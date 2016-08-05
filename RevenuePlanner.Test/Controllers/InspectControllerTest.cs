@@ -475,11 +475,219 @@ namespace RevenuePlanner.Test.Controllers
             Form.TacticTitle = "Test Tactic" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
+            Form.Cost = 20;
 
             var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
         }
+
+        [TestMethod]
+        public void Save_ExistingTactic()
+        {
+            Console.WriteLine("To Save the Tactic.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            string UserID = (Sessions.User.UserId).ToString();
+            var planTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted == false && a.LinkedTacticId != null).FirstOrDefault();
+
+            int PlanID = planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+            int ModelId = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId;
+            int PlanCampaignId = planTactic.Plan_Campaign_Program.PlanCampaignId;
+            int PlanProgramId = planTactic.PlanProgramId;
+            
+            int TacticTypeId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.TacticTypeId).FirstOrDefault();
+            int? StageId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.StageId).FirstOrDefault();
+            List<int> PlanIds = new List<int>();
+            PlanIds.Add(PlanID);
+            Sessions.PlanPlanIds = PlanIds;
+
+            string Title = "Test Tactic" + "_ " + DateTime.Now;
+            Inspect_Popup_Plan_Campaign_Program_TacticModel Form = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
+            Form.PlanTacticId = planTactic.PlanTacticId;
+            Form.PlanProgramId = PlanProgramId;
+            Form.PlanCampaignId = PlanCampaignId;
+            Form.OwnerId = Sessions.User.UserId;
+            Form.TacticTypeId = TacticTypeId;
+            Form.StageId = Convert.ToInt32(StageId);
+            Form.TacticTitle = "Test Tactic" + "_ " + DateTime.Now;
+            Form.StartDate = DateTime.Now;
+            Form.EndDate = DateTime.MaxValue;
+            Form.Cost = 20;
+
+            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+        }
+        #endregion
+
+        #region LoadSetup
+        [TestMethod]
+        public void LoadImprovementSetupEditMode()
+        {
+            Console.WriteLine("To open inspect popup for improvement tactic.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            var improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(i => i.IsDeleted == false).FirstOrDefault();
+            int improvementTacticId = improvementTactic.ImprovementPlanTacticId;
+            var Editresult = objInspectController.LoadImprovementSetup(improvementTacticId, "Edit") as PartialViewResult;
+            int improvementProgramId = improvementTactic.ImprovementPlanProgramId;
+            var Addresult = objInspectController.LoadImprovementSetup(improvementProgramId, "Add") as PartialViewResult;
+            Assert.AreEqual("_SetupImprovementTactic", Editresult.ViewName);
+            Assert.AreEqual("_SetupImprovementTactic", Addresult.ViewName);
+        }
+        [TestMethod]
+        public void LoadEditSetupCampaign()
+        {
+            Console.WriteLine("To open inspect popup for campaign setup.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            int planCampaignId = db.Plan_Campaign.Where(a => a.IsDeleted == false).Select(a => a.PlanCampaignId).FirstOrDefault();
+            var result= objInspectController.LoadEditSetupCampaign(planCampaignId) as PartialViewResult;
+            Assert.AreEqual("_EditSetupCampaign", result.ViewName);
+        }
+
+        [TestMethod]
+        public void LoadSetupProgramEdit()
+        {
+            Console.WriteLine("To open inspect popup for program setup.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            int planProgramId = db.Plan_Campaign_Program.Where(a => a.IsDeleted == false).Select(a => a.PlanProgramId).FirstOrDefault();
+            var result = objInspectController.LoadSetupProgramEdit(planProgramId) as PartialViewResult;
+            Assert.AreEqual("_EditSetupProgram", result.ViewName);
+        }
+        [TestMethod]
+        public void LoadActuals()
+        {
+            Console.WriteLine("To load actuals of tactic.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            int tacticId = db.Plan_Campaign_Program_Tactic_Actual.Where(a => a.Plan_Campaign_Program_Tactic.IsDeleted == false).Select(a => a.PlanTacticId).FirstOrDefault();
+            var result = objInspectController.LoadActuals(tacticId) as PartialViewResult;
+            Assert.AreEqual("Actual", result.ViewName);
+        }
+        [TestMethod]
+        public void LoadReviewCampaign()
+        {
+            Console.WriteLine("To load review tab of campaign.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            int campignId = db.Plan_Campaign.Where(a => a.IsDeleted == false).Select(a => a.PlanCampaignId).FirstOrDefault();
+            var result = objInspectController.LoadReviewCampaign(campignId) as PartialViewResult;
+            Assert.AreEqual("_ReviewCampaign", result.ViewName);
+        }
+
+        [TestMethod]
+        public void LoadReviewProgram()
+        {
+            Console.WriteLine("To load review tab of program.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            int programId = db.Plan_Campaign_Program.Where(a => a.IsDeleted == false).Select(a => a.PlanProgramId).FirstOrDefault();
+            var result = objInspectController.LoadReviewProgram(programId) as PartialViewResult;
+            Assert.AreEqual("_ReviewProgram", result.ViewName);
+        }
+        #endregion
+
+        #region Load Inspect Popup
+        [TestMethod]
+        public void LoadInspectPopupTactic()
+        {
+            Console.WriteLine("To open tactic popup.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            var planTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted == false && a.LinkedTacticId != null).FirstOrDefault();
+            var result = objInspectController.LoadInspectPopup(planTactic.PlanTacticId, "Tactic", "Setup", "Edit", planTactic.PlanProgramId);
+            Assert.IsNotNull(result);
+        }
+        [TestMethod]
+        public void LoadInspectPopupProgram()
+        {
+            Console.WriteLine("To open program popup.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            var planProgram = db.Plan_Campaign_Program.Where(a => a.IsDeleted == false).FirstOrDefault();
+            var result = objInspectController.LoadInspectPopup(planProgram.PlanProgramId, "Program", "Setup", "Edit", planProgram.PlanCampaignId);
+            Assert.IsNotNull(result);
+        }
+        [TestMethod]
+        public void LoadInspectPopupCampaign()
+        {
+            Console.WriteLine("To open campaign popup.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            var planCampign = db.Plan_Campaign.Where(a => a.IsDeleted == false).FirstOrDefault();
+            var result = objInspectController.LoadInspectPopup(planCampign.PlanCampaignId, "Campaign", "Setup", "Edit", planCampign.PlanId);
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void LoadInspectPopupPlan()
+        {
+            Console.WriteLine("To open Plan popup.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            var Plan = db.Plans.Where(a => a.IsDeleted == false).FirstOrDefault();
+            var result = objInspectController.LoadInspectPopup(Plan.PlanId, "Plan", "Setup", "Edit");
+            Assert.IsNotNull(result);
+        }
+
         #endregion
 
         #region Save Tactic Check duplicate
@@ -708,14 +916,9 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
             string UserID = (Sessions.User.UserId).ToString();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
-            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
-            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
-            int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
+            int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.IsDeleted==false && id.LinkedTacticId!=null).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
             int LineitemTypeId = db.LineItemTypes.Where(id => id.ModelId == ModelId).Select(Lineitem => Lineitem.LineItemTypeId).FirstOrDefault();
             List<int> PlanIds = new List<int>();
-            PlanIds.Add(PlanID);
-            Sessions.PlanPlanIds = PlanIds;
             string Title = "Test Lineitem" + "_ " + DateTime.Now;
             Plan_Campaign_Program_Tactic_LineItemModel Form = new Plan_Campaign_Program_Tactic_LineItemModel();
             Form.PlanTacticId = PlanTacticId;
@@ -724,10 +927,52 @@ namespace RevenuePlanner.Test.Controllers
             Form.Title = "Test Lineitem" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
+            Form.Cost = 20;
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
-        
+        }
+
+
+        [TestMethod]
+        public void Save_CostLineItem()
+        {
+
+            Console.WriteLine("To Save the LineItem.\n");
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            int ModelId = DataHelper.GetModelId();
+            string UserID = (Sessions.User.UserId).ToString();
+            //int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            //int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+            //int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+            //int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
+            int CostLineItemId = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lc => lc.Plan_Campaign_Program_Tactic_LineItem.IsDeleted == false && lc.Plan_Campaign_Program_Tactic_LineItem.LinkedLineItemId!=null && lc.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.IsDeleted == false).Select(a => a.PlanLineItemId).FirstOrDefault();
+            int PlanTacticId = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.PlanLineItemId == CostLineItemId).Select(a => a.PlanTacticId).FirstOrDefault();
+                //db.Plan_Campaign_Program_Tactic.Where(id => id.IsDeleted == false && id.LinkedTacticId != null).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
+            int LineitemTypeId = db.LineItemTypes.Where(id => id.ModelId == ModelId).Select(Lineitem => Lineitem.LineItemTypeId).FirstOrDefault();
+
+            List<int> PlanIds = new List<int>();
+            //PlanIds.Add(PlanID);
+            //Sessions.PlanPlanIds = PlanIds;
+            string Title = "Test Lineitem" + "_ " + DateTime.Now;
+            Plan_Campaign_Program_Tactic_LineItemModel Form = new Plan_Campaign_Program_Tactic_LineItemModel();
+            Form.PlanTacticId = PlanTacticId;
+            Form.PlanLineItemId = CostLineItemId;
+            Form.LineItemTypeId = LineitemTypeId;
+            Form.Title = "Test Lineitem" + "_ " + DateTime.Now;
+            Form.StartDate = DateTime.Now;
+            Form.EndDate = DateTime.MaxValue;
+            Form.Cost = 20;
+            var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+
         }
         #endregion
 
@@ -1282,6 +1527,132 @@ namespace RevenuePlanner.Test.Controllers
             
         }
         #endregion
+        #endregion
+
+        #region Load Review Tactic
+        [TestMethod]
+        public void LoadReview()
+        {
+            Console.WriteLine("To load review tab of tactic.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController();
+            int planId = DataHelper.GetPlanId();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == planId && c.IsDeleted==false).Select(c => c.PlanCampaignId).FirstOrDefault();
+            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId && id.IsDeleted==false).Select(program => program.PlanProgramId).FirstOrDefault();
+            
+            int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId && id.IsDeleted==false).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
+            var result = objInspectController.LoadReview(PlanTacticId) as PartialViewResult;
+            Assert.AreEqual("Review", result.ViewName);
+        }
+
+        [TestMethod]
+        public void SaveTacticTitle()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To save tactic title.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int planId = DataHelper.GetPlanId();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == planId && c.IsDeleted == false).Select(c => c.PlanCampaignId).FirstOrDefault();
+            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId && id.IsDeleted == false).Select(program => program.PlanProgramId).FirstOrDefault();
+
+            var PlanTactic = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId && id.IsDeleted == false).FirstOrDefault();
+            string tId=PlanTactic.PlanTacticId.ToString();
+            string newTitle=PlanTactic.Title+"New";
+            var result = objInspectController.SaveTitle("Tactic", newTitle, tId);
+            Assert.IsNotNull(result);
+        }
+        [TestMethod]
+        public void SaveCampaignTitle()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To save campaign title.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int planId = DataHelper.GetPlanId();
+            var PlanCampaign = db.Plan_Campaign.Where(c => c.PlanId == planId && c.IsDeleted == false).FirstOrDefault();
+            string cId = PlanCampaign.PlanCampaignId.ToString();
+            string newTitle = PlanCampaign.Title + "New";
+            var result = objInspectController.SaveTitle("Campaign", newTitle, cId);
+            Assert.IsNotNull(result);
+        }
+        [TestMethod]
+        public void SaveProgramTitle()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To save program title.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int planId = DataHelper.GetPlanId();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == planId && c.IsDeleted == false).Select(c => c.PlanCampaignId).FirstOrDefault();
+            var PlanProgram = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId && id.IsDeleted == false).FirstOrDefault();
+
+            string pId = PlanProgram.PlanProgramId.ToString();
+            string newTitle = PlanProgram.Title + "New";
+            var result = objInspectController.SaveTitle("Program", newTitle, pId);
+            Assert.IsNotNull(result);
+        }
+        [TestMethod]
+        public void SaveLineItemTitle()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To save lineitem title.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            var LineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(l=> l.IsDeleted == false && l.LineItemType!=null).FirstOrDefault();
+            string lId = LineItem.PlanLineItemId.ToString();
+            string newTitle = LineItem.Title + "New";
+            var result = objInspectController.SaveTitle("LineItem", newTitle, lId);
+            Assert.IsNotNull(result);
+        }
+        #endregion
+
+        #region CreateProgram view
+        [TestMethod]
+        public void CreateProgram()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To open program view.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int campaignId = db.Plan_Campaign.Where(a => a.IsDeleted == false).Select(a=>a.PlanCampaignId).FirstOrDefault();
+            var result = objInspectController.CreateProgram(campaignId) as PartialViewResult;
+            Assert.AreEqual("_EditSetupProgram", result.ViewName);
+        }
+        #endregion
+
+        #region LoadEditSetupLineitem
+        [TestMethod]
+        public void LoadEditSetupLineitem()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("To open program view.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController objInspectController = new InspectController();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            int lineItemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted == false).Select(a => a.PlanLineItemId).FirstOrDefault();
+            var result = objInspectController.LoadEditSetupLineitem(lineItemId) as PartialViewResult;
+            Assert.AreEqual("_EditSetupLineitem", result.ViewName);
+        }
+
         #endregion
 
     }
