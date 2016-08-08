@@ -9804,8 +9804,7 @@ li.close-list {
 }
 
 .Save-icon-white:after,
-.edit-icon-white:after,
-.Save-add-new-icon-white:after {
+.edit-icon-white:after  {
     background-position: 0 3px;
     background-repeat: no-repeat;
     font-size: 14px;
@@ -9827,18 +9826,8 @@ li.close-list {
 
 .Save-icon-white:after {
     background-image: url(../images/save-icon-white.png);
-    content: "Save & Close";
+    content: "Save";
     color: #fff;/* Added for #2219 - Bhumika */
-}
-
-.Save-add-new-icon-white:after {
-    background-image: url(../images/add-large.png);
-    content: "Save & Add New";
-    color: #fff;
-}
-
-.Save-add-new-icon-white {
-    margin-left: 20px;
 }
 
 .border-top-div {

@@ -571,22 +571,10 @@
                              return false;
                          }
                          else {
-                             $('.close-x-big-icon').trigger('click');
+                             ReloadSavedLineItem();
 
                          }
                      }
-                         // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
-                     //else if (activeTab == TabBudget) {
-                     //    var ReturnParameter = SaveLineitemBudget();
-                     //    if (ReturnParameter == false) {
-                     //        return false;
-                     //    }
-                     //    else {
-                     //        $('.close-x-big-icon').trigger('click');
-
-
-                     //    }
-                     //}
 
                      else if (activeTab == TabActual) {
                          var hdnTacticStatus = $("#hdnParentTacticStatus").val();
@@ -603,7 +591,7 @@
                              return false;
                          }
                          else {
-                             $('.close-x-big-icon').trigger('click');
+                             ReloadSavedLineItem();
 
                          }
 
@@ -613,6 +601,12 @@
              }
          });
 
+         //
+         //Reload line item for further editing/update zz
+         //
+         function ReloadSavedLineItem() {
+             loadInspectPopup($("#hdnPlanLineItemID").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@tacticId', '@RedirectType');
+         }
 
          $('#AddForm').click(function () {
              if ($('#popupLineitem').css('display') == 'none') {

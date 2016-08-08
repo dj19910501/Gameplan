@@ -138,7 +138,6 @@
                 @if (InspectMode == Enums.InspectPopupMode.Add.ToString())
                 {
                     <span class="Save-icon-white btn-blue btn-large SpanDisable" style="display: block; cursor: pointer;" id="EditForm"></span>
-                    <span class="Save-add-new-icon-white btn-blue btn-large SpanDisable" style="display: block; cursor: pointer;" id="EditFormAddNew"></span>
                 }
 
             </span>
@@ -394,16 +393,14 @@
           });
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
-          $('#EditForm').on("click", function (e) { SaveTacticAddNew(false); } );
-          $('#EditFormAddNew').on("click", function (e) { SaveTacticAddNew(true); } );
+          $('#EditForm').on("click", function (e) { SaveTacticAddNew(); } );
 
       });
  
     //
     //The save will need to work for both "Save & Close" and "Save & Add New" - #2329 by zz
-    //addNew - a boolean falg to indicate which case it is.
     //
-    function SaveTacticAddNew(addNew) {
+    function SaveTacticAddNew() {
         $("#divArchiveMediaCode").html("");
         //added by devanshi for PL ticket #2276
         if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
@@ -466,7 +463,7 @@
                         return false;
                     }
                     else {
-                        CloseIfNotAddNew(addNew, activeTab);
+                        ReloadSavedTactic();
                     }
                 }
                     // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
@@ -497,7 +494,7 @@
                         return false;
                     }
                     else {
-                        CloseIfNotAddNew(addNew, activeTab);
+                        ReloadSavedTactic();
 
                     }
                 }
@@ -509,17 +506,17 @@
                     }
                     else {
 
-                        CloseIfNotAddNew(addNew, activeTab);
+                        ReloadSavedTactic();
 
                     }
                 }
                     // Added by Arpita Soni for Ticket #2237 on 06/09/2016
                 else if (activeTab == TabLineItem) {
-                    CloseIfNotAddNew(addNew);
+                    ReloadSavedTactic();
                 }
                     // Added by Devanshi gandhi for Ticket #2368 on 06/09/2016
                 else if (activeTab == TabMediaCode) {
-                    CloseIfNotAddNew(addNew, activeTab);
+                    ReloadSavedTactic();
                 }
             }
 
@@ -527,22 +524,11 @@
     }
 
     //
-    //Close the inspect tab if no new to be added 
+    // Reload saved tactic 
     //
-    function CloseIfNotAddNew(addNew, activeTab){
-        if (!addNew){
-            $('.close-x-big-icon').trigger('click');
-        }else{
-            ResetAllTacticFields(activeTab);
-        }
-    }
-
-    //
-    // Reset all tactic fields before add new
-    //
-    function ResetAllTacticFields(){
+    function ReloadSavedTactic(){
         //Reloading the dialog is NOT ideal, yet it sure cleans things up and guarantees a clean start. zz
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", @PlanProgramId, '@RequestedModule');
+        loadInspectPopup($("#hdnPlanTacticId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", @PlanProgramId, '@RequestedModule');
     }
 
     //Added By Komal Rawal for #1213

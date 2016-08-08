@@ -209,7 +209,7 @@
     var tabtext = "";
     $(document).ready(
       function () {
-         
+
           //Bhumika - #2236 For equal width of li
           var evenWidth = ($("#InspectTab").width() / $("#InspectTab li").length) - 2;
           $("#InspectTab li").css("width", evenWidth);
@@ -241,7 +241,7 @@
                       var activeTab = $("#InspectTab li.active a").text();
                       //   alert(activeTab);
                       tabtext = ($(this).children('a').text());
-                   
+
 
                       $('#InspectTab').addClass('SpanDisable');
                       // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
@@ -271,13 +271,13 @@
                           loadAddSetup();
                       }
 
-                      }          
+                      }
           });
 
           //Added By Komal Rawal for #1325
 
-    
-          
+
+
           //End
           if ($("#hdnPlanProgramId").val() != '0') {
               if ($('#EditProgram').hasClass('edit-icon-white') && $("#hdnProgramOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
@@ -295,7 +295,7 @@
 
              // $("#liReview,#liBudget,#liSetup").unbind('click');
               loadAddSetup();
-          }       
+          }
           $("#EditProgram").on("click", function () {
               //added by devanshi for PL ticket #2276
               if (CheckHtmlTag($("#txtProgramTitle").val()) == false) {
@@ -360,24 +360,9 @@
                               return false;
                           }
                           else {
-                              $('.close-x-big-icon').trigger('click');
-                         
-
+                              ReloadSavedProgram();
                           }
                       }
-		      // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
-
-                      //else if (activeTab == TabBudget) {
-                      //    var ReturnParameter = SaveProgramBudget();
-                      //    if (ReturnParameter == false) {
-                      //        return false;
-                      //    }
-                      //    else {
-                      //        $('.close-x-big-icon').trigger('click');
-                          
-
-                      //    }
-                      //}
 
                       else if (activeTab == TabReview) {
                           var ReturnParameter = SaveTitle();
@@ -385,17 +370,16 @@
                               return false;
                           }
                           else {
-                              $('.close-x-big-icon').trigger('click');
-                       
+                              ReloadSavedProgram();
                           }
 
                       }
 
                   }
               }
-          });   
+          });
 
-          // Close event for Error Message & Success Message Close button 
+          // Close event for Error Message & Success Message Close button
           $(".alert").find(".close").on("click", function (e) {
               e.stopPropagation();
               e.preventDefault();
@@ -491,8 +475,16 @@
               }
           });
 
-          
+
       });
+
+    //
+    //Reload saved program for edit/update zz
+    //
+    function ReloadSavedProgram (){
+        ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", $("#hdnPlanProgramId").val(),  @campaignId, '@RedirectType');
+    }
+
     function SaveAllData(activeTab) {
         var ProgramOpt = $("#hdnProgramOpt").val();
         $('.btn-dropdwn').hide();
@@ -679,7 +671,7 @@
         }
     });
 
-   
+
     function SaveMessageOnParent(value) {
         $("#modal-container-186470").modal('hide');
         $("#errorMessageDuplicatePlan").slideUp(50);
@@ -688,7 +680,7 @@
         $("#cSuccessDuplicatePlan").text(htmlDecode(value));
         $("#successMessageDuplicatePlan").removeClass("message-position");
         $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
-       
+
     }
 
     $("#deleteProgram").click(function () {
@@ -719,7 +711,7 @@
                         else {
                          if (data.IsSuccess && data.opt != 'undefined') {
                              if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                 
+
                                  // Added by Arpita Soni for Ticket #2354 on 07/14/2016
                                  RemoveAllHoneyCombData();
 
@@ -739,7 +731,7 @@
                                  $('body').removeClass('bodyOverflow');
                                 }
                              else {
-			     
+
                                  if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == data.opt) {
                                      $("#hdnBudgetingExpandId").val(data.expand);
                                      $("#hdnBudgetingIsSave").val("true");
@@ -748,7 +740,7 @@
                                  } else {
                                      window.location.href = data.redirect;
                                  }
-                                 
+
                                     return;
                                 }
                             }
@@ -772,7 +764,7 @@
             returnpara = SaveAllData(activeTab);
         }
         var CampaignId = @campaignId;
-        isCopyTactic = CampaignId;         
+        isCopyTactic = CampaignId;
         if(returnpara){
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RedirectType');
         }

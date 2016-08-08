@@ -326,15 +326,14 @@
                           url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
                           $("#divTab").empty();
                           $("#divTab").load(url + '?id=' + planCampaignId
-        , function (response, status, xhr) {
-            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                //// Call function to redirect on service unavailibility.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-            }
-        });
-
+                            , function (response, status, xhr) {
+                                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                                    //// Call function to redirect on service unavailibility.
+                                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                    //// Ticket: 942 Exception handeling in Gameplan.
+                                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                                }
+                            });
                       }
 		      // Commented by Arpita Soni for Ticket #2236 on 06/14/2016
                      @* else if (tabtext == "Budget") {
@@ -346,14 +345,14 @@
                           url = '@Url.Content("~/Inspect/LoadEditSetupCampaign/")';
                           $("#divTab").empty();
                           $("#divTab").load(url + '?id=' + planCampaignId
-        , function (response, status, xhr) {
-            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                //// Call function to redirect on service unavailibility.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-            }
-        });
+                                , function (response, status, xhr) {
+                                    if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                                        //// Call function to redirect on service unavailibility.
+                                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                        //// Ticket: 942 Exception handeling in Gameplan.
+                                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                                    }
+                                });
 
                           RemoveTabClass();
                           $("#liSetup").removeClass('pull-left');
@@ -378,9 +377,7 @@
                               return false;
                           }
                           else {
-                              $('.close-x-big-icon').trigger('click');
-
-
+                              ReloadSavedCampaign();
                           }
                       }
 			// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
@@ -402,8 +399,7 @@
                               return false;
                           }
                           else {
-                              $('.close-x-big-icon').trigger('click');
-
+                              ReloadSavedCampaign();
                           }
 
                       }
@@ -412,6 +408,13 @@
               }
 
           });
+
+          //
+          // Reload campaign for further edit/update zz
+          //
+          function ReloadSavedCampaign() {
+              loadInspectPopup($("#hdnPlanCampaignId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId', $("#hdnRedirectType").val());
+          }
 
           $("#btnAddCampaign").on("click", function () {
               loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', '@planCampaignId', $("#hdnRedirectType").val());
