@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-
+using System.Configuration;
 
 namespace RevenuePlanner.Test.Controllers
 {
@@ -1107,6 +1107,12 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+            string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
+            string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
+            string singlehash = DataHelper.ComputeSingleHash(password);
+            RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
+            Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
+
             int EntityId = DataHelper.GetPlanId();
             bool isGridview = true;
             var result = controller.AddActual(EntityId, isGridview) as ActionResult;

@@ -1018,6 +1018,11 @@ namespace RevenuePlanner.Test.Controllers
             //// Call AddActual method
             PlanController objHomeController = new PlanController();
             Sessions.PlanId = DataHelper.GetPlanId();
+            string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
+            string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
+            string singlehash = DataHelper.ComputeSingleHash(password);
+            RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
+            Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
             var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             var result = objHomeController.AddActual(Convert.ToInt32(Sessions.PlanId)) as ViewResult;
