@@ -462,6 +462,7 @@
                                 // gantt.render();
                             }
                             else {
+                                logMixpanelTrack("User has added Plan entity to honeycomb list."); // log entity to added to Honeycomb event to mixpanel. Added by Viral regarding PL ticket #2434.
                                 $(this).addClass("honeycombbox-icon-gantt-Active");
                                 ExportSelectedIds.TaskID.push($(this).attr('name1'));
                                 ExportSelectedIds.Title.push($(this).attr('aria-label'));
@@ -513,6 +514,7 @@
 
                             }
                             else {
+                                logMixpanelTrack("User has added Campaign entity to honeycomb list."); // log entity to added to Honeycomb event to mixpanel. Added by Viral regarding PL ticket #2434.
                                 $(this).addClass("honeycombbox-icon-gantt-Active");
                                 ExportSelectedIds.TaskID.push($(this).attr('name1'));
                                 ExportSelectedIds.Title.push($(this).attr('aria-label'));
@@ -556,6 +558,7 @@
                                 }
                             }
                             else {
+                                logMixpanelTrack("User has added Program entity to honeycomb list."); // log entity to added to Honeycomb event to mixpanel. Added by Viral regarding PL ticket #2434.
                                 $(this).addClass("honeycombbox-icon-gantt-Active");
                                 ExportSelectedIds.TaskID.push($(this).attr('name1'));
                                 ExportSelectedIds.Title.push($(this).attr('aria-label'));
@@ -597,6 +600,7 @@
                                 $(this).addClass("honeycombbox-icon-gantt");
                             }
                             else {
+                                logMixpanelTrack("User has added Tactic entity to honeycomb list."); // log entity to added to Honeycomb event to mixpanel. Added by Viral regarding PL ticket #2434.
                                 $(this).addClass("honeycombbox-icon-gantt-Active");
                                 ExportSelectedIds.TaskID.push($(this).attr('name1'));
                                 ExportSelectedIds.Title.push($(this).attr('aria-label'));
@@ -7320,6 +7324,7 @@
         });
         function CloseIconClick() {
             $('.close-x-big-icon').click(function () {
+                logMixpanelTrack("Exit from inspection window."); // log Exit(close) Plan/Campaign/Program/Tactic inspect window event to mixpanel. Added by Viral regarding PL ticket #2434.
                 //Added by Rahul shah to remove all media code honeycomb data on click of close icon for  PL #2371
                 RemoveAllMediaCodeData();
                 $("#modal-container-186470").addClass("transition-close");

@@ -412,6 +412,7 @@
         // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
         if($(this).hasClass('SpanDisable') == false)
         {
+            logMixpanelTrack("Save & Add New button clicked under Tactic inspection window."); // log Save & Add button click event to mixpanel. Added by Viral regarding PL ticket #2434.
             isDataModified = true;
             //Modified for #1318 by Komal Rawal to handle the Save function
             var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
@@ -680,6 +681,7 @@
 
     $('#AddForm').click(function () {
         if ($('#popupnewTactic').css('display') == 'none') {
+            logMixpanelTrack("Add button clicked under Tactic inspection window."); // log Add button click event to mixpanel. Added by Viral regarding PL ticket #2434.
             $('#popupnewTactic').css('display', 'block')
         }
         else {

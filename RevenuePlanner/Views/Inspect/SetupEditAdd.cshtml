@@ -282,9 +282,10 @@
             </div>
         </div>*@
     <!-- Added by Arpita Soni for Ticket #2212 on 05/24/2016 -->
-      <a href="@Url.Action("Budgeting", "Plan", new { PlanId = Model.PlanId })" class="gotoLink">Go to Plan Budget <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
-        if(Sessions.AppMenus.Where(x=>x.Code.ToLower()==Enums.ActiveMenu.MarketingBudget.ToString().ToLower()).Any()){
-        <a href="@Url.Action("Index","Finance")" class="gotoLink" >Go to Marketing Budget <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
+    <a href="@Url.Action("Budgeting", "Plan", new { PlanId = Model.PlanId })" class="gotoLink" onclick="onGoToPlanBudgetClick(); return true;">Go to Plan Budget <i class=" fa fa-long-arrow-right" aria-hidden="true"></i> </a>
+    if (Sessions.AppMenus.Where(x => x.Code.ToLower() == Enums.ActiveMenu.MarketingBudget.ToString().ToLower()).Any())
+    {
+        <a href="@Url.Action("Index","Finance")" class="gotoLink" onclick="onGoToMarketingBudgetClick(); return true;">Go to Marketing Budget <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
     }
 }
 
@@ -1732,4 +1733,11 @@ if ('@Model.IsPackagedTactic' != null && '@Convert.ToString(Model.IsPackagedTact
         $('#CustomAttributeheading').show();
 
     }
+    function onGoToPlanBudgetClick() {
+        logMixpanelTrack("Clicked on Go to Plan Budget link under Tactic inspection window."); // log Go to Plan link event to mixpanel. Added by Viral regarding PL ticket #2434.
+    }
+    function onGoToMarketingBudgetClick() {
+        logMixpanelTrack("Clicked on Go to Marketing Budget link under Tactic inspection window."); // log Go to Marketing Budget link event to mixpanel. Added by Viral regarding PL ticket #2434.
+    }
+
 </script>

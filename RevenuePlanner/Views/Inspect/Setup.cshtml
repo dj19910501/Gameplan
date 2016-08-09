@@ -89,8 +89,9 @@
     <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
         id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;" />
     <!-- Added by Arpita Soni for Ticket #2212 on 05/24/2016 -->
-    <a href="@Url.Action("Budgeting", "Plan", new { PlanId = Model.PlanId })" class="gotoLink">Go to Plan Budget <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
-        if(Sessions.AppMenus.Where(x=>x.Code.ToLower()==Enums.ActiveMenu.MarketingBudget.ToString().ToLower()).Any()){
+    <a href="@Url.Action("Budgeting", "Plan", new { PlanId = Model.PlanId })" class="gotoLink" onclick="onGoToPlanBudgetClick(); return true;">Go to Plan Budget <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
+    if (Sessions.AppMenus.Where(x => x.Code.ToLower() == Enums.ActiveMenu.MarketingBudget.ToString().ToLower()).Any())
+    {
         <a href="@Url.Action("Index","Finance")" class="gotoLink" >Go to Marketing Budget <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
     }
 }
@@ -160,6 +161,10 @@
                    });
           /*End - Modified by Mitesh Vaishnav for PL ticket #1165*/
 
+               $(".viewattrlnk").on("click", function () {
+                   logMixpanelTrack("Clicked on View Attribution link under Tactic inspection window."); // log View Attribution click event to mixpanel. Added by Viral regarding PL ticket #2434.
+               });
+
       });
 
     // Modified by Komal Rawal for ticket #1196
@@ -175,5 +180,9 @@
         $('#CustomHtmlHelperfield').show();
         $('#CustomAttributeheading').show();
 
+    }
+
+    function onGoToPlanBudgetClick() {
+        logMixpanelTrack("Clicked on Go to Plan link under Tactic inspection window."); // log Go to Plan link event to mixpanel. Added by Viral regarding PL ticket #2434.
     }
 </script>

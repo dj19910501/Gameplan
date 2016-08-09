@@ -4824,7 +4824,7 @@ namespace RevenuePlanner.Helpers
                                         }
                                         sb.Append("</tbody> <tfoot><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">X close</span></a></td></tr></tfoot></table></div></div></div>");
 
-                                        sb = sb.Replace("#VIEW_DETAIL_LINK#", "<span class=\"new_tag\"><a href=\"#\">View Attribution</a></span>");
+                                        sb = sb.Replace("#VIEW_DETAIL_LINK#", "<span class=\"new_tag\"><a href=\"#\" class=\"viewattrlnk\">View Attribution</a></span>");
 
                                     }
                                     #endregion
@@ -5108,7 +5108,7 @@ namespace RevenuePlanner.Helpers
                                         }
                                         sb.Append("</tbody> <tfoot><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\"><span class=\"swap-text\">X close</span></a></td></tr></tfoot></table></div></div></div>");
 
-                                        sb = sb.Replace("#VIEW_DETAIL_LINK#", "<span class=\"new_tag\"><a href=\"#\">View Attribution</a></span>");
+                                        sb = sb.Replace("#VIEW_DETAIL_LINK#", "<span class=\"new_tag\"><a href=\"#\" class=\"viewattrlnk\">View Attribution</a></span>");
 
                                     }
                                     #endregion
