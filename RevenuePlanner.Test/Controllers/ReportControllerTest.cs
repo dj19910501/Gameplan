@@ -1878,5 +1878,27 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #endregion
+
+        #region GetReportBudgetDataQuarter
+        [TestMethod]
+        public void GetReportBudgetData()
+        {
+            Console.WriteLine("To get report on revenue tab.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            List<int> lstPlanIds = new List<int>();
+            var tactic = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false).FirstOrDefault();
+            int planId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+            lstPlanIds.Add(planId);
+            HttpContext.Current.Session["ReportPlanIds"] = lstPlanIds;
+
+            ReportController ReportController = new ReportController();
+            var result = ReportController.GetReportBudgetData("2016", "quarters", "Plan","") as PartialViewResult;
+            //Assert.IsNotNull(result);
+            Assert.AreEqual("_Budget", result.ViewName);
+            var result1 = ReportController.GetReportBudgetData("thisquarter", "quarters", "Plan", "") as PartialViewResult;
+            Assert.AreEqual("_Budget", result1.ViewName);
+        }
+
+        #endregion
     }
 }
