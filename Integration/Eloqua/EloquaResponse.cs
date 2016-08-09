@@ -324,13 +324,10 @@ namespace Integration.Eloqua
 
                             List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
-                                                                                                                           tactic.IsDeleted == false && tactic.IsSyncEloqua.HasValue && tactic.IsSyncEloqua.Value == true).ToList();
+                                                                                                                           tactic.IsDeleted == false).ToList();
 
                             //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
-                            List<Plan_Campaign_Program_Tactic> lstAllTactics = tblTactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                                           tactic.IsDeployedToIntegration == true &&
-                                                                                                                           lstApproveStatus.Contains(tactic.Status) &&
-                                                                                                                           tactic.IsDeleted == false).ToList();
+                            List<Plan_Campaign_Program_Tactic> lstAllTactics = tblTactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
                             // Log: Total No. of Tactics find filter by PlanIds.
                             //// Get MQL Level
                             var MQLLevel = db.Stages.Where(ObjStage => ObjStage.Code == Common.StageMQL && ObjStage.ClientId == _ClientId && ObjStage.IsDeleted == false).Select(ObjStage => ObjStage.Level).FirstOrDefault();
