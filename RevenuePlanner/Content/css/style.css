@@ -15976,6 +15976,81 @@ input.selectInput{
 }
 .range_inputs .cancelBtn.btn{color:inherit}
 #ddlCustomTimeFrame{margin-top:15px}
+
+/* ==== #2457 Accordian for Alert Style ==== */
+.alert-form-wrap{margin-left:30px}
+.btn-create-alert{margin-top:-30px}
+.accordion.alert-accordian{width:78%}
+.accordion.alert-accordian .accordion-group {
+    background: #f2f2f2 none repeat scroll 0 0;
+    padding: 0 15px;
+    margin-bottom: 5px;
+}
+.accordion.alert-accordian .accordion-heading {
+    padding: 5px 0;
+}
+.acco-icons {width: 150px;margin-top: 8px;}
+.accordion.alert-accordian .accordion-heading a{color:#95989A; float:right;display:inline;}
+.accordion.alert-accordian .accordion-heading a.accordion-toggle{ margin-right:10px}
+.accordion.alert-accordian .accordion-heading .fa{font-size:18px; color:#95989A;}
+.alert-heading h4{margin:0; font-weight:normal}
+.alert-heading:first-child span{margin-right:50px}
+
+.accordion-row{width:100%;  margin-bottom: 15px;}
+.alert-value-box {
+    padding-left: 15px;
+}
+.alert-question {
+    font-size: 16px;
+    margin: 0 0 10px;
+}
+.searchtextbox {
+    display: inline-block;
+    position: relative;
+    width: 30%;
+}
+.searchtextbox input{width:100%; margin: 0;}
+.searchtextbox::after {
+    background: #f2f2f2 none repeat scroll 0 0;
+    border-radius: 0 5px 5px 0;
+    content: "Search";
+    font-size: 12px;
+    line-height: 28px;
+    padding: 0 6px;
+    position: absolute;
+    right: 1px;
+    top: 1px;
+}
+.accordion-row .selectBox select {
+  display: inline-block;
+  font: inherit;
+  /* reset */
+  margin: 0;      
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+   background: #fff url("../images/big-arrow-down-accordion.png") no-repeat scroll right 10px center / 8px auto;
+   background-position:  right 10px center;  
+   outline:0 none;
+   width: 112px;
+}
+.accordion-row .selectBox{margin: 0 5px 0 5px; }
+.accordion-row .bootstrap-datetimepicker-widget{ width:100% !important}
+.accordion-row.calendar_div .input-group-addon {
+    border-radius: 0 4px 4px 0;
+    line-height: 0;
+    padding: 7px 12px;
+    width: auto;
+}
+.accordion-row.calendar_div .input-group-addon, 
+.accordion-row.calendar_div .input-group .form-control {
+    display: inline-block;
+    float: left;
+}
+.container-button {width: 100%;}
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
@@ -16006,6 +16081,8 @@ input.selectInput{
  .grid_Delete {
  margin-right: 6px;
 }
+
+ .accordion.alert-accordian{width:82%}/* #2457 */
 }
  @media (max-width: 1440px) {
     /*.row-fluid .hierarchy_wrapper {
@@ -16106,6 +16183,7 @@ input.selectInput{
  width: 15%;
  float: right;
 }
+ .accordion.alert-accordian{width:100%}/* #2457 */
 }
 @media screen and (max-width: 1400px) {
 .report-btn-group {
