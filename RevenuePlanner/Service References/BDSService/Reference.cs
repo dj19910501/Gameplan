@@ -2290,6 +2290,179 @@ namespace RevenuePlanner.BDSService {
         }
     }
     
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Currency", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class Currency : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid ClientIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid CreatedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime CreatedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CurrencyDetailField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CurrencyIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CurrencySymbolField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ISOCurrencyCodeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsDefaultField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsDeletedField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid ClientId {
+            get {
+                return this.ClientIdField;
+            }
+            set {
+                if ((this.ClientIdField.Equals(value) != true)) {
+                    this.ClientIdField = value;
+                    this.RaisePropertyChanged("ClientId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid CreatedBy {
+            get {
+                return this.CreatedByField;
+            }
+            set {
+                if ((this.CreatedByField.Equals(value) != true)) {
+                    this.CreatedByField = value;
+                    this.RaisePropertyChanged("CreatedBy");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime CreatedDate {
+            get {
+                return this.CreatedDateField;
+            }
+            set {
+                if ((this.CreatedDateField.Equals(value) != true)) {
+                    this.CreatedDateField = value;
+                    this.RaisePropertyChanged("CreatedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string CurrencyDetail {
+            get {
+                return this.CurrencyDetailField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CurrencyDetailField, value) != true)) {
+                    this.CurrencyDetailField = value;
+                    this.RaisePropertyChanged("CurrencyDetail");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CurrencyId {
+            get {
+                return this.CurrencyIdField;
+            }
+            set {
+                if ((this.CurrencyIdField.Equals(value) != true)) {
+                    this.CurrencyIdField = value;
+                    this.RaisePropertyChanged("CurrencyId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string CurrencySymbol {
+            get {
+                return this.CurrencySymbolField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CurrencySymbolField, value) != true)) {
+                    this.CurrencySymbolField = value;
+                    this.RaisePropertyChanged("CurrencySymbol");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ISOCurrencyCode {
+            get {
+                return this.ISOCurrencyCodeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ISOCurrencyCodeField, value) != true)) {
+                    this.ISOCurrencyCodeField = value;
+                    this.RaisePropertyChanged("ISOCurrencyCode");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsDefault {
+            get {
+                return this.IsDefaultField;
+            }
+            set {
+                if ((this.IsDefaultField.Equals(value) != true)) {
+                    this.IsDefaultField = value;
+                    this.RaisePropertyChanged("IsDefault");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsDeleted {
+            get {
+                return this.IsDeletedField;
+            }
+            set {
+                if ((this.IsDeletedField.Equals(value) != true)) {
+                    this.IsDeletedField = value;
+                    this.RaisePropertyChanged("IsDeleted");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="BDSService.IBDSService")]
     public interface IBDSService {
@@ -2767,6 +2940,36 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreatePasswordHistory", ReplyAction="http://tempuri.org/IBDSService/CreatePasswordHistoryResponse")]
         System.Threading.Tasks.Task<string> CreatePasswordHistoryAsync(System.Guid UserId, string Password, System.Guid CreatedBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetAllCurrency", ReplyAction="http://tempuri.org/IBDSService/GetAllCurrencyResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.Currency> GetAllCurrency();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetAllCurrency", ReplyAction="http://tempuri.org/IBDSService/GetAllCurrencyResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Currency>> GetAllCurrencyAsync();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetClientCurrency", ReplyAction="http://tempuri.org/IBDSService/GetClientCurrencyResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.Currency> GetClientCurrency(System.Guid clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetClientCurrency", ReplyAction="http://tempuri.org/IBDSService/GetClientCurrencyResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Currency>> GetClientCurrencyAsync(System.Guid clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/AddClientCurrency", ReplyAction="http://tempuri.org/IBDSService/AddClientCurrencyResponse")]
+        bool AddClientCurrency(RevenuePlanner.BDSService.Currency currency);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/AddClientCurrency", ReplyAction="http://tempuri.org/IBDSService/AddClientCurrencyResponse")]
+        System.Threading.Tasks.Task<bool> AddClientCurrencyAsync(RevenuePlanner.BDSService.Currency currency);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteClientCurrency", ReplyAction="http://tempuri.org/IBDSService/DeleteClientCurrencyResponse")]
+        bool DeleteClientCurrency(int currencyId, System.Guid clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteClientCurrency", ReplyAction="http://tempuri.org/IBDSService/DeleteClientCurrencyResponse")]
+        System.Threading.Tasks.Task<bool> DeleteClientCurrencyAsync(int currencyId, System.Guid clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/SaveClientCurrency", ReplyAction="http://tempuri.org/IBDSService/SaveClientCurrencyResponse")]
+        bool SaveClientCurrency(System.Collections.Generic.List<int> currencyIds, System.Guid clientId, System.Guid userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/SaveClientCurrency", ReplyAction="http://tempuri.org/IBDSService/SaveClientCurrencyResponse")]
+        System.Threading.Tasks.Task<bool> SaveClientCurrencyAsync(System.Collections.Generic.List<int> currencyIds, System.Guid clientId, System.Guid userId);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -3426,6 +3629,46 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<string> CreatePasswordHistoryAsync(System.Guid UserId, string Password, System.Guid CreatedBy) {
             return base.Channel.CreatePasswordHistoryAsync(UserId, Password, CreatedBy);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.Currency> GetAllCurrency() {
+            return base.Channel.GetAllCurrency();
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Currency>> GetAllCurrencyAsync() {
+            return base.Channel.GetAllCurrencyAsync();
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.Currency> GetClientCurrency(System.Guid clientId) {
+            return base.Channel.GetClientCurrency(clientId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Currency>> GetClientCurrencyAsync(System.Guid clientId) {
+            return base.Channel.GetClientCurrencyAsync(clientId);
+        }
+        
+        public bool AddClientCurrency(RevenuePlanner.BDSService.Currency currency) {
+            return base.Channel.AddClientCurrency(currency);
+        }
+        
+        public System.Threading.Tasks.Task<bool> AddClientCurrencyAsync(RevenuePlanner.BDSService.Currency currency) {
+            return base.Channel.AddClientCurrencyAsync(currency);
+        }
+        
+        public bool DeleteClientCurrency(int currencyId, System.Guid clientId) {
+            return base.Channel.DeleteClientCurrency(currencyId, clientId);
+        }
+        
+        public System.Threading.Tasks.Task<bool> DeleteClientCurrencyAsync(int currencyId, System.Guid clientId) {
+            return base.Channel.DeleteClientCurrencyAsync(currencyId, clientId);
+        }
+        
+        public bool SaveClientCurrency(System.Collections.Generic.List<int> currencyIds, System.Guid clientId, System.Guid userId) {
+            return base.Channel.SaveClientCurrency(currencyIds, clientId, userId);
+        }
+        
+        public System.Threading.Tasks.Task<bool> SaveClientCurrencyAsync(System.Collections.Generic.List<int> currencyIds, System.Guid clientId, System.Guid userId) {
+            return base.Channel.SaveClientCurrencyAsync(currencyIds, clientId, userId);
         }
     }
 }
