@@ -22,62 +22,52 @@
 }
 
 <style>
-    .toggle.NotificationToggle, .toggle-on.NotificationToggle, .toggle-off.NotificationToggle {
-        border-radius: 20px;
-        -webkit-border-radius: 20px;
-        -ms-border-radius: 20px;
-    }
-
-        .toggle.NotificationToggle .toggle-handle {
-            border-radius: 20px;
-            -webkit-border-radius: 20px;
-            -ms-border-radius: 20px;
-        }
-
-    .NotificationToggle .toggle-group {
-        transition: left 0.1s;
-        -webkit-transition: left 0.1s;
-    }
-
-    .toggle.NotificationToggle {
-        min-height: 20px;
-    }
+    
+  .toggle.NotificationToggle, .toggle-on.NotificationToggle, .toggle-off.NotificationToggle { border-radius: 20px;-webkit-border-radius: 20px;-ms-border-radius: 20px;}
+  .toggle.NotificationToggle .toggle-handle { border-radius: 20px;-webkit-border-radius: 20px;-ms-border-radius: 20px; }
+  .NotificationToggle .toggle-group { transition: left 0.1s; -webkit-transition: left 0.1s; }
+  .toggle.NotificationToggle {min-height: 25px !important; min-width:45px !important}
+  .NotificationToggle .toggle-group label{font-size:10px; padding:2px 8px}
 
     /* Add to solve Chrome Browser issue of on/off button radius #2296 - Bhumika*/
     .btn.btn-success, .btn.toggle-off, .btn.toggle-handle, .btn.off {
         backface-visibility: visible;
-        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
-        border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+        box-shadow: none;/*0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);*/
+        border-color:#ccc; /*rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);*/
         text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
     }
 
     .btn.NotificationToggle {
         border-style: solid;
         border-width: 1px;
-        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+        box-shadow:none; /*0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05)*/
+    }
+    .NotificationToggle.btn-success{border-color:#89cede;}
+    .NotificationToggle .btn.btn-success {
+        background-image: none; /*linear-gradient(to bottom, #62c462, #51a351)*/
+        background-color: #89cede;
+        
     }
 
-    .btn.btn-success {
-        background-image: linear-gradient(to bottom, #62c462, #51a351);
-        background-color: #5bb75b;
-    }
-
-    .btn.toggle-off {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
-        background-color: #e6e6e6;
+    .NotificationToggle .btn.toggle-off {
+        box-shadow:none ;/*0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05)*/
+        background-color: #eee;
         background-image: none;
+        padding-left:14px;
     }
-
-        .btn.toggle-off:hover {
+    .NotificationToggle .toggle-on.btn {
+    padding-right: 16px;
+}
+       .NotificationToggle .btn.toggle-off:hover {
             color: #333;
         }
 
-    .btn.toggle-handle {
-        background-color: #f5f5f5;
-        background-image: linear-gradient(to bottom, #fff, #e6e6e6);
+    .NotificationToggle .btn.toggle-handle {
+        background-color: #fff;
+        background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
     }
 
-        .btn.toggle-handle:hover, .btn.toggle-handle:focus {
+      .NotificationToggle   .btn.toggle-handle:hover, .NotificationToggle .btn.toggle-handle:focus {
             background-position: 0 -15px;
             color: #333;
             text-decoration: none;
@@ -109,12 +99,12 @@
 <div class="padding-content cf source-sans-proregular" id="content">
     <div class="row">
         @Html.Partial("~/Views/User/_myprofile.cshtml")
-        <div class="span10 content-user-checkbox">
+        <div class="span10 content-column-right  margin-left44">
             @if (SMCount > 0)
             {
-                <div class="cf inputs-aligned-horizontal">
-                    <label class="align-top">System Messages</label>
-                    <div class="wraper-checkbox">
+                <div class="pref-msg-row">
+                    <h4 class="pref-msg-header">System Messages</h4>
+                    
                         @foreach (var item in Model)
                         {
                             var checkBoxIdSMSel = "chk" + item.NotificationId;
@@ -125,27 +115,27 @@
                             {
                                 if (item.IsSelected)
                                 {
-                                    <span> @item.NotificationTitle</span><input id="@checkBoxIdSMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
-                                    <br />
+                                   <div class="wraper-checkbox"> <span> @item.NotificationTitle</span><input id="@checkBoxIdSMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                    </div>
 
                                 }
                                 else
                                 {
-                                    <span> @item.NotificationTitle</span><input id="@checkBoxIdSM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
-                                    <br />
+                                    <div class="wraper-checkbox"><span> @item.NotificationTitle</span><input id="@checkBoxIdSM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                    </div>
                                 }
                             }
                         }
-                    </div>
+                   
                 </div>
             }
 
             @if (AMCount > 0)
             {
-                <div class="cf inputs-aligned-horizontal">
-                    <label class="align-top">Activity Messages</label>
-                    <div class="wraper-checkbox">
-                        @foreach (var item in Model)
+                <div class="pref-msg-row">
+                    <h4 class="pref-msg-header">Activity Messages</h4>
+                   
+    @foreach (var item in Model)
                         {
                             var checkBoxIdAMSel = "chk" + item.NotificationId;
                             var checkBoxIdAM = "chk" + item.NotificationId;
@@ -155,24 +145,24 @@
                             {
                                 if (item.IsSelected)
                                 {
-                                    <span>@item.NotificationTitle</span><input id="@checkBoxIdAMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
-                                    <br />
+                                    <div class="wraper-checkbox"> <span>@item.NotificationTitle</span><input id="@checkBoxIdAMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                    </div>
                                 }
                                 else
                                 {
-                                    <span> @item.NotificationTitle </span>  <input id="@checkBoxIdAM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
-                                    <br />
+                                     <div class="wraper-checkbox"><span> @item.NotificationTitle </span>  <input id="@checkBoxIdAM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                </div>
                                 }
 
                             }
                         }
-                    </div>
+                    
                 </div>
             }
 
             <div class="cf inputs-aligned-horizontal">
                 <div class="container-button">
-                    <input type="submit" value="Save" title="save" id="saveNotifications" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
+                    <input type="submit" value="Save" title="save" id="saveNotifications" class="btn btn-blue btn-save" />
                 </div>
             </div>
         </div>

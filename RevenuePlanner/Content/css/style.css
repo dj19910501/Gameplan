@@ -16034,7 +16034,8 @@ input.selectInput{
    background: #fff url("../images/big-arrow-down-accordion.png") no-repeat scroll right 10px center / 8px auto;
    background-position:  right 10px center;  
    outline:0 none;
-   width: 112px;
+   width: 130px;
+   font-size:13px;
 }
 .accordion-row .selectBox{margin: 0 5px 0 5px; }
 .accordion-row .bootstrap-datetimepicker-widget{ width:100% !important}
@@ -16050,7 +16051,25 @@ input.selectInput{
     float: left;
 }
 .container-button {width: 100%;}
+#lblentity{ 
+    display: inline-block;
+    line-height: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 300px;
 
+} 
+/* Notification settings */
+.pref-msg-row{margin-bottom:35px}
+.pref-msg-row h4{font-weight:normal;}
+.pref-msg-row .wraper-checkbox {
+    margin-bottom: 10px;
+}
+.pref-msg-row .wraper-checkbox > span { 
+    display: inline-block;
+    min-width: 30%;
+}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
