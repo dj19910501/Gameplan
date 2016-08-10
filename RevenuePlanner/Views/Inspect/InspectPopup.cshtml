@@ -828,6 +828,11 @@
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }
+        // added by Rahul Shah for PL #2335 point 1. to set default focus on tactic inspect popup open.
+        $('#txtTacticTitle').focus();
+        var txtTactTitle = $('#txtTacticTitle').val();
+        $('#txtTacticTitle').val('');
+        $('#txtTacticTitle').val(txtTactTitle);
     }
 
     //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals

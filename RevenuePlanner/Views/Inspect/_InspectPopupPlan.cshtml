@@ -184,6 +184,10 @@
         var tabtext = ($("#li" + InspectValue).children('a').text());
         $('#div' + tabtext).css({ display: "block" });
         loadInnerTabs(planId, tabtext);
+        $('#txtTitle').focus();
+        var txtPlanTitle = $('#txtTitle').val();
+        $('#txtTitle').val('');
+        $('#txtTitle').val(txtPlanTitle);
     });
 
     function RemoveTabClass() {

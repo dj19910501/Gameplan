@@ -635,6 +635,10 @@
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               $('#InspectTab').removeClass('SpanDisable');
           });
+          $('#txtProgramTitle').focus();
+          var txtProgTitle = $('#txtProgramTitle').val();
+          $('#txtProgramTitle').val('');
+          $('#txtProgramTitle').val(txtProgTitle);
       }
     function loadAddSetup() {
         $("#errorMessage").css("display", "none");
@@ -650,6 +654,7 @@
        // $("#EditProgram").css("display", "none");
         $('#txtProgramTitle').css('display', 'block');
         $('#txtProgramTitle').text('');
+        $('#txtProgramTitle').focus();
         $('#lblProgramTitle').css('display', 'none');
               return false;
           }

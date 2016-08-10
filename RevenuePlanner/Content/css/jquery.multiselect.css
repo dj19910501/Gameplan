@@ -85,3 +85,9 @@
         max-width:200px !important;
         display:block;
     }
+/*Added by Rahul Shah on 10/08/2016 for PL #2335 to set focus on tab change for multiselection drop-down*/
+.ui-state-focus{
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.043) inset, 0 0 5px rgba(0, 0, 0, 0.2);
+    outline: 0 none;
+}

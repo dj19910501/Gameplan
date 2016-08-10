@@ -241,7 +241,10 @@
             /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
         });
 
-
+        $('#txtTitle').focus();
+        var txtImpTactTitle = $('#txtTitle').val();
+        $('#txtTitle').val('');
+        $('#txtTitle').val(txtImpTactTitle);
     });
 
     //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
@@ -371,6 +374,10 @@
             $('#InspectTab').removeClass('SpanDisable');
         });
     }
+        $('#txtTitle').focus();
+        var txtImpTactTitle = $('#txtTitle').val();
+        $('#txtTitle').val('');
+        $('#txtTitle').val(txtImpTactTitle);
 }
 
 @*$('#btnEditImrovement').click(function () {

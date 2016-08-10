@@ -912,6 +912,11 @@
                   window.location = redirecturl;
               }
           });
+          // added by Rahul Shah for PL #2335 point 1. to set default focus on tactic inspect popup open.
+          $('#txtTacticTitle').focus();
+          var txtTactTitle = $('#txtTacticTitle').val();
+          $('#txtTacticTitle').val('');
+          $('#txtTacticTitle').val(txtTactTitle);          
       });
     function loadChildProgramList(parentOption, id) {
         $.ajax({

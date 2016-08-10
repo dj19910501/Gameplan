@@ -307,6 +307,10 @@
             }
             $('#InspectTab').removeClass('SpanDisable');
         });
+        $('#txtTitle').focus();
+        var txtLineTitle = $('#txtTitle').val();
+        $('#txtTitle').val('');
+        $('#txtTitle').val(txtLineTitle);
     }
     // Close event for Error Message & Success Message Close button
     $(".alert").find(".close").on("click", function (e) {
@@ -345,6 +349,7 @@
         $("#AddForm").css("display", "none");
         $('#txtTitle').css('display', 'block');
         $('#txtTitle').text('');
+        $('#txtTitle').focus();
         $('#lblLineitemTitle').css('display', 'none');
         return false;
     }

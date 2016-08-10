@@ -501,8 +501,10 @@
                   });
               }
           });
-
-
+          $('#txtTitle').focus();
+          var txtCampTitle = $('#txtTitle').val();
+          $('#txtTitle').val('');
+          $('#txtTitle').val(txtCampTitle);
       });
 
     function SaveAllData(activeTab) {
@@ -647,6 +649,10 @@
 
             $('#InspectTab').removeClass('SpanDisable');
         });
+        $('#txtTitle').focus();
+        var txtCampTitle = $('#txtTitle').val();
+        $('#txtTitle').val('');
+        $('#txtTitle').val(txtCampTitle);
     }
     function loadAddSetup() {
         $("#errorMessage").css("display", "none");
@@ -667,6 +673,7 @@
         $('#btnEditCampaign').addClass('Save-icon-white');
         $('#txtTitle').css('display', 'block');
         $('#txtTitle').text('');
+        $('#txtTitle').focus();
         $('#lblCampaignTitle').css('display', 'none');
         return false;
     }
