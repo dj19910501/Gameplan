@@ -917,7 +917,7 @@ namespace Integration.Eloqua
                                                                                                                            tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                            tactic.IsDeleted == false &&
-                                                                                                                           tactic.Stage.Code == Common.StageINQ && tactic.IsSyncEloqua.HasValue && tactic.IsSyncEloqua.Value == true).ToList();
+                                                                                                                           tactic.Stage.Code == Common.StageINQ).ToList();
                             List<string> lstNotExistEloquaId = (from p in lstEloquaId.AsEnumerable()
                                         where !tblTactic.Select(tac => tac.IntegrationInstanceEloquaId).Contains(p)
                                         select p).Distinct().ToList();
@@ -983,7 +983,7 @@ namespace Integration.Eloqua
                             tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                            tactic.IsDeleted == false &&
-                                                                                                                           tactic.Stage.Code == Common.StageINQ && tactic.IsSyncEloqua.HasValue && tactic.IsSyncEloqua.Value == true).ToList();
+                                                                                                                           tactic.Stage.Code == Common.StageINQ).ToList();
 
                             List<Plan_Campaign_Program_Tactic> lstTactic = tblPlanTactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                                                (lstEloquaTacticId.Contains(tactic.IntegrationInstanceEloquaId))).ToList();
@@ -1176,7 +1176,7 @@ namespace Integration.Eloqua
                             tblUnProcessedPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                            tactic.IsDeleted == false &&
-                                                                                                                           tactic.Stage.Code == Common.StageINQ && tactic.IsSyncEloqua.HasValue && tactic.IsSyncEloqua.Value == true).ToList();
+                                                                                                                           tactic.Stage.Code == Common.StageINQ).ToList();
 
                             List<Plan_Campaign_Program_Tactic> lstTactic = tblUnProcessedPlanTactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                                                (lstEloquaTacticId.Contains(tactic.IntegrationInstanceEloquaId))).ToList();
