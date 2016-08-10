@@ -72,7 +72,7 @@ BEGIN
 		[IsRead] [bit] NOT NULL DEFAULT 0,
 		[UserId] [uniqueidentifier] NULL,
 		[RecipientId] [uniqueidentifier] NOT NULL,
-		[TimeStamp] [datetime] NOT NULL,
+		[CreatedDate] [datetime] NOT NULL,
 		[ClientID] [uniqueidentifier] NULL,
 	 CONSTRAINT [PK_User_Notification_Detail] PRIMARY KEY CLUSTERED 
 	(
