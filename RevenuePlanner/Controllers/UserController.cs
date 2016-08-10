@@ -1343,5 +1343,54 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #endregion
+
+        #region Currency
+        //insertation start 09/08/2016 kausha #2492 Following  is added to get and save currency.
+        public ActionResult Currency(string usrid, string src)
+        {
+            List<CurrencyModel> lstCurrency = new List<CurrencyModel>();
+            IEnumerable<BDSService.Currency> lstCurrencydata = objBDSServiceClient.GetAllCurrency();
+            IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrency(Sessions.User.ClientId);
+
+            if (lstCurrencydata != null)
+            {
+
+                foreach (var item in lstCurrencydata)
+                {
+                    CurrencyModel objCurrency = new CurrencyModel();
+                    objCurrency.CurrencyId = item.CurrencyId;
+                    objCurrency.CurrencySymbol = item.CurrencySymbol;
+                    objCurrency.CurrencyDetail = item.CurrencyDetail;
+                    objCurrency.ISOCurrencyCode = item.ISOCurrencyCode;
+                    var defaultCurrency = lstClientCurrency.Where(w => w.IsDefault == true && w.CurrencyId == item.CurrencyId).FirstOrDefault();
+                    if (defaultCurrency != null)
+                        objCurrency.IsDefault = true;
+                    else
+                        objCurrency.IsDefault = false;
+                    if (lstClientCurrency.Where(w => w.CurrencyId == item.CurrencyId).Any())
+                        objCurrency.ClientId = Sessions.User.ClientId;
+                    objCurrency.ISOCurrencyCode = item.ISOCurrencyCode;
+                    lstCurrency.Add(objCurrency);
+                }
+            }
+            return View("Currency", lstCurrency.AsEnumerable());
+        }
+        public JsonResult SaveClientCurrency(List<int> curruncies)
+        {
+            bool status = false;
+            try
+            {
+                status = objBDSServiceClient.SaveClientCurrency(curruncies, Sessions.User.ClientId, Sessions.User.UserId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+            }
+            TempData["SuccessMessage"] = Common.objCached.CurrencySaved;
+            return Json(status, JsonRequestBehavior.AllowGet);
+        }
+        //insertation end 09/08/2016 kausha #2492 Following  is added to get and save currency.
+        #endregion
     }
 }

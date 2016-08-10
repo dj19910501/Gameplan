@@ -234,6 +234,7 @@
     <Compile Include="Models\BoostModel.cs" />
     <Compile Include="Models\BudgetModel.cs" />
     <Compile Include="Models\ChangeLog_ViewModel.cs" />
+    <Compile Include="Models\CurrencyModel.cs" />
     <Compile Include="Models\CustomRestrictionModel.cs" />
     <Compile Include="Models\ExtrenalServiceModel.cs" />
     <Compile Include="Models\FinanceModel.cs" />
@@ -701,6 +702,18 @@
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Content\Common\MarketingBudgetImportSample.xls" />
+    <Content Include="Integration.BDSService.ApplicationActivity1.datasource" />
+    <Content Include="Integration.BDSService.Client1.datasource" />
+    <Content Include="Integration.BDSService.ClientDatabase1.datasource" />
+    <Content Include="Integration.BDSService.CustomRestriction1.datasource" />
+    <Content Include="Integration.BDSService.Menu1.datasource" />
+    <Content Include="Integration.BDSService.PasswordResetRequest1.datasource" />
+    <Content Include="Integration.BDSService.Permission1.datasource" />
+    <Content Include="Integration.BDSService.Role1.datasource" />
+    <Content Include="Integration.BDSService.SecurityQuestion1.datasource" />
+    <Content Include="Integration.BDSService.User1.datasource" />
+    <Content Include="Integration.BDSService.UserApplicationPermission1.datasource" />
+    <Content Include="Integration.BDSService.UserHierarchy1.datasource" />
     <None Include="Properties\PublishProfiles\zhang-local.pubxml" />
     <None Include="Service References\BDSService\BDSService1.wsdl" />
     <None Include="Service References\BDSService\BDSService4.xsd">
@@ -929,6 +942,10 @@
     <Content Include="Views\Inspect\_ArchiveMediaCode.cshtml" />
     <Content Include="Views\MeasureDashboard\Index.cshtml" />
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.AppConfiguration.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Views\User\Currency.cshtml" />
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Currency6.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">

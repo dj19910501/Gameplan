@@ -1168,4 +1168,10 @@
     <Name>MoreThanOneAssetValidation</Name>
     <value>There is more than one asset included in this package. Please remove any additional assets before packaging.</value>
   </Field>
+  <!--//insertation start 09/08/2016 kausha #2492 Currency Msg is added.-->
+  <Field>
+    <Name>CurrencySaved</Name>
+    <value>User currency have been saved successfully.</value>
+  </Field>
+  <!--//insertation End 09/08/2016 kausha #2492 -->
 </Messages>

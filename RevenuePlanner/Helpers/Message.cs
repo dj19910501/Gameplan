@@ -2911,7 +2911,19 @@ namespace RevenuePlanner.Helpers
                 _PackageUpdated = value;
             }
         }
-
+        //Added by kausha for #2942 on 10/08/2016
+        private string _CurrencySaved;
+        public string CurrencySaved
+        {
+            get
+            {
+                return _CurrencySaved;
+            }
+            set
+            {
+                _CurrencySaved = value;
+            }
+        }
         #endregion
 
         #region  Functions
@@ -3848,6 +3860,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "PackageUpdated":
                                             _PackageUpdated = strMsgValue;
+                                            break;
+                                        case "CurrencySaved":
+                                            _CurrencySaved = strMsgValue;
                                             break;
                                     }
                                 }

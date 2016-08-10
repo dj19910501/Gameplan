@@ -1,0 +1,300 @@
+﻿@model IEnumerable<RevenuePlanner.Models.CurrencyModel>
+@using RevenuePlanner.Helpers
+
+@{
+    ViewBag.Title = "Currency";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ViewBag.PageTitle = "Currency";
+    ViewBag.ModuleTitle = "Currency";
+    Guid clientId = Sessions.User.ClientId;
+}
+
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+@Html.Hidden("ErrMsg", TempData["ErrorMessage"])
+
+@section Sidebar {
+    @Html.Partial("~/Views/shared/_preferences.cshtml")
+}
+
+
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success ">
+    <a class="close">×</a>
+    <strong>Success.</strong>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+    <span id="divsuccessmsg"></span>
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error ">
+    <a class="close">×</a>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+    <strong>Error!</strong><span id="diverrormsg"></span>
+
+</div>
+<!--error message-->
+<div class="title-header source-sans-proregular margin-bottom25">
+    <h2>Currency</h2>
+</div> 
+
+<div class="padding-content cf source-sans-proregular" id="content">
+    <div class="row">
+
+        <div class="span10 content-user-checkbox">
+            <div class="cf inputs-aligned-horizontal" style="border:1px solid black">
+                <div class="wraper-checkbox" id="divCurrencyList" style="border:1px solid gray;">
+                    <h4 class="align-top">Available Currencies</h4>
+                    <input width="150px" type="text" id="txtSearch" onkeypress="return EnterEvent(event)" />
+                    <div>
+                        <input type="submit" value="Search" title="Search" id="btnSearch" onclick="LoadSearchedFilter(false);" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" />
+                        @*<input type="submit" value="Clear" title="save" id="btnClear" onclick="LoadSearchedFilter(this.id,this.value,true);" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" />*@
+                    </div>
+                    <ul id="ulCurrency" class="searchmenu">
+                        @foreach (var item in Model)
+                        {
+                            if (item.ClientId != clientId)
+                            {
+                                <li id="licurrency_@item.CurrencyId">
+                                    <a href="#">
+                                        <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    <div class="container-button">
+                        <input type="submit" value="Add To My List" title="save" id="btnAddtoMyList" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 100px;" />
+                    </div>
+                </div>
+                <div class="wraper-checkbox" id="divMyList" style="border:1px solid gray;width:auto">
+                    <h4 class="align-top">My List</h4>
+                    <ul id="ulMyCurrency" class="searchmenu">
+                        @foreach (var item in Model)
+                        {
+                            if (item.ClientId == clientId)
+                            {
+                                <li id="limycurrency_@item.CurrencyId" isdefault='@item.IsDefault'>
+                                    <a href="#">
+                                        <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
+                                    </a>
+                                </li>
+                                if (@item.IsDefault == true)
+                                {
+                                    <script>
+                                        $('#limycurrency_'+@item.CurrencyId).attr('isdefault', '1');
+                                    </script>
+                                }
+                                else
+                                {
+                                    <script>
+                                        $('#limycurrency_'+@item.CurrencyId).attr('isdefault', '0');
+                                    </script>
+                                }
+                            }
+                        }
+                    </ul>
+                    <div class="container-button">
+                        <input type="submit" value="Remove" title="remove" id="btnRemove" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
+                    </div>
+                </div>
+                <div class="container-button">
+                    <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
+                </div>
+            </div>
+
+            <div class="cf inputs-aligned-horizontal">
+
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .searchactive {
+        background-color: antiquewhite !important;
+    }
+
+    .searchinactive {
+        background-color: none;
+    }
+</style>
+<script>
+    //insertation start 28/06/2016 kausha #742 Following function is added to search within filters
+  //For enter key press event of search textbox
+    function EnterEvent(e) {
+        if (e.keyCode == 13) {
+            LoadSearchedFilter(false);
+        }
+    }
+    $(document).ready(function () {
+
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        /*close x event on message*/
+        $(".close").click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+        }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+
+    });
+    //Function for search functionality
+    function LoadSearchedFilter(isViewAll) {
+        if (isViewAll == true)
+            $('#txtSearch').val('');
+
+        var searchText = $.trim($("#txtSearch").val());
+
+        var ulId = "#ulCurrency";
+
+        $(ulId + " li").each(function () {
+            var currentLiText = $(this).text(),
+                showCurrentLi = currentLiText.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
+            $(this).toggle(showCurrentLi);
+
+        });
+        $('#txtSearch').focus();
+
+    }
+    //Following function is added for my currency array
+    function ReturnCurrencyArray() {
+        var ulId = "#ulMyCurrency";
+        var id = [];
+        $(ulId + " li").each(function () {
+            var res = this.id.split("_");
+            id.push(res[1]);
+        });
+        return id;
+    }
+    //Following is added to manage selection and deselection of li
+    $('.searchmenu li').click(function () {
+
+        if ($(this).hasClass('searchactive')) {
+            $(this).removeClass('searchactive')
+            $(this).addClass('searchinactive')
+        }
+        else {
+            $(this).addClass('searchactive')
+            $(this).removeClass('searchinactive')
+        }
+    });
+    //CLick of Add to my list
+    $('#btnAddtoMyList').click(function () {
+        var ulId = "#ulCurrency"
+        var cnt = 0;
+
+        $(ulId + " li").each(function () {
+            if ($(this).hasClass('searchactive')) {
+                cnt = cnt + 1;
+                $(this).css("display", "block");
+                $(this).removeClass("searchactive");                
+                $("#divMyList ul").append(this);
+            }
+        });
+
+        if (cnt == 0) {
+            $("#diverrormsg").html("Please select at least one currency.");
+           
+        }
+        else {
+            $("#diverrormsg").html("");
+          
+        }
+        ShowMessages();
+    });
+    //CLick of remove from my list
+    $('#btnRemove').click(function () {      
+        var ulId = "#ulMyCurrency";
+        var cnt = 0;
+        var defaultcurrency='';
+        var isDefaultCurrencyExist=false;
+        $(ulId + " li").each(function () {
+            if ($(this).hasClass('searchactive')) {
+                if($(this).attr("isdefault")==1)
+                {
+                    isDefaultCurrencyExist=true;
+                    defaultcurrency=$(this).find("span").text();
+                }
+            }
+        });
+        if(isDefaultCurrencyExist==true)
+        {
+            $("#diverrormsg").html("You can't delete default currency , ["+defaultcurrency + "] is default currency.");
+            ShowMessages();
+            return;
+        }
+        $(ulId + " li").each(function () {
+            if ($(this).hasClass('searchactive')) {
+                cnt = cnt + 1;
+                $(this).removeClass("searchactive");
+                $(this).css("display", "block");
+                $("#divCurrencyList ul").append(this)
+              
+            }
+        });
+        if (cnt == 0) {
+            $("#diverrormsg").html("Please select at least one currency.");
+            //$("#errorMessage").slideDown(400);
+            // $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+        else {
+            $("#diverrormsg").html("");
+            //$("#errorMessage").slideUp(400);
+           
+        }
+        ShowMessages();
+    });
+    //Click of Save button which will save all records which is in my list
+    $('#btnSave').click(function () {
+        $.post('/User/SaveClientCurrency', $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {          
+            window.location.href = "@Url.Content("~/User/Currency")";
+        });
+    });
+    function ShowMessages() {
+
+        if ($('#divsuccessmsg').text() == null || $('#divsuccessmsg').text() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+        }
+        if ($('#diverrormsg').text() == null || $('#diverrormsg').text() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+    }
+    $(document).ready(function () {
+
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+        }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+    });
+    //insertation end
+
+</script>
