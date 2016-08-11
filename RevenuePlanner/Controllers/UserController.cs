@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RevenuePlanner.Services;
 
 /*
  *  Author: Kuber Joshi
@@ -25,6 +26,7 @@ namespace RevenuePlanner.Controllers
 
         private MRPEntities db = new MRPEntities();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        IAlerts objcommonalert = new Alerts();
 
         #endregion
 
@@ -1391,6 +1393,197 @@ namespace RevenuePlanner.Controllers
             return Json(status, JsonRequestBehavior.AllowGet);
         }
         //insertation end 09/08/2016 kausha #2492 Following  is added to get and save currency.
+        #endregion
+
+        #region alerts
+        #region User Alerts
+        /// <summary>
+        /// Load user alerts
+        /// </summary>
+        /// <returns>Return Alerts view</returns>
+        public ActionResult Alerts()
+        {
+
+            List<SelectListItem> lstSyncFreq = new List<SelectListItem>();
+            try
+            {
+                CacheObject objCache = new CacheObject();
+                var lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId);
+                objCache.AddCache(Enums.CacheObject.ClientEntityList.ToString(), lstentity);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return View();
+        }
+        #endregion
+
+        #region method to get list of entity list as per search text
+        public JsonResult ListEntity(string term)
+        {
+            CacheObject objCache = new CacheObject();
+            List<SearchEntity> EntityList = new List<SearchEntity>();
+            List<vClientWise_EntityList> lstentity = new List<vClientWise_EntityList>();
+            try
+            {
+                var ClientEntityList = (List<vClientWise_EntityList>)objCache.Returncache(Enums.CacheObject.ClientEntityList.ToString());
+
+                if (ClientEntityList != null)
+                {
+                    lstentity = ClientEntityList;
+                }
+                else
+                {
+                    lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId);
+                }
+
+                EntityList = lstentity.Where(a => a.ClientId == Sessions.User.ClientId && a.EntityTitle.ToLower().Contains(term.ToLower())).Select(a => new SearchEntity
+                {
+                    category = a.Entity,
+                    value = a.EntityId,
+                    label = a.EntityTitle
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            //  return Json(new { Success = true, SearchData = EntityList }, JsonRequestBehavior.AllowGet);
+            return Json(EntityList, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+        #region mfunction to get performance fector for create rule
+        public SelectList GetPerformancefector()
+        {
+            var lstGoalTypes = Enum.GetValues(typeof(Enums.PerformanceFector)).Cast<Enums.PerformanceFector>().Select(a => a.ToString()).ToList();
+            var lstGoalTypeListFromDB = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.ClientId && lstGoalTypes.Contains(a.Code)).Select(a => a).ToList();
+            Stage objStage = new Stage();
+            string revGoalType = Convert.ToString( Enums.PerformanceFector.Revenue);
+            objStage.Title = revGoalType.ToLower();
+            objStage.Code = revGoalType.ToUpper();
+            lstGoalTypeListFromDB.Add(objStage);
+            objStage = new Stage();
+            revGoalType = Convert.ToString(Enums.PerformanceFector.PlannedCost);
+            objStage.Title = revGoalType.ToLower();
+            objStage.Code = revGoalType.ToUpper();
+            lstGoalTypeListFromDB.Add(objStage);
+            return new SelectList(lstGoalTypeListFromDB, "Code", "Title");
+        }
+        #endregion
+        #region Method to save alertRule
+        [HttpPost]
+        public JsonResult SaveAlertRule(List<AlertRuleDetail> RuleDetail, int RuleID = 0)
+        {
+            try
+            {
+                if (RuleID == 0)
+                {
+                    //Insert Rule
+                    if (RuleDetail != null)
+                    {
+                        AlertRuleDetail objRule = RuleDetail.FirstOrDefault();
+                        if (objRule.EntityID != null && Convert.ToInt32(objRule.EntityID) != 0)
+                        {
+                            int EntityID = Convert.ToInt32(objRule.EntityID);
+                            int indicatorGoal = Convert.ToInt32(objRule.IndicatorGoal);
+                            int Completiongoal = Convert.ToInt32(objRule.CompletionGoal);
+                            Boolean IsExists = objcommonalert.IsAlertRuleExists(EntityID, Completiongoal, indicatorGoal, objRule.Indicator, objRule.IndicatorComparision);
+                            if (!IsExists)
+                            {
+                                int result = objcommonalert.SaveAlert(objRule);
+                                if(result>0)
+                                    return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessAlertRule }, JsonRequestBehavior.AllowGet);
+                                else
+                                    return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+
+                            }
+                            else
+                                return Json(new { Success = false, ErrorMessage = Common.objCached.DuplicateAlertRule }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                }
+                else
+                {
+                    //update rule
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+
+            }
+            return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessAlertRule }, JsonRequestBehavior.AllowGet);
+
+        }
+        #endregion
+        /// <summary>
+        /// Get Weekdays list
+        /// </summary>
+        /// <returns></returns>
+        public SelectList GetWeekDaysList()
+        {
+            List<SelectListItem> lstWeekdays = new List<SelectListItem>();
+            foreach (var item in Enum.GetValues(typeof(DayOfWeek)))
+            {
+                SelectListItem objTime = new SelectListItem();
+                objTime.Text = item.ToString();
+                objTime.Value = ((int)item).ToString();
+                lstWeekdays.Add(objTime);
+            }
+            return new SelectList(lstWeekdays) ;
+        }
+        #region method to get list of alert rule
+        public ActionResult GetAlertRuleList()
+        {
+
+            AlertRule objalert = new AlertRule();
+            List<SelectListItem> lstSyncFreq = new List<SelectListItem>();
+            List<SelectListItem> lstWeekdays = new List<SelectListItem>();
+
+            try
+            {
+                var GoalTypeList = GetPerformancefector();
+                objalert.GoalType = GoalTypeList;
+
+                objalert.PerformanceComparison = new SelectList(Enums.DictPerformanceComparison, "Key", "Value");
+                objalert.GoalNum = new SelectList(Enums.DictGoalNum.ToList(), "Value", "Value");
+
+                SelectListItem objItem1 = new SelectListItem();
+
+                objItem1.Text = SyncFrequencys.Daily.ToString();
+                objItem1.Value = SyncFrequencys.Daily.ToString();
+                lstSyncFreq.Add(objItem1);
+
+                objItem1 = new SelectListItem();
+                objItem1.Text = SyncFrequencys.Weekly.ToString();
+                objItem1.Value = SyncFrequencys.Weekly.ToString();
+                lstSyncFreq.Add(objItem1);
+
+                objItem1 = new SelectListItem();
+                objItem1.Text = SyncFrequencys.Monthly.ToString();
+                objItem1.Value = SyncFrequencys.Monthly.ToString();
+                lstSyncFreq.Add(objItem1);
+
+                objalert.lstFrequency = new SelectList(lstSyncFreq, "Value", "Text", lstSyncFreq.First());
+
+                foreach (var item in Enum.GetValues(typeof(DayOfWeek)))
+                {
+                    SelectListItem objTime = new SelectListItem();
+                    objTime.Text = item.ToString();
+                    objTime.Value = ((int)item).ToString();
+                    lstWeekdays.Add(objTime);
+                }
+                objalert.lstWeekdays = new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First());
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return PartialView("_AlertListing", objalert);
+        }
+        #endregion
         #endregion
     }
 }

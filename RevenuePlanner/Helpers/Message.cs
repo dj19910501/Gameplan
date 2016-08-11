@@ -2924,6 +2924,32 @@ namespace RevenuePlanner.Helpers
                 _CurrencySaved = value;
             }
         }
+        // added by devanshi for Alerts and Notiffications #2417
+        private string _DuplicateAlertRule;
+        public string DuplicateAlertRule
+        {
+            get
+            {
+                return _DuplicateAlertRule;
+            }
+            set
+            {
+                _DuplicateAlertRule = value;
+            }
+        }
+        private string _SuccessAlertRule;
+        public string SuccessAlertRule
+        {
+            get
+            {
+                return _SuccessAlertRule;
+            }
+            set
+            {
+                _SuccessAlertRule = value;
+            }
+        }
+        //end
         #endregion
 
         #region  Functions
@@ -3863,6 +3889,12 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "CurrencySaved":
                                             _CurrencySaved = strMsgValue;
+                                            break;
+                                        case "DuplicateAlertRule":
+                                            _DuplicateAlertRule = strMsgValue;
+                                            break;
+                                        case "SuccessAlertRule":
+                                            _SuccessAlertRule = strMsgValue;
                                             break;
                                     }
                                 }

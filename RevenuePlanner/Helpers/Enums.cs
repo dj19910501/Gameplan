@@ -1395,7 +1395,8 @@ namespace RevenuePlanner.Helpers
             StageList,
             MediaCodeCustomfieldConfiguration,
             PlanTacticListforpackageing,
-            ROIPackageTactics
+            ROIPackageTactics,
+            ClientEntityList
         }
 
         public enum DownloadCSV
@@ -1454,7 +1455,47 @@ namespace RevenuePlanner.Helpers
             Asset,
             Promotion
         }
-
+        /// <summary>
+        /// Added by: DEvanshi
+        /// Date:08-08-2016
+        /// Enum for Rule performance fector
+        /// </summary>
+        public enum PerformanceFector
+        {
+            INQ,
+            MQL,
+            Revenue,
+            CW,
+            PlannedCost
+        }
+        public enum PerformanceComparison
+        {
+            LT,
+            GT,
+            ET
+        }
+        public static Dictionary<string, string> DictPerformanceComparison = new Dictionary<string, string>()
+        {
+            {PerformanceComparison.LT.ToString(), "Less than"},
+            {PerformanceComparison.GT.ToString(), "Greater than"},
+            {PerformanceComparison.ET.ToString(), "Equal to"}
+        };
+        public enum GoalNum
+        {
+           
+            TwentyFive = 25,
+            Fifty = 50,
+            Seventyfive = 75,
+            Hundered = 100
+        }
+        public static Dictionary<string, string> DictGoalNum = new Dictionary<string, string>()
+        {
+            {GoalNum.TwentyFive.ToString(), "25"},
+            {GoalNum.Fifty.ToString(), "50"},
+            {GoalNum.Seventyfive.ToString(), "75"},
+            {GoalNum.Hundered.ToString(), "100"}
+          
+        };
         // Added by Arpita Soni for Ticket #2357 on 07/14/2016
         public static Dictionary<string, string> DictPlanGanttTypes = new Dictionary<string, string>()
         {

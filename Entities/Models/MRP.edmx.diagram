@@ -197,6 +197,10 @@
         <EntityTypeShape EntityType="MRPModel.Tactic_MediaCodes" Width="1.5" PointX="18.375" PointY="9" />
         <AssociationConnector Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" />
         <EntityTypeShape EntityType="MRPModel.vClientWise_Tactic" Width="1.5" PointX="18.875" PointY="4.75" />
+        <EntityTypeShape EntityType="MRPModel.vClientWise_EntityList" Width="1.5" PointX="19.875" PointY="16.875" />
+        <EntityTypeShape EntityType="MRPModel.Alert_Rules" Width="1.5" PointX="20.375" PointY="10.125" />
+        <EntityTypeShape EntityType="MRPModel.Alert" Width="1.5" PointX="22.625" PointY="11.375" />
+        <AssociationConnector Association="MRPModel.FK_Alerts_Alert_Rules" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

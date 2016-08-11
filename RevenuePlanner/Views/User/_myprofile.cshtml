@@ -32,6 +32,7 @@
                             <a  href="@Url.Action("Edit", "User")">Account</a> @* Modified by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
                         </li>
                     }
+                    <li id="alert"><a href="@Url.Action("Alerts", "User")">Alerts</a></li>
                     @*<li id="Tmember"><a href="@Url.Action("Index", "User")">Team Members</a></li>*@  @*Commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
                     <li id="notification"><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
                     @*<li id="Squestion"><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li> Commented By Komal Rawal for #1457*@
@@ -79,6 +80,12 @@
                     else if ('@ViewBag.PageTitle' == 'ChangePassword') {
                         if (!$('#Cpassword').hasClass('active')) {
                             $('#Cpassword').addClass('active');
+
+                    }
+                }
+                else if ('@ViewBag.PageTitle' == 'Alerts') {
+                    if (!$('#alert').hasClass('active')) {
+                        $('#alert').addClass('active');
                             
                         }
                     }

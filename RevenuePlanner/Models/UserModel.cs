@@ -151,4 +151,34 @@ namespace RevenuePlanner.Models
         [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")] //Added By Maitri Gandhi on 15/4/2016
         public string ConfirmNewPassword { get; set; }
     }
+    
+    public class SearchEntity
+    {
+        public string category { get; set; }
+        public string label { get; set; }
+        public int value { get; set; }
+    }
+
+    public class AlertRule
+    {
+        public SelectList GoalType { get; set; }
+        public SelectList GoalNum { get; set; }
+        public SelectList PerformanceComparison { get; set; }
+        public SelectList lstFrequency { get; set; }
+        public SelectList lstWeekdays { get; set; }
+
+    }
+    public class AlertRuleDetail
+    {
+        public string EntityID { get; set; }
+        public string EntityType { get; set; }
+        public string Indicator { get; set; }
+        public string IndicatorComparision { get; set; }
+        public string IndicatorGoal { get; set; }
+        public string CompletionGoal { get; set; }
+        public string Frequency { get; set; }
+        public string DayOfWeek { get; set; }
+        public string DateOfMonth { get; set; }
+        public string RuleSummary { get; set; }
+    }
 }

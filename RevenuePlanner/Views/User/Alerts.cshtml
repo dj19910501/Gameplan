@@ -1,0 +1,159 @@
+﻿@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "Alerts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.PageTitle = "Alerts";
+    ViewBag.ModuleTitle = "MyProfile";
+}
+@section Sidebar {
+    @Html.Partial("~/Views/shared/_preferences.cshtml")
+}
+<link href="@Url.Content("~/Content/css/JquryUI/jquery-ui-1.8.21.custom.css")" rel="stylesheet" type="text/css" />
+@*<link href="~/Content/css/bootstrap-datetimepicker.css" rel="stylesheet" />*@
+@*<script src="~/Scripts/js/jquery-ui-1.11.4.js"></script>*@
+<script src="@Url.Content("~/Scripts/js/DHTMLX/jquery-ui-1.11.4.min.js")"></script>
+@*<script src="~/Scripts/moment.min.js"></script>
+<script src="~/Scripts/bootstrap-datetimepicker.js"></script>*@
+<style>
+    .ui-autocomplete{
+        width:300px !important; 
+        max-height: 200px;
+         overflow-x: hidden;
+        overflow-y: auto;font-size:13px
+    }
+    .ui-menu .ui-menu-item{ 
+        white-space: normal;
+    word-wrap: break-word;font-size:13px
+    }
+    .ui-menu .ui-menu-item:hover, .ui-menu .ui-menu-item.ui-state-focus{font-size:13px; background:#ccc; color:inherit; font-weight:normal; outline:0 none; border:0 none;}
+    .ui-autocomplete-group.ui-menu-item, .ui-autocomplete-group.ui-menu-item:hover, .ui-autocomplete-group.ui-menu-item.ui-state-focus{background:#aaa}
+   
+</style>
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <strong>Success.</strong> <span id="spanMessageSuccess"></span> 
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong>Error!</strong> <span id="spanMessageError"></span>
+</div>
+<!--error message-->
+<div class="title-header source-sans-proregular margin-bottom25">
+    <h2>Alerts</h2>
+</div>
+
+
+<div class="padding-content cf source-sans-proregular" id="Alertcontent">
+    <div class="row">
+        @Html.Partial("~/Views/User/_myprofile.cshtml")
+        <div class="span10 content-colum-right">
+            <div class="alert-form-wrap clearfix">
+                <div class="pull-right"><input type="button" value="Create Alert" id="btnCreateAlert" class="btn btn-blue btn-create-alert" /></div>
+                <div class="clearfix"></div>
+                <div id="Ruleaccordion" class="accordion alert-accordian">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .ui-autocomplete-group {
+        line-height: 30px;
+        background-color: #aaa;
+    }
+
+    .ui-menu-item {
+        padding-left: 10px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+      
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        /*close x event on message*/
+        $(".close").click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+        }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+        $("#btnCreateAlert").click(function (e) {
+            $("#divrule0").find("#divque4").hide();
+            $("#divrule0").find("#divque3").hide();
+            $("#divrule0").find("#divque2part2").hide();
+            $("#divrule0").find("#divque2").hide();
+            $("#collapseGrp1").find("#divSave").hide();
+            $('.accordion-body:first:not(".in")').collapse('show');
+            $('.accordion-body:first').css("min-height", "300px");
+            $('.accordion-body.in').collapse('hide');
+            $("#divrule0").find("#searchentity").val('');
+            $("#divrule0").find("#searchentity").focus();
+            $("#successMessage").css("display", "none");
+            $("#errorMessage").css("display", "none");
+            $("#spanMessageSuccess").empty();
+            $("#spanMessageError").empty();
+        });
+        $("#Ruleaccordion").load('@Url.Action("GetAlertRuleList", "User")');
+
+       
+    });
+
+
+    
+    function CheckValidate(tableId) {
+        var isValid = true;
+        var maindiv = $(tableId);
+        if ($(tableId).find("#hdnEntityId").val() == "") {
+            $(tableId).find("#searchentity").addClass("error");
+            isValid = false;
+        }
+        if ($(tableId).find("#ddlindicator").val() == "") {
+            $(tableId).find("#ddlindicator").addClass("error");
+            isValid = false;
+        }
+        if ($(tableId).find("#ddlGolanum").val() == "") {
+            $(tableId).find("#ddlGolanum").addClass("error");
+            isValid = false;
+        }
+        if ($(tableId).find("#ddlpercentage").val() == "") {
+            $(tableId).find("#ddlpercentage").addClass("error");
+            isValid = false;
+        }
+        if ($(tableId).find("#ddlfrequency").val() == "Monthly")
+        {
+            if($(tableId).find("#txtDateofmonth").val()=="")
+            {
+                $(tableId).find("#txtDateofmonth").addClass("error");
+                isValid = false;
+            }
+            else{
+                var count = $(tableId).find("#txtDateofmonth").val();
+                if (parseInt(count) > 31 || count.length > 2 || parseInt(count) == 0) {
+                    $('#txtDateofmonth').addClass("error");
+                    isValid = false;
+                }
+            }
+           
+        }
+     
+        return isValid;
+    }
+ 
+</script>

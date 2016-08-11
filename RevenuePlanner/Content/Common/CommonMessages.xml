@@ -1,190 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Messages>
-	<Field>
-		<Name>ServiceUnavailableMessage</Name>
-		<value>This application is currently unavailable. The site administrators are currently working hard to address this issue.</value>
-	</Field>
-	<Field>
-		<Name>DatabaseServiceUnavailableMessage</Name>
-		<value>The application database is currently unavailable. The site administrators are currently working hard to address this issue.</value>
-	</Field>
-	<Field>
-		<Name>InvalidProfileImage</Name>
-		<value>Only files with extensions (JPG and PNG) and size upto 1MB are allowed.</value>
-	</Field>
-	<Field>
-		<Name>InvalidPassword</Name>
-		<value>Login failed, please enter valid 8 character password.</value>
-	</Field>
-	<Field>
-		<Name>InvalidLogin</Name>
-		<value>Login failed, please ensure that you have entered valid credentials.</value>
-	</Field>
-	<!--Added By Komal Rawal for #2107-->
-	<Field>
-		<Name>InvalidEmailLogin</Name>
-		<value>Login failed,user does not exist</value>
-	</Field>
-	<Field>
-		<Name>LockedUser</Name>
-		<value>User locked, please reset your password using forgot password feature or contact your system administrator</value>
-	</Field>
-	<Field>
-		<Name>ErrorOccured</Name>
-		<value>An error has occured.</value>
-	</Field>
-	<Field>
-		<Name>UserAdded</Name>
-		<value>User added successfully.</value>
-	</Field>
-	<Field>
-		<Name>UserEdited</Name>
-		<value>User edited successfully.</value>
-	</Field>
-	<Field>
-		<Name>UserDeleted</Name>
-		<value>User deleted successfully.</value>
-	</Field>
-	<Field>
-		<Name>UserCantDeleted</Name>
-		<value>User cannot be deleted.</value>
-	</Field>
-	<Field>
-		<Name>UserCantEdited</Name>
-		<value>User cannot be edited.</value>
-	</Field>
-	<Field>
-		<Name>UserPasswordChanged</Name>
-		<value>Password has been changed successfully.</value>
-	</Field>
-	<Field>
-		<Name>CurrentUserPasswordNotCorrect</Name>
-		<value>Your current password is not correct.</value>
-	</Field>
-	<Field>
-		<Name>UserPasswordDoNotMatch</Name>
-		<value>Your new password and confirm new password do not match.</value>
-	</Field>
-	<Field>
-		<Name>UserDuplicate</Name>
-		<value>User with same details already exists in our database.</value>
-	</Field>
-	<Field>
-		<Name>DeleteConfirm</Name>
-		<value>Are you sure you want to delete this record?</value>
-	</Field>
-	<Field>
-		<Name>ActivityMasterAdded</Name>
-		<value>Activity Master added successfully.</value>
-	</Field>
-	<Field>
-		<Name>ActivityMasterDeleted</Name>
-		<value>Activity Master deleted successfully.</value>
-	</Field>
-	<Field>
-		<Name>ActivityMasterDuplicate</Name>
-		<value>Duplicate Activity Master.</value>
-	</Field>
-	<Field>
-		<Name>ActivityMasterEdited</Name>
-		<value>Activity Master edited successfully.</value>
-	</Field>
-	<Field>
-		<Name>UserNotificationsSaved</Name>
-		<value>User notifications have been saved successfully.</value>
-	</Field>
-	<Field>
-		<Name>DuplicateCampaignExits</Name>
-		<value>Campaign with same title exits.</value>
-	</Field>
-	<Field>
-		<Name>DuplicateProgramExits</Name>
-		<value>Program with same title exits.</value>
-	</Field>
-	<Field>
-		<Name>DuplicateTacticExits</Name>
-		<value>Tactic with same title exits.</value>
-	</Field>
-	<Field>
-		<Name>DuplicateLineItemExits</Name>
-		<value>Line Item with same title exits.</value>
-	</Field>
-	<Field>
-		<Name>DeleteCampaignDependency</Name>
-		<value>Dependency with other entities exits, cannot be deleted.</value>
-	</Field>
-	<Field>
-		<Name>DeleteProgramDependency</Name>
-		<value>Dependency with other entities exits, cannot be deleted.</value>
-	</Field>
-	<Field>
-		<Name>ValidateForEmptyField</Name>
-		<!--Modiefied by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.-->
-		<value>Please fill all required fields.</value>
-	</Field>
-	<Field>
-		<Name>ValidateForValidField</Name>
-		<value>Make sure all fields are filled with valid values and try again.</value>
-	</Field>
-	<Field>
-		<Name>DateComapreValidation</Name>
-		<value>End date must be greater than or equal to start date.</value>
-	</Field>
-	<Field>
-		<Name>CommentSuccessfully</Name>
-		<value>Update completed.</value>
-	</Field>
-	<Field>
-		<Name>TacticStatusSuccessfully</Name>
-		<value>Tactic {0} successfully.</value>
-	</Field>
-	<Field>
-		<Name>ProgramStatusSuccessfully</Name>
-		<value>Program {0} successfully.</value>
-	</Field>
-	<Field>
-		<Name>CampaignStatusSuccessfully</Name>
-		<value>Campaign {0} successfully.</value>
-	</Field>
-	<Field>
-		<Name>TacticStartDateCompareWithParentStartDate</Name>
-		<value>One of the tactic start date is less than selected start date.</value>
-	</Field>
-	<Field>
-		<Name>TacticEndDateCompareWithParentEndDate</Name>
-		<value>One of the tactic end date is greater than seleted end date.</value>
-	</Field>
-	<Field>
-		<Name>ProgramStartDateCompareWithParentStartDate</Name>
-		<value>One of the program start date is less than selected start date.</value>
-	</Field>
-	<Field>
-		<Name>ProgramEndDateCompareWithParentEndDate</Name>
-		<value>One of the program end date is greater than seleted end date.</value>
-	</Field>
-	<Field>
-		<Name>ModelSaveSuccess</Name>
-		<value>Model {0} saved successfully.</value>
-	</Field>
-	<Field>
-		<Name>ModelAudienceSaveSuccess</Name>
-		<value>Audience acquisition planning successully saved.</value>
-	</Field>
-	<Field>
-		<Name>ModelNewTacticSaveSucess</Name>
-		<value>Model Tactic {0} saved successfully.</value>
-	</Field>
-	<Field>
-		<Name>ModelTacticSaveSucess</Name>
-		<value>Model Tactics saved successfully.</value>
-	</Field>
-	<Field>
-		<Name>ModelTacticEditSucess</Name>
-		<value>Model Tactic {0} modified successfully.</value>
-	</Field>
-	<!--Commented by Rahul shah on 24/11/2015 for PL 1764.-->
-	<!--start-->
-	<!--
+  <Field>
+    <Name>ServiceUnavailableMessage</Name>
+    <value>This application is currently unavailable. The site administrators are currently working hard to address this issue.</value>
+  </Field>
+  <Field>
+    <Name>DatabaseServiceUnavailableMessage</Name>
+    <value>The application database is currently unavailable. The site administrators are currently working hard to address this issue.</value>
+  </Field>
+  <Field>
+    <Name>InvalidProfileImage</Name>
+    <value>Only files with extensions (JPG and PNG) and size upto 1MB are allowed.</value>
+  </Field>
+  <Field>
+    <Name>InvalidPassword</Name>
+    <value>Login failed, please enter valid 8 character password.</value>
+  </Field>
+  <Field>
+    <Name>InvalidLogin</Name>
+    <value>Login failed, please ensure that you have entered valid credentials.</value>
+  </Field>
+  <!--Added By Komal Rawal for #2107-->
+  <Field>
+    <Name>InvalidEmailLogin</Name>
+    <value>Login failed,user does not exist</value>
+  </Field>
+  <Field>
+    <Name>LockedUser</Name>
+    <value>User locked, please reset your password using forgot password feature or contact your system administrator</value>
+  </Field>
+  <Field>
+    <Name>ErrorOccured</Name>
+    <value>An error has occured.</value>
+  </Field>
+  <Field>
+    <Name>UserAdded</Name>
+    <value>User added successfully.</value>
+  </Field>
+  <Field>
+    <Name>UserEdited</Name>
+    <value>User edited successfully.</value>
+  </Field>
+  <Field>
+    <Name>UserDeleted</Name>
+    <value>User deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>UserCantDeleted</Name>
+    <value>User cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>UserCantEdited</Name>
+    <value>User cannot be edited.</value>
+  </Field>
+  <Field>
+    <Name>UserPasswordChanged</Name>
+    <value>Password has been changed successfully.</value>
+  </Field>
+  <Field>
+    <Name>CurrentUserPasswordNotCorrect</Name>
+    <value>Your current password is not correct.</value>
+  </Field>
+  <Field>
+    <Name>UserPasswordDoNotMatch</Name>
+    <value>Your new password and confirm new password do not match.</value>
+  </Field>
+  <Field>
+    <Name>UserDuplicate</Name>
+    <value>User with same details already exists in our database.</value>
+  </Field>
+  <Field>
+    <Name>DeleteConfirm</Name>
+    <value>Are you sure you want to delete this record?</value>
+  </Field>
+  <Field>
+    <Name>ActivityMasterAdded</Name>
+    <value>Activity Master added successfully.</value>
+  </Field>
+  <Field>
+    <Name>ActivityMasterDeleted</Name>
+    <value>Activity Master deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>ActivityMasterDuplicate</Name>
+    <value>Duplicate Activity Master.</value>
+  </Field>
+  <Field>
+    <Name>ActivityMasterEdited</Name>
+    <value>Activity Master edited successfully.</value>
+  </Field>
+  <Field>
+    <Name>UserNotificationsSaved</Name>
+    <value>User notifications have been saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>DuplicateCampaignExits</Name>
+    <value>Campaign with same title exits.</value>
+  </Field>
+  <Field>
+    <Name>DuplicateProgramExits</Name>
+    <value>Program with same title exits.</value>
+  </Field>
+  <Field>
+    <Name>DuplicateTacticExits</Name>
+    <value>Tactic with same title exits.</value>
+  </Field>
+  <Field>
+    <Name>DuplicateLineItemExits</Name>
+    <value>Line Item with same title exits.</value>
+  </Field>
+  <Field>
+    <Name>DeleteCampaignDependency</Name>
+    <value>Dependency with other entities exits, cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>DeleteProgramDependency</Name>
+    <value>Dependency with other entities exits, cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>ValidateForEmptyField</Name>
+    <!--Modiefied by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.-->
+    <value>Please fill all required fields.</value>
+  </Field>
+  <Field>
+    <Name>ValidateForValidField</Name>
+    <value>Make sure all fields are filled with valid values and try again.</value>
+  </Field>
+  <Field>
+    <Name>DateComapreValidation</Name>
+    <value>End date must be greater than or equal to start date.</value>
+  </Field>
+  <Field>
+    <Name>CommentSuccessfully</Name>
+    <value>Update completed.</value>
+  </Field>
+  <Field>
+    <Name>TacticStatusSuccessfully</Name>
+    <value>Tactic {0} successfully.</value>
+  </Field>
+  <Field>
+    <Name>ProgramStatusSuccessfully</Name>
+    <value>Program {0} successfully.</value>
+  </Field>
+  <Field>
+    <Name>CampaignStatusSuccessfully</Name>
+    <value>Campaign {0} successfully.</value>
+  </Field>
+  <Field>
+    <Name>TacticStartDateCompareWithParentStartDate</Name>
+    <value>One of the tactic start date is less than selected start date.</value>
+  </Field>
+  <Field>
+    <Name>TacticEndDateCompareWithParentEndDate</Name>
+    <value>One of the tactic end date is greater than seleted end date.</value>
+  </Field>
+  <Field>
+    <Name>ProgramStartDateCompareWithParentStartDate</Name>
+    <value>One of the program start date is less than selected start date.</value>
+  </Field>
+  <Field>
+    <Name>ProgramEndDateCompareWithParentEndDate</Name>
+    <value>One of the program end date is greater than seleted end date.</value>
+  </Field>
+  <Field>
+    <Name>ModelSaveSuccess</Name>
+    <value>Model {0} saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelAudienceSaveSuccess</Name>
+    <value>Audience acquisition planning successully saved.</value>
+  </Field>
+  <Field>
+    <Name>ModelNewTacticSaveSucess</Name>
+    <value>Model Tactic {0} saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelTacticSaveSucess</Name>
+    <value>Model Tactics saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelTacticEditSucess</Name>
+    <value>Model Tactic {0} modified successfully.</value>
+  </Field>
+  <!--Commented by Rahul shah on 24/11/2015 for PL 1764.-->
+  <!--start-->
+  <!--
 <Field>
 		<Name>StartDateCurrentYear</Name>
 		<value>Start date must be selected of current plan year.</value>
@@ -194,951 +194,951 @@
 		<value>End date must be selected of current plan year.</value>
 	</Field>
 	-->
-	<!--end-->
-	<!--Added by Rahul shah on 24/11/2015 for PL 1764.-->
-	<!--start-->
-	<Field>
-		<Name>StartDateCurrentYear</Name>
-		<value>Start date must be selected of {0} or {1} year.</value>
-	</Field>
-	<Field>
-		<Name>EndDateCurrentYear</Name>
-		<value>End date must be selected of {0} or {1} year.</value>
-	</Field>
-	<!--end-->
-	<Field>
-		<Name>NoTacticFound</Name>
-		<value>No tactic found.</value>
-	</Field>
-	<Field>
-		<Name>NoOpenTacticExists</Name>
-		<value>No open tactic exists.</value>
-	</Field>
-	<Field>
-		<Name>NoTacticExistPlan</Name>
-		<value>No tactic exist for this plan.</value>
-	</Field>
-	<Field>
-		<Name>InvalidError</Name>
-		<value>InvalidError.</value>
-	</Field>
-	<Field>
-		<Name>ModelTacticTypeNotexist</Name>
-		<value>No tactic type(s) selected for {0} model.</value>
-	</Field>
-	<Field>
-		<Name>ModelPublishSuccess</Name>
-		<value>Model Published Successfully.</value>
-	</Field>
-	<Field>
-		<Name>StageNotDefined</Name>
-		<value>Stages not specified for current account.</value>
-	</Field>
-	<Field>
-		<Name>ValidationForMqlGreaterThanINQ</Name>
-		<value>Unable to save data as entered.  Total {4} of {0} exceeds total {1} of {2}. Total {4} must be less than or equal to total {3}.</value>
-	</Field>
-	<!--
+  <!--end-->
+  <!--Added by Rahul shah on 24/11/2015 for PL 1764.-->
+  <!--start-->
+  <Field>
+    <Name>StartDateCurrentYear</Name>
+    <value>Start date must be selected of {0} or {1} year.</value>
+  </Field>
+  <Field>
+    <Name>EndDateCurrentYear</Name>
+    <value>End date must be selected of {0} or {1} year.</value>
+  </Field>
+  <!--end-->
+  <Field>
+    <Name>NoTacticFound</Name>
+    <value>No tactic found.</value>
+  </Field>
+  <Field>
+    <Name>NoOpenTacticExists</Name>
+    <value>No open tactic exists.</value>
+  </Field>
+  <Field>
+    <Name>NoTacticExistPlan</Name>
+    <value>No tactic exist for this plan.</value>
+  </Field>
+  <Field>
+    <Name>InvalidError</Name>
+    <value>InvalidError.</value>
+  </Field>
+  <Field>
+    <Name>ModelTacticTypeNotexist</Name>
+    <value>No tactic type(s) selected for {0} model.</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishSuccess</Name>
+    <value>Model Published Successfully.</value>
+  </Field>
+  <Field>
+    <Name>StageNotDefined</Name>
+    <value>Stages not specified for current account.</value>
+  </Field>
+  <Field>
+    <Name>ValidationForMqlGreaterThanINQ</Name>
+    <value>Unable to save data as entered.  Total {4} of {0} exceeds total {1} of {2}. Total {4} must be less than or equal to total {3}.</value>
+  </Field>
+  <!--
   * changed by : Nirav Shah on 31 Jan 2013
   * Bug 19:Model - should not be able to publish a model with no tactics selected 
 	-->
-	<Field>
-		<Name>DeleteTacticDependency</Name>
-		<value>One of the selected tactic(s) is being used in a plan and hence cannot be deleted.</value>
-	</Field>
-	<Field>
-		<Name>ModifiedTactic</Name>
-		<value>Tactic(s) modified successfully.</value>
-	</Field>
-	<!--added by Nirav Shah  on 14 feb 2014 -->
-	<Field>
-		<Name>ModelDeleteSuccess</Name>
-		<value>Model {0} deleted successfully.</value>
-	</Field>
-	<Field>
-		<Name>ModelDeleteDependency</Name>
-		<value>Model {0} is being used in a plan and hence cannot be deleted.</value>
-	</Field>
-	<Field>
-		<Name>NoModelFound</Name>
-		<value>No Model {0} found.</value>
-	</Field>
-	<Field>
-		<Name>ModelDeleteConfirmMessage</Name>
-		<value>Are you sure you want to delete selected model (all versions related to it also deleted)?</value>
-	</Field>
-	<!-- Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model. -->
-	<Field>
-		<Name>ModelDuplicated</Name>
-		<value>Model duplicated.</value>
-	</Field>
-	<!-- End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model. -->
-	<!-- Start - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
-	<Field>
-		<Name>TargetStageNotAssociatedWithModelMsg</Name>
-		<value>Target stage of selected tactic type is not associated with target stages of selected model.</value>
-	</Field>
-	<!-- End - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
-	<Field>
-		<Name>PlanDeleteSuccessful</Name>
-		<value>Plan {0} deleted successfully.</value>
-	</Field>
-	<Field>
-		<Name>PlanDeleteError</Name>
-		<value>Error occured during deleting the {0} plan</value>
-	</Field>
-	<Field>
-		<Name>PlanDeleteConfirmMessage</Name>
-		<value>Are you sure you want to delete selected plan (all campaigns/programs/tactics related to it also deleted)?</value>
-	</Field>
-	<Field>
-		<Name>ModelDeleteParentDependency</Name>
-		<value>Model {0} Version {1} is being used in a plan and hence cannot be deleted.</value>
-	</Field>
-	<Field>
-		<Name>ModelPublishCreateNew</Name>
-		<value>You are about to create a new version of a published model, doing so will only apply changes once the new version is published.  At that point, the changes will only apply to tactics that start after the chosen effective date of the updated version.  Do you wish to continue?</value>
-	</Field>
-	<Field>
-		<Name>ModelPublishEdit</Name>
-		<value>You are about to edit a published model, doing so will apply changes across all plans associated with this version of the model, even to tactics that have already commenced.  Do you wish to continue?</value>
-	</Field>
-	<Field>
-		<Name>ModelPublishTacticDelete</Name>
-		<value>Can't remove one or more tactic(s) because it is currently attached to plan {0}</value>
-	</Field>
-	<Field>
-		<Name>ModelPublishComfirmation</Name>
-		<value>You are about to publish a new version of an already published model. Doing so will apply the new conversion rates and velocities only to tactics that start the selected effective date.</value>
-	</Field>
-	<Field>
-		<Name>ImprovementTacticStatusSuccessfully</Name>
-		<value>Improvement Tactic {0} successfully.</value>
-	</Field>
-	<Field>
-		<Name>NewImprovementTacticSaveSucess</Name>
-		<value>Improvement Tactic saved successfully.</value>
-	</Field>
-	<Field>
-		<Name>DeleteImprovementTacticSaveSucess</Name>
-		<value>Improvement Tactic Type {0} deleted successfully.</value>
-	</Field>
-	<Field>
-		<Name>ImprovementTacticReferencesPlanError</Name>
-		<value>Selected improvement tactic type is being used in a plan and hence cannot be deleted.</value>
-	</Field>
-	<Field>
-		<Name>EditImprovementTacticSaveSucess</Name>
-		<value>Improvement Tactic updated successfully.</value>
-	</Field>
-	<Field>
-		<Name>DuplicateImprovementTacticExits</Name>
-		<value>Improvement tactic type with same title exits.</value>
-	</Field>
-	<Field>
-		<Name>StageNotExist</Name>
-		<value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>
-	</Field>
-	<!--For forgot Password functionality Added by Dharmraj Mangukiya on 26-March-2014-->
-	<Field>
-		<Name>EmailNotExistInDatabse</Name>
-		<value>Email not found. Please correct the indicated error and submit again.</value>
-	</Field>
-	<Field>
-		<Name>SecurityQuestionNotFound</Name>
-		<value>Security Question not found. Please set your security question and answer.</value>
-	</Field>
-	<Field>
-		<Name>PasswordResetLinkAlreadyUsed</Name>
-		<value>Link was already used.</value>
-	</Field>
-	<Field>
-		<Name>PasswordResetLinkExpired</Name>
-		<value>Password reset link has been expired.</value>
-	</Field>
-	<Field>
-		<Name>AnswerNotMatched</Name>
-		<value>Given answer doesn't match. Please give correct answer.</value>
-	</Field>
-	<Field>
-		<Name>PossibleAttemptLimitExceed</Name>
-		<value>Your possible attempt limit are exceed.</value>
-	</Field>
-	<Field>
-		<Name>SecurityQuestionChangesNotApplied</Name>
-		<value>Somthing went wrong. The changes to the security question were not applied.</value>
-	</Field>
-	<Field>
-		<Name>SecurityQuestionChangesApplied</Name>
-		<value>The changes to the security question applied.</value>
-	</Field>
-	<Field>
-		<Name>CannotSwitchModelForPlan</Name>
-		<value>You can not move to the new model due to the fact that there are tactics ([TacticNameToBeReplaced]) in the selected plan that are not present in new model.</value>
-	</Field>
-	<Field>
-		<Name>SameImprovementTypeExits</Name>
-		<value>Same improvement tactic type exits.</value>
-	</Field>
-	<Field>
-		<Name>ModelTacticDeleted</Name>
-		<value>Tactic {0} deleted successfully.</value>
-	</Field>
-	<Field>
-		<Name>ModelTacticCannotDelete</Name>
-		<value>Cannot delete tactic, As this is the only tactic in this published model.</value>
-	</Field>
-	<!--For Model integration functionality Added by Dharmraj Mangukiya -->
-	<Field>
-		<Name>ModelIntegrationSaveSuccess</Name>
-		<value>Model integration saved successfully.</value>
-	</Field>
-	<Field>
-		<Name>DeployedToIntegrationStatusSaveSuccess</Name>
-		<value>Deployed to Integration status saved successfully.</value>
-	</Field>
-	<!--Start - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
-	<Field>
-		<Name>IntegrationAdded</Name>
-		<value>New integration successfully added.</value>
-	</Field>
-	<Field>
-		<Name>IntegrationEdited</Name>
-		<value>Integration edited successfully.</value>
-	</Field>
-	<Field>
-		<Name>IntegrationDeleted</Name>
-		<value>Integration deleted successfully.</value>
-	</Field>
-	<Field>
-		<Name>IntegrationDuplicate</Name>
-		<!--
+  <Field>
+    <Name>DeleteTacticDependency</Name>
+    <value>One of the selected tactic(s) is being used in a plan and hence cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>ModifiedTactic</Name>
+    <value>Tactic(s) modified successfully.</value>
+  </Field>
+  <!--added by Nirav Shah  on 14 feb 2014 -->
+  <Field>
+    <Name>ModelDeleteSuccess</Name>
+    <value>Model {0} deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelDeleteDependency</Name>
+    <value>Model {0} is being used in a plan and hence cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>NoModelFound</Name>
+    <value>No Model {0} found.</value>
+  </Field>
+  <Field>
+    <Name>ModelDeleteConfirmMessage</Name>
+    <value>Are you sure you want to delete selected model (all versions related to it also deleted)?</value>
+  </Field>
+  <!-- Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model. -->
+  <Field>
+    <Name>ModelDuplicated</Name>
+    <value>Model duplicated.</value>
+  </Field>
+  <!-- End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model. -->
+  <!-- Start - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
+  <Field>
+    <Name>TargetStageNotAssociatedWithModelMsg</Name>
+    <value>Target stage of selected tactic type is not associated with target stages of selected model.</value>
+  </Field>
+  <!-- End - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
+  <Field>
+    <Name>PlanDeleteSuccessful</Name>
+    <value>Plan {0} deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>PlanDeleteError</Name>
+    <value>Error occured during deleting the {0} plan</value>
+  </Field>
+  <Field>
+    <Name>PlanDeleteConfirmMessage</Name>
+    <value>Are you sure you want to delete selected plan (all campaigns/programs/tactics related to it also deleted)?</value>
+  </Field>
+  <Field>
+    <Name>ModelDeleteParentDependency</Name>
+    <value>Model {0} Version {1} is being used in a plan and hence cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishCreateNew</Name>
+    <value>You are about to create a new version of a published model, doing so will only apply changes once the new version is published.  At that point, the changes will only apply to tactics that start after the chosen effective date of the updated version.  Do you wish to continue?</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishEdit</Name>
+    <value>You are about to edit a published model, doing so will apply changes across all plans associated with this version of the model, even to tactics that have already commenced.  Do you wish to continue?</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishTacticDelete</Name>
+    <value>Can't remove one or more tactic(s) because it is currently attached to plan {0}</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishComfirmation</Name>
+    <value>You are about to publish a new version of an already published model. Doing so will apply the new conversion rates and velocities only to tactics that start the selected effective date.</value>
+  </Field>
+  <Field>
+    <Name>ImprovementTacticStatusSuccessfully</Name>
+    <value>Improvement Tactic {0} successfully.</value>
+  </Field>
+  <Field>
+    <Name>NewImprovementTacticSaveSucess</Name>
+    <value>Improvement Tactic saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>DeleteImprovementTacticSaveSucess</Name>
+    <value>Improvement Tactic Type {0} deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>ImprovementTacticReferencesPlanError</Name>
+    <value>Selected improvement tactic type is being used in a plan and hence cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>EditImprovementTacticSaveSucess</Name>
+    <value>Improvement Tactic updated successfully.</value>
+  </Field>
+  <Field>
+    <Name>DuplicateImprovementTacticExits</Name>
+    <value>Improvement tactic type with same title exits.</value>
+  </Field>
+  <Field>
+    <Name>StageNotExist</Name>
+    <value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>
+  </Field>
+  <!--For forgot Password functionality Added by Dharmraj Mangukiya on 26-March-2014-->
+  <Field>
+    <Name>EmailNotExistInDatabse</Name>
+    <value>Email not found. Please correct the indicated error and submit again.</value>
+  </Field>
+  <Field>
+    <Name>SecurityQuestionNotFound</Name>
+    <value>Security Question not found. Please set your security question and answer.</value>
+  </Field>
+  <Field>
+    <Name>PasswordResetLinkAlreadyUsed</Name>
+    <value>Link was already used.</value>
+  </Field>
+  <Field>
+    <Name>PasswordResetLinkExpired</Name>
+    <value>Password reset link has been expired.</value>
+  </Field>
+  <Field>
+    <Name>AnswerNotMatched</Name>
+    <value>Given answer doesn't match. Please give correct answer.</value>
+  </Field>
+  <Field>
+    <Name>PossibleAttemptLimitExceed</Name>
+    <value>Your possible attempt limit are exceed.</value>
+  </Field>
+  <Field>
+    <Name>SecurityQuestionChangesNotApplied</Name>
+    <value>Somthing went wrong. The changes to the security question were not applied.</value>
+  </Field>
+  <Field>
+    <Name>SecurityQuestionChangesApplied</Name>
+    <value>The changes to the security question applied.</value>
+  </Field>
+  <Field>
+    <Name>CannotSwitchModelForPlan</Name>
+    <value>You can not move to the new model due to the fact that there are tactics ([TacticNameToBeReplaced]) in the selected plan that are not present in new model.</value>
+  </Field>
+  <Field>
+    <Name>SameImprovementTypeExits</Name>
+    <value>Same improvement tactic type exits.</value>
+  </Field>
+  <Field>
+    <Name>ModelTacticDeleted</Name>
+    <value>Tactic {0} deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelTacticCannotDelete</Name>
+    <value>Cannot delete tactic, As this is the only tactic in this published model.</value>
+  </Field>
+  <!--For Model integration functionality Added by Dharmraj Mangukiya -->
+  <Field>
+    <Name>ModelIntegrationSaveSuccess</Name>
+    <value>Model integration saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>DeployedToIntegrationStatusSaveSuccess</Name>
+    <value>Deployed to Integration status saved successfully.</value>
+  </Field>
+  <!--Start - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
+  <Field>
+    <Name>IntegrationAdded</Name>
+    <value>New integration successfully added.</value>
+  </Field>
+  <Field>
+    <Name>IntegrationEdited</Name>
+    <value>Integration edited successfully.</value>
+  </Field>
+  <Field>
+    <Name>IntegrationDeleted</Name>
+    <value>Integration deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>IntegrationDuplicate</Name>
+    <!--
 <value>Integration with same Instance already exists in our database.</value>
 		-->
-		<value>Same Instance already exists.</value>
-	</Field>
-	<Field>
-		<Name>IntegrationDeleteConfirmationMsg</Name>
-		<value>Deleting integration instance will reset sync details configured at model and plan level. Are you sure you want to proceed?</value>
-	</Field>
-	<Field>
-		<Name>TestIntegrationSuccess</Name>
-		<value>Provided integration service credentials are authenticated successfully.</value>
-	</Field>
-	<Field>
-		<Name>TestIntegrationFail</Name>
-		<value>Provided integration service credentials are not authenticated.</value>
-	</Field>
-	<!--End - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
-	<Field>
-		<Name>DataTypeMappingSaveSuccess</Name>
-		<value>Data Mapping have been saved.</value>
-	</Field>
-	<Field>
-		<Name>DataTypeMappingNotConfigured</Name>
-		<value>plan source data types or Integration instance not configured.</value>
-	</Field>
-	<!--Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
-	<Field>
-		<Name>TargetFieldInvalidMsg</Name>
-		<value>Please ensure that a target field is not mapped to more than one Plan data type under same plan entity.</value>
-	</Field>
-	<!--End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
-	<Field>
-		<Name>IntegrationInActiveConfirmationMsg</Name>
-		<value>This will remove Service Integration from Models also. Are you sure to proceed?</value>
-	</Field>
-	<Field>
-		<Name>SyncNowSuccMessage</Name>
-		<value>Sync is successfully done.</value>
-	</Field>
-	<Field>
-		<Name>SyncNowErrorMessage</Name>
-		<value>An error occured in Sync.</value>
-	</Field>
-	<!--Start Manoj Limbachiya PL # 486-->
-	<Field>
-		<Name>TacticReqForPublishedModel</Name>
-		<value>Model is published hence at least one tactic required as deployed.</value>
-	</Field>
-	<Field>
-		<Name>TacticCanNotDeployed</Name>
-		<value>{0} tactic type is being used in a plan and hence cannot be marked as Not Deployed.</value>
-	</Field>
-	<!--End Manoj Limbachiya PL # 486-->
-	<Field>
-		<Name>LoginWithSameSession</Name>
-		<value>Another user is logged in with the same session.</value>
-	</Field>
-	<!-- Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
-	<Field>
-		<Name>ChangeTargetStageMsg</Name>
-		<value>You are about to modify target stage of a tactic of published model, Do you want to continue?</value>
-	</Field>
-	<!-- End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
-	<!-- Start - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
-	<Field>
-		<Name>UnauthorizedCommentSection</Name>
-		<value>You are not authorized to view/add comments.</value>
-	</Field>
-	<!-- End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
-	<!-- Start - Added By Sohel Pathan on 26/06/2014 for PL ticket #517 -->
-	<Field>
-		<Name>NotifyBeforeManagerDeletion</Name>
-		<value>Before deleting the user, you would have to re-assign the corresponding subordinates to another manager.</value>
-	</Field>
-	<!-- End - Added By Sohel Pathan on 26/06/2014 for PL ticket #517 -->
-	<!-- Start - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521 -->
-	<Field>
-		<Name>UserPermissionsResetToDefault</Name>
-		<value>Users permissions have been reset to the role default permissions.</value>
-	</Field>
-	<!-- End - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521 -->
-	<!-- Start - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65 -->
-	<Field>
-		<Name>ValidateForEmptyImprovementWeight</Name>
-		<value>User must select at least one improvement weight for the improvement tactic to be valid.</value>
-	</Field>
-	<Field>
-		<Name>ValidateForNumericDigitOneToFive</Name>
-		<value>A valid entry must be an integer between 0 and 5.</value>
-	</Field>
-	<Field>
-		<Name>ValidateIntegretionCredential</Name>
-		<value>Please test integration credentials</value>
-	</Field>
-	<Field>
-		<Name>SynchronizationStatus</Name>
-		<value>The synchronization has started and status will be updated on completion.</value>
-	</Field>
-	<Field>
-		<Name>ValidateForEmptyFieldAndValid</Name>
-		<value>Make sure all fields are filled and valid,try again.</value>
-	</Field>
-	<Field>
-		<Name>ValidateEmailAtleastone</Name>
-		<value>Please select at least one email.</value>
-	</Field>
-	<Field>
-		<Name>ValidatePaswordMustSameAsConfirm</Name>
-		<value>New and confirm new password must be same.</value>
-	</Field>
-	<Field>
-		<Name>ValidatePassowordCannotSameAsCurrent</Name>
-		<value>New and current password cannot be same.</value>
-	</Field>
-	<Field>
-		<Name>HilightedFieldRequire</Name>
-		<value>highlighted fields are required.</value>
-	</Field>
-	<Field>
-		<Name>ValidatePasswordCannotSameAsOld</Name>
-		<value>New password should not be same as old password.</value>
-	</Field>
-	<Field>
-		<Name>ValidateEnteredField</Name>
-		<value>Please enter value in the above field.</value>
-	</Field>
-	<Field>
-		<Name>ModelAlreadyExits</Name>
-		<value>A model with the same name already exists.</value>
-	</Field>
-	<Field>
-		<Name>ValidateConversionRateAndTargetStage</Name>
-		<value>User must enter at least one conversion(%) or velocity (days) and set allowed as target stage true for the model to be valid.</value>
-	</Field>
-	<Field>
-		<Name>ValidateConversionRate</Name>
-		<value>User must enter at least one conversion(%) or velocity (days) for the model to be valid.</value>
-	</Field>
-	<Field>
-		<Name>ValidateTargetStage</Name>
-		<!--
+    <value>Same Instance already exists.</value>
+  </Field>
+  <Field>
+    <Name>IntegrationDeleteConfirmationMsg</Name>
+    <value>Deleting integration instance will reset sync details configured at model and plan level. Are you sure you want to proceed?</value>
+  </Field>
+  <Field>
+    <Name>TestIntegrationSuccess</Name>
+    <value>Provided integration service credentials are authenticated successfully.</value>
+  </Field>
+  <Field>
+    <Name>TestIntegrationFail</Name>
+    <value>Provided integration service credentials are not authenticated.</value>
+  </Field>
+  <!--End - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
+  <Field>
+    <Name>DataTypeMappingSaveSuccess</Name>
+    <value>Data Mapping have been saved.</value>
+  </Field>
+  <Field>
+    <Name>DataTypeMappingNotConfigured</Name>
+    <value>plan source data types or Integration instance not configured.</value>
+  </Field>
+  <!--Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
+  <Field>
+    <Name>TargetFieldInvalidMsg</Name>
+    <value>Please ensure that a target field is not mapped to more than one Plan data type under same plan entity.</value>
+  </Field>
+  <!--End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
+  <Field>
+    <Name>IntegrationInActiveConfirmationMsg</Name>
+    <value>This will remove Service Integration from Models also. Are you sure to proceed?</value>
+  </Field>
+  <Field>
+    <Name>SyncNowSuccMessage</Name>
+    <value>Sync is successfully done.</value>
+  </Field>
+  <Field>
+    <Name>SyncNowErrorMessage</Name>
+    <value>An error occured in Sync.</value>
+  </Field>
+  <!--Start Manoj Limbachiya PL # 486-->
+  <Field>
+    <Name>TacticReqForPublishedModel</Name>
+    <value>Model is published hence at least one tactic required as deployed.</value>
+  </Field>
+  <Field>
+    <Name>TacticCanNotDeployed</Name>
+    <value>{0} tactic type is being used in a plan and hence cannot be marked as Not Deployed.</value>
+  </Field>
+  <!--End Manoj Limbachiya PL # 486-->
+  <Field>
+    <Name>LoginWithSameSession</Name>
+    <value>Another user is logged in with the same session.</value>
+  </Field>
+  <!-- Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
+  <Field>
+    <Name>ChangeTargetStageMsg</Name>
+    <value>You are about to modify target stage of a tactic of published model, Do you want to continue?</value>
+  </Field>
+  <!-- End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
+  <!-- Start - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
+  <Field>
+    <Name>UnauthorizedCommentSection</Name>
+    <value>You are not authorized to view/add comments.</value>
+  </Field>
+  <!-- End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
+  <!-- Start - Added By Sohel Pathan on 26/06/2014 for PL ticket #517 -->
+  <Field>
+    <Name>NotifyBeforeManagerDeletion</Name>
+    <value>Before deleting the user, you would have to re-assign the corresponding subordinates to another manager.</value>
+  </Field>
+  <!-- End - Added By Sohel Pathan on 26/06/2014 for PL ticket #517 -->
+  <!-- Start - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521 -->
+  <Field>
+    <Name>UserPermissionsResetToDefault</Name>
+    <value>Users permissions have been reset to the role default permissions.</value>
+  </Field>
+  <!-- End - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521 -->
+  <!-- Start - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65 -->
+  <Field>
+    <Name>ValidateForEmptyImprovementWeight</Name>
+    <value>User must select at least one improvement weight for the improvement tactic to be valid.</value>
+  </Field>
+  <Field>
+    <Name>ValidateForNumericDigitOneToFive</Name>
+    <value>A valid entry must be an integer between 0 and 5.</value>
+  </Field>
+  <Field>
+    <Name>ValidateIntegretionCredential</Name>
+    <value>Please test integration credentials</value>
+  </Field>
+  <Field>
+    <Name>SynchronizationStatus</Name>
+    <value>The synchronization has started and status will be updated on completion.</value>
+  </Field>
+  <Field>
+    <Name>ValidateForEmptyFieldAndValid</Name>
+    <value>Make sure all fields are filled and valid,try again.</value>
+  </Field>
+  <Field>
+    <Name>ValidateEmailAtleastone</Name>
+    <value>Please select at least one email.</value>
+  </Field>
+  <Field>
+    <Name>ValidatePaswordMustSameAsConfirm</Name>
+    <value>New and confirm new password must be same.</value>
+  </Field>
+  <Field>
+    <Name>ValidatePassowordCannotSameAsCurrent</Name>
+    <value>New and current password cannot be same.</value>
+  </Field>
+  <Field>
+    <Name>HilightedFieldRequire</Name>
+    <value>highlighted fields are required.</value>
+  </Field>
+  <Field>
+    <Name>ValidatePasswordCannotSameAsOld</Name>
+    <value>New password should not be same as old password.</value>
+  </Field>
+  <Field>
+    <Name>ValidateEnteredField</Name>
+    <value>Please enter value in the above field.</value>
+  </Field>
+  <Field>
+    <Name>ModelAlreadyExits</Name>
+    <value>A model with the same name already exists.</value>
+  </Field>
+  <Field>
+    <Name>ValidateConversionRateAndTargetStage</Name>
+    <value>User must enter at least one conversion(%) or velocity (days) and set allowed as target stage true for the model to be valid.</value>
+  </Field>
+  <Field>
+    <Name>ValidateConversionRate</Name>
+    <value>User must enter at least one conversion(%) or velocity (days) for the model to be valid.</value>
+  </Field>
+  <Field>
+    <Name>ValidateTargetStage</Name>
+    <!--
 <value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>
 		-->
-		<value>At least one stage under Conversion Rates section needs to be set to target stage, please contact system administrator.</value>
-	</Field>
-	<Field>
-		<Name>ConfirmationForDeleteTactic</Name>
-		<value>Are you sure you want to delete this tactic?</value>
-	</Field>
-	<Field>
-		<Name>RoleAlreadyExits</Name>
-		<value>A role with the same name already exists.</value>
-	</Field>
-	<Field>
-		<Name>ValidateRequiredRole</Name>
-		<value>Please select a role to reassign.</value>
-	</Field>
-	<Field>
-		<Name>ValidateRequiredPermission</Name>
-		<value>Please Select at least one permission</value>
-	</Field>
-	<Field>
-		<Name>ValidateAtleastOneCampaign</Name>
-		<value>Please add at least one campaign.</value>
-	</Field>
-	<Field>
-		<Name>AddMarketingActivitiesBeforeAddImprovementActivities</Name>
-		<value>Before adding any improvement tactic please add marketing activities.</value>
-	</Field>
-	<Field>
-		<Name>ConfirmationForDeleteCampaign</Name>
-		<value>Are you sure you want to delete this campaign?</value>
-	</Field>
-	<Field>
-		<Name>ValidateEffectiveDate</Name>
-		<value>please select valid effective date.</value>
-	</Field>
-	<Field>
-		<Name>NoPublishPlanAvailable</Name>
-		<value>No published plan available to shown on home, please publish a plan.</value>
-	</Field>
-	<Field>
-		<Name>ConfirmationForDeleteProgram</Name>
-		<value>Are you sure you want to delete this program?</value>
-	</Field>
-	<Field>
-		<Name>ValidateEmailAtleastone</Name>
-		<value>Please select at least one email.</value>
-	</Field>
-	<Field>
-		<Name>EmailAlreadyExits</Name>
-		<value>This email already exists. Please choose another email.</value>
-	</Field>
-	<Field>
-		<Name>EmailAvailable</Name>
-		<value>Email available.</value>
-	</Field>
-	<Field>
-		<Name>RegionRequired</Name>
-		<value>The Region field is required.</value>
-	</Field>
-	<Field>
-		<Name>RoleRequired</Name>
-		<value>The Role field is required.</value>
-	</Field>
-	<Field>
-		<Name>ManagerRequired</Name>
-		<value>The Manager field is required.</value>
-	</Field>
-	<Field>
-		<Name>ReassignRequired</Name>
-		<value>The Reassign field is required.</value>
-	</Field>
-	<Field>
-		<Name>NotValidEmail</Name>
-		<value>Not a valid Email.</value>
-	</Field>
-	<Field>
-		<Name>NoRecordFound</Name>
-		<value>No record found for this id.</value>
-	</Field>
-	<Field>
-		<Name>RoleDeleteSuccess</Name>
-		<value>Role Deleted Successfully.</value>
-	</Field>
-	<Field>
-		<Name>RoleCopySuccess</Name>
-		<value>Role Copied Successfully.</value>
-	</Field>
-	<Field>
-		<Name>CampaignDeleteSuccess</Name>
-		<value>Campaign {0} Deleted Successfully.</value>
-	</Field>
-	<Field>
-		<Name>ProgramDeleteSuccess</Name>
-		<value>Program {0} Deleted Successfully.</value>
-	</Field>
-	<Field>
-		<Name>TacticDeleteSuccess</Name>
-		<value>Tactic {0} Deleted Successfully.</value>
-	</Field>
-	<Field>
-		<Name>ImprovementTacticDeleteSuccess</Name>
-		<value>Improvement Tactic {0} Deleted Successfully.</value>
-	</Field>
-	<Field>
-		<Name>CloneDuplicated</Name>
-		<value>{0} duplicated.</value>
-	</Field>
-	<Field>
-		<Name>CloneAlreadyExits</Name>
-		<value>{0} with same name already exist.</value>
-	</Field>
-	<Field>
-		<Name>TacticMustDeployedToModel</Name>
-		<value>The tactic must be deployed to Model before deploying it to an integration.</value>
-	</Field>
-	<!--revert all the changes regarding 2115-->
-	<!--
+    <value>At least one stage under Conversion Rates section needs to be set to target stage, please contact system administrator.</value>
+  </Field>
+  <Field>
+    <Name>ConfirmationForDeleteTactic</Name>
+    <value>Are you sure you want to delete this tactic?</value>
+  </Field>
+  <Field>
+    <Name>RoleAlreadyExits</Name>
+    <value>A role with the same name already exists.</value>
+  </Field>
+  <Field>
+    <Name>ValidateRequiredRole</Name>
+    <value>Please select a role to reassign.</value>
+  </Field>
+  <Field>
+    <Name>ValidateRequiredPermission</Name>
+    <value>Please Select at least one permission</value>
+  </Field>
+  <Field>
+    <Name>ValidateAtleastOneCampaign</Name>
+    <value>Please add at least one campaign.</value>
+  </Field>
+  <Field>
+    <Name>AddMarketingActivitiesBeforeAddImprovementActivities</Name>
+    <value>Before adding any improvement tactic please add marketing activities.</value>
+  </Field>
+  <Field>
+    <Name>ConfirmationForDeleteCampaign</Name>
+    <value>Are you sure you want to delete this campaign?</value>
+  </Field>
+  <Field>
+    <Name>ValidateEffectiveDate</Name>
+    <value>please select valid effective date.</value>
+  </Field>
+  <Field>
+    <Name>NoPublishPlanAvailable</Name>
+    <value>No published plan available to shown on home, please publish a plan.</value>
+  </Field>
+  <Field>
+    <Name>ConfirmationForDeleteProgram</Name>
+    <value>Are you sure you want to delete this program?</value>
+  </Field>
+  <Field>
+    <Name>ValidateEmailAtleastone</Name>
+    <value>Please select at least one email.</value>
+  </Field>
+  <Field>
+    <Name>EmailAlreadyExits</Name>
+    <value>This email already exists. Please choose another email.</value>
+  </Field>
+  <Field>
+    <Name>EmailAvailable</Name>
+    <value>Email available.</value>
+  </Field>
+  <Field>
+    <Name>RegionRequired</Name>
+    <value>The Region field is required.</value>
+  </Field>
+  <Field>
+    <Name>RoleRequired</Name>
+    <value>The Role field is required.</value>
+  </Field>
+  <Field>
+    <Name>ManagerRequired</Name>
+    <value>The Manager field is required.</value>
+  </Field>
+  <Field>
+    <Name>ReassignRequired</Name>
+    <value>The Reassign field is required.</value>
+  </Field>
+  <Field>
+    <Name>NotValidEmail</Name>
+    <value>Not a valid Email.</value>
+  </Field>
+  <Field>
+    <Name>NoRecordFound</Name>
+    <value>No record found for this id.</value>
+  </Field>
+  <Field>
+    <Name>RoleDeleteSuccess</Name>
+    <value>Role Deleted Successfully.</value>
+  </Field>
+  <Field>
+    <Name>RoleCopySuccess</Name>
+    <value>Role Copied Successfully.</value>
+  </Field>
+  <Field>
+    <Name>CampaignDeleteSuccess</Name>
+    <value>Campaign {0} Deleted Successfully.</value>
+  </Field>
+  <Field>
+    <Name>ProgramDeleteSuccess</Name>
+    <value>Program {0} Deleted Successfully.</value>
+  </Field>
+  <Field>
+    <Name>TacticDeleteSuccess</Name>
+    <value>Tactic {0} Deleted Successfully.</value>
+  </Field>
+  <Field>
+    <Name>ImprovementTacticDeleteSuccess</Name>
+    <value>Improvement Tactic {0} Deleted Successfully.</value>
+  </Field>
+  <Field>
+    <Name>CloneDuplicated</Name>
+    <value>{0} duplicated.</value>
+  </Field>
+  <Field>
+    <Name>CloneAlreadyExits</Name>
+    <value>{0} with same name already exist.</value>
+  </Field>
+  <Field>
+    <Name>TacticMustDeployedToModel</Name>
+    <value>The tactic must be deployed to Model before deploying it to an integration.</value>
+  </Field>
+  <!--revert all the changes regarding 2115-->
+  <!--
 	<Field>
 		<Name>TacticTypeMaybeUsed</Name>
 		<value>Unselecting the "Deploy to Model" flag for selected Tactic will reset all related Tactic(s) at Plan level. Are you sure you want to proceed?</value>
 	</Field>
 	-->
-	<Field>
-		<Name>ConfirmationForModifyTargetIntegration</Name>
-		<value>Modifying target integration will reset sync details configured at plan level. Are you sure you want to proceed?</value>
-	</Field>
-	<Field>
-		<Name>MarketoSelectionValidation</Name>
-		<value>Both salesforce and marketo cannot be selected together as a target for pushing plan data</value>
-	</Field>
-	<Field>
-		<Name>ConfirmationForDeleteImprovementTactic</Name>
-		<value>Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.</value>
-	</Field>
-	<!-- End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65-->
-	<!-- Start - Added by Mitesh Vaishnav on 21/07/2014 for functional review point 49 -->
-	<Field>
-		<Name>ValidateStartDate</Name>
-		<value>please select valid start date.</value>
-	</Field>
-	<Field>
-		<Name>ValidateEndDate</Name>
-		<value>please select valid end date.</value>
-	</Field>
-	<Field>
-		<Name>SessionExpired</Name>
-		<value>Sorry, your session has expired. Please login again by clicking on Ok button.</value>
-	</Field>
-	<!-- End - Added by Mitesh Vaishnav on 21/07/2014 for functional review point 49 -->
-	<!--Added By : Kalpesh Sharma Functional Review Point #75-->
-	<Field>
-		<Name>NoActiveModelFound</Name>
-		<value>There is no any active model.</value>
-	</Field>
-	<!--Added By : Kalpesh Sharma Functional Review Point-->
-	<Field>
-		<Name>NoPlanFoundPlanSelector</Name>
-		<value>There is no active plan for selected filter.</value>
-	</Field>
-	<!--Start Added By Dharmraj #567 : Budget allocation for campaign-->
-	<Field>
-		<Name>CannotAllocateMorethanRemainingBudgeted</Name>
-		<value>You cannot allocate more than remaining budgeted.</value>
-	</Field>
-	<Field>
-		<Name>CannotSetBudgetLessthanAllocated</Name>
-		<value>You cannot set budget less than allocated.</value>
-	</Field>
-	<Field>
-		<Name>CannotAllocateMorehanBudgeted</Name>
-		<value>You cannot allocate more than budgeted</value>
-	</Field>
-	<Field>
-		<Name>CampaignBudgetIsLowerthanTotalAllocatedPrograms</Name>
-		<value>Your campaign budget is lower than the total allocated programs month budget in</value>
-	</Field>
-	<!--End Added By Dharmraj #567 : Budget allocation for campaign-->
-	<!-- Start - Added By Sohel Pathan #597 -->
-	<Field>
-		<Name>NoActiveModelFound</Name>
-		<value>There is no any active model.</value>
-	</Field>
-	<Field>
-		<Name>ErrMsgLessPlanBudget</Name>
-		<value>You cannot reduce the total budget amount of the plan than the total allocated campaign budget amount.</value>
-	</Field>
-	<Field>
-		<Name>ErrMsgLessPlanBudget</Name>
-		<value>You cannot reduce the total budget amount of the plan than the total allocated campaign budget amount.</value>
-	</Field>
-	<Field>
-		<Name>ErrMsgLessCampaignBudget</Name>
-		<value>Your plan budget is lower than the total allocated campaigns budget in</value>
-	</Field>
-	<Field>
-		<Name>ErrMsgBudgetAllocationExceeds</Name>
-		<value>You cannot allocate more than budgeted.</value>
-	</Field>
-	<Field>
-		<Name>DefaultPlanAllocationMessage</Name>
-		<value>You have chosen not to allocate this plan's budget.</value>
-	</Field>
-	<!-- End - Added By Sohel Pathan #597 -->
-	<!-- Start - Added By Dharmraj #574 -->
-	<Field>
-		<Name>ConfirmationForDeleteLineItem</Name>
-		<value>Are you sure you want to delete this line item?</value>
-	</Field>
-	<!-- End - Added By Dharmraj #574 -->
-	<!-- Start - Manoj #679 -->
-	<Field>
-		<Name>DuplicateFileLocation</Name>
-		<value>Server configuration with same file location {0} already exist</value>
-	</Field>
-	<Field>
-		<Name>ConnectionFail</Name>
-		<value>Not able to connect to the server with provided details</value>
-	</Field>
-	<Field>
-		<Name>ServerConfigurationSaved</Name>
-		<value>External Server Configuration saved successfully</value>
-	</Field>
-	<!-- End - Manoj #679 -->
-	<!-- Start - Added By Mitesh #559 -->
-	<Field>
-		<Name>IntegrationSelectionSaved</Name>
-		<value>Integration selection have been saved successfully.</value>
-	</Field>
-	<!-- End - Added By Mitesh #559 -->
-	<!--Start - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
-	<Field>
-		<Name>CloseDealTargetFieldInvalidMsg</Name>
-		<value>Please ensure that a target field is not mapped to more than one application field.</value>
-	</Field>
-	<Field>
-		<Name>DataTypeMappingPullSaveSuccess</Name>
-		<value>Settings have been saved successfully.</value>
-	</Field>
-	<Field>
-		<Name>NoDataTypeMappingFieldsForEloqua</Name>
-		<value>This section is not applicable for current integration type.</value>
-	</Field>
-	<!--End - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
-	<!-- Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716 -->
-	<Field>
-		<Name>DataLoseErrorMessage</Name>
-		<value>You have unsaved changes. Do you wish to leave this page and lose your work?</value>
-	</Field>
-	<!-- End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716 -->
-	<!-- Start - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752 -->
-	<Field>
-		<Name>CannotAllocateLessThanPlanned</Name>
-		<value>You cannot allocate less than planned</value>
-	</Field>
-	<!-- End - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752 -->
-	<!-- Start - Added by Pratik on 24/09/2014 for PL ticket #754 -->
-	<Field>
-		<Name>StagesConfigurationMissMatch</Name>
-		<value>Stages configured for your organization doesn't match with those defined as benchmark stages. Please contact system administrator.</value>
-	</Field>
-	<!-- End - Added by Pratik on 24/09/2014 for PL ticket #754 -->
-	<!-- Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933 -->
-	<Field>
-		<Name>ChangesSaved</Name>
-		<value>Changes Saved.</value>
-	</Field>
-	<!-- End - Added by Sohel on 12/11/2014 for PL ticket #933 -->
-	<!-- Start - Added by Viral Kadiya on 17/11/2014 for PL ticket #947 -->
-	<Field>
-		<Name>PlanEntityCreated</Name>
-		<value>{0} created.</value>
-	</Field>
-	<Field>
-		<Name>PlanEntityUpdated</Name>
-		<value>{0} updated.</value>
-	</Field>
-	<Field>
-		<Name>PlanEntityDeclined</Name>
-		<value>{0} declined.</value>
-	</Field>
-	<Field>
-		<Name>PlanEntitySubmittedForApproval</Name>
-		<value>{0} submitted for approval.</value>
-	</Field>
-	<Field>
-		<Name>PlanEntityApproved</Name>
-		<value>{0} approved.</value>
-	</Field>
-	<Field>
-		<Name>PlanEntityAllocationUpdated</Name>
-		<value>{0} allocation updated.</value>
-	</Field>
-	<Field>
-		<Name>PlanEntityActualsUpdated</Name>
-		<value>{0} actuals updated.</value>
-	</Field>
-	<Field>
-		<Name>PlanEntityDeleted</Name>
-		<value>{0} deleted.</value>
-	</Field>
-	<Field>
-		<Name>EmptyFieldValidation</Name>
-		<value>Please fill all required fields.</value>
-	</Field>
-	<Field>
-		<Name>EmptyFieldCommentAdded</Name>
-		<value>Comment added.</value>
-	</Field>
-	<Field>
-		<Name>PlanEntityDuplicated</Name>
-		<value>{0} with same title exist.</value>
-	</Field>
-	<!-- End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947 -->
-	<!--Start Added by Mitesh Vaishnav for internal issue on 20-11-2014-->
-	<Field>
-		<Name>NoPublishPlanAvailableOnReport</Name>
-		<value>No published plan available to shown on report, please publish a plan.</value>
-	</Field>
-	<!--End Added by Mitesh Vaishnav for internal issue on 20-11-2014-->
-	<Field>
-		<Name>DataInconsistency</Name>
-		<value>The system as detected a data inconsistency between Tactics and Waterfall Stages. Please contact your system administrator for assistance.</value>
-	</Field>
-	<!--Start Added by Pratik -->
-	<Field>
-		<Name>InvalidCharacterofDescription</Name>
-		<value>Character &#60; , &#62; are not allowed in description field.</value>
-	</Field>
-	<!--End Added by Pratik -->
-	<!--Start Added by Pratik -->
-	<Field>
-		<Name>IntegrationFolderPathSaved</Name>
-		<value>Folder paths saved.</value>
-	</Field>
-	<!--End Added by Pratik -->
-	<!-- Add By Nishant Sheth PL#2220-->
-	<Field>
-		<Name>MarketoCampaignSaved</Name>
-		<value>Campaign folder saved.</value>
-	</Field>
-	<!-- End By Nishant Sheth-->
-	<!--Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 -->
-	<Field>
-		<Name>CrossClientLoginForInspectPopup</Name>
-		<value>You may not have required permissions to view this activity.</value>
-	</Field>
-	<Field>
-		<Name>DeletedEntityForInspectPopup</Name>
-		<value>Activity you are trying to view does not exist.</value>
-	</Field>
-	<Field>
-		<Name>FakeEntityForInspectPopup</Name>
-		<value>Activity you are trying to view does not exist.</value>
-	</Field>
-	<Field>
-		<Name>CustomRestrictionFailedForInspectPopup</Name>
-		<value>You may not have required permissions to view this activity.</value>
-	</Field>
-	<Field>
-		<Name>InvalidURLForInspectPopup</Name>
-		<value>Activity you are trying to view does not exist.</value>
-	</Field>
-	<!--End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 -->
-	<!--Start - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 -->
-	<Field>
-		<Name>PullingTargetFieldInvalidMsg</Name>
-		<value>Please ensure that a target field is not mapped to more than one Plan pull data type.</value>
-	</Field>
-	<Field>
-		<Name>DataTypeMappingPullMQLSaveSuccess</Name>
-		<value>Pull MQL mapping Information have been saved successfully.</value>
-	</Field>
-	<!--End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 -->
-	<!--start Added by Mitesh Vaishnav for PL ticket #1124-->
-	<Field>
-		<Name>ValidateAttributeWeightSum</Name>
-		<value>The weights(%) for {0} should sum up to 100! Please rectify and proceed.</value>
-	</Field>
-	<!--End Added by Mitesh Vaishnav for PL ticket #1124-->
-	<!--start Added by Mitesh Vaishnav for PL ticket #1124-->
-	<Field>
-		<Name>PlanSaved</Name>
-		<value>Plan Saved Successfully.</value>
-	</Field>
-	<Field>
-		<Name>LastSynced</Name>
-		<value>Last synced with integration {0}.</value>
-	</Field>
-	<!--End Added by Mitesh Vaishnav for PL ticket #1124-->
-	<!--start Added by Mitesh Vaishnav for PL ticket #1215-->
-	<Field>
-		<Name>MarketingDealDescription</Name>
-		<value>I use marketing to generate leads annually from my website, blogs and social media efforts with an average deal size of #MarketingDealSize.</value>
-	</Field>
-	<!--End Added by Mitesh Vaishnav for PL ticket #1215-->
-	<!--start Added by Viral Kadiya for PL ticket #1220-->
-	<Field>
-		<Name>RevenueSparklineChartHeader</Name>
-		<value>Top {0} by</value>
-	</Field>
-	<!--start Added by Viral Kadiya for PL ticket #1220-->
-	<!--start Added by Viral Kadiya for PL ticket #1748-->
-	<Field>
-		<Name>CloneEntityErrorMessage</Name>
-		<value>A {0} can only be moved into a {1}. Please try again.</value>
-	</Field>
-	<!--End Added by Viral Kadiya for PL ticket #1748-->
-	<!--start Added by Viral Kadiya for PL ticket #1748-->
-	<Field>
-		<Name>ExceptionErrorMessage</Name>
-		<value>Error occurred while copying data.</value>
-	</Field>
-	<!--End Added by Viral Kadiya for PL ticket #1748-->
-	<!--start Added by Viral Kadiya for PL ticket #1748-->
-	<Field>
-		<Name>TacticTypeConflictMessage</Name>
-		<value>Copy process cannot proceed due to source and destination plan uses different Tactic Type. Please check Tactic Type under Model.</value>
-	</Field>
-	<!--end Added by Viral Kadiya for PL ticket #1748-->
-	<!--start Added by Viral Kadiya for PL ticket #1748-->
-	<Field>
-		<Name>CloneEntitySuccessMessage</Name>
-		<value>{0} {1} has been copied to {2}.</value>
-	</Field>
-	<!--End Added by Viral Kadiya for PL ticket #1748-->
-	<!--start Added by Rahul Shah for PL ticket #1846-->
-	<Field>
-		<Name>ExceptionErrorMessageforLinking</Name>
-		<value>Error occurred while Linking data.</value>
-	</Field>
-	<!--end Added by Rahul Shah for PL ticket #1846-->
-	<!--start Added by Rahul Shah for PL ticket #1846-->
-	<Field>
-		<Name>TacticTypeConflictMessageforLinking</Name>
-		<value>Linking process cannot proceed due to source and destination plan uses different Tactic Type or Target Stage. Please check Tactic Type and Target Stage under Model.</value>
-	</Field>
-	<!--end Added by Rahul Shah for PL ticket #1846-->
-	<!--start Added by Rahul Shah for PL ticket #1846-->
-	<Field>
-		<Name>ModelTypeConflict</Name>
-		<value>Linking process cannot proceed due to source and destination Model Integration instances are different.</value>
-	</Field>
-	<!--end Added by Rahul Shah for PL ticket #1846-->
-	<!--start Added by Rahul Shah for PL ticket #1846-->
-	<Field>
-		<Name>DifferentModel</Name>
-		<value>Linking process cannot proceed due to source and destination Models are different.</value>
-	</Field>
-	<!--end Added by Rahul Shah for PL ticket #1846-->
-	<Field>
-		<Name>ExtendedProgram</Name>
-		<value>Linking process cannot proceed due to destination program is already extended to next year.</value>
-	</Field>
-	<!--start Added by Rahul Shah for PL ticket #1846-->
-	<Field>
-		<Name>LinkEntitySuccessMessage</Name>
-		<value>{0} {1} has been linked to {2}.</value>
-	</Field>
-	<!--end Added by Rahul Shah for PL ticket #1846-->
-	<!--start Added by Rahul Shah for PL ticket #1846-->
-	<Field>
-		<Name>LinkEntityAlreadyExist</Name>
-		<value>{0} is already Exist.</value>
-	</Field>
-	<!--end Added by Rahul Shah for PL ticket #1846-->
-	<!--start Added by Rahul Shah for PL ticket #1846-->
-	<Field>
-		<Name>LinkedTacticExtendedYear</Name>
-		<value>Linked Tactic End Date can't move to next year</value>
-	</Field>
-	<!--end Added by Rahul Shah for PL ticket #1846-->
-	<!--start Added by Rahul Shah for PL ticket #1961-->
-	<Field>
-		<Name>NoPlanforLinking</Name>
-		<value>No Plan exists for linking selected tactic(s)</value>
-	</Field>
-	<!--end Added by Rahul Shah for PL ticket #1961-->
-	<!--start Added by Dashrath Prajapati for PL ticket #1776-->
-	<Field>
-		<Name>CloneEntityNoneSelectiontMessage</Name>
-		<value>Please select Task Name.</value>
-	</Field>
-	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
-	<!--start Added by Dashrath Prajapati for PL ticket #1776-->
-	<Field>
-		<Name>CloneEntityMetaDataMessage</Name>
-		<value>Some META Data will be lost if this plan uses a different model.</value>
-	</Field>
-	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
-	<!--start Added by Rahul Shah for PL ticket #1899-->
-	<Field>
-		<Name>LinkEntityInformationMessage</Name>
-		<value>Some information will be lost if this plan has a different model.</value>
-	</Field>
-	<!--End Added by Rahul Shah for PL ticket #1899-->
-	<!--start Added by Komal Rawal for PL ticket #1779-->
-	<Field>
-		<Name>SavePresetSuccess</Name>
-		<value>Preset Saved Successfully</value>
-	</Field>
-	<Field>
-		<Name>SavePresetSuccess</Name>
-		<value>Preset Saved Successfully</value>
-	</Field>
-	<Field>
-		<Name>ProvidePresetName</Name>
-		<value>Please provide preset name</value>
-	</Field>
-	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
-	<!--start Added by Viral Kadiya for PL ticket #1849-->
-	<Field>
-		<Name>LinkedPlanEntityDuplicated</Name>
-		<value>{0} with same title exist in the linked plan.</value>
-	</Field>
-	<!--End Added by Viral Kadiya for PL ticket #1849-->
-	<!--start Added by Viral Kadiya for PL ticket #1970-->
-	<Field>
-		<Name>TacticPlanedCostReduce</Name>
-		<value>{0} planned cost can not be less than the sum of line items. Please change the cost of line items.</value>
-	</Field>
-	<!--End Added by Viral Kadiya for PL ticket #1970-->
-	<!--Added By Komal Rawal for #2107-->
-	<Field>
-		<Name>PasswordExpired</Name>
-		<value>Password expired, please reset your password</value>
-	</Field>
-	<!--Added by devanshi for #2276-->
-	<Field>
-		<Name>TitleContainHTMLString</Name>
-		<value>Title contain HTML String, Please reset the Value.</value>
-	</Field>
-	<Field>
-		<Name>ReportNotConfigured</Name>
-		<value>Report for this dashboard have not been configured.</value>
-	</Field>
-	<Field>
-		<Name>ApiUrlNotConfigured</Name>
-		<value>API Url is not configured in config file, please configure it.</value>
-	</Field>
-	<Field>
-		<Name>ErrorInWebApi</Name>
-		<value>There is some error from Web API.</value>
-	</Field>
-	<Field>
-		<Name>ClientDimenisionNotSet</Name>
-		<value>ClientId dimension is not configured</value>
-	</Field>
-	<Field>
-		<Name>DuplicateMediacode</Name>
-		<value>A Media code with same attributes already exists.</value>
-	</Field>
-	<Field>
-		<Name>SuccessMediacode</Name>
-		<value>Media code generated successfully.</value>
-	</Field>
-	<Field>
-		<Name>AtLeastOneMediacode</Name>
-		<value>Please add atleast one value of custom field to generate Media code.</value>
-	</Field>
-	<Field>
-		<Name>RequiredMediacode</Name>
-		<value>Please fill required fields to generate Media code.</value>
-	</Field>
-	<Field>
-		<Name>UndoMediacode</Name>
-		<value>This undo will overwrite your existing code. Do you want to continue?</value>
-	</Field>
-	<Field>
-		<Name>UnarchiveMediacode</Name>
-		<value>Selected Media code has been unarchived successfully.</value>
-	</Field>
-	<Field>
-		<Name>ArchiveMediacode</Name>
-		<value>Selected Media code has been archived successfully.</value>
-	</Field>	 
+  <Field>
+    <Name>ConfirmationForModifyTargetIntegration</Name>
+    <value>Modifying target integration will reset sync details configured at plan level. Are you sure you want to proceed?</value>
+  </Field>
+  <Field>
+    <Name>MarketoSelectionValidation</Name>
+    <value>Both salesforce and marketo cannot be selected together as a target for pushing plan data</value>
+  </Field>
+  <Field>
+    <Name>ConfirmationForDeleteImprovementTactic</Name>
+    <value>Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.</value>
+  </Field>
+  <!-- End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65-->
+  <!-- Start - Added by Mitesh Vaishnav on 21/07/2014 for functional review point 49 -->
+  <Field>
+    <Name>ValidateStartDate</Name>
+    <value>please select valid start date.</value>
+  </Field>
+  <Field>
+    <Name>ValidateEndDate</Name>
+    <value>please select valid end date.</value>
+  </Field>
+  <Field>
+    <Name>SessionExpired</Name>
+    <value>Sorry, your session has expired. Please login again by clicking on Ok button.</value>
+  </Field>
+  <!-- End - Added by Mitesh Vaishnav on 21/07/2014 for functional review point 49 -->
+  <!--Added By : Kalpesh Sharma Functional Review Point #75-->
+  <Field>
+    <Name>NoActiveModelFound</Name>
+    <value>There is no any active model.</value>
+  </Field>
+  <!--Added By : Kalpesh Sharma Functional Review Point-->
+  <Field>
+    <Name>NoPlanFoundPlanSelector</Name>
+    <value>There is no active plan for selected filter.</value>
+  </Field>
+  <!--Start Added By Dharmraj #567 : Budget allocation for campaign-->
+  <Field>
+    <Name>CannotAllocateMorethanRemainingBudgeted</Name>
+    <value>You cannot allocate more than remaining budgeted.</value>
+  </Field>
+  <Field>
+    <Name>CannotSetBudgetLessthanAllocated</Name>
+    <value>You cannot set budget less than allocated.</value>
+  </Field>
+  <Field>
+    <Name>CannotAllocateMorehanBudgeted</Name>
+    <value>You cannot allocate more than budgeted</value>
+  </Field>
+  <Field>
+    <Name>CampaignBudgetIsLowerthanTotalAllocatedPrograms</Name>
+    <value>Your campaign budget is lower than the total allocated programs month budget in</value>
+  </Field>
+  <!--End Added By Dharmraj #567 : Budget allocation for campaign-->
+  <!-- Start - Added By Sohel Pathan #597 -->
+  <Field>
+    <Name>NoActiveModelFound</Name>
+    <value>There is no any active model.</value>
+  </Field>
+  <Field>
+    <Name>ErrMsgLessPlanBudget</Name>
+    <value>You cannot reduce the total budget amount of the plan than the total allocated campaign budget amount.</value>
+  </Field>
+  <Field>
+    <Name>ErrMsgLessPlanBudget</Name>
+    <value>You cannot reduce the total budget amount of the plan than the total allocated campaign budget amount.</value>
+  </Field>
+  <Field>
+    <Name>ErrMsgLessCampaignBudget</Name>
+    <value>Your plan budget is lower than the total allocated campaigns budget in</value>
+  </Field>
+  <Field>
+    <Name>ErrMsgBudgetAllocationExceeds</Name>
+    <value>You cannot allocate more than budgeted.</value>
+  </Field>
+  <Field>
+    <Name>DefaultPlanAllocationMessage</Name>
+    <value>You have chosen not to allocate this plan's budget.</value>
+  </Field>
+  <!-- End - Added By Sohel Pathan #597 -->
+  <!-- Start - Added By Dharmraj #574 -->
+  <Field>
+    <Name>ConfirmationForDeleteLineItem</Name>
+    <value>Are you sure you want to delete this line item?</value>
+  </Field>
+  <!-- End - Added By Dharmraj #574 -->
+  <!-- Start - Manoj #679 -->
+  <Field>
+    <Name>DuplicateFileLocation</Name>
+    <value>Server configuration with same file location {0} already exist</value>
+  </Field>
+  <Field>
+    <Name>ConnectionFail</Name>
+    <value>Not able to connect to the server with provided details</value>
+  </Field>
+  <Field>
+    <Name>ServerConfigurationSaved</Name>
+    <value>External Server Configuration saved successfully</value>
+  </Field>
+  <!-- End - Manoj #679 -->
+  <!-- Start - Added By Mitesh #559 -->
+  <Field>
+    <Name>IntegrationSelectionSaved</Name>
+    <value>Integration selection have been saved successfully.</value>
+  </Field>
+  <!-- End - Added By Mitesh #559 -->
+  <!--Start - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
+  <Field>
+    <Name>CloseDealTargetFieldInvalidMsg</Name>
+    <value>Please ensure that a target field is not mapped to more than one application field.</value>
+  </Field>
+  <Field>
+    <Name>DataTypeMappingPullSaveSuccess</Name>
+    <value>Settings have been saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>NoDataTypeMappingFieldsForEloqua</Name>
+    <value>This section is not applicable for current integration type.</value>
+  </Field>
+  <!--End - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
+  <!-- Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716 -->
+  <Field>
+    <Name>DataLoseErrorMessage</Name>
+    <value>You have unsaved changes. Do you wish to leave this page and lose your work?</value>
+  </Field>
+  <!-- End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716 -->
+  <!-- Start - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752 -->
+  <Field>
+    <Name>CannotAllocateLessThanPlanned</Name>
+    <value>You cannot allocate less than planned</value>
+  </Field>
+  <!-- End - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752 -->
+  <!-- Start - Added by Pratik on 24/09/2014 for PL ticket #754 -->
+  <Field>
+    <Name>StagesConfigurationMissMatch</Name>
+    <value>Stages configured for your organization doesn't match with those defined as benchmark stages. Please contact system administrator.</value>
+  </Field>
+  <!-- End - Added by Pratik on 24/09/2014 for PL ticket #754 -->
+  <!-- Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933 -->
+  <Field>
+    <Name>ChangesSaved</Name>
+    <value>Changes Saved.</value>
+  </Field>
+  <!-- End - Added by Sohel on 12/11/2014 for PL ticket #933 -->
+  <!-- Start - Added by Viral Kadiya on 17/11/2014 for PL ticket #947 -->
+  <Field>
+    <Name>PlanEntityCreated</Name>
+    <value>{0} created.</value>
+  </Field>
+  <Field>
+    <Name>PlanEntityUpdated</Name>
+    <value>{0} updated.</value>
+  </Field>
+  <Field>
+    <Name>PlanEntityDeclined</Name>
+    <value>{0} declined.</value>
+  </Field>
+  <Field>
+    <Name>PlanEntitySubmittedForApproval</Name>
+    <value>{0} submitted for approval.</value>
+  </Field>
+  <Field>
+    <Name>PlanEntityApproved</Name>
+    <value>{0} approved.</value>
+  </Field>
+  <Field>
+    <Name>PlanEntityAllocationUpdated</Name>
+    <value>{0} allocation updated.</value>
+  </Field>
+  <Field>
+    <Name>PlanEntityActualsUpdated</Name>
+    <value>{0} actuals updated.</value>
+  </Field>
+  <Field>
+    <Name>PlanEntityDeleted</Name>
+    <value>{0} deleted.</value>
+  </Field>
+  <Field>
+    <Name>EmptyFieldValidation</Name>
+    <value>Please fill all required fields.</value>
+  </Field>
+  <Field>
+    <Name>EmptyFieldCommentAdded</Name>
+    <value>Comment added.</value>
+  </Field>
+  <Field>
+    <Name>PlanEntityDuplicated</Name>
+    <value>{0} with same title exist.</value>
+  </Field>
+  <!-- End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947 -->
+  <!--Start Added by Mitesh Vaishnav for internal issue on 20-11-2014-->
+  <Field>
+    <Name>NoPublishPlanAvailableOnReport</Name>
+    <value>No published plan available to shown on report, please publish a plan.</value>
+  </Field>
+  <!--End Added by Mitesh Vaishnav for internal issue on 20-11-2014-->
+  <Field>
+    <Name>DataInconsistency</Name>
+    <value>The system as detected a data inconsistency between Tactics and Waterfall Stages. Please contact your system administrator for assistance.</value>
+  </Field>
+  <!--Start Added by Pratik -->
+  <Field>
+    <Name>InvalidCharacterofDescription</Name>
+    <value>Character &#60; , &#62; are not allowed in description field.</value>
+  </Field>
+  <!--End Added by Pratik -->
+  <!--Start Added by Pratik -->
+  <Field>
+    <Name>IntegrationFolderPathSaved</Name>
+    <value>Folder paths saved.</value>
+  </Field>
+  <!--End Added by Pratik -->
+  <!-- Add By Nishant Sheth PL#2220-->
+  <Field>
+    <Name>MarketoCampaignSaved</Name>
+    <value>Campaign folder saved.</value>
+  </Field>
+  <!-- End By Nishant Sheth-->
+  <!--Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 -->
+  <Field>
+    <Name>CrossClientLoginForInspectPopup</Name>
+    <value>You may not have required permissions to view this activity.</value>
+  </Field>
+  <Field>
+    <Name>DeletedEntityForInspectPopup</Name>
+    <value>Activity you are trying to view does not exist.</value>
+  </Field>
+  <Field>
+    <Name>FakeEntityForInspectPopup</Name>
+    <value>Activity you are trying to view does not exist.</value>
+  </Field>
+  <Field>
+    <Name>CustomRestrictionFailedForInspectPopup</Name>
+    <value>You may not have required permissions to view this activity.</value>
+  </Field>
+  <Field>
+    <Name>InvalidURLForInspectPopup</Name>
+    <value>Activity you are trying to view does not exist.</value>
+  </Field>
+  <!--End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 -->
+  <!--Start - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 -->
+  <Field>
+    <Name>PullingTargetFieldInvalidMsg</Name>
+    <value>Please ensure that a target field is not mapped to more than one Plan pull data type.</value>
+  </Field>
+  <Field>
+    <Name>DataTypeMappingPullMQLSaveSuccess</Name>
+    <value>Pull MQL mapping Information have been saved successfully.</value>
+  </Field>
+  <!--End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 -->
+  <!--start Added by Mitesh Vaishnav for PL ticket #1124-->
+  <Field>
+    <Name>ValidateAttributeWeightSum</Name>
+    <value>The weights(%) for {0} should sum up to 100! Please rectify and proceed.</value>
+  </Field>
+  <!--End Added by Mitesh Vaishnav for PL ticket #1124-->
+  <!--start Added by Mitesh Vaishnav for PL ticket #1124-->
+  <Field>
+    <Name>PlanSaved</Name>
+    <value>Plan Saved Successfully.</value>
+  </Field>
+  <Field>
+    <Name>LastSynced</Name>
+    <value>Last synced with integration {0}.</value>
+  </Field>
+  <!--End Added by Mitesh Vaishnav for PL ticket #1124-->
+  <!--start Added by Mitesh Vaishnav for PL ticket #1215-->
+  <Field>
+    <Name>MarketingDealDescription</Name>
+    <value>I use marketing to generate leads annually from my website, blogs and social media efforts with an average deal size of #MarketingDealSize.</value>
+  </Field>
+  <!--End Added by Mitesh Vaishnav for PL ticket #1215-->
+  <!--start Added by Viral Kadiya for PL ticket #1220-->
+  <Field>
+    <Name>RevenueSparklineChartHeader</Name>
+    <value>Top {0} by</value>
+  </Field>
+  <!--start Added by Viral Kadiya for PL ticket #1220-->
+  <!--start Added by Viral Kadiya for PL ticket #1748-->
+  <Field>
+    <Name>CloneEntityErrorMessage</Name>
+    <value>A {0} can only be moved into a {1}. Please try again.</value>
+  </Field>
+  <!--End Added by Viral Kadiya for PL ticket #1748-->
+  <!--start Added by Viral Kadiya for PL ticket #1748-->
+  <Field>
+    <Name>ExceptionErrorMessage</Name>
+    <value>Error occurred while copying data.</value>
+  </Field>
+  <!--End Added by Viral Kadiya for PL ticket #1748-->
+  <!--start Added by Viral Kadiya for PL ticket #1748-->
+  <Field>
+    <Name>TacticTypeConflictMessage</Name>
+    <value>Copy process cannot proceed due to source and destination plan uses different Tactic Type. Please check Tactic Type under Model.</value>
+  </Field>
+  <!--end Added by Viral Kadiya for PL ticket #1748-->
+  <!--start Added by Viral Kadiya for PL ticket #1748-->
+  <Field>
+    <Name>CloneEntitySuccessMessage</Name>
+    <value>{0} {1} has been copied to {2}.</value>
+  </Field>
+  <!--End Added by Viral Kadiya for PL ticket #1748-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>ExceptionErrorMessageforLinking</Name>
+    <value>Error occurred while Linking data.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>TacticTypeConflictMessageforLinking</Name>
+    <value>Linking process cannot proceed due to source and destination plan uses different Tactic Type or Target Stage. Please check Tactic Type and Target Stage under Model.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>ModelTypeConflict</Name>
+    <value>Linking process cannot proceed due to source and destination Model Integration instances are different.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>DifferentModel</Name>
+    <value>Linking process cannot proceed due to source and destination Models are different.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>ExtendedProgram</Name>
+    <value>Linking process cannot proceed due to destination program is already extended to next year.</value>
+  </Field>
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>LinkEntitySuccessMessage</Name>
+    <value>{0} {1} has been linked to {2}.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>LinkEntityAlreadyExist</Name>
+    <value>{0} is already Exist.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>LinkedTacticExtendedYear</Name>
+    <value>Linked Tactic End Date can't move to next year</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1961-->
+  <Field>
+    <Name>NoPlanforLinking</Name>
+    <value>No Plan exists for linking selected tactic(s)</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1961-->
+  <!--start Added by Dashrath Prajapati for PL ticket #1776-->
+  <Field>
+    <Name>CloneEntityNoneSelectiontMessage</Name>
+    <value>Please select Task Name.</value>
+  </Field>
+  <!--End Added by Dashrath Prajapati for PL ticket #1776-->
+  <!--start Added by Dashrath Prajapati for PL ticket #1776-->
+  <Field>
+    <Name>CloneEntityMetaDataMessage</Name>
+    <value>Some META Data will be lost if this plan uses a different model.</value>
+  </Field>
+  <!--End Added by Dashrath Prajapati for PL ticket #1776-->
+  <!--start Added by Rahul Shah for PL ticket #1899-->
+  <Field>
+    <Name>LinkEntityInformationMessage</Name>
+    <value>Some information will be lost if this plan has a different model.</value>
+  </Field>
+  <!--End Added by Rahul Shah for PL ticket #1899-->
+  <!--start Added by Komal Rawal for PL ticket #1779-->
+  <Field>
+    <Name>SavePresetSuccess</Name>
+    <value>Preset Saved Successfully</value>
+  </Field>
+  <Field>
+    <Name>SavePresetSuccess</Name>
+    <value>Preset Saved Successfully</value>
+  </Field>
+  <Field>
+    <Name>ProvidePresetName</Name>
+    <value>Please provide preset name</value>
+  </Field>
+  <!--End Added by Dashrath Prajapati for PL ticket #1776-->
+  <!--start Added by Viral Kadiya for PL ticket #1849-->
+  <Field>
+    <Name>LinkedPlanEntityDuplicated</Name>
+    <value>{0} with same title exist in the linked plan.</value>
+  </Field>
+  <!--End Added by Viral Kadiya for PL ticket #1849-->
+  <!--start Added by Viral Kadiya for PL ticket #1970-->
+  <Field>
+    <Name>TacticPlanedCostReduce</Name>
+    <value>{0} planned cost can not be less than the sum of line items. Please change the cost of line items.</value>
+  </Field>
+  <!--End Added by Viral Kadiya for PL ticket #1970-->
+  <!--Added By Komal Rawal for #2107-->
+  <Field>
+    <Name>PasswordExpired</Name>
+    <value>Password expired, please reset your password</value>
+  </Field>
+  <!--Added by devanshi for #2276-->
+  <Field>
+    <Name>TitleContainHTMLString</Name>
+    <value>Title contain HTML String, Please reset the Value.</value>
+  </Field>
+  <Field>
+    <Name>ReportNotConfigured</Name>
+    <value>Report for this dashboard have not been configured.</value>
+  </Field>
+  <Field>
+    <Name>ApiUrlNotConfigured</Name>
+    <value>API Url is not configured in config file, please configure it.</value>
+  </Field>
+  <Field>
+    <Name>ErrorInWebApi</Name>
+    <value>There is some error from Web API.</value>
+  </Field>
+  <Field>
+    <Name>ClientDimenisionNotSet</Name>
+    <value>ClientId dimension is not configured</value>
+  </Field>
+  <Field>
+    <Name>DuplicateMediacode</Name>
+    <value>A Media code with same attributes already exists.</value>
+  </Field>
+  <Field>
+    <Name>SuccessMediacode</Name>
+    <value>Media code generated successfully.</value>
+  </Field>
+  <Field>
+    <Name>AtLeastOneMediacode</Name>
+    <value>Please add atleast one value of custom field to generate Media code.</value>
+  </Field>
+  <Field>
+    <Name>RequiredMediacode</Name>
+    <value>Please fill required fields to generate Media code.</value>
+  </Field>
+  <Field>
+    <Name>UndoMediacode</Name>
+    <value>This undo will overwrite your existing code. Do you want to continue?</value>
+  </Field>
+  <Field>
+    <Name>UnarchiveMediacode</Name>
+    <value>Selected Media code has been unarchived successfully.</value>
+  </Field>
+  <Field>
+    <Name>ArchiveMediacode</Name>
+    <value>Selected Media code has been archived successfully.</value>
+  </Field>
 
   <Field>
-		<Name>PackageCreated</Name>
-		<value>Package created successfully.</value>
-	</Field>
-	<Field>
-		<Name>UnpackageSuccessful</Name>
-		<value>Package deleted successfully.</value>
-	</Field>
+    <Name>PackageCreated</Name>
+    <value>Package created successfully.</value>
+  </Field>
+  <Field>
+    <Name>UnpackageSuccessful</Name>
+    <value>Package deleted successfully.</value>
+  </Field>
   <Field>
     <Name>PackageUpdated</Name>
     <value>Package updated successfully.</value>
@@ -1174,4 +1174,14 @@
     <value>User currency have been saved successfully.</value>
   </Field>
   <!--//insertation End 09/08/2016 kausha #2492 -->
+  <!--//added by devanshi for #2429 alert message.-->
+  <Field>
+    <Name>DuplicateAlertRule</Name>
+    <value>Alert rule with same configuration already exists.</value>
+  </Field>
+  <Field>
+    <Name>SuccessAlertRule</Name>
+    <value>Alert rule generated successfully.</value>
+  </Field>
+
 </Messages>

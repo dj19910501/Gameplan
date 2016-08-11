@@ -1,0 +1,334 @@
+﻿@model RevenuePlanner.Models.AlertRule
+
+<div class="accordion-group ">
+
+    <div class="accordion-body collapse" id="collapseGrp1">
+        <div id="divrule0">
+
+            <div class="accordion-row margin-top18">
+                <div class="alert-question"> 1. What item would you like to be alerted for?</div>
+                <div class="alert-value-box">
+                    <span class="searchtextbox"><input id="searchentity" class="searchtext" type="text" tabindex="1" /></span>
+                </div>
+            </div>
+
+            <input id="hdnEntityId" type="hidden" />
+            <input id="hdnEntityType" type="hidden" />
+
+            <div class="accordion-row clearfix" id="divque2">
+                <div class="alert-question"> 2. What performance indicator should trigger the alert?</div>
+                <div class="alert-value-box">
+
+                    <span class="selectBox">
+                        @Html.DropDownList("ddlindicator", (SelectList)Model.GoalType, "Select", new { tabindex = "2", style="width:170px" })
+                    </span>
+                    <div id="divque2part2">
+                        <span class="vb-text">are</span>
+                        <span class="selectBox">
+                            @*@Html.DropDownList("ddlperformance", Enumerable.Empty<SelectListItem>())*@
+                            @Html.DropDownList("ddlperformance", (SelectList)Model.PerformanceComparison, new { tabindex = "3" })
+                        </span>
+                        <span class="selectBox">
+                            @Html.DropDownList("ddlGolanum", (SelectList)Model.GoalNum, "Select", new { tabindex = "4" })
+                        </span>
+
+                        <span class="vb-text">% of Goal</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-row clearfix" id="divque3">
+                <div class="alert-question"> 3. When would you like to be alerted?</div>
+                <div class="alert-value-box inline-span">
+                    <span class="vb-text">When</span> <span id="lblentity"></span><span class="vb-text"> is </span>
+                    <span class="selectBox ">
+                        @Html.DropDownList("ddlpercentage", (SelectList)Model.GoalNum, "Select", new { tabindex = "5" })
+                    </span>
+                    <span class="vb-text "> % completed</span>
+                </div>
+            </div>
+            <div class="accordion-row calendar_div clearfix" id="divque4">
+                <div class="alert-question"> 4. How often should you be alerted?</div>
+                <div class="alert-value-box">
+                    <span class="selectBox pull-left">
+
+                        @Html.DropDownList("ddlfrequency", (SelectList)Model.lstFrequency, new { tabindex = "6" })
+                    </span>
+                    <span class="selectBox day-option-wrap pull-left" id="divDayOptions" style="display:none;">
+                        
+                        @Html.DropDownList("dayOptions", (SelectList)Model.lstWeekdays,new { tabindex = "6" })
+
+                    </span>
+                    <div class="pull-left margin-left5px" id="divDateOptions" style="display:none;">
+                        @*<div id="datetimepicker-alert" class="input-group date">*@
+                       
+                        <input type="text" class="form-control margin-bottom0" id="txtDateofmonth" tabindex="7" style="width:150px;"
+                               placeholder="Enter date of month" onkeypress="return isNumberKey(event)" maxlength="2">
+                        
+                            @*<span class="input-group-addon">
+                <span class="fa fa-calendar">
+                </span>
+            </span>*@
+                       
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="container-button pull-left" id="divSave">
+            <input type="submit" value="Save" title="save" tabindex="8" class="btn btn-blue btn-save pull-right" ruleid="0">
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    
+    $("#txtDateofmonth").blur(function (e) {
+        var count = $(this).val();
+        if (parseInt(count) > 31 || count.length > 2) {
+            //$(this).val('');
+            $('#txtDateofmonth').addClass("error");
+        }
+        else
+            $('#txtDateofmonth').removeClass("error");
+    });
+    function isNumberKey(evt) {
+        var charCode = evt.which;
+        if (charCode != 46 && charCode > 31
+          && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+    $(document).ready(function () {
+       
+        $("#ddlindicator").change(function () {
+            if ($(this).val() != "") {
+                $("#divrule0").find("#divque2part2").css("display", "inline-block");
+                $("#divrule0").find("#divque2part2").find("#ddlperformance").focus();
+                $(this).removeClass("error");
+            }
+        });
+        $("#ddlGolanum").change(function () {
+            if ($(this).val() != "") {
+                $("#divrule0").find("#divque3").show();
+                $("#divrule0").find("#divque3").find("#ddlpercentage").focus();
+                $(this).removeClass("error");
+            }
+        });
+        $("#ddlpercentage").change(function () {
+            if ($(this).val() != "") {
+                $("#divrule0").find("#divque4").show();
+                $("#collapseGrp1").find("#divSave").show();
+                $("#divrule0").find("#divque4").find("#ddlfrequency").focus();
+                $(this).removeClass("error");
+            }
+        });
+        $("#ddlfrequency").change(function () {
+
+            var selectedSpan = $(this).val();
+            if (selectedSpan != "") {
+                if (selectedSpan == "Daily") {
+
+                    $("#divDayOptions").hide();
+                    $("#divDateOptions").hide();
+
+                }
+                else if (selectedSpan == "Weekly") {
+
+                    $("#divDayOptions").show();
+                    $("#divDateOptions").hide();
+
+                }
+                else if (selectedSpan == "Monthly") {
+
+                    $("#divDayOptions").hide();
+                    $("#divDateOptions").show();
+
+                }
+            }
+        });
+
+    });
+  
+    var customRenderMenu = function (ul, items) {
+        var self = this;
+        var categoryArr = [];
+
+        function contain(item, array) {
+            var contains = false;
+            $.each(array, function (index, value) {
+                if (item == value) {
+                    contains = true;
+                    return false;
+                }
+            });
+            return contains;
+        }
+
+        $.each(items, function (index, item) {
+            if (!contain(item.category, categoryArr)) {
+                categoryArr.push(item.category);
+            }
+        });
+
+        $.each(categoryArr, function (index, category) {
+            ul.append("<li class='ui-autocomplete-group' aria-label=" + category + ">" + category + "</li>");
+            $.each(items, function (index, item) {
+                if (item.category == category) {
+                    self._renderItemData(ul, item);
+                }
+
+            });
+        });
+
+    };
+    $(".searchtext").keyup(function () {
+        var maindiv = $(this).parent().parent().parent().parent();
+        if ($(this).val().trim().length > 0) {
+            $(this).autocomplete({
+                source: function (request, response) {
+                    if ($(this).val) {
+                        var urlcontent = '@Url.Content("~/User/ListEntity/")';
+
+                        $.getJSON(urlcontent, { 'term': request.term }, function (data) {
+                            var t = data;
+
+                            if (data.length > 0) {
+                                myApp.hidePleaseWait();
+                                response($.map(data, function (item) {
+
+                                    return { category: item.category, value: item.value, label: item.label };
+                                }))
+                            }
+                            else {
+                                $('.ui-autocomplete').html('No Records found');
+                                var hdnid = $(maindiv).find("#hdnEntityId");
+                                $(hdnid).val('');
+
+                                var hdntypeid = $(maindiv).find("#hdnEntityType");
+                                $(hdntypeid).val('');
+                                $(this).attr("title", '');
+                                var lbl = $(maindiv).find("#lblentity");
+                                $(lbl).html('');
+                            }
+
+                        });
+                        myApp.hidePleaseWait();
+                    }
+                },
+                minLength: 4,
+                create: function () {
+
+                    //access to jQuery Autocomplete widget differs depending
+                    //on jQuery UI version - you can also try .data('autocomplete')
+
+                    $(this).data('uiAutocomplete')._renderMenu = customRenderMenu;
+                },
+                select: function (event, ui) {
+                    if (ui.item != null && ui.item != undefined) {
+                        $(this).val(ui.item.label);
+                        $(this).attr("title", ui.item.label);
+                        var id = $(this).attr('id');
+                        $("#" + id).removeClass("error");
+                        var hdnid = $(maindiv).find("#hdnEntityId");
+                        $(hdnid).val(ui.item.value);
+
+                        var hdntypeid = $(maindiv).find("#hdnEntityType");
+                        $(hdntypeid).val(ui.item.category);
+
+                        var lbl = $(maindiv).find("#lblentity");
+                        $(lbl).html(ui.item.label);
+                        $(maindiv).find("#divque2").show();
+                    }
+                    return false;
+                },
+                focus: function (e, ui) {
+                    var a = e.items;
+                    return false;
+
+                }
+
+            });
+
+        }
+        else {
+            var hdnid = $(maindiv).find("#hdnEntityId");
+            $(hdnid).val('');
+
+            var hdntypeid = $(maindiv).find("#hdnEntityType");
+            $(hdntypeid).val('');
+            $(this).attr("title", '');
+            var lbl = $(maindiv).find("#lblentity");
+            $(lbl).html('');
+            $(maindiv).find("#searchentity").addClass("error");
+        }
+    });
+
+    $(".btn-save").click(function () {
+        var ruleid = $(this).attr('ruleid');
+        var tableId = "#divrule" + ruleid;
+        var isvalid = CheckValidate(tableId);
+        if (isvalid) {
+            var str = '';
+            var AlertRuleDetail = [];
+            var EntityId = $(tableId).find("#hdnEntityId").val();
+            var Performancefector = $(tableId).find("#ddlperformance").val();
+            var GoalType = $(tableId).find("#ddlindicator").val();
+            var GoalNum = $(tableId).find("#ddlGolanum").val();
+            var ComplettionGoal = $(tableId).find("#ddlpercentage").val();
+            var frequency = $(tableId).find("#ddlfrequency").val();
+            var EntityType = $(tableId).find("#hdnEntityType").val();
+            var EntityName = $(tableId).find("#lblentity").html();
+            var DayOfWeek = $(tableId).find("#dayOptions").val();
+            var DateofMonth = $(tableId).find("#txtDateofmonth").val();
+            var rulesummary = "<h4>" + EntityName + "  " + $("#ddlindicator option:selected").text() + " are " + $("#ddlperformance option:selected").text() + " " + GoalNum + "% of Goal</h4>" +
+                "<span>Start at " + ComplettionGoal + "% completion</span><span>Repeat " + frequency + "</span>";
+            // var dayofweekMonth = $(tableId).find("#hdnEntityId").val();
+            if (EntityId != "" && EntityId != null && parseInt(EntityId) != 0) {
+                AlertRuleDetail.push({
+                    EntityID: EntityId.toString(),
+                    EntityType: EntityType.toString(),
+                    Indicator: GoalType.toString(),
+                    IndicatorComparision: Performancefector.toString(),
+                    IndicatorGoal: GoalNum.toString(),
+                    CompletionGoal: ComplettionGoal.toString(),
+                    Frequency: frequency.toString(),
+                    DayOfWeek: DayOfWeek.toString(),
+                    DateOfMonth: DateofMonth.toString(),
+                    RuleSummary: rulesummary.toString()
+                });
+            }
+            if (AlertRuleDetail != null) {
+                AlertRuleDetail = JSON.stringify(AlertRuleDetail);
+
+                $.ajax({
+
+                    type: 'POST',
+                    url: '@Url.Action("SaveAlertRule", "User")', // we are calling json method
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: "{'RuleDetail':" + (AlertRuleDetail) + "}",
+                    success: function (data) {
+                        if (data.Success != null && data.Success == true && data.SuccessMessage != null) {
+                            $("#successMessage").css("display", "block");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.SuccessMessage);
+                            $("#errorMessage").css("display", "none");
+                            $("#Ruleaccordion").load('@Url.Action("GetAlertRuleList", "User")');
+                        }
+                        if (data.Success != null && data.Success == false && data.ErrorMessage != null) {
+                            $("#errorMessage").css("display", "block");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text(data.ErrorMessage);
+                            $("#successMessage").css("display", "none");
+                        }
+
+                    }
+                });
+            }
+        }
+    });
+
+</script>

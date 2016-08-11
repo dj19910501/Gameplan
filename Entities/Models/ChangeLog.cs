@@ -16,15 +16,15 @@ namespace RevenuePlanner.Models
     {
         public int ChangeLogId { get; set; }
         public string TableName { get; set; }
-        public int ObjectId { get; set; }
+        public Nullable<int> ObjectId { get; set; }
         public Nullable<int> ParentObjectId { get; set; }
-        public int ComponentId { get; set; }
+        public Nullable<int> ComponentId { get; set; }
         public string ComponentTitle { get; set; }
         public string ComponentType { get; set; }
         public string ActionName { get; set; }
         public string ActionSuffix { get; set; }
         public System.DateTime TimeStamp { get; set; }
-        public System.Guid UserId { get; set; }
+        public Nullable<System.Guid> UserId { get; set; }
         public bool IsDeleted { get; set; }
         public Nullable<System.Guid> ClientId { get; set; }
     }

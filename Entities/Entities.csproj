@@ -49,6 +49,12 @@
     <Compile Include="Models\AggregationStatu.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Alert.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Alert_Rules.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\BestInClass.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -329,6 +335,9 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User_Permission.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\vClientWise_EntityList.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\vClientWise_Tactic.cs">

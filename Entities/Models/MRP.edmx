@@ -13,6 +13,42 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           </Key>
           <Property Name="StatusCode" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
+        <EntityType Name="Alert_Rules">
+          <Key>
+            <PropertyRef Name="RuleId" />
+          </Key>
+          <Property Name="RuleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RuleSummary" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="EntityId" Type="int" Nullable="false" />
+          <Property Name="EntityType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Indicator" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IndicatorComparision" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="IndicatorGoal" Type="int" Nullable="false" />
+          <Property Name="CompletionGoal" Type="int" Nullable="false" />
+          <Property Name="Frequency" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DayOfWeek" Type="tinyint" />
+          <Property Name="DateOfMonth" Type="tinyint" />
+          <Property Name="LastProcessingDate" Type="datetime" />
+          <Property Name="NextProcessingDate" Type="datetime" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsDisabled" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="Alerts">
+          <Key>
+            <PropertyRef Name="AlertId" />
+          </Key>
+          <Property Name="AlertId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RuleId" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="IsRead" Type="bit" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="BestInClass">
           <Key>
             <PropertyRef Name="BestInClassId" />
@@ -123,15 +159,15 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           </Key>
           <Property Name="ChangeLogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TableName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="ObjectId" Type="int" Nullable="false" />
+          <Property Name="ObjectId" Type="int" />
           <Property Name="ParentObjectId" Type="int" />
-          <Property Name="ComponentId" Type="int" Nullable="false" />
+          <Property Name="ComponentId" Type="int" />
           <Property Name="ComponentTitle" Type="nvarchar" MaxLength="256" />
           <Property Name="ComponentType" Type="nvarchar" MaxLength="50" />
           <Property Name="ActionName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="ActionSuffix" Type="nvarchar(max)" />
           <Property Name="TimeStamp" Type="datetime" Nullable="false" />
-          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="ClientId" Type="uniqueidentifier" />
         </EntityType>
@@ -1213,6 +1249,22 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="HomePageId" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'MRPDev.dbo.vClientWise_EntityList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vClientWise_EntityList">
+          <Key>
+            <PropertyRef Name="EntityId" />
+            <PropertyRef Name="ClientId" />
+            <PropertyRef Name="Entity" />
+            <PropertyRef Name="EntityOrder" />
+            <PropertyRef Name="EntityTitle" />
+          </Key>
+          <Property Name="EntityId" Type="int" Nullable="false" />
+          <Property Name="EntityTitle" Type="nvarchar" MaxLength="512" Nullable="false" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Entity" Type="varchar" MaxLength="8" Nullable="false" />
+          <Property Name="EntityOrder" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vClientWise_Tactic">
           <Key>
@@ -1292,6 +1344,18 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
             </Principal>
             <Dependent Role="Tactic_Share">
               <PropertyRef Name="PlanProgramId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Alerts_Alert_Rules">
+          <End Role="Alert_Rules" Type="Self.Alert_Rules" Multiplicity="1" />
+          <End Role="Alerts" Type="Self.Alerts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alert_Rules">
+              <PropertyRef Name="RuleId" />
+            </Principal>
+            <Dependent Role="Alerts">
+              <PropertyRef Name="RuleId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2491,6 +2555,8 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
           <Parameter Name="CreatedBy" Type="uniqueidentifier" Mode="In" />
         </Function>
         <EntityContainer Name="MRPModelStoreContainer">
+          <EntitySet Name="Alert_Rules" EntityType="Self.Alert_Rules" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Alerts" EntityType="Self.Alerts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BestInClass" EntityType="Self.BestInClass" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Budget" EntityType="Self.Budget" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Budget_Columns" EntityType="Self.Budget_Columns" Schema="dbo" store:Type="Tables" />
@@ -2583,6 +2649,15 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
 [AggregationStatus].[StatusCode] AS [StatusCode]
 FROM [dbo].[AggregationStatus] AS [AggregationStatus]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="vClientWise_EntityList" EntityType="Self.vClientWise_EntityList" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[vClientWise_EntityList].[EntityId] AS [EntityId], 
+[vClientWise_EntityList].[EntityTitle] AS [EntityTitle], 
+[vClientWise_EntityList].[ClientId] AS [ClientId], 
+[vClientWise_EntityList].[Entity] AS [Entity], 
+[vClientWise_EntityList].[EntityOrder] AS [EntityOrder]
+FROM [dbo].[vClientWise_EntityList] AS [vClientWise_EntityList]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="vClientWise_Tactic" EntityType="Self.vClientWise_Tactic" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
 [vClientWise_Tactic].[PlanTacticId] AS [PlanTacticId], 
@@ -2618,6 +2693,10 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <AssociationSet Name="FK__Tactic_Sh__PlanP__44952D46" Association="Self.FK__Tactic_Sh__PlanP__44952D46">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Alerts_Alert_Rules" Association="Self.FK_Alerts_Alert_Rules">
+            <End Role="Alert_Rules" EntitySet="Alert_Rules" />
+            <End Role="Alerts" EntitySet="Alerts" />
           </AssociationSet>
           <AssociationSet Name="FK_BestInClass_Stage" Association="Self.FK_BestInClass_Stage">
             <End Role="Stage" EntitySet="Stage" />
@@ -3562,6 +3641,13 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
           </AssociationSet>
           <EntitySet Name="vClientWise_Tactic" EntityType="MRPModel.vClientWise_Tactic" />
+          <EntitySet Name="vClientWise_EntityList" EntityType="MRPModel.vClientWise_EntityList" />
+          <EntitySet Name="Alert_Rules" EntityType="MRPModel.Alert_Rules" />
+          <EntitySet Name="Alerts" EntityType="MRPModel.Alert" />
+          <AssociationSet Name="FK_Alerts_Alert_Rules" Association="MRPModel.FK_Alerts_Alert_Rules">
+            <End Role="Alert_Rules" EntitySet="Alert_Rules" />
+            <End Role="Alert" EntitySet="Alerts" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -3600,15 +3686,15 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           </Key>
           <Property Type="Int32" Name="ChangeLogId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="String" Name="TableName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="ObjectId" Nullable="false" />
+          <Property Type="Int32" Name="ObjectId" />
           <Property Type="Int32" Name="ParentObjectId" />
-          <Property Type="Int32" Name="ComponentId" Nullable="false" />
+          <Property Type="Int32" Name="ComponentId" />
           <Property Type="String" Name="ComponentTitle" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ComponentType" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ActionName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ActionSuffix" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="TimeStamp" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="UserId" Nullable="false" />
+          <Property Type="Guid" Name="UserId" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <Property Type="Guid" Name="ClientId" />
         </EntityType>
@@ -6278,6 +6364,70 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="IsDeleted" Type="Boolean" />
           <Property Name="ClientId" Type="Guid" Nullable="false" />
         </EntityType>
+        <EntityType Name="vClientWise_EntityList">
+          <Key>
+            <PropertyRef Name="EntityId" />
+            <PropertyRef Name="EntityTitle" />
+            <PropertyRef Name="Entity" />
+            <PropertyRef Name="EntityOrder" />
+            <PropertyRef Name="ClientId" />
+          </Key>
+          <Property Name="EntityId" Type="Int32" Nullable="false" />
+          <Property Name="EntityTitle" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
+          <Property Name="Entity" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="EntityOrder" Type="Int32" Nullable="false" />
+          <Property Name="ClientId" Type="Guid" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Alert_Rules">
+          <Key>
+            <PropertyRef Name="RuleId" />
+          </Key>
+          <Property Name="RuleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RuleSummary" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="EntityId" Type="Int32" Nullable="false" />
+          <Property Name="EntityType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Indicator" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IndicatorComparision" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="IndicatorGoal" Type="Int32" Nullable="false" />
+          <Property Name="CompletionGoal" Type="Int32" Nullable="false" />
+          <Property Name="Frequency" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DayOfWeek" Type="Byte" />
+          <Property Name="DateOfMonth" Type="Byte" />
+          <Property Name="LastProcessingDate" Type="DateTime" Precision="3" />
+          <Property Name="NextProcessingDate" Type="DateTime" Precision="3" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="ClientId" Type="Guid" Nullable="false" />
+          <Property Name="IsDisabled" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Guid" />
+          <NavigationProperty Name="Alerts" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert_Rules" ToRole="Alert" />
+        </EntityType>
+        <EntityType Name="Alert">
+          <Key>
+            <PropertyRef Name="AlertId" />
+          </Key>
+          <Property Name="AlertId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RuleId" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsRead" Type="Boolean" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Alert_Rules" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert" ToRole="Alert_Rules" />
+        </EntityType>
+        <Association Name="FK_Alerts_Alert_Rules">
+          <End Type="MRPModel.Alert_Rules" Role="Alert_Rules" Multiplicity="1" />
+          <End Type="MRPModel.Alert" Role="Alert" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alert_Rules">
+              <PropertyRef Name="RuleId" />
+            </Principal>
+            <Dependent Role="Alert">
+              <PropertyRef Name="RuleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7604,6 +7754,55 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
                 <ScalarProperty Name="MediaCodeId" ColumnName="MediaCodeId" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vClientWise_EntityList">
+            <EntityTypeMapping TypeName="MRPModel.vClientWise_EntityList">
+              <MappingFragment StoreEntitySet="vClientWise_EntityList">
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="EntityOrder" ColumnName="EntityOrder" />
+                <ScalarProperty Name="Entity" ColumnName="Entity" />
+                <ScalarProperty Name="EntityTitle" ColumnName="EntityTitle" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Alert_Rules">
+            <EntityTypeMapping TypeName="MRPModel.Alert_Rules">
+              <MappingFragment StoreEntitySet="Alert_Rules">
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsDisabled" ColumnName="IsDisabled" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="NextProcessingDate" ColumnName="NextProcessingDate" />
+                <ScalarProperty Name="LastProcessingDate" ColumnName="LastProcessingDate" />
+                <ScalarProperty Name="DateOfMonth" ColumnName="DateOfMonth" />
+                <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />
+                <ScalarProperty Name="Frequency" ColumnName="Frequency" />
+                <ScalarProperty Name="CompletionGoal" ColumnName="CompletionGoal" />
+                <ScalarProperty Name="IndicatorGoal" ColumnName="IndicatorGoal" />
+                <ScalarProperty Name="IndicatorComparision" ColumnName="IndicatorComparision" />
+                <ScalarProperty Name="Indicator" ColumnName="Indicator" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+                <ScalarProperty Name="RuleSummary" ColumnName="RuleSummary" />
+                <ScalarProperty Name="RuleId" ColumnName="RuleId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Alerts">
+            <EntityTypeMapping TypeName="MRPModel.Alert">
+              <MappingFragment StoreEntitySet="Alerts">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="IsRead" ColumnName="IsRead" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="RuleId" ColumnName="RuleId" />
+                <ScalarProperty Name="AlertId" ColumnName="AlertId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
