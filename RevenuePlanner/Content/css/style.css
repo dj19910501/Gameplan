@@ -227,9 +227,8 @@ div[id*=modal-container] {
 div.dropdown-info-user {
     position: absolute;
     z-index: 2000;
-    right: 112px;
-    top: 78px;
-    float: left;
+    right: 10px;
+    top: 60px;
 }
 
 ul.drop-down-menu {
@@ -15111,7 +15110,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     background-color: transparent;
     display: inline-block;
     font-size: 0.8em;
-    padding: 4px 6px 10px;
+    padding: 8px 6px 10px;
     text-align: center;
     text-decoration: none;
     width: 77px;/*75px #2312 */
@@ -15184,12 +15183,13 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .header-right {
     float: right;
     margin-right: 0;
-    max-width: 208px;
+    /*max-width: 208px;*/
+    width:20%;
     padding: 0 15px;
     text-align: right;
 }
-.home-header, .header-right span{ line-height: 58px;}
-.header-right span {
+
+/*.header-right span {
     display: inline-block;
     float: none;
     vertical-align: middle;
@@ -15211,7 +15211,8 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 }
 .header-right span a:hover {
     color: #F8700E;
-}
+}*/
+.home-header{ line-height: 58px;}
 .navigation {
     background: #e6e6e6 none repeat scroll 0 0;
     display: block;
@@ -15351,30 +15352,39 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .menu-content li.active .dd-arrow, .menu-content .dd-arrow:hover{color:#333}
 
 /* ================= New navigation Style End ================= */
-
+.header-right a{color:#fff}
 .info-user {
     float: right;
     font-size: 14px;
     height: auto;
-    padding-bottom: 5px;
     padding-right: 0;
     padding-top: 4px;
-    width: 16%;
-    margin-right: 15px;
+    width: 45%;
+    text-align: center;
 }
 .info-user  .username {
-    float: right;
-    max-width: 80%; /* Changed for #795 */
+    /*max-width: 80%;  Changed for #795 */
+    color: #fff;
+    display: inline-block;
+    font-size: 12px;
+    margin: 0 auto;
+    max-width: 98%;
     overflow: hidden;
-    margin: 8px 0 0;
-    text-align: left;
+    padding-right: 12px;
+    position: relative;
     text-overflow: ellipsis;
-    white-space: nowrap;
-    width:auto;
+    white-space: nowrap;   
+}
+.info-user  .username:after{
+    content: "\f107";
+    display: inline-block;
+    font: 14px/1 FontAwesome;
+    position: absolute;
+    right: 0;
+    top: 2px;
 }
 .info-user .proflie_pic {
-     float: right;
-    margin-right: 8px;
+    margin: 0 auto;
     width: 40px;
 }
 .info-user  .avatar-user {
@@ -15382,6 +15392,18 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     margin-top: 0;
     width: 36px;
 }
+
+.ul-top {
+    background: #fff none repeat scroll 0 0;
+    border-radius: 5px 5px 0 0;
+    font-size: 11px;
+    margin-bottom: 0;
+    padding: 0 8px;
+    width: 100%;
+    border-bottom:1px solid #ccc;
+}
+.ul-top a{color:inherit}
+
 #planHeader #nl-form2{margin: 10px 0 0 0;}
 #planHeader #nl-form2 a.nl-field-toggle{/* #2312 */
     /*font-size:16px;*/  
@@ -15390,6 +15412,58 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     font-family: proximanova-regular;
     font-size: 28px;
 } 
+/* ============= Top header Alert-Notification and profile dropdown CSS ============ */
+.notify-list, .aler-list{ 
+   padding-top: 15px;
+   text-align: center;
+   width: 30px;
+}
+.aler-list {
+    margin-left: 20px;
+    margin-right: -32px;
+}
+.notify-list .fa, .aler-list .fa{ font-size: 22px;}
+
+.header-right .dropdown-menu{padding:0; background: #f2f2f2 none repeat scroll 0 0;}
+.header-right .dropdown-menu li{text-align:left; border-bottom:1px solid #ccc;font-size:13px}
+.header-right .dropdown-menu > li:last-child{ border-bottom:0 none;}
+.header-right .dropdown-menu > li > a{padding: 4px 10px;}
+.header-right .dropdown-menu > li > a:hover{background:none; color:inherit}
+
+.header-right .info-user .dropdown-menu li{text-align:center}
+.notify-list .dropdown-menu, 
+.aler-list .dropdown-menu { width: 240px;}
+.header-right .notify-list .dropdown-menu li,
+.header-right .aler-list .dropdown-menu li {
+    float: left;
+    font-size: 13px;
+    padding: 10px 10px;
+    text-align: left;
+    width: 100%;
+}
+.dd-left{
+    float: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 165px;
+}
+.dd-right{
+    float: right;
+    font-size: 10px;}
+.dd-right, .ul-top a:last-child {
+    color: #95989A;
+}
+
+.header-right .notify-list .dropdown-menu li:last-child,
+.header-right .aler-list .dropdown-menu li:last-child {
+    background: #fff none repeat scroll 0 0;
+    border-radius: 0 0 5px 5px;
+    padding: 6px 10px;
+    text-align: center;
+}
+.header-right .notify-list .dropdown-menu > li:last-child > a,
+.header-right .aler-list .dropdown-menu > li:last-child > a{padding:0}
 
 /* ******************** Please add new styles here - Start ******************** */
 .password-requirement-box {
@@ -15989,6 +16063,9 @@ input.selectInput{
 .accordion.alert-accordian .accordion-heading {
     padding: 5px 0;
 }
+.alert-heading {
+    width: 75%;
+}
 .acco-icons {width: 150px;margin-top: 8px;}
 .accordion.alert-accordian .accordion-heading a{color:#95989A; float:right;display:inline;}
 .accordion.alert-accordian .accordion-heading a.accordion-toggle{ margin-right:10px}
@@ -16007,7 +16084,7 @@ input.selectInput{
 .searchtextbox {
     display: inline-block;
     position: relative;
-    width: 30%;
+    width: 45%;
 }
 .searchtextbox input{width:100%; margin: 0;}
 .searchtextbox::after {
@@ -16065,10 +16142,14 @@ input.selectInput{
 .pref-msg-row h4{font-weight:normal;}
 .pref-msg-row .wraper-checkbox {
     margin-bottom: 10px;
+    display: inline-block;
+    width:100%;
 }
 .pref-msg-row .wraper-checkbox > span { 
     display: inline-block;
-    min-width: 30%;
+    float: left;
+    width: 30%;
+    padding-right:15px;
 }
 /* ********************  new styles  - End ******************** */
 

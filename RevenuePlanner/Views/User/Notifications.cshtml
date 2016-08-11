@@ -99,34 +99,36 @@
 <div class="padding-content cf source-sans-proregular" id="content">
     <div class="row">
         @Html.Partial("~/Views/User/_myprofile.cshtml")
-        <div class="span10 content-column-right  margin-left44">
+        <div class="span10 content-colum-right  margin-left44">
             @if (SMCount > 0)
             {
                 <div class="pref-msg-row">
                     <h4 class="pref-msg-header">System Messages</h4>
-                    
-                        @foreach (var item in Model)
+
+                    @foreach (var item in Model)
+                    {
+                        var checkBoxIdSMSel = "chk" + item.NotificationId;
+                        var checkBoxIdSM = "chk" + item.NotificationId;
+                        var notificationType = item.NotificationType;
+
+                        if (notificationType.ToString().ToLower() == Enums.NotificationType.SM.ToString().ToLower())
                         {
-                            var checkBoxIdSMSel = "chk" + item.NotificationId;
-                            var checkBoxIdSM = "chk" + item.NotificationId;
-                            var notificationType = item.NotificationType;
-
-                            if (notificationType.ToString().ToLower() == Enums.NotificationType.SM.ToString().ToLower())
+                            if (item.IsSelected)
                             {
-                                if (item.IsSelected)
-                                {
-                                   <div class="wraper-checkbox"> <span> @item.NotificationTitle</span><input id="@checkBoxIdSMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
-                                    </div>
+                                <div class="wraper-checkbox">
+                                    <span> @item.NotificationTitle</span><input id="@checkBoxIdSMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                </div>
 
-                                }
-                                else
-                                {
-                                    <div class="wraper-checkbox"><span> @item.NotificationTitle</span><input id="@checkBoxIdSM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
-                                    </div>
-                                }
+                            }
+                            else
+                            {
+                                <div class="wraper-checkbox">
+                                    <span> @item.NotificationTitle</span><input id="@checkBoxIdSM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                </div>
                             }
                         }
-                   
+                    }
+
                 </div>
             }
 
@@ -134,29 +136,31 @@
             {
                 <div class="pref-msg-row">
                     <h4 class="pref-msg-header">Activity Messages</h4>
-                   
-    @foreach (var item in Model)
+
+                    @foreach (var item in Model)
+                    {
+                        var checkBoxIdAMSel = "chk" + item.NotificationId;
+                        var checkBoxIdAM = "chk" + item.NotificationId;
+                        var notificationType = item.NotificationType;
+
+                        if (notificationType.ToString().ToLower() == Enums.NotificationType.AM.ToString().ToLower())
                         {
-                            var checkBoxIdAMSel = "chk" + item.NotificationId;
-                            var checkBoxIdAM = "chk" + item.NotificationId;
-                            var notificationType = item.NotificationType;
-
-                            if (notificationType.ToString().ToLower() == Enums.NotificationType.AM.ToString().ToLower())
+                            if (item.IsSelected)
                             {
-                                if (item.IsSelected)
-                                {
-                                    <div class="wraper-checkbox"> <span>@item.NotificationTitle</span><input id="@checkBoxIdAMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
-                                    </div>
-                                }
-                                else
-                                {
-                                     <div class="wraper-checkbox"><span> @item.NotificationTitle </span>  <input id="@checkBoxIdAM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                <div class="wraper-checkbox">
+                                    <span>@item.NotificationTitle</span><input id="@checkBoxIdAMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
                                 </div>
-                                }
-
                             }
+                            else
+                            {
+                                <div class="wraper-checkbox">
+                                    <span> @item.NotificationTitle </span>  <input id="@checkBoxIdAM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                </div>
+                            }
+
                         }
-                    
+                    }
+
                 </div>
             }
 
@@ -166,6 +170,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
