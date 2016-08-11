@@ -1130,7 +1130,7 @@ namespace Integration.Salesforce
                 List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                statusList.Contains(tactic.Status) &&
                                                                                                                tactic.StageId == INQStageId &&
-                                                                                                               tactic.IsDeleted == false && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                                                                                                               tactic.IsDeleted == false).ToList();
 
                 //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
                 List<Plan_Campaign_Program_Tactic> lstAllTactics = tblPlanTactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
@@ -1970,7 +1970,7 @@ namespace Integration.Salesforce
                 List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                statusList.Contains(tactic.Status) &&
                                                                                                                tactic.Stage.Level <= MQLLevel &&
-                                                                                                               tactic.IsDeleted == false && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                                                                                                               tactic.IsDeleted == false).ToList();
 
                 //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
                 List<Plan_Campaign_Program_Tactic> lstAllTactics = tblPlanTactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
@@ -2838,7 +2838,7 @@ namespace Integration.Salesforce
                 List<Plan_Campaign_Program_Tactic> tblPlanTactic = new List<Plan_Campaign_Program_Tactic>();
                 tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                statusList.Contains(tactic.Status) &&
-                                                                                                               tactic.IsDeleted == false && tactic.IsSyncSalesForce.HasValue && tactic.IsSyncSalesForce.Value == true).ToList();
+                                                                                                               tactic.IsDeleted == false).ToList();
 
                 //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
                 List<Plan_Campaign_Program_Tactic> lstAllTactics = tblPlanTactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
