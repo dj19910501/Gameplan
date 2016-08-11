@@ -16,7 +16,6 @@ BEGIN
 		[DayOfWeek] [tinyint] NULL,
 		[DateOfMonth] [tinyint] NULL,
 		[LastProcessingDate] [datetime] NULL,
-		[NextProcessingDate] [datetime] NULL,
 		[UserId] [uniqueidentifier] NOT NULL,
 		[ClientId] [uniqueidentifier] NOT NULL,
 		[IsDisabled] [bit] NOT NULL DEFAULT 0,
@@ -40,6 +39,7 @@ BEGIN
 		[RuleId] [int] NOT NULL,
 		[Description] [nvarchar](max) NOT NULL,
 		[IsRead] [bit] NOT NULL DEFAULT 0,
+		[ReadDate] [datetime] NULL,
 		[UserId] [uniqueidentifier] NOT NULL,
 		[CreatedDate] [datetime] NOT NULL,
 	 CONSTRAINT [PK_Alerts] PRIMARY KEY CLUSTERED 
@@ -70,6 +70,7 @@ BEGIN
 		[EntityId] [int] NULL,
 		[Description] [nvarchar](250) NULL,
 		[IsRead] [bit] NOT NULL DEFAULT 0,
+		[ReadDate] [datetime] NULL,
 		[UserId] [uniqueidentifier] NULL,
 		[RecipientId] [uniqueidentifier] NOT NULL,
 		[CreatedDate] [datetime] NOT NULL,
