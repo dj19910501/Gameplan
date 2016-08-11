@@ -103,6 +103,12 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = 'IsCurrency' AND [object_id] = OBJECT_ID(N'Measure'))
+BEGIN
+	ALTER TABLE dbo.Measure ADD IsCurrency BIT NULL
+END
+GO
+
 /* End - Added by Arpita Soni on 08/09/2016 for Ticket #2464 - Custom Alerts and Notifications */
 
 /* Added by devanshi for #2569: create alert rule*/
@@ -167,3 +173,946 @@ SELECT * FROM AllLineitem
 ' 
 GO
 /*end*/
+
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'DimensionBaseQuery') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[DimensionBaseQuery]
+GO
+
+CREATE FUNCTION [dbo].[DimensionBaseQuery] 
+( 
+    @DIMENSIONTABLENAME NVARCHAR(1000), 
+	@STARTDATE date='01/01/2014', 
+	@ENDDATE date='12/31/2014',
+	@ReportGraphId int ,
+	@FilterValues nvarchar(MAX) =null ,
+	@IsOnlyDateDimension bit =0,
+	@IsDimension bit=0,
+	@UserId UNIQUEIDENTIFIER = '14D7D588-CF4D-46BE-B4ED-A74063B67D66',
+	@RoleId UNIQUEIDENTIFIER = '504F5E26-2208-44C2-A78F-4BDF4BAB703F',
+	@RateList NVARCHAR(50) = ''
+) 
+RETURNS  NVARCHAR(MAX)
+BEGIN
+DECLARE @OrderByCount int=1
+DECLARE @DimensionCount int=0
+DECLARE @Dimensionid int,@DimensionIndex NVARCHAR(100),@IsDateDimension BIT, @i INT =3
+DECLARE @ExcludeQuery nvarchar(MAX)
+SET @ExcludeQuery=''
+
+DECLARE @QueryToRun NVARCHAR(MAX) 
+--Chek is only Date dimension then it will get values from dimension value table
+	IF(@IsOnlyDateDimension=1 AND @FilterValues IS NULL)
+	BEGIN
+		SET @DimensionId=(SELECT TOP 1 DimensionId from ReportAxis where reportgraphid=@ReportGraphID )
+		SET @QueryToRun='';
+		IF(@IsDimension=0)
+		BEGIN
+			IF(@RateList = '' OR @RateList IS NULL)
+			BEGIN
+			SET @QueryToRun =  'SELECT ' + 'DISTINCT #COLUMNS# '  + ' FROM MeasureValue D1 INNER JOIN DimensionValue D3 ON D1.DimensionValue = d3.id and CAST(d3.DisplayValue AS DATE) between ''' + cast(@STARTDATE as nvarchar) + ''' and ''' + cast(@ENDDATE as nvarchar) + '''  AND d3.DimensionId =' + REPLACE(@DIMENSIONTABLENAME,'D','') 
+			END
+			ELSE
+			BEGIN
+			SET @QueryToRun =  'SELECT ' + 'DISTINCT #COLUMNS# '  + ' FROM MeasureValue D1 INNER JOIN DimensionValue D3 ON D1.DimensionValue = d3.id and CAST(d3.DisplayValue AS DATE) between ''' + cast(@STARTDATE as nvarchar) + ''' and ''' + cast(@ENDDATE as nvarchar) + '''  AND d3.DimensionId =' + REPLACE(@DIMENSIONTABLENAME,'D','') +' INNER JOIN '+@RateList+' rt ON  CAST(D3.DisplayValue AS DATE) between CAST(StartDate AS DATE) and CAST(EndDate AS DATE)' 
+			END
+		END
+		ELSE
+		BEGIN
+			SET @QueryToRun ='SELECT '+'DISTINCT #COLUMNS# '+'  from dimensionvalue D3 where DimensionID=' + REPLACE(@DIMENSIONTABLENAME,'D','')+' and CAST(DisplayValue AS DATE) between '''+CAST(@STARTDATE AS NVARCHAR)+''' and '''+CAST(@ENDDATE AS NVARCHAR)+'''' -- INNER JOIN '+@RateList+' rt ON CAST(D3.DisplayValue AS DATE) between CAST(StartDate AS DATE) and CAST(EndDate AS DATE) order by ordervalue1
+		END
+	END
+	ELSE
+	BEGIN
+		SET @QueryToRun= 'SELECT distinct '+' #COLUMNS# '+' FROM ' + @DIMENSIONTABLENAME + 'Value D1'
+		SET @QueryToRun = @QueryToRun + ' INNER JOIN ' + @DIMENSIONTABLENAME + ' D2 ON D2.id = D1.' + @DIMENSIONTABLENAME 
+
+		DECLARE Column_Cursor CURSOR FOR
+		SELECT D.id,D.IsDateDimension,FD.cnt
+			FROM dbo.fnSplitString(@DIMENSIONTABLENAME,'D') FD
+			INNER JOIN Dimension D ON D.id = FD.dimension
+		OPEN Column_Cursor
+		FETCH NEXT FROM Column_Cursor
+		INTO @Dimensionid,@IsDateDimension, @DimensionIndex
+		WHILE @@FETCH_STATUS = 0
+		BEGIN	    
+			/* Start - Added by Arpita Soni for ticket #511 on 10/30/2015 */
+			-- Restrict dimension values as per UserId and RoleId
+			--Insertation Start 24/02/2016 Kausha Added if conditionDue to resolve performance issue we have removed unneccesary join for ticket no #729,#730
+			IF(@IsDateDimension=1 OR ((SELECT COUNT(*) FROM ReportAxis WHERE ReportGraphID=@ReportGraphId AND DimensionId=@Dimensionid)>0))
+			BEGIN
+				DECLARE @RestrictedDimensionValues NVARCHAR(MAX)
+		
+				IF EXISTS(SELECT TOP 1 DimensionValue FROM User_RestrictedDimensionValues WHERE DimensionId = @Dimensionid AND UserId = @UserId)
+				BEGIN
+					SELECT @RestrictedDimensionValues = COALESCE(@RestrictedDimensionValues + ''',''' ,'') + DimensionValue 
+					FROM User_RestrictedDimensionValues WHERE DimensionId = @Dimensionid AND UserId = @UserId
+				END
+				ELSE 
+				BEGIN
+					SELECT @RestrictedDimensionValues = COALESCE(@RestrictedDimensionValues + ''',''' ,'') + DimensionValue 
+					FROM Role_RestrictedDimensionValues WHERE DimensionId = @Dimensionid AND RoleId = @RoleId
+				END
+				IF(CHARINDEX(',',@RestrictedDimensionValues) = 2)
+				BEGIN
+					SET @RestrictedDimensionValues = SUBSTRING(@RestrictedDimensionValues,4,LEN(@RestrictedDimensionValues))
+				END
+				/* End - Added by Arpita Soni for ticket #511 on 10/30/2015 */
+
+				IF(@ExcludeQuery IS NOT NULL)
+					SET @ExcludeQuery=@ExcludeQuery+' and '
+				SET @ExcludeQuery=@ExcludeQuery+'D'+ CAST(@i  AS NVARCHAR) + '.DisplayValue not in (select Exclude FROM ReportGraphRowExclude WHERE ReportGraphId=' +cast(@ReportGraphId as nvarchar)+')'
+
+				/* Start - Added by Arpita Soni for ticket #511 on 10/30/2015 */
+				IF(ISNULL(@RestrictedDimensionValues,'') != '')
+					SET @ExcludeQuery = @ExcludeQuery + ' AND ' + 'D'+ CAST(@i  AS NVARCHAR) + '.DisplayValue NOT IN (''' + ISNULL(@RestrictedDimensionValues,'') + ''')'
+				/* End - Added by Arpita Soni for ticket #511 on 11/02/2015 */
+
+				SET @QueryToRun = @QueryToRun + ' INNER JOIN DimensionValue D' + CAST(@i AS NVARCHAR) + ' ON D' + CAST(@i AS NVARCHAR) + '.id = D2.D' + CAST(@DimensionIndex AS NVARCHAR) 
+																+ ' AND D'+ CAST(@i  AS NVARCHAR) +'.DimensionId = ' + CAST(@Dimensionid AS NVARCHAR) 
+
+				IF(@IsDateDimension = 1)
+				BEGIN
+					SET @QueryToRun = @QueryToRun + ' and CAST(d' + CAST(@i  AS NVARCHAR) + '.DisplayValue AS DATE) between '''+cast(@STARTDATE as nvarchar)+''' and '''+cast(@ENDDATE as nvarchar)+''''
+					IF(@RateList != '' AND @RateList IS NOT NULL)
+					BEGIN
+						SET @QueryToRun = @QueryToRun + ' INNER JOIN '+@RateList+' rt ON  CAST(d' + CAST(@i  AS NVARCHAR) + '.DisplayValue AS DATE) between CAST(StartDate AS DATE) and CAST(EndDate AS DATE)'
+					END
+					SET @OrderbyCount=(select count(id) from ReportAxis where ReportGraphId=@ReportGraphId and AxisName='X'and Dimensionid=@Dimensionid );
+					SET @DimensionCount=(select count(id) from ReportAxis where ReportGraphId=@ReportGraphId );
+					--Following code is written to identify order by value
+					if(@OrderbyCount=0 and @DimensionCount>1)
+						SET @OrderByCount=2
+					else
+						SET @OrderByCount=1
+				END	   
+				SET @RestrictedDimensionValues= ''
+			END
+			SET @i = @i + 1
+			FETCH NEXT FROM Column_Cursor
+			INTO @Dimensionid,@IsDateDimension, @DimensionIndex
+		END
+		Close Column_Cursor
+		Deallocate Column_Cursor
+		--Filters
+		DECLARE @FilterCondition NVARCHAR(MAX);
+		SET @FilterCondition = ''
+		IF(@FilterValues IS NOT NULL AND @IsDimension=0)
+		BEGIN
+			--Insertation Start 28/07/2016 Kausha Moved function code here and following code will be executed when this function will caled for measure
+			--SELECT @FilterCondition = ' ' +  ISNULL(KeyValue,'') FROM [dbo].[ExtractValueFromXML](@FilterValues,'D2',2);
+			DECLARE @FilterString TABLE (KeyValue NVARCHAR(MAX))
+			DECLARE @TableAlias NVARCHAR(MAX)='D2'
+			DECLARE @IsGraph int=2
+			Declare @XmlString XML=@FilterValues
+			DECLARE @temp_Table TABLE (ID NVARCHAR(10) Index Ix1 clustered,Value NVARCHAR(1000))
+
+			INSERT INTO @temp_Table
+			SELECT data.col.value('(@ID)[1]', 'int'),data.col.value('(.)', 'INT') FROM @XmlString.nodes('(/filters/filter)') AS data(col);
+
+			--Based on the Id, combines value comma saperated
+			WITH ExtractValue AS(
+				SELECT ID, Value = STUFF((
+					SELECT ', ' + Value
+					FROM @temp_Table b
+					WHERE b.ID = a.ID
+					FOR XML PATH('')
+					), 1, 2, '')
+				FROM @temp_Table a
+				GROUP BY ID
+			),
+			_AllFilters AS(
+			SELECT 1 Id,  
+				Condition = CASE 
+					WHEN @IsGraph= 0 THEN  'AND '+ @TableAlias +'.D' + ID + ' IN (' + Value + ')' 
+					WHEN @IsGraph= 2 THEN  ' '+ @TableAlias +'.D' + ID + ' IN (' + Value + ')' 
+					ELSE ' left outer join DimensionValue d' + CONVERT(NVARCHAR(20),(ID + 4)) + ' on ' +  @TableAlias + '.Id = d' + CONVERT(NVARCHAR(20),(ID + 4)) + '.id and d' + CONVERT(NVARCHAR(20),(ID + 4)) + '.id in (' + Value  +')'
+				END 
+			FROM ExtractValue
+			)
+			INSERT @FilterString (KeyValue)
+			SELECT DISTINCT 
+				STUFF	(
+					(SELECT CASE WHEN @IsGraph = 2 THEN '#' ELSE ',' END + B.Condition FROM _AllFilters B WHERE B.Id = A.Id FOR XML PATH(''))
+					,1,1,''	) Condition
+					FROM
+					_AllFilters A;
+					--Insertation End  kausha 27/07/2016 Write function code here for extract xml to reduce time
+			SELECT  @FilterCondition= ' ' +  ISNULL(KeyValue,'') FROM @FilterString	
+
+		END
+		SET @FilterCondition = ISNULL(@FilterCondition,'')
+		IF(@FilterCondition != '')
+		BEGIN
+			SET @FilterCondition=' where'+@FilterCondition
+			SET @FilterCondition =  REPLACE(@FilterCondition,'#',' AND ')
+		END
+
+		IF(@FilterCondition is null and @ExcludeQuery is not null)
+			SET @ExcludeQuery=' where '+@ExcludeQuery
+		--Exclude
+		--Deletion Start: <17/02/2016> <Kausha> <Ticket #729,#730> - <Due to performance issue no need to pass filter and exclude in both dimension and measure table>
+		--set @QueryToRun=@QueryToRun+'  '+@FilterCondition+@ExcludeQuery
+		--Deletion End: <17/02/2016> <Kausha> <Ticket #729,#730>
+
+		--Insertion Start: <17/02/2016> <Kausha> <Ticket #729,#730> - <Due to performance issue we have removed filter from dimension table and exculd from measure table>
+		IF(@IsDimension=1)
+			set @QueryToRun=@QueryToRun+'  '+@ExcludeQuery
+		ELSE
+			set @QueryToRun=@QueryToRun+'  '+@FilterCondition
+		--Insertion End: <17/02/2016> <Kausha> <Ticket #729,#730>
+
+		IF(@IsDimension=1)
+			set @QueryToRun=@QueryToRun+' order by ordervalue'+CAST(@OrderByCount as nvarchar)
+
+	END
+RETURN @QueryToRun 
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'GetMeasuresForMeasureTable') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[GetMeasuresForMeasureTable]
+GO
+
+CREATE FUNCTION [dbo].[GetMeasuresForMeasureTable] 
+(   
+	@ReportGraphID int,
+    @MeasureId int,
+	@RateList NVARCHAR(50) = ''
+) 
+RETURNS  nvarchar(1000)
+BEGIN
+declare @MeasureName nvarchar(100)
+declare @AggrigationType nvarchar(100)
+declare @Column nvarchar(max)
+declare @DimensionTableMeasure nvarchar(max)
+declare @SymbolType nvarchar(max)
+declare @Count int =1
+     
+
+  set @Column=''
+			set @Column=',SUM(d1.Rows) as Rows'
+ DECLARE @MeasureCursor CURSOR
+			SET @MeasureCursor = CURSOR FAST_FORWARD FOR SELECT Top 1 m.name,m.AggregationType,rc.SymbolType from reportgraphcolumn rc inner join measure m on    rc.reportgraphid=@ReportGraphId and m.id=@MeasureId
+			OPEN @MeasureCursor
+			FETCH NEXT FROM @MeasureCursor
+			INTO @MeasureName,@AggrigationType,@SymbolType
+			WHILE @@FETCH_STATUS = 0 
+			BEGIN
+			if(@AggrigationType='AVG')
+			BEGIN
+			IF(@SymbolType = '%'  )
+			BEGIN
+			set @Column=@Column+','+' ISNULL(ROUND((sum(D1.Value*d1.rows)/sum(d1.rows))*100,2),0) AS  ['+@MeasureName+']'			
+			END
+			ELSE
+			BEGIN
+				IF(@RateList = '' OR @RateList IS NULL)
+				BEGIN
+					set @Column=@Column+','+ 'ISNULL(ROUND(sum(D1.Value*d1.rows)/sum(d1.rows),2),0) AS ['+@MeasureName+']'
+				END
+				ELSE
+				BEGIN
+					SET @Column=@Column+','+ 'ISNULL(ROUND((sum(D1.Value*d1.rows)/sum(d1.rows))*avg(ISNULL(rt.Rate,0)),2),0) AS ['+@MeasureName+']'
+				END
+			END
+			END
+			ELSE
+				IF(@RateList = '' OR @RateList IS NULL)
+				BEGIN
+					set @Column=@Column+','+'ISNULL(ROUND(SUM(d1.Value),2),0) as ['+@MeasureName+']'
+				END
+				ELSE
+				BEGIN
+					set @Column=@Column+','+'ISNULL(ROUND(SUM(d1.Value)* avg(ISNULL(rt.Rate,0)),2),0) as ['+@MeasureName+']'
+				END
+			--Add Rows
+			set @Count=@count+1
+			
+			FETCH NEXT FROM @MeasureCursor
+			INTO @MeasureName,@AggrigationType,@SymbolType
+			END
+			CLOSE @MeasureCursor
+			DEALLOCATE @MeasureCursor
+			return @Column
+END
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'ReportGraphResultsNew') AND xtype IN (N'P'))
+    DROP PROCEDURE ReportGraphResultsNew
+GO
+
+
+CREATE PROCEDURE [ReportGraphResultsNew]
+@ReportGraphID INT, 
+@DIMENSIONTABLENAME NVARCHAR(100), 
+@STARTDATE date='1-1-1900', 
+@ENDDATE date='1-1-2100', 
+@DATEFIELD NVARCHAR(100)=null, 
+@FilterValues NVARCHAR(MAX)=null,
+@ViewByValue NVARCHAR(15),
+@SubDashboardOtherDimensionTable INT = 0,
+@SubDashboardMainDimensionTable INT = 0,
+@DisplayStatSignificance NVARCHAR(15) = NULL,
+@UserId UNIQUEIDENTIFIER = '14D7D588-CF4D-46BE-B4ED-A74063B67D66',
+@RoleId UNIQUEIDENTIFIER = '504F5E26-2208-44C2-A78F-4BDF4BAB703F',
+@Rate PreferredCurrenctDetails READONLY
+
+AS
+BEGIN
+SET NOCOUNT ON;
+DECLARE @DateDimensionID int
+
+ --Dimension Table 
+SET @DateDimensionId=(SELECT TOP 1 Dimension FROM dbo.fnSplitString(@DimensionTableName,'D') d1 INNER JOIN dimension d ON d1.dimension=d.id AND d.IsDateDimension=1)
+
+--For issue #609
+if @FilterValues='''<filters></filters>'''
+BEGIN
+	SET @FilterValues=null
+END
+
+Declare @CustomQuery NVARCHAR(MAX)
+SET @CustomQuery=(SELECT ISNULL(CustomQuery,'') FROM ReportGraph where Id=@ReportGraphID)
+IF(@CustomQuery!='')
+BEGIN
+EXEC CustomGraphQuery @ReportGraphID,@STARTDATE,@ENDDATE,@FilterValues,@ViewByValue,@DIMENSIONTABLENAME,@DateDimensionID,0,NULL,NULL,NULL,NULL,NULL,1,@Rate
+END
+ELSE
+
+
+BEGIN
+SET @DisplayStatSignificance=ISNULL(@DisplayStatSignificance,'')
+--to do please add report id to all the table variables 
+DECLARE @Dimensions NVARCHAR(MAX), @TempString NVARCHAR(MAX), @Count INT, @Measures NVARCHAR(1000), @GroupBy NVARCHAR(1000), @FirstTable NVARCHAR(MAX), @SymbolType NVARCHAR(50) ,@ConfidenceLevel FLOAT
+DECLARE @SecondTable NVARCHAR(MAX)  DECLARE @MeasureCreateTableDimension NVARCHAR(MAX) DECLARE @MeasureSelectTableDimension NVARCHAR(1000), @IsDateOnYaixs BIT=0, @DimensionCount INT=0
+DECLARE @UpdateTableCondition NVARCHAR(500),  @DimensionName1 NVARCHAR(50), @DimensionName2 NVARCHAR(50), @Measure NVARCHAR(50), @DimensionId1 INT, @DimensionId2 INT, @IsDateDimension BIT=0 ,@IsOnlyDateDimension BIT=0
+DECLARE @FinalTable NVARCHAR(MAX), @MeasureCount INT DECLARE @SQL NVARCHAR(MAX), @Columns NVARCHAR(1000) DECLARE @BaseQuery NVARCHAR(MAX), @GType NVARCHAR(100)
+DECLARE @RateList NVARCHAR(50) = ''
+
+SET @FirstTable='';  SET @SymbolType=''; SET @Columns='' ; SET @MeasureCreateTableDimension='';SET @MeasureSelectTableDimension='';SET @UpdateTableCondition='';SET @BaseQuery='';SET @SecondTable=''
+SET @SQL=''; SET @DimensionName1=''; SET @DimensionName2=''; SET @Measure=''; SET @GroupBy='';SET @FinalTable='';SET @TempString=''
+if @FilterValues='<filters></filters>'
+BEGIN
+SET @FilterValues=null
+END	
+		
+SELECT @GType =LOWER (GraphType),@ConfidenceLevel=ISNULL(ConfidenceLevel,0) FROM ReportGraph WHERE id = @ReportGraphID
+
+ --Dimension Table 
+SET @DateDimensionId=(SELECT TOP 1 Dimension FROM dbo.fnSplitString(@DimensionTableName,'D') d1 INNER JOIN dimension d ON d1.dimension=d.id AND d.IsDateDimension=1)
+
+SELECT 
+		@Dimensions						= selectdimension, 
+		@Columns						= CreateTableColumn,
+		@MeasureCreateTableDimension	= MeasureTableColumn, 
+		@MeasureSelectTableDimension	= MeasureSelectColumn, 
+		@UpdateTableCondition			= UpdateCondition,
+		@GroupBy						= GroupBy,
+		@DimensionCount					= CAST(Totaldimensioncount AS INT), 
+		@DimensionName1					= DimensionName1, 
+		@DimensionName2					= DimensionName2, 
+		@DimensionId1					= CAST(DimensionId1 AS INT), 
+		@DimensionId2					= CAST(DimensionId2 AS INT),
+		@IsDateDimension				= CAST(IsDateDImensionExist AS BIT), 
+		@IsDateOnYaixs					= CAST(IsDateOnYAxis AS BIT), 
+		@IsOnlyDateDimension			= CAST(IsOnlyDateDImensionExist AS BIT) 
+FROM dbo.GetDimensions(@ReportGraphID,@ViewByValue,@DIMENSIONTABLENAME,@STARTDATE,@ENDDATE,@GType,@SubDashboardOtherDimensionTable,@SubDashboardMainDimensionTable,@DisplayStatSignificance)
+
+--Measure Table
+ SELECT 
+		@Measures	= SelectTableColumn, 
+		@Columns	= @Columns + CreateTableColumn, 
+		@Measure	= MeasureName,
+		@SymbolType	= SymbolType 
+FROM dbo.GetMeasures(@ReportGraphID,@ViewByValue,@DimensionCount,@GTYPe,@DisplayStatSignificance)
+
+
+IF EXISTS (SELECT * FROM @Rate)
+BEGIN
+	IF OBJECT_ID('tempdb..#RateListMonthWise') IS NOT NULL
+	BEGIN
+		DROP TABLE #RateListMonthWise
+	END
+	CREATE TABLE #RateListMonthWise (StartDate DATE, EndDate DATE, Rate FLOAT)
+	INSERT INTO #RateListMonthWise 
+	SELECT CAST(StartDate AS DATE), CAST(EndDate AS DATE), Rate FROM @Rate
+	
+	IF EXISTS (SELECT * FROM Measure m 
+				INNER JOIN ReportGraphColumn rgc ON (rgc.MeasureId = m.id AND rgc.ReportGraphId = @ReportGraphID) 
+				WHERE ISNULL(m.IsCurrency, 0) = 1)
+	BEGIN
+		SET @RateList = '#RateListMonthWise'
+	END
+END
+
+--1 means creating base query for dimension - only order by cluase will be added
+SET @BaseQuery = dbo.DimensionBaseQuery(@DIMENSIONTABLENAME, @STARTDATE, @ENDDATE, @ReportGraphID, @FilterValues,@IsOnlyDateDimension, 1,@UserId,@RoleId,@RateList)
+--print @basequery
+--
+SET @SQL = REPLACE(@BaseQuery,'#COLUMNS#',@Dimensions + @Measures)
+--print @Columns
+DECLARE @Table NVARCHAR(1000)
+SET @Table = ''
+SET @Table = 'DECLARE @DimensionTable'+CAST(@ReportGraphID AS NVARCHAR)+' TABLE('
+SET @Table = @Table+' '+ @Columns + ')'
+SET @FirstTable = @Table + 'INSERT INTO @DimensionTable'+CAST(@ReportGraphID AS NVARCHAR)+' ' + @SQL + ''; --insert in to dimension table
+
+SET @BaseQuery= (dbo.DimensionBaseQuery(@DIMENSIONTABLENAME,@STARTDATE,@ENDDATE,@ReportGraphID,@FilterValues,@IsOnlyDateDimension,0,@UserId,@RoleId,@RateList))
+--print @basequery
+DECLARE @MeasureId INT, @AggregationType NVARCHAR(50), @MeasureName NVARCHAR(100)
+SET @Table=' DECLARE @MeasureTable'+cast(@ReportGraphID AS NVARCHAR)+' table(' + ' ' + @MeasureCreateTableDimension + ',Rows float, Measure float'+')'
+
+SET @SecondTable = @SecondTable + @Table
+
+--print @MeasureSelectTableDimension + @Measures
+
+DECLARE @MeasureCursor CURSOR
+SET @MeasureCursor = CURSOR FAST_FORWARD FOR SELECT MeasureId,Measurename,AggregationType  FROM dbo.GetGraphMeasure(@ReportGraphID,@ViewByValue)
+OPEN @MeasureCursor
+FETCH NEXT FROM @MeasureCursor
+INTO @MeasureId,@MeasureName,@AggregationType
+WHILE @@FETCH_STATUS = 0 
+BEGIN
+  IF(@DimensionCount>1 AND LOWER(@GType)!='errorbar' AND LOWER(@GType)!='columnrange' AND LOWER(@GType)!='bullet' AND  LOWER(@DisplayStatSignificance)!='rate')
+   SET @MeasureName='Measure_'+@MeasureName
+
+	IF EXISTS(SELECT * FROM Measure WHERE id = @MeasureId AND ISNULL(IsCurrency, 0) = 1)
+	BEGIN
+		SET @Measures = dbo.GetMeasuresForMeasureTable(@ReportGraphID,@MeasureId,@RateList)
+	END
+	ELSE
+	BEGIN
+		SET @Measures = dbo.GetMeasuresForMeasureTable(@ReportGraphID,@MeasureId,'')
+	END
+	IF(@IsOnlyDateDImension=1 AND @FilterValues IS NULL )
+	SET @Measures=REPLACE(@Measures,'rows','RecordCount')
+	SET @SQL = REPLACE(@BaseQuery,'#COLUMNS#', @MeasureSelectTableDimension + @Measures )
+	--SET SQL
+
+	--In base query if there are row excluded or filter is passed as parameter then there is already where cluase so we have to check condition
+	IF CHARINDEX('where',LOWER(@SQL)) <= 0
+		SET @SQL=@SQL+' WHERE '
+	ELSE
+		SET @SQL=@SQL+' AND '
+	
+	SET @SQL = @SQL + ' D1.Measure=' + CAST(@MeasureId AS NVARCHAR) + ' GROUP BY ' + @GroupBy
+			
+	SET @SecondTable=@SecondTable+' INSERT INTO @MeasureTable'+cast(@ReportGraphID AS NVARCHAR)+' '+@SQL
+	
+		IF(LOWER(@GType)='errorbar' OR LOWER(@DisplayStatSignificance)='rate')	
+		BEGIN
+			DECLARE @ErrorbarQuery NVARCHAR(2000)='', @UpdateErrorbarQuery NVARCHAR(2000)=' ', @PopulationRate FLOAT, @NoOfTails FLOAT=2
+			
+			IF( @Confidencelevel < 0 OR @Confidencelevel > 1)
+				SET @ConfidenceLevel=0
+
+		IF(@DimensionCount = 1)
+			BEGIN
+			IF(LOWER(@AggregationType) = 'avg')
+			BEGIN
+			SET @PopulationRate=(SELECT ROUND((SUM(value*RecordCount)/SUM(RecordCount)),2) FROM MeasureValue WHERE DimensionValue in (SELECT id FROM DimensionValue where DimensionID in(select DIMENSIONID FROM reportaxis where ReportGraphId=@ReportGraphID ))and measure = @MeasureId)
+				
+			END
+			ELSE
+			BEGIN
+				SET @PopulationRate=(SELECT ROUND(AVG(value),2) FROM MeasureValue WHERE DimensionValue IN (SELECT id FROM DimensionValue where DimensionID IN(SELECT DIMENSIONID FROM reportaxis where ReportGraphId=@ReportGraphID ))and measure = @MeasureId)
+			END
+		
+			IF(@PopulationRate>1 OR @PopulationRate<0)
+				SET @PopulationRate = 1;
+				SET @ErrorbarQuery =' Update @DimensionTable'+cast(@ReportGraphID AS NVARCHAR)+' SET PopulationRate='+CAST(@PopulationRate AS NVARCHAR)
+				SET @SecondTable = @SecondTable + @ErrorbarQuery + ';'
+			END
+
+		ELSE -- @DimensionCount = 2
+			BEGIN
+				DECLARE @ExistDimensionTableName NVARCHAR(100), @Pr_DimensionId INT, @SeriesDimension INT, @SeriesDimensionIndex INT, @YaxisIndex INT
+				DECLARE @SeriesDimensionName NVARCHAR(500), @DateAdded bit =0, @IsDateDimensionOnYAxis INT, @Pr_IsDateDimensionExist INT
+			
+				SELECT @Pr_IsDateDimensionExist = COUNT(IsDateDimension) FROM Dimension WHERE Id IN (SELECT DimensionId FROM ReportAxis WHERE ReportGraphId = @ReportGraphID) and IsDateDimension=1;
+				SET @SeriesDimension=(select dimensionid FROM ReportAxis WHERE  ReportGraphId = @ReportGraphID and axisname='Y')
+				
+				SET @SeriesDimensionName=(select columnname FROM Dimension where id=@SeriesDimension)
+			
+				SET @YaxisIndex=2
+				SELECT @IsDateDimensionOnYAxis = COUNT(IsDateDimension) FROM Dimension WHERE Id IN (SELECT DimensionId FROM ReportAxis WHERE ReportGraphId = @ReportGraphID and axisname='Y') and IsDateDimension=1;
+			
+				DECLARE @DimensionCursor CURSOR
+				SET @DimensionCursor = CURSOR FAST_FORWARD FOR SELECT dimensionid FROM   reportaxis where reportgraphid=@ReportGraphID order by dimensionid 
+				OPEN @DimensionCursor
+				FETCH NEXT FROM @DimensionCursor
+				INTO @Pr_DimensionId
+				WHILE @@FETCH_STATUS = 0
+					BEGIN
+
+						IF(@Pr_IsDateDimensionExist=0 and @DateDimensionId < @Pr_DimensionId and @DateAdded=0)
+						BEGIN
+							SET @ExistDimensionTableName=concat(@ExistDimensionTableName,'D'+CAST(@DateDimensionId as NVARCHAR)) 
+							SET @DateAdded=1
+						END
+
+					SET @ExistDimensionTableName=concat(@ExistDimensionTableName,'D'+CAST(@Pr_DimensionId as NVARCHAR)) 
+				FETCH NEXT FROM @DimensionCursor
+				INTO @Pr_DimensionId
+				END
+				CLOSE @DimensionCursor
+				DEALLOCATE @DimensionCursor	
+					SET @SeriesDimensionIndex=1
+				IF(@DateAdded=1)
+				SET @SeriesDimensionIndex= (select cnt FROM dbo.fnSplitString(@DIMENSIONTABLENAME,'d') where Dimension=CAST(@SeriesDimension as NVARCHAR))
+				ELSE
+				IF((select Dimensionid from reportaxis where ReportGraphId=@ReportGraphID and UPPER(axisname)='Y')>(select Dimensionid from reportaxis where ReportGraphId=@ReportGraphID and UPPER(axisname)='X'))
+				SET @SeriesDimensionIndex=2
+				DECLARE @DisplayValue NVARCHAR(500), @Dimension NVARCHAR(50), @Populationratestring NVARCHAR(1000)
+			
+				IF(@YaxisIndex=1)
+					SET @Dimension = @DimensionName1
+				ELSE
+					SET @Dimension = @DimensionName2
+					SET @DisplayValue='DisplayValue'
+					IF(@IsDateDimensionOnYAxis>0)
+						SET @DisplayValue=' dimensionid='+CAST(@DateDimensionId as NVARCHAR)+' and CAST(dbo.GetDatePart(CAST(DisplayValue AS DATE),'''+@ViewByValue+''','''+CAST(@STARTDATE as NVARCHAR)+''','''+CAST(@Enddate as NVARCHAR)+''') as NVARCHAR) '
+							IF(LOWER(@AggregationType)='avg')
+							BEGIN
+						
+							SET @PopulationRateString='((select (SUM(Value*Rows)/SUM(rows)) FROM '+CAST(@ExistDimensionTableName as NVARCHAR)+'Value where '+CAST(@ExistDimensionTableName as NVARCHAR)+' in (select id FROM '+CAST(@ExistDimensionTableName as NVARCHAR)+' where d'+CAST(@SeriesDimensionIndex as NVARCHAR)+' in (select Id FROM Dimensionvalue where '+@DisplayValue+' = '+@Dimension+')) and Measure='+CAST(@MeasureId as NVARCHAR)+' ))'
+						
+							END
+							ELSE
+							BEGIN
+							SET @PopulationRateString='((select AVG(value) FROM '+CAST(@ExistDimensionTableName as NVARCHAR)+'Value where '+CAST(@ExistDimensionTableName as NVARCHAR)+' in (select id FROM '+CAST(@ExistDimensionTableName as NVARCHAR)+' where d'+CAST(@SeriesDimensionIndex as NVARCHAR)+' in (select Id FROM Dimensionvalue where '+@DisplayValue+' = '+@Dimension+')) and Measure='+CAST(@MeasureId as NVARCHAR)+' ))'
+								
+							
+							END
+							SET @ErrorbarQuery=' UPDATE @DimensionTable'+CAST(@ReportGraphID AS NVARCHAR)+' SET PopulationRate='+@PopulationRateString
+							SET @SecondTable=@SEcondTable+@ErrorbarQuery+';'
+		END -- Error graph @DimensionCount End
+		IF(LOWER(@DisplayStatSignificance)='rate')
+		BEGIN
+		IF(@SymbolType='%' )
+			BEGIN
+				SET @UpdateErrorbarQuery=',[LowerLimit-'+CAST(@ConfidenceLevel*100 AS NVARCHAR)+'%]=CAST(ROUND((2*CAST(PopulationRate as float)-(select dbo.ComputeErrorBar(PopulationRate,M.rows,'+CAST(@ConfidenceLevel AS NVARCHAR)+','+CAST(@NoOfTails AS NVARCHAR)+'))/M.rows)*100,2) as NVARCHAR)'+',[UpperLimit-'+CAST(@ConfidenceLevel*100 AS NVARCHAR)+'%]=CAST(ROUND((select dbo.ComputeErrorBar(PopulationRate,M.rows,'+CAST(@ConfidenceLevel AS NVARCHAR)+','+CAST(@NoOfTails AS NVARCHAR)+')/M.rows)*100,2) as NVARCHAR)'
+			END
+		ELSE
+			BEGIN
+				SET @UpdateErrorbarQuery=',[LowerLimit-'+CAST(@ConfidenceLevel*100 AS NVARCHAR)+'%]=CAST(ROUND((2*CAST(PopulationRate as float)-(select dbo.ComputeErrorBar(PopulationRate,M.rows,'+CAST(@ConfidenceLevel AS NVARCHAR)+','+CAST(@NoOfTails AS NVARCHAR)+'))/M.rows),2) as NVARCHAR)'+',[UpperLimit-'+CAST(@ConfidenceLevel*100 AS NVARCHAR)+'%]=CAST(ROUND((select dbo.ComputeErrorBar(PopulationRate,M.rows,'+CAST(@ConfidenceLevel AS NVARCHAR)+','+CAST(@NoOfTails AS NVARCHAR)+')/M.rows),2) as NVARCHAR)'
+			END
+		END
+		ELSE IF(LOWER(@GType)='errorbar')
+		BEGIN
+	    IF(@SymbolType='%' )
+			BEGIN
+				SET @UpdateErrorbarQuery=',LowerLimit=CAST(ROUND((2*CAST(PopulationRate as float)-(select dbo.ComputeErrorBar(PopulationRate,M.rows,'+CAST(@ConfidenceLevel AS NVARCHAR)+','+CAST(@NoOfTails AS NVARCHAR)+'))/M.rows)*100,2) as NVARCHAR)'+',UpperLimit=CAST(ROUND((select dbo.ComputeErrorBar(PopulationRate,M.rows,'+CAST(@ConfidenceLevel AS NVARCHAR)+','+CAST(@NoOfTails AS NVARCHAR)+')/M.rows)*100,2) as NVARCHAR)'
+			END
+			ELSE
+			BEGIN
+				SET @UpdateErrorbarQuery=',LowerLimit=CAST(ROUND((2*CAST(PopulationRate as float)-(select dbo.ComputeErrorBar(PopulationRate,M.rows,'+CAST(@ConfidenceLevel AS NVARCHAR)+','+CAST(@NoOfTails AS NVARCHAR)+'))/M.rows),2) as NVARCHAR)'+',UpperLimit=CAST(ROUND((select dbo.ComputeErrorBar(PopulationRate,M.rows,'+CAST(@ConfidenceLevel AS NVARCHAR)+','+CAST(@NoOfTails AS NVARCHAR)+')/M.rows),2) as NVARCHAR)'
+			END
+
+		END -- Error graph complete
+		END
+
+		 IF(@gtype!='errorbar' AND LOWER(@DisplayStatSignificance)!='rate')
+				SET @UpdateErrorBarQuery=' '
+				SET @SecondTable=@SecondTable+' UPDATE @dimensionTable'+CAST(@ReportGraphID AS NVARCHAR)+' SET Rows=M.Rows,['+@MeasureName+']=M.[Measure]'+@UpdateErrorBarQuery+' FROM @dimensionTable'+cast(@ReportGraphID AS NVARCHAR)+' D INNER JOIN @MeasureTable'+CAST(@ReportGraphID AS NVARCHAR)+' M ON '+@UpdateTableCondition+' delete FROM @Measuretable'+CAST(@ReportGraphID as NVARCHAR)
+			 
+FETCH NEXT FROM @MeasureCursor
+INTO @MeasureId,@MeasureName,@AggregationType
+END
+CLOSE @MeasureCursor
+DEALLOCATE @MeasureCursor
+DECLARE @SelectTable NVARCHAR(MAX)
+
+
+IF(@DimensionCount>1 AND LOWER(@GType)!='errorbar' AND LOWER(@GType)!='columnrange' AND LOWER(@GType)!='bullet' AND LOWER(@DisplayStatSignificance)!='rate')
+BEGIN
+
+	DECLARE @DimensionValues NVARCHAR(MAX)
+	IF(@IsDateOnYaixs=0)
+		SELECT @DimensionValues = COALESCE(@DimensionValues + ', ' ,'') + '[' + DisplayValue + ']'  FROM DimensionValue WHERE DimensionID = @DimensionId2 AND DisplayValue NOT IN (SELECT Exclude FROM ReportGraphRowExclude WHERE ReportGraphID = @ReportGraphID) ORDER BY OrderValue
+	ELSE
+	BEGIN
+			IF(@ViewByValue = 'Q') 
+			BEGIN
+				SELECT @DimensionValues = COALESCE(@DimensionValues + ', ' ,'') + DisplayValue FROM 
+				(SELECT '[' + 'Q' + CAST(DATEPART(Q,CAST(DisplayValue AS DATE)) AS NVARCHAR) + '-' + CAST(DATEPART(YY,CAST(DisplayValue AS DATE)) AS NVARCHAR)  + ']' DisplayValue ,MIN(OrderValue) OrderValue  FROM DimensionValue WHERE DimensionID = @DimensionId2 AND DisplayValue NOT IN (SELECT Exclude FROM ReportGraphRowExclude WHERE ReportGraphID = @ReportGraphID) GROUP BY '[' + 'Q' + CAST(DATEPART(Q,CAST(DisplayValue AS DATE)) AS NVARCHAR) + '-' + CAST(DATEPART(YY,CAST(DisplayValue AS DATE)) AS NVARCHAR)  + ']') A
+				ORDER BY OrderValue
+			END
+			ELSE IF(@ViewByValue = 'Y') 
+			BEGIN
+				SELECT @DimensionValues = COALESCE(@DimensionValues + ', ' ,'') + DisplayValue FROM 
+				(SELECT '[' + CAST(DATEPART(YY,CAST(DisplayValue AS DATE)) AS NVARCHAR)  + ']' DisplayValue ,MIN(OrderValue) OrderValue  FROM DimensionValue WHERE DimensionID = @DimensionId2 AND DisplayValue NOT IN (SELECT Exclude FROM ReportGraphRowExclude WHERE ReportGraphID = @ReportGraphID) GROUP BY '[' + CAST(DATEPART(YY,CAST(DisplayValue AS DATE)) AS NVARCHAR)  + ']') A
+				ORDER BY OrderValue
+			END
+			ELSE IF(@ViewByValue = 'M') 
+			BEGIN
+				SELECT @DimensionValues = COALESCE(@DimensionValues + ', ' ,'') + DisplayValue FROM 
+				(SELECT '[' + SUBSTRING(DateName(MONTH,CAST(DisplayValue AS DATE)),0,4) + '-' + CAST(DATEPART(YY,CAST(DisplayValue AS DATE)) AS NVARCHAR) + ']' DisplayValue ,MIN(OrderValue) OrderValue  FROM DimensionValue WHERE DimensionID = @DimensionId2 AND DisplayValue NOT IN (SELECT Exclude FROM ReportGraphRowExclude WHERE ReportGraphID = @ReportGraphID) GROUP BY '[' + SUBSTRING(DateName(MONTH,CAST(DisplayValue AS DATE)),0,4) + '-' + CAST(DATEPART(YY,CAST(DisplayValue AS DATE)) AS NVARCHAR) + ']') A
+				ORDER BY OrderValue
+			END
+			ELSE IF(@ViewByValue='W')
+			BEGIN
+				IF(YEAR(@STARTDATE)=YEAR(@ENDDATE))
+				BEGIN
+					SELECT @DimensionValues = COALESCE(@DimensionValues + ', ' ,'') + DisplayValue FROM 
+					(SELECT '[' + LEFT(CAST(DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)) AS NVARCHAR),3) + ' ' + CONVERT(NVARCHAR,DATEPART(DD,DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)))) + ']' DisplayValue ,MIN(OrderValue) OrderValue  FROM DimensionValue WHERE DimensionID = @DimensionId2 AND DisplayValue NOT IN (SELECT Exclude FROM ReportGraphRowExclude WHERE ReportGraphID = @ReportGraphID) GROUP BY '[' + LEFT(CAST(DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)) AS NVARCHAR),3) + ' ' + CONVERT(NVARCHAR,DATEPART(DD,DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)))) + ']') A
+					ORDER BY OrderValue
+				END
+				ELSE 
+				BEGIN
+					SELECT @DimensionValues = COALESCE(@DimensionValues + ', ' ,'') + DisplayValue FROM 
+					(SELECT '[' + LEFT(CAST(DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)) AS NVARCHAR),3) + ' '+ CONVERT(NVARCHAR,DATEPART(DD,DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)))) + '-' + CONVERT(NVARCHAR,YEAR(CAST(DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)) AS NVARCHAR))) + ']' DisplayValue ,MIN(OrderValue) OrderValue  FROM DimensionValue WHERE DimensionID = @DimensionId2 AND DisplayValue NOT IN (SELECT Exclude FROM ReportGraphRowExclude WHERE ReportGraphID = @ReportGraphID) GROUP BY '[' + LEFT(CAST(DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)) AS NVARCHAR),3) + ' '+ CONVERT(NVARCHAR,DATEPART(DD,DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)))) + '-' + CONVERT(NVARCHAR,YEAR(CAST(DATEADD(dd, @@DATEFIRST - DATEPART(dw, CAST(DisplayValue AS NVARCHAR)) - 6, CAST(DisplayValue AS NVARCHAR)) AS NVARCHAR))) + ']') A
+					ORDER BY OrderValue
+				END
+			END
+			ELSE IF(@ViewByValue='FQ' OR @ViewByValue='FY' OR @ViewByValue='FM')
+			BEGIN
+				SELECT @DimensionValues = COALESCE(@DimensionValues + ', ' ,'') + DisplayValue FROM 
+				(SELECT '[' + [dbo].[CalculateFiscalQuarterYear](@ViewByValue,CAST(DisplayValue AS DATETIME)) + ']' DisplayValue ,MIN(OrderValue) OrderValue  FROM DimensionValue WHERE DimensionID = @DimensionId2 AND DisplayValue NOT IN (SELECT Exclude FROM ReportGraphRowExclude WHERE ReportGraphID = @ReportGraphID) GROUP BY '[' + [dbo].[CalculateFiscalQuarterYear](@ViewByValue,CAST(DisplayValue AS DATETIME)) + ']') A
+				ORDER BY OrderValue
+			END
+	END
+	
+	--SET @SelectTable='; SELECT '+ @DimensionName1 + ',' + @DimensionValues + ' FROM ( ' +
+	SET @SelectTable='; SELECT * FROM ( ' +
+	'SELECT ' + @DimensionName1 + ',' + @DimensionName2 + ',[' + @Measure + '],MAX(OrderValue1) OVER (PARTITION BY '+ @DimensionName1 +') OrderValue FROM @DimensionTable'+cast(@ReportGraphID AS NVARCHAR)+' ' + 
+	') P PIVOT ('+
+	'MAX(['+ @Measure +']) FOR ' + @DimensionName2 + ' IN ('+ @DimensionValues +')'+
+	') AS PVT ORDER BY OrderValue' 
+	END
+	ELSE
+	BEGIN
+		DECLARE @OrderBy NVARCHAR(500) 
+		IF(@DimensionCount>1)
+			SET @OrderBy=' ORDER BY OrderValue1,OrderValue2'
+		ELSE
+			SET @OrderBy=' ORDER BY OrderValue1  '
+		SET @SelectTable=';SELECT * FROM @DimensionTable'+CAST(@ReportGraphID AS NVARCHAR)+' '+@OrderBy
+	END
+	
+	
+	print 	@FirstTable
+	print @SecondTable
+	print @finaltable
+	print @SelectTable
+	EXEC(@FirstTable+@SecondTable+@finaltable+@SelectTable )
+END
+
+END
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'WebApiGetReportRawData') AND xtype IN (N'P'))
+    DROP PROCEDURE WebApiGetReportRawData
+GO
+
+
+CREATE PROCEDURE [WebApiGetReportRawData]
+(
+	@Id INT, @TopOnly BIT = 1, @ViewBy NVARCHAR(2) = 'Q',@StartDate DATETIME= '1/1/1900', @EndDate DATETIME = '1/1/2100', @FilterValues NVARCHAR(MAX) = NULL, @Rate PreferredCurrenctDetails READONLY
+)
+AS 
+BEGIN
+	SET NOCOUNT ON;
+	--Identify if it is a custom query or not
+	DECLARE @CustomQuery NVARCHAR(MAX),@DrillDownCustomQuery NVARCHAR(MAX),@DrillDownXFilter NVARCHAR(MAX),@CustomFilter NVARCHAR(MAX), @GT NVARCHAR(100)
+	SELECT TOP 1 
+			@GT						= ISNULL(G.GraphType,''),
+			@CustomQuery			= ISNULL(G.CustomQuery,''),
+			@DrillDownCustomQuery	= ISNULL(G.DrillDownCustomQuery,''),
+			@DrillDownXFilter		= ISNULL(G.DrillDownXFilter,''),
+			@CustomFilter			= ISNULL(G.CustomFilter,'')
+	FROM ReportGraph G 
+		LEFT JOIN ReportAxis A			ON G.id = A.ReportGraphId 
+		WHERE G.Id = @Id
+
+	IF(@GT != 'bar' AND @GT != 'column' AND @GT != 'pie' AND @GT != 'donut' AND @GT != 'line' AND @GT != 'stackbar' AND @GT != 'stackcol' AND @GT != 'area' AND @GT != 'bubble' AND @GT != 'scatter' AND @GT != 'columnrange' AND @GT != 'negativearea' AND @GT != 'negativebar' AND @GT != 'negativecol' AND @GT != 'solidgauge' AND @GT != 'gauge')
+	BEGIN
+			SET @GT = 'Currently we are not supporting graph type "'+ @GT +'"  in Measure Report Web API'
+			RAISERROR(@GT,16,1) 
+	END
+	ELSE
+	BEGIN
+		--Identify if there is only date dimension is configured and will return with the chart attribute
+		DECLARE @IsDateDimensionOnly BIT = 0
+		IF(@CustomQuery != '') --Need to get if date dimension is configured on x-axis or not, this can be happen only for 2 dimension configured
+		BEGIN
+			SET @IsDateDimensionOnly = 
+				CASE WHEN (SELECT COUNT(*) FROM ReportAxis WHERE ReportGraphId = @Id ) = 1 THEN
+						(SELECT COUNT(*) FROM ReportAxis  A
+						INNER JOIN Dimension D ON D.id = A.Dimensionid AND D.IsDateDimension = 1 AND D.IsDeleted = 0
+						WHERE ReportGraphId  = @Id)
+				ELSE 0 
+			END
+		END
+
+		--Need to get if date dimension is configured on x-axis or not, this can be happen only for 2 dimension configured
+		DECLARE @DateOnX BIT = 0
+		IF(@CustomQuery = '') 
+		BEGIN
+			SET @DateOnX = 
+				CASE WHEN (SELECT COUNT(*) FROM ReportAxis WHERE ReportGraphId = @Id ) > 1 THEN
+						(SELECT COUNT(*) FROM ReportAxis  A
+						INNER JOIN Dimension D ON D.id = A.Dimensionid AND D.IsDateDimension = 1 AND D.IsDeleted = 0
+						WHERE ReportGraphId  = @Id AND AxisNAme = 'X')
+				ELSE 0 
+			END
+		END
+	
+		DECLARE @ColumnNames NVARCHAR(MAX) 
+		SELECT @ColumnNames = COALESCE(@ColumnNames + ', ', '') +  AttributeKey FROM (SELECT DISTINCT  '[' + AttributeKey + ']' AttributeKey FROM ChartOptionAttribute)  A
+		IF(@ColumnNames IS NULL OR @ColumnNames ='')
+			SET @ColumnNames = 'X'
+
+		DECLARE @Query NVARCHAR(MAX);
+		SET @Query = '
+		;WITH ReportAttribute AS (
+		SELECT 
+				Id,
+				GraphType				=	ISNULL(GraphType,''''),
+				IsLableDisplay			=	ISNULL(IsLableDisplay,0),
+				IsLegendVisible			= 	ISNULL(IsLegendVisible,0),
+				LegendPosition			=	ISNULL(LegendPosition,''right,middle,y''),
+				IsDataLabelVisible		= 	ISNULL(IsDataLabelVisible,0),
+				DataLablePosition		=	ISNULL(DataLablePosition,''''),
+				DefaultRows				=	ISNULL(DefaultRows,10),
+				ChartAttribute			=	ISNULL(ChartAttribute,''''),
+				ConfidenceLevel			=	ConfidenceLevel,
+				CustomQuery				=	ISNULL(CustomQuery,''''),
+				IsSortByValue			=	ISNULL(IsSortByValue,0),
+				SortOrder				=	ISNULL(SortOrder,''asc''),
+				DrillDownCustomQuery	=	ISNULL(DrillDownCustomQuery,''''),
+				DrillDownXFilter		=	ISNULL(DrillDownXFilter,''''),
+				CustomFilter			=	ISNULL(CustomFilter,''''),
+				TotalDecimalPlaces		=	(SELECT TOP 1 CASE WHEN ISNULL(TotalDecimalPlaces,-1) = -1 THEN ISNULL(G.TotalDecimalPlaces,-1) ELSE TotalDecimalPlaces END FROM ReportGraphColumn WHERE ReportGraphId = ' + CAST(@Id AS NVARCHAR) + '),
+				MagnitudeValue			=	(SELECT TOP 1 CASE WHEN ISNULL(MagnitudeValue,'''') = '''' THEN ISNULL(G.MagnitudeValue,'''') ELSE MagnitudeValue END  FROM ReportGraphColumn WHERE ReportGraphId = ' + CAST(@Id AS NVARCHAR) + '),
+				DimensionCount			=   CASE WHEN ISNULL(CustomQuery,'''') = ''''
+												THEN (SELECT COUNT(*) FROM ReportAxis A WHERE A.ReportGraphId = ' + CAST(@Id AS NVARCHAR) + ')
+											ELSE 
+												CASE WHEN CHARINDEX(''#DIMENSIONGROUP#'',CustomQuery) <= 0
+													THEN 1
+													ELSE 2
+												END
+											END,
+				SymbolType = (SELECT TOP 1 ISNULL(SymbolType,'''') FROM ReportGraphColumn WHERE ReportGraphId = ' + CAST(@Id AS NVARCHAR) + '),
+				IsDateDimensionOnly		=   '+ CAST(@IsDateDimensionOnly AS NVARCHAR) +',
+				DateOnX					=   '+ CAST(@DateOnX AS NVARCHAR) +'
+				FROM ReportGraph G
+				WHERE G.Id = ' + CAST(@Id AS NVARCHAR) + '
+		),
+		ExtendedAttribute AS
+		(
+	
+			SELECT * FROM (
+						SELECT  C1.ReportGraphId ReportGraphId1,C1.AttributeKey,C1.AttributeValue,C2.AttributeValue ColorSequenceNo FROM ChartOptionAttribute C1
+						LEFT JOIN ChartOptionAttribute C2 ON C1.ReportGraphId = C2.ReportGraphId AND  C2.AttributeKey = ''ColorSequenceNumber''
+						WHERE C1.ReportGraphId = ' + CAST(@Id AS NVARCHAR) + '
+				) AS R
+				PIVOT 
+				(
+					MIN(AttributeValue)
+					FOR AttributeKey IN ( '+  @ColumnNames + ')
+				) AS A
+				
+		)
+		SELECT *,ChartColor = dbo.GetColor(E.ColorSequenceNo) FROM ReportAttribute R
+		LEFT JOIN ExtendedAttribute E ON R.id = E.ReportGraphId1
+		'
+	
+		--This dynamic query will returns all the attributes of chart
+	
+		EXEC(@Query)
+
+	
+		DECLARE @DateDimensionId INT;
+		DECLARE @DimensionName VARCHAR(MAX);
+		DECLARE @FilterXML NVARCHAR(MAX) = NULL
+		DECLARE @FilterXMLString NVARCHAR(MAX) = NULL
+		DECLARE @DimList NVARCHAR(MAX) = NULL
+		DECLARE @ColDimLst NVARCHAR(MAX)
+			IF(@CustomQuery != '') --In case of custom query is configured for the report
+			BEGIN
+			
+				SELECT TOP 1 
+					@DateDimensionId = D.Id
+				FROM ReportGraph G 
+					LEFT JOIN ReportAxis A			ON G.id = A.ReportGraphId 
+					INNER JOIN Dimension D			ON D.id = A.Dimensionid AND D.IsDateDimension = 1 AND D.IsDeleted = 0
+				WHERE G.Id = @Id
+
+				IF(@GT = 'columnrange')
+				BEGIN
+					IF (@FilterValues IS NOT NULL AND @FilterValues != '')
+					BEGIN
+						SELECT @ColDimLst = COALESCE(@ColDimLst, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM ReportAxis where ReportGraphId = @Id
+						SELECT @DimList = COALESCE(@DimList, '') + 'D' + LEFT(dimension, CHARINDEX(':',dimension)-1) FROM [dbo].[fnSplitString](@FilterValues, ',')
+						SET @DimList = CONCAT(@DimList, 'D', CAST(@ColDimLst AS NVARCHAR(MAX)))
+						SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR(MAX)) FROM dbo.[IdentifyDimensions](@Id,1,@DimList)
+					END
+					ELSE
+					BEGIN
+						SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM ReportAxis where ReportGraphId = @Id order by DimensionId asc
+					END
+
+					IF (@FilterValues IS NOT NULL AND @FilterValues != '' AND @DimensionName IS NOT NULL AND @DimensionName != '')
+					BEGIN
+						SET @FilterXMLString = (SELECT [dbo].[GetFilterXmlString] (@FilterValues, @DimensionName))
+					END	
+				END
+				ELSE
+				BEGIN
+					IF (@FilterValues IS NOT NULL AND @FilterValues != '')
+					BEGIN
+						SELECT @DimList = COALESCE(@DimList, '') + 'D' + LEFT(dimension, CHARINDEX(':',dimension)-1) FROM [dbo].[fnSplitString](@FilterVAlues, ',')
+						SET @DimList = CONCAT(@DimList, 'D', CAST(@DateDimensionId AS NVARCHAR(MAX)))
+						SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DimList)
+					END
+					ELSE
+					BEGIN
+						SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM dbo.[IdentifyDimensions](@Id,1,@DateDimensionId)
+					END
+
+					IF (@FilterValues IS NOT NULL AND @FilterValues != '' AND @DimensionName IS NOT NULL AND @DimensionName != '')
+					BEGIN
+						SET @FilterXMLString = (SELECT [dbo].[GetFilterXmlString] (@FilterValues, @DimensionName))
+					END
+				END
+
+				IF (@FilterXMLString IS NOT NULL AND @FilterXMLString != '')
+				BEGIN
+					SELECT @FilterXML = CONCAT('''<filters>', @FilterXMLString, '</filters>''')
+				END
+			
+				IF((CHARINDEX('#DIMENSIONGROUP#',@CustomQuery) > 0 OR CHARINDEX('#DIMENSIONWHERE#',@CustomQuery) > 0) AND ISNULL(@DateDimensionId,0) != 0 )  -- We must have one dimension (date) configured for the report
+				BEGIN
+					EXEC [CustomGraphQuery]  
+						@ReportGraphID			= @Id, 
+						@STARTDATE				= @StartDate, 
+						@ENDDATE				= @EndDate,
+						@FilterValues			= @FilterXML,
+						@ViewByValue			= @ViewBy,
+						@DimensionTableName		= '',
+						@DateDimensionId		= @DateDimensionId,--this value must be pass , other wise CustomGraphQuery will throw an error
+						@IsDrillDownData		= 0,
+						@DrillRowValue			= NULL,
+						@SortBy					= NULL,
+						@SortDirection			= NULL,
+						@PageSize				= NULL,
+						@PageIndex				= NULL,
+						@IsExportAll			= 0,
+						@Rate                   = @Rate
+				END
+				ELSE IF(CHARINDEX('#DIMENSIONWHERE#',@CustomQuery) <= 0)
+				BEGIN
+					EXEC [CustomGraphQuery]  
+						@ReportGraphID			= @Id, 
+						@STARTDATE				= @StartDate, 
+						@ENDDATE				= @EndDate,
+						@FilterValues			= @FilterXML,
+						@ViewByValue			= @ViewBy,
+						@DimensionTableName		= '',
+						@DateDimensionId		= '', --this value is not passed here
+						@IsDrillDownData		= 0,
+						@DrillRowValue			= NULL,
+						@SortBy					= NULL,
+						@SortDirection			= NULL,
+						@PageSize				= NULL,
+						@PageIndex				= NULL,
+						@IsExportAll			= 0,
+						@Rate                   = @Rate
+				END
+				ELSE 
+				BEGIN
+						RAISERROR('Date Dimension is not configured for Report ',16,1) 
+				END
+			END
+			ELSE --In case of custom query is not configured for the report, but Dimension and Measure are configured
+			BEGIN
+					SELECT TOP 1 @DateDimensionId = DateD.id FROM ReportAxis A 
+						INNER JOIN Dimension D ON D.id = A.Dimensionid AND D.IsDeleted = 0
+						INNER JOIN Dimension DateD ON D.TableName = DateD.TableName and DateD.IsDateDimension = 1 AND DateD.IsDeleted = 0
+					WHERE A.ReportGraphId = @Id
+
+					IF(ISNULL(@DateDimensionId,0) != 0 )  -- We must have one dimension (date) configured for the report
+					BEGIN
+						IF(@GT = 'columnrange')
+						BEGIN
+							IF (@FilterValues IS NOT NULL AND @FilterValues != '')
+							BEGIN
+								SELECT @ColDimLst = COALESCE(@ColDimLst, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM ReportAxis where ReportGraphId = @Id
+								SELECT @DimList = COALESCE(@DimList, '') + 'D' + LEFT(dimension, CHARINDEX(':',dimension)-1) FROM [dbo].[fnSplitString](@FilterVAlues, ',')
+								SET @DimList = CONCAT(@DimList, 'D', CAST(@ColDimLst AS NVARCHAR(MAX)))
+								SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR(MAX)) FROM dbo.[IdentifyDimensions](@Id,1,@DimList)
+							END
+							ELSE
+							BEGIN
+								SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR) FROM ReportAxis where ReportGraphId = @Id order by DimensionId asc
+							END
+
+							IF (@FilterValues IS NOT NULL AND @FilterValues != '' AND @DimensionName IS NOT NULL AND @DimensionName != '')
+							BEGIN
+								SET @FilterXMLString = (SELECT [dbo].[GetFilterXmlString] (@FilterValues, @DimensionName))
+							END	
+						END
+						ELSE
+						BEGIN
+							IF (@FilterValues IS NOT NULL AND @FilterValues != '')
+							BEGIN
+								SELECT @DimList = COALESCE(@DimList, '') + 'D' + LEFT(dimension, CHARINDEX(':',dimension)-1) FROM [dbo].[fnSplitString](@FilterVAlues, ',')
+								SET @DimList = CONCAT(@DimList, 'D', CAST(@DateDimensionId AS NVARCHAR(MAX)))
+								SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR(MAX)) FROM dbo.[IdentifyDimensions](@Id,1,@DimList)
+							END
+							ELSE
+							BEGIN
+								SELECT @DimensionName = COALESCE(@DimensionName, '') + 'D' + CAST(DimensionId AS NVARCHAR(MAX)) FROM dbo.[IdentifyDimensions](@Id,1,@DateDimensionId)
+							END
+
+							IF (@FilterValues IS NOT NULL AND @FilterValues != '' AND @DimensionName IS NOT NULL AND @DimensionName != '')
+							BEGIN
+								SET @FilterXMLString = (SELECT [dbo].[GetFilterXmlString] (@FilterValues, @DimensionName))
+							END						
+						END
+
+						IF (@FilterXMLString IS NOT NULL AND @FilterXMLString != '')
+						BEGIN
+							SELECT @FilterXML = CONCAT('''<filters>', @FilterXMLString, '</filters>''')
+						END
+						
+						EXEC [ReportGraphResultsNew]
+							@ReportGraphID						= @Id, 
+							@DIMENSIONTABLENAME					= @DimensionName, 
+							@STARTDATE							= @StartDate, 
+							@ENDDATE							= @EndDate, 
+							@DATEFIELD							= @DateDimensionId, 
+							@FilterValues						= @FilterXML,
+							@ViewByValue						= @ViewBy,
+							@SubDashboardOtherDimensionTable	= 0,
+							@SubDashboardMainDimensionTable		= 0,
+							@DisplayStatSignificance			= NULL,
+							@UserId								= NULL,
+							@RoleId								= NULL,
+							@Rate                               = @Rate
+					END
+					ELSE
+					BEGIN
+							RAISERROR('Date Dimension is not configured for Report ',16,1) 
+					END
+			END
+
+			--If chart type is Gauge than returns Measure Output values
+
+			IF (@GT='gauge')
+			BEGIN
+					SELECT 
+						LowerLimit,
+						UpperLimit,
+						Value 
+					FROM MeasureOutputValue MOV
+					INNER JOIN ReportGraphColumn RGC 
+					ON MOV.MeasureId=RGC.MeasureId
+					WHERE RGC.ReportGraphId=@Id
+
+			END
+		END
+END
+GO
+
