@@ -1348,7 +1348,8 @@ namespace RevenuePlanner.Controllers
 
         #region Currency
         //insertation start 09/08/2016 kausha #2492 Following  is added to get and save currency.
-        public ActionResult Currency(string usrid, string src)
+        public ActionResult Currency()
+
         {
             List<CurrencyModel> lstCurrency = new List<CurrencyModel>();
             IEnumerable<BDSService.Currency> lstCurrencydata = objBDSServiceClient.GetAllCurrency();
@@ -1360,16 +1361,16 @@ namespace RevenuePlanner.Controllers
                 foreach (var item in lstCurrencydata)
                 {
                     CurrencyModel objCurrency = new CurrencyModel();
-                    objCurrency.CurrencyId = item.CurrencyId;
+                    //    objCurrency.CurrencyId = item.CurrencyId;
                     objCurrency.CurrencySymbol = item.CurrencySymbol;
                     objCurrency.CurrencyDetail = item.CurrencyDetail;
                     objCurrency.ISOCurrencyCode = item.ISOCurrencyCode;
-                    var defaultCurrency = lstClientCurrency.Where(w => w.IsDefault == true && w.CurrencyId == item.CurrencyId).FirstOrDefault();
+                    var defaultCurrency = lstClientCurrency.Where(w => w.IsDefault == true && w.ISOCurrencyCode == item.ISOCurrencyCode).FirstOrDefault();
                     if (defaultCurrency != null)
                         objCurrency.IsDefault = true;
                     else
                         objCurrency.IsDefault = false;
-                    if (lstClientCurrency.Where(w => w.CurrencyId == item.CurrencyId).Any())
+                    if (lstClientCurrency.Where(w => w.ISOCurrencyCode == item.ISOCurrencyCode).Any())
                         objCurrency.ClientId = Sessions.User.ClientId;
                     objCurrency.ISOCurrencyCode = item.ISOCurrencyCode;
                     lstCurrency.Add(objCurrency);
@@ -1377,7 +1378,7 @@ namespace RevenuePlanner.Controllers
             }
             return View("Currency", lstCurrency.AsEnumerable());
         }
-        public JsonResult SaveClientCurrency(List<int> curruncies)
+        public JsonResult SaveClientCurrency(List<string> curruncies)
         {
             bool status = false;
             try
@@ -1391,6 +1392,235 @@ namespace RevenuePlanner.Controllers
             }
             TempData["SuccessMessage"] = Common.objCached.CurrencySaved;
             return Json(status, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult ConversionRate()
+        {
+            //  string mode = InsepectMode;
+            Plangrid objplangrid = new Plangrid();
+            List<PlanHead> headobjlist = new List<PlanHead>();
+            List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+            PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
+            PlanController objPlanController = new PlanController();
+            string customFieldEntityValue = string.Empty;
+            string DropdowList = Enums.CustomFieldType.DropDownList.ToString();
+            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            string stylecolorgray = "color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:85%;";
+            try
+            {
+
+                bool isRequire = false;
+
+                string Gridheder = string.Empty;
+                string coltype = string.Empty;
+
+
+                headobjlist = GenerateHeader();
+
+                int requiredcnt = 0;
+                for (int i = 0; i < 5; i++)
+                {
+                    string RowID = "mediacode." + i.ToString();
+                    lineitemrowsobj = new PlanDHTMLXGridDataModel();
+                    List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
+
+
+                    lineitemrowsobj.id = RowID;
+
+                    Plandataobj lineitemdataobj = new Plandataobj();
+
+
+                    lineitemdataobj = new Plandataobj();
+                    lineitemdataobj.value = "Us dollar";
+                    lineitemdataobjlist.Add(lineitemdataobj);
+
+
+                    lineitemdataobj = new Plandataobj();
+                    lineitemdataobj.value = "50";
+                    lineitemdataobjlist.Add(lineitemdataobj);
+
+
+                    //if (IsArchive == false)
+                    //{
+                    //    lineitemdataobj = new Plandataobj();
+                    //    if (mode == Convert.ToString(Enums.InspectPopupMode.Edit) || mode == Convert.ToString(Enums.InspectPopupMode.Add))
+                    //        lineitemdataobj.value = "<span alt=" + Convert.ToString(tacticId) + " class='plus-circle' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " onclick='javascript:OpenGridPopup(event)' title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt' rowid=" + RowID + " onclick='javascript:AddRemoveMediaCode(this);' title='Select' altid=" + item.MediaCodeId.ToString() + "></div><span class='archive' title='Archive' ><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " onclick='javascript:ArchiveMediaCode(event)' title='Archive'></i></span>";
+                    //    else
+                    //        lineitemdataobj.value = "<span alt=" + Convert.ToString(tacticId) + " class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt' rowid=" + RowID + " onclick='javascript:AddRemoveMediaCode(this);' title='Select' altid=" + item.MediaCodeId.ToString() + "></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " title='Archive'></i></span>";
+
+                    //    lineitemdataobjlist.Add(lineitemdataobj);
+                    //}
+                    //else
+                    //{
+                    //    lineitemdataobj = new Plandataobj();
+                    //    if (mode == Convert.ToString(Enums.InspectPopupMode.Edit) || mode == Convert.ToString(Enums.InspectPopupMode.Add))
+                    //        lineitemdataobj.value = "<span class='archive' title='Unarchive'><i class='fa fa-archive UnarchiveMediaCode' aria-hidden='true' rowid=" + RowID + " onclick='javascript:UnarchiveMediaCode(event)' title='Unarchive'></i></span>";
+                    //    else
+                    //        lineitemdataobj.value = "<span class='archive disabled' title='Unarchive'><i class='fa fa-archive UnarchiveMediaCode' aria-hidden='true' rowid=" + RowID + " title='Unarchive'/>";
+
+                    //    lineitemdataobjlist.Add(lineitemdataobj);
+                    //}
+
+                    lineitemdataobj = new Plandataobj();
+                    lineitemdataobj.value = "<span class='spnMediacode'>" + "60" + "</span>";
+                    //  lineitemdataobj.value = "<span class='spnMediacode'>" + HttpUtility.HtmlEncode(item.MediaCode) + "</span>";
+                    lineitemdataobj.actval = HttpUtility.HtmlEncode("60");
+                    // lineitemdataobj.style = stylecolorgray;
+                    lineitemdataobjlist.Add(lineitemdataobj);
+
+                    lineitemdataobj = new Plandataobj();
+                    lineitemdataobj.value = "<span class='spnMediacode'>" + "60" + "</span>";
+                    //  lineitemdataobj.value = "<span class='spnMediacode'>" + HttpUtility.HtmlEncode(item.MediaCode) + "</span>";
+                    lineitemdataobj.actval = HttpUtility.HtmlEncode("70");
+                    //  lineitemdataobj.style = stylecolorgray;
+                    lineitemdataobjlist.Add(lineitemdataobj);
+
+
+                    //foreach (var Cust in lstmediaCodeCustomfield)
+                    //{
+                    //    if (Cust.CustomFieldTypeName.ToString() == Convert.ToString(Enums.CustomFieldType.TextBox))
+                    //    {
+                    //        coltype = "ro";
+
+
+                    //        isRequire = Cust.IsRequired;
+
+
+                    //        if (IsArchive)
+                    //            coltype = "ro";
+
+                    //        var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
+                    //        customFieldEntityValue = (optionValue != null) ? optionValue : string.Empty;
+
+                    //    }
+                    //    else if (Convert.ToString(Cust.CustomFieldTypeName) == Convert.ToString(Enums.CustomFieldType.DropDownList))
+                    //    {
+                    //        if (IsArchive == false)
+                    //        {
+
+                    //            coltype = "coro";
+
+                    //            var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
+                    //            customFieldEntityValue = (optionValue != null) ? optionValue : string.Empty;
+                    //            isRequire = Cust.IsRequired;
+
+                    //        }
+                    //        else
+                    //        {
+                    //            coltype = "ro";
+
+                    //            var objoptionID = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).FirstOrDefault();
+                    //            if (objoptionID != null)
+                    //            {
+                    //                int intoptionID = Convert.ToInt32(objoptionID.CustomFieldValue);
+                    //                string OptionValue = Cust.Option.Where(a => a.CustomFieldOptionId == intoptionID).Select(a => a.CustomFieldOptionValue).FirstOrDefault();
+                    //                customFieldEntityValue = (OptionValue != null) ? OptionValue : string.Empty;
+                    //            }
+                    //            else
+                    //                customFieldEntityValue = string.Empty;
+                    //        }
+                    //    }
+                    //    if (isRequire)
+                    //        requiredcnt = requiredcnt + 1;
+                    //    lineitemdataobj = new Plandataobj();
+                    //    if (!string.IsNullOrEmpty(customFieldEntityValue))
+                    //        lineitemdataobj.value = HttpUtility.HtmlEncode(customFieldEntityValue);
+                    //    else
+                    //        lineitemdataobj.value = "--";
+                    //    lineitemdataobj.locked = "1";
+                    //    lineitemdataobj.actval = Convert.ToString(isRequire);
+                    //    lineitemdataobj.style = stylecolorgray;
+
+                    //    lineitemdataobjlist.Add(lineitemdataobj);
+                    // }
+                    lineitemrowsobj.data = lineitemdataobjlist;
+
+                    lineitemrowsobjlist.Add(lineitemrowsobj);
+                }
+
+                objPlanMainDHTMLXGrid.head = headobjlist;
+                objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
+
+
+                objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+            }
+            return View("ConversionRate", objplangrid);
+        }
+        public List<PlanHead> GenerateHeader()
+        {
+            List<PlanHead> headobjlist = new List<PlanHead>();
+            string coltype = string.Empty;
+            List<PlanOptions> viewoptionlist = new List<PlanOptions>();
+            // string mode = Mode;
+            bool IsRequired = false;
+            List<RequriedCustomField> lstRequiredcustomfield = new List<RequriedCustomField>();
+            try
+            {
+
+                PlanHead headobjother = new PlanHead();
+
+
+                headobjother = new PlanHead();
+                headobjother.type = "ro";
+                headobjother.id = "Currency";
+                headobjother.sort = "na";
+                headobjother.width = 100;
+                headobjother.value = "Currency";
+                headobjlist.Add(headobjother);
+
+                headobjother = new PlanHead();
+                headobjother.type = "ed";
+                headobjother.id = "Jan";
+                headobjother.sort = "na";
+                headobjother.width = 100;
+                headobjother.value = "Jan";
+                headobjlist.Add(headobjother);
+
+
+                headobjother = new PlanHead();
+                headobjother.type = "ed";
+                headobjother.id = "Feb";
+                headobjother.sort = "na";
+
+                headobjother.width = 100;
+                //if (IsArchive == false)
+                //{
+                //    headobjother.value = "<input type='checkbox' id = 'MediaCodeSelectAll' value='SelectAll'  title='SelectAll'  class='selectInput'><span class='selectall'> Select All</span></input>";
+                //}
+                //else
+                headobjother.value = "Feb";
+                headobjlist.Add(headobjother);
+
+                headobjother = new PlanHead();
+                headobjother.type = "ed";
+                headobjother.id = "March";
+                headobjother.sort = "na";
+                headobjother.width = 200;
+                headobjother.value = "March";
+
+                headobjlist.Add(headobjother);
+                //var columncnt = lstmediaCodeCustomfield.Count;
+                var colwidth = 200;
+                //if (columncnt != 0 && columncnt < 4)
+                //{
+                //    colwidth = 725 / columncnt;
+                //}
+
+                if (lstRequiredcustomfield != null && lstRequiredcustomfield.Count > 0)
+                    ViewBag.RequiredList = lstRequiredcustomfield;
+                else
+                    ViewBag.RequiredList = "";
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+            }
+            return headobjlist;
+
         }
         //insertation end 09/08/2016 kausha #2492 Following  is added to get and save currency.
         #endregion

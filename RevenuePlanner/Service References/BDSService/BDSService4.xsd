@@ -278,7 +278,6 @@
       <xs:element minOccurs="0" name="CreatedBy" type="ser:guid" />
       <xs:element minOccurs="0" name="CreatedDate" type="xs:dateTime" />
       <xs:element minOccurs="0" name="CurrencyDetail" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="CurrencyId" type="xs:int" />
       <xs:element minOccurs="0" name="CurrencySymbol" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ISOCurrencyCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="IsDefault" type="xs:boolean" />

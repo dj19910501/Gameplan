@@ -2312,9 +2312,6 @@ namespace RevenuePlanner.BDSService {
         private string CurrencyDetailField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int CurrencyIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string CurrencySymbolField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -2384,19 +2381,6 @@ namespace RevenuePlanner.BDSService {
                 if ((object.ReferenceEquals(this.CurrencyDetailField, value) != true)) {
                     this.CurrencyDetailField = value;
                     this.RaisePropertyChanged("CurrencyDetail");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int CurrencyId {
-            get {
-                return this.CurrencyIdField;
-            }
-            set {
-                if ((this.CurrencyIdField.Equals(value) != true)) {
-                    this.CurrencyIdField = value;
-                    this.RaisePropertyChanged("CurrencyId");
                 }
             }
         }
@@ -2966,10 +2950,10 @@ namespace RevenuePlanner.BDSService {
         System.Threading.Tasks.Task<bool> DeleteClientCurrencyAsync(int currencyId, System.Guid clientId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/SaveClientCurrency", ReplyAction="http://tempuri.org/IBDSService/SaveClientCurrencyResponse")]
-        bool SaveClientCurrency(System.Collections.Generic.List<int> currencyIds, System.Guid clientId, System.Guid userId);
+        bool SaveClientCurrency(System.Collections.Generic.List<string> currencyIds, System.Guid clientId, System.Guid userId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/SaveClientCurrency", ReplyAction="http://tempuri.org/IBDSService/SaveClientCurrencyResponse")]
-        System.Threading.Tasks.Task<bool> SaveClientCurrencyAsync(System.Collections.Generic.List<int> currencyIds, System.Guid clientId, System.Guid userId);
+        System.Threading.Tasks.Task<bool> SaveClientCurrencyAsync(System.Collections.Generic.List<string> currencyIds, System.Guid clientId, System.Guid userId);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -3663,11 +3647,11 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.DeleteClientCurrencyAsync(currencyId, clientId);
         }
         
-        public bool SaveClientCurrency(System.Collections.Generic.List<int> currencyIds, System.Guid clientId, System.Guid userId) {
+        public bool SaveClientCurrency(System.Collections.Generic.List<string> currencyIds, System.Guid clientId, System.Guid userId) {
             return base.Channel.SaveClientCurrency(currencyIds, clientId, userId);
         }
         
-        public System.Threading.Tasks.Task<bool> SaveClientCurrencyAsync(System.Collections.Generic.List<int> currencyIds, System.Guid clientId, System.Guid userId) {
+        public System.Threading.Tasks.Task<bool> SaveClientCurrencyAsync(System.Collections.Generic.List<string> currencyIds, System.Guid clientId, System.Guid userId) {
             return base.Channel.SaveClientCurrencyAsync(currencyIds, clientId, userId);
         }
     }

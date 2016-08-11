@@ -35,8 +35,10 @@
 <!--error message-->
 <div class="title-header source-sans-proregular margin-bottom25">
     <h2>Currency</h2>
-</div> 
-
+</div>
+<li id="liConversionrate" class="item">
+    <a class="source-sans-probold integrations" href="#" id="aConversionrate"><span></span>ConversionRate</a>
+</li>
 <div class="padding-content cf source-sans-proregular" id="content">
     <div class="row">
 
@@ -54,7 +56,7 @@
                         {
                             if (item.ClientId != clientId)
                             {
-                                <li id="licurrency_@item.CurrencyId">
+                                <li id="licurrency_@item.ISOCurrencyCode">
                                     <a href="#">
                                         <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
                                     </a>
@@ -73,21 +75,22 @@
                         {
                             if (item.ClientId == clientId)
                             {
-                                <li id="limycurrency_@item.CurrencyId" isdefault='@item.IsDefault'>
+                                <li id="limycurrency_@item.ISOCurrencyCode" isdefault='@item.IsDefault'>
                                     <a href="#">
                                         <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
                                     </a>
                                 </li>
+
                                 if (@item.IsDefault == true)
                                 {
                                     <script>
-                                        $('#limycurrency_'+@item.CurrencyId).attr('isdefault', '1');
+                                        $('#limycurrency_'+'@item.ISOCurrencyCode').attr('isdefault', '1');
                                     </script>
                                 }
                                 else
                                 {
                                     <script>
-                                        $('#limycurrency_'+@item.CurrencyId).attr('isdefault', '0');
+                                        $('#limycurrency_'+'@item.ISOCurrencyCode').attr('isdefault', '0');
                                     </script>
                                 }
                             }
@@ -118,6 +121,13 @@
     }
 </style>
 <script>
+    //insertation start 09/08/2016 kausha #2492.
+    $('#aConversionrate').click(function () {
+        var url = '';
+        url = '@Url.Action("ConversionRate", "User")';
+        window.location.href = url;
+    });
+    //end insertation start 09/08/2016 kausha #2492.
     //insertation start 28/06/2016 kausha #742 Following function is added to search within filters
   //For enter key press event of search textbox
     function EnterEvent(e) {
@@ -200,23 +210,23 @@
             if ($(this).hasClass('searchactive')) {
                 cnt = cnt + 1;
                 $(this).css("display", "block");
-                $(this).removeClass("searchactive");                
+                $(this).removeClass("searchactive");
                 $("#divMyList ul").append(this);
             }
         });
 
         if (cnt == 0) {
             $("#diverrormsg").html("Please select at least one currency.");
-           
+
         }
         else {
             $("#diverrormsg").html("");
-          
+
         }
         ShowMessages();
     });
     //CLick of remove from my list
-    $('#btnRemove').click(function () {      
+    $('#btnRemove').click(function () {
         var ulId = "#ulMyCurrency";
         var cnt = 0;
         var defaultcurrency='';
@@ -242,7 +252,7 @@
                 $(this).removeClass("searchactive");
                 $(this).css("display", "block");
                 $("#divCurrencyList ul").append(this)
-              
+
             }
         });
         if (cnt == 0) {
@@ -253,13 +263,13 @@
         else {
             $("#diverrormsg").html("");
             //$("#errorMessage").slideUp(400);
-           
+
         }
         ShowMessages();
     });
     //Click of Save button which will save all records which is in my list
     $('#btnSave').click(function () {
-        $.post('/User/SaveClientCurrency', $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {          
+        $.post('/User/SaveClientCurrency', $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {
             window.location.href = "@Url.Content("~/User/Currency")";
         });
     });
