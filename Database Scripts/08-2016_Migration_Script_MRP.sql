@@ -69,6 +69,7 @@ BEGIN
 		[ComponentId] [int] NULL,
 		[EntityId] [int] NULL,
 		[Description] [nvarchar](250) NULL,
+		[ActionName] [nvarchar](50) NULL,
 		[IsRead] [bit] NOT NULL DEFAULT 0,
 		[ReadDate] [datetime] NULL,
 		[UserId] [uniqueidentifier] NULL,
