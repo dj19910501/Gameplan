@@ -1598,7 +1598,7 @@ namespace RevenuePlanner.Helpers
             BDSServiceClient bdsservice = new BDSServiceClient();
             List<ChangeLog_ViewModel> lst_clvm = new List<ChangeLog_ViewModel>();
             List<ChangeLog> lst_ChangeLog = new List<ChangeLog>();
-            List<int> lst_Objects = new List<int>();
+            List<int?> lst_Objects = new List<int?>();
 
             if (ObjectId > 0)
             {
