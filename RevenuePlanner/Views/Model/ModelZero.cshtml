@@ -79,10 +79,7 @@ else
     <div class="title-header source-sans-proregular">
         <h2>Baseline Models</h2>
     </div>
-    <ul class="nav nav-tabs">
-        @*<li class="title-header source-sans-proregular">
-            <h2>Model v1.0</h2>
-        </li>*@
+    <ul class="nav nav-tabs">       
         <li class="active pull-right">
             <a href="#">N/A</a>
         </li>
@@ -123,26 +120,17 @@ else
         $(document).on('click', '#table_baseline tbody tr', function (e) {
             var id = $(this).attr("id");
             if (id != null) {
-                var url = '@Url.Content("~/Model/createModel")';
-                //var queryStringArr = [];
-                //queryStringArr.push(
-                //    {
-                //        key: 'id',
-                //        Value: id
-                //    });
-                //formSubmitEvent(url, queryStringArr);
+                var url = '@Url.Content("~/Model/createModel")';                
                 window.location.href = url + "?id=" + id;
-                @*//window.location.href = "@Url.Content("~/model/create?id=")" + id;*@
+               
             }
         });
         $('#btnNewModel').click(function () {
-            var url = '@Url.Content("~/Model/createModel")';
-            //formSubmitEvent(url);
+            var url = '@Url.Content("~/Model/createModel")';            
             window.location.href = url;
         });
         $('#btnZeroModel').click(function () {
-            var url = '@Url.Content("~/Model/createModel")';
-            //formSubmitEvent(url);
+            var url = '@Url.Content("~/Model/createModel")';            
             window.location.href = url;
         });
     });
@@ -151,7 +139,6 @@ else
     $('#table_baseline').on('click', 'tbody tr td .add-icon', function (e) {
         e.stopPropagation();
         var url = '@Url.Content("~/Model/createModel")';
-        //formSubmitEvent(url);
         window.location.href = url;
     });
 
@@ -159,15 +146,7 @@ else
         var id = $(this).attr("id");
         if (id != null) {
             var url = '@Url.Content("~/Model/createModel")';
-            //var queryStringArr = [];
-            //queryStringArr.push(
-            //    {
-            //        key: 'id',
-            //        Value: id
-            //    });
-            //formSubmitEvent(url, queryStringArr);
             window.location.href = url + "?id=" + id;
-            @*//window.location.href = "@Url.Content("~/model/create?id=")" + id;*@
         }
     });
     //End
@@ -316,14 +295,7 @@ else
         } else {
             var status = "Published";
             $html += '<tr id="' + _id + '" index="' + _index + '"><td>';
-        }
-        @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
-        //if (_isOwner == 0) {
-        //    $html += '<span class="delete-temp-program width5 float-left-margin-top4-margin-right10"></span>';
-        //}
-        //else {
-        //    $html += '<span class="width3 float-left-margin-top4-margin-right10"></span>';
-        //}
+        }      
 
         $html += '<span class="title-baseline-model">' + _title +
         '<td>' + _version + '</td>' +

@@ -163,8 +163,7 @@
             $("#cSuccess").text(msgspan);
             $("#successMessage").slideDown(600);
         }
-        $("#btnCancel").click(function () {
-            // window.location.reload(true);   // Modified by Viral Kadiya on 11/19/2014 to implement cancel event.
+        $("#btnCancel").click(function () {            
             var url = '@Url.Content("~/Model/IntegrationSelection")';
             var queryStringArr = [];
             queryStringArr.push(
@@ -340,8 +339,7 @@
             }
             else {
                 var url = '@Url.Content("~/Model/CreateModel")';
-                formSubmitEvent(url);
-                //window.location.href = url;
+                formSubmitEvent(url);                
             }
         });
         $('#copymodelbtn').click(function () {

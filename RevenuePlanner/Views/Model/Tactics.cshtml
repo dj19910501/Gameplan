@@ -7,22 +7,22 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     string PublishedMsg = ViewBag.ModelPublishComfirmation;
     @Html.Hidden("PublishedMsg", PublishedMsg);
-                                              bool PublisheStatus = ViewBag.Flag;
-                                            @Html.Hidden("PublisheStatus", PublisheStatus);
-                                                                                          var currentdate = System.DateTime.Today.ToShortDateString();
-                                                                                          bool IsModelIntegrated = ViewBag.IsModelIntegrated;
+    bool PublisheStatus = ViewBag.Flag;
+    @Html.Hidden("PublisheStatus", PublisheStatus);
+    var currentdate = System.DateTime.Today.ToShortDateString();
+    bool IsModelIntegrated = ViewBag.IsModelIntegrated;
 
     // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
 
     @Html.Hidden("IsModelIntegrated", IsModelIntegrated);
-                                                        string TargetStageNotAssociatedWithModelMsg = Convert.ToString(ViewBag.TargetStageNotAssociatedWithModelMsg);   // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
-                                                        @Html.Hidden("TargetStageNotAssociatedWithModelMsg", TargetStageNotAssociatedWithModelMsg);                     // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
-                                                                                                                                                  // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-                                                                                                                                                  string IsOwner = Convert.ToString(ViewBag.IsOwner);
-                                                                                                                                                @Html.Hidden("IsOwner", IsOwner);
-                                                                                                                                                                                // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-                                                                                                                                                                                ViewBag.ModelIdPartial = Model.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
-                                                                                                                                                                                ViewBag.PageTitle = "Tactics";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+    string TargetStageNotAssociatedWithModelMsg = Convert.ToString(ViewBag.TargetStageNotAssociatedWithModelMsg);   // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+    @Html.Hidden("TargetStageNotAssociatedWithModelMsg", TargetStageNotAssociatedWithModelMsg);                     // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+                          // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
+    string IsOwner = Convert.ToString(ViewBag.IsOwner);
+    @Html.Hidden("IsOwner", IsOwner);
+    // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
+    ViewBag.ModelIdPartial = Model.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+    ViewBag.PageTitle = "Tactics";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
 
 }
 @section nlFormContent{
@@ -54,10 +54,10 @@
     {
         if (v.IsLatest)
         {
-            @Html.HiddenFor(model => v.ModelId, new { id = "VersionModelId" })  @*changed for #2312 *@ 
+            @Html.HiddenFor(model => v.ModelId, new { id = "VersionModelId" })  @*changed for #2312 *@
             <input type="hidden" value="@v.ModelId" id="latestModelId" />
 
-            <div class="title-header source-sans-proregular" title="@v.Title"> 
+            <div class="title-header source-sans-proregular" title="@v.Title">
                 <h2 id="lblTitle" >@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
 
             </div>
@@ -68,11 +68,9 @@
         {
             if (v.IsLatest)
             {
-
                 <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
                     <a href="#" name="versionId" id="@v.ModelId" onclick="LoadModelData(@v.ModelId,true)">@Html.Raw("v")@v.Version</a>
                 </li>
-
             }
             else
             {
@@ -81,7 +79,6 @@
                 <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
                     <a href="#" name="versionId" id="@v.ModelId">@Html.Raw("v")@v.Version</a>
                 </li>
-
             }
         }
     </ul>
@@ -102,8 +99,6 @@
         </ul>
     }
 }
-
-
 @Html.Hidden("0", (int)ViewBag.Version, new { id = "mode" })
 @Html.Hidden("EffectiveDate", currentdate)
 <div id="table_request" class="padding-content padding-top0 cf source-sans-proregular">
@@ -124,8 +119,7 @@
                 }
             </tr>
         </thead>
-        <tbody>
-            <!--tr elements are add dynamically with javascript (view script.js file)-->
+        <tbody>           
 
         </tbody>
     </table>
@@ -136,23 +130,21 @@
     }
 
 </div>
-
 @*Added By Kalpesh Sharma Functional and code review #560 07-16-2014   *@
 @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
 
 <script type="text/javascript">
     var lastModelId = null;
-
     $(document).ready(function () {
         $('#DivBackgroundModel').css("display", "none");
         $('#DivPublishModelPopup').css("display", "none");
         $('#dp_start .add-on').click(function () {
             $('#dp_start').datepicker('show');
-        })
+        });
 
         var ismsg = $("#hdnMsg").val();
         if ($('#cSuccess').html() != '') {
-            $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
+            $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html());
             $("#successMessage").slideDown(1200);
         }
         if ($('#cError').html() != '') {
@@ -216,7 +208,6 @@
 
                 //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
                 var titleName = htmlEncode($("#copymodeldesc").val().trim());
-
                 $.ajax(
                 {
                     type: "GET",
@@ -386,8 +377,6 @@
                 });
             }
         });
-
-
         //fill tactics table with data from json
         function fillTacticsTable() {
             if (tactic != 'undefined') {
@@ -506,13 +495,7 @@
 
                     if ($(this).parent().next().find("span").hasClass("circle-check-icon-integration-blue")) {
                         $(this).parent().next().find("span").removeClass("circle-check-icon-integration-blue")
-                    }
-                    //revert all the changes regarding 2115
-                    //Added by Rahul Shah on 02/06/2016 for PL #2115..  display confirm box when user off the "Deploye to Model" toggle.
-                    @*var isTrue = confirm(htmlDecode("@Common.objCached.TacticTypeMaybeUsed"));
-                    if (!isTrue) {
-                        $(this).addClass('circle-check-icon-blue');
-                    }*@
+                    }                    
                 }
                 else {
                     $(this).addClass('circle-check-icon-blue');
@@ -598,8 +581,6 @@
                 return false;
             }
         });
-
-
         $("#continue").click(function () {
             SaveAllTactic(false);
         });

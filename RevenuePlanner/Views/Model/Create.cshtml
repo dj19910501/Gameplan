@@ -7,7 +7,7 @@
     string strValidateForEmptyField = Common.objCached.ValidateForValidField;
     string strErrorOccured = Common.objCached.ErrorOccured;
     string ModelId = Convert.ToString(ViewBag.ModelId);
-    bool IsBenchmarked = false;//ViewBag.IsBenchmarked;
+    bool IsBenchmarked = false;
     string errormsg = Convert.ToString(TempData["StageNotExist"]);
     /*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*/
     string ModelPublishEdit = ViewBag.ModelPublishEdit;
@@ -16,21 +16,21 @@
     string PublishedMsg = ViewBag.ModelPublishComfirmation;
     @Html.Hidden("PublishedMsg", PublishedMsg);
     @Html.Hidden("Planflag", flag);
-                                  var currentdate = System.DateTime.Today.ToShortDateString();
-                                  // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                                  string IsOwner = Convert.ToString(ViewBag.IsOwner);
-                                @Html.Hidden("IsOwner", IsOwner);
-                                                                // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                                                                ViewBag.ModelIdPartial = ViewBag.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
-                                                                if (Model != null)
-                                                                {
-                                                                    ViewBag.modelStageCount = Model.lstmodelstage.Count();//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
-                                                                }
-                                                                else
-                                                                {
-                                                                    ViewBag.modelStageCount = 0;
-                                                                }
-                                                                ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+    var currentdate = System.DateTime.Today.ToShortDateString();
+    // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+    string IsOwner = Convert.ToString(ViewBag.IsOwner);
+    @Html.Hidden("IsOwner", IsOwner);
+    // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+    ViewBag.ModelIdPartial = ViewBag.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+    if (Model != null)
+    {
+        ViewBag.modelStageCount = Model.lstmodelstage.Count();//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+    }
+    else
+    {
+        ViewBag.modelStageCount = 0;
+    }
+    ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
 }
 <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
 @section nlFormContent{
@@ -155,19 +155,19 @@
                     <div id="divcontactInquiry"></div>
                     <a name="Rates"></a>
                     <h2 class="sub-title-forms source-sans-proregular">3. Conversion Rates</h2>
-                    @*<ul id="sub_nav_tabs" class="nav nav-tabs">
-                            <li class="title-header source-sans-proregular">
+                    <ul id="sub_nav_tabs" class="nav nav-tabs">
+                        <li class="title-header source-sans-proregular">
 
-                                <h2>3. Conversion Rates</h2>
+                            <h2></h2>
 
-                            </li>
-                            <li id="benchmarked-option" class="pull-right" >
-                                <a>Benchmarked</a>
-                            </li>
-                            <li id="advanced-option" class="active pull-right">
-                                <a>Advanced</a>
-                            </li>
-                        </ul>*@
+                        </li>
+                        <li id="benchmarked-option" class="pull-right">
+                            <a></a>
+                        </li>
+                        <li id="advanced-option" class="active pull-right">
+                            <a></a>
+                        </li>
+                    </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="benchmarked" style="display:none;">
                             <p>
@@ -198,61 +198,61 @@
                                 </thead>
                                 <tbody>
                                     @{
-        var cnti = 0;
-        var cntj = 2;
-        foreach (var item in Model.lstmodelstage)
-        {
-            cnti = cnti + 1;
-            if (cnti <= Model.lstmodelstage.Count())
-            {
-                if (@item.Funnel != "" && @item.Funnel != null)
-                {
-                    string m = Enums.FunnelFlag.M.ToString();
-                    string strmarketingflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(m)).Value;
+                                        var cnti = 0;
+                                        var cntj = 2;
+                                        foreach (var item in Model.lstmodelstage)
+                                        {
+                                            cnti = cnti + 1;
+                                            if (cnti <= Model.lstmodelstage.Count())
+                                            {
+                                                if (@item.Funnel != "" && @item.Funnel != null)
+                                                {
+                                                    string m = Enums.FunnelFlag.M.ToString();
+                                                    string strmarketingflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(m)).Value;
 
-                    if (Array.IndexOf(@item.Funnel.Split(','), strmarketingflag) >= 0)
-                    {
-                        <input type="hidden" name="txtStageId" value="@item.StageId">
-                                        <input type="hidden" name="txtTargetStage" id="hdnAllowedtargetStage_@item.StageId">
-                        if (cntj == cnti)
-                        {
-                            <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;" class="alternate">
-                                <td style="width: 30%">
-                                    <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
-                                </td>
-                                <td style="width: 22%; border-left: thin solid; border-color: black;">
-                                    <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0">
-                                </td>
-                                <td style="width: 22%; border-left: thin solid; border-color: black;">
-                                    <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0">
-                                </td>
-                                <td style="width: 26%; border-left: thin solid; border-color: black;" align="center">
-                                    <a class="targetStageclick" id="TargetStage_@item.StageId">False</a>
-                                </td>
-                            </tr>
-                            cntj = cntj + 2;
-                        }
-                        else
-                        {
-                            <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;">
-                                <td style="width: 30%">
-                                    <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
-                                </td>
-                                <td style="width: 22%; border-left: thin solid; border-color: black;">
-                                    <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0">
-                                </td>
-                                <td style="width: 22%; border-left: thin solid; border-color: black;">
-                                    <input class="backgroundC6EBF3 input-table source-sans-probold " type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0">
-                                </td>
-                                <td style="width: 26%; border-left: thin solid; border-color: black;" align="center">
-                                    <a class="targetStageclick" id="TargetStage_@item.StageId">False</a>
-                                </td>
-                            </tr>
-                        }
-                    }
-                }
-            }
-        }
+                                                    if (Array.IndexOf(@item.Funnel.Split(','), strmarketingflag) >= 0)
+                                                    {
+                                                        <input type="hidden" name="txtStageId" value="@item.StageId">
+                                                        <input type="hidden" name="txtTargetStage" id="hdnAllowedtargetStage_@item.StageId">
+                                                        if (cntj == cnti)
+                                                        {
+                                                            <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;" class="alternate">
+                                                                <td style="width: 30%">
+                                                                    <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
+                                                                </td>
+                                                                <td style="width: 22%; border-left: thin solid; border-color: black;">
+                                                                    <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0">
+                                                                </td>
+                                                                <td style="width: 22%; border-left: thin solid; border-color: black;">
+                                                                    <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0">
+                                                                </td>
+                                                                <td style="width: 26%; border-left: thin solid; border-color: black;" align="center">
+                                                                    <a class="targetStageclick" id="TargetStage_@item.StageId">False</a>
+                                                                </td>
+                                                            </tr>
+                                                            cntj = cntj + 2;
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;">
+                                                                <td style="width: 30%">
+                                                                    <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
+                                                                </td>
+                                                                <td style="width: 22%; border-left: thin solid; border-color: black;">
+                                                                    <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0">
+                                                                </td>
+                                                                <td style="width: 22%; border-left: thin solid; border-color: black;">
+                                                                    <input class="backgroundC6EBF3 input-table source-sans-probold " type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0">
+                                                                </td>
+                                                                <td style="width: 26%; border-left: thin solid; border-color: black;" align="center">
+                                                                    <a class="targetStageclick" id="TargetStage_@item.StageId">False</a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 </tbody>
                             </table>
@@ -262,14 +262,14 @@
                     <br />
                     <div class="container-button">
                         @{
-        if (Model.lstmodelstage.Count() > 0)
-        {
-            if (Convert.ToString(ViewBag.IsAuthorized) == "True") // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            {
-                <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
-                            <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
-            }
-        }
+                            if (Model.lstmodelstage.Count() > 0)
+                            {
+                                if (Convert.ToString(ViewBag.IsAuthorized) == "True") // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                                {
+                                    <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
+                                    <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
+                                }
+                            }
                         }
                     </div>
                     @Html.Hidden("isPublishButton")
@@ -285,10 +285,10 @@
             </div>
         </div>
 
-        //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
-        @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
-    }
-}
+                            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
+                            @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
+                                }
+                            }
 <script type="text/javascript">
     var lastModelId;
     var modelStatus;/* changed by Nirav shah for TFS Point :252 editing a published model*/

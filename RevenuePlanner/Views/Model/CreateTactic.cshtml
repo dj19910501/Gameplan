@@ -5,10 +5,8 @@
 @using System.Data.Entity;
 @using System.Linq;
 @{
-    bool IsModelIntegrated = ViewBag.IsModelIntegrated;
-    //string ModelIntegrationType = ViewBag.ModelIntegrationType;
+    bool IsModelIntegrated = ViewBag.IsModelIntegrated;    
     //Start Manoj Limbachiya PL # 486
-
     bool IsDeplyed = ViewBag.IsDeployed;
     bool IsWorkFront = ViewBag.isIntegratedWithWorkFront != null ? ViewBag.isIntegratedWithWorkFront : false; // Update by bhavesh #1727
     bool IsMarketo = ViewBag.isIntegratedWithMarketo != null ? ViewBag.isIntegratedWithMarketo : false;         //Added By Komal RAwal
@@ -21,8 +19,6 @@
     @Html.Hidden("hdnStageId", TacticTypeStageId);
     string ChangeTargetStageMsg = Convert.ToString(ViewBag.ChangeTargetStageMsg);
     @Html.Hidden("hdnChangeTargetStageMsg", ChangeTargetStageMsg);
-
-
     // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
 }
 <div class="head">
@@ -39,14 +35,12 @@
             </div>
         }
     </div>
-
 </div>
 
 <div id="validationMessage" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
     <strong>Error:</strong> <span id="spanMessage"></span>
 </div>
-
 
 @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
 {
@@ -138,10 +132,8 @@
             }
         </div>
         <!--End content-->
-
         <div class="content dark">
             <p>Add two or more projected or historical values for projection purposes.</p>
-
             <label id="projectStage">Projected [Stage]</label>
             @*//changes done by uday for #497*@
             <label></label>
@@ -199,7 +191,6 @@
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-
         if ($("#StageId option:selected").text() != "Please Select") {
             $("#projectStage").html();
             $("#projectStage").html('Projected [' + $("#StageId option:selected").text() + ']');
@@ -291,12 +282,7 @@
                     t_integration_status.val("Not Deployed to Integration");
                     t_integration_status.addClass("icon-check-gray");
                     t_integration_status.removeClass("icon-check-blue");
-                }
-                //revert all the changes regarding 2115
-                @*var isTrue = confirm(htmlDecode("@Common.objCached.TacticTypeMaybeUsed"));
-                if (!isTrue) {
-                    $(this).addClass('icon-check-blue');
-                }*@
+                }              
             }
             else {
                 $(this).val("Deployed to Model");
@@ -372,7 +358,6 @@
             });
         });
 
-        
         /*Modified by Mitesh Vaishnav on 05/06/2014 for remove two buttons of save tactics */
         $("#CreateTactic").click(function (event, DeleteAllPackage) {
             var iserror = false;
@@ -405,7 +390,6 @@
                     }
                 }
             });
-
             //sbSelector
             $('form').find('.sbSelector').each(function () {
                 if ($(this).parent().prev().attr('require') == 'true') {
@@ -421,7 +405,6 @@
 
             /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
             var isDeployedToIntegration = false;
-
             if ($("#t_integration_status").hasClass("icon-check-blue")) {
                 isDeployedToIntegration = true;
             }
@@ -447,18 +430,11 @@
             var TemplateId = $("#WorkFrontTemplateId").val();
             if (TemplateId == '' || TemplateId == 'undefined') {
                 TemplateId = 'null';
-            }
-            //End added Brad Gray 07/24/2015 PL # 1374
-            //var Campainfoldervalue = "";
-            //var ProgramType = "";
-            //var Channel = "";
+            }           
 
             var ProgramType = $('#ddlprogramtype').attr('value');
             var Channel = $('#ddlchannel').attr('value');
-
             var AssetType = $("#AssetType").val();
-
-
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
             //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
             var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val());
@@ -467,7 +443,6 @@
             if (isCreated == 'True') {
                 TacticTypeId = 0;
             }
-
             var clientId = $("#hdnClientId").val();
             var modelID = $("#hdnModelId").val();
 
@@ -586,12 +561,7 @@
             $('#Spanchannel div .sbSelector').text("Please Select");
             $("#ddlchannel").val("");
         }
-
-
-
     });
-
-
 
     $('#ddlprogramtype').on('change', function () {
         ProgramTypeValue = $(this).val();
@@ -657,15 +627,12 @@
 
 
     });
-
     $("#cancel-button-Package").click(function () {
         $('#PackageListModal').css("display", "none");
         $('#PackageListModal').modal("hide");
     });
-
     $('#proceed-button-Package').on("click", function () {
-        var Assetvalue = $('#AssetType').val();
-     //   DeleteAllPackage = true;
+        var Assetvalue = $('#AssetType').val();    
         $('#CreateTactic').trigger('click',[true]);
         $('#PackageListModal').css("display", "none");
         $('#PackageListModal').modal("hide");

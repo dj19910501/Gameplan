@@ -208,8 +208,7 @@
             else {
                 var url = '@Url.Content("~/Model/CreateModel")';
                 var queryString = []
-                formSubmitEvent(url, queryString);
-                //window.location.href = url;
+                formSubmitEvent(url, queryString);                
             }
         });
         $('#copymodelbtn').click(function () {
@@ -272,8 +271,7 @@
                             key: 'id',
                             Value: ModelId
                         });
-                    formSubmitEvent(url, queryStringArr);
-                    //window.location.href = url + '?id=' + ModelId;
+                    formSubmitEvent(url, queryStringArr);                   
                       }
                       else {
                           url = '@Url.Content("~/Model/ModelZero")';
