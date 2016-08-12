@@ -39,7 +39,6 @@ namespace RevenuePlanner
 
             bundles.Add(new ScriptBundle("~/bundles/GetJSForLogin").Include(
                         "~/Scripts/js/jquery-2.2.1.js",
-                        "~/Scripts/MultiCurrency.js",
                         "~/Scripts/js/bootstrap.js",
                         "~/Scripts/js/jquery.slimscroll_min.js",
                         "~/Scripts/js/jquery.slidepanel_min.js",

@@ -7,19 +7,19 @@ $(document).ready(function () {
 // Add By Nishant Sheth // Get list of plan currency details 
 function setCurrencyDetails()
 {
-    if (GetCurrencyURL != undefined) {
+    if (typeof GetCurrencyURL != undefined) {
         $.ajax({
             type: 'get',
             url: GetCurrencyURL,
             success: function (data) {
                 if (data != null && data != '') {
                     if (data.CurrencySymbol != null && data.CurrencySymbol != '') {
-                        if (CurrencySybmol != undefined) {
+                        if (typeof CurrencySybmol != undefined) {
                             CurrencySybmol = data.CurrencySymbol;
                         }
                     }
                     if (data.ExchangeRate != null && data.ExchangeRate != '') {
-                        if (PlanExchangeRate != undefined) {
+                        if (typeof PlanExchangeRate != undefined) {
                             PlanExchangeRate = data.ExchangeRate;
                         }
                     }
