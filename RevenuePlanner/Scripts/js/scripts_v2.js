@@ -753,6 +753,9 @@ function ME_GetSymbolforValues(value, symbolType) {
                 value = value + "%"
             }
         }
+        else {
+            value = symbolType + value;
+        }
     }
 
 
