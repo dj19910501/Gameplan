@@ -1992,14 +1992,14 @@ namespace RevenuePlanner.Test.Controllers
             objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             string asset = Convert.ToString(Enums.AssetType.Asset);
-            var AssetTacticTypes = db.TacticTypes.Where(tt => tt.AssetType.Equals(asset)).Select(x => x);
+            var AssetTacticTypes = db.TacticTypes.Where(tt => tt.AssetType.Equals(asset) && tt.IsDeleted == false).Select(x => x);
             Plan_Campaign_Program_Tactic tactic = new Plan_Campaign_Program_Tactic();
             JsonResult result = null;
             string pkgItems = string.Empty;
             if (AssetTacticTypes != null && AssetTacticTypes.Count() > 0)
             {
-                int TacTypeId = AssetTacticTypes.Select(tt => tt.TacticTypeId).FirstOrDefault();
-                tactic = db.Plan_Campaign_Program_Tactic.Where(x => x.TacticTypeId == TacTypeId && x.ROI_PackageDetail.Count == 0).FirstOrDefault();
+                List<int> TacTypeId = AssetTacticTypes.Select(tt => tt.TacticTypeId).ToList();
+                tactic = db.Plan_Campaign_Program_Tactic.Where(x => TacTypeId.Contains(x.TacticTypeId) && x.ROI_PackageDetail.Count == 0).FirstOrDefault();
             }
             if (tactic != null && tactic.PlanTacticId != 0)
             {
@@ -2011,8 +2011,9 @@ namespace RevenuePlanner.Test.Controllers
             var resultvalue = serializedData["data"];
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value: resultvalue " + resultvalue);
             Assert.AreEqual(resultvalue, "Success");
-            
+
         }
+
 
         /// <summary>
         /// Get tactic details on clicking of package icon from grid/calendar 
