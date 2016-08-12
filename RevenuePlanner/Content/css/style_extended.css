@@ -61,7 +61,7 @@
      */
 
 .pull-right > span {
-    margin-right: -15px !important;
+    /*margin-right: -15px;*//* Commented because it creates global rule for all span and badley affect allover application. Use class hirarchy for this style */
 }
 
 .table-info-actual-left {

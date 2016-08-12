@@ -15420,9 +15420,22 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 }
 .aler-list {
     margin-left: 20px;
-    margin-right: -32px;
+    margin-right: -20px;
 }
-.notify-list .fa, .aler-list .fa{ font-size: 22px;}
+.notify-list .fa, .aler-list .fa{ font-size: 20px;}
+.count {
+    background: #f8710e none repeat scroll 0 0;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 11px;
+    height: 18px;
+    line-height: 17px;
+    min-width: 25px;
+    padding: 0 2px;
+    position: absolute;
+    right: 0;
+    top: 5px;
+}
 
 .header-right .dropdown-menu{padding:0; background: #f2f2f2 none repeat scroll 0 0;}
 .header-right .dropdown-menu li{text-align:left; border-bottom:1px solid #ccc;font-size:13px}
@@ -16066,13 +16079,24 @@ input.selectInput{
 .alert-heading {
     width: 75%;
 }
-.acco-icons {width: 150px;margin-top: 8px;}
+.acco-icons {width: 175px;margin-top: 8px;}
 .accordion.alert-accordian .accordion-heading a{color:#95989A; float:right;display:inline;}
 .accordion.alert-accordian .accordion-heading a.accordion-toggle{ margin-right:10px}
 .accordion.alert-accordian .accordion-heading .fa{font-size:18px; color:#95989A;}
+.accordion.alert-accordian .accordion-heading .fa.fa-clone {font-size: 16px;}
 .alert-heading h4{margin:0; font-weight:normal}
 .alert-heading:first-child span{margin-right:50px}
-
+.acco-icons  .alert-rule-check{margin-right:10px;color:#95989A; font-size:13px}
+.alert-rule-check input[type="checkbox"]{
+    margin: -2px 0 0 2px;
+    opacity: 0.6;
+    transform: scale(1.2);
+    /* Double-sized Checkboxes */
+        -ms-transform: scale(1.2); /* IE */
+        -moz-transform: scale(1.2); /* FF */
+        -webkit-transform: scale(1.4); /* Safari and Chrome */
+        -o-transform: scale(1.2); /* Opera */
+}
 .accordion-row{width:100%;  margin-bottom: 15px;}
 .alert-value-box {
     padding-left: 15px;
@@ -16115,7 +16139,8 @@ input.selectInput{
    font-size:13px;
 }
 .accordion-row .selectBox{margin: 0 5px 0 5px; }
-.accordion-row .bootstrap-datetimepicker-widget{ width:100% !important}
+.accordion-row .selectBox option:hover{background:#ccc }
+/*.accordion-row .bootstrap-datetimepicker-widget{ width:100% !important}
 .accordion-row.calendar_div .input-group-addon {
     border-radius: 0 4px 4px 0;
     line-height: 0;
@@ -16126,17 +16151,21 @@ input.selectInput{
 .accordion-row.calendar_div .input-group .form-control {
     display: inline-block;
     float: left;
-}
+}*/
 .container-button {width: 100%;}
 #lblentity{ 
     display: inline-block;
-    line-height: 11px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 300px;
+    padding:0 5px;
 
 } 
+.alert-value-box.inline-span span {
+    float: left;
+    line-height: 27px;
+}
 /* Notification settings */
 .pref-msg-row{margin-bottom:35px}
 .pref-msg-row h4{font-weight:normal;}
