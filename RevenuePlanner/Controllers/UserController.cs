@@ -1690,12 +1690,12 @@ namespace RevenuePlanner.Controllers
             var lstGoalTypeListFromDB = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.ClientId && lstGoalTypes.Contains(a.Code)).Select(a => a).ToList();
             Stage objStage = new Stage();
             string revGoalType = Convert.ToString( Enums.PerformanceFector.Revenue);
-            objStage.Title = revGoalType.ToLower();
+            objStage.Title = revGoalType;
             objStage.Code = revGoalType.ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
             objStage = new Stage();
             revGoalType = Convert.ToString(Enums.PerformanceFector.PlannedCost);
-            objStage.Title = revGoalType.ToLower();
+            objStage.Title = revGoalType;
             objStage.Code = revGoalType.ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
             return new SelectList(lstGoalTypeListFromDB, "Code", "Title");
@@ -1703,7 +1703,7 @@ namespace RevenuePlanner.Controllers
         #endregion
         #region Method to save alertRule
         [HttpPost]
-        public JsonResult SaveAlertRule(List<AlertRuleDetail> RuleDetail, int RuleID = 0)
+        public JsonResult SaveAlertRule(AlertRuleDetail RuleDetail, int RuleID = 0)
         {
             try
             {
@@ -1712,16 +1712,17 @@ namespace RevenuePlanner.Controllers
                     //Insert Rule
                     if (RuleDetail != null)
                     {
-                        AlertRuleDetail objRule = RuleDetail.FirstOrDefault();
+                       // AlertRuleDetail objRule = RuleDetail.FirstOrDefault();
+                        AlertRuleDetail objRule = RuleDetail;
                         if (objRule.EntityID != null && Convert.ToInt32(objRule.EntityID) != 0)
                         {
-                            int EntityID = Convert.ToInt32(objRule.EntityID);
-                            int indicatorGoal = Convert.ToInt32(objRule.IndicatorGoal);
-                            int Completiongoal = Convert.ToInt32(objRule.CompletionGoal);
-                            Boolean IsExists = objcommonalert.IsAlertRuleExists(EntityID, Completiongoal, indicatorGoal, objRule.Indicator, objRule.IndicatorComparision);
+                            int EntityID = Int32.Parse(objRule.EntityID);
+                            int indicatorGoal = Int32.Parse(objRule.IndicatorGoal);
+                            int Completiongoal = Int32.Parse(objRule.CompletionGoal);
+                            Boolean IsExists = objcommonalert.IsAlertRuleExists(EntityID, Completiongoal, indicatorGoal, objRule.Indicator, objRule.IndicatorComparision, Sessions.User.UserId);
                             if (!IsExists)
                             {
-                                int result = objcommonalert.SaveAlert(objRule);
+                                int result = objcommonalert.SaveAlert(objRule,Sessions.User.ClientId,Sessions.User.UserId);
                                 if(result>0)
                                     return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessAlertRule }, JsonRequestBehavior.AllowGet);
                                 else

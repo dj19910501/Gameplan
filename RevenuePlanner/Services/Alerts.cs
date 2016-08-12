@@ -33,18 +33,18 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region Method to save Alert Rule
-        public int SaveAlert(AlertRuleDetail objRule)
+        public int SaveAlert(AlertRuleDetail objRule, Guid ClientId, Guid UserId)
         {
             Alert_Rules objalertRule = new Alert_Rules();
             int result = 0;
             try
             {
-                objalertRule.EntityId = Convert.ToInt32(objRule.EntityID);
+                objalertRule.EntityId = Int32.Parse(objRule.EntityID);
                 objalertRule.EntityType = objRule.EntityType;
                 objalertRule.Indicator = objRule.Indicator;
-                objalertRule.IndicatorComparision = objRule.IndicatorComparision; ;
-                objalertRule.IndicatorGoal = Convert.ToInt32(objRule.IndicatorGoal);
-                objalertRule.CompletionGoal = Convert.ToInt32(objRule.CompletionGoal);
+                objalertRule.IndicatorComparision = objRule.IndicatorComparision; 
+                objalertRule.IndicatorGoal = Int32.Parse(objRule.IndicatorGoal);
+                objalertRule.CompletionGoal = Int32.Parse(objRule.CompletionGoal);
                 objalertRule.Frequency = objRule.Frequency;
                 if (objRule.Frequency == Convert.ToString(SyncFrequencys.Weekly))
                     objalertRule.DayOfWeek = Convert.ToByte(objRule.DayOfWeek);
@@ -55,13 +55,12 @@ namespace RevenuePlanner.Services
                     else
                         objalertRule.DateOfMonth = 10;
                 }
-                objalertRule.ClientId = Sessions.User.ClientId;
-                objalertRule.UserId = Sessions.User.UserId;
+                objalertRule.ClientId = ClientId;
+                objalertRule.UserId = UserId;
                 objalertRule.CreatedDate = DateTime.Now;
-                objalertRule.CreatedBy = Sessions.User.UserId;
+                objalertRule.CreatedBy = UserId;
                 objalertRule.RuleSummary = objRule.RuleSummary;
                 objalertRule.LastProcessingDate = DateTime.Now;
-                objalertRule.NextProcessingDate = DateTime.Now;
                 objalertRule.IsDisabled = false;
 
                 objDbMrpEntities.Entry(objalertRule).State = EntityState.Added;
@@ -76,12 +75,12 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region method to check alert rule already exists or not
-        public bool IsAlertRuleExists(int EntityID, int Completiongoal, int indicatorGoal, string Indicator, string Comparison)
+        public bool IsAlertRuleExists(int EntityID, int Completiongoal, int indicatorGoal, string Indicator, string Comparison, Guid UserId)
         {
             bool IsExists = false;
             try
             {
-                IsExists = objDbMrpEntities.Alert_Rules.Any(a => a.EntityId == EntityID && a.CompletionGoal == Completiongoal && a.IndicatorGoal == indicatorGoal && a.Indicator == Indicator && a.IndicatorComparision == Comparison);
+                IsExists = objDbMrpEntities.Alert_Rules.Any(a => a.EntityId == EntityID && a.CompletionGoal == Completiongoal && a.IndicatorGoal == indicatorGoal && a.Indicator == Indicator && a.IndicatorComparision == Comparison && a.UserId == UserId);
             }
             catch (Exception ex)
             {

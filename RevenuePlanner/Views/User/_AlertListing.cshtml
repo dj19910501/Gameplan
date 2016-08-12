@@ -176,13 +176,18 @@
         $.each(categoryArr, function (index, category) {
             ul.append("<li class='ui-autocomplete-group' aria-label=" + category + ">" + category + "</li>");
             $.each(items, function (index, item) {
+                var li;
                 if (item.category == category) {
-                    self._renderItemData(ul, item);
+                    li = self._renderItemData(ul, item);
+                    if (item.category) {
+                        li.attr("title", item.label);
+                    }
                 }
 
             });
         });
-
+      
+      
     };
     $(".searchtext").keyup(function () {
         var maindiv = $(this).parent().parent().parent().parent();
@@ -194,7 +199,7 @@
 
                         $.getJSON(urlcontent, { 'term': request.term }, function (data) {
                             var t = data;
-
+                           
                             if (data.length > 0) {
                                 myApp.hidePleaseWait();
                                 response($.map(data, function (item) {
@@ -203,6 +208,7 @@
                                 }))
                             }
                             else {
+                               
                                 $('.ui-autocomplete').html('No Records found');
                                 var hdnid = $(maindiv).find("#hdnEntityId");
                                 $(hdnid).val('');
@@ -211,6 +217,7 @@
                                 $(hdntypeid).val('');
                                 $(this).attr("title", '');
                                 var lbl = $(maindiv).find("#lblentity");
+                                $(lbl).attr("title", '');
                                 $(lbl).html('');
                             }
 
@@ -240,6 +247,7 @@
 
                         var lbl = $(maindiv).find("#lblentity");
                         $(lbl).html(ui.item.label);
+                        $(lbl).attr("title",ui.item.label);
                         $(maindiv).find("#divque2").show();
                     }
                     return false;
@@ -272,7 +280,7 @@
         var isvalid = CheckValidate(tableId);
         if (isvalid) {
             var str = '';
-            var AlertRuleDetail = [];
+            var AlertRuleDetail ;
             var EntityId = $(tableId).find("#hdnEntityId").val();
             var Performancefector = $(tableId).find("#ddlperformance").val();
             var GoalType = $(tableId).find("#ddlindicator").val();
@@ -287,7 +295,7 @@
                 "<span>Start at " + ComplettionGoal + "% completion</span><span>Repeat " + frequency + "</span>";
             // var dayofweekMonth = $(tableId).find("#hdnEntityId").val();
             if (EntityId != "" && EntityId != null && parseInt(EntityId) != 0) {
-                AlertRuleDetail.push({
+                AlertRuleDetail={
                     EntityID: EntityId.toString(),
                     EntityType: EntityType.toString(),
                     Indicator: GoalType.toString(),
@@ -298,7 +306,7 @@
                     DayOfWeek: DayOfWeek.toString(),
                     DateOfMonth: DateofMonth.toString(),
                     RuleSummary: rulesummary.toString()
-                });
+                };
             }
             if (AlertRuleDetail != null) {
                 AlertRuleDetail = JSON.stringify(AlertRuleDetail);
