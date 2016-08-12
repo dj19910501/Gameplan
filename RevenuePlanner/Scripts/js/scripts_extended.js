@@ -82,7 +82,8 @@ function FormatCurrency(amount, showDecimals) {
         if (s.indexOf('.') == (s.length - 2)) { s += '0'; }
     }
     //s = minus + s;
-    s = '$' + FormatCommas(s, showDecimals);
+    //s = '$' + FormatCommas(s, showDecimals);//Commented by Rahul Shah for PL #2498.
+    s = CurrencySybmol + FormatCommas(s, showDecimals); //Added by Rahul Shah for PL #2498.
     //// Start - Commented By Sohel Pathan on 23/07/2014 for PL ticket #597
     //if (minus)
     //    s = "(" + s + ")";
@@ -160,7 +161,7 @@ function FormatCommasBudget(amount, showDecimals , showCurrencySymbol) {
 }
 
 function ReplaceCC(text) {
-    return text.trim().replace(/,/g, '').replace('$', '');
+    return text.trim().replace(/,/g, '').replace(CurrencySybmol, ''); //Modified by Rahul Shah for PL #2498 & #2499.
 }
 //// Modified By: Viral Kadiya
 //// Date 10/29/2014
@@ -476,9 +477,10 @@ function setBootstrapTooltip(lableId, value, maxSize, iscurrency, decimaldigit) 
 
     if (lengthvalue >= maxSize) {
         if (iscurrency) {
-            $(lableId).text("$" + GetAbberiviatedValue(numericval));
-            $(lableId).attr('title', "$" + number_format(roundValue, 0, '.', ','));
-            bootstrapetitle($(lableId), '$' + number_format(roundValue, 0, '.', ','), "tipsy-innerWhite");
+            //Modified by Rahul Shah for PL #2498 & #2499
+            $(lableId).text(CurrencySybmol + GetAbberiviatedValue(numericval));
+            $(lableId).attr('title', CurrencySybmol + number_format(roundValue, 0, '.', ','));
+            bootstrapetitle($(lableId), CurrencySybmol + number_format(roundValue, 0, '.', ','), "tipsy-innerWhite");
         }
         else {
             $(lableId).text(GetAbberiviatedValue(numericval));
@@ -488,9 +490,9 @@ function setBootstrapTooltip(lableId, value, maxSize, iscurrency, decimaldigit) 
     }
     else {
         if (iscurrency) {
-            //Modified by Ashish for PL #1656
-            $(lableId).text("$" + number_format(roundValue, digit, '.', ','));
-            //Modified by Ashish for PL #1656
+            //Modified by Rahul Shah for PL #2498 & #2499
+            $(lableId).text(CurrencySybmol + number_format(roundValue, digit, '.', ','));
+            
         }
         else {
             $(lableId).text(number_format(roundValue, 0, '.', ','));

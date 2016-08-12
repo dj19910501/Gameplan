@@ -32,6 +32,7 @@ namespace RevenuePlanner.Controllers
         private MRPEntities objDbMrpEntities = new MRPEntities();
         static Random rnd = new Random();
         string strVersion = "version";
+        public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency(); //Added by Rahul Shah for PL #2498 to apply multi currency
         #endregion
         public ModelController()
         {
@@ -293,8 +294,10 @@ namespace RevenuePlanner.Controllers
             if (collection["txtMarketing"] != null)
             {
                 double doubleValue = 0.0;
-                double.TryParse(Convert.ToString(collection["txtMarketing"].ToString().Replace(",", "").Replace("$", "")), out doubleValue);
-                averageDealSize = doubleValue;
+                //Modified by Rahul Shah for PL #2498.
+                double.TryParse(Convert.ToString(collection["txtMarketing"]).Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""), out doubleValue);
+                //averageDealSize = doubleValue;
+                averageDealSize = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(doubleValue)));
             }
             try
             {
@@ -1299,7 +1302,8 @@ namespace RevenuePlanner.Controllers
                 Stage = (tacticType.StageId == null) ? "-" : tacticType.Stage.Title, //// Modified by dharmraj for ticket #475, Old line : Stage = (p.StageId == null) ? "-" : p.Stage.Code
                 //// changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                 ProjectedStageValue = (tacticType.ProjectedStageValue == null) ? 0 : tacticType.ProjectedStageValue,
-                revenue = (tacticType.ProjectedRevenue == null) ? 0 : tacticType.ProjectedRevenue,
+                revenue = (tacticType.ProjectedRevenue == null) ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tacticType.ProjectedRevenue))), //Added by Rahul Shah for PL #2498.
+                //revenue = (tacticType.ProjectedRevenue == null) ? 0 : tacticType.ProjectedRevenue,//Commented by Rahul Shah for PL #2498.
                 IsDeployedToIntegration = tacticType.IsDeployedToIntegration,
                 IsTargetStageOfModel = (tacticType.StageId == null) ? true : stagesList.Contains(Convert.ToInt32(tacticType.StageId)),     //// Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                 IsDeployedToModel = tacticType.IsDeployedToModel, //// added by dharmraj for #592 : Tactic type data model
@@ -1407,7 +1411,7 @@ namespace RevenuePlanner.Controllers
                 //// changed by Nirav Shah on 2 APR 2013
                 //// changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                 objTacticTypeMdoel.ProjectedStageValue = (objTacticType.ProjectedStageValue != null) ? objTacticType.ProjectedStageValue : 0;
-                objTacticTypeMdoel.ProjectedRevenue = (objTacticType.ProjectedRevenue != null) ? objTacticType.ProjectedRevenue : 0;
+                objTacticTypeMdoel.ProjectedRevenue = (objTacticType.ProjectedRevenue != null) ? objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objTacticType.ProjectedRevenue))) : 0; //Modified by Rahul Shah for PL #2498.
 
                 //// added by dharmraj for ticket #433 Integration - Model Screen Tactic List
                 objTacticTypeMdoel.IsDeployedToIntegration = objTacticType.IsDeployedToIntegration;
@@ -1664,7 +1668,8 @@ namespace RevenuePlanner.Controllers
                 objtactic.Description = Description;
                 ////changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                 objtactic.ProjectedStageValue = ProjectedStageValue;
-                objtactic.ProjectedRevenue = ProjectedRevenue;
+                objtactic.ProjectedRevenue =  objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(ProjectedRevenue))); //Modified by Rahul Shah for PL #2498.
+                //objtactic.ProjectedRevenue = ProjectedRevenue;
                 //// changed by Nirav Shah on 2 APR 2013
                 objtactic.StageId = StageId;
                 int intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
@@ -2061,7 +2066,7 @@ namespace RevenuePlanner.Controllers
                                 objtactic.Description = tacticType.Description;
                                 //// changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                                 objtactic.ProjectedStageValue = tacticType.ProjectedStageValue;
-                                objtactic.ProjectedRevenue = tacticType.ProjectedRevenue;
+                                objtactic.ProjectedRevenue = tacticType.ProjectedRevenue;                               
                                 objtactic.Abbreviation = tacticType.Abbreviation;
                                 objtactic.AssetType = tacticType.AssetType;
 

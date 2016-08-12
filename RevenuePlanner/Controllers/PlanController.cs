@@ -63,6 +63,7 @@ namespace RevenuePlanner.Controllers
         private const string Total = "Total";
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
+        public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
         #endregion
         #region variable for load plan grid
         double totalmqlCSV = 0;
@@ -244,7 +245,8 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Value).FirstOrDefault();
                     objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
                     objPlanModel.AllocatedBy = objplan.AllocatedBy;
-                    objPlanModel.Budget = objplan.Budget;
+                    //objPlanModel.Budget = objplan.Budget;
+                    objPlanModel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.Budget)));                    
                     objPlanModel.Version = objplan.Version;
                     objPlanModel.ModelTitle = objplan.Model.Title + " " + objplan.Model.Version;
                     double TotalAllocatedCampaignBudget = 0;
@@ -659,7 +661,8 @@ namespace RevenuePlanner.Controllers
                             plan.GoalValue = 0;
                         }
                         plan.AllocatedBy = objPlanModel.AllocatedBy;
-                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        //plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        plan.Budget = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(objPlanModel.Budget).Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, "")));
                         plan.ModelId = objPlanModel.ModelId;
                         plan.Year = objPlanModel.Year;
                         db.Plans.Add(plan);
@@ -705,7 +708,8 @@ namespace RevenuePlanner.Controllers
                         }
                         plan.AllocatedBy = objPlanModel.AllocatedBy;
                         plan.Description = objPlanModel.Description;
-                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        //plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        plan.Budget = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(objPlanModel.Budget).Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, "")));
                         plan.ModelId = objPlanModel.ModelId;
                         if (plan.Year != objPlanModel.Year)
                         {
@@ -792,7 +796,8 @@ namespace RevenuePlanner.Controllers
                         msg1 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
                         msg2 = " in revenue";
                         input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
-                        input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                        //input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objBudgetAllocationModel.RevenueValue))).ToString();
 
                     }
                     else if (goalType.ToString().ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
@@ -800,7 +805,9 @@ namespace RevenuePlanner.Controllers
                         msg1 = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
                         msg2 = " in revenue";
                         input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
-                        input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                        //input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objBudgetAllocationModel.RevenueValue))).ToString();
+
                     }
                     else if (goalType.ToString().ToLower() == Enums.PlanGoalType.Revenue.ToString().ToLower())
                     {
@@ -816,7 +823,7 @@ namespace RevenuePlanner.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
-            return Json(new { msg1 = msg1, msg2 = msg2, input1 = input1, input2 = input2, ADS = ADS }, JsonRequestBehavior.AllowGet);
+            return Json(new { msg1 = msg1, msg2 = msg2, input1 = input1, input2 = input2, ADS = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(ADS))) }, JsonRequestBehavior.AllowGet);
         }
         #endregion
 

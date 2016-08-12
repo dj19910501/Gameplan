@@ -189,7 +189,7 @@
         var LiValue = "";
         var SelectedValue = "";
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
-        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });  //Modified by Rahul Shah for PL #2498.
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         if ($("#StageId option:selected").text() != "Please Select") {
             $("#projectStage").html();

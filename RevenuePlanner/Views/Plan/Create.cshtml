@@ -98,10 +98,11 @@
     }
                         }
                             goal of
-                        <span id="revenueSign">$ </span>
+                            @*//Modified by Rahul Shah for PL #2499*@
+                        <span id="revenueSign">@Sessions.PlanCurrencySymbol</span>
                             @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat", isedit = isPlanEdit  })
                             and a budget of
-                        @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit  })
+                        @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>" + Sessions.PlanCurrencySymbol + "800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit  })
                             allocated by
                         @{
     if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
@@ -637,7 +638,8 @@
 
     @* Start - Added by Pratik on 03/02/2015 for PL ticket #1114 *@
     function changeBudgetValues() {
-        if ($("#txtBudget").val().replace("$","") == "0") {
+        //Modified by Rahul Shah for PL #2499
+        if ($("#txtBudget").val().replace(CurrencySybmol, "") == "0") {
             $('#AllocatedBy').prev().css("display", "none");
             $('#spanZeroBudget').css("display", "inline");
             $('#AllocatedBy').prev().children('a').text("none");
@@ -720,7 +722,7 @@
                 $('#msg2').html(data.msg2);
                 $('#input1').html(number_format(data.input1.toString(), 0, '.', ','));
                 if (_goalType.toLowerCase() != "revenue") {
-                    $('#input2').html('$' + number_format(data.input2.toString(), 0, '.', ','));
+                    $('#input2').html(CurrencySybmol + number_format(data.input2.toString(), 0, '.', ','));  //Modified by Rahul Shah for PL #2499
                 }
                 else {
                     $('#input2').html(number_format(data.input2.toString(), 0, '.', ','));
@@ -964,7 +966,7 @@
         if ($(input).val() == '') {
             isInputBlank = true;
         }
-        var selectedMonthBudget = parseInt($(input).val() == '' ? 0 : ($(input).val().trim().replace(/,/g, '').replace('$', '')));
+        var selectedMonthBudget = parseInt($(input).val() == '' ? 0 : ($(input).val().trim().replace(/,/g, '').replace(CurrencySybmol, '')));  //Modified by Rahul Shah for PL #2499
         if (campaignBudget > selectedMonthBudget) {
             $('#spnCampaignAllocatedBudget').addClass('error-text');
             $(input).addClass('campaignBudgetError');
@@ -985,7 +987,7 @@
         var allocatedBudget = 0;
         $('.budget-month .priceValue').each(function () {
             if ($(this).val().trim() != '' && this.id.toString() != 'unallocatedBudget') {
-                var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                var currentValue = $(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '');  //Modified by Rahul Shah for PL #2499
                 if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                     allocatedBudget += parseInt(currentValue);
                 }
@@ -998,7 +1000,7 @@
         var allocatedBudget = 0;
         $('.budget-quarters .priceValue').each(function () {
             if ($(this).val().trim() != '' && this.id.toString() != 'unallocatedBudget') {
-                var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                var currentValue = $(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '');  //Modified by Rahul Shah for PL #2499
                 if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                     allocatedBudget += parseInt(currentValue);
                 }
@@ -1315,7 +1317,7 @@ function GetAllocatedBudgetForPlan(planId) {
         $('#disabledPlanYear').html($('#Year').val());
         $('#disabledGoalType').html($('#GoalType').prev().find('.nl-field-toggle').html());
         if ($('#GoalType').val().toLowerCase() == "revenue") {
-            $('#disabledGoalValue').html("$" + $('#GoalValue').prev().find('.nl-field-toggle').html());
+            $('#disabledGoalValue').html(CurrencySybmol + $('#GoalValue').prev().find('.nl-field-toggle').html());  //Modified by Rahul Shah for PL #2499
         }
         else {
             $('#disabledGoalValue').html($('#GoalValue').prev().find('.nl-field-toggle').html());

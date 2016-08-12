@@ -5590,7 +5590,7 @@ namespace RevenuePlanner.Helpers
 
                 if (goalType != "" && goalValue != "" && goalValue != "0")
                 {
-                    double inputValue = Convert.ToInt64(goalValue.Trim().Replace(",", "").Replace("$", ""));
+                    double inputValue = Convert.ToInt64(goalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, "")); //Modified by Rahul Shah for PL #2499
 
                     if (goalType == Enums.PlanGoalType.INQ.ToString())
                     {

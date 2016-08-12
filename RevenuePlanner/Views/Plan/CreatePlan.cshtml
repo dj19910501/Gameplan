@@ -40,14 +40,7 @@
 @Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
 @Html.HiddenFor(model => model.GoalType) @*Modified by Komal Rawal for 1903 goals not showing as per plan defination*@
 
-@* commented for #2312  *@
-@*@section PlanHeader{
 
-    <div class="light-blue-chart cf full-width-header" id="planHeader">
-        @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
-    </div>
-
-}*@
 @section Sidebar
 {
     <div class="padding-content padding-bottom0 ">
@@ -80,16 +73,6 @@
         </li>
     </ul>
 }
-
-@*<div id="errorMessage" class="alert alert-error hide message-position-small">
-        <a class="close" id="aclose">×</a>
-        <strong>Error! </strong><span id="spanMessageError"></span>
-    </div>*@
-<!--Error message-->
-@*<div id="divErrLessBudget" class="alert alert-error hide message-position-small">
-        <a class="close" id="aclose">×</a>
-        <strong>Error! </strong><span>@Common.objCached.ErrMsgLessPlanBudget</span>
-    </div>*@
 
 @* Added for #2312  *@
 <div class="light-blue-chart cf full-width-header" id="planHeader">
@@ -144,10 +127,11 @@
     }
                             }
                             goal of
-                            <span id="revenueSign">$</span>
+                            @*//Modified by Rahul Shah for PL #2499*@
+                            <span id="revenueSign">@Sessions.PlanCurrencySymbol</span>                           
                             @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat", isedit = isPlanEdit })
                             and a budget of
-                            @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit })
+                            @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>"+ Sessions.PlanCurrencySymbol+ "800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit })
                             allocated by
                             @{
     if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
@@ -222,25 +206,6 @@
     var IsPlanSelecter = '@isPlanSelecter';
     var isError = false;
     var IsHeaderActuals = true;
-
-    @*   jQuery(document).ready(function ($) { //event of browser back button
-        if (window.history && window.history.pushState) {
-            window.history.pushState('forward', null, './#forward');
-            $(window).on('popstate', function () {
-                var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
-                window.location.href = url;
-            });
-        }
-      });
-
-    $(document).on("keydown", function (e) {
-        if (e.which == 8) {
-            // var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
-                //window.location.href = url;
-                return false;
-            }
-
-    });*@
 
     $(document).ready(function () {
         var hdnPlanId = $("#hdnPlanId").val();
@@ -356,9 +321,6 @@
             });
 
             if (isError) {
-                @* $("#errorMessage").css("display", "block");
-                $("#spanMessageError").empty();
-                $("#spanMessageError").text("@Common.objCached.ValidateForEmptyField");*@
                 ShowMessage(isError, "@Common.objCached.ValidateForEmptyField")
                 $("#button-save").removeAttr('disabled');
                 return false;
@@ -392,10 +354,6 @@
                             else {
                                 if (data.id == -1) {
                                     isError = true;
-                                    //$("#errorMessage").css("display", "block");
-                                    //$("#spanMessageError").empty();
-                                    //$("#spanMessageError").text(data.imsg);
-                                    //   $("#divErrLessBudget").css("display", "none");
 
                                     ShowMessage(isError, data.imsg)
                                     $("#button-save").removeAttr('disabled');
@@ -404,7 +362,6 @@
                                 else if (data.id != 0) {
                                     $('#PlanId').val(data.id.toString());
                                     $('#divPlanDefinationEnabled').hide();
-                                    // $('#divPlanDefinationDisabled').show(); //Commented By komal Rawal for 1903 block displayed on sae of definaion
                                     $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
 
                                     // Added by Viral regarding PL ticket #2434.
@@ -444,9 +401,6 @@
                                 }
                                 else {
                                     isError = true;
-                                    @*$("#errorMessage").css("display", "block");
-                                      $("#spanMessageError").empty();
-                                      $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");*@
 
                                     ShowMessage(isError, "@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                                     return false;
@@ -592,7 +546,7 @@
                 $('#msg2').html(data.msg2);
                 $('#input1').html(number_format(data.input1.toString(), 0, '.', ','));
                 if (_goalType.toLowerCase() != "revenue") {
-                    $('#input2').html('$' + number_format(data.input2.toString(), 0, '.', ','));
+                    $('#input2').html(CurrencySybmol + number_format(data.input2.toString(), 0, '.', ',')); //Modified by Rahul Shah for PL #2499
                 }
                 else {
                     $('#input2').html(number_format(data.input2.toString(), 0, '.', ','));
@@ -624,7 +578,7 @@
         $('#disabledPlanYear').html($('#Year').val());
         $('#disabledGoalType').html($('#GoalType').prev().find('.nl-field-toggle').html());
         if ($('#GoalType').val().toLowerCase() == "revenue") {
-            $('#disabledGoalValue').html("$" + $('#GoalValue').prev().find('.nl-field-toggle').html());
+            $('#disabledGoalValue').html(CurrencySybmol + $('#GoalValue').prev().find('.nl-field-toggle').html());  //Modified by Rahul Shah for PL #2499
         }
         else {
             $('#disabledGoalValue').html($('#GoalValue').prev().find('.nl-field-toggle').html());
@@ -636,7 +590,7 @@
 
 
     function changeBudgetValues() {
-        if ($("#txtBudget").val().replace("$", "") == "0") {
+        if ($("#txtBudget").val().replace(CurrencySybmol, "") == "0") {  //Modified by Rahul Shah for PL #2499
             $('#AllocatedBy').prev().css("display", "none");
             $('#spanZeroBudget').css("display", "inline");
             $('#AllocatedBy').prev().children('a').text("none");
@@ -680,7 +634,6 @@
         if (isDataChanged()) {
             $('#errorMsg').html("<strong>Error! </strong> <span id='spanMsgError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a></span><a id='aclose' class='close confirmClose'>×</a>");
             $("#errorMsg").slideDown(400);
-            // $("#divErrLessBudget").css("display", "none");
         }
         else {
             window.location.href = strURL;
@@ -724,7 +677,6 @@
 
     $(document).on("click", "#confirmClose, .confirmClose", function (e) {
         $("#errorMsg").slideUp(1000);
-        //  $("#divErrLessBudget").css("display", "none");
     });
 
     // Code to Cancel new Plan

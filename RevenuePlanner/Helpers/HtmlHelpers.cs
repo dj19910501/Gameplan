@@ -13,7 +13,8 @@ using Elmah;
 namespace RevenuePlanner.Helpers
 {
     public static class HtmlHelpers
-    {
+    {        
+        public static RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();//Added by Rahul Shah for PL #2498.
         /// <summary>
         /// To truncate the string 
         /// </summary>
@@ -51,11 +52,12 @@ namespace RevenuePlanner.Helpers
             textboxMarketingDealSize.Attributes.Add("id", "MarketingDealSize");
             textboxMarketingDealSize.Attributes.Add("name", "txtMarketing");
             textboxMarketingDealSize.Attributes.Add("datadefault", "MS");
-            textboxMarketingDealSize.Attributes.Add("datasubline", "For example: <em>$100,000</em>");
+            textboxMarketingDealSize.Attributes.Add("datasubline", "For example: <em>" + Sessions.PlanCurrencySymbol + "100,000</em>"); //Modified by Rahul Shah for PL #2498.
             if (MSize > 0)
             {
-                textboxMarketingDealSize.Attributes.Add("value", MSize.ToString());
-                textboxMarketingDealSize.Attributes.Add("placeholder", MSize.ToString());
+                //Modified by Rahul Shah for PL #2498.
+                textboxMarketingDealSize.Attributes.Add("value", objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(MSize))).ToString());
+                textboxMarketingDealSize.Attributes.Add("placeholder", objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(MSize))).ToString());
             }
             else
             {

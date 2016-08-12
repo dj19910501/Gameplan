@@ -422,7 +422,7 @@
                           '<td   class="sm border-r" id="' + _id + '">' + _AssetType + '</td>' +
                            //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
                           '<td   class="sm border-r" id="' + _id + '">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
-                          '<td  class="border-r sm projectedcost" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
+                          '<td  class="border-r sm projectedcost" id="' + _id + '">' + CurrencySybmol + FormatCommas(_revenue.toString(), false) + '</td>' +  //Modified by Rahul Shah for PL #2498
                           '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>';
 
                 if ($("#IsModelIntegrated").val() == 'True') {
@@ -440,7 +440,7 @@
                             '<td id="' + _id + '"  class="sm border-r">' + _AssetType + '</td>' +
                              //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
                             '<td  id="' + _id + '" class="sm border-r">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
-                            '<td id="' + _id + '" class="border-r sm projectedcost">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
+                            '<td id="' + _id + '" class="border-r sm projectedcost">' + CurrencySybmol + FormatCommas(_revenue.toString(), false) + '</td>' +  //Modified by Rahul Shah for PL #2498 
                             '<td class="border-r"><span class="circle-check-icon-gray"  id = "' + "rej" + _id + '"></span></td>';
 
                 if ($("#IsModelIntegrated").val() == 'True') {
