@@ -75,12 +75,18 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region method to check alert rule already exists or not
-        public bool IsAlertRuleExists(int EntityID, int Completiongoal, int indicatorGoal, string Indicator, string Comparison, Guid UserId)
+        public bool IsAlertRuleExists(int EntityID, int Completiongoal, int indicatorGoal, string Indicator, string Comparison, Guid UserId,int Ruleid)
         {
             bool IsExists = false;
             try
             {
-                IsExists = objDbMrpEntities.Alert_Rules.Any(a => a.EntityId == EntityID && a.CompletionGoal == Completiongoal && a.IndicatorGoal == indicatorGoal && a.Indicator == Indicator && a.IndicatorComparision == Comparison && a.UserId == UserId);
+                if(Ruleid!=0)
+                {
+                    IsExists = objDbMrpEntities.Alert_Rules.Any(a => a.EntityId == EntityID && a.CompletionGoal == Completiongoal && a.IndicatorGoal == indicatorGoal && a.Indicator == Indicator && a.IndicatorComparision == Comparison && a.RuleId!=Ruleid && a.UserId==UserId);
+
+                }
+                else
+                    IsExists = objDbMrpEntities.Alert_Rules.Any(a => a.EntityId == EntityID && a.CompletionGoal == Completiongoal && a.IndicatorGoal == indicatorGoal && a.Indicator == Indicator && a.IndicatorComparision == Comparison && a.UserId == UserId);
             }
             catch (Exception ex)
             {
@@ -88,6 +94,132 @@ namespace RevenuePlanner.Services
 
             }
             return IsExists;
+        }
+        #endregion
+        #region method to get list or alert rules created
+        public List<AlertRuleDetail> GetAletRuleList(Guid UserId, Guid ClientId)
+        {
+            List<AlertRuleDetail> lsAlerttRule = new List<AlertRuleDetail>();
+            try
+            {
+
+                var RuleList = (from ar in objDbMrpEntities.Alert_Rules
+                                join ent in objDbMrpEntities.vClientWise_EntityList on ar.EntityId equals ent.EntityId
+                                where ar.UserId == UserId && ar.EntityType == ent.Entity && ar.ClientId == ClientId
+                                select new { ar, ent.EntityTitle }).OrderBy(a => a.ar.IsDisabled).ThenByDescending(a=>a.ar.CreatedDate).ToList();
+
+                lsAlerttRule = RuleList.Select(a => new AlertRuleDetail
+                {
+                    EntityID = Convert.ToString(a.ar.EntityId),
+                    EntityType = a.ar.EntityType,
+                    Indicator = a.ar.Indicator,
+                    IndicatorGoal = Convert.ToString(a.ar.IndicatorGoal),
+                    IndicatorComparision = a.ar.IndicatorComparision,
+                    CompletionGoal = Convert.ToString(a.ar.CompletionGoal),
+                    Frequency = a.ar.Frequency,
+                    DateOfMonth = Convert.ToString(a.ar.DateOfMonth),
+                    DayOfWeek = Convert.ToString(a.ar.DayOfWeek),
+                    RuleSummary = a.ar.RuleSummary,
+                    RuleId = a.ar.RuleId,
+                    EntityName = a.EntityTitle,
+                    IsDisable=a.ar.IsDisabled
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+
+            }
+            return lsAlerttRule;
+        }
+        #endregion
+        #region method to update Alert rule
+        public int UpdateAlertRule(AlertRuleDetail objRule, Guid UserId)
+        {
+           
+            int result = 0;
+            try
+            {
+                Alert_Rules objalertRule = objDbMrpEntities.Alert_Rules.Where(a => a.RuleId == objRule.RuleId && a.UserId == UserId).FirstOrDefault();
+                if (objalertRule != null)
+                {
+                    objalertRule.EntityId = Int32.Parse(objRule.EntityID);
+                    objalertRule.EntityType = objRule.EntityType;
+                    objalertRule.Indicator = objRule.Indicator;
+                    objalertRule.IndicatorComparision = objRule.IndicatorComparision; ;
+                    objalertRule.IndicatorGoal = Int32.Parse(objRule.IndicatorGoal);
+                    objalertRule.CompletionGoal = Int32.Parse(objRule.CompletionGoal);
+                    objalertRule.Frequency = objRule.Frequency;
+                    if (objRule.Frequency == Convert.ToString(SyncFrequencys.Weekly))
+                        objalertRule.DayOfWeek = Convert.ToByte(objRule.DayOfWeek);
+                    if (objRule.Frequency == Convert.ToString(SyncFrequencys.Monthly))
+                    {
+                        if (objRule.DateOfMonth != null)
+                            objalertRule.DateOfMonth = Convert.ToByte(objRule.DateOfMonth);
+                        else
+                            objalertRule.DateOfMonth = 10;
+                    }
+                  
+                    objalertRule.ModifiedDate = DateTime.Now;
+                    objalertRule.ModifiedBy = UserId;
+                    objalertRule.RuleSummary = objRule.RuleSummary;
+                    objalertRule.LastProcessingDate = DateTime.Now;
+                    objalertRule.IsDisabled = false;
+
+                    objDbMrpEntities.Entry(objalertRule).State = EntityState.Modified;
+                    result = objDbMrpEntities.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return result;
+        }
+        #endregion
+        #region method to delete alert rule
+        public int DeleteAlertRule(int RuleId)
+        {
+            int result = 0;
+            try
+            {
+                //delete alert related to rule
+                var lstAlerts = objDbMrpEntities.Alerts.Where(a => a.RuleId == RuleId).ToList();
+                lstAlerts.ForEach(alert => objDbMrpEntities.Entry(alert).State = EntityState.Deleted);
+                objDbMrpEntities.SaveChanges();
+
+                //delete rule
+                Alert_Rules objrule = objDbMrpEntities.Alert_Rules.Where(a => a.RuleId == RuleId).FirstOrDefault();
+                objDbMrpEntities.Entry(objrule).State = EntityState.Deleted;
+                result = objDbMrpEntities.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+
+            }
+            return result;
+        }
+        #endregion
+        #region method to delete alert rule
+        public int DisableAlertRule(int RuleId, bool RuleOn)
+        {
+            int result = 0;
+            bool Isdisable = RuleOn==true?false:true;
+            try
+            {
+               
+                Alert_Rules objrule = objDbMrpEntities.Alert_Rules.Where(a => a.RuleId == RuleId).FirstOrDefault();
+                objrule.IsDisabled = Isdisable;
+                objDbMrpEntities.Entry(objrule).State = EntityState.Modified;
+                result = objDbMrpEntities.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+
+            }
+            return result;
         }
         #endregion
     }

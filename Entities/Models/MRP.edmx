@@ -29,7 +29,6 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="DayOfWeek" Type="tinyint" />
           <Property Name="DateOfMonth" Type="tinyint" />
           <Property Name="LastProcessingDate" Type="datetime" />
-          <Property Name="NextProcessingDate" Type="datetime" />
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsDisabled" Type="bit" Nullable="false" />
@@ -6394,7 +6393,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="DayOfWeek" Type="Byte" />
           <Property Name="DateOfMonth" Type="Byte" />
           <Property Name="LastProcessingDate" Type="DateTime" Precision="3" />
-          <Property Name="NextProcessingDate" Type="DateTime" Precision="3" />
           <Property Name="UserId" Type="Guid" Nullable="false" />
           <Property Name="ClientId" Type="Guid" Nullable="false" />
           <Property Name="IsDisabled" Type="Boolean" Nullable="false" />
@@ -7778,7 +7776,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
                 <ScalarProperty Name="IsDisabled" ColumnName="IsDisabled" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="NextProcessingDate" ColumnName="NextProcessingDate" />
                 <ScalarProperty Name="LastProcessingDate" ColumnName="LastProcessingDate" />
                 <ScalarProperty Name="DateOfMonth" ColumnName="DateOfMonth" />
                 <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />

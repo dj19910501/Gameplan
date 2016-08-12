@@ -8,10 +8,10 @@
             <div class="accordion-row margin-top18">
                 <div class="alert-question"> 1. What item would you like to be alerted for?</div>
                 <div class="alert-value-box">
-                    <span class="searchtextbox"><input id="searchentity" class="searchtext" type="text" tabindex="1" /></span>
+                    <span class="searchtextbox"><input id="searchentity" class="searchtext" type="text" tabindex="1" onkeyup="searchtext(this);" /></span>
                 </div>
             </div>
-
+            <input id="hdnRuleId" type="hidden" value="0" />
             <input id="hdnEntityId" type="hidden" />
             <input id="hdnEntityType" type="hidden" />
 
@@ -25,7 +25,8 @@
                     <div id="divque2part2">
                         <span class="vb-text">are</span>
                         <span class="selectBox">
-                            @*@Html.DropDownList("ddlperformance", Enumerable.Empty<SelectListItem>())*@
+                            @*@Html.DropDownList("ddlperformance", Enumerable.Empty<selectlistitem>
+                                ())*@
                             @Html.DropDownList("ddlperformance", (SelectList)Model.PerformanceComparison, new { tabindex = "3" })
                         </span>
                         <span class="selectBox">
@@ -52,17 +53,18 @@
                 <div class="alert-value-box">
                     <span class="selectBox pull-left">
 
-                        @Html.DropDownList("ddlfrequency", (SelectList)Model.lstFrequency, new { tabindex = "6" })
+                        @Html.DropDownList("ddlfrequency", (SelectList)Model.lstFrequency, new { tabindex = "6", @class = "frequncy" })
                     </span>
                     <span class="selectBox day-option-wrap pull-left" id="divDayOptions" style="display:none;">
                         
-                        @Html.DropDownList("dayOptions", (SelectList)Model.lstWeekdays,new { tabindex = "6" })
+                        @Html.DropDownList("dayOptions", (SelectList)Model.lstWeekdays, new { tabindex = "7" })
 
                     </span>
                     <div class="pull-left margin-left5px" id="divDateOptions" style="display:none;">
-                        @*<div id="datetimepicker-alert" class="input-group date">*@
+                        @*<div id="datetimepicker-alert" class="input-group date">
+                        *@
                        
-                        <input type="text" class="form-control margin-bottom0" id="txtDateofmonth" tabindex="7" style="width:150px;"
+                        <input type="text" class="form-control margin-bottom0" id="txtDateofmonth" tabindex="8" style="width:150px;"
                                placeholder="Enter date of month" onkeypress="return isNumberKey(event)" maxlength="2">
                         
                             @*<span class="input-group-addon">
@@ -76,14 +78,154 @@
 
         </div>
         <div class="container-button pull-left" id="divSave">
-            <input type="submit" value="Save" title="save" tabindex="8" class="btn btn-blue btn-save pull-right" ruleid="0">
+            <input type="submit" value="Save" title="save" tabindex="9" class="btn btn-blue btn-save pull-right" ruleid="0" onclick="saveRule(this);">
         </div>
     </div>
 </div>
+<div class="accordion-group" id="copyAccourdingroup">
 
+
+</div>
+@if (Model.lstAlertRule != null && Model.lstAlertRule.Count > 0)
+{
+    int tabndex = 9;
+    foreach (var alertrule in Model.lstAlertRule)
+    {
+        string ruleId = alertrule.RuleId.ToString();
+        string collapsid = "collapseGrp" + ruleId;
+        string divrulid = "divrule" + ruleId;
+        string groupid = "group-" + @ruleId;
+        bool isdisable = alertrule.IsDisable == true ? false : true;
+        <div class="accordion-group" id="group-@ruleId">
+            <div class="accordion-heading clearfix">
+                <div class="alert-heading pull-left">
+                    @Html.Raw(alertrule.RuleSummary)
+                </div>
+                <div class="pull-right acco-icons">
+                    <a class="alert-delet" title="Delete" onclick="DeleteAlrtRule(@alertrule.RuleId);"><i class="fa fa-times-circle" aria-hidden="true"></i></a>
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#Ruleaccordion" href="#@collapsid" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                    <a class="alert-copy" onclick="CopyAlertRule('@collapsid');" title="Copy"><i class="fa fa-clone" aria-hidden="true"></i></a>
+                    <div  class="pull-right alert-rule-check">
+                        Alert on 
+                        <input id="chkOnOff" class="chkbxfilter" type="checkbox" checked="@isdisable"  onchange="OnOffAlert(this);" ruleid="@ruleId">
+                </div> 
+                </div>
+            </div>
+            <div class="accordion-body collapse" id="@collapsid">
+                <div id="@divrulid" class="maindiv">
+                    <div class="accordion-row margin-top18">
+                        <div class="alert-question"> 1. What item would you like to be alerted for?</div>
+                        <div class="alert-value-box">
+                            <span class="searchtextbox">
+                                @{tabndex = tabndex + 1;}
+                                <input id="searchentity" class="searchtext" type="text" tabindex="@tabndex" value="@alertrule.EntityName" onkeyup="searchtext(this);" />
+                            </span>
+                        </div>
+                    </div>
+                    <input id="hdnRuleId" type="hidden" value="@alertrule.RuleId" />
+                    <input id="hdnEntityId" type="hidden" value="@alertrule.EntityID" />
+                    <input id="hdnEntityType" type="hidden" value="@alertrule.EntityType" />
+
+                    <div class="accordion-row clearfix" id="divque2">
+                        <div class="alert-question"> 2. What performance indicator should trigger the alert?</div>
+                        <div class="alert-value-box">
+
+                            <span class="selectBox">
+                                @{tabndex = tabndex + 1;}
+                                @Html.DropDownList("ddlindicator", new SelectList(Model.GoalType, "Value", "Text", alertrule.Indicator), new { tabindex = tabndex, style = "width:170px" })
+                            </span>
+                            <div id="divque2part2" style="display:inline-block;">
+                                <span class="vb-text">are</span>
+                                <span class="selectBox">
+                                    @*@Html.DropDownList("ddlperformance", Enumerable.Empty<selectlistitem>
+                                        ())*@
+                                    @{tabndex = tabndex + 1;}
+                                    @Html.DropDownList("ddlperformance", new SelectList(Model.PerformanceComparison, "Value", "Text", alertrule.IndicatorComparision), new { tabindex = tabndex })
+                                </span>
+                                <span class="selectBox">
+                                    @{tabndex = tabndex + 1;}
+                                    @Html.DropDownList("ddlGolanum", new SelectList(Model.GoalNum, "Value", "Text", alertrule.IndicatorGoal), new { tabindex = tabndex })
+                                </span>
+
+                                <span class="vb-text">% of Goal</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-row clearfix" id="divque3">
+                        <div class="alert-question"> 3. When would you like to be alerted?</div>
+                        <div class="alert-value-box inline-span">
+                            <span class="vb-text">When</span> <span id="lblentity" title="@alertrule.EntityName">@alertrule.EntityName</span><span class="vb-text"> is </span>
+                            <span class="selectBox ">
+                                @{tabndex = tabndex + 1;}
+                                @Html.DropDownList("ddlpercentage", new SelectList(Model.GoalNum, "Value", "Text", alertrule.CompletionGoal), new { tabindex = tabndex })
+                            </span>
+                            <span class="vb-text "> % completed</span>
+                        </div>
+                    </div>
+                    <div class="accordion-row calendar_div clearfix" id="divque4">
+                        <div class="alert-question"> 4. How often should you be alerted?</div>
+                        <div class="alert-value-box">
+                            <span class="selectBox pull-left">
+                                @{tabndex = tabndex + 1;}
+                                @Html.DropDownList("ddlfrequency", new SelectList(Model.lstFrequency, "Value", "Text", alertrule.Frequency), new { tabindex = tabndex, @class = "frequncy" })
+                            </span>
+                            <span class="selectBox day-option-wrap pull-left" id="divDayOptions" style="display:none;">
+                                @{tabndex = tabndex + 1;}
+                                @Html.DropDownList("dayOptions", new SelectList(Model.lstWeekdays, "Value", "Text", alertrule.DayOfWeek), new { tabindex = tabndex, @class = "weekday" })
+
+                            </span>
+                            <div class="pull-left margin-left5px" id="divDateOptions" style="display:none;">
+                                @*<div id="datetimepicker-alert" class="input-group date">
+                                *@
+                                @{tabndex = tabndex + 1;}
+                                <input type="text" class="form-control margin-bottom0 monthdate" id="txtDateofmonth" tabindex="@tabndex" style="width:150px;"
+                                       placeholder="Enter date of month" onkeypress="return isNumberKey(event)" maxlength="2" value="@alertrule.DateOfMonth">
+
+                                @*<span class="input-group-addon">
+                                        <span class="fa fa-calendar">
+                                        </span>
+                                    </span>*@
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="container-button pull-left" id="divSave">
+                    <input type="submit" value="Save" title="save" tabindex="@tabndex + 9" class="btn btn-blue btn-save pull-right" ruleid="@ruleId" onclick="saveRule(this);">
+                </div>
+            </div>
+        </div>
+    }
+}
 
 <script type="text/javascript">
     
+    function CopyAlertRule(groupid) {
+        var clongroupid = "#" + groupid;
+        $("#successMessage").css("display", "none");
+        $("#errorMessage").css("display", "none");
+        $("#spanMessageSuccess").empty();
+        $("#spanMessageError").empty();
+        $("#copyAccourdingroup").empty();
+        $newPanel = $(clongroupid).clone();
+       
+        $newPanel.attr("id", "collapseGrpCopy");
+        $newPanel.find(".maindiv").attr("id", "divrule-1");
+        $newPanel.find(".maindiv").find("#hdnRuleId").val('0');
+        $newPanel.find(".btn-save").attr("ruleid", "-1");
+
+        $("#copyAccourdingroup").append($newPanel.fadeIn());
+        $('.accordion-body.in').collapse('hide');
+        
+        $(".frequncy").change(function () {
+            showHideOption(this);
+        });
+        $('#copyAccourdingroup').find('.accordion-body').collapse('show');
+
+    }
+
     $("#txtDateofmonth").blur(function (e) {
         var count = $(this).val();
         if (parseInt(count) > 31 || count.length > 2) {
@@ -103,6 +245,15 @@
     }
     $(document).ready(function () {
        
+        var rulecnt = '@Model.lstAlertRule.Count';
+        if (rulecnt > 0)
+        {
+            $("#divnoRecords").hide();
+        }
+        else
+        {
+            $("#divnoRecords").show();
+        }
         $("#ddlindicator").change(function () {
             if ($(this).val() != "") {
                 $("#divrule0").find("#divque2part2").css("display", "inline-block");
@@ -125,33 +276,59 @@
                 $(this).removeClass("error");
             }
         });
-        $("#ddlfrequency").change(function () {
-
-            var selectedSpan = $(this).val();
-            if (selectedSpan != "") {
-                if (selectedSpan == "Daily") {
-
-                    $("#divDayOptions").hide();
-                    $("#divDateOptions").hide();
-
-                }
-                else if (selectedSpan == "Weekly") {
-
-                    $("#divDayOptions").show();
-                    $("#divDateOptions").hide();
-
-                }
-                else if (selectedSpan == "Monthly") {
-
-                    $("#divDayOptions").hide();
-                    $("#divDateOptions").show();
-
-                }
-            }
+        $(".frequncy").change(function () {
+            showHideOption(this);
         });
 
+        $("#Ruleaccordion").find('.frequncy').each(function () {
+            showHideOption(this);
+        });
+     
     });
-  
+    function OnOffAlert(e)
+    {
+        var OnOff = e.checked;
+        var result = true;
+        var ruleid = $(e).attr("ruleid");
+        if (!e.checked) {
+            result = confirm("Are you sure you want to turn off the alert ?");
+        }
+        if (result) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DisableAlertRule", "User")',
+                data: {
+                    RuleId: parseInt(ruleid),
+                    RuleOn: OnOff
+                },
+                success: function (data) {
+                    $("#Ruleaccordion").load('@Url.Action("GetAlertRuleList", "User")');
+                }
+            });
+        }
+        else {
+            $(e).attr('checked', !e.checked);
+        }
+        return false;
+    }
+    function showHideOption(e) {
+        var selectedSpan = $(e).val();
+        var parentdiv = $(e).parent().parent();
+            if (selectedSpan != "") {
+                if (selectedSpan == "Daily") {
+                $(parentdiv).find("#divDayOptions").hide();
+                $(parentdiv).find("#divDateOptions").hide();
+                }
+                else if (selectedSpan == "Weekly") {
+                $(parentdiv).find("#divDayOptions").show();
+                $(parentdiv).find("#divDateOptions").hide();
+                }
+                else if (selectedSpan == "Monthly") {
+                $(parentdiv).find("#divDayOptions").hide();
+                $(parentdiv).find("#divDateOptions").show();
+            }
+        }
+    }
     var customRenderMenu = function (ul, items) {
         var self = this;
         var categoryArr = [];
@@ -189,12 +366,14 @@
       
       
     };
-    $(".searchtext").keyup(function () {
-        var maindiv = $(this).parent().parent().parent().parent();
-        if ($(this).val().trim().length > 0) {
-            $(this).autocomplete({
+    // $(".searchtext").keyup(
+    function searchtext(el) {
+
+        var maindiv = $(el).parent().parent().parent().parent();
+        if ($(el).val().trim().length > 0) {
+            $(el).autocomplete({
                 source: function (request, response) {
-                    if ($(this).val) {
+                    if ($(el).val) {
                         var urlcontent = '@Url.Content("~/User/ListEntity/")';
 
                         $.getJSON(urlcontent, { 'term': request.term }, function (data) {
@@ -215,7 +394,7 @@
 
                                 var hdntypeid = $(maindiv).find("#hdnEntityType");
                                 $(hdntypeid).val('');
-                                $(this).attr("title", '');
+                                $(el).attr("title", '');
                                 var lbl = $(maindiv).find("#lblentity");
                                 $(lbl).attr("title", '');
                                 $(lbl).html('');
@@ -228,16 +407,13 @@
                 minLength: 4,
                 create: function () {
 
-                    //access to jQuery Autocomplete widget differs depending
-                    //on jQuery UI version - you can also try .data('autocomplete')
-
-                    $(this).data('uiAutocomplete')._renderMenu = customRenderMenu;
+                    $(el).data('uiAutocomplete')._renderMenu = customRenderMenu;
                 },
                 select: function (event, ui) {
                     if (ui.item != null && ui.item != undefined) {
-                        $(this).val(ui.item.label);
-                        $(this).attr("title", ui.item.label);
-                        var id = $(this).attr('id');
+                        $(el).val(ui.item.label);
+                        $(el).attr("title", ui.item.label);
+                        var id = $(el).attr('id');
                         $("#" + id).removeClass("error");
                         var hdnid = $(maindiv).find("#hdnEntityId");
                         $(hdnid).val(ui.item.value);
@@ -267,21 +443,24 @@
 
             var hdntypeid = $(maindiv).find("#hdnEntityType");
             $(hdntypeid).val('');
-            $(this).attr("title", '');
+            $(el).attr("title", '');
             var lbl = $(maindiv).find("#lblentity");
             $(lbl).html('');
             $(maindiv).find("#searchentity").addClass("error");
         }
-    });
+    }
+    //);
 
-    $(".btn-save").click(function () {
-        var ruleid = $(this).attr('ruleid');
+    //$(".btn-save").click(
+    function saveRule(el) {
+        var ruleid = $(el).attr('ruleid');
         var tableId = "#divrule" + ruleid;
         var isvalid = CheckValidate(tableId);
         if (isvalid) {
             var str = '';
             var AlertRuleDetail ;
             var EntityId = $(tableId).find("#hdnEntityId").val();
+            var RuleId = $(tableId).find("#hdnRuleId").val();
             var Performancefector = $(tableId).find("#ddlperformance").val();
             var GoalType = $(tableId).find("#ddlindicator").val();
             var GoalNum = $(tableId).find("#ddlGolanum").val();
@@ -291,9 +470,9 @@
             var EntityName = $(tableId).find("#lblentity").html();
             var DayOfWeek = $(tableId).find("#dayOptions").val();
             var DateofMonth = $(tableId).find("#txtDateofmonth").val();
-            var rulesummary = "<h4>" + EntityName + "  " + $("#ddlindicator option:selected").text() + " are " + $("#ddlperformance option:selected").text() + " " + GoalNum + "% of Goal</h4>" +
+            var rulesummary = "<h4>" + EntityName + "  " + $(tableId).find("#ddlindicator option:selected").text() + " are " + $(tableId).find("#ddlperformance option:selected").text() + " " + GoalNum + "% of Goal</h4>" +
                 "<span>Start at " + ComplettionGoal + "% completion</span><span>Repeat " + frequency + "</span>";
-            // var dayofweekMonth = $(tableId).find("#hdnEntityId").val();
+
             if (EntityId != "" && EntityId != null && parseInt(EntityId) != 0) {
                 AlertRuleDetail={
                     EntityID: EntityId.toString(),
@@ -305,7 +484,8 @@
                     Frequency: frequency.toString(),
                     DayOfWeek: DayOfWeek.toString(),
                     DateOfMonth: DateofMonth.toString(),
-                    RuleSummary: rulesummary.toString()
+                    RuleSummary: rulesummary.toString()	,
+                    RuleId: RuleId
                 };
             }
             if (AlertRuleDetail != null) {
@@ -317,7 +497,7 @@
                     url: '@Url.Action("SaveAlertRule", "User")', // we are calling json method
                     dataType: 'json',
                     contentType: 'application/json',
-                    data: "{'RuleDetail':" + (AlertRuleDetail) + "}",
+                    data: "{'RuleDetail':" + (AlertRuleDetail) + ",'RuleID':" + parseInt(RuleId) + "}",
                     success: function (data) {
                         if (data.Success != null && data.Success == true && data.SuccessMessage != null) {
                             $("#successMessage").css("display", "block");
@@ -337,6 +517,33 @@
                 });
             }
         }
-    });
+    }
+    //);
+    function DeleteAlrtRule(ruleid) {
+        var result = confirm("Are you sure you want to delete the Alert Rule?");
+        if (result) {
+            $.ajax({
 
+                type: 'POST',
+                url: '@Url.Action("DeleteAlertRule", "User")', // we are calling json method
+                data: { RuleId: parseInt(ruleid) },
+                success: function (data) {
+                    if (data.Success != null && data.Success == true && data.SuccessMessage != null) {
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.SuccessMessage);
+                        $("#errorMessage").css("display", "none");
+                        $("#Ruleaccordion").load('@Url.Action("GetAlertRuleList", "User")');
+                    }
+                    if (data.Success != null && data.Success == false && data.ErrorMessage != null) {
+                        $("#errorMessage").css("display", "block");
+                        $("#spanMessageError").empty();
+                        $("#spanMessageError").text(data.ErrorMessage);
+                        $("#successMessage").css("display", "none");
+                    }
+
+                }
+    });
+        }
+    }
 </script>

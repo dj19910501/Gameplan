@@ -2949,6 +2949,30 @@ namespace RevenuePlanner.Helpers
                 _SuccessAlertRule = value;
             }
         }
+        private string _UpdateAlertRule;
+        public string UpdateAlertRule
+        {
+            get
+            {
+                return _UpdateAlertRule;
+            }
+            set
+            {
+                _UpdateAlertRule = value;
+            }
+        }
+        private string _DeleteAlertRule;
+        public string DeleteAlertRule
+        {
+            get
+            {
+                return _DeleteAlertRule;
+            }
+            set
+            {
+                _DeleteAlertRule = value;
+            }
+        }
         //end
         #endregion
 
@@ -3896,6 +3920,13 @@ namespace RevenuePlanner.Helpers
                                         case "SuccessAlertRule":
                                             _SuccessAlertRule = strMsgValue;
                                             break;
+                                        case "UpdateAlertRule":
+                                            _UpdateAlertRule = strMsgValue;
+                                            break;
+                                        case "DeleteAlertRule":
+                                            _DeleteAlertRule = strMsgValue;
+                                            break;
+
                                     }
                                 }
                                 i = i + 1;

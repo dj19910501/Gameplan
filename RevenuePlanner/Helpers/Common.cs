@@ -8876,11 +8876,11 @@ namespace RevenuePlanner.Helpers
         }
         public void AddCache(string objectName, object CacheObject)
         {
-            //var obj = HttpRuntime.Cache.Get(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
-            //if (obj != null)
-            //{
+            var obj = HttpRuntime.Cache.Get(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
+            if (obj != null)
+            {
                 HttpRuntime.Cache.Remove(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
-            //}
+            }
             HttpRuntime.Cache.Insert(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString(), CacheObject, null, DateTime.Now.AddHours(3), Cache.NoSlidingExpiration);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

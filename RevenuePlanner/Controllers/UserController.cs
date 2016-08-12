@@ -52,7 +52,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 //// Get TeamMembers list by Client,Application & User Id.
-                lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).OrderBy(teamlist => teamlist.FirstName,new AlphaNumericComparer()).ToList();
+                lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).OrderBy(teamlist => teamlist.FirstName, new AlphaNumericComparer()).ToList();
                 if (lstUser.Count() > 0)
                 {
                     foreach (var user in lstUser)
@@ -98,12 +98,12 @@ namespace RevenuePlanner.Controllers
             if (lstOtherUser != null && lstOtherUser.Count > 0)
             {
                 lstOtherUser.ForEach(a => a.DisplayName = a.FirstName + a.LastName);
-                ViewBag.OtherUsers = lstOtherUser.OrderBy(a => a.DisplayName , new AlphaNumericComparer()).ToList();
+                ViewBag.OtherUsers = lstOtherUser.OrderBy(a => a.DisplayName, new AlphaNumericComparer()).ToList();
 
                 try
                 {
                     //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                    ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId).OrderBy(role=>role.Title , new AlphaNumericComparer());
+                    ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId).OrderBy(role => role.Title, new AlphaNumericComparer());
                 }
                 catch (Exception e)
                 {
@@ -184,7 +184,7 @@ namespace RevenuePlanner.Controllers
                         TempData["ErrorMessage"] = returnMessage;
                         return View(form);
                     }
-                    else if(returnMessage == "Success")
+                    else if (returnMessage == "Success")
                     {
                         ChangePasswordMail();
                         //Redirect users logging in for the first time to the change password module
@@ -420,7 +420,7 @@ namespace RevenuePlanner.Controllers
                 if (id != null)
                 {
                     //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                    string userRole = objBDSServiceClient.GetUserRole(id, Sessions.ApplicationId,Sessions.User.ClientId);
+                    string userRole = objBDSServiceClient.GetUserRole(id, Sessions.ApplicationId, Sessions.User.ClientId);
                     int retVal = objBDSServiceClient.DeleteUser(id, Sessions.ApplicationId);
                     if (retVal == 1)
                         TempData["SuccessMessage"] = Common.objCached.UserDeleted;
@@ -468,7 +468,7 @@ namespace RevenuePlanner.Controllers
             }
 
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId).OrderBy(role => role.Title, new AlphaNumericComparer() );
+            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId).OrderBy(role => role.Title, new AlphaNumericComparer());
             ViewBag.CurrClientId = Sessions.User.ClientId;
             ViewBag.CurrClient = Sessions.User.Client;
 
@@ -679,7 +679,7 @@ namespace RevenuePlanner.Controllers
             ViewData["Clients"] = objBDSServiceClient.GetClientList();
 
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
+            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId);
 
             ViewBag.CurrentUserId = Convert.ToString(Sessions.User.UserId);
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
@@ -1301,7 +1301,7 @@ namespace RevenuePlanner.Controllers
             {
                 var UserList = objBDSServiceClient.GetManagerList(ClientId, Sessions.ApplicationId, UserId);
                 var ManagerList = UserList.Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.ManagerName }).ToList();
-                return ManagerList.OrderBy(a => a.ManagerName , new AlphaNumericComparer()).ToList();
+                return ManagerList.OrderBy(a => a.ManagerName, new AlphaNumericComparer()).ToList();
             }
             return null;
         }
@@ -1349,7 +1349,6 @@ namespace RevenuePlanner.Controllers
         #region Currency
         //insertation start 09/08/2016 kausha #2492 Following  is added to get and save currency.
         public ActionResult Currency()
-
         {
             List<CurrencyModel> lstCurrency = new List<CurrencyModel>();
             IEnumerable<BDSService.Currency> lstCurrencydata = objBDSServiceClient.GetAllCurrency();
@@ -1689,7 +1688,7 @@ namespace RevenuePlanner.Controllers
             var lstGoalTypes = Enum.GetValues(typeof(Enums.PerformanceFector)).Cast<Enums.PerformanceFector>().Select(a => a.ToString()).ToList();
             var lstGoalTypeListFromDB = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.ClientId && lstGoalTypes.Contains(a.Code)).Select(a => a).ToList();
             Stage objStage = new Stage();
-            string revGoalType = Convert.ToString( Enums.PerformanceFector.Revenue);
+            string revGoalType = Convert.ToString(Enums.PerformanceFector.Revenue);
             objStage.Title = revGoalType;
             objStage.Code = revGoalType.ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
@@ -1698,6 +1697,10 @@ namespace RevenuePlanner.Controllers
             objStage.Title = revGoalType;
             objStage.Code = revGoalType.ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
+            objStage = new Stage();
+            objStage.Title = "Select";
+            objStage.Code = "0";
+            lstGoalTypeListFromDB.Insert(0, objStage);
             return new SelectList(lstGoalTypeListFromDB, "Code", "Title");
         }
         #endregion
@@ -1707,23 +1710,24 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-                if (RuleID == 0)
+                //Insert Rule
+                if (RuleDetail != null)
                 {
-                    //Insert Rule
-                    if (RuleDetail != null)
+
+                    AlertRuleDetail objRule = RuleDetail;
+                    int EntityID = Int32.Parse(objRule.EntityID);
+                    int indicatorGoal = Int32.Parse(objRule.IndicatorGoal);
+                    int Completiongoal = Int32.Parse(objRule.CompletionGoal);
+
+                    if (objRule.EntityID != null && Convert.ToInt32(objRule.EntityID) != 0)
                     {
-                       // AlertRuleDetail objRule = RuleDetail.FirstOrDefault();
-                        AlertRuleDetail objRule = RuleDetail;
-                        if (objRule.EntityID != null && Convert.ToInt32(objRule.EntityID) != 0)
+                        if (RuleID == 0)
                         {
-                            int EntityID = Int32.Parse(objRule.EntityID);
-                            int indicatorGoal = Int32.Parse(objRule.IndicatorGoal);
-                            int Completiongoal = Int32.Parse(objRule.CompletionGoal);
-                            Boolean IsExists = objcommonalert.IsAlertRuleExists(EntityID, Completiongoal, indicatorGoal, objRule.Indicator, objRule.IndicatorComparision, Sessions.User.UserId);
+                            Boolean IsExists = objcommonalert.IsAlertRuleExists(EntityID, Completiongoal, indicatorGoal, objRule.Indicator, objRule.IndicatorComparision, Sessions.User.UserId, 0);
                             if (!IsExists)
                             {
-                                int result = objcommonalert.SaveAlert(objRule,Sessions.User.ClientId,Sessions.User.UserId);
-                                if(result>0)
+                                int result = objcommonalert.SaveAlert(objRule, Sessions.User.ClientId, Sessions.User.UserId);
+                                if (result > 0)
                                     return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessAlertRule }, JsonRequestBehavior.AllowGet);
                                 else
                                     return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
@@ -1732,12 +1736,28 @@ namespace RevenuePlanner.Controllers
                             else
                                 return Json(new { Success = false, ErrorMessage = Common.objCached.DuplicateAlertRule }, JsonRequestBehavior.AllowGet);
                         }
+                        else
+                        {
+                            //update rule
+                            Boolean IsExists = objcommonalert.IsAlertRuleExists(EntityID, Completiongoal, indicatorGoal, objRule.Indicator, objRule.IndicatorComparision, Sessions.User.UserId, RuleID);
+                            if (!IsExists)
+                            {
+                                int result = objcommonalert.UpdateAlertRule(objRule, Sessions.User.UserId);
+                                if (result > 0)
+                                    return Json(new { Success = true, SuccessMessage = Common.objCached.UpdateAlertRule }, JsonRequestBehavior.AllowGet);
+                                else
+                                    return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+                            }
+                            else
+                                return Json(new { Success = false, ErrorMessage = Common.objCached.DuplicateAlertRule }, JsonRequestBehavior.AllowGet);
+                        }
                     }
+                    else
+                        return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
                 }
                 else
-                {
-                    //update rule
-                }
+                    return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
+
             }
             catch (Exception ex)
             {
@@ -1745,8 +1765,6 @@ namespace RevenuePlanner.Controllers
                 return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
 
             }
-            return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessAlertRule }, JsonRequestBehavior.AllowGet);
-
         }
         #endregion
         /// <summary>
@@ -1763,7 +1781,7 @@ namespace RevenuePlanner.Controllers
                 objTime.Value = ((int)item).ToString();
                 lstWeekdays.Add(objTime);
             }
-            return new SelectList(lstWeekdays) ;
+            return new SelectList(lstWeekdays);
         }
         #region method to get list of alert rule
         public ActionResult GetAlertRuleList()
@@ -1807,12 +1825,58 @@ namespace RevenuePlanner.Controllers
                     lstWeekdays.Add(objTime);
                 }
                 objalert.lstWeekdays = new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First());
+                List<AlertRuleDetail> lstRuledetail = objcommonalert.GetAletRuleList(Sessions.User.UserId, Sessions.User.ClientId);
+                objalert.lstAlertRule = lstRuledetail;
             }
             catch (Exception ex)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return PartialView("_AlertListing", objalert);
+        }
+        #endregion
+        #region method to delete alert rule
+        [HttpPost]
+        public JsonResult DeleteAlertRule(int RuleId)
+        {
+            try
+            {
+                if (RuleId != 0)
+                {
+                    int result = objcommonalert.DeleteAlertRule(RuleId);
+                    if (result > 0)
+                        return Json(new { Success = true, SuccessMessage = Common.objCached.DeleteAlertRule }, JsonRequestBehavior.AllowGet);
+                    else
+                        return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                    return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+
+            }
+
+        }
+        #endregion
+        #region method to disable alert rule
+        public JsonResult DisableAlertRule(int RuleId, bool RuleOn)
+        {
+            try
+            {
+                if (RuleId != 0)
+                {
+                    int result = objcommonalert.DisableAlertRule(RuleId, RuleOn);
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { Success = true }, JsonRequestBehavior.AllowGet);
+
         }
         #endregion
         #endregion

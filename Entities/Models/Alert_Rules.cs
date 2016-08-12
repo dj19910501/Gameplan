@@ -31,7 +31,6 @@ namespace RevenuePlanner.Models
         public Nullable<byte> DayOfWeek { get; set; }
         public Nullable<byte> DateOfMonth { get; set; }
         public Nullable<System.DateTime> LastProcessingDate { get; set; }
-        public Nullable<System.DateTime> NextProcessingDate { get; set; }
         public System.Guid UserId { get; set; }
         public System.Guid ClientId { get; set; }
         public bool IsDisabled { get; set; }

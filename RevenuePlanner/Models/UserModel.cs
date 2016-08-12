@@ -166,7 +166,7 @@ namespace RevenuePlanner.Models
         public SelectList PerformanceComparison { get; set; }
         public SelectList lstFrequency { get; set; }
         public SelectList lstWeekdays { get; set; }
-
+        public List<AlertRuleDetail> lstAlertRule { get; set; }
     }
     public class AlertRuleDetail
     {
@@ -180,5 +180,8 @@ namespace RevenuePlanner.Models
         public string DayOfWeek { get; set; }
         public string DateOfMonth { get; set; }
         public string RuleSummary { get; set; }
+        public string EntityName {get;set;}
+        public int RuleId{get;set;}
+        public bool IsDisable { get; set; }
     }
 }

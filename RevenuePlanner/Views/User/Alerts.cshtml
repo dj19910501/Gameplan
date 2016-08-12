@@ -1,5 +1,4 @@
-﻿@using Newtonsoft.Json;
-@{
+﻿@{
     ViewBag.Title = "Alerts";
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.PageTitle = "Alerts";
@@ -55,6 +54,9 @@
                 <div class="clearfix"></div>
                 <div id="Ruleaccordion" class="accordion alert-accordian">
                 </div>
+                <div class="content-panel-tab" id="divnoRecords">
+                    <div class="bold padding-top16 font-size18">No Rules available.</div>
+            </div>
             </div>
         </div>
     </div>
@@ -71,6 +73,7 @@
 </style>
 <script type="text/javascript">
     $(document).ready(function () {
+        $("#divnoRecords").hide();
       
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
@@ -100,39 +103,48 @@
             $("#divrule0").find("#divque2part2").hide();
             $("#divrule0").find("#divque2").hide();
             $("#collapseGrp1").find("#divSave").hide();
-            $('.accordion-body:first:not(".in")').collapse('show');
-            $('.accordion-body:first').css("min-height", "300px");
+         
+         //   $('.accordion-body:first').css("min-height", "300px");
             $('.accordion-body.in').collapse('hide');
+            $('.accordion-body:first:not(".in")').collapse('show');
             $("#divrule0").find("#searchentity").val('');
             $("#divrule0").find("#searchentity").focus();
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
             $("#spanMessageSuccess").empty();
             $("#spanMessageError").empty();
+            $("#copyAccourdingroup").empty();
+            $("#divnoRecords").hide();
         });
         $("#Ruleaccordion").load('@Url.Action("GetAlertRuleList", "User")');
 
        
     });
 
-
+    var $doc = $(document);
+    $doc.click(function () {
+        $("#successMessage").css("display", "none");
+        $("#errorMessage").css("display", "none");
+        $("#spanMessageSuccess").empty();
+        $("#spanMessageError").empty();
+    });
     
     function CheckValidate(tableId) {
         var isValid = true;
         var maindiv = $(tableId);
-        if ($(tableId).find("#hdnEntityId").val() == "") {
+        if ($(tableId).find("#hdnEntityId").val() == "" || $(tableId).find("#hdnEntityId").val() == "0") {
             $(tableId).find("#searchentity").addClass("error");
             isValid = false;
         }
-        if ($(tableId).find("#ddlindicator").val() == "") {
+        if ($(tableId).find("#ddlindicator").val() == "" || $(tableId).find("#ddlindicator").val() == "0") {
             $(tableId).find("#ddlindicator").addClass("error");
             isValid = false;
         }
-        if ($(tableId).find("#ddlGolanum").val() == "") {
+        if ($(tableId).find("#ddlGolanum").val() == "" || $(tableId).find("#ddlGolanum").val() == "0") {
             $(tableId).find("#ddlGolanum").addClass("error");
             isValid = false;
         }
-        if ($(tableId).find("#ddlpercentage").val() == "") {
+        if ($(tableId).find("#ddlpercentage").val() == "" || $(tableId).find("#ddlpercentage").val() == "0") {
             $(tableId).find("#ddlpercentage").addClass("error");
             isValid = false;
         }

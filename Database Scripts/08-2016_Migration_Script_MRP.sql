@@ -148,12 +148,20 @@ AllProgram AS
               INNER JOIN AllCampaigns C ON P.PlanCampaignId = C.EntityId 
        WHERE P.IsDeleted = 0
 ),
+AllLinkedTactic as
+(
+SELECT P.LinkedTacticId 
+       FROM Plan_Campaign_Program_Tactic P
+              INNER JOIN AllProgram C ON P.PlanProgramId = C.EntityId 
+       WHERE P.IsDeleted = 0 and P.Status in (''In-Progress'',''Approved'',''Complete'') and P.LinkedTacticId is not null
+),
 AllTactic AS
 (
        SELECT P.PlanTacticId EntityId, P.Title EntityTitle,C.ClientId, ''Tactic'' Entity, 4 EntityOrder 
        FROM Plan_Campaign_Program_Tactic P
               INNER JOIN AllProgram C ON P.PlanProgramId = C.EntityId 
-       WHERE P.IsDeleted = 0 and P.Status in (''In-Progress'',''Approved'',''Complete'')
+			  LEFT OUTER JOIN AllLinkedTactic L on P.PlanTacticId=L.LinkedTacticId
+       WHERE P.IsDeleted = 0 and P.Status in (''In-Progress'',''Approved'',''Complete'') and L.LinkedTacticId is null
 ),
 AllLineitem AS
 (
