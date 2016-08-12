@@ -512,6 +512,12 @@
   <wsdl:message name="IBDSService_SaveClientCurrency_OutputMessage">
     <wsdl:part name="parameters" element="tns:SaveClientCurrencyResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_GetCurrencyExchangeRate_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCurrencyExchangeRate" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetCurrencyExchangeRate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCurrencyExchangeRateResponse" />
+  </wsdl:message>
   <wsdl:portType name="IBDSService">
     <wsdl:operation name="ValidateUser">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/ValidateUser" message="tns:IBDSService_ValidateUser_InputMessage" />
@@ -848,6 +854,10 @@
     <wsdl:operation name="SaveClientCurrency">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/SaveClientCurrency" message="tns:IBDSService_SaveClientCurrency_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/SaveClientCurrencyResponse" message="tns:IBDSService_SaveClientCurrency_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCurrencyExchangeRate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate" message="tns:IBDSService_GetCurrencyExchangeRate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRateResponse" message="tns:IBDSService_GetCurrencyExchangeRate_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IBDSService" type="tns:IBDSService">
@@ -1601,6 +1611,15 @@
     </wsdl:operation>
     <wsdl:operation name="SaveClientCurrency">
       <soap:operation soapAction="http://tempuri.org/IBDSService/SaveClientCurrency" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCurrencyExchangeRate">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetCurrencyExchangeRate" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

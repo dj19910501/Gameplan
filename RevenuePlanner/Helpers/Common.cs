@@ -28,13 +28,14 @@ using System.Web.Caching;
 using System.Data.SqlClient;
 using System.Runtime.CompilerServices;	 
 using System.Xml;
+using RevenuePlanner.Services;
 
 namespace RevenuePlanner.Helpers
 {
     public class Common
     {
         #region Declarations
-
+        public static RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
         public const string InvalidCharactersForEmail = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
         public const string InvalidCharactersForAnswer = "^[^~^|]+$";
         public const string InvalidCharactersForAnswerMsg = "~|^ ";
@@ -2515,7 +2516,7 @@ namespace RevenuePlanner.Helpers
             }
 
             newHomePlanModelHeader.MQLs = TotalMQLs;
-            newHomePlanModelHeader.Budget = TotalBudget;
+            newHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(TotalBudget); // To set multi-currency
             newHomePlanModelHeader.TacticCount = TotalTacticCount;
             newHomePlanModelHeader.PercentageMQLImproved = TotalPercentageMQLImproved;
             if (activeMenu == Enums.ActiveMenu.Home.ToString().ToLower())
@@ -8862,15 +8863,20 @@ namespace RevenuePlanner.Helpers
     public class CacheObject
     {
         //Modified By Komal Rawal for #2138 solve caching issue for different browser.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object Returncache(string objectName)
         {
             return HttpRuntime.Cache[objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString()];
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddCache(string objectName, object CacheObject)
         {
             HttpRuntime.Cache.Remove(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
             HttpRuntime.Cache.Insert(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString(), CacheObject, null, DateTime.Now.AddHours(3), Cache.NoSlidingExpiration);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveAllCurrentUserCache()
         {
             if (Sessions.User != null && Sessions.User.UserId != null && HttpContext.Current.Session.Contents.SessionID != null)

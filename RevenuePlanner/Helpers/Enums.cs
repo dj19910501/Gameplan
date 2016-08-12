@@ -1396,8 +1396,26 @@ namespace RevenuePlanner.Helpers
             MediaCodeCustomfieldConfiguration,
             PlanTacticListforpackageing,
             ROIPackageTactics,
-            ClientEntityList
+            ClientEntityList,
+            UserPlanCurrency,
+            ListUserReportCurrency
         }
+
+        public enum CurrencyComponent
+        {
+            Plan,
+            Report
+        }
+
+        public enum CurrencySymbols
+        {
+            USD,
+        }
+
+        public static Dictionary<string, string> CurrencySymbolsValues = new Dictionary<string, string>()
+        {
+            {CurrencySymbols.USD.ToString(), "$"}
+        };
 
         public enum DownloadCSV
         {

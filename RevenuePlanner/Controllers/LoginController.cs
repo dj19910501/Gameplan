@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.IO;
+using RevenuePlanner.Services;
 
 /*
  *  Author: Manoj Limbachiya
@@ -26,6 +27,7 @@ namespace RevenuePlanner.Controllers
         #region Variables
         MRPEntities db = new MRPEntities();
         private bool IsClientAllowedForCustomNaming = false;
+        ICurrency objCurrency = new Currency(); // Add By Nishant Sheth
         #endregion
 
         #region Login
@@ -245,6 +247,8 @@ namespace RevenuePlanner.Controllers
                     System.Web.Security.FormsAuthentication.SetAuthCookie(obj.UserId.ToString(), false);
                     //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
                     Sessions.User = obj;                    
+                    // Add By Nishant Sheth Set Cache for exchange rate #2496
+                    objCurrency.SetUserCurrencyCache(Sessions.User.ClientId, Sessions.User.UserId);
 
                     //Start Manoj Limbachiya : 11/23/2013 - Menu filling and Role Permission
                     //Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);

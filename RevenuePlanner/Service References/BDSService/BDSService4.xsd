@@ -282,7 +282,37 @@
       <xs:element minOccurs="0" name="ISOCurrencyCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="IsDefault" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
+      <xs:element minOccurs="0" name="UserCurrency" nillable="true" type="tns:Currency.UserCurrencyRate" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Currency" nillable="true" type="tns:Currency" />
+  <xs:complexType name="Currency.UserCurrencyRate">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CurrencyExchangeRate" nillable="true" type="tns:ArrayOfCurrency.CurrencyExchangeRate" />
+      <xs:element minOccurs="0" name="UserPreferredCurrencyCode" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Currency.UserCurrencyRate" nillable="true" type="tns:Currency.UserCurrencyRate" />
+  <xs:complexType name="ArrayOfCurrency.CurrencyExchangeRate">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Currency.CurrencyExchangeRate" nillable="true" type="tns:Currency.CurrencyExchangeRate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCurrency.CurrencyExchangeRate" nillable="true" type="tns:ArrayOfCurrency.CurrencyExchangeRate" />
+  <xs:complexType name="Currency.CurrencyExchangeRate">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ClientId" type="ser:guid" />
+      <xs:element minOccurs="0" name="Component" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CreatedBy" type="ser:guid" />
+      <xs:element minOccurs="0" name="CreatedDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="CurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CurrencySymbol" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="EndDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="ExchangeRate" type="xs:double" />
+      <xs:element minOccurs="0" name="LastModifiedBy" nillable="true" type="ser:guid" />
+      <xs:element minOccurs="0" name="LastModifiedDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="StartDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Currency.CurrencyExchangeRate" nillable="true" type="tns:Currency.CurrencyExchangeRate" />
 </xs:schema>

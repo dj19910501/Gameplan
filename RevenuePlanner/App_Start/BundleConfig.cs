@@ -39,6 +39,7 @@ namespace RevenuePlanner
 
             bundles.Add(new ScriptBundle("~/bundles/GetJSForLogin").Include(
                         "~/Scripts/js/jquery-2.2.1.js",
+                        "~/Scripts/MultiCurrency.js",
                         "~/Scripts/js/bootstrap.js",
                         "~/Scripts/js/jquery.slimscroll_min.js",
                         "~/Scripts/js/jquery.slidepanel_min.js",
@@ -51,6 +52,7 @@ namespace RevenuePlanner
 
             bundles.Add(new ScriptBundle("~/bundles/GetJS").Include(                        
                         "~/Scripts/js/jquery-2.2.1.js",
+                        "~/Scripts/MultiCurrency.js",
                         "~/Scripts/js/jquery-migrate-1.2.1.js",
                         "~/Scripts/js/jquery.slimscroll_min.js",
                         "~/Scripts/js/jquery.slidepanel_min.js",
@@ -79,6 +81,7 @@ namespace RevenuePlanner
                         "~/Scripts/js/DHTMLX/dhtmlxgantt_smart_rendering.js"//added Akashdeep Kadia 28 Mar 2016 PL#1798
                         ));
             bundles.Add(new ScriptBundle("~/bundles/GetJSReport").Include(
+                       "~/Scripts/MultiCurrency.js",
                        "~/Scripts/js/jquery.slimscroll.js",
                        "~/Scripts/js/slimScrollHorizontal.js",
                        "~/Scripts/js/jquery.mCustomScrollbar.concat.min.js",

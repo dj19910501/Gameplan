@@ -26,6 +26,24 @@ namespace RevenuePlanner.Models
         public Guid ClientId { get; set; }
         public Guid UserId { get; set; }
         public bool IsDefault { get; set; }
+	    // Add By Nishant Sheth
+        public class ClientCurrency
+        {
+            public string CurrencyCode { get; set; }
+            public string CurrencySymbol { get; set; }
+            public System.Guid ClientId { get; set; }
+            public System.DateTime StartDate { get; set; }
+            public System.DateTime EndDate { get; set; }
+            public double ExchangeRate { get; set; }
+            public string Component { get; set; }
+        }
 
+        public class PlanCurrency
+        {
+            public string CurrencyCode { get; set; }
+            public string CurrencySymbol { get; set; }
+            public double ExchangeRate { get; set; }
+        }
+        //End By Nishant Sheth
     }
 }

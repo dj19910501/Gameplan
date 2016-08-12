@@ -205,6 +205,7 @@
     <Compile Include="BAL\CustomDashboard.cs" />
     <Compile Include="Controllers\BoostController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\CurrencyController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\ExternalServiceController.cs" />
     <Compile Include="Controllers\FinanceController.cs" />
@@ -265,7 +266,9 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="Services\Alerts.cs" />
+    <Compile Include="Services\Currency.cs" />
     <Compile Include="Services\IAlerts.cs" />
+    <Compile Include="Services\ICurrency.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
@@ -725,6 +728,7 @@
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
     <None Include="Service References\BDSService\BDSService1.disco" />
+    <Content Include="Scripts\MultiCurrency.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -931,11 +935,10 @@
     <Content Include="Views\Inspect\_TacticMediaCode.cshtml" />
     <Content Include="Views\Inspect\_ArchiveMediaCode.cshtml" />
     <Content Include="Views\MeasureDashboard\Index.cshtml" />
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.AppConfiguration.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
     <Content Include="Views\User\Currency.cshtml" />
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Currency6.datasource">
+    <Content Include="Views\User\Alerts.cshtml" />
+    <Content Include="Views\User\_AlertListing.cshtml" />
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.AppConfiguration.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
@@ -945,6 +948,9 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ClientDatabase.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Currency.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.CustomRestriction.datasource">
@@ -974,8 +980,6 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <Content Include="Views\User\Alerts.cshtml" />
-    <Content Include="Views\User\_AlertListing.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

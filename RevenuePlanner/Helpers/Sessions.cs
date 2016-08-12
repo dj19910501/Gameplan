@@ -312,6 +312,49 @@ namespace RevenuePlanner.Helpers
             }
         }
         /// <summary>
+        /// Add By Nishant Sheth
+        /// Return plan exchange rate value
+        /// </summary>
+        /// <returns></returns>
+        public static double PlanExchangeRate
+        {
+            get
+            {
+                double ExchangeRate = 1;
+                if (HttpContext.Current.Session["PlanExchangeRate"] != null)
+                {
+                    double.TryParse(Convert.ToString(HttpContext.Current.Session["PlanExchangeRate"]), out ExchangeRate);
+                }
+                return ExchangeRate;
+            }
+            set
+            {
+                HttpContext.Current.Session["PlanExchangeRate"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Return plan currencySymbol
+        /// </summary>
+        /// <returns></returns>
+        public static string PlanCurrencySymbol
+        {
+            get
+            {
+                string CurrencySymbol = Enums.CurrencySymbolsValues[Enums.CurrencySymbols.USD.ToString()].ToString();
+                if (HttpContext.Current.Session["PlanCurrencySymbol"] != null)
+                {
+                    CurrencySymbol = Convert.ToString(HttpContext.Current.Session["PlanCurrencySymbol"]);
+                }
+                return CurrencySymbol;
+            }
+            set
+            {
+                HttpContext.Current.Session["PlanCurrencySymbol"] = value;
+            }
+        }
+        /// <summary>
         /// Added By: Kunal
         /// Store Model Id.
         /// </summary>
