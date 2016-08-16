@@ -7,6 +7,16 @@
     {
         IsIntegrationCredentialCreateEditAuthorized = (bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized;
     }
+    ViewBag.IsMultiCurrencyNone = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyNone);
+
+    bool IsMultiCurrencyNone = true;
+    if (ViewBag.IsMultiCurrencyNone != null)
+    {
+        if (ViewBag.IsIntegrationCredentialCreateEditAuthorized != null)
+        {
+            IsMultiCurrencyNone = (bool)ViewBag.IsMultiCurrencyNone;
+        }
+    }
 }
 
     <div class="padding-content">
@@ -25,10 +35,14 @@
             <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
         </li>
         }
-        @*insertation start 09/08/2016 kausha #2492 - class change by Bhumika 16-8-2016*@
-        <li id="liCurrency" class="item">
-            <a class="source-sans-probold currency" href="#" id="aCurrency"><span></span>CURRENCY</a>
-        </li>
+
+        @*insertation start 09/08/2016 kausha #2492.*@
+        @if (IsMultiCurrencyNone == false)
+        {
+            <li id="liCurrency" class="item">
+                <a class="source-sans-probold inputs" href="#" id="aCurrency"><span></span>CURRENCY</a>
+            </li>
+        }
         @*insertation End 09/08/2016 kausha #2492.*@
     </ul>
 

@@ -1,0 +1,107 @@
+﻿@using RevenuePlanner.Helpers;
+@model RevenuePlanner.Models.Plangrid
+@{
+    Layout = "";
+    var countrows = 0;
+    if (Model.PlanDHTMLXGrid != null)
+    {
+        countrows = Model.PlanDHTMLXGrid.rows != null ? Model.PlanDHTMLXGrid.rows.Count : 0;
+    }
+
+    var errorUnarchive = "";
+
+    if (ViewBag.ErrorUnarchived != null)
+    {
+        errorUnarchive = Convert.ToString(ViewBag.ErrorUnarchived);
+    }
+}
+
+
+<div>
+    <h2>Planing</h2>
+    <div id="PlanCurrencyGrid" class="gridViewGrid" style="padding:3%;"></div>
+
+</div>
+
+@Html.Hidden("hdnErrorUnarchive", errorUnarchive, new { id = "hdnErrorUnarchive" })
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.nav').addClass('no-bottom-border');
+        if (parseInt(@countrows) > 0) {
+            BindPlanGrid();
+            $(document).ajaxComplete(function () {
+                PlanCurrencyGrid.setSizes();
+            });
+            //Enable single click to trigger edit - zz
+            PlanCurrencyGrid.enableEditEvents(true, true, true);
+        }
+    });
+
+    function BindPlanGrid() {
+        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
+        var mainGridData = JsonModel;
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+
+        PlanCurrencyGrid = new dhtmlXGridObject('PlanCurrencyGrid');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        PlanCurrencyGrid.attachEvent("onEditCell", doOnEditCell);
+        PlanCurrencyGrid.setImagePath(imgpath);
+        PlanCurrencyGrid.enableAutoHeight(true);
+        PlanCurrencyGrid.init();
+        PlanCurrencyGrid.parse(GridDataHomeGrid, "json");
+    }
+
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+        $('#diverrormsg').text('');
+        $("#errorMessage").slideUp(400);
+        if (stage == 1) {
+            $(".dhx_combo_edit").off("keydown");
+
+            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+            PlanCurrencyGrid.editor.obj.onkeypress = function (e) {
+                e = e || window.event;
+                if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                    var text = this.value;
+                    if (text.length > 10) { //max length of the text
+                        return false;
+                    }
+                }
+            }
+        }
+        if (stage == 2) {
+            debugger;
+            if (nValue == "0") {
+                $('#diverrormsg').text(" 0 is not allowed.");
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                return false;
+            }
+            if (nValue == '') {
+                $('#diverrormsg').text(" Exchange rate can't be null.");
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                return false;
+                //PlanCurrencyGrid.cells(rowId, cellInd).setValue("1");
+                //nValue = "1";
+            }
+            else
+            {
+                if($.isNumeric(nValue)==false)
+                {
+                    $('#diverrormsg').text(" Please enter valid exchange rate.");
+                    $("#errorMessage").slideDown(400);
+                    $("html, body").animate({ scrollTop: 0 }, 1000);
+                    return false;
+                }
+            }
+            
+            var monthValue = PlanCurrencyGrid.cells(rowId, cellInd).getAttribute("actval");
+            if (nValue != oValue)
+                SaveExchangeRate(rowId, oValue, nValue, "plan", monthValue);
+        }
+        return true;
+    }
+</script>

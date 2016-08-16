@@ -709,6 +709,9 @@
     <Content Include="Content\Common\MarketingBudgetImportSample.xls" />
     <None Include="Properties\PublishProfiles\zhang-local.pubxml" />
     <None Include="Service References\BDSService\BDSService1.wsdl" />
+    <None Include="Service References\BDSService\BDSService15.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Service References\BDSService\BDSService4.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -980,6 +983,9 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="Views\User\ExchangeRate.cshtml" />
+    <Content Include="Views\User\_PlanCurrencyGrid.cshtml" />
+    <Content Include="Views\User\_ReportCurrencyGrid.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

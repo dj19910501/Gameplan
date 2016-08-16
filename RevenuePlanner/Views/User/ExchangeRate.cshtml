@@ -1,0 +1,109 @@
+﻿@using RevenuePlanner.Helpers;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var countrows = 0;
+
+    ViewBag.PageTitle = "Currency";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
+    ViewBag.ModuleTitle = "Currency";
+
+}
+
+@section Sidebar {
+    @Html.Partial("~/Views/shared/_preferences.cshtml")
+}
+@using (Html.BeginForm())
+{
+    <h2>
+        Currency Exchange rate
+    </h2>
+    <div>
+        <div id="errorMessage" class="alert hide alert-error ">
+            <a class="close">×</a>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+            <strong>Error !</strong><span id="diverrormsg"></span>
+
+        </div>
+    </div>
+    <div>
+        @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
+    </div>
+
+    <div>
+        <div id="PlanGrid" class="gridViewGrid"></div>
+    </div>
+    <div>
+        <div id="ReportGrid" class="gridViewGrid"></div>
+    </div>
+
+}
+
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
+
+
+<script type="text/javascript">
+    $("#drpYear").change(function () {
+        var year = this.value;
+        if (year != '') {
+            LoadReportGrid(year);
+            LoadPlanGrid(year);
+
+        }
+
+    });
+    $(document).ready(function () {
+
+        $('.nav').addClass('no-bottom-border');
+        var year = $("#drpYear option:selected").text();
+        if (year != '') {
+
+            LoadReportGrid(year);
+            LoadPlanGrid(year);
+        }
+    });
+    function LoadReportGrid(yearValue) {
+
+        var url = '@Url.Content("~/User/PlanGrid/")';
+      
+        $("#PlanGrid").load(url + '?year=' + yearValue , function (response, status, xhr) {
+
+        });
+    }
+    function SaveExchangeRate(code, oldValue, newValue, component, monthValue) {
+      
+        var url = '@Url.Content("~/User/SaveExchangeRate/")';
+        var compo = '';
+        if (component == 'plan')
+        {
+            compo='@Enums.CurrencyComponent.Plan.ToString()';
+        }
+        else if (component == 'report')
+        {
+            compo='@Enums.CurrencyComponent.Report.ToString()';
+        }
+        var year = $("#drpYear option:selected").text();
+        if (year != '') {
+            //$("#PlanGrid").load(url + '?year=' + year + '&component=' + compo + '&currencyCode=' + code + '&oldValue=' + oldValue + '&newValue=' + newValue + '&month=' + monthValue, function (response, status, xhr) {
+
+            //});
+
+            $.ajax(
+   {
+       type: "GET",
+       cache: false,
+       url: 'SaveExchangeRate',
+       data: { year: year, component: compo, currencyCode: code, oldValue :oldValue,newValue:newValue,month:monthValue},
+       success: function (data) {
+         
+       }
+   });
+        }
+     
+    }
+    function LoadPlanGrid(yearValue) {
+
+        var url = '@Url.Content("~/User/ReportGrid/")';
+    
+        $("#ReportGrid").load(url + '?year=' + yearValue , function (response, status, xhr) {
+
+        });
+    }
+</script>

@@ -1,0 +1,224 @@
+﻿@using RevenuePlanner.Helpers;
+@model RevenuePlanner.Models.Plangrid
+@{
+    Layout = "";
+    var countrows = 0;
+    if (Model.PlanDHTMLXGrid != null)
+    {
+        countrows = Model.PlanDHTMLXGrid.rows != null ? Model.PlanDHTMLXGrid.rows.Count : 0;
+    }
+
+    var errorUnarchive = "";
+
+    if (ViewBag.ErrorUnarchived != null)
+    {
+        errorUnarchive = Convert.ToString(ViewBag.ErrorUnarchived);
+    }
+    
+
+}
+@section Sidebar {
+    @Html.Partial("~/Views/shared/_preferences.cshtml")
+}
+
+    <div>
+        <h2>Reporting</h2>
+        <div id="ReportCurrencyGrid" class="gridViewGrid" style="padding:3%;"></div>
+
+    </div>
+    
+
+@Html.Hidden("hdnErrorUnarchive", errorUnarchive, new { id = "hdnErrorUnarchive" })
+
+
+@*<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />*@
+
+<div id="errorMessage" class="alert hide alert-error ">
+    <a class="close">×</a>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+    <strong>Error!</strong><span id="diverrormsg"></span>
+
+</div>
+<div class="market-activity-main">
+
+    <div class="btn-dropdwn" style="display: none;" id="popupMediCode">
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.nav').addClass('no-bottom-border');
+       // LoadArchiveGrid();
+        if (parseInt(@countrows) > 0) {
+            BindReportGrid();
+
+            $(document).ajaxComplete(function () {
+                ReportCurrencyGrid.setSizes();
+
+            });
+            //Enable single click to trigger edit - zz
+            ReportCurrencyGrid.enableEditEvents(true, false, true);
+        }
+    });
+
+
+
+
+    @*function BindReportGrid() {
+        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
+        var mainGridData = JsonModel;
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+
+        ReportCurrency = new dhtmlXGridObject('ReportCurrency');
+
+        ReportCurrency.enableAutoHeight(true);
+
+        ReportCurrency.attachEvent("onEditCell", doOnEditCell);
+        ReportCurrency.attachEvent("onScroll", function (sLeft, sTop) {
+            $(".dhx_combo_select").css("display", "none");
+            $('#popupMediCode').css('display', 'none');
+        });
+
+        ReportCurrency.init();
+
+        ReportCurrency.parse(GridDataHomeGrid, "json");
+
+    }
+
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+
+        if (stage == 0) {
+            var locked = ReportCurrency.cells(rowId, cellInd).getAttribute("locked");
+            if ((locked != null && locked != "") && locked == "1")
+                return false;
+        }
+        if (stage == 1) {
+            var newvale = htmlDecode(nValue);
+            $('.dhx_combo_select').css('z-index', '99999');
+            var oldval = ReportCurrency.cells(rowId, cellInd).getValue();
+            var v1 = parseInt(oldval);
+            var combo = ReportCurrency.getColType(cellInd);
+            if (isNaN(v1) && combo == 'coro') {
+                $('.dhx_combo_select option[value="' + (oldval) + '"]').remove();
+                var v = $('.dhx_combo_select option:contains("' + (oldval) + '")').val();
+                if (v != null) {
+                    $('.dhx_combo_select').val(v);
+                }
+                else {
+                    v = "0";
+                    $('.dhx_combo_select').val(v);
+                }
+                if (oldval == '--')
+                    $('.dhx_combo_edit').val('');
+            }
+            else {
+                if (oldval == '--')
+                    $('.dhx_combo_edit').val('');
+            }
+
+        }
+        if (stage == 2) {
+            var fillrequired = 0;
+            var GeneratecolIndex = ReportCurrency.getColIndexById("generateMediaCode");
+            var isrequired = ReportCurrency.cells(rowId, cellInd).getAttribute("actval");
+            if (nValue != '' && nValue != oValue) {
+
+                if (isrequired != null && isrequired != undefined && isrequired.toString().toLowerCase() == "true") {
+                    ReportCurrency.setCellTextStyle(rowId, cellInd, "");
+                }
+
+                var newvale = htmlDecode(nValue);
+                ReportCurrency.cells(rowId, cellInd).setValue(newvale);
+            }
+            else if (nValue.toString().trim() == '') {
+                if (isrequired != null && isrequired != undefined && isrequired.toString().toLowerCase() == "true") {
+                    ReportCurrency.setCellTextStyle(rowId, cellInd, "border-bottom: 2px solid red;");
+                }
+                ReportCurrency.cells(rowId, cellInd).setValue('--');
+            }
+            ReportCurrency.forEachCell(rowId, function (cellObj, col_index) {
+                if (col_index > 2) {
+                    var isrequired = ReportCurrency.cells(rowId, col_index).getAttribute("actval");
+                    if (isrequired != null && isrequired != undefined && isrequired.toString().toLowerCase() == "true") {
+                        var val = ReportCurrency.cells(rowId, col_index).getValue();
+                        if (val == '' || val == '--')
+                            fillrequired = fillrequired + 1;
+                    }
+                }
+            });
+            if (fillrequired > 0) {
+                ReportCurrency.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn disabled' rowid=" + rowId + " onclick=GenerateMediaCode(this); disabled='disabled' />");
+
+            }
+            else
+                ReportCurrency.cells(rowId, GeneratecolIndex).setValue("<input type='button' value='Generate'  class='GenerateMediaCode btn' rowid=" + rowId + " onclick=GenerateMediaCode(this); />")
+
+        }
+        return true;
+    }*@
+
+    function BindReportGrid() {
+        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
+        var mainGridData = JsonModel;
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+
+        ReportCurrencyGrid = new dhtmlXGridObject('ReportCurrencyGrid');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        ReportCurrencyGrid.attachEvent("onEditCell", doOnEditCell);
+        ReportCurrencyGrid.setImagePath(imgpath);
+        ReportCurrencyGrid.enableAutoHeight(true);
+        ReportCurrencyGrid.init();
+        ReportCurrencyGrid.parse(GridDataHomeGrid, "json");
+    }
+
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+        $('#diverrormsg').text('');
+        $("#errorMessage").slideUp(400);
+        if (stage == 1) {
+            $(".dhx_combo_edit").off("keydown");
+
+            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+            ReportCurrencyGrid.editor.obj.onkeypress = function (e) {
+                e = e || window.event;
+                if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                    var text = this.value;
+                    if (text.length > 10) { //max length of the text
+                        return false;
+                    }
+                }
+            }
+        }
+        if (stage == 2) {
+            if (nValue == "0") {
+                $('#diverrormsg').text(" 0 is not allowed.");
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                return false;
+            }
+            if (nValue == '') {
+                $('#diverrormsg').text(" Exchange rate can't be null.");
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                return false;
+                //PlanCurrencyGrid.cells(rowId, cellInd).setValue("1");
+                //nValue = "1";
+            }
+            else {
+                if ($.isNumeric(nValue) == false) {
+                    $('#diverrormsg').text("Please enter valid exchange rate.");
+                    $("#errorMessage").slideDown(400);
+                    $("html, body").animate({ scrollTop: 0 }, 1000);
+                    return false;
+                }
+            }
+            var monthValue = ReportCurrencyGrid.cells(rowId, cellInd).getAttribute("actval");
+            if (nValue != oValue)
+                SaveExchangeRate(rowId, oValue, nValue, "report", monthValue);
+        }
+        return true;
+    }
+</script>

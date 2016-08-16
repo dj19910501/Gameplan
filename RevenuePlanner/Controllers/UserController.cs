@@ -1350,6 +1350,7 @@ namespace RevenuePlanner.Controllers
         #region Currency
         //insertation start 09/08/2016 kausha #2492 Following  is added to get and save currency.
         public ActionResult Currency()
+
         {
             List<CurrencyModel> lstCurrency = new List<CurrencyModel>();
             IEnumerable<BDSService.Currency> lstCurrencydata = objBDSServiceClient.GetAllCurrency();
@@ -1375,6 +1376,15 @@ namespace RevenuePlanner.Controllers
                     objCurrency.ISOCurrencyCode = item.ISOCurrencyCode;
                     lstCurrency.Add(objCurrency);
                 }
+
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyEdit))
+                    ViewData["permission"] = Enums.ApplicationActivity.MultiCurrencyEdit.ToString();
+
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyViewOnly))
+                    ViewData["permission"] = Enums.ApplicationActivity.MultiCurrencyViewOnly.ToString();
+
+
+
             }
             return View("Currency", lstCurrency.AsEnumerable());
         }
@@ -1394,7 +1404,34 @@ namespace RevenuePlanner.Controllers
             return Json(status, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult ConversionRate()
+        public ActionResult ExchangeRate()
+        {
+            //lstYearViewBag.yearList = new List<SelectListItem> { };
+            List<SelectListItem> lstYear = new List<SelectListItem>();
+            SelectListItem obj;
+            for (int i = 2000; i <= DateTime.Now.Year; i++)
+            {
+                obj = new SelectListItem();
+                obj.Text = i.ToString();
+                obj.Value = i.ToString();
+                if (i == DateTime.Now.Year)
+                    obj.Selected = true;
+                lstYear.Add(obj);
+            }
+            ViewBag.yearList = lstYear;
+
+            return View("ExchangeRate", "");
+        }
+        public ActionResult PlanGrid(string year)
+        {
+            return View("_PlanCurrencyGrid", GenerateGrid(year, Enums.CurrencyComponent.Plan.ToString()));
+        }
+        public ActionResult ReportGrid(string year)
+        {
+            return View("_ReportCurrencyGrid", GenerateGrid(year, Enums.CurrencyComponent.Report.ToString()));
+        }
+
+        private Plangrid GenerateGrid(string year, string component)
         {
             //  string mode = InsepectMode;
             Plangrid objplangrid = new Plangrid();
@@ -1408,147 +1445,128 @@ namespace RevenuePlanner.Controllers
             string stylecolorgray = "color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:85%;";
             try
             {
-
-                bool isRequire = false;
-
                 string Gridheder = string.Empty;
                 string coltype = string.Empty;
-
-
                 headobjlist = GenerateHeader();
-
-                int requiredcnt = 0;
-                for (int i = 0; i < 5; i++)
+                IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrency(Sessions.User.ClientId);
+                BDSService.Currency lstConversionRate = objBDSServiceClient.GetCurrencyExchangeRate(Sessions.User.ClientId, Sessions.User.UserId);
+                for (int i = 0; i < lstClientCurrency.Count(); i++)
                 {
-                    string RowID = "mediacode." + i.ToString();
+
+                    string RowID = lstClientCurrency.ElementAt(i).ISOCurrencyCode;
                     lineitemrowsobj = new PlanDHTMLXGridDataModel();
                     List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
-
-
                     lineitemrowsobj.id = RowID;
-
                     Plandataobj lineitemdataobj = new Plandataobj();
-
-
                     lineitemdataobj = new Plandataobj();
-                    lineitemdataobj.value = "Us dollar";
+                    lineitemdataobj.value = "<span><b>" + lstClientCurrency.ElementAt(i).CurrencySymbol + "</b></span>" + " " + lstClientCurrency.ElementAt(i).ISOCurrencyCode + " (" + lstClientCurrency.ElementAt(i).CurrencyDetail + ")";
                     lineitemdataobjlist.Add(lineitemdataobj);
 
 
-                    lineitemdataobj = new Plandataobj();
-                    lineitemdataobj.value = "50";
-                    lineitemdataobjlist.Add(lineitemdataobj);
+                    for (int j = 1; j < headobjlist.Count(); j++)
+                    {
+                        int month = 0;
+
+                        #region MonthNo
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.Jan + 1;
+
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.Feb + 1;
+
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.Mar + 1;
+
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.April + 1;
+
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.May + 1;
+
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jun.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.Jun + 1;
+
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.July + 1;
+
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.Aug + 1;
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.Sep + 1;
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.Oct + 1;
+
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.Nov + 1;
+                        if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()].ToString())
+                            month = (int)Enums.ReportMonthDisplay.Dec + 1;
+                        #endregion
 
 
-                    //if (IsArchive == false)
-                    //{
-                    //    lineitemdataobj = new Plandataobj();
-                    //    if (mode == Convert.ToString(Enums.InspectPopupMode.Edit) || mode == Convert.ToString(Enums.InspectPopupMode.Add))
-                    //        lineitemdataobj.value = "<span alt=" + Convert.ToString(tacticId) + " class='plus-circle' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " onclick='javascript:OpenGridPopup(event)' title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt' rowid=" + RowID + " onclick='javascript:AddRemoveMediaCode(this);' title='Select' altid=" + item.MediaCodeId.ToString() + "></div><span class='archive' title='Archive' ><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " onclick='javascript:ArchiveMediaCode(event)' title='Archive'></i></span>";
-                    //    else
-                    //        lineitemdataobj.value = "<span alt=" + Convert.ToString(tacticId) + " class='plus-circle disabled' title='Add Media Code'><i class='fa fa-plus-circle CodeNew' aria-hidden='true' rowid=" + RowID + " title='Add Media Code'></i></span><div class='honeycombbox-icon-gantt' rowid=" + RowID + " onclick='javascript:AddRemoveMediaCode(this);' title='Select' altid=" + item.MediaCodeId.ToString() + "></div><span class='archive disabled' title='Archive'><i class='fa fa-archive CodeArchive' aria-hidden='true' rowid=" + RowID + " title='Archive'></i></span>";
+                        var startDate = new DateTime(Convert.ToInt32(year), month, 1);
+                        var endDate = startDate.AddMonths(1).AddDays(-1);
 
-                    //    lineitemdataobjlist.Add(lineitemdataobj);
-                    //}
-                    //else
-                    //{
-                    //    lineitemdataobj = new Plandataobj();
-                    //    if (mode == Convert.ToString(Enums.InspectPopupMode.Edit) || mode == Convert.ToString(Enums.InspectPopupMode.Add))
-                    //        lineitemdataobj.value = "<span class='archive' title='Unarchive'><i class='fa fa-archive UnarchiveMediaCode' aria-hidden='true' rowid=" + RowID + " onclick='javascript:UnarchiveMediaCode(event)' title='Unarchive'></i></span>";
-                    //    else
-                    //        lineitemdataobj.value = "<span class='archive disabled' title='Unarchive'><i class='fa fa-archive UnarchiveMediaCode' aria-hidden='true' rowid=" + RowID + " title='Unarchive'/>";
+                        var data = lstConversionRate.UserCurrency.CurrencyExchangeRate.Where(w => w.StartDate == startDate && w.EndDate == endDate && w.Component.ToLower() == component.ToLower() && w.CurrencyCode.ToLower() == lstClientCurrency.ElementAt(i).ISOCurrencyCode.ToLower()).FirstOrDefault();
+                        lineitemdataobj = new Plandataobj();
+                        if (data != null)
+                        {
+                            lineitemdataobj.value = Convert.ToString(data.ExchangeRate);
+                        }
+                        else
+                            lineitemdataobj.value = "1";
+                        //lineitemdataobj.actval = month.ToString();
+                        lineitemdataobj.actval = month.ToString();
+                        lineitemdataobj.style = "allownumericwithdecimal";
+                        lineitemdataobjlist.Add(lineitemdataobj);
+                    }
 
-                    //    lineitemdataobjlist.Add(lineitemdataobj);
-                    //}
-
-                    lineitemdataobj = new Plandataobj();
-                    lineitemdataobj.value = "<span class='spnMediacode'>" + "60" + "</span>";
-                    //  lineitemdataobj.value = "<span class='spnMediacode'>" + HttpUtility.HtmlEncode(item.MediaCode) + "</span>";
-                    lineitemdataobj.actval = HttpUtility.HtmlEncode("60");
-                    // lineitemdataobj.style = stylecolorgray;
-                    lineitemdataobjlist.Add(lineitemdataobj);
-
-                    lineitemdataobj = new Plandataobj();
-                    lineitemdataobj.value = "<span class='spnMediacode'>" + "60" + "</span>";
-                    //  lineitemdataobj.value = "<span class='spnMediacode'>" + HttpUtility.HtmlEncode(item.MediaCode) + "</span>";
-                    lineitemdataobj.actval = HttpUtility.HtmlEncode("70");
-                    //  lineitemdataobj.style = stylecolorgray;
-                    lineitemdataobjlist.Add(lineitemdataobj);
-
-
-                    //foreach (var Cust in lstmediaCodeCustomfield)
-                    //{
-                    //    if (Cust.CustomFieldTypeName.ToString() == Convert.ToString(Enums.CustomFieldType.TextBox))
-                    //    {
-                    //        coltype = "ro";
-
-
-                    //        isRequire = Cust.IsRequired;
-
-
-                    //        if (IsArchive)
-                    //            coltype = "ro";
-
-                    //        var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
-                    //        customFieldEntityValue = (optionValue != null) ? optionValue : string.Empty;
-
-                    //    }
-                    //    else if (Convert.ToString(Cust.CustomFieldTypeName) == Convert.ToString(Enums.CustomFieldType.DropDownList))
-                    //    {
-                    //        if (IsArchive == false)
-                    //        {
-
-                    //            coltype = "coro";
-
-                    //            var optionValue = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).Select(o => o.CustomFieldValue).FirstOrDefault();
-                    //            customFieldEntityValue = (optionValue != null) ? optionValue : string.Empty;
-                    //            isRequire = Cust.IsRequired;
-
-                    //        }
-                    //        else
-                    //        {
-                    //            coltype = "ro";
-
-                    //            var objoptionID = item.CustomFieldList.Where(o => o.CustomFieldId == Cust.CustomFieldId).FirstOrDefault();
-                    //            if (objoptionID != null)
-                    //            {
-                    //                int intoptionID = Convert.ToInt32(objoptionID.CustomFieldValue);
-                    //                string OptionValue = Cust.Option.Where(a => a.CustomFieldOptionId == intoptionID).Select(a => a.CustomFieldOptionValue).FirstOrDefault();
-                    //                customFieldEntityValue = (OptionValue != null) ? OptionValue : string.Empty;
-                    //            }
-                    //            else
-                    //                customFieldEntityValue = string.Empty;
-                    //        }
-                    //    }
-                    //    if (isRequire)
-                    //        requiredcnt = requiredcnt + 1;
-                    //    lineitemdataobj = new Plandataobj();
-                    //    if (!string.IsNullOrEmpty(customFieldEntityValue))
-                    //        lineitemdataobj.value = HttpUtility.HtmlEncode(customFieldEntityValue);
-                    //    else
-                    //        lineitemdataobj.value = "--";
-                    //    lineitemdataobj.locked = "1";
-                    //    lineitemdataobj.actval = Convert.ToString(isRequire);
-                    //    lineitemdataobj.style = stylecolorgray;
-
-                    //    lineitemdataobjlist.Add(lineitemdataobj);
-                    // }
                     lineitemrowsobj.data = lineitemdataobjlist;
-
                     lineitemrowsobjlist.Add(lineitemrowsobj);
                 }
 
                 objPlanMainDHTMLXGrid.head = headobjlist;
                 objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
-
-
-                objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
             }
             catch (Exception objException)
             {
                 ErrorSignal.FromCurrentContext().Raise(objException);
             }
-            return View("ConversionRate", objplangrid);
+
+            objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+            return objplangrid;
+        }
+        public void SaveExchangeRate(string year, string component, string currencyCode, string oldValue, string newValue, string month)
+        {
+            try
+            {
+                ExchangeRate_Log obj = new ExchangeRate_Log();
+                obj.ISOCurrencyCode = currencyCode;
+                obj.ClientId = Sessions.User.ClientId;
+                obj.Component = component;
+                int monthNo = 0;
+                if (!string.IsNullOrEmpty(month))
+                    monthNo = Convert.ToInt32(month);
+                var startDate = new DateTime(Convert.ToInt32(year), monthNo, 1);
+                var endDate = startDate.AddMonths(1).AddDays(-1);
+                obj.StartDate = startDate;
+                obj.EndDate = endDate;
+                if (!string.IsNullOrEmpty(oldValue))
+                    obj.OldExchangeRate = Convert.ToDouble(oldValue);
+                //else
+                //    obj.OldExchangeRate = null;
+                if (!string.IsNullOrEmpty(newValue))
+                    obj.NewExchangeRate = Convert.ToDouble(newValue);
+                //else
+                //    obj.NewExchangeRate = null;
+
+                obj.CreatedBy = Sessions.User.UserId;
+                obj.CreatedDate = DateTime.Now;
+                bool status = objBDSServiceClient.SaveExchangeRate(obj);
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
         }
         public List<PlanHead> GenerateHeader()
         {
@@ -1563,46 +1581,102 @@ namespace RevenuePlanner.Controllers
 
                 PlanHead headobjother = new PlanHead();
 
-
                 headobjother = new PlanHead();
                 headobjother.type = "ro";
                 headobjother.id = "Currency";
-                headobjother.sort = "na";
-                headobjother.width = 100;
+                headobjother.sort = "str";
+                headobjother.width = 140;
                 headobjother.value = "Currency";
                 headobjlist.Add(headobjother);
 
-                headobjother = new PlanHead();
-                headobjother.type = "ed";
-                headobjother.id = "Jan";
-                headobjother.sort = "na";
-                headobjother.width = 100;
-                headobjother.value = "Jan";
-                headobjlist.Add(headobjother);
+
+                bool isEdit = false;
+
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyEdit))
+                    isEdit = true;
+
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyViewOnly))
+                    isEdit = false;
 
 
-                headobjother = new PlanHead();
-                headobjother.type = "ed";
-                headobjother.id = "Feb";
-                headobjother.sort = "na";
+                for (int i = 0; i < 12; i++)
+                {
+                    headobjother = new PlanHead();
+                    if (isEdit)
+                        headobjother.type = "edn";
+                    else
+                        //if (datanew.row.Code == Enums.ApplicationActivity.MultiCurrencyViewOnly.ToString())
+                        headobjother.type = "ro";
 
-                headobjother.width = 100;
-                //if (IsArchive == false)
-                //{
-                //    headobjother.value = "<input type='checkbox' id = 'MediaCodeSelectAll' value='SelectAll'  title='SelectAll'  class='selectInput'><span class='selectall'> Select All</span></input>";
-                //}
-                //else
-                headobjother.value = "Feb";
-                headobjlist.Add(headobjother);
+                    headobjother.sort = "int";
+                    headobjother.width = 80;
 
-                headobjother = new PlanHead();
-                headobjother.type = "ed";
-                headobjother.id = "March";
-                headobjother.sort = "na";
-                headobjother.width = 200;
-                headobjother.value = "March";
+                    if (i == 0)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()].ToString();
+                    }
+                    if (i == 1)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()].ToString();
+                    }
 
-                headobjlist.Add(headobjother);
+                    if (i == 2)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()].ToString();
+                    }
+
+                    if (i == 3)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()].ToString();
+                    }
+                    if (i == 4)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()].ToString();
+                    }
+                    if (i == 5)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jun.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jun.ToString()].ToString();
+                    }
+                    if (i == 6)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()].ToString();
+                    }
+                    if (i == 7)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()].ToString();
+                    }
+                    if (i == 8)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()].ToString();
+                    }
+                    if (i == 9)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()].ToString();
+                    }
+                    if (i == 10)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()].ToString();
+                    }
+                    if (i == 11)
+                    {
+                        headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()].ToString();
+                    }
+                    headobjlist.Add(headobjother);
+                }
+
+
                 //var columncnt = lstmediaCodeCustomfield.Count;
                 var colwidth = 200;
                 //if (columncnt != 0 && columncnt < 4)
