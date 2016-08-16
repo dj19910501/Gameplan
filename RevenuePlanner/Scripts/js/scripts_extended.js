@@ -205,7 +205,8 @@ function SetLabelFormaterWithTitle(idName) {
     if (budgetValue) {
         //alert(budgetValue);
         var isDollarAmout = false;
-        if (budgetValue.indexOf('$') > -1) {
+        // Modified Below Condion by Nishant Sheth #2497
+        if (budgetValue.indexOf(CurrencySybmol) > -1) {
             isDollarAmout = true;
         }
         budgetValue = RemoveExtraCharactersFromString(budgetValue); //Function that remove the special char from the string 
@@ -217,8 +218,8 @@ function SetLabelFormaterWithTitle(idName) {
             }
             //Add tipsy for the current label.
             if (isDollarAmout) {
-                $(idName).html('$' + GetAbberiviatedValue(budgetValue));
-                $(idName).prop('title', "$" + number_format(budgetValue.toString(), 0, '.', ',') + remNumber);
+                $(idName).html(CurrencySybmol + GetAbberiviatedValue(budgetValue)); // Modified By Nishant Sheth #2497
+                $(idName).prop('title', CurrencySybmol + number_format(budgetValue.toString(), 0, '.', ',') + remNumber); // Modified By Nishant Sheth #2497
             }
             else {
                 $(idName).html(GetAbberiviatedValue(budgetValue));
@@ -300,8 +301,8 @@ function FormatNumber(value, isPercentage) {
         return value + '%'
     }
     else {
-
-        return '$' + (parseFloat(value) != 0 ? GetAbberiviatedValue(value) : 0);
+        // Modified By Nishant Sheth #2497
+        return CurrencySybmol + (parseFloat(value) != 0 ? GetAbberiviatedValue(value) : 0);
     }
 }
 

@@ -12753,7 +12753,7 @@ namespace RevenuePlanner.Controllers
 
                 string doubledesh = "--";
                 string typero = "ro";
-                string dollarsymbol = "$";
+                string dollarsymbol = Sessions.PlanCurrencySymbol; // Modified By Nishant Sheth #2497
                 if (IsPlan)
                 {
                     foreach (var planitem in lstplandetail)
@@ -12844,9 +12844,10 @@ namespace RevenuePlanner.Controllers
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
+                        string planTotalCost = Convert.ToString(double.Parse(Convert.ToString(totalcost))); // Add By Nishant Sheth #2497
                         plandataobj = new Plandataobj();
-                        plandataobj.value = totalcost.ToString();
-                        plandataobj.actval = totalcost.ToString();
+                        plandataobj.value = planTotalCost;
+                        plandataobj.actval = planTotalCost;
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
@@ -12889,9 +12890,10 @@ namespace RevenuePlanner.Controllers
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
+                        double planTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(totalrevenue))); // Add By Nishant Sheth #2497
                         plandataobj = new Plandataobj();
-                        plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(totalrevenue).ToString();
-                        plandataobj.actval = totalrevenue.ToString();
+                        plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(planTotalRevenue).ToString();
+                        plandataobj.actval = planTotalRevenue.ToString();
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
@@ -13023,9 +13025,10 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
+                                    string campTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Campaignitem.totalcost)))); // Add By Nishant Sheth #2497
                                     campaigndataobj = new Plandataobj();
-                                    campaigndataobj.value = Campaignitem.totalcost.ToString();
-                                    campaigndataobj.actval = Campaignitem.totalcost.ToString();
+                                    campaigndataobj.value = campTotalCost;
+                                    campaigndataobj.actval = campTotalCost;
                                     campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
@@ -13059,9 +13062,10 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj.actval = Campaignitem.totalmql.ToString();
                                     campaigndataobjlist.Add(campaigndataobj);
 
+                                    double campTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Campaignitem.totalrevenue))); // Add By Nishant Sheth #2497
                                     campaigndataobj = new Plandataobj();
-                                    campaigndataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Campaignitem.totalrevenue).ToString();
-                                    campaigndataobj.actval = Campaignitem.totalrevenue.ToString();
+                                    campaigndataobj.value = dollarsymbol + ConvertNumberToRoundFormate(campTotalRevenue).ToString();
+                                    campaigndataobj.actval = campTotalRevenue.ToString();
                                     campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
@@ -13191,9 +13195,10 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
+                                                double progToatalCost = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Programitem.totalcost)));
                                                 programdataobj = new Plandataobj();
-                                                programdataobj.value = Programitem.totalcost.ToString();
-                                                programdataobj.actval = Programitem.totalcost.ToString();
+                                                programdataobj.value = progToatalCost.ToString();
+                                                programdataobj.actval = progToatalCost.ToString();
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
@@ -13227,9 +13232,10 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
+                                                double progTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Programitem.totalrevenue)));// Add By Nishant Sheth #2497
                                                 programdataobj = new Plandataobj();
-                                                programdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Programitem.totalrevenue).ToString();
-                                                programdataobj.actval = Programitem.totalrevenue.ToString();
+                                                programdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(progTotalRevenue).ToString();
+                                                programdataobj.actval = progTotalRevenue.ToString();
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
@@ -13355,9 +13361,10 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
+                                                        string tacTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tactic.totalcost))));// Add By Nishant Sheth #2497
                                                         tacticdataobj = new Plandataobj();
-                                                        tacticdataobj.value = tactic.totalcost.ToString();
-                                                        tacticdataobj.actval = tactic.totalcost.ToString();
+                                                        tacticdataobj.value = tacTotalCost;
+                                                        tacticdataobj.actval = tacTotalCost;
                                                         tacticdataobj.locked = tactic.IstactEditable;
                                                         tacticdataobj.type = "edn";
                                                         tacticdataobj.style = cellTextColor;
@@ -13395,9 +13402,10 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
+                                                        double tacTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tactic.totalrevenue)));// Add By Nishant Sheth #2497
                                                         tacticdataobj = new Plandataobj();
-                                                        tacticdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(tactic.totalrevenue).ToString();
-                                                        tacticdataobj.actval = tactic.totalrevenue.ToString();
+                                                        tacticdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(tacTotalRevenue).ToString();
+                                                        tacticdataobj.actval = tacTotalRevenue.ToString();
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
@@ -13470,8 +13478,9 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemdataobj.locked = lockedstateone;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
+                                                                string lineTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(lineitem.Cost)); // Add By Nishant Sheth #2497
                                                                 lineitemdataobj = new Plandataobj();
-                                                                lineitemdataobj.value = lineitem.Cost.ToString();
+                                                                lineitemdataobj.value = lineTotalCost;
                                                                 lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
                                                                 lineitemdataobj.type = "edn";
                                                                 lineitemdataobj.style = cellTextColor;
@@ -14027,6 +14036,12 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["tacticplancost"])
                     {
+                        // Add By Nishant Sheth #2497
+                        // Convert value from other currency to USD
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                        {
+                            UpdateVal = Convert.ToString(objCurrency.SetValueByExchangeRate(double.Parse(UpdateVal)));
+                        }
                         tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == id).ToList();
                         UpdateTacticPlannedCost(ref pcpobj, ref linkedTactic, ref totalLineitemCost, UpdateVal, tblTacticLineItem, linkedTacticId, yearDiff);
                     }
@@ -15512,7 +15527,7 @@ namespace RevenuePlanner.Controllers
                 objplangrid.INQLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(INQLable);
                 objplangrid.MQLValue = MQLValue;
                 objplangrid.INQValue = INQValue;
-                objplangrid.Revenue = Revenue;
+                objplangrid.Revenue = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Revenue))));// Add By Nishant Sheth #2497
                 objplangrid.CWLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(CWLable);
                 objplangrid.CWValue = CWValue;
                 //ViewBag.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);

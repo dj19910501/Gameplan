@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="Controllers\BoostControllerTest.cs" />
     <Compile Include="Controllers\CommonControllerTest.cs" />
+    <Compile Include="Controllers\CurrencyControllerTest.cs" />
     <Compile Include="Controllers\ErrorControllerTest.cs" />
     <Compile Include="Controllers\ExternalServiceControllerTest.cs">
       <SubType>Code</SubType>

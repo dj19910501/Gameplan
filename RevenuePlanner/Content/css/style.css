@@ -6535,6 +6535,22 @@ h2.title-header {
         right: 0;
         cursor: pointer;
     }
+    /*Add By Nishant Sheth #2497 Changes regarding Home screen icon*/
+.bulldoller-bg a.currency-value {
+    bottom: 0;
+    height: 30px;
+    min-width: 30px;
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    color:#fff;
+    font-size:13px;
+    line-height:44px;
+    text-align:right;
+    padding-right:4px;
+    font-weight: bold;
+}
+/*End By Nishant Sheth*/
 
 .improvement .gantt_task_drag {
     display: block;

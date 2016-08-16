@@ -369,7 +369,7 @@
                     data = [];
                     for (var i = 0; i < 14; i++) {
                         if (i == 8) {
-                            data[i] = "\"" + '$' + HomeGrid.cells(this, i).getValue().toString() + "\"";
+                            data[i] = "\"" + CurrencySybmol + HomeGrid.cells(this, i).getValue().toString() + "\"";
                         }
                         else if (i == 9) {
                             // data[i] = "\"" + $("#ulTacticType").find('li').attr('id', '#liTT' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
@@ -598,7 +598,7 @@
         HomeGrid.enableAutoHeight(false);
         HomeGrid.enableAutoWidth(false);
 
-        HomeGrid.setNumberFormat("$0,000", 6, ".", ","); // PlannedCost column index is 6
+        HomeGrid.setNumberFormat(""+CurrencySybmol+"0,000", 6, ".", ","); // PlannedCost column index is 6
         
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
@@ -1033,7 +1033,7 @@
     function convertNumber(num) {
 
         var finlval = 0;
-        var base = parseFloat(num.replace('$', ''));
+        var base = parseFloat(num.replace(CurrencySybmol, ''));
         if (num.toLowerCase().match(/k/)) {
             return finlval = Math.round(base * 1000);
         }
@@ -1044,7 +1044,7 @@
             return finlval = Math.round(base * 1000000000);
         }
         else
-            return finlval = numb.replace('$', '');
+            return finlval = numb.replace(CurrencySybmol, '');
     }
     function ResizeGrid(wid) {
         $("#gridbox").attr("width", wid);

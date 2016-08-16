@@ -1907,7 +1907,7 @@ namespace RevenuePlanner.Helpers
                     {
                         objHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
                     }
-                    objHomePlanModelHeader.Budget = objPlan.Budget;
+                    objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(objPlan.Budget);// Modified By Nishant Sheth #2497
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
                 }
                 else
@@ -1935,7 +1935,7 @@ namespace RevenuePlanner.Helpers
                         List<Plan_Campaign_Program_Tactic_LineItem> planTacticLineItemIds = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).ToList();
                         if (planTacticLineItemIds.Count() > 0)
                         {
-                            objHomePlanModelHeader.Budget = planTacticLineItemIds.Sum(lineItem => lineItem.Cost);
+                            objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(planTacticLineItemIds.Sum(lineItem => lineItem.Cost));// Modified By Nishant Sheth #2497
                         }
 
                     }
@@ -2204,7 +2204,7 @@ namespace RevenuePlanner.Helpers
                     {
                         objHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
                     }
-                    objHomePlanModelHeader.Budget = objPlan.Budget;
+                    objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(objPlan.Budget);// Modified By Nishant Sheth #2497
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
                 }
                 else
@@ -2232,7 +2232,7 @@ namespace RevenuePlanner.Helpers
                         List<Plan_Campaign_Program_Tactic_LineItem> planTacticLineItemIds = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).ToList();
                         if (planTacticLineItemIds.Count() > 0)
                         {
-                            objHomePlanModelHeader.Budget = planTacticLineItemIds.Sum(lineItem => lineItem.Cost);
+                            objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(planTacticLineItemIds.Sum(lineItem => lineItem.Cost));// Modified By Nishant Sheth #2497
                         }
 
                     }
@@ -2796,7 +2796,7 @@ namespace RevenuePlanner.Helpers
             }
 
             newHomePlanModelHeader.MQLs = TotalMQLs;
-            newHomePlanModelHeader.Budget = TotalBudget;
+            newHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(TotalBudget);// Modified By Nishant Sheth #2497
             newHomePlanModelHeader.TacticCount = TotalTacticCount;
             newHomePlanModelHeader.PercentageMQLImproved = TotalPercentageMQLImproved;
             if (activeMenu == Enums.ActiveMenu.Home.ToString().ToLower())
