@@ -5657,9 +5657,10 @@ namespace RevenuePlanner.Helpers
                     else if (goalType == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                     {
                         // Calculate INQ
+                        double avdDealSize = objCurrency.GetValueByExchangeRate(averageDealSize);
                         cwStagelist = stageList.Where(s => s.Level >= levelINQ && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
-                        double convalue = ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
+                        double convalue = ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * avdDealSize);
                         double INQValue = (inputValue) / convalue;
                         INQValue = (INQValue.Equals(double.NaN) || INQValue.Equals(double.NegativeInfinity) || INQValue.Equals(double.PositiveInfinity)) ? 0 : INQValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.INQValue = INQValue;
@@ -5667,14 +5668,14 @@ namespace RevenuePlanner.Helpers
                         // Calculate MQL
                         cwStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListMQL = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
-                        double MQLValue = (inputValue) / (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)) * averageDealSize); // Modified by Sohel Pathan on 12/09/2014 for PL ticket #775
+                        double MQLValue = (inputValue) / (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)) * avdDealSize); // Modified by Sohel Pathan on 12/09/2014 for PL ticket #775
                         MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.MQLValue = MQLValue;
 
                         // Calculate CW   -- Added by devanshi gandhi for pl #1430
                         if (IsCw == true)
                         {
-                            double CWValue = (inputValue) / averageDealSize;
+                            double CWValue = (inputValue) / avdDealSize;
                             CWValue = (CWValue.Equals(double.NaN) || CWValue.Equals(double.NegativeInfinity) || CWValue.Equals(double.PositiveInfinity)) ? 0 : CWValue;
                             objBudgetAllocationModel.CWValue = CWValue;
                         }

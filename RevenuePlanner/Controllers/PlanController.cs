@@ -243,7 +243,15 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.Title = objplan.Title;
                     objPlanModel.Year = objplan.Year;
                     objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Value).FirstOrDefault();
-                    objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
+                    //objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
+                    if (objPlanModel.GoalType == Enums.PlanGoalType.Revenue.ToString())
+                    {
+                        objPlanModel.GoalValue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.GoalValue))).ToString();
+                    }
+                    else
+                    {
+                        objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
+                    }
                     objPlanModel.AllocatedBy = objplan.AllocatedBy;
                     //objPlanModel.Budget = objplan.Budget;
                     objPlanModel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.Budget)));                    

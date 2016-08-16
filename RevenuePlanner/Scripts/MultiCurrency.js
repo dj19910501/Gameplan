@@ -28,3 +28,18 @@ function setCurrencyDetails()
         });
     }
 }
+//Added by Rahul Shah to Apply multicurrency on client side
+function ConvertDatatoPreferedCurrency(value) {
+   
+    if (value > 0) {
+        value = value * PlanExchangeRate;
+    }
+    return value;   
+}
+
+function ConvertDatatoDollarCurrency(value) {
+    if (value > 0) {
+        value = value / PlanExchangeRate;
+    }
+    return value;
+}
