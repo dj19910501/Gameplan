@@ -160,7 +160,7 @@ else
                             <dd>
                                 @foreach (var item in Model.Where(act => act.ParentId == headerItem.ApplicationActivityId))
                                 {
-                                    if (headerItem.Title.ToUpper() == Enums.ApplicationActivity.Finance.ToString().ToUpper())
+                                    if (headerItem.Title.ToUpper() == Enums.ApplicationActivity.Finance.ToString().ToUpper() || headerItem.ItemCode.ToUpper() == Enums.ApplicationActivity.MultiCurrency.ToString().ToUpper())
                                     {
                                         <div class="dd-row">
                                             <label title="@Html.Raw(item.Title)">@Html.Raw(item.Title)</label>

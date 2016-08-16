@@ -149,6 +149,76 @@ jQuery.fn.extend({
 	    $('.No_ForecastCreateEdit').parent().css('opacity', '');
 	    $('.Yes_ForecastCreateEdit').parent().css('opacity', '');
 	}
+	if ($('.Yes_MultiCurrencyNone').attr('checked') == 'checked') {
+
+	    $('.Yes_MultiCurrencyViewOnly').attr("checked", false);
+	    $('.Yes_MultiCurrencyViewOnly').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+	    
+	    $('.No_MultiCurrencyViewOnly').attr("checked", true);
+	    $('.No_MultiCurrencyViewOnly').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+
+	    $('.Yes_MultiCurrencyEdit').attr("checked", false);
+	    $('.Yes_MultiCurrencyEdit').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	    $('.No_MultiCurrencyEdit').attr("checked", true);
+	    $('.No_MultiCurrencyEdit').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+	}
+	else {
+	    $('.Yes_MultiCurrencyViewOnly').parent().css('opacity', '');
+	    $('.No_MultiCurrencyViewOnly').parent().css('opacity', '');
+	    $('.Yes_MultiCurrencyEdit').parent().css('opacity', '');
+	    $('.No_MultiCurrencyEdit').parent().css('opacity', '');
+	}
+
+	if ($('.Yes_MultiCurrencyViewOnly').attr('checked') == 'checked') {
+
+	    $('.Yes_MultiCurrencyNone').attr("checked", false);
+	    $('.Yes_MultiCurrencyNone').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	    $('.No_MultiCurrencyNone').attr("checked", true);
+	    $('.No_MultiCurrencyNone').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+	}
+	else {
+	    if ($('.No_MultiCurrencyEdit').attr('checked') == 'checked') {
+	        $('.Yes_MultiCurrencyNone').parent().css('opacity', '');
+	        $('.No_MultiCurrencyNone').parent().css('opacity', '');
+	    }
+	    else {
+	        $('.Yes_MultiCurrencyNone').attr("checked", false);
+	        $('.Yes_MultiCurrencyNone').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	        $('.No_MultiCurrencyNone').attr("checked", true);
+	        $('.No_MultiCurrencyNone').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+	    }
+	}
+
+	if ($('.Yes_MultiCurrencyEdit').attr('checked') == 'checked') {
+
+	    $('.Yes_MultiCurrencyViewOnly').attr("checked", true);
+	    $('.Yes_MultiCurrencyViewOnly').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+
+	    $('.No_MultiCurrencyViewOnly').attr("checked", false);
+	    $('.No_MultiCurrencyViewOnly').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	    $('.No_MultiCurrencyNone').attr("checked", true);
+	    $('.No_MultiCurrencyNone').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+
+	    $('.Yes_MultiCurrencyNone').attr("checked", false);
+	    $('.Yes_MultiCurrencyNone').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+	}
+	else {
+	    if ($('.No_MultiCurrencyViewOnly').attr('checked') == 'checked') {
+	        $('.Yes_MultiCurrencyNone').parent().css('opacity', '');
+	        $('.No_MultiCurrencyNone').parent().css('opacity', '');
+	    }
+	    else {
+	        $('.Yes_MultiCurrencyNone').attr("checked", false);
+	        $('.Yes_MultiCurrencyNone').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	        $('.No_MultiCurrencyNone').attr("checked", true);
+	        $('.No_MultiCurrencyNone').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+	    }
+	}
 },
     dgUncheck: function (div) {
 	$(this).attr("checked",false);
@@ -229,6 +299,76 @@ jQuery.fn.extend({
 	else {
 	    $('.No_ForecastCreateEdit').parent().css('opacity', '');
 	    $('.Yes_ForecastCreateEdit').parent().css('opacity', '');
+	}
+	if ($('.Yes_MultiCurrencyNone').attr('checked') == 'checked') {
+
+	    $('.Yes_MultiCurrencyViewOnly').attr("checked", false);
+	    $('.Yes_MultiCurrencyViewOnly').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	    $('.No_MultiCurrencyViewOnly').attr("checked", true);
+	    $('.No_MultiCurrencyViewOnly').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+
+	    $('.Yes_MultiCurrencyEdit').attr("checked", false);
+	    $('.Yes_MultiCurrencyEdit').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	    $('.No_MultiCurrencyEdit').attr("checked", true);
+	    $('.No_MultiCurrencyEdit').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+	}
+	else {
+	    $('.Yes_MultiCurrencyViewOnly').parent().css('opacity', '');
+	    $('.No_MultiCurrencyViewOnly').parent().css('opacity', '');
+	    $('.Yes_MultiCurrencyEdit').parent().css('opacity', '');
+	    $('.No_MultiCurrencyEdit').parent().css('opacity', '');
+	}
+
+	if ($('.Yes_MultiCurrencyViewOnly').attr('checked') == 'checked') {
+
+	    $('.Yes_MultiCurrencyNone').attr("checked", false);
+	    $('.Yes_MultiCurrencyNone').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	    $('.No_MultiCurrencyNone').attr("checked", true);
+	    $('.No_MultiCurrencyNone').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+	}
+	else {
+	    if ($('.No_MultiCurrencyEdit').attr('checked') == 'checked') {
+	        $('.Yes_MultiCurrencyNone').parent().css('opacity', '');
+	        $('.No_MultiCurrencyNone').parent().css('opacity', '');
+	    }
+	    else {
+	        $('.Yes_MultiCurrencyNone').attr("checked", false);
+	        $('.Yes_MultiCurrencyNone').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	        $('.No_MultiCurrencyNone').attr("checked", true);
+	        $('.No_MultiCurrencyNone').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+	    }
+	}
+
+	if ($('.Yes_MultiCurrencyEdit').attr('checked') == 'checked') {
+
+	    $('.Yes_MultiCurrencyViewOnly').attr("checked", true);
+	    $('.Yes_MultiCurrencyViewOnly').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+
+	    $('.No_MultiCurrencyViewOnly').attr("checked", false);
+	    $('.No_MultiCurrencyViewOnly').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	    $('.No_MultiCurrencyNone').attr("checked", true);
+	    $('.No_MultiCurrencyNone').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+
+	    $('.Yes_MultiCurrencyNone').attr("checked", false);
+	    $('.Yes_MultiCurrencyNone').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+	}
+	else {
+	    if ($('.No_MultiCurrencyViewOnly').attr('checked') == 'checked') {
+	        $('.Yes_MultiCurrencyNone').parent().css('opacity', '');
+	        $('.No_MultiCurrencyNone').parent().css('opacity', '');
+	    }
+	    else {
+	        $('.Yes_MultiCurrencyNone').attr("checked", false);
+	        $('.Yes_MultiCurrencyNone').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+
+	        $('.No_MultiCurrencyNone').attr("checked", true);
+	        $('.No_MultiCurrencyNone').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+	    }
 	}
 }
 });

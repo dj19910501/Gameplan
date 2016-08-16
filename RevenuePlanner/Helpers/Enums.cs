@@ -371,7 +371,11 @@ namespace RevenuePlanner.Helpers
             BudgetCreateEdit = 1 << 21,
             BudgetView = 1 << 22,
             ForecastCreateEdit = 1 << 23,
-            ForecastView = 1 << 24
+            ForecastView = 1 << 24,
+            MultiCurrency = 1 << 25,
+            MultiCurrencyNone = 1 << 26,
+            MultiCurrencyViewOnly = 1 << 27,
+            MultiCurrencyEdit = 1 << 28
         }
 
 
