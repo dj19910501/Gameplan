@@ -3,6 +3,7 @@ using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace RevenuePlanner.Services
@@ -222,5 +223,24 @@ namespace RevenuePlanner.Services
             return result;
         }
         #endregion
+        #region method to get alert summary
+        public List<Alert> GetAlertAummary(Guid UserId)
+        {
+            List<Alert> lstAlerts = new List<Alert>();
+            try
+            {
+
+                lstAlerts = objDbMrpEntities.Alerts.Where(a => a.UserId == UserId).OrderByDescending(a => a.CreatedDate).ToList();
+               
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+
+            }
+            return lstAlerts;
+        }
+        #endregion
+        
     }
 }

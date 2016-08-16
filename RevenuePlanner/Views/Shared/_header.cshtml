@@ -132,22 +132,19 @@
                 </div>
             }
             @*Added by Bhumika for #2468 - alert & Notification dropdown*@
-            <div class="aler-list dropdown pull-right">
-                <span class="count">5</span>
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell-o" aria-hidden="true"></i></a>
-                <ul class="dropdown-menu">
-                    <p class="ul-top clearfix"><span class="pull-left">Alerts</span> <a href="#" class="pull-right">Settings</a></p>
-                    <li><span class="dd-left">Lorem ipsum dolor sit amet</span><span class="dd-right">11Aug2016</span></li> 
-                    <li><span class="dd-left">Lorem ipsum dolor sit amet</span><span class="dd-right">11Aug2016</span></li>
-                    <li><span class="dd-left">Lorem ipsum dolor sit amet</span><span class="dd-right">11Aug2016</span></li>
-                    <li><a href="#">See All</a></li>
+            <div class="aler-list dropdown pull-right" id="divAlertSummary">
+                <span class="count" id="spnAlertCnt"></span>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="aAlertSummary"><i class="fa fa-bell-o" aria-hidden="true"></i></a>
+                <ul class="dropdown-menu UlAlertList" id="UlAlertsummary">
+                    <p class="ul-top clearfix"><span class="pull-left">Alerts</span> <a href="@Url.Action("Alerts", "User")" class="pull-right">Settings</a></p>
+
                 </ul>
             </div>
 
             <div class="notify-list dropdown pull-right">
                 <span class="count">12</span>
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-globe" aria-hidden="true"></i></a>
-                <ul class="dropdown-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-globe" aria-hidden="true"></i></a>
+                <ul class="dropdown-menu" >
                     <p class="ul-top clearfix"><span class="pull-left">Notifications</span> <a href="#" class="pull-right">Settings</a></p>
                     <li><span class="dd-left">Lorem ipsum dolor sit amet</span><span class="dd-right">11Aug2016</span></li>
                     <li><span class="dd-left">Lorem ipsum dolor sit amet</span><span class="dd-right">11Aug2016</span></li>
@@ -187,6 +184,46 @@
 </div>
 
 <script type="text/javascript">
+    
+    $(document).ready(function () {
+        $("#spnAlertCnt").css('display', 'none');
+        BindAlertSummary();
+     
+    });
+    function BindAlertSummary()
+    {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetAlertSummary", "User")',
+            success: function (data) {
+                if (data.Success != null && data.Success == true && data.Alertcount != null) {
+                    var cnt = data.Alertcount;
+                    if (cnt > 0) {
+                        $("#spnAlertCnt").css('display', 'block');
+
+                        $("#spnAlertCnt").html(data.Alertcount);
+                        var cList = $('ul.UlAlertList');
+                        if (data.Alertsummary != null) {
+                            $.each(data.Alertsummary, function (i, item) {
+
+                                $(cList).append('<li><span class="dd-left">' + item.Description + '</span><span class="dd-right">' + item.AlertCreatedDate + '</span></li>');
+                            });
+                          
+                            $(cList).append('<li><a href="#">See All</a></li>');
+                        }
+                    }
+                    else
+                    {
+                        $("#spnAlertCnt").html('');
+                        $("#spnAlertCnt").css('display', 'none');
+                        $("#UlAlertsummary").css('display', 'none');
+                    }
+                   
+                   
+                }
+            }
+        });
+    }
     //**user menu-dropdown
     //$(".user-drop-down").click(function () {
     //    var X = $(this).attr('id');

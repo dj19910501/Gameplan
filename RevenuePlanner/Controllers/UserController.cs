@@ -10,6 +10,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RevenuePlanner.Services;
+using System.Threading.Tasks;
 
 /*
  *  Author: Kuber Joshi
@@ -1886,6 +1887,34 @@ namespace RevenuePlanner.Controllers
 
         }
         #endregion
+
+        #region method to get alert summary
+        public JsonResult GetAlertSummary()
+        {
+            int alertCount = 0;
+            List<AlertSummary> lstalertSummary= new List<AlertSummary>();
+            try
+            {
+                var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
+                if(AllAlert!=null && AllAlert.Count>0)
+                {
+                    alertCount = AllAlert.Where(a => a.IsRead == false).ToList().Count();
+                    lstalertSummary = AllAlert.Where(a => a.IsRead == false).Select(a => new AlertSummary
+                        {
+                        Description=a.Description.Trim(),
+                        AlertCreatedDate=Common.TimeAgo(a.CreatedDate),
+                        AlertId=a.AlertId
+                        }).Take(5).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { Success = true, Alertcount = alertCount, Alertsummary = lstalertSummary }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+      
         #endregion
     }
 }

@@ -14,5 +14,7 @@ namespace RevenuePlanner.Services
         int UpdateAlertRule(AlertRuleDetail objRule, Guid UserId);
         int DeleteAlertRule(int RuleId);
         int DisableAlertRule(int RuleId, bool RuleOn);
+        List<Alert> GetAlertAummary(Guid UserId);
+     
     }
 }

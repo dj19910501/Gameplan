@@ -184,4 +184,10 @@ namespace RevenuePlanner.Models
         public int RuleId{get;set;}
         public bool IsDisable { get; set; }
     }
+    public class AlertSummary
+    {
+        public string Description { get; set; }
+        public string AlertCreatedDate { get; set; }
+        public int AlertId { get; set; }
+    }
 }

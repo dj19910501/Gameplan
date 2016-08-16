@@ -8831,6 +8831,35 @@ namespace RevenuePlanner.Helpers
             return DashboardList;
         }
         #endregion
+
+        /// <summary>
+        /// Added by devanshi for formating the timestemp for Alert & Notification on 16-8-2016
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        #region Method for timestamp formation for Alert & Notifications
+        public static string TimeAgo(DateTime dt)
+        {
+            TimeSpan span = DateTime.Now - dt;
+            if (span.Days > 0 && span.Days != 1)
+            {
+                return dt.ToString("MMM d yyyy");
+            }
+            if (span.Days > 0 && span.Days == 1)
+                return "yesterday";
+            if (span.Hours > 0)
+                return String.Format("{0} {1} ago",
+                span.Hours, span.Hours == 1 ? "hour" : "hours");
+            if (span.Minutes > 0)
+                return String.Format("{0} {1} ago",
+                span.Minutes, span.Minutes == 1 ? "minute" : "minutes");
+            if (span.Seconds > 5)
+                return String.Format("{0} seconds ago", span.Seconds);
+            if (span.Seconds <= 5)
+                return "just now";
+            return string.Empty;
+        }
+        #endregion
     }
 
     /// <summary>
@@ -8869,7 +8898,7 @@ namespace RevenuePlanner.Helpers
             // End
         }
 
-
+       
     }
     // Add By Nishant Sheth
     // Desc :: common methods for cache memory
