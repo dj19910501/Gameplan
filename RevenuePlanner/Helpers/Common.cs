@@ -9214,6 +9214,7 @@ namespace RevenuePlanner.Helpers
                 command.Parameters.AddWithValue("@PlanId", PlanId);
                 command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
                 command.Parameters.AddWithValue("@HoneyCombids", HoneyCombids);
+                command.Parameters.AddWithValue("@CurrencyExchangeRate", Sessions.PlanExchangeRate);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
                 adp.Fill(dataset);

@@ -49,7 +49,7 @@
                         goal of
                         @if (@pm.GoalType.ToLower() == "revenue")
                         {
-                            <span class="source-sans-proregular">$ </span>
+                            <span class="source-sans-proregular">@Sessions.PlanCurrencySymbol </span>
                         }
                         <span id="spanGoalValue" class="source-sans-proregular">@pm.GoalValue</span>
                         and a budget of
@@ -939,7 +939,7 @@
                 $('#msg2').html(data.msg2);
                 $('#input1').html(number_format(data.input1.toString(), 0, '.', ','));
                 if (_goalType.toLowerCase() != "revenue") {
-                    $('#input2').html('$' + number_format(data.input2.toString(), 0, '.', ','));
+                    $('#input2').html(CurrencySybmol + number_format(data.input2.toString(), 0, '.', ','));
                 }
                 else {
                     $('#input2').html(number_format(data.input2.toString(), 0, '.', ','));
@@ -979,7 +979,7 @@
                             '<span id="0" class="pull-left width55"><span class="pull-left font-black">1.</span><span class="blue-bg-text campaign-name campaign-name-span">Add Campaign</span></span>' +
                             '<span class="pull-right width50px"><div class="add-icon-old campaign"></div></span>' +
                             '<span class="pull-right width100px text-right font-black">' + 0 + '</span>' +
-                            '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
+                            '<span class="pull-right width150px text-right font-black tipsyclass">' + CurrencySybmol + '' + 0 + '</span>' +
                             '<span class="pull-right width100px text-right font-black tipsyclass">' + 0 + '</span>' +
                         '</a>' +
                     '</div>';
@@ -990,7 +990,7 @@
                             '<div class="pull-left width55"></div>' +
                             '<div class="height40 pull-right width50px"></div>' +
                             '<div class="total markTotal pull-right width100px text-right">' + FormatCommas(programTotal.toString(), false) + '</div>' +
-                            '<div class="total markTotal pull-right width150px text-right tipsyclass costAssotment">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
+                            '<div class="total markTotal pull-right width150px text-right tipsyclass costAssotment">' + CurrencySybmol + '' + FormatCommas(costTotal.toString(), false) + '</div>' +
                             '<div class="total markTotal pull-right width100px text-right tipsyclass costAssotment">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
                         '</div>';
 
@@ -1039,7 +1039,7 @@
                       '<span id="' + _id + '" class="duplicate-icon-campaignCopy-old" titles="' + _title + '" ></span>' +
                            '<span class="pull-right width50px"><div class="add-icon-old campaign" ></div></span>' +
                             '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_programCount.toString(), false) + '</span>' +
-                            '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_cost.toString(), false) + '</span>' +
+                            '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">' + CurrencySybmol + '' + FormatCommas(_cost.toString(), false) + '</span>' +
                             '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_mqls.toString(), false) + '</span>' +
                         '</a>' +
                     '</div>' +
@@ -1073,7 +1073,7 @@
                     '<span id="' + _programs[i].id + '" class="duplicate-icon-ProgramCopy-old" titles="' + _programs[i].title + '" ></span></span>' +
                      '<span class="pull-right width50px"><div class="add-icon-old program" ></div></span>' +
                      '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                     '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
+                     '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">' + CurrencySybmol + '' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
                      '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
                  '</a>' +
              '</div>' +
@@ -1112,7 +1112,7 @@
                                      '<span id="' + _programs[i].tactics[k].id + '" class="duplicate-icon-TacticCopy-old" titles="' + _programs[i].tactics[k].title + '" ></span></span>' +
                                                 '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                           '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                          '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
+                                          '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">' + CurrencySybmol + '' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
                                           '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + displayTacticMQL(_programs[i].tactics[k].mqls.toString()) + '</span>' +
                                           '<span class="pull-right btn-gray" id="createlineitem">Add Line Item</span>' +
                                             '</a>' +
@@ -1142,7 +1142,7 @@
                                             }
                                             $html += '</span><span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                                         '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                                        '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].lineitems[z].cost.toString(), false) + '</span>' +
+                                                        '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">' + CurrencySybmol + '' + FormatCommas(_programs[i].tactics[k].lineitems[z].cost.toString(), false) + '</span>' +
                                                       '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                               '</div>' +
                                         '</div>';
@@ -1258,20 +1258,20 @@
                            '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">Add Improvement Tactic</span></span>' +
                            '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel"></div></span>' +
                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                           '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
+                           '<span class="pull-right width150px text-right font-black tipsyclass">' + CurrencySybmol + '' + 0 + '</span>' +
                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                        '</a>' +
                    '</div>';
 
         $html += '<div class="cf border-cf improvement-activities">' +
                                 '<div class="pull-left first-columns font_size16 border-cf-right suggested-tactics" data-id="1"><span class="cf-arrow">SUGGESTED</span><span class="border-bottom"></span></div>' +
-                                '<div class="pull-left first-columns font_size16 border-cf-right" data-id="2"><span class="cf-arrow"><span class="cf-icon ads-icon"></span><span id="spanSuggestedADS">+$0</span></span><span class="border-bottom"></span></div>' +
+                                '<div class="pull-left first-columns font_size16 border-cf-right" data-id="2"><span class="cf-arrow"><span class="cf-icon ads-icon"></span><span id="spanSuggestedADS">+' + CurrencySybmol + '0</span></span><span class="border-bottom"></span></div>' +
                                 '<div class="pull-left first-columns font_size16 border-cf-right" data-id="3"><span class="cf-arrow"><span class="cf-icon velocity-icon"></span><span id="spanSuggestedCW">+0</span> CWs</span><span class="border-bottom"></span></div>' +
                                 '<div class="pull-left first-columns font_size16" data-id="4"><span class="cf-arrow"><span class="cf-icon conversion-icon"></span><span id="spanSuggestedVelocity">-0</span> DAYS</span><span class="border-bottom"></span></div>' +
                                 '<div class="pull-right-assortment width50px total"><span class="cf-arrow cf-arrow-blue pull-right"></span></div>' +
 
                             '<div class="total improvementTotal pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
-                            '<div class="total improvementTotal pull-right width150px text-right tipsyclass Cost_Improvement_Activities">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
+                            '<div class="total improvementTotal pull-right width150px text-right tipsyclass Cost_Improvement_Activities">' + CurrencySybmol + '' + FormatCommas(costTotal.toString(), false) + '</div>' +
                             '<div class="total improvementTotal pull-right width100px text-right border-cf-left" id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
                             '<div class="gray-add-container border-cf" id="grayImprovementContainer"></div>' +
                             '<div class="grey-container-full" id="grayFullContainer">' +
@@ -1356,11 +1356,11 @@
                     var adsValue = parseFloat(data.ADS);
                     if (adsValue < 0) {
                         $html += FormatCurrency(Math.abs(adsValue).toString(), false) + '</strong> less';
-                        $("#spanSuggestedADS").text("-$" + Math.abs(adsValue).toString());
+                        $("#spanSuggestedADS").text("-" + CurrencySybmol + "" + Math.abs(adsValue).toString());
                     }
                     else {
                         $html += FormatCurrency(adsValue.toString(), false) + '</strong> larger';
-                        $("#spanSuggestedADS").text("+$" + Math.abs(adsValue).toString());
+                        $("#spanSuggestedADS").text("+" + CurrencySybmol + "" + Math.abs(adsValue).toString());
                     }
 
                     $html += ' Average Deal Size and<br><strong>';
@@ -1514,7 +1514,7 @@ function addRowImprovementTactic(_index, _id, _title, _cost, _isOwner, _programI
     $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline" title="' + _title + '">' + GrapSubstring(_title, 40) + '</span></span>' +
                         '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel"></div></span>' +
                         '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
-                        '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities">$' + FormatCommas(_cost.toString(), false) + '</span>' +
+                        '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities">' + CurrencySybmol + '' + FormatCommas(_cost.toString(), false) + '</span>' +
                         '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                     '</a>' +
                 '</div>';
@@ -1756,7 +1756,7 @@ function LoadRecommendedGrid() {
         if (!isADS) {
             $html += ' class="noRightBorder SuggestedSection"';
         }
-        $html += ' >$' + FormatCommas(Cost.toString(), false) + '</td>';
+        $html += ' >' + CurrencySybmol + '' + FormatCommas(Cost.toString(), false) + '</td>';
         var isDashedDisplay = false;
         if (isADS) {
             if (ProjectedRevenueWithoutTactic == ProjectedRevenueWithTactic) {
@@ -1769,8 +1769,8 @@ function LoadRecommendedGrid() {
                             + '	<td data-column="4" >---  </td>';
         }
         else {
-            $html += '<td data-column="3" class="noRightBorder SuggestedSection">$' + FormatCommas(ProjectedRevenueWithoutTactic.toString(), true) + '</td>'
-                         + '	<td class="SuggestedSection" data-column="4" >$' + FormatCommas(ProjectedRevenueWithTactic.toString(), true) + '</td>';
+            $html += '<td data-column="3" class="noRightBorder SuggestedSection">' + CurrencySybmol + '' + FormatCommas(ProjectedRevenueWithoutTactic.toString(), true) + '</td>'
+                         + '	<td class="SuggestedSection" data-column="4" >' + CurrencySybmol + '' + FormatCommas(ProjectedRevenueWithTactic.toString(), true) + '</td>';
         }
 
         $html += '	<td data-column="5">' + ProjectedRevenueLift + '%</td>'
@@ -1825,10 +1825,10 @@ function LoadRecommendedGrid() {
                             if (typeof data != 'undefined') {
                                 var adsValue = parseFloat(data.ADS);
                                 if (adsValue < 0) {
-                                    $("#spanSuggestedADS").text("-$" + Math.abs(adsValue).toString());
+                                    $("#spanSuggestedADS").text("-" + CurrencySybmol + "" + Math.abs(adsValue).toString());
                                 }
                                 else {
-                                    $("#spanSuggestedADS").text("+$" + Math.abs(adsValue).toString());
+                                    $("#spanSuggestedADS").text("+" + CurrencySybmol + "" + Math.abs(adsValue).toString());
                                 }
 
                                 var cwValue = parseFloat(data.CW);
@@ -1883,10 +1883,10 @@ function LoadRecommendedGrid() {
                             if (typeof data != 'undefined') {
                                 var adsValue = parseFloat(data.ADS);
                                 if (adsValue < 0) {
-                                    $("#spanSuggestedADS").text("-$" + Math.abs(adsValue).toString());
+                                    $("#spanSuggestedADS").text("-" + CurrencySybmol + "" + Math.abs(adsValue).toString());
                                 }
                                 else {
-                                    $("#spanSuggestedADS").text("+$" + Math.abs(adsValue).toString());
+                                    $("#spanSuggestedADS").text("+" + CurrencySybmol + "" + Math.abs(adsValue).toString());
                                 }
 
                                 var cwValue = parseFloat(data.CW);
@@ -2026,7 +2026,7 @@ function LoadRecommendedGrid() {
                 htmlInner += ' class="added"';
             }
             htmlInner += '><td data-column="1" class="left-text">' + ImprovementTacticTypeTitle + '</td>'
-                                 + '	<td class="SuggestedSection" data-column="2">$' + FormatCommas(Cost.toString(), false) + '</td>';
+                                 + '	<td class="SuggestedSection" data-column="2">' + CurrencySybmol + '' + FormatCommas(Cost.toString(), false) + '</td>';
             if (typeof MetricList != 'undefined') {
 
                 if (MetricList.length > 0) {
