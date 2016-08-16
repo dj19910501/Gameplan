@@ -9,6 +9,7 @@
     ViewBag.PageTitle = "Currency";
     ViewBag.ModuleTitle = "Currency";
     Guid clientId = Sessions.User.ClientId;
+    string permission = Convert.ToString(ViewData["permission"]);
 }
 
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
@@ -37,8 +38,8 @@
     <h2>Currency</h2>
 </div>
 @*<div id="liConversionrate" class="clearfix">
-    <a class="source-sans-probold integrations" href="#" id="aConversionrate"><i class="fa fa-exchange" aria-hidden="true"></i> ConversionRate</a>
-</div>*@
+        <a class="source-sans-probold integrations" href="#" id="aConversionrate"><i class="fa fa-exchange" aria-hidden="true"></i> ConversionRate</a>
+    </div>*@
 <div class="padding-content cf source-sans-proregular">
     <div class="row">
 
@@ -46,74 +47,77 @@
             <div id="liConversionrate" class="clearfix">
                 <a class="source-sans-probold integrations" href="#" id="aConversionrate"><i class="fa fa-exchange" aria-hidden="true"></i> ConversionRate</a>
             </div>
-                <div class="span6" id="divCurrencyList">
-                    <h4 class="align-top">Available Currencies</h4>
-                    <div class="currency-wrap span-12">
-                        <div class="clearfix">
-                            <input type="text" id="txtSearch" onkeypress="return EnterEvent(event)" class="serach-input pull-left" />
-                            <input type="submit" value="Search" title="Search" id="btnSearch" onclick="LoadSearchedFilter(false);" class="btn-blue btn-search" />
-                            @*<input type="submit" value="Clear" title="save" id="btnClear" onclick="LoadSearchedFilter(this.id,this.value,true);" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" />*@
-                        </div>
-                    
-                        <ul id="ulCurrency" class="searchmenu">
-                            @foreach (var item in Model)
-                            {
-                                if (item.ClientId != clientId)
-                                {
-                                    <li id="licurrency_@item.ISOCurrencyCode">
-                                        <a href="#">
-                                            <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
-                                        </a>
-                                    </li>
-                                }
-                            }
-                        </ul>
-                        
+            <div class="span6" id="divCurrencyList">
+                <h4 class="align-top">Available Currencies</h4>
+                <div class="currency-wrap span-12">
+                    <div class="clearfix">
+                        <input type="text" id="txtSearch" onkeypress="return EnterEvent(event)" class="serach-input pull-left" />
+                        <input type="submit" value="Search" title="Search" id="btnSearch" onclick="LoadSearchedFilter(false);" class="btn-blue btn-search" />
+                        @*<input type="submit" value="Clear" title="save" id="btnClear" onclick="LoadSearchedFilter(this.id,this.value,true);" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" />*@
                     </div>
-                    <div class="container-button clearfix">
-                        <input type="submit" value="Add To My List" title="save" id="btnAddtoMyList" class="btn btn-fill-white btn-add-remove" />
-                    </div>
-                </div>
-                <div class="span5" id="divMyList">
-                    <h4 class="align-top">My List</h4>
-                    <div class="currency-wrap span-12">
-                        <ul id="ulMyCurrency" class="searchmenu">
-                            @foreach (var item in Model)
-                            {
-                                if (item.ClientId == clientId)
-                                {
-                                    <li id="limycurrency_@item.ISOCurrencyCode" isdefault='@item.IsDefault'>
-                                        <a href="#">
-                                            <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
-                                        </a>
-                                    </li>
 
-                                    if (@item.IsDefault == true)
-                                    {
-                                        <script>
-                                            $('#limycurrency_' + '@item.ISOCurrencyCode').attr('isdefault', '1');
-                                        </script>
-                                    }
-                                    else
-                                    {
-                                        <script>
-                                            $('#limycurrency_' + '@item.ISOCurrencyCode').attr('isdefault', '0');
-                                        </script>
-                                    }
+                    <ul id="ulCurrency" class="searchmenu">
+                        @foreach (var item in Model)
+                        {
+                            if (item.ClientId != clientId)
+                            {
+                                <li id="licurrency_@item.ISOCurrencyCode">
+                                    <a href="#">
+                                        <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                </div>
+                <div class="container-button clearfix">
+                    <input type="submit" value="Add To My List" title="save" id="btnAddtoMyList" class="btn btn-fill-white btn-add-remove" />
+                </div>
+            </div>
+            <div class="span5" id="divMyList">
+                <h4 class="align-top">My List</h4>
+                <div class="currency-wrap span-12">
+                    <ul id="ulMyCurrency" class="searchmenu">
+                        @foreach (var item in Model)
+                        {
+                            if (item.ClientId == clientId)
+                            {
+                                <li id="limycurrency_@item.ISOCurrencyCode" isdefault='@item.IsDefault'>
+                                    <a href="#">
+                                        <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
+                                    </a>
+                                </li>
+
+                                if (@item.IsDefault == true)
+                                {
+                                    <script>
+                                        $('#limycurrency_' + '@item.ISOCurrencyCode').attr('isdefault', '1');
+                                    </script>
+                                }
+                                else
+                                {
+                                    <script>
+                                        $('#limycurrency_' + '@item.ISOCurrencyCode').attr('isdefault', '0');
+                                    </script>
                                 }
                             }
-                        </ul>
-                       
-                    </div>
-                    <div class="container-button clearfix">
-                        <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20"/>
-                        <input type="submit" value="Remove" title="remove" id="btnRemove" class="btn btn-fill-white btn-add-remove" />
-                    </div>
-                    </div>
-                @*<div class="container-button clear">
+                        }
+                    </ul>
+
+                </div>
+                <div class="container-button clearfix">
+                    @if (permission == Enums.ApplicationActivity.MultiCurrencyEdit.ToString())
+                    {
+                        <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20" />
+                    }
+                    <input type="submit" value="Remove" title="remove" id="btnRemove" class="btn btn-fill-white btn-add-remove" />
+                </div>
+            </div>
+            @*<div class="container-button clear">
                     <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
                 </div>*@
-            
+
 
             <div class="cf inputs-aligned-horizontal">
 
@@ -131,7 +135,7 @@
     });
     //end insertation start 09/08/2016 kausha #2492.
     //insertation start 28/06/2016 kausha #742 Following function is added to search within filters
-  //For enter key press event of search textbox
+    //For enter key press event of search textbox
     function EnterEvent(e) {
         if (e.keyCode == 13) {
             LoadSearchedFilter(false);
@@ -231,20 +235,18 @@
     $('#btnRemove').click(function () {
         var ulId = "#ulMyCurrency";
         var cnt = 0;
-        var defaultcurrency='';
-        var isDefaultCurrencyExist=false;
+        var defaultcurrency = '';
+        var isDefaultCurrencyExist = false;
         $(ulId + " li").each(function () {
             if ($(this).hasClass('searchactive')) {
-                if($(this).attr("isdefault")==1)
-                {
-                    isDefaultCurrencyExist=true;
-                    defaultcurrency=$(this).find("span").text();
+                if ($(this).attr("isdefault") == 1) {
+                    isDefaultCurrencyExist = true;
+                    defaultcurrency = $(this).find("span").text();
                 }
             }
         });
-        if(isDefaultCurrencyExist==true)
-        {
-            $("#diverrormsg").html("You can't delete default currency , ["+defaultcurrency + "] is default currency.");
+        if (isDefaultCurrencyExist == true) {
+            $("#diverrormsg").html("You can't delete default currency , [" + defaultcurrency + "] is default currency.");
             ShowMessages();
             return;
         }

@@ -12,39 +12,39 @@
     bool IsMultiCurrencyNone = true;
     if (ViewBag.IsMultiCurrencyNone != null)
     {
-        if (ViewBag.IsIntegrationCredentialCreateEditAuthorized != null)
-        {
-            IsMultiCurrencyNone = (bool)ViewBag.IsMultiCurrencyNone;
-        }
+
+        IsMultiCurrencyNone = (bool)ViewBag.IsMultiCurrencyNone;
+
     }
 }
 
-    <div class="padding-content">
-        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
-    </div>
-    <ul class="nav nav-list nav-gray">
-        <li id="liMyProfile" class="item">
-            <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
-        </li>
-        <li id="liOrganization" class="item">@*uday for new screen*@
-            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
-        </li>
-        @if (IsIntegrationCredentialCreateEditAuthorized)
-        {
-        <li id="liIntegrations" class="item">
-            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
-        </li>
-        }
+<div class="padding-content">
+    <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+</div>
+<ul class="nav nav-list nav-gray">
+    <li id="liMyProfile" class="item">
+        <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
+    </li>
+    <li id="liOrganization" class="item">
+        @*uday for new screen*@
+    <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
+</li>
+@if (IsIntegrationCredentialCreateEditAuthorized)
+{
+    <li id="liIntegrations" class="item">
+        <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
+    </li>
+}
 
-        @*insertation start 09/08/2016 kausha #2492.*@
-        @if (IsMultiCurrencyNone == false)
-        {
-            <li id="liCurrency" class="item">
-                <a class="source-sans-probold inputs" href="#" id="aCurrency"><span></span>CURRENCY</a>
-            </li>
-        }
-        @*insertation End 09/08/2016 kausha #2492.*@
-    </ul>
+    @*insertation start 09/08/2016 kausha #2492.*@
+    @if (IsMultiCurrencyNone == false)
+    {
+        <li id="liCurrency" class="item">
+            <a class="source-sans-probold inputs" href="#" id="aCurrency"><span></span>CURRENCY</a>
+        </li>
+    }
+    @*insertation End 09/08/2016 kausha #2492.*@
+</ul>
 
 
 <script>
@@ -79,32 +79,32 @@
             });
             if ('@ViewBag.ModuleTitle' == 'MyProfile') {
 
-                    if (!$('#liMyProfile').hasClass('active')) {
-                        $('#liMyProfile').addClass('active');
+                if (!$('#liMyProfile').hasClass('active')) {
+                    $('#liMyProfile').addClass('active');
 
-                    }
                 }
-                else if ('@ViewBag.ModuleTitle' == 'Organization') {
-                    if (!$('#liOrganization').hasClass('active')) {
-                        $('#liOrganization').addClass('active');
-
-                    }
-                }
-                else if ('@ViewBag.ModuleTitle' == 'Integration') {
-                    if (!$('#liIntegrations').hasClass('active')) {
-                        $('#liIntegrations').addClass('active');
-
-                    }
-                }
-                    //insertation start 09/08/2016 kausha #2492.
-                else if ('@ViewBag.ModuleTitle' == 'Currency') {
-                    if (!$('#liCurrency').hasClass('active')) {
-                        $('#liCurrency').addClass('active');
-
-                    }
-                }
-            //insertation End 09/08/2016 kausha #2492.
             }
+            else if ('@ViewBag.ModuleTitle' == 'Organization') {
+                if (!$('#liOrganization').hasClass('active')) {
+                    $('#liOrganization').addClass('active');
+
+                }
+            }
+            else if ('@ViewBag.ModuleTitle' == 'Integration') {
+                if (!$('#liIntegrations').hasClass('active')) {
+                    $('#liIntegrations').addClass('active');
+
+                }
+            }
+                //insertation start 09/08/2016 kausha #2492.
+            else if ('@ViewBag.ModuleTitle' == 'Currency') {
+                if (!$('#liCurrency').hasClass('active')) {
+                    $('#liCurrency').addClass('active');
+
+                }
+            }
+            //insertation End 09/08/2016 kausha #2492.
+        }
             );
 </script>
 
