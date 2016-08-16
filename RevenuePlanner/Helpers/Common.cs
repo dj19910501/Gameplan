@@ -9444,12 +9444,7 @@ namespace RevenuePlanner.Helpers
             int returnvalue = 0;
             MRPEntities db = new MRPEntities();
             List<string> lst_RecipientId = new List<string>();
-            if (description == Convert.ToString(Enums.ChangeLog_ComponentType.plan).ToLower() && componentId != null)
-            {
-                lst_RecipientId = Common.GetCollaboratorId(Convert.ToInt32(componentId));
-
-            }
-            else if (description == Convert.ToString(Enums.ChangeLog_ComponentType.tactic).ToLower() && componentId != null)
+            if (description == Convert.ToString(Enums.ChangeLog_ComponentType.tactic).ToLower() && componentId != null)
             {
                 lst_RecipientId = Common.GetCollaboratorForTactic(Convert.ToInt32(componentId));
             }
@@ -9461,12 +9456,7 @@ namespace RevenuePlanner.Helpers
             {
                 lst_RecipientId = Common.GetCollaboratorForCampaign(Convert.ToInt32(componentId));
             }
-            else if (description == Convert.ToString(Enums.ChangeLog_ComponentType.improvetactic).ToLower() && componentId != null)
-            {
-                lst_RecipientId = Common.GetCollaboratorForImprovementTactic(Convert.ToInt32(componentId));
-            }
-
-            string RecipientIds = "";
+            string RecipientIds = null;
 
             if(lst_RecipientId.Count > 0)
             {
