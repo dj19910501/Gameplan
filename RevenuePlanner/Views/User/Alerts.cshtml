@@ -98,13 +98,18 @@
             $("html, body").animate({ scrollTop: 0 }, 1000);
         }
         $("#btnCreateAlert").click(function (e) {
-            $("#divrule0").find("#divque4").hide();
-            $("#divrule0").find("#divque3").hide();
-            $("#divrule0").find("#divque2part2").hide();
-            $("#divrule0").find("#divque2").hide();
-            $("#collapseGrp1").find("#divSave").hide();
-         
-         //   $('.accordion-body:first').css("min-height", "300px");
+            $("#divrule0").find("#divque4").css("visibility", "hidden");
+            $("#divrule0").find("#divque3").css("visibility", "hidden");
+            $("#divrule0").find("#divque2part2").css("visibility", "hidden");
+            $("#divrule0").find("#divque2").css("visibility", "hidden");
+            $("#collapseGrp1").find("#divSave").css("visibility", "hidden");
+            
+            $("#divrule0").find("#ddlindicator").val('0');
+            $("#divrule0").find("#ddlperformance").val('LT');
+            $("#divrule0").find("#ddlGolanum").val('');
+            $("#divrule0").find("#ddlpercentage").val('');
+
+         $('.accordion-body:first').removeClass("in");
             $('.accordion-body.in').collapse('hide');
             $('.accordion-body:first:not(".in")').collapse('show');
             $("#divrule0").find("#searchentity").val('');
@@ -136,18 +141,30 @@
             $(tableId).find("#searchentity").addClass("error");
             isValid = false;
         }
+        else
+            $(tableId).find("#searchentity").removeClass("error");
+
         if ($(tableId).find("#ddlindicator").val() == "" || $(tableId).find("#ddlindicator").val() == "0") {
             $(tableId).find("#ddlindicator").addClass("error");
             isValid = false;
         }
+        else
+            $(tableId).find("#ddlindicator").removeClass("error");
+
         if ($(tableId).find("#ddlGolanum").val() == "" || $(tableId).find("#ddlGolanum").val() == "0") {
             $(tableId).find("#ddlGolanum").addClass("error");
             isValid = false;
         }
+        else
+            $(tableId).find("#ddlGolanum").removeClass("error");
+
         if ($(tableId).find("#ddlpercentage").val() == "" || $(tableId).find("#ddlpercentage").val() == "0") {
             $(tableId).find("#ddlpercentage").addClass("error");
             isValid = false;
         }
+        else
+            $(tableId).find("#ddlpercentage").removeClass("error");
+
         if ($(tableId).find("#ddlfrequency").val() == "Monthly")
         {
             if($(tableId).find("#txtDateofmonth").val()=="")
@@ -158,9 +175,11 @@
             else{
                 var count = $(tableId).find("#txtDateofmonth").val();
                 if (parseInt(count) > 31 || count.length > 2 || parseInt(count) == 0) {
-                    $('#txtDateofmonth').addClass("error");
+                    $(tableId).find('#txtDateofmonth').addClass("error");
                     isValid = false;
                 }
+                else
+                    $(tableId).find("#txtDateofmonth").removeClass("error");
             }
            
         }

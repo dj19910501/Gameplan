@@ -592,6 +592,57 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion                
 
+        #region Alerts and alert Rule
+        #region method to get rule list
+        /// <summary>
+        /// To Get the list of Alert rule
+        /// <author>Devanshi gandhi</author>
+        /// <createddate>12-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetAlertRuleList()
+        {
+           
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            UserController objUserController = new UserController();
+            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
+            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+
+            var result = objUserController.GetAlertRuleList() as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.IsNotNull(result.Model);
+            Assert.AreEqual("_AlertListing", result.ViewName);
+
+        }
+        #endregion
+        #region method to Search entity
+        /// <summary>
+        /// To Get the list of entity as per search text
+        /// <author>Devanshi gandhi</author>
+        /// <createddate>12-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void SearchListEntity()
+        {
+
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            UserController objUserController = new UserController();
+            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
+            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            string SearchTerm = "plan test";
+            var result = objUserController.ListEntity(SearchTerm) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+
+        }
+        #endregion
+
+      
+        #endregion
     }
 
 

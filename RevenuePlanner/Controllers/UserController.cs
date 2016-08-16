@@ -1665,6 +1665,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId);
+                    objCache.AddCache(Enums.CacheObject.ClientEntityList.ToString(), lstentity);
                 }
 
                 EntityList = lstentity.Where(a => a.ClientId == Sessions.User.ClientId && a.EntityTitle.ToLower().Contains(term.ToLower())).Select(a => new SearchEntity
@@ -1682,7 +1683,7 @@ namespace RevenuePlanner.Controllers
             return Json(EntityList, JsonRequestBehavior.AllowGet);
         }
         #endregion
-        #region mfunction to get performance fector for create rule
+        #region function to get performance fector for create rule
         public SelectList GetPerformancefector()
         {
             var lstGoalTypes = Enum.GetValues(typeof(Enums.PerformanceFector)).Cast<Enums.PerformanceFector>().Select(a => a.ToString()).ToList();
@@ -1708,6 +1709,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveAlertRule(AlertRuleDetail RuleDetail, int RuleID = 0)
         {
+            int EntityID = 0;
+            int indicatorGoal;
+            int Completiongoal;
             try
             {
                 //Insert Rule
@@ -1715,11 +1719,11 @@ namespace RevenuePlanner.Controllers
                 {
 
                     AlertRuleDetail objRule = RuleDetail;
-                    int EntityID = Int32.Parse(objRule.EntityID);
-                    int indicatorGoal = Int32.Parse(objRule.IndicatorGoal);
-                    int Completiongoal = Int32.Parse(objRule.CompletionGoal);
+                     Int32.TryParse(objRule.EntityID, out EntityID);
+                     Int32.TryParse(objRule.IndicatorGoal, out indicatorGoal);
+                     Int32.TryParse(objRule.CompletionGoal, out Completiongoal);
 
-                    if (objRule.EntityID != null && Convert.ToInt32(objRule.EntityID) != 0)
+                    if (objRule.EntityID != null && Int32.Parse(objRule.EntityID) != 0)
                     {
                         if (RuleID == 0)
                         {
@@ -1869,6 +1873,9 @@ namespace RevenuePlanner.Controllers
                 if (RuleId != 0)
                 {
                     int result = objcommonalert.DisableAlertRule(RuleId, RuleOn);
+                    if(result>0)
+                        return Json(new { Success = true, SuccessMessage = Common.objCached.UpdateAlertRule }, JsonRequestBehavior.AllowGet);
+
                 }
             }
             catch (Exception ex)

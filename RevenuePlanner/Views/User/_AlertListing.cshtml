@@ -20,7 +20,7 @@
                 <div class="alert-value-box">
 
                     <span class="selectBox">
-                        @Html.DropDownList("ddlindicator", (SelectList)Model.GoalType, "Select", new { tabindex = "2", style="width:170px" })
+                        @Html.DropDownList("ddlindicator", (SelectList)Model.GoalType,new { tabindex = "2", style="width:170px" })
                     </span>
                     <div id="divque2part2">
                         <span class="vb-text">are</span>
@@ -106,7 +106,7 @@
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#Ruleaccordion" href="#@collapsid" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                     <a class="alert-copy" onclick="CopyAlertRule('@collapsid');" title="Copy"><i class="fa fa-clone" aria-hidden="true"></i></a>
                     <div  class="pull-right alert-rule-check">
-                        Alert on 
+                        Alert On 
                         <input id="chkOnOff" class="chkbxfilter" type="checkbox" checked="@isdisable"  onchange="OnOffAlert(this);" ruleid="@ruleId">
                 </div> 
                 </div>
@@ -215,14 +215,14 @@
         $newPanel.find(".maindiv").attr("id", "divrule-1");
         $newPanel.find(".maindiv").find("#hdnRuleId").val('0');
         $newPanel.find(".btn-save").attr("ruleid", "-1");
-
+        $newPanel.removeClass('in');
         $("#copyAccourdingroup").append($newPanel.fadeIn());
         $('.accordion-body.in').collapse('hide');
         
         $(".frequncy").change(function () {
             showHideOption(this);
         });
-        $('#copyAccourdingroup').find('.accordion-body').collapse('show');
+            $('#copyAccourdingroup').find('.accordion-body').collapse('show');
 
     }
 
@@ -257,6 +257,7 @@
         $("#ddlindicator").change(function () {
             if ($(this).val() != "") {
                 $("#divrule0").find("#divque2part2").css("display", "inline-block");
+                $("#divrule0").find("#divque2part2").css("visibility", "visible");
                 $("#divrule0").find("#divque2part2").find("#ddlperformance").focus();
                 $(this).removeClass("error");
             }
@@ -264,6 +265,7 @@
         $("#ddlGolanum").change(function () {
             if ($(this).val() != "") {
                 $("#divrule0").find("#divque3").show();
+                $("#divrule0").find("#divque3").css("visibility", "visible");
                 $("#divrule0").find("#divque3").find("#ddlpercentage").focus();
                 $(this).removeClass("error");
             }
@@ -271,7 +273,9 @@
         $("#ddlpercentage").change(function () {
             if ($(this).val() != "") {
                 $("#divrule0").find("#divque4").show();
+                $("#divrule0").find("#divque4").css("visibility", "visible");
                 $("#collapseGrp1").find("#divSave").show();
+                $("#collapseGrp1").find("#divSave").css("visibility", "visible");
                 $("#divrule0").find("#divque4").find("#ddlfrequency").focus();
                 $(this).removeClass("error");
             }
@@ -291,7 +295,7 @@
         var result = true;
         var ruleid = $(e).attr("ruleid");
         if (!e.checked) {
-            result = confirm("Are you sure you want to turn off the alert ?");
+            result = confirm("Are you sure you want to turn off the Alert ?");
         }
         if (result) {
             $.ajax({
@@ -302,7 +306,13 @@
                     RuleOn: OnOff
                 },
                 success: function (data) {
-                    $("#Ruleaccordion").load('@Url.Action("GetAlertRuleList", "User")');
+                    if (data.Success != null && data.Success == true && data.SuccessMessage != null) {
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.SuccessMessage);
+                        $("#errorMessage").css("display", "none");
+                        $("#Ruleaccordion").load('@Url.Action("GetAlertRuleList", "User")');
+                    }
                 }
             });
         }
@@ -424,7 +434,7 @@
                         var lbl = $(maindiv).find("#lblentity");
                         $(lbl).html(ui.item.label);
                         $(lbl).attr("title",ui.item.label);
-                        $(maindiv).find("#divque2").show();
+                        $(maindiv).find("#divque2").css("visibility", "visible");
                     }
                     return false;
                 },
@@ -446,7 +456,7 @@
             $(el).attr("title", '');
             var lbl = $(maindiv).find("#lblentity");
             $(lbl).html('');
-            $(maindiv).find("#searchentity").addClass("error");
+            //$(maindiv).find("#searchentity").addClass("error");
         }
     }
     //);
@@ -520,7 +530,7 @@
     }
     //);
     function DeleteAlrtRule(ruleid) {
-        var result = confirm("Are you sure you want to delete the Alert Rule?");
+        var result = confirm("Are you sure you want to delete the Alert?");
         if (result) {
             $.ajax({
 

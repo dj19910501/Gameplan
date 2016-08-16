@@ -8869,11 +8869,12 @@ namespace RevenuePlanner.Helpers
             var obj = HttpRuntime.Cache.Get(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
             if (obj != null)
             {
-                return HttpRuntime.Cache[objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString()];
+                return obj;
             }
             else
                 return null;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddCache(string objectName, object CacheObject)
         {
             var obj = HttpRuntime.Cache.Get(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
