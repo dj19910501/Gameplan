@@ -1893,10 +1893,11 @@ namespace RevenuePlanner.Test.Controllers
 
             ReportController ReportController = new ReportController();
             var result = ReportController.GetReportBudgetData("2016", "quarters", "Plan","") as PartialViewResult;
-            //Assert.IsNotNull(result);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_Budget", result.ViewName);
             var result1 = ReportController.GetReportBudgetData("thisquarter", "quarters", "Plan", "") as PartialViewResult;
             Assert.AreEqual("_Budget", result1.ViewName);
+           
         }
 
         #endregion

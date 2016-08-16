@@ -555,6 +555,7 @@ namespace RevenuePlanner.Test.Controllers
             var improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(i => i.IsDeleted == false).FirstOrDefault();
             int improvementTacticId = improvementTactic.ImprovementPlanTacticId;
             var Editresult = objInspectController.LoadImprovementSetup(improvementTacticId, "Edit") as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + Editresult.ViewName);
             int improvementProgramId = improvementTactic.ImprovementPlanProgramId;
             var Addresult = objInspectController.LoadImprovementSetup(improvementProgramId, "Add") as PartialViewResult;
             Assert.AreEqual("_SetupImprovementTactic", Editresult.ViewName);
@@ -573,6 +574,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int planCampaignId = db.Plan_Campaign.Where(a => a.IsDeleted == false).Select(a => a.PlanCampaignId).FirstOrDefault();
             var result= objInspectController.LoadEditSetupCampaign(planCampaignId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_EditSetupCampaign", result.ViewName);
         }
 
@@ -589,6 +591,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int planProgramId = db.Plan_Campaign_Program.Where(a => a.IsDeleted == false).Select(a => a.PlanProgramId).FirstOrDefault();
             var result = objInspectController.LoadSetupProgramEdit(planProgramId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_EditSetupProgram", result.ViewName);
         }
         //[TestMethod]
@@ -619,6 +622,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int campignId = db.Plan_Campaign.Where(a => a.IsDeleted == false).Select(a => a.PlanCampaignId).FirstOrDefault();
             var result = objInspectController.LoadReviewCampaign(campignId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_ReviewCampaign", result.ViewName);
         }
 
@@ -635,6 +639,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int programId = db.Plan_Campaign_Program.Where(a => a.IsDeleted == false).Select(a => a.PlanProgramId).FirstOrDefault();
             var result = objInspectController.LoadReviewProgram(programId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_ReviewProgram", result.ViewName);
         }
         #endregion
@@ -652,8 +657,9 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var planTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted == false && a.LinkedTacticId != null).FirstOrDefault();
-            var result = objInspectController.LoadInspectPopup(planTactic.PlanTacticId, "Tactic", "Setup", "Edit", planTactic.PlanProgramId);
-            Assert.IsNotNull(result);
+            var result = objInspectController.LoadInspectPopup(planTactic.PlanTacticId, "Tactic", "Setup", "Edit", planTactic.PlanProgramId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("InspectPopup", result.ViewName); //InspectPopup
         }
         [TestMethod]
         public void LoadInspectPopupProgram()
@@ -667,8 +673,9 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var planProgram = db.Plan_Campaign_Program.Where(a => a.IsDeleted == false).FirstOrDefault();
-            var result = objInspectController.LoadInspectPopup(planProgram.PlanProgramId, "Program", "Setup", "Edit", planProgram.PlanCampaignId);
-            Assert.IsNotNull(result);
+            var result = objInspectController.LoadInspectPopup(planProgram.PlanProgramId, "Program", "Setup", "Edit", planProgram.PlanCampaignId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_InspectPopupProgram", result.ViewName); //_InspectPopupProgram
         }
         [TestMethod]
         public void LoadInspectPopupCampaign()
@@ -682,8 +689,9 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var planCampign = db.Plan_Campaign.Where(a => a.IsDeleted == false).FirstOrDefault();
-            var result = objInspectController.LoadInspectPopup(planCampign.PlanCampaignId, "Campaign", "Setup", "Edit", planCampign.PlanId);
-            Assert.IsNotNull(result);
+            var result = objInspectController.LoadInspectPopup(planCampign.PlanCampaignId, "Campaign", "Setup", "Edit", planCampign.PlanId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_InspectPopupCampaign", result.ViewName);
         }
 
         [TestMethod]
@@ -698,8 +706,9 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             var Plan = db.Plans.Where(a => a.IsDeleted == false).FirstOrDefault();
-            var result = objInspectController.LoadInspectPopup(Plan.PlanId, "Plan", "Setup", "Edit");
-            Assert.IsNotNull(result);
+            var result = objInspectController.LoadInspectPopup(Plan.PlanId, "Plan", "Setup", "Edit") as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_InspectPopupPlan", result.ViewName);
         }
 
         #endregion
@@ -1557,6 +1566,7 @@ namespace RevenuePlanner.Test.Controllers
             
             int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId && id.IsDeleted==false).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
             var result = objInspectController.LoadReview(PlanTacticId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("Review", result.ViewName);
         }
 
@@ -1578,6 +1588,7 @@ namespace RevenuePlanner.Test.Controllers
             string tId=PlanTactic.PlanTacticId.ToString();
             string newTitle=PlanTactic.Title+"New";
             var result = objInspectController.SaveTitle("Tactic", newTitle, tId);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result);
         }
         [TestMethod]
@@ -1595,6 +1606,7 @@ namespace RevenuePlanner.Test.Controllers
             string cId = PlanCampaign.PlanCampaignId.ToString();
             string newTitle = PlanCampaign.Title + "New";
             var result = objInspectController.SaveTitle("Campaign", newTitle, cId);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result);
         }
         [TestMethod]
@@ -1614,6 +1626,7 @@ namespace RevenuePlanner.Test.Controllers
             string pId = PlanProgram.PlanProgramId.ToString();
             string newTitle = PlanProgram.Title + "New";
             var result = objInspectController.SaveTitle("Program", newTitle, pId);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result);
         }
         [TestMethod]
@@ -1630,6 +1643,7 @@ namespace RevenuePlanner.Test.Controllers
             string lId = LineItem.PlanLineItemId.ToString();
             string newTitle = LineItem.Title + "New";
             var result = objInspectController.SaveTitle("LineItem", newTitle, lId);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result);
         }
         #endregion
@@ -1647,6 +1661,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int campaignId = db.Plan_Campaign.Where(a => a.IsDeleted == false).Select(a=>a.PlanCampaignId).FirstOrDefault();
             var result = objInspectController.CreateProgram(campaignId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_EditSetupProgram", result.ViewName);
         }
         #endregion
@@ -1664,6 +1679,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int lineItemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted == false).Select(a => a.PlanLineItemId).FirstOrDefault();
             var result = objInspectController.LoadEditSetupLineitem(lineItemId) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_EditSetupLineitem", result.ViewName);
         }
 
