@@ -242,7 +242,7 @@ namespace RevenuePlanner.Helpers
                     ////End Added by Mitesh Vaishnav for PL ticket #718
 
                     Sessions.PlanId = proj.PlanId;
-                    Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, proj.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, proj.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", proj.CreatedBy.ToString());
                     returnFlag = planId;
                     return returnFlag;
                 }
@@ -409,7 +409,7 @@ namespace RevenuePlanner.Helpers
                     db.SaveChanges();
                     ////End Added by Mitesh Vaishnav for PL ticket #718
 
-                    Common.InsertChangeLog(PlanId, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(PlanId, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaign.CreatedBy.ToString());
                     returnFlag = PlanCampaignId;
                     return returnFlag;
                 }
@@ -549,7 +549,7 @@ namespace RevenuePlanner.Helpers
                     db.SaveChanges();
                     ////End Added by Mitesh Vaishnav for PL ticket #719
 
-                    Common.InsertChangeLog(planId, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(planId, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignPrograms.CreatedBy.ToString());
                     returnFlag = PlanProgramId;
                     return returnFlag;
                 }
@@ -674,7 +674,7 @@ namespace RevenuePlanner.Helpers
                 db.SaveChanges();
                 ////End Added by Mitesh Vaishnav for PL ticket #720
 
-                Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignProgramTactic.CreatedBy.ToString());
                 returnFlag = planTacticId;
                 return returnFlag;
             }
@@ -796,7 +796,7 @@ namespace RevenuePlanner.Helpers
 
                 }
                     CostCalculacation(TacticId);
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTacticLineItem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTacticLineItem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignProgramTacticLineItem.CreatedBy.ToString());
                 }
              
                 return returnFlag;
@@ -1036,7 +1036,7 @@ namespace RevenuePlanner.Helpers
 
                     db.SaveChanges();
 
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanTactic.CreatedBy.ToString());
                     returnFlag = planTacticId;
                 } // To handle object null reference exception  - Dashrath Prajapati - 29/01/2016
                 return returnFlag;
@@ -1207,7 +1207,7 @@ namespace RevenuePlanner.Helpers
 
                     db.SaveChanges();
 
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaign.CreatedBy.ToString());
                     returnFlag = PlanCampaignId;
                     return returnFlag;
                 }
@@ -1357,7 +1357,7 @@ namespace RevenuePlanner.Helpers
 
                     db.SaveChanges();
 
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignPrograms.CreatedBy.ToString());
                     returnFlag = PlanProgramId;
                     return returnFlag;
                 }
@@ -1802,7 +1802,7 @@ namespace RevenuePlanner.Helpers
 
                     db.SaveChanges();
 
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanTactic.CreatedBy.ToString());
                     returnFlag = planTacticId;
                 } // To handle object null reference exception - Dashrath Prajapati - 29/01/2016
                 return returnFlag;

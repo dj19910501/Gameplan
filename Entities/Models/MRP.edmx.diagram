@@ -201,6 +201,7 @@
         <EntityTypeShape EntityType="MRPModel.Alert_Rules" Width="1.5" PointX="20.375" PointY="10.125" />
         <EntityTypeShape EntityType="MRPModel.Alert" Width="1.5" PointX="22.625" PointY="11.375" />
         <AssociationConnector Association="MRPModel.FK_Alerts_Alert_Rules" />
+        <EntityTypeShape EntityType="MRPModel.User_Notification_Messages" Width="1.5" PointX="20.375" PointY="19.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

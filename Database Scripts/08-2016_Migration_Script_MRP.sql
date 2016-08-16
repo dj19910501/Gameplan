@@ -1436,3 +1436,270 @@ BEGIN
 	END
 END
 GO
+
+
+   /* Start - Added by Komal Rawal on 08/16/2016 for Ticket #2468 -Notifications*/
+   /*Note : Change variable @Createdby as required */
+    Declare @Createdby uniqueidentifier = 'C55D12A8-79EC-4ADE-9E40-E595D7980248'
+
+    IF (EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'PlanIsUpdated'  and IsDeleted = 0 )) 
+	Begin
+	update Notification set IsDeleted = 1 where NotificationInternalUseOnly = 'PlanIsUpdated'
+	End
+
+	IF (EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'ModelIsUpdated'  and IsDeleted = 0 )) 
+	Begin
+	update Notification set IsDeleted = 1 where NotificationInternalUseOnly = 'ModelIsUpdated'
+	End
+
+	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'TacticIsEdited')) 
+	Begin
+	 insert into Notification values('TacticIsEdited','When my tactic is edited',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following tactic has been edited.<br><br><table><tr><td>Tactic Name</td><td>:</td><td>[TacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Edited by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan :Tactic is edited')
+	End
+
+	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'TacticIsApproved')) 
+	Begin
+	 insert into Notification values('TacticIsApproved','When a tactic that I own / collaborate on is approved',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following tactic has been approved.<br><br><table><tr><td>Tactic Name</td><td>:</td><td>[TacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Approved by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : Tactic is approved')
+	End
+
+	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'CommentAddedToTactic')) 
+	Begin
+	 insert into Notification values('CommentAddedToTactic','When a comment is added to a tactic I own / collaborate on',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that comment is added to following tactic.<br><br><table><tr><td>Tactic Name</td><td>:</td><td>[TacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Added by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan: Comment added to tactic')
+	End
+
+	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'CampaignIsEdited')) 
+	Begin
+	 insert into Notification values('CampaignIsEdited','When my campaign is edited',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following campaign has been edited.<br><br><table><tr><td>Campaign Name</td><td>:</td><td>[CampaignNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Edited by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : Campaign is edited')
+	End
+
+	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'ProgramIsEdited')) 
+	Begin
+	 insert into Notification values('ProgramIsEdited','When my program is edited',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following program has been edited.<br><br><table><tr><td>Program Name</td><td>:</td><td>[ProgramToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Edited by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : program is edited')
+	End
+
+	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'TacticIsSubmitted')) 
+	Begin
+	 insert into Notification values('TacticIsSubmitted','When my tactic is submitted for approval',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following tactic has been submitted for approval.<br><br><table><tr><td>Tactic Name</td><td>:</td><td>[TacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Submitted by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr><tr><td>URL</td><td>:</td><td>[URL]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan: Tactic submitted for approval')
+	End
+
+	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'EntityOwnershipAssigned')) 
+	Begin
+	 insert into Notification values('EntityOwnershipAssigned','When I am assigned ownership of an entity',null,'AM','Dear [NameToBeReplaced],<br><br>[ModifierName] has made you the owner of following [EntityName].<br><br><table><tr><td>[EntityName]</td><td>:</td><td>[EntityTitle]</td></tr><tr><td>Plan</td><td>:</td><td>[planname]</td></tr><tr><td>URL</td><td>:</td><td>[URL]</td></tr></table><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : Ownership assigned of an entity')
+	End
+	
+    IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'CommentAddedToCampaign')) 
+	Begin
+	 insert into Notification values('CommentAddedToCampaign','When a comment is added to a campaign I own / collaborate on',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that comment is added to following campaign.<br><br><table><tr><td>Campaign Name</td><td>:</td><td>[CampaignNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Added by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan: Comment added to campaign')
+	End
+
+	  IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'CommentAddedToProgram')) 
+	Begin
+	 insert into Notification values('CommentAddedToProgram','When a comment is added to a program I own / collaborate on',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that comment is added to following program.<br><br><table><tr><td>Program Name</td><td>:</td><td>[ProgramNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Added by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan: Comment added to program')
+	End
+
+	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'CampaignIsApproved')) 
+	Begin
+	 insert into Notification values('CampaignIsApproved','When a campaign that I own / collaborate on is approved',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following campaign has been approved.<br><br><table><tr><td>Campaign Name</td><td>:</td><td>[CampaignNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Approved by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : Campaign is approved')
+	End
+
+	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'ProgramIsApproved')) 
+	Begin
+	 insert into Notification values('ProgramIsApproved','When a program that I own / collaborate on is approved',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following program has been approved.<br><br><table><tr><td>Program Name</td><td>:</td><td>[ProgramNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Approved by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : Program is approved')
+	End
+	Go
+
+	
+/****** Object:  StoredProcedure [dbo].[SaveLogNoticationdata]    Script Date: 08/12/2016 17:52:34 ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SaveLogNoticationdata]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[SaveLogNoticationdata]
+GO
+/****** Object:  StoredProcedure [dbo].[SaveLogNoticationdata]    Script Date: 08/12/2016 17:52:34 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SaveLogNoticationdata]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[SaveLogNoticationdata] AS' 
+END
+GO
+ALTER PROCEDURE [dbo].[SaveLogNoticationdata]
+@action nvarchar(50) = null,
+@actionSuffix nvarchar(max) = null,
+@componentId int = null,
+@componentTitle nvarchar(256) = null,
+@description nvarchar(50) = null,
+@objectId int = null ,
+@parentObjectId int =  null ,
+@TableName nvarchar(50) = null,
+@Userid uniqueidentifier,
+@ClientId uniqueidentifier,
+@UserName nvarchar(250) = null,
+@RecipientIDs nvarchar(max) = null,
+@EntityOwnerID nvarchar(max) = null
+AS
+BEGIN
+Declare @InsertedCount int
+Declare @ActivityMessageIds int
+Declare @NotificationMessage nvarchar(250)
+Declare @TacticIsApproved nvarchar(50) = 'TacticIsApproved'
+Declare @ReportShared nvarchar(50) = 'ReportIsShared'
+Declare @TacticEdited nvarchar(50) = 'TacticIsEdited'
+Declare @CommentAddedToTactic nvarchar(50) = 'CommentAddedToTactic'
+Declare @CampaignIsEdited nvarchar(50) = 'CampaignIsEdited'
+Declare @ProgramIsEdited nvarchar(50) = 'ProgramIsEdited'
+Declare @TacticIsSubmitted nvarchar(50) = 'TacticIsSubmitted'
+Declare @CommentAddedToCampaign nvarchar(50) = 'CommentAddedToCampaign'
+Declare @CommentAddedToProgram nvarchar(50) = 'CommentAddedToProgram'
+Declare @CampaignIsApproved nvarchar(50) = 'CampaignIsApproved'
+Declare @ProgramIsApproved nvarchar(50) = 'ProgramIsApproved'
+Declare @OwnerChange nvarchar(50) = 'EntityOwnershipAssigned'
+
+
+IF OBJECT_ID('tempdb..#tempNotificationdata') IS NOT NULL
+Drop Table #tempNotificationdata
+ 
+insert into ChangeLog(TableName,ObjectId,ParentObjectId,ComponentId,ComponentTitle,ComponentType,ActionName,ActionSuffix,[TimeStamp],UserId,IsDeleted,ClientId) 
+values (@TableName,@objectId,@parentObjectId,@componentId,@componentTitle,@description,@action,@actionSuffix,GETDATE(),@Userid,0,@ClientId)
+
+SELECT @InsertedCount=@@ROWCOUNT
+DECLARE @ret int = CASE WHEN @InsertedCount = 0 THEN 0 ELSE 1 END
+select @ret
+
+if(@TableName <> 'Model')
+BEGIN
+	select * into #tempnotificationdata from 
+	(select u.userid,u.notificationid,n.notificationinternaluseonly from user_notification as u join notification as n on
+	 u.notificationid= n.notificationid where  n.notificationtype = 'AM'  and n.isdeleted = 0 and
+	 userid in (SELECT Item From dbo.SplitString(@RecipientIDs,','))) as result
+
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @TacticEdited and @action='updated' and (@description ='tactic' or @description ='tactic results'))) 
+	Begin
+		select @NotificationMessage = 'Tactic '+ @componentTitle +' has been changed by ' + @UserName
+		if(@Userid <> @EntityOwnerID)
+		Begin
+			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
+		End
+	End
+
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @CampaignIsEdited and @action='updated' and  @description ='campaign' )) 
+	Begin
+		
+	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
+	    select @NotificationMessage = @description + ' '+ @componentTitle +' has been changed by ' + @UserName
+		
+		if(@Userid <> @EntityOwnerID)
+		Begin
+			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
+		End
+	End
+
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @ProgramIsEdited  and @action='updated' and @description ='program')) 
+	Begin
+		
+	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
+		select @NotificationMessage = @description + ' '+ @componentTitle +' has been changed by ' + @UserName
+	
+		if(@Userid <> @EntityOwnerID)
+		Begin
+			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
+		End
+	End
+
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @ReportShared and  @TableName ='Report' and @action='shared' )) 
+	Begin
+		select @NotificationMessage = @UserName +' has shared report with you '
+		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
+		WHERE NotificationInternalUseOnly = @ReportShared and UserId <> @Userid
+	End
+
+	 IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @CommentAddedToTactic and @description ='tactic' and @action='commentadded' )) 
+	Begin
+	
+		select @NotificationMessage =  @UserName +' has added comment to ' + @description + ' ' + @componentTitle 
+	
+		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
+		WHERE NotificationInternalUseOnly = @CommentAddedToTactic and UserId <> @Userid
+	End
+
+	 IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @CommentAddedToCampaign and @description ='campaign'and @action='commentadded' )) 
+	Begin
+	
+		select @NotificationMessage =  @UserName +' has added comment to ' + @description + ' ' + @componentTitle 
+	
+		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
+		WHERE NotificationInternalUseOnly = @CommentAddedToCampaign  and UserId <> @Userid
+	End
+
+	 IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @CommentAddedToProgram and @description ='program'and @action='commentadded' )) 
+	Begin
+	
+		select @NotificationMessage =  @UserName +' has added comment to ' + @description + ' ' + @componentTitle 
+	
+		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
+		WHERE NotificationInternalUseOnly = @CommentAddedToProgram and UserId <> @Userid
+	End
+
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @TacticIsApproved and @action='approved' and @description ='tactic' )) 
+	Begin
+	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
+		select @NotificationMessage = @description +' '+ @componentTitle +' has been approved by ' + @UserName
+		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
+		WHERE (NotificationInternalUseOnly = @TacticIsApproved) and UserId <> @Userid
+	End
+
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @CampaignIsApproved  and @action='approved' and  @description ='campaign' )) 
+	Begin
+	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
+		select @NotificationMessage = @description +' '+ @componentTitle +' has been approved by ' + @UserName
+		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
+		WHERE NotificationInternalUseOnly = @CampaignIsApproved and UserId <> @Userid
+	End
+
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @ProgramIsApproved  and @action='approved' and @description ='program')) 
+	Begin
+	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
+		select @NotificationMessage = @description +' '+ @componentTitle +' has been approved by ' + @UserName
+		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
+		WHERE  NotificationInternalUseOnly = @ProgramIsApproved and UserId <> @Userid
+	End
+
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @TacticIsSubmitted and @description ='tactic' and @action='submitted' )) 
+	Begin
+		select @NotificationMessage = @UserName + ' has submitted tactic ' + @componentTitle +' for approval '
+		if(@Userid <> @EntityOwnerID)
+		Begin
+			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
+		End
+	End
+
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @OwnerChange  and @action='ownerchanged' )) 
+	Begin
+		select @NotificationMessage = @UserName + ' has made you the owner of ' + @description + ' ' + @componentTitle
+		if(@Userid <> @EntityOwnerID)
+		Begin
+			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
+		End
+	End
+
+END
+
+End
+
+
+
+GO
+
+	/* End - Added by Komal Rawal on 08/16/2016 for Ticket #2468 -Notifications*/

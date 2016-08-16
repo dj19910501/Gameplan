@@ -1559,7 +1559,7 @@ namespace RevenuePlanner.Helpers
 
         /********************** Function to handle changelog for model & plan ************************/
 
-        public static int InsertChangeLog(int objectId, int? parentObjectId, int componentId, string componentTitle, Enums.ChangeLog_ComponentType componentType, Enums.ChangeLog_TableName TableName, Enums.ChangeLog_Actions action, string actionSuffix = "")
+        public static int InsertChangeLog(int? objectId, int? parentObjectId, int? componentId, string componentTitle, Enums.ChangeLog_ComponentType componentType, Enums.ChangeLog_TableName TableName, Enums.ChangeLog_Actions action, string actionSuffix = "",string EntityOwnerId ="",string ReportRecipientUserIds="")
         {
             /************************** Get value of component type ******************************/
             var type = typeof(Enums.ChangeLog_ComponentType);
@@ -1567,24 +1567,36 @@ namespace RevenuePlanner.Helpers
             var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
             var description = ((DescriptionAttribute)attributes[0]).Description;
             /*************************************************************************************/
-
+            //Modified by komal rawal on 16-08-2016 regarding #2484 save notifications 
             int retval = 0;
             MRPEntities db = new MRPEntities();
-            ChangeLog c1 = new ChangeLog();
-            c1.ActionName = action.ToString();
-            c1.ActionSuffix = actionSuffix;
-            c1.ComponentId = componentId;
-            c1.ComponentTitle = componentTitle;
-            c1.ComponentType = description;
-            c1.IsDeleted = false;
-            c1.ObjectId = objectId;
-            c1.ParentObjectId = parentObjectId;
-            c1.TableName = TableName.ToString();
-            c1.TimeStamp = DateTime.Now;
-            c1.ClientId = Sessions.User.ClientId;
-            c1.UserId = Sessions.User.UserId;
-            db.ChangeLogs.Add(c1);
-            int ret = db.SaveChanges();
+            StoredProcedure objSp = new StoredProcedure();
+            //ChangeLog c1 = new ChangeLog();
+            //c1.ActionName = action.ToString();
+            //c1.ActionSuffix = actionSuffix;
+            //c1.ComponentId = componentId;
+            //c1.ComponentTitle = componentTitle;
+            //c1.ComponentType = description;
+            //c1.IsDeleted = false;
+            //c1.ObjectId = objectId;
+            //c1.ParentObjectId = parentObjectId;
+            //c1.TableName = TableName.ToString();
+            //c1.TimeStamp = DateTime.Now;
+            //if (Sessions.User != null)
+            //{
+            //    c1.ClientId = Sessions.User.ClientId;
+            //    c1.UserId = Sessions.User.UserId;
+            //}
+            //else
+            //{
+            //    c1.ClientId = null;
+            //    c1.UserId = null;
+            //}
+
+            //db.ChangeLogs.Add(c1);
+            var OwnerID = EntityOwnerId;
+            var UserName = Convert.ToString(Sessions.User.FirstName + " " + Sessions.User.LastName);
+            int ret = objSp.SaveLogNoticationdata(action.ToString(), actionSuffix,componentId,componentTitle,description,objectId,parentObjectId,TableName.ToString(), Sessions.User.ClientId,Sessions.User.UserId, UserName,OwnerID, ReportRecipientUserIds);
             if (ret >= 1)
             {
                 retval = 1;
@@ -8856,6 +8868,8 @@ namespace RevenuePlanner.Helpers
             return secondIsNumber ? 1 : first != null ? first.CompareTo(second) : 0;
             // End
         }
+
+
     }
     // Add By Nishant Sheth
     // Desc :: common methods for cache memory
@@ -9395,8 +9409,87 @@ namespace RevenuePlanner.Helpers
             var data = db.Database.SqlQuery<RevenuePlanner.Models.CustomDashboardModel>("GetCustomDashboardsClientwise @UserId,@ClientId", para).ToList();
             return data;
         }
+        //Added by komal rawal on 16-08-2016 regarding #2484 save notifications 
+        public int SaveLogNoticationdata( string action, string actionSuffix, int? componentId,string componentTitle,string description,int? objectid, int? parentObjectId,string TableName, Guid ClientId,Guid User,string  UserName,string EntityOwnerID,string ReportRecipientUserIds)
+        {
+            int returnvalue = 0;
+            MRPEntities db = new MRPEntities();
+            List<string> lst_RecipientId = new List<string>();
+            if (description == Convert.ToString(Enums.ChangeLog_ComponentType.plan).ToLower() && componentId != null)
+            {
+                lst_RecipientId = Common.GetCollaboratorId(Convert.ToInt32(componentId));
+
+            }
+            else if (description == Convert.ToString(Enums.ChangeLog_ComponentType.tactic).ToLower() && componentId != null)
+            {
+                lst_RecipientId = Common.GetCollaboratorForTactic(Convert.ToInt32(componentId));
+            }
+            else if (description == Convert.ToString(Enums.ChangeLog_ComponentType.program).ToLower() && componentId != null)
+            {
+                lst_RecipientId = Common.GetCollaboratorForProgram(Convert.ToInt32(componentId));
+            }
+            else if (description == Convert.ToString(Enums.ChangeLog_ComponentType.campaign).ToLower() && componentId != null)
+            {
+                lst_RecipientId = Common.GetCollaboratorForCampaign(Convert.ToInt32(componentId));
+            }
+            else if (description == Convert.ToString(Enums.ChangeLog_ComponentType.improvetactic).ToLower() && componentId != null)
+            {
+                lst_RecipientId = Common.GetCollaboratorForImprovementTactic(Convert.ToInt32(componentId));
+            }
+
+            string RecipientIds = "";
+
+            if(lst_RecipientId.Count > 0)
+            {
+                RecipientIds = String.Join(",", lst_RecipientId);
+
+            }
+            else if(TableName == Convert.ToString(Enums.ChangeLog_TableName.Report) && action == Convert.ToString(Enums.ChangeLog_Actions.shared))
+            {
+                RecipientIds = ReportRecipientUserIds;
+            }
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("SaveLogNoticationdata", Connection);
+
+            using (command)
+            {
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@action", action);
+                command.Parameters.AddWithValue("@actionSuffix", actionSuffix);
+                command.Parameters.AddWithValue("@componentId", componentId);
+                command.Parameters.AddWithValue("@componentTitle", componentTitle);
+                command.Parameters.AddWithValue("@description", description);
+                command.Parameters.AddWithValue("@objectId", objectid);
+                command.Parameters.AddWithValue("@parentObjectId", parentObjectId);
+                command.Parameters.AddWithValue("@TableName", TableName);
+                command.Parameters.AddWithValue("@Userid", User);
+                command.Parameters.AddWithValue("@ClientId", ClientId);
+                command.Parameters.AddWithValue("@UserName", UserName);
+                command.Parameters.AddWithValue("@RecipientIDs", RecipientIds);
+                command.Parameters.AddWithValue("@EntityOwnerID", EntityOwnerID);
+                string returnvalue1 = command.ExecuteScalar().ToString();
+                //  adp.Fill(dataset);
+                returnvalue = Convert.ToInt32(returnvalue1);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+          
+            return returnvalue;
+        }
+
+        //ENd
+
     }
     #endregion
+
+
+
+
 
 
 }

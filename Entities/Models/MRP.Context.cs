@@ -121,6 +121,7 @@ namespace RevenuePlanner.Models
         public DbSet<vClientWise_EntityList> vClientWise_EntityList { get; set; }
         public DbSet<Alert_Rules> Alert_Rules { get; set; }
         public DbSet<Alert> Alerts { get; set; }
+        public DbSet<User_Notification_Messages> User_Notification_Messages { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

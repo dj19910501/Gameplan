@@ -99,7 +99,7 @@
         var emails = @Html.Raw(Json.Encode(@ViewBag.EmailIds));
         if (emails != null) {
             $.each(emails, function (index, email) {
-                select2EmailData.push({id: email, text: email});
+                select2EmailData.push({id: email.UserId, text: email.Email});
             });
         }
 
@@ -128,15 +128,33 @@
                 $(".select2-choices").removeClass("error-background");
                 $("#errorMessageShareReportPopup").css("display", "none");
                 // Send mail and show confirmation popup.
-                ShareReport($("#select2Email").select2("val").toString(), $("#TxtOptionalMessage").val());
+                //Modified by komal rawal on 16-08-2016 regarding #2484 save notifications 
+                var SelectedData = $("#select2Email").select2("data");
+                var Emails = "";
+                var UserIDs = "";
+                $.each(SelectedData, function (index, data) {
+                    Emails +=  data.text + ",",
+                    UserIDs += data.id + ","
+                });
+                if(Emails != "")
+                {
+                    Emails = Emails.slice(0, -1);
+                }
+                if(UserIDs != "")
+                {
+                    UserIDs = UserIDs.slice(0, -1);
+                }
+                
+
+                ShareReport(Emails, $("#TxtOptionalMessage").val(),UserIDs);
             }
 
             return false;
         });
 
         //Start Share Report
-        function ShareReport(email, optionalMessage) {
-           
+        //Modified by komal rawal on 16-08-2016 regarding #2484 save notifications 
+        function ShareReport(email, optionalMessage,RecipientUserIds) {
             var reportType = '@reportType';
             var htmlOfCurrentView = GetHTML(reportType);
             
@@ -158,7 +176,8 @@
                     toEmailIds: email,
                     optionalMessage: optionalMessage,
                     htmlOfCurrentView : htmlOfCurrentView,
-                    url:urlpdf
+                    url:urlpdf,
+                    RecipientUserIds : RecipientUserIds
                 },
                 success: function (data) {
                     if (data != 'undefined' && data != false) {

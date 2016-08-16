@@ -590,7 +590,9 @@ namespace RevenuePlanner.Helpers
         public enum ChangeLog_TableName
         {
             Plan,
-            Model
+            Model,
+            Report,
+            
         }
 
         public enum ChangeLog_Actions
@@ -604,7 +606,11 @@ namespace RevenuePlanner.Helpers
             advanced,
             benchmarked,
             created,
-            moved
+            moved,
+            shared,
+            submitted,
+            commentadded,
+            ownerchanged
         }
 
         public enum ChangeLog_ComponentType
@@ -631,7 +637,14 @@ namespace RevenuePlanner.Helpers
             improvetactic,
             [Description("line item")]
             lineitem,
-
+            [Description("Summary")]
+            Summary,
+            [Description("Revenue")]
+            Revenue,
+            [Description("Waterfall")]
+            Waterfall,
+            [Description("Contact Support")]
+            Contactsupport
         }
         #endregion
 

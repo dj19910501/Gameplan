@@ -577,11 +577,11 @@ namespace RevenuePlanner.Controllers
                     //// Insert Changelog.
                     if (objPlanModel.PlanId == 0)
                     {
-                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added,"",plan.CreatedBy.ToString());
                     }
                     else
                     {
-                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", plan.CreatedBy.ToString());
                     }
                     if (result > 0)
                     {
@@ -727,11 +727,11 @@ namespace RevenuePlanner.Controllers
                     //// Insert Changelog.
                     if (objPlanModel.PlanId == 0)
                     {
-                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", plan.CreatedBy.ToString());
                     }
                     else
                     {
-                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", plan.CreatedBy.ToString());
                     }
 
                     if (result > 0)
@@ -1719,7 +1719,7 @@ namespace RevenuePlanner.Controllers
                 plan.ModifiedDate = DateTime.Now;
 
                 int returnValue = db.SaveChanges();
-                Common.InsertChangeLog(Sessions.PlanId, 0, Sessions.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.published);
+                Common.InsertChangeLog(Sessions.PlanId, 0, Sessions.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.published, "", plan.CreatedBy.ToString());
                 ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
                 return Json(new { activeMenu = Enums.ActiveMenu.Plan.ToString(), currentPlanId = Sessions.PlanId }, JsonRequestBehavior.AllowGet);
             }
@@ -1763,7 +1763,7 @@ namespace RevenuePlanner.Controllers
                 //// Saving changes.
                 returnValue = db.SaveChanges();
                 if (isApproved)
-                    Common.InsertChangeLog(Sessions.PlanId, 0, planCampaign.PlanCampaignId, planCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    Common.InsertChangeLog(Sessions.PlanId, 0, planCampaign.PlanCampaignId, planCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", planCampaign.CreatedBy.ToString());
 
             }
             else if (isPlanProgram)
@@ -1786,7 +1786,7 @@ namespace RevenuePlanner.Controllers
                 returnValue = db.SaveChanges();
 
                 if (isApproved)
-                    Common.InsertChangeLog(Sessions.PlanId, 0, planProgram.PlanProgramId, planProgram.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    Common.InsertChangeLog(Sessions.PlanId, 0, planProgram.PlanProgramId, planProgram.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", planProgram.CreatedBy.ToString());
             }
             else if (isPlanTactic)
             {
@@ -1880,7 +1880,7 @@ namespace RevenuePlanner.Controllers
                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                 if (isApproved)
-                    Common.InsertChangeLog(Sessions.PlanId, 0, planTactic.PlanTacticId, planTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    Common.InsertChangeLog(Sessions.PlanId, 0, planTactic.PlanTacticId, planTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", planTactic.CreatedBy.ToString());
             }
 
             //// Checking whether operation was successfully or not.
@@ -2372,7 +2372,7 @@ namespace RevenuePlanner.Controllers
                         {
                             Plan_Campaign pc = db.Plan_Campaign.Where(campgn => campgn.PlanCampaignId == id).FirstOrDefault();
                             Title = pc.Title;
-                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanCampaignId, pc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanCampaignId, pc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pc.CreatedBy.ToString());
                             if (returnValue >= 1)
                             {
                                 scope.Complete();
@@ -2455,7 +2455,7 @@ namespace RevenuePlanner.Controllers
                             Plan_Campaign_Program pc = db.Plan_Campaign_Program.Where(prgrm => prgrm.PlanProgramId == id).FirstOrDefault();
                             cid = pc.PlanCampaignId;
                             Title = pc.Title;
-                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pc.CreatedBy.ToString());
                             if (returnValue >= 1)
                             {
                                 Common.ChangeCampaignStatus(pc.PlanCampaignId, false);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
@@ -2540,7 +2540,7 @@ namespace RevenuePlanner.Controllers
                             cid = pcpt.Plan_Campaign_Program.PlanCampaignId;
                             pid = pcpt.PlanProgramId;
                             Title = pcpt.Title;
-                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.PlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.PlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pcpt.CreatedBy.ToString());
                             if (returnValue >= 1)
                             {
                                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
@@ -2690,7 +2690,7 @@ namespace RevenuePlanner.Controllers
                             pid = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
                             tid = pcptl.PlanTacticId;
                             Title = pcptl.Title;
-                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcptl.PlanLineItemId, pcptl.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcptl.PlanLineItemId, pcptl.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pcptl.CreatedBy.ToString());
                             if (returnValue >= 1)
                             {
                                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
@@ -3058,7 +3058,7 @@ namespace RevenuePlanner.Controllers
 
                     if (isApproved)
                     {
-                        returnValue = Common.InsertChangeLog(planImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, 0, planImprovementTactic.ImprovementPlanTacticId, planImprovementTactic.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                        returnValue = Common.InsertChangeLog(planImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, 0, planImprovementTactic.ImprovementPlanTacticId, planImprovementTactic.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", planImprovementTactic.CreatedBy.ToString());
                     }
 
                     if (returnValue > 0)
@@ -3171,7 +3171,7 @@ namespace RevenuePlanner.Controllers
                         db.Entry(pcpt).State = EntityState.Modified;
                         returnValue = db.SaveChanges();
                         Title = pcpt.Title;
-                        returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                        returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pcpt.CreatedBy.ToString());
                         if (returnValue >= 1)
                         {
                             scope.Complete();
@@ -3213,7 +3213,7 @@ namespace RevenuePlanner.Controllers
                         db.Entry(pcpt).State = EntityState.Modified;
                         returnValue = db.SaveChanges();
                         Title = pcpt.Title;
-                        returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                        returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pcpt.CreatedBy.ToString());
                         if (returnValue >= 1)
                         {
                             scope.Complete();
@@ -3725,7 +3725,7 @@ namespace RevenuePlanner.Controllers
                 var Title = picpt.Title;
                 int result = db.SaveChanges();
                 //// Insert change log entry.
-                result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", picpt.CreatedBy.ToString());
                 if (result >= 1)
                 {
                     TempData["SuccessMessageDeletedPlan"] = Common.objCached.ImprovementTacticStatusSuccessfully.Replace("{0}", Title + " " + "added");
@@ -4191,7 +4191,7 @@ namespace RevenuePlanner.Controllers
                                 pcpt.IsDeleted = true;
                                 db.Entry(pcpt).State = EntityState.Modified;
                                 returnValue = db.SaveChanges();
-                                returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                                returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pcpt.CreatedBy.ToString());
                             }
                         }
                         scope.Complete();
@@ -13850,7 +13850,7 @@ namespace RevenuePlanner.Controllers
                     db.Entry(plan).State = EntityState.Modified;
                     db.SaveChanges();
                     //Modified by Rahul Shah on 09/03/2016 for PL #1939
-                    int result = Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    int result = Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", plan.CreatedBy.ToString());
                     if (result > 0)
                     {
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
@@ -14251,7 +14251,7 @@ namespace RevenuePlanner.Controllers
                     pcpobj.ModifiedDate = DateTime.Now;
                     db.Entry(pcpobj).State = EntityState.Modified;
                     db.SaveChanges();
-                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcpobj.CreatedBy.ToString());
 
                     if (result > 0)
                     {
@@ -14271,7 +14271,7 @@ namespace RevenuePlanner.Controllers
                             if (oldProgramId > 0)
                             {
                                 var actionSuffix = oldProgramTitle + " to " + pcpobj.Plan_Campaign_Program.Title;
-                                Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix);
+                                Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix,pcpobj.CreatedBy.ToString());
                             }
                             Common.ChangeProgramStatus(pcpobj.PlanProgramId, false);
                             var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == pcpobj.PlanProgramId).Select(program => program.PlanCampaignId).Single();
@@ -14442,7 +14442,7 @@ namespace RevenuePlanner.Controllers
                     }
                     db.Entry(pcpobj).State = EntityState.Modified;
                     db.SaveChanges();
-                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcpobj.CreatedBy.ToString());
 
                     if (result > 0)
                     {
@@ -14501,7 +14501,7 @@ namespace RevenuePlanner.Controllers
                     }
                     db.Entry(pcobj).State = EntityState.Modified;
                     db.SaveChanges();
-                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcobj.CreatedBy.ToString());
 
                     if (result > 0)
                     {
@@ -14961,7 +14961,7 @@ namespace RevenuePlanner.Controllers
                         db.Entry(linkedLineItem).State = EntityState.Modified;
                     }
                     #endregion
-                    int result = Common.InsertChangeLog(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    int result = Common.InsertChangeLog(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", objLineitem.CreatedBy.ToString());
                     db.SaveChanges();
                     //Added by Rahul Shah on 17/03/2016 for PL #2068
                     if (result > 0)
@@ -15389,18 +15389,21 @@ namespace RevenuePlanner.Controllers
                         if (lstRecepientEmail.Count > 0)
                         {
                             string strURL = GetNotificationURLbyStatus(PlanID, ChangeID, section);
+                            var ComponentType = Enums.ChangeLog_ComponentType.tactic;
                             ////Added by Rahul Shah on 10/09/2015 fo PL Ticket #1521
                             if (Enums.Section.Program.ToString().ToLower() == section)
                             {
-
+                                ComponentType = Enums.ChangeLog_ComponentType.program;
                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Program.ToString().ToLower(), strURL);
                             }
-                            else if (Enums.Section.Campaign.ToString().ToLower() == section)
+                            else if (Enums.Section.Campaign.ToString().ToLower() == Campaign)
                             {
+                                ComponentType = Enums.ChangeLog_ComponentType.campaign;
                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);
                             }
                             else if (Enums.Section.Plan.ToString().ToLower() == section)
                             {
+                                ComponentType = Enums.ChangeLog_ComponentType.plan;
                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, PlanTitle, PlanTitle, PlanTitle, Enums.Section.Plan.ToString().ToLower(), strURL);
                             }
                             //Added by Rahul Shah on 17/03/2016 for PL #2068
@@ -15413,7 +15416,16 @@ namespace RevenuePlanner.Controllers
                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);
                             }
                             //Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL); ////Added by Rahul Shah on 03/09/2015 fo PL Ticket #1521
+                            //Changes made regarding #2484 save notifications by komal rawal on 16-08-2016
+                            if (Enums.Section.LineItem.ToString().ToLower() != section)
+                            {
+                                Common.InsertChangeLog(PlanID, null, ChangeID, Title, ComponentType,Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", NewOwnerID.ToString());
+                            }
+
                         }
+
+
+                       
                     }
                 }
             }

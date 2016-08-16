@@ -334,6 +334,9 @@
     <Compile Include="Models\User_Notification.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\User_Notification_Messages.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\User_Permission.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

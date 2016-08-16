@@ -100,7 +100,8 @@
     <div class="row">
         @Html.Partial("~/Views/User/_myprofile.cshtml")
         <div class="span10 content-colum-right  margin-left44">
-            @if (SMCount > 0)
+            @*Modified by komal rawal on 16-08-2016 regarding #2468 not to display system messages*@ 
+            @*@if (SMCount > 0)
             {
                 <div class="pref-msg-row">
                     <h4 class="pref-msg-header">System Messages</h4>
@@ -130,7 +131,7 @@
                     }
 
                 </div>
-            }
+            }*@
 
             @if (AMCount > 0)
             {

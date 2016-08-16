@@ -2281,10 +2281,14 @@ namespace RevenuePlanner.Controllers
                     individuals = individuals.OrderBy(a => a.FirstName).ToList();
                 }
                 ////
-
+                //Modified regarding #2484 save notifications by komal rawal on 16-08-2016
                 if (individuals.Count != 0)
                 {
-                    ViewBag.EmailIds = individuals.Select(member => member.Email).ToList<string>();
+                    ViewBag.EmailIds = individuals.Select(member => new
+                    {
+                        UserId = member.UserId.ToString(),
+                        Email = member.Email
+                    }).ToList();
                 }
             }
             catch (Exception e)
@@ -2313,9 +2317,19 @@ namespace RevenuePlanner.Controllers
         /// <param name="optionalMessage">Optional message.</param>
         /// <param name="htmlOfCurrentView">Html of current view.</param>
         /// <returns>Returns json result which indicates report is generated and sent sucessfully.</returns>
-        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView, string url = "")
+        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView, string url = "",string RecipientUserIds = "")
         {
+            //Modified regarding #2484 save notifications by komal rawal on 16-08-2016
             int result = 0;
+            var ChangeLogComponentType = Enums.ChangeLog_ComponentType.Summary;
+            if(reportType == Enums.ReportType.Revenue.ToString())
+            {
+                ChangeLogComponentType = Enums.ChangeLog_ComponentType.Revenue;
+            }
+            else if(reportType == Enums.ReportType.Waterfall.ToString())
+            {
+                ChangeLogComponentType = Enums.ChangeLog_ComponentType.Waterfall;
+            }
             try
             {
                 using (MRPEntities mrp = new MRPEntities())
@@ -2352,6 +2366,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
 
+                        Common.InsertChangeLog(null, null, null, null, ChangeLogComponentType, Enums.ChangeLog_TableName.Report, Enums.ChangeLog_Actions.shared, "", "", RecipientUserIds);
                         return Json(true, JsonRequestBehavior.AllowGet);
                     }
                 }
