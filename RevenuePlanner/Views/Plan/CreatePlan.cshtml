@@ -28,11 +28,12 @@
     var IsPlanChange = (bool)ViewBag.IsPlanChange;  //Added BY komal Rawal for #2072 to reload filters only if plan is changed in Plan defination
 }
 
+
 @section nlFormContent{
-<link rel="stylesheet" href="@Url.Content(" ~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
-<link rel="stylesheet" href="@Url.Content(" ~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
-<script type="text/javascript" src="@Url.Content(" ~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
-<script type="text/javascript" src="@Url.Content(" ~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
 }
 <style>
     .nl-ti-example {
@@ -45,35 +46,35 @@
 
 @section Sidebar
 {
-<div class="padding-content padding-bottom0 ">
-    <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
-    <div class="wraper-btns cf">
+    <div class="padding-content padding-bottom0 ">
+        <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
+        <div class="wraper-btns cf">
 
-        @if (strPlanId == "0")
-        {
-        <div>
-            <button id="btnCancel" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%">Cancel</button>
+            @if (strPlanId == "0")
+            {
+                <div>
+                    <button id="btnCancel" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%">Cancel</button>
+                </div>
+            }
+
+            else
+            {
+                <div>
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action(" Index", "Home" , new { activeMenu=RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId=strPlanId, isGridView=IsGridView, IsPlanSelector=IsPlanChange })');" style="min-width:90%">< Back to Plan</button>
+                </div>
+            }
+
         </div>
-        }
-
-        else
-        {
-        <div>
-            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action(" Index", "Home" , new { activeMenu=RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId=strPlanId, isGridView=IsGridView, IsPlanSelector=IsPlanChange })');" style="min-width:90%">< Back to Plan</button>
-        </div>
-        }
-
     </div>
-</div>
 
-<ul class="nav nav-list nav-gray-plan">
-    <li id="change-log" class="nav-header">
-        <span>Change Log</span>
-        <div class="changes">
-            <div class="change"><span class="action">None</span></div>
-        </div>
-    </li>
-</ul>
+    <ul class="nav nav-list nav-gray-plan">
+        <li id="change-log" class="nav-header">
+            <span>Change Log</span>
+            <div class="changes">
+                <div class="change"><span class="action">None</span></div>
+            </div>
+        </li>
+    </ul>
 }
 
 @* Added for #2312  *@
@@ -84,120 +85,120 @@
 @using (Html.BeginForm("SavePlanDefination", "Plan", FormMethod.Post, new { @name = "SavePlanForm", @class = "create-plan-form" }))
 {
 
-<table>
-    <tbody>
-        <tr>
-            <td>
-                <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment n1-form-main">
-                    <div class="bold font_size16 plan-defination">Plan definition</div>
-                    <div id="divPlanDefinationEnabled" class="plan-text">
-                        I'm using the
-                        @{
-                        if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable) && IsModelCreateEditAuthorized)
-                        {
-                        @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
-                        <span id="ModelTitle" class="source-sans-proregular"></span>
-                        }
-                        else
-                        {
-                        <span id="ModelTitle" class="source-sans-proregular">@Model.ModelTitle</span>
-                        }
-                        }
-                        model to create a plan called
-                        @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue", isedit = isPlanEdit })
-                        in
-                        @{
-                        if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
-                        {
-                        @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
-                        }
-                        else
-                        {
-                        <span id="spandef">@Model.Year</span>
-                        }
-                        }
-                        @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
-                        with a
-                        @{
-                        if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
-                        {
-                        @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType })
-                        }
-                        else
-                        {
-                        <span id="spandef">@Model.GoalType</span>
-                        }
-                        }
-                        goal of
-                        @*//Modified by Rahul Shah for PL #2499*@
-                        <span id="revenueSign">@Sessions.PlanCurrencySymbol</span>
-                        @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat", isedit = isPlanEdit })
-                        and a budget of
-                        @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>" + Sessions.PlanCurrencySymbol + "800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit })
-                        allocated by
-                        @{
-                        if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
-                        {
-                        @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue hide", placeholder = @Model.AllocatedBy })
-                        }
-                        else
-                        {
-                        <span id="spanAllocatedBy">@Model.AllocatedBy</span>
-                        }
-                        <span id="spanZeroBudget" class="source-sans-prosemibold" style="display: none;">none</span>  }.
-                        <div class="nl-overlay"></div>
-                    </div>
-                    <div id="divPlanDefinationDisabled">
-                        I'm using the
-                        <span id="disabledModelTitle" class="source-sans-proregular"></span>
-                        model to create a plan called
-                        <span id="disabledPlanTitle" class="source-sans-proregular"></span>in
-                        <span id="disabledPlanYear" class="source-sans-proregular"></span>
-                        with a
-                        <span id="disabledGoalType" class="source-sans-proregular"></span>
-                        goal of
-                        <span id="disabledGoalValue" class="source-sans-proregular letter-space"></span>
-                        and a budget of
-                        <span id="disabledBudgetValue" class="source-sans-proregular"></span>
-                        allocated by
-                        <span id="disabledAllocatedBy" class="source-sans-proregular"></span>.
-                    </div>
-                    <div id="divBudgetSummary">
-                        Based on my goal, this plan will require
-                        <span id="input1" class="source-sans-prosemibold"></span>
-                        <span id="msg1" class="source-sans-prosemibold"></span>
-                        <span id="conjuntionWord">and </span>
-                        <span id="input2" class="source-sans-prosemibold"></span>
-                        <span id="msg2" class="source-sans-prosemibold"></span>
-                        with an<span class="source-sans-prosemibold"> average deal size of</span>
-                        <span id="averageDealSize" class="source-sans-prosemibold">@Model.AverageDealSize</span>.
-                    </div>
-                    @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
-                    <!--To call js for forms animations-->
-                    <script type="text/javascript" src="@Url.Content(" ~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
-                    <script>
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment n1-form-main">
+                        <div class="bold font_size16 plan-defination">Plan definition</div>
+                        <div id="divPlanDefinationEnabled" class="plan-text">
+                            I'm using the
+                            @{
+                                if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable) && IsModelCreateEditAuthorized)
+                                {
+                                    @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
+                                    <span id="ModelTitle" class="source-sans-proregular"></span>
+                                }
+                                else
+                                {
+                                    <span id="ModelTitle" class="source-sans-proregular">@Model.ModelTitle</span>
+                                }
+                            }
+                            model to create a plan called
+                            @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue", isedit = isPlanEdit })
+                            in
+                            @{
+                                if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
+                                {
+                                    @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
+                                }
+                                else
+                                {
+                                    <span id="spandef">@Model.Year</span>
+                                }
+                            }
+                            @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+                            with a
+                            @{
+                                if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
+                                {
+                                    @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType })
+                                }
+                                else
+                                {
+                                    <span id="spandef">@Model.GoalType</span>
+                                }
+                            }
+                            goal of
+                            @*//Modified by Rahul Shah for PL #2499*@
+                            <span id="revenueSign">@Sessions.PlanCurrencySymbol</span>
+                            @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat", isedit = isPlanEdit })
+                            and a budget of
+                            @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>" + Sessions.PlanCurrencySymbol + "800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit })
+                            allocated by
+                            @{
+                                if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
+                                {
+                                    @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue hide", placeholder = @Model.AllocatedBy })
+                                }
+                                else
+                                {
+                                    <span id="spanAllocatedBy">@Model.AllocatedBy</span>
+                                }
+                                <span id="spanZeroBudget" class="source-sans-prosemibold" style="display: none;">none</span>  }.
+                            <div class="nl-overlay"></div>
+                        </div>
+                        <div id="divPlanDefinationDisabled">
+                            I'm using the
+                            <span id="disabledModelTitle" class="source-sans-proregular"></span>
+                            model to create a plan called
+                            <span id="disabledPlanTitle" class="source-sans-proregular"></span>in
+                            <span id="disabledPlanYear" class="source-sans-proregular"></span>
+                            with a
+                            <span id="disabledGoalType" class="source-sans-proregular"></span>
+                            goal of
+                            <span id="disabledGoalValue" class="source-sans-proregular letter-space"></span>
+                            and a budget of
+                            <span id="disabledBudgetValue" class="source-sans-proregular"></span>
+                            allocated by
+                            <span id="disabledAllocatedBy" class="source-sans-proregular"></span>.
+                        </div>
+                        <div id="divBudgetSummary">
+                            Based on my goal, this plan will require
+                            <span id="input1" class="source-sans-prosemibold"></span>
+                            <span id="msg1" class="source-sans-prosemibold"></span>
+                            <span id="conjuntionWord">and </span>
+                            <span id="input2" class="source-sans-prosemibold"></span>
+                            <span id="msg2" class="source-sans-prosemibold"></span>
+                            with an<span class="source-sans-prosemibold"> average deal size of</span>
+                            <span id="averageDealSize" class="source-sans-prosemibold">@Model.AverageDealSize</span>.
+                        </div>
+                        @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+                        <!--To call js for forms animations-->
+                        <script type="text/javascript" src="@Url.Content(" ~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+                        <script>
                             var nlform = new NLForm(document.getElementById('nl-form'));
-                    </script>
+                        </script>
 
-                </div>
-            </td>
+                    </div>
+                </td>
 
-            @Html.HiddenFor(model => model.ModelId)
-            @Html.HiddenFor(model => model.PlanId)
-            @Html.HiddenFor(model => model.TotalAllocatedCampaignBudget)
-        </tr>
-    </tbody>
-</table>
-<div>
-    @if (strPlanId == "0")
-    {
-    <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20 create-plan-btn" type="button" style="min-width: 20%; margin-left: 20px">Create Plan</button>
-    }
-    else
-    {
-    <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20 create-plan-btn" type="button" style="min-width: 20%; margin-left: 20px">Save</button>
-    }
-</div>
+                @Html.HiddenFor(model => model.ModelId)
+                @Html.HiddenFor(model => model.PlanId)
+                @Html.HiddenFor(model => model.TotalAllocatedCampaignBudget)
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        @if (strPlanId == "0")
+        {
+            <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20 create-plan-btn" type="button" style="min-width: 20%; margin-left: 20px">Create Plan</button>
+        }
+        else
+        {
+            <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20 create-plan-btn" type="button" style="min-width: 20%; margin-left: 20px">Save</button>
+        }
+    </div>
 
 
                                 }
@@ -588,11 +589,11 @@
             if ($('#ModelId').val() != '')
                 modelId = $('#ModelId').val();
 
-            if (goalType != '' && goalType.toLowerCase() == 'revenue'){
+            if (goalType != '' && goalType.toLowerCase() == 'revenue') {
                 goalValue = ConvertDatatoDollarCurrency(goalValue);
                 calculateBudget(modelId, goalType, goalValue);
             }
-            else{
+            else {
                 calculateBudget(modelId, goalType, goalValue);
             }
         }
