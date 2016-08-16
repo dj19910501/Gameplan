@@ -695,7 +695,9 @@ span.info-icon {
     .nav-gray li a.organization span.trophy {
         background-position: 0 0 !important;
     }
-
+.nav-gray li a.currency span {/* #2492 - Bhumika */
+    background-position: -266px 0 !important;
+}
 /*.nav-gray li a:hover { /* Edited for #2219 - Bhumika *//*Change color from #f8710e to #89CEDE by devanshi for #2312
     color: #89cede  !important; 
 }
@@ -15375,7 +15377,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     height: auto;
     padding-right: 0;
     padding-top: 4px;
-    width: 45%;
+    width: 55%;
     text-align: center;
 }
 .info-user  .username {
@@ -15453,7 +15455,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     top: 5px;
 }
 
-.header-right .dropdown-menu{padding:0; background: #f2f2f2 none repeat scroll 0 0;}
+.header-right .dropdown-menu{padding:0; background: #f2f2f2 none repeat scroll 0 0; right:0; left:auto}
 .header-right .dropdown-menu li{text-align:left; border-bottom:1px solid #ccc;font-size:13px}
 .header-right .dropdown-menu > li:last-child{ border-bottom:0 none;}
 .header-right .dropdown-menu > li > a{padding: 4px 10px;}
@@ -15475,7 +15477,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 165px;
+    width: 162px;
 }
 .dd-right{
     float: right;
@@ -16168,7 +16170,7 @@ input.selectInput{
     display: inline-block;
     float: left;
 }*/
-.container-button {width: 100%;}
+.container-button {width: 100%;display: inline-block;}
 #lblentity{ 
     display: inline-block;
     overflow: hidden;
@@ -16196,6 +16198,59 @@ input.selectInput{
     width: 30%;
     padding-right:15px;
 }
+
+/* Currency listing Style */
+#liConversionrate{ margin-bottom: 12px;}
+
+#liConversionrate a {
+    color: #f8710e;
+}
+#liConversionrate a:hover {
+    border-bottom:1px solid #f8710e;
+}
+.currency-wrap ul {
+    list-style: outside none none;
+    width: 97%;
+    margin-left: 0;
+}
+.currency-wrap ul > li {padding:2px 2px 4px;}
+.currency-wrap ul li > a {color: inherit;}
+.searchactive{background: #ddd none repeat scroll 0 0;}
+.searchinactive {
+        background: none;
+    }
+.row-fluid .currency-content .span5 { width: 48%;}
+#divCurrencyList{margin-right:15px}
+.currency-wrap{
+    border:1px solid #ccc; 
+    padding: 10px;   
+    height: 250px;
+    max-height: 285px;
+    overflow: auto;
+    margin-bottom: 15px;
+}
+.btn-blue.btn-search {
+    border-radius: 0 5px 5px 0; 
+    color: #f4f5ed; 
+    float:left;
+    line-height: 30px;
+    margin-bottom: 0;
+    box-shadow:none;
+    height:auto !important;
+    padding: 0 15px;
+}
+input.serach-input {
+    border-radius: 5px 0 0 5px;
+    width: 85%;
+}
+.btn.btn-add-remove {
+    height: 35px;
+    float:right;
+    box-shadow: 0 2px 1px rgba(0, 0, 0, 0.25);
+    font-size: 13px;
+    /*color: #908d88;*/
+}
+.currency-content h4{font-weight:normal}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

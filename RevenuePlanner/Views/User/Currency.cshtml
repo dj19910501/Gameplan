@@ -36,74 +36,84 @@
 <div class="title-header source-sans-proregular margin-bottom25">
     <h2>Currency</h2>
 </div>
-<li id="liConversionrate" class="item">
-    <a class="source-sans-probold integrations" href="#" id="aConversionrate"><span></span>ConversionRate</a>
-</li>
-<div class="padding-content cf source-sans-proregular" id="content">
+@*<div id="liConversionrate" class="clearfix">
+    <a class="source-sans-probold integrations" href="#" id="aConversionrate"><i class="fa fa-exchange" aria-hidden="true"></i> ConversionRate</a>
+</div>*@
+<div class="padding-content cf source-sans-proregular">
     <div class="row">
 
-        <div class="span10 content-user-checkbox">
-            <div class="cf inputs-aligned-horizontal" style="border:1px solid black">
-                <div class="wraper-checkbox" id="divCurrencyList" style="border:1px solid gray;">
-                    <h4 class="align-top">Available Currencies</h4>
-                    <input width="150px" type="text" id="txtSearch" onkeypress="return EnterEvent(event)" />
-                    <div>
-                        <input type="submit" value="Search" title="Search" id="btnSearch" onclick="LoadSearchedFilter(false);" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" />
-                        @*<input type="submit" value="Clear" title="save" id="btnClear" onclick="LoadSearchedFilter(this.id,this.value,true);" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" />*@
-                    </div>
-                    <ul id="ulCurrency" class="searchmenu">
-                        @foreach (var item in Model)
-                        {
-                            if (item.ClientId != clientId)
-                            {
-                                <li id="licurrency_@item.ISOCurrencyCode">
-                                    <a href="#">
-                                        <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
-                                    </a>
-                                </li>
-                            }
-                        }
-                    </ul>
-                    <div class="container-button">
-                        <input type="submit" value="Add To My List" title="save" id="btnAddtoMyList" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 100px;" />
-                    </div>
-                </div>
-                <div class="wraper-checkbox" id="divMyList" style="border:1px solid gray;width:auto">
-                    <h4 class="align-top">My List</h4>
-                    <ul id="ulMyCurrency" class="searchmenu">
-                        @foreach (var item in Model)
-                        {
-                            if (item.ClientId == clientId)
-                            {
-                                <li id="limycurrency_@item.ISOCurrencyCode" isdefault='@item.IsDefault'>
-                                    <a href="#">
-                                        <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
-                                    </a>
-                                </li>
-
-                                if (@item.IsDefault == true)
-                                {
-                                    <script>
-                                        $('#limycurrency_'+'@item.ISOCurrencyCode').attr('isdefault', '1');
-                                    </script>
-                                }
-                                else
-                                {
-                                    <script>
-                                        $('#limycurrency_'+'@item.ISOCurrencyCode').attr('isdefault', '0');
-                                    </script>
-                                }
-                            }
-                        }
-                    </ul>
-                    <div class="container-button">
-                        <input type="submit" value="Remove" title="remove" id="btnRemove" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
-                    </div>
-                </div>
-                <div class="container-button">
-                    <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
-                </div>
+        <div class="span10 currency-content clearfix">
+            <div id="liConversionrate" class="clearfix">
+                <a class="source-sans-probold integrations" href="#" id="aConversionrate"><i class="fa fa-exchange" aria-hidden="true"></i> ConversionRate</a>
             </div>
+                <div class="span6" id="divCurrencyList">
+                    <h4 class="align-top">Available Currencies</h4>
+                    <div class="currency-wrap span-12">
+                        <div class="clearfix">
+                            <input type="text" id="txtSearch" onkeypress="return EnterEvent(event)" class="serach-input pull-left" />
+                            <input type="submit" value="Search" title="Search" id="btnSearch" onclick="LoadSearchedFilter(false);" class="btn-blue btn-search" />
+                            @*<input type="submit" value="Clear" title="save" id="btnClear" onclick="LoadSearchedFilter(this.id,this.value,true);" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" />*@
+                        </div>
+                    
+                        <ul id="ulCurrency" class="searchmenu">
+                            @foreach (var item in Model)
+                            {
+                                if (item.ClientId != clientId)
+                                {
+                                    <li id="licurrency_@item.ISOCurrencyCode">
+                                        <a href="#">
+                                            <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                        
+                    </div>
+                    <div class="container-button clearfix">
+                        <input type="submit" value="Add To My List" title="save" id="btnAddtoMyList" class="btn btn-fill-white btn-add-remove" />
+                    </div>
+                </div>
+                <div class="span5" id="divMyList">
+                    <h4 class="align-top">My List</h4>
+                    <div class="currency-wrap span-12">
+                        <ul id="ulMyCurrency" class="searchmenu">
+                            @foreach (var item in Model)
+                            {
+                                if (item.ClientId == clientId)
+                                {
+                                    <li id="limycurrency_@item.ISOCurrencyCode" isdefault='@item.IsDefault'>
+                                        <a href="#">
+                                            <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
+                                        </a>
+                                    </li>
+
+                                    if (@item.IsDefault == true)
+                                    {
+                                        <script>
+                                            $('#limycurrency_' + '@item.ISOCurrencyCode').attr('isdefault', '1');
+                                        </script>
+                                    }
+                                    else
+                                    {
+                                        <script>
+                                            $('#limycurrency_' + '@item.ISOCurrencyCode').attr('isdefault', '0');
+                                        </script>
+                                    }
+                                }
+                            }
+                        </ul>
+                       
+                    </div>
+                    <div class="container-button clearfix">
+                        <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20"/>
+                        <input type="submit" value="Remove" title="remove" id="btnRemove" class="btn btn-fill-white btn-add-remove" />
+                    </div>
+                    </div>
+                @*<div class="container-button clear">
+                    <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
+                </div>*@
+            
 
             <div class="cf inputs-aligned-horizontal">
 
@@ -111,15 +121,7 @@
         </div>
     </div>
 </div>
-<style>
-    .searchactive {
-        background-color: antiquewhite !important;
-    }
 
-    .searchinactive {
-        background-color: none;
-    }
-</style>
 <script>
     //insertation start 09/08/2016 kausha #2492.
     $('#aConversionrate').click(function () {
