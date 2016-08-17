@@ -726,6 +726,9 @@
     <None Include="Service References\BDSService\BDSService43.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Service References\BDSService\BDSService5.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />
     <None Include="Service References\BDSService\Reference.svcmap">

@@ -39,7 +39,7 @@ namespace RevenuePlanner.Services
                 if (objUserCurrency.UserCurrency != null)
                 {
                     var Currency = objUserCurrency.UserCurrency;
-                    // Get Planning Exchange rate
+                    // Get Planning Exchange rate // With Current Start Date and end date
                     RevenuePlanner.Models.CurrencyModel.PlanCurrency UserPlanCurrency = Currency.CurrencyExchangeRate
                         .Where(curr => curr.CurrencyCode == Currency.UserPreferredCurrencyCode
                                 && curr.Component == Enums.CurrencyComponent.Plan.ToString().ToLower()
@@ -77,13 +77,17 @@ namespace RevenuePlanner.Services
                     {
                         objCache.AddCache(Enums.CacheObject.ListUserReportCurrency.ToString(), UserReportCurrency);
                     }
+                    Sessions.PlanCurrencySymbol = Currency.UserPreferredCurrencySymbol;
                 }
 
                 var CacheExchangeRate = (RevenuePlanner.Models.CurrencyModel.PlanCurrency)objCache.Returncache(Enums.CacheObject.UserPlanCurrency.ToString());
                 if (CacheExchangeRate != null)
                 {
                     Sessions.PlanExchangeRate = CacheExchangeRate.ExchangeRate;
-                    Sessions.PlanCurrencySymbol = CacheExchangeRate.CurrencySymbol;
+                }
+                else
+                {
+                    Sessions.PlanExchangeRate = 1;
                 }
 
             }

@@ -29,6 +29,7 @@
     <MetadataFile FileName="BDSService1.disco" MetadataType="Disco" ID="0f644de0-3568-4159-b666-65a5dbd33dfe" SourceId="1" SourceUrl="http://stage-new:8085/BDSServiceDev/BDSService.svc?disco" />
     <MetadataFile FileName="BDSService41.xsd" MetadataType="Schema" ID="73280e3d-ae33-46fd-b294-644a610bc048" SourceId="1" SourceUrl="http://stage-new:8085/BDSServiceDev/BDSService.svc?xsd=xsd0" />
     <MetadataFile FileName="BDSService42.xsd" MetadataType="Schema" ID="a1cd78e3-4696-4c4b-8362-c98a9783e3ed" SourceId="1" SourceUrl="http://stage-new:8085/BDSServiceDev/BDSService.svc?xsd=xsd1" />
+    <MetadataFile FileName="BDSService5.xsd" MetadataType="Schema" ID="cc6d0860-fdcd-4c60-85bd-8750276de50d" SourceId="1" SourceUrl="http://stage-new:8085/BDSServiceDev/BDSService.svc?xsd=xsd4" />
     <MetadataFile FileName="BDSService43.xsd" MetadataType="Schema" ID="d5024040-08b3-4d79-9e02-d01c67f8fec1" SourceId="1" SourceUrl="http://stage-new:8085/BDSServiceDev/BDSService.svc?xsd=xsd3" />
   </Metadata>
   <Extensions>

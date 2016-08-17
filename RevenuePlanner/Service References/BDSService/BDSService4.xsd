@@ -24,6 +24,7 @@
       <xs:element minOccurs="0" name="NewManagerId" nillable="true" type="ser:guid" />
       <xs:element minOccurs="0" name="Password" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Phone" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PreferredCurrencyCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ProfilePhoto" nillable="true" type="xs:base64Binary" />
       <xs:element minOccurs="0" name="RoleCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="RoleId" type="ser:guid" />
@@ -290,6 +291,7 @@
     <xs:sequence>
       <xs:element minOccurs="0" name="CurrencyExchangeRate" nillable="true" type="tns:ArrayOfCurrency.CurrencyExchangeRate" />
       <xs:element minOccurs="0" name="UserPreferredCurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UserPreferredCurrencySymbol" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Currency.UserCurrencyRate" nillable="true" type="tns:Currency.UserCurrencyRate" />
