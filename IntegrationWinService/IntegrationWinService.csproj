@@ -98,6 +98,7 @@
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Service References\BDSService\BDSService1.wsdl" />
     <None Include="Service References\BDSService\BDSService1.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -107,7 +108,37 @@
     <None Include="Service References\BDSService\BDSService3.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Service References\BDSService\BDSService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService6.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService7.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService8.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.AppConfiguration.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.ApplicationActivity.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Service References\BDSService\IntegrationWinService.BDSService.Client.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.ClientDatabase.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Currency.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.CustomRestriction.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\BDSService\IntegrationWinService.BDSService.Menu.datasource">
@@ -145,6 +176,12 @@
     <None Include="Service References\BDSService\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.UserApplicationPermission.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.UserHierarchy.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Service References\BDSService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
@@ -161,6 +198,7 @@
     <Content Include="DLL\Newtonsoft.Json.dll" />
     <Content Include="DLL\RestSharp.dll" />
     <Content Include="DLL\SalesforceSharp.dll" />
+    <None Include="Service References\BDSService\BDSService1.disco" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">

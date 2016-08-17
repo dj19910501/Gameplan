@@ -119,58 +119,39 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="Service References\BDSService\BDSService.wsdl" />
-    <None Include="Service References\BDSService\BDSService.xsd">
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.AppConfiguration.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.ApplicationActivity.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.Client.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.ClientDatabase.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.Currency.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.CustomRestriction.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.Menu.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.PasswordResetRequest.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.Permission.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.Role.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.SecurityQuestion.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.User.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.UserApplicationPermission.datasource" />
+    <None Include="Properties\DataSources\RevenuePlanner.BDSService.UserHierarchy.datasource" />
+    <None Include="Service References\BDSService\BDSService1.wsdl" />
+    <None Include="Service References\BDSService\BDSService4.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService1.xsd">
+    <None Include="Service References\BDSService\BDSService41.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService2.xsd">
+    <None Include="Service References\BDSService\BDSService42.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService3.xsd">
+    <None Include="Service References\BDSService\BDSService43.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.ApplicationActivity.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.Client.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.CustomRestriction.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.Menu.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.PasswordResetRequest.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.Permission.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.Role.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.SecurityQuestion.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.User.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.UserApplicationPermission.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\RevenuePlanner.Test.BDSService.UserHierarchy.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
+    <None Include="Service References\BDSService\BDSService44.xsd">
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\BDSService\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\BDSService\BDSService.disco" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\BDSService\configuration91.svcinfo" />
@@ -191,6 +172,7 @@
     <Content Include="DLL\EntityFramework.dll" />
     <Content Include="DLL\HelperSharp.dll" />
     <Content Include="DLL\RestSharp.dll" />
+    <None Include="Service References\BDSService\BDSService1.disco" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">

@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://115.254.85.195:8085/BDSServiceDev/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="http://localhost/BDSService/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
   <xs:complexType name="User">
     <xs:sequence>
       <xs:element minOccurs="0" name="Answer" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="BusinessUnitId" type="ser:guid" />
+      <xs:element minOccurs="0" name="CID" type="xs:int" />
       <xs:element minOccurs="0" name="Client" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ClientId" type="ser:guid" />
       <xs:element minOccurs="0" name="DisplayName" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="GeographyId" type="ser:guid" />
+      <xs:element minOccurs="0" name="ID" type="xs:int" />
       <xs:element minOccurs="0" name="IsClientAdmin" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDirector" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsLocked" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsManager" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsPlanner" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsSystemAdmin" type="xs:boolean" />
@@ -25,16 +26,50 @@
       <xs:element minOccurs="0" name="NewManagerId" nillable="true" type="ser:guid" />
       <xs:element minOccurs="0" name="Password" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Phone" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PreferredCurrencyCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ProfilePhoto" nillable="true" type="xs:base64Binary" />
       <xs:element minOccurs="0" name="RoleCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="RoleId" type="ser:guid" />
       <xs:element minOccurs="0" name="RoleTitle" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="SecurityQuestion" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="SecurityQuestionId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" name="UserApplicationId" nillable="true" type="tns:ArrayOfUser.ApplicationDetail" />
       <xs:element minOccurs="0" name="UserId" type="ser:guid" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="User" nillable="true" type="tns:User" />
+  <xs:complexType name="ArrayOfUser.ApplicationDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="User.ApplicationDetail" nillable="true" type="tns:User.ApplicationDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUser.ApplicationDetail" nillable="true" type="tns:ArrayOfUser.ApplicationDetail" />
+  <xs:complexType name="User.ApplicationDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ApplicationId" type="ser:guid" />
+      <xs:element minOccurs="0" name="ApplicationTitle" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ConnectionString" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="EncryptedConnectionString" nillable="true" type="xs:base64Binary" />
+      <xs:element minOccurs="0" name="RoleIdApplicationWise" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="User.ApplicationDetail" nillable="true" type="tns:User.ApplicationDetail" />
+  <xs:complexType name="ArrayOfAppConfiguration">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AppConfiguration" nillable="true" type="tns:AppConfiguration" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAppConfiguration" nillable="true" type="tns:ArrayOfAppConfiguration" />
+  <xs:complexType name="AppConfiguration">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ApplicationId" nillable="true" type="ser:guid" />
+      <xs:element minOccurs="0" name="ClientId" nillable="true" type="ser:guid" />
+      <xs:element minOccurs="0" name="Config_Key" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Config_Value" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PasswordModifiedDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="AppConfiguration" nillable="true" type="tns:AppConfiguration" />
   <xs:complexType name="ArrayOfUser">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="unbounded" name="User" nillable="true" type="tns:User" />
@@ -57,6 +92,7 @@
       <xs:element minOccurs="0" name="Country" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="CreatedBy" nillable="true" type="ser:guid" />
       <xs:element minOccurs="0" name="CreatedDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="ID" type="xs:int" />
       <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
       <xs:element minOccurs="0" name="Logo" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ModifiedBy" nillable="true" type="ser:guid" />
@@ -78,6 +114,7 @@
       <xs:element minOccurs="0" name="ActionName" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ControllerName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CustomCss" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="IsDisplayInMenu" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsEnable" type="xs:boolean" />
@@ -207,7 +244,6 @@
       <xs:element minOccurs="0" name="ColorCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="GeographyId" type="ser:guid" />
       <xs:element minOccurs="0" name="JobTitle" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ManagerId" nillable="true" type="ser:guid" />
@@ -218,4 +254,70 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="UserHierarchy" nillable="true" type="tns:UserHierarchy" />
+  <xs:complexType name="ArrayOfClientDatabase">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ClientDatabase" nillable="true" type="tns:ClientDatabase" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfClientDatabase" nillable="true" type="tns:ArrayOfClientDatabase" />
+  <xs:complexType name="ClientDatabase">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ClientDatabaseID" type="xs:int" />
+      <xs:element minOccurs="0" name="ClientID" type="ser:guid" />
+      <xs:element minOccurs="0" name="ConnectionString" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DatabaseName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="EncryptedConnectionString" nillable="true" type="xs:base64Binary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ClientDatabase" nillable="true" type="tns:ClientDatabase" />
+  <xs:complexType name="ArrayOfCurrency">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Currency" nillable="true" type="tns:Currency" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCurrency" nillable="true" type="tns:ArrayOfCurrency" />
+  <xs:complexType name="Currency">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ClientId" type="ser:guid" />
+      <xs:element minOccurs="0" name="CreatedBy" type="ser:guid" />
+      <xs:element minOccurs="0" name="CreatedDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="CurrencyDetail" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CurrencySymbol" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ISOCurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsDefault" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
+      <xs:element minOccurs="0" name="UserCurrency" nillable="true" type="tns:Currency.UserCurrencyRate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Currency" nillable="true" type="tns:Currency" />
+  <xs:complexType name="Currency.UserCurrencyRate">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CurrencyExchangeRate" nillable="true" type="tns:ArrayOfCurrency.CurrencyExchangeRate" />
+      <xs:element minOccurs="0" name="UserPreferredCurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UserPreferredCurrencySymbol" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Currency.UserCurrencyRate" nillable="true" type="tns:Currency.UserCurrencyRate" />
+  <xs:complexType name="ArrayOfCurrency.CurrencyExchangeRate">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Currency.CurrencyExchangeRate" nillable="true" type="tns:Currency.CurrencyExchangeRate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCurrency.CurrencyExchangeRate" nillable="true" type="tns:ArrayOfCurrency.CurrencyExchangeRate" />
+  <xs:complexType name="Currency.CurrencyExchangeRate">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ClientId" type="ser:guid" />
+      <xs:element minOccurs="0" name="Component" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CreatedBy" type="ser:guid" />
+      <xs:element minOccurs="0" name="CreatedDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="CurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CurrencySymbol" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="EndDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="ExchangeRate" type="xs:double" />
+      <xs:element minOccurs="0" name="LastModifiedBy" nillable="true" type="ser:guid" />
+      <xs:element minOccurs="0" name="LastModifiedDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="StartDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Currency.CurrencyExchangeRate" nillable="true" type="tns:Currency.CurrencyExchangeRate" />
 </xs:schema>
