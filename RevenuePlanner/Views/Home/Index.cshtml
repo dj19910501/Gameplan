@@ -8,7 +8,7 @@
     int showInspectForPlanCampaignId = ViewBag.ShowInspectForPlanCampaignId; // variable added to show campagin popup from email url link click when email sent to user when comapign shared
     int showInspectForPlanProgramId = ViewBag.ShowInspectForPlanProgramId; // variable added to show program popup from email url link click when email sent to user when program shared
     int ShowInspectForPlanLineItemId = ViewBag.ShowInspectForPlanLineItemId; // variable added to show Plan LineItem popup from Finance page when user click on View button of LineItem Grid
-                                                                             //// Modified By Maninder Singh Wadhva PL Ticket#47
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
     bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
     string FilterName = Sessions.FilterPresetName;
@@ -45,7 +45,6 @@
     //#2327 boost section loads based on permission - zz
     bool isBoostAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
 }
-
 @Html.Hidden("IsViewOnly")
 @Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
@@ -68,7 +67,7 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/ganttExportapi.js")"></script>*@
 <style type="text/css">
     .pull-right > span {
-        /*margin-right: -15px !important;*//* Commented because it creates global rule for all span and badley affect allover application. Use class hirarchy for this style */
+        /*margin-right: -15px !important;*/ /* Commented because it creates global rule for all span and badley affect allover application. Use class hirarchy for this style */
     }
 
     .dhx_chart {
@@ -429,7 +428,7 @@
                         return false;
                     }
                     CloseClick = false;
-                    
+
                     var entityType = $(this).attr('id').toUpperCase().toString();
                     var task_id = $(this).attr('name1');
                     //gantt.open(task_id);
@@ -577,7 +576,7 @@
                                 var IsAssetTactic = $(this).attr('roitactictype');
                                 var AssetTacId = $(this).attr('anchortacticid');
                                 var EntityId = $(this).attr('taskid');
-                                if (IsPackageView && PackageAnchorId == EntityId && IsAssetTactic == '@Enums.AssetType.Asset' && AssetTacId == EntityId) 
+                                if (IsPackageView && PackageAnchorId == EntityId && IsAssetTactic == '@Enums.AssetType.Asset' && AssetTacId == EntityId)
                                 {
                                     ShowMessage(true, "@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage", 3000);
                                     $('html,body').scrollTop(0);
@@ -1117,231 +1116,435 @@
                             </button>
                         }
                         @*Modified by Komal Rawal for 2013 Home/Plan Layout changes*@
-                        @*<button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="CallBudget()" style="min-width:90%">
-                            Edit Plan Budget & Cost
+                            @*<button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="CallBudget()" style="min-width:90%">
+                                Edit Plan Budget & Cost
+                                </button>
+                                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%" id="btnPlanReport" onclick='CallPDF()'>
+                                Export to .pdf
+                                </button>*@
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            @*<input value="Export to PDF" type="button" onclick='CallPDF()'>*@
+            <div id="testdiv" style="display:none;">
+                <div style="display:block;width:100%;margin:0 auto;">
+                    <div style="width: 100%; background-color: rgb(36, 133, 186); color: rgb(255, 255, 255); font-size: 16px;">
+                        <div style="padding: 20px 14px; height: 23px;">
+                            <div style="float: left;  margin-top: -5px;font-size:19px">
+                                Hive9™
+                            </div>
+                            <div style="float: right; height: 31px;margin-top: -4px;">
+                                @*  <img src="@Url.Content("~/Content/images/game-plan-logo.png")" style="height: 100%; width: auto;">*@
+                                <img id="imglogopdf" src="" style="height: 100%; width: auto;">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background-color:#fff;padding: 20px 14px;" id="filterdiv">
+                        <h2 style="color: #040707; margin: 0 0 7px;">Marketing Calendar</h2>
+                    </div>
+                    <div id="mainpdfdiv" style="padding:4px;margin-left: 8px;">
+                        @*<div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;background:url('@Url.Content(" ~ />Content/images/bullhorn-bg.png")') no-repeat bottom right;display: inline-block;height:100px;vertical-align:top;    border-radius: 4px;">*@
+                        <div id="mqlmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;    border-radius: 5px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="mqllabeltest">
+                                Projected MQLs
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 30px; color: rgb(123, 122, 124);" id="mqlspanvalue">270</span>
+                            </p>
+                            <p style="font-size: 13px; margin: -15px 0px 0px; font-weight: 600;word-break: break-all;" id="mqlspanpercentage">+8.0%</p>
+                            <p></p>
+                        </div>
+                        <div id="budgetmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px; ">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="budgetlabeltest">
+                                Budget
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 30px; color: rgb(123, 122, 124);" id="budgetspanvalue">$800,000</span>
+                            </p>
+                            <p></p>
+                        </div>
+                        <div style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                                Tactics
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 30px; color: rgb(123, 122, 124);" id="ptacticcounttest">36</span>
+                            </p>
+
+                            <p></p>
+                        </div>
+                        <div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                                Activity Distribution
+                            </span>
+                            @*<p style="margin: 13px 4px 0;word-break: break-all;word-break:break-all">
+                                </p>*@
+                            <div id="chartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;display:none;">
+                                <div id="JAN" style="margin-left:3px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">J</div>
+                                <div id="APR" style="margin-left: 35px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">A</div>
+                                <div id="JUL" style="margin-left: 69px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">J</div>
+                                <div id="OCT" style="margin-left: 101px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">O</div>
+                                <div id="DEC" style="margin-left: 123px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">D</div>
+                                <div id="border" style="border: 1px solid; width: 100%; float: left; margin-top: 63px;margin-left:-5px;"></div>
+                            </div>
+                            <div id="AttachChartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;">
+                            </div>
+                            <div id="chartCanvasmultiyear" style="width: 270px; height: 85px; position: absolute; margin-left: 66px; margin-top: -10px; display: none;">
+                                <div id="Q1" style="margin-left: 3px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q1</div>
+                                <div id="Q2" style="margin-left: 17px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q2</div>
+                                <div id="Q3" style="margin-left: 32px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q3</div>
+                                <div id="Q4" style="margin-left: 47px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q4</div>
+                                <div id="Q5" style="margin-left: 64px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q1</div>
+                                <div id="Q6" style="margin-left: 79px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q2</div>
+                                <div id="Q7" style="margin-left: 94px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q3</div>
+                                <div id="Q8" style="margin-left: 109px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q4</div>
+                                <div id="bordermultiyear" style="border: 1px solid; width: 100%; float: left; margin-top: 63px; margin-left: -5px;"></div>
+                            </div>
+                            <div id="AttachChartCanvasmultiyear" style="width: 135px; height: 85px; position: absolute; margin-left: 155px; margin-top: -10px;">
+                            </div>
+
+                            <div id="legendchart" style="display: block; position: absolute; margin-top: -228px;margin-left: 495px;">
+                                <div style="position: absolute; right: 42px; font-size: 10px; top:231px">
+                                    <span id="firstyear"></span><div style="display: inline-block; margin-left: -2px;margin-top:4px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #C633C9; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
+                                </div>
+                                <div style="position: absolute; right: 42px; font-size: 10px; top: 260px;">
+                                    <span id="secondyear"></span><div style="display: inline-block; margin-left: -2px;margin-top:6px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #407B22; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
+                                </div>
+                            </div>
+                        </div>
+                        @*<div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                                Tactic Distribution
+                            </span>
+                                    <p style="  margin: 13px 4px 0;word-break: break-all;;word-break:break-all">
+                                        <img style="width:100%" src="images/graph-chart-small.jpg">
+                                    </p>
+
+                                    <p></p>
+                                </div>*@
+                    </div>
+                    <br />
+                </div>
+            </div>
+            <!-- Sidebar Block Starts -->
+            <div id="Filtersidebar" class="span2 sidebar">
+                @*Commented By Maitri Gandhi on 23/2/2016 For #2014*@
+                @*<div class="WelcomeMessageBorder"></div>
+                    <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
+                        <div class="wraper-btns cf">
+                            <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdateResult" onclick="UpdateResult()">
+                                Update Results
                             </button>
-                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%" id="btnPlanReport" onclick='CallPDF()'>
-                            Export to .pdf
-                            </button>*@
+                        </div>
+                    </div>*@
+                <!--success message-->
+                <div class="error-msg-filter">
+                    <div id="successMessageSidebar" class="alert hide alert-success">
+                        <a class="close">×</a>
+                        <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
                     </div>
-                </div>
-            </div>
+                    <!--error message-->
 
-        </div>
-        @*<input value="Export to PDF" type="button" onclick='CallPDF()'>*@
-        <div id="testdiv" style="display:none;">
-            <div style="display:block;width:100%;margin:0 auto;">
-                <div style="width: 100%; background-color: rgb(36, 133, 186); color: rgb(255, 255, 255); font-size: 16px;">
-                    <div style="padding: 20px 14px; height: 23px;">
-                        <div style="float: left;  margin-top: -5px;font-size:19px">
-                            Hive9™
-                        </div>
-                        <div style="float: right; height: 31px;margin-top: -4px;">
-                            @*  <img src="@Url.Content("~/Content/images/game-plan-logo.png")" style="height: 100%; width: auto;">*@
-                            <img id="imglogopdf" src="" style="height: 100%; width: auto;">
-                        </div>
-                    </div>
-                </div>
-                <div style="background-color:#fff;padding: 20px 14px;" id="filterdiv">
-                    <h2 style="color: #040707; margin: 0 0 7px;">Marketing Calendar</h2>
-                </div>
-                <div id="mainpdfdiv" style="padding:4px;margin-left: 8px;">
-                    @*<div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;background:url('@Url.Content(" ~ />Content/images/bullhorn-bg.png")') no-repeat bottom right;display: inline-block;height:100px;vertical-align:top;    border-radius: 4px;">*@
-                    <div id="mqlmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;    border-radius: 5px;">
-                        <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="mqllabeltest">
-                            Projected MQLs
-                        </span>
-                        <p style="margin-top:20px;word-break:break-all">
-                            <span style="font-size: 30px; color: rgb(123, 122, 124);" id="mqlspanvalue">270</span>
-                        </p>
-                        <p style="font-size: 13px; margin: -15px 0px 0px; font-weight: 600;word-break: break-all;" id="mqlspanpercentage">+8.0%</p>
-                        <p></p>
-                    </div>
-                    <div id="budgetmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px; ">
-                        <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="budgetlabeltest">
-                            Budget
-                        </span>
-                        <p style="margin-top:20px;word-break:break-all">
-                            <span style="font-size: 30px; color: rgb(123, 122, 124);" id="budgetspanvalue">$800,000</span>
-                        </p>
-                        <p></p>
-                    </div>
-                    <div style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px;">
-                        <span style="color:#918E89;font-size:15px;  font-weight: 600;">
-                            Tactics
-                        </span>
-                        <p style="margin-top:20px;word-break:break-all">
-                            <span style="font-size: 30px; color: rgb(123, 122, 124);" id="ptacticcounttest">36</span>
-                        </p>
-
-                        <p></p>
-                    </div>
-                    <div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
-                        <span style="color:#918E89;font-size:15px;  font-weight: 600;">
-                            Activity Distribution
-                        </span>
-                        @*<p style="margin: 13px 4px 0;word-break: break-all;word-break:break-all">
-                            </p>*@
-                        <div id="chartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;display:none;">
-                            <div id="JAN" style="margin-left:3px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">J</div>
-                            <div id="APR" style="margin-left: 35px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">A</div>
-                            <div id="JUL" style="margin-left: 69px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">J</div>
-                            <div id="OCT" style="margin-left: 101px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">O</div>
-                            <div id="DEC" style="margin-left: 123px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">D</div>
-                            <div id="border" style="border: 1px solid; width: 100%; float: left; margin-top: 63px;margin-left:-5px;"></div>
-                        </div>
-                        <div id="AttachChartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;">
-                        </div>
-                        <div id="chartCanvasmultiyear" style="width: 270px; height: 85px; position: absolute; margin-left: 66px; margin-top: -10px; display: none;">
-                            <div id="Q1" style="margin-left: 3px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q1</div>
-                            <div id="Q2" style="margin-left: 17px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q2</div>
-                            <div id="Q3" style="margin-left: 32px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q3</div>
-                            <div id="Q4" style="margin-left: 47px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q4</div>
-                            <div id="Q5" style="margin-left: 64px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q1</div>
-                            <div id="Q6" style="margin-left: 79px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q2</div>
-                            <div id="Q7" style="margin-left: 94px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q3</div>
-                            <div id="Q8" style="margin-left: 109px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q4</div>
-                            <div id="bordermultiyear" style="border: 1px solid; width: 100%; float: left; margin-top: 63px; margin-left: -5px;"></div>
-                        </div>
-                        <div id="AttachChartCanvasmultiyear" style="width: 135px; height: 85px; position: absolute; margin-left: 155px; margin-top: -10px;">
-                        </div>
-
-                        <div id="legendchart" style="display: block; position: absolute; margin-top: -228px;margin-left: 495px;">
-                            <div style="position: absolute; right: 42px; font-size: 10px; top:231px">
-                                <span id="firstyear"></span><div style="display: inline-block; margin-left: -2px;margin-top:4px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #C633C9; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
-                            </div>
-                            <div style="position: absolute; right: 42px; font-size: 10px; top: 260px;">
-                                <span id="secondyear"></span><div style="display: inline-block; margin-left: -2px;margin-top:6px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #407B22; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
-                            </div>
-                        </div>
-                    </div>
-                    @*<div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
-                        <span style="color:#918E89;font-size:15px;  font-weight: 600;">
-                            Tactic Distribution
-                        </span>
-                                <p style="  margin: 13px 4px 0;word-break: break-all;;word-break:break-all">
-                                    <img style="width:100%" src="images/graph-chart-small.jpg">
-                                </p>
-
-                                <p></p>
-                            </div>*@
-                </div>
-                <br />
-            </div>
-        </div>
-        <!-- Sidebar Block Starts -->
-        <div id="Filtersidebar" class="span2 sidebar">
-            @*Commented By Maitri Gandhi on 23/2/2016 For #2014*@
-            @*<div class="WelcomeMessageBorder"></div>
-                <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
-                    <div class="wraper-btns cf">
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdateResult" onclick="UpdateResult()">
-                            Update Results
-                        </button>
-                    </div>
-                </div>*@
-            <!--success message-->
-            <div class="error-msg-filter">
-                <div id="successMessageSidebar" class="alert hide alert-success">
-                    <a class="close">×</a>
-                    <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
                 </div>
                 <!--error message-->
-
-            </div>
-            <!--error message-->
-            <div class="sidebar-section scroll-section">
-                <div class="float-left filter-preset">
-                    <div class="width50 float-left filter-title ">
-                        <span class="filter-header">@Enums.FilterLabel.Filters.ToString()</span> @*Edited By Maitri Gandhi on 23/2/2016 For #2014*@
-                    </div>
-                    <div class="dropdown" style="float:right;">
-                        <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
-                            <i class="fa fa-bars"></i>
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
-                            <li onclick="SaveAsPreset()" role="presentation">
-                                <a id="saveaslink" tabindex="-1" role="menuitem">Save Current Filters</a>
-                            </li>
-                            @*Modified by Maitri Gandhi on 1/3/2016 to resolve the scenario of more than one plan in saved preset*@
-                            @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
-                            {
-                                <li onclick="LoadPreset()" role="presentation">
-                                    <a tabindex="-1" role="menuitem">Load Saved Filters</a>
+                <div class="sidebar-section scroll-section">
+                    <div class="float-left filter-preset">
+                        <div class="width50 float-left filter-title ">
+                            <span class="filter-header">@Enums.FilterLabel.Filters.ToString()</span> @*Edited By Maitri Gandhi on 23/2/2016 For #2014*@
+                        </div>
+                        <div class="dropdown" style="float:right;">
+                            <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
+                                <i class="fa fa-bars"></i>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
+                                <li onclick="SaveAsPreset()" role="presentation">
+                                    <a id="saveaslink" tabindex="-1" role="menuitem">Save Current Filters</a>
                                 </li>
-                            }
-                            <li onclick="ClearAllPreset()" role="presentation">
-                                <a tabindex="-1" role="menuitem">Clear All</a>
-                            </li>
-                        </ul>
+                                @*Modified by Maitri Gandhi on 1/3/2016 to resolve the scenario of more than one plan in saved preset*@
+                                @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+                                {
+                                    <li onclick="LoadPreset()" role="presentation">
+                                        <a tabindex="-1" role="menuitem">Load Saved Filters</a>
+                                    </li>
+                                }
+                                <li onclick="ClearAllPreset()" role="presentation">
+                                    <a tabindex="-1" role="menuitem">Clear All</a>
+                                </li>
+                            </ul>
+                        </div>
+                        @*<div class="width50 float-left filter-btn">
+                                    <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="UpdateResult" onclick="UpdateResult()">
+                                        Update Results
+                                    </button>
+                            </div>*@
                     </div>
-                    @*<div class="width50 float-left filter-btn">
-                                <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="UpdateResult" onclick="UpdateResult()">
-                                    Update Results
+                    @* Modified By Maitri Gandhi on 23/2/2016 For #2014 *@
+
+
+                    <div style="clear: both;"></div>
+                    @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+                    {
+                        <div id="accordion-SelectedPlanFilter" class="dropdown-section accordion">
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <h2 id="PlanFilterHeader" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedPlanFilter" href="#accordion-element-SelectedPlanFilter">@Enums.FilterLabel.Active_Plans.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i>@*<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i> tkt#1951 *@</h2>
+                                </div>
+                                <div id="accordion-element-SelectedPlanFilter" class="accordion-body in collapse">
+                                    <ul class="scroll-list singleselect" id="ulSelectedPlanFilter">
+                                        @{
+                        List<string> SelectedYearText = new List<string>();
+                        List<string> SelectedPlanTitle = new List<string>();
+                                        }
+                                        @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+                                        {
+
+                                            <li class="accordion-inner" title="Year">
+                                                <span class="sidebarliwidthSelected-left">Year - </span>
+                                                @{
+                                            foreach (SelectListItem item in ViewYearList)
+                                            {
+                                                if (item.Selected == true)
+                                                {
+                                                    SelectedYearText.Add(item.Text);
+                                                }
+                                            }
+                                            if (ViewYearList.Count == SelectedYearText.Count())
+                                            {
+                                                SelectedYearText.Clear();
+                                                SelectedYearText.Add("All");
+                                            }
+                                                }
+                                                <span id="lstYearActive" class="sidebarliwidthSelected-right">@string.Join(", ", SelectedYearText).ToString()</span>
+                                            </li>
+
+                                            <li class="accordion-inner" title="Plan">
+                                                <span class="sidebarliwidthSelected-left">Plan -  </span>
+                                                @{
+                                            foreach (var objplan in planList)
+                                            {
+                                                if (objplan.Checked == "checked")
+                                                {
+                                                    SelectedPlanTitle.Add(objplan.Title);
+                                                }
+                                            }
+                                            if (planList.Count == SelectedPlanTitle.Count())
+                                            {
+                                                SelectedPlanTitle.Clear();
+                                                SelectedPlanTitle.Add("All");
+                                            }
+
+                                                }
+                                                <span id="lstPlanActive" class="sidebarliwidthSelected-right">@string.Join(", ", SelectedPlanTitle).ToString()</span>
+
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
+                            <div class="wraper-btns cf">
+                                <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdatePlan" onclick="UpdatePlan()">
+                                    @Enums.FilterLabel.Update_Plans.ToString().Replace("_", " ")
                                 </button>
-                        </div>*@
-                </div>
-                @* Modified By Maitri Gandhi on 23/2/2016 For #2014 *@
+                            </div>
+                        </div>
 
 
-                <div style="clear: both;"></div>
-                @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
-                {
-                    <div id="accordion-SelectedPlanFilter" class="dropdown-section accordion">
+                                        //Modified By komal Rawal for 1911 add year filter on home page
+                                        <div id="accordion-Year" class="dropdown-section accordion">
+                                            <div class="accordion-group">
+                                                <div class="accordion-heading">
+                                                    <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year">Year<i class="indicator fa fa-angle-down pull-right"></i><span id="tYearcount" class="filter-count">/@ViewYearList.Count</span><span id="cYearcount" class="filter-count"></span></h2>
+                                                </div>
+                                                <div id="accordion-element-Year" class="accordion-body collapse">
+                                                    <ul class="scroll-list singleselect" id="ulSelectedYear">
+                                                        @{
+                                        string ddlYearId, YearText;
+                                        ddlYearId = YearText = string.Empty;
+                                        foreach (SelectListItem item in ViewYearList)
+                                        {
+                                            ddlYearId = "liYear" + item.Value;
+                                            YearText = item.Text;
+
+                                            if (item.Selected == true)
+                                            {
+
+                                                <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
+                                                    <span class="sidebarliwidth">@YearText</span>
+                                                    <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value" autocomplete="off"></input>   @*Modified by komal Rawal for 2319 to avoid maintaing state of checkbox on F5*@
+                                                    @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span>  @*#1951 - sidebar design  checkbox styling*@
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="accordion-inner" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
+                                                    <span class="sidebarliwidth">@YearText</span>
+                                                    <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value" autocomplete="off"></input>
+                                                    @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span> @*#1951 - sidebar design  checkbox styling*@
+                                                </li>
+                                            }
+                                        }
+                                                        }
+                                                    </ul>
+                                                    @if (ViewYearList == null)
+                                                    {
+                                                        <div class="list-tab">
+                                                            <div id="NoYearFound" class="NoDataFoundFilter">No Year Found</div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                                    //End
+                                                    <div id="accordion-2" class="dropdown-section accordion">
+                                                        <div class="accordion-group">
+                                                            <div class="accordion-heading">
+                                                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">
+                                                                    Plan
+                                                                    <i class="indicator fa fa-angle-down pull-right"></i>
+                                                                    <span id="tPlancount" class="filter-count"></span><span id="cPlancount" class="filter-count">/@planList.Count()</span>
+                                                                </h2>
+                                                            </div>
+                                                            <div id="accordion-element-Plan" class="accordion-body collapse">
+                                                                <ul class="scroll-list" id="ulSelectedPlans">
+                                                                    @{
+                                                    string liPlanid;
+                                                    foreach (var objplan in planList)
+                                                    {
+                                                        liPlanid = "liPlan" + objplan.PlanId;
+                                                        if (objplan.Checked == "checked")
+                                                        // if(objplan.PlanId == CurrentPlanId)
+                                                        {
+                                                            <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid">
+                                                                <span class="sidebarliwidth">@objplan.Title</span>
+                                                                <input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked" autocomplete="off">
+                                                                </input>
+                                                                @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li class="accordion-inner" title="@objplan.Title" id="@liPlanid">
+                                                                <span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" autocomplete="off"></input>
+                                                                @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@
+                                                            </li>
+                                                        }
+                                                    }
+                                                                    }
+
+                                                                </ul>
+                                                                <div class="list-tab">
+                                                                    @if (planList != null && planList.Count > 0)
+                                                                    {
+                                                                        <ul id="PlanAllModule">
+                                                                            <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                                                            <li>|</li>
+                                                                            <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
+                                                                        </ul>
+                                                                        <div id="NoPlanFound" class="NoDataFoundFilter" style="display: none;">No Plan Found</div>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <ul id="PlanAllModule" style="display: none;">
+                                                                            <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                                                            <li>|</li>
+                                                                            <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
+                                                                        </ul>
+                                                                        <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                    }
+
+                    <div id="accordion-SelectedFilter" class="dropdown-section accordion">
                         <div class="accordion-group">
                             <div class="accordion-heading">
-                                <h2 id="PlanFilterHeader" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedPlanFilter" href="#accordion-element-SelectedPlanFilter">@Enums.FilterLabel.Active_Plans.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i>@*<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i> tkt#1951 *@</h2>
+                                <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@Enums.FilterLabel.Active_Attributes.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i>@*<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i> tkt#1951 *@</h2>
                             </div>
-                            <div id="accordion-element-SelectedPlanFilter" class="accordion-body in collapse">
-                                <ul class="scroll-list singleselect" id="ulSelectedPlanFilter">
+                            <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
+                                <ul class="scroll-list singleselect" id="ulSelectedFilter">
+                                    @* @{
+                                            List<string> YearText1 = new List<string>();
+                                            List<string> PlanTitle = new List<string>();
+                                            List<string> OwnerName = new List<string>();
+                                            List<string> StatusTitle = new List<string>();
+                                        }
+                                        @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+                                        {
+
+                                            <li class="accordion-inner" title="Year">
+                                                <span class="sidebarliwidthSelected-left">Year - </span>
+                                                @{
+                                            foreach (SelectListItem item in ViewYearList)
+                                            {
+                                                if (item.Selected == true)
+                                                {
+                                                    YearText1.Add(item.Text);
+                                                }
+                                            }
+                                            if (ViewYearList.Count == YearText1.Count())
+                                            {
+                                                YearText1.Clear();
+                                                YearText1.Add("All");
+                                            }
+                                                }
+                                                <span id="lstYear" class="sidebarliwidthSelected-right">@string.Join(", ", YearText1).ToString()</span>
+                                            </li>
+
+                                            <li class="accordion-inner" title="Plan">
+                                                <span class="sidebarliwidthSelected-left">Plan -  </span>
+                                                @{
+                                            foreach (var objplan in planList)
+                                            {
+                                                if (objplan.Checked == "checked")
+                                                {
+                                                    PlanTitle.Add(objplan.Title);
+                                                }
+                                            }
+                                            if (planList.Count == PlanTitle.Count())
+                                            {
+                                                PlanTitle.Clear();
+                                                PlanTitle.Add("All");
+                                            }
+
+                                                }
+                                                <span id="lstPlan" class="sidebarliwidthSelected-right">@string.Join(", ", PlanTitle).ToString()</span>
+
+                                            </li>
+                                        }*@
                                     @{
-                                        List<string> SelectedYearText = new List<string>();
-                                        List<string> SelectedPlanTitle = new List<string>();
+                                        foreach (var custField in customfiledList)
+                                        {
+                                            <li class="accordion-inner" title='@custField.Title'>
+                                                <div id="CustomFields">
+                                                    <span class="sidebarliwidthSelected-left">@custField.Title - </span>
+                                                    <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
+                                                </div>
+                                            </li>
+                                        }
                                     }
-                                    @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
-                                    {
 
-                                        <li class="accordion-inner" title="Year">
-                                            <span class="sidebarliwidthSelected-left">Year - </span>
-                                            @{
-                                                foreach (SelectListItem item in ViewYearList)
-                                                {
-                                                    if (item.Selected == true)
-                                                    {
-                                                        SelectedYearText.Add(item.Text);
-                                                    }
-                                                }
-                                                if (ViewYearList.Count == SelectedYearText.Count())
-                                                {
-                                                    SelectedYearText.Clear();
-                                                    SelectedYearText.Add("All");
-                                                }
-                                            }
-                                            <span id="lstYearActive" class="sidebarliwidthSelected-right">@string.Join(", ", SelectedYearText).ToString()</span>
-                                        </li>
+                                    <li class="accordion-inner" title="Owner">
+                                        <span class="sidebarliwidthSelected-left">Owner - </span>
+                                        <span id="lstOwner" class="sidebarliwidthSelected-right"></span>
 
-                                        <li class="accordion-inner" title="Plan">
-                                            <span class="sidebarliwidthSelected-left">Plan -  </span>
-                                            @{
-                                                foreach (var objplan in planList)
-                                                {
-                                                    if (objplan.Checked == "checked")
-                                                    {
-                                                        SelectedPlanTitle.Add(objplan.Title);
-                                                    }
-                                                }
-                                                if (planList.Count == SelectedPlanTitle.Count())
-                                                {
-                                                    SelectedPlanTitle.Clear();
-                                                    SelectedPlanTitle.Add("All");
-                                                }
+                                    </li>
 
-                                            }
-                                            <span id="lstPlanActive" class="sidebarliwidthSelected-right">@string.Join(", ", SelectedPlanTitle).ToString()</span>
-
-                                        </li>
-                                                }
+                                    <li class="accordion-inner" title="TacticType">
+                                        <span class="sidebarliwidthSelected-left">Tactic Type - </span>
+                                        <span id="lstTType" class="sidebarliwidthSelected-right"></span>
+                                    </li>
+                                    <li class="accordion-inner" title="Status">
+                                        <span class="sidebarliwidthSelected-left">Status - </span>
+                                        <span id="lstStatus" class="sidebarliwidthSelected-right"></span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -1349,437 +1552,233 @@
 
                     <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
                         <div class="wraper-btns cf">
-                            <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdatePlan" onclick="UpdatePlan()">
-                                @Enums.FilterLabel.Update_Plans.ToString().Replace("_", " ")
+                            <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="ApplyFilters" onclick="ApplyFilters()">
+                                @Enums.FilterLabel.Update_Attributes.ToString().Replace("_", " ")
                             </button>
                         </div>
                     </div>
+                    <div id="divCustomFieldsFilter">
+                        @{
+                            string acordionId, acordionParentId, acordionElementId, acordionElementHref, liCustom, ulCustom, allCustom, noCustom, cutomoptioninputid;
+                            acordionId = acordionParentId = acordionElementId = acordionElementHref = liCustom = ulCustom = allCustom = noCustom = string.Empty;
+                            List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
+                            int custFieldCount = 0;
+                            foreach (var custField in customfiledList)
+                            {
+                                lstCutomFieldOptions = customfiledOptionList.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Title).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Title, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
+                                acordionId = "accordion-" + custField.CustomFieldId;
+                                acordionParentId = "#" + acordionId;
+                                acordionElementId = "accordion-element-" + custField.CustomFieldId;
+                                acordionElementHref = "#" + acordionElementId;
+                                ulCustom = "ulSelected" + custField.CustomFieldId;
+                                allCustom = custField.CustomFieldId + "AllModule";
+                                noCustom = "No" + custField.CustomFieldId + "Found";
 
+                                <div id="@acordionId" class="dropdown-section accordion">
+                                    <div class="accordion-group">
+                                        <div class="accordion-heading">
+                                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator fa fa-angle-down pull-right"></i><span class="filter-count"><span id="SelectedCustomFilter_@custField.CustomFieldId">@lstCutomFieldOptions.Count()</span>/@lstCutomFieldOptions.Count()</span></h2>
+                                        </div>
+                                        <div id="@acordionElementId" class="accordion-body collapse">
+                                            <ul class="scroll-list" id="@ulCustom">
+                                                @{
+                                foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
+                                {
 
-                                                //Modified By komal Rawal for 1911 add year filter on home page
-                                                <div id="accordion-Year" class="dropdown-section accordion">
-                                                    <div class="accordion-group">
-                                                        <div class="accordion-heading">
-                                                            <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year">Year<i class="indicator fa fa-angle-down pull-right"></i><span id="tYearcount" class="filter-count">/@ViewYearList.Count</span><span id="cYearcount" class="filter-count"></span></h2>
-                                                        </div>
-                                                        <div id="accordion-element-Year" class="accordion-body collapse">
-                                                            <ul class="scroll-list singleselect" id="ulSelectedYear">
-                                                                @{
-                                                                    string ddlYearId, YearText;
-                                                                    ddlYearId = YearText = string.Empty;
-                                                                    foreach (SelectListItem item in ViewYearList)
-                                                                    {
-                                                                        ddlYearId = "liYear" + item.Value;
-                                                                        YearText = item.Text;
+                                    liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
+                                    cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
 
-                                                                        if (item.Selected == true)
-                                                                        {
-
-                                                                            <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
-                                                                                <span class="sidebarliwidth">@YearText</span>
-                                                                                <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value" autocomplete="off"></input>   @*Modified by komal Rawal for 2319 to avoid maintaing state of checkbox on F5*@
-                                                                                @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span>  @*#1951 - sidebar design  checkbox styling*@
-                                                                            </li>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <li class="accordion-inner" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
-                                                                                <span class="sidebarliwidth">@YearText</span>
-                                                                                <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value" autocomplete="off"></input>
-                                                                                @*<span class="chkbx-icon"> <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></span> @*#1951 - sidebar design  checkbox styling*@
-                                                                            </li>
-                                                                        }
-                                                                    }
-                                                                }
-                                                            </ul>
-                                                            @if (ViewYearList == null)
-                                                            {
-                                                                <div class="list-tab">
-                                                                    <div id="NoYearFound" class="NoDataFoundFilter">No Year Found</div>
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                                    //End
-                                                                    <div id="accordion-2" class="dropdown-section accordion">
-                                                                        <div class="accordion-group">
-                                                                            <div class="accordion-heading">
-                                                                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">
-                                                                                    Plan
-                                                                                    <i class="indicator fa fa-angle-down pull-right"></i>
-                                                                                    <span id="tPlancount" class="filter-count"></span><span id="cPlancount" class="filter-count">/@planList.Count()</span>
-                                                                                </h2>
-                                                                            </div>
-                                                                            <div id="accordion-element-Plan" class="accordion-body collapse">
-                                                                                <ul class="scroll-list" id="ulSelectedPlans">
-                                                                                    @{
-                                                                                        string liPlanid;
-                                                                                        foreach (var objplan in planList)
-                                                                                        {
-                                                                                            liPlanid = "liPlan" + objplan.PlanId;
-                                                                                            if (objplan.Checked == "checked")
-                                                                                            // if(objplan.PlanId == CurrentPlanId)
-                                                                                            {
-                                                                                                <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid">
-                                                                                                    <span class="sidebarliwidth">@objplan.Title</span>
-                                                                                                    <input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked" autocomplete="off">
-                                                                                                    </input>
-                                                                                                    @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@
-                                                                                                </li>
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <li class="accordion-inner" title="@objplan.Title" id="@liPlanid">
-                                                                                                    <span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" autocomplete="off"></input>
-                                                                                                    @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@
-                                                                                                </li>
-                                                                                            }
-                                                                                        }
-                                                                                    }
-
-                                                                                </ul>
-                                                                                <div class="list-tab">
-                                                                                    @if (planList != null && planList.Count > 0)
-                                                                                    {
-                                                                                        <ul id="PlanAllModule">
-                                                                                            <li><a onclick="BulkPlanOperation(true)">select all</a></li>
-                                                                                            <li>|</li>
-                                                                                            <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
-                                                                                        </ul>
-                                                                                        <div id="NoPlanFound" class="NoDataFoundFilter" style="display: none;">No Plan Found</div>
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        <ul id="PlanAllModule" style="display: none;">
-                                                                                            <li><a onclick="BulkPlanOperation(true)">select all</a></li>
-                                                                                            <li>|</li>
-                                                                                            <li><a onclick="BulkPlanOperation(false)">@*deselect all*@clear</a></li>
-                                                                                        </ul>
-                                                                                        <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
-                                                                                    }
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                                        }
-
-                <div id="accordion-SelectedFilter" class="dropdown-section accordion">
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@Enums.FilterLabel.Active_Attributes.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i>@*<i class="indicator glyphicon glyphicon-chevron-up pull-right"></i> tkt#1951 *@</h2>
-                        </div>
-                        <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
-                            <ul class="scroll-list singleselect" id="ulSelectedFilter">
-                                @* @{
-                                        List<string> YearText1 = new List<string>();
-                                        List<string> PlanTitle = new List<string>();
-                                        List<string> OwnerName = new List<string>();
-                                        List<string> StatusTitle = new List<string>();
-                                    }
-                                    @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
-                                    {
-
-                                        <li class="accordion-inner" title="Year">
-                                            <span class="sidebarliwidthSelected-left">Year - </span>
-                                            @{
-                                        foreach (SelectListItem item in ViewYearList)
-                                        {
-                                            if (item.Selected == true)
-                                            {
-                                                YearText1.Add(item.Text);
-                                            }
-                                        }
-                                        if (ViewYearList.Count == YearText1.Count())
-                                        {
-                                            YearText1.Clear();
-                                            YearText1.Add("All");
-                                        }
-                                            }
-                                            <span id="lstYear" class="sidebarliwidthSelected-right">@string.Join(", ", YearText1).ToString()</span>
-                                        </li>
-
-                                        <li class="accordion-inner" title="Plan">
-                                            <span class="sidebarliwidthSelected-left">Plan -  </span>
-                                            @{
-                                        foreach (var objplan in planList)
-                                        {
-                                            if (objplan.Checked == "checked")
-                                            {
-                                                PlanTitle.Add(objplan.Title);
-                                            }
-                                        }
-                                        if (planList.Count == PlanTitle.Count())
-                                        {
-                                            PlanTitle.Clear();
-                                            PlanTitle.Add("All");
-                                        }
-
-                                            }
-                                            <span id="lstPlan" class="sidebarliwidthSelected-right">@string.Join(", ", PlanTitle).ToString()</span>
-
-                                        </li>
-                                    }*@
-                                @{
-                                    foreach (var custField in customfiledList)
-                                    {
-                                        <li class="accordion-inner" title='@custField.Title'>
-                                            <div id="CustomFields">
-                                                <span class="sidebarliwidthSelected-left">@custField.Title - </span>
-                                                <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
-                                            </div>
-                                        </li>
-                                    }
+                                    <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid"></input> @*<span class="chkbx-icon"> </span> #1951 - sidebar design  checkbox styling*@</li>
                                 }
-
-                                <li class="accordion-inner" title="Owner">
-                                    <span class="sidebarliwidthSelected-left">Owner - </span>
-                                    <span id="lstOwner" class="sidebarliwidthSelected-right"></span>
-
-                                </li>
-
-                                <li class="accordion-inner" title="TacticType">
-                                    <span class="sidebarliwidthSelected-left">Tactic Type - </span>
-                                    <span id="lstTType" class="sidebarliwidthSelected-right"></span>
-                                </li>
-                                <li class="accordion-inner" title="Status">
-                                    <span class="sidebarliwidthSelected-left">Status - </span>
-                                    <span id="lstStatus" class="sidebarliwidthSelected-right"></span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
-                    <div class="wraper-btns cf">
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="ApplyFilters" onclick="ApplyFilters()">
-                            @Enums.FilterLabel.Update_Attributes.ToString().Replace("_", " ")
-                        </button>
-                    </div>
-                </div>
-                <div id="divCustomFieldsFilter">
-                    @{
-                        string acordionId, acordionParentId, acordionElementId, acordionElementHref, liCustom, ulCustom, allCustom, noCustom, cutomoptioninputid;
-                        acordionId = acordionParentId = acordionElementId = acordionElementHref = liCustom = ulCustom = allCustom = noCustom = string.Empty;
-                        List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
-                        int custFieldCount = 0;
-                        foreach (var custField in customfiledList)
-                        {
-                            lstCutomFieldOptions = customfiledOptionList.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Title).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Title, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
-                            acordionId = "accordion-" + custField.CustomFieldId;
-                            acordionParentId = "#" + acordionId;
-                            acordionElementId = "accordion-element-" + custField.CustomFieldId;
-                            acordionElementHref = "#" + acordionElementId;
-                            ulCustom = "ulSelected" + custField.CustomFieldId;
-                            allCustom = custField.CustomFieldId + "AllModule";
-                            noCustom = "No" + custField.CustomFieldId + "Found";
-
-                            <div id="@acordionId" class="dropdown-section accordion">
-                                <div class="accordion-group">
-                                    <div class="accordion-heading">
-                                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator fa fa-angle-down pull-right"></i><span class="filter-count"><span id="SelectedCustomFilter_@custField.CustomFieldId">@lstCutomFieldOptions.Count()</span>/@lstCutomFieldOptions.Count()</span></h2>
-                                    </div>
-                                    <div id="@acordionElementId" class="accordion-body collapse">
-                                        <ul class="scroll-list" id="@ulCustom">
-                                            @{
-                                                foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
-                                                {
-
-                                                    liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
-                                                    cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
-
-                                                    <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid"></input> @*<span class="chkbx-icon"> </span> #1951 - sidebar design  checkbox styling*@</li>
                                                 }
-                                            }
-                                        </ul>
-                                        <div class="list-tab">
-                                            @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
-                                            {
-                                                <ul id="@allCustom">
-                                                    <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">select all</a></li>
-                                                    <li>|</li>
-                                                    <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">@*deselect all*@clear</a></li>
-                                                </ul>
-                                            }
-                                            else
-                                            {
-                                                <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
-                                            }
+                                            </ul>
+                                            <div class="list-tab">
+                                                @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
+                                                {
+                                                    <ul id="@allCustom">
+                                                        <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">select all</a></li>
+                                                        <li>|</li>
+                                                        <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">@*deselect all*@clear</a></li>
+                                                    </ul>
+                                                }
+                                                else
+                                                {
+                                                    <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                                                    custFieldCount++;
-                                                }
-                    }
-                </div>
-                <div id="accordion-Owner" class="dropdown-section accordion">
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator fa fa-angle-down pull-right"></i>@*#1951 - sidebar design  checkbox styling*@<span id="tOwnercount" class="filter-count"></span><span id="cOwnercount" class="filter-count"></span></h2>
-                        </div>
-                        <div id="accordion-element-Owner" class="accordion-body collapse">
-                            <ul class="scroll-list" id="ulSelectedOwner">
-                                @{
-                                    string liid;
-                                    foreach (var owner in ownerList)
-                                    {
-                                        liid = "liOwner" + owner.OwnerId;
-                                        <li class="accordion-inner" title="@owner.Title + '" id="@liid">
-                                            <span class="sidebarliwidth">@owner.Title</span>
-                                            <input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@
-                                        </li>
-                                    }
-                                }
-                            </ul>
-                            <div class="list-tab">
-                                @if (ownerList != null && ownerList.Count > 0)
-                                {
-                                    <ul id="ulOwnerAllModule">
-                                        <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
-                                        <li>|</li>
-                                        <li><a onclick="BulkOwnerOperation(false)">@*deselect all*@clear</a></li>
-                                    </ul>
-                                    <div id="NoOwnerFound" class="NoDataFoundFilter" style="display: none;">No Owner Found</div>
-                                }
-                                else
-                                {
-                                    <ul id="ulOwnerAllModule" style="display: none;">
-                                        <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
-                                        <li>|</li>
-                                        <li><a onclick="BulkOwnerOperation(false)">@*deselect all*@clear</a></li>
-                                    </ul>
-                                    <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
-                                }
-                            </div>
-                        </div>
+                                                custFieldCount++;
+                            }
+                        }
                     </div>
-                </div>
-
-                <div id="accordion-TacticType" class="dropdown-section accordion">
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator fa fa-angle-down pull-right"></i><span id="tTTcount" class="filter-count"></span><span id="cTTcount" class="filter-count"></span></h2>
-                        </div>
-                        <div id="accordion-element-TacticType" class="accordion-body collapse">
-                            <ul class="scroll-list" id="ulTacticType">
-                                @{
-                                    string litacticid, titielwithbracket, lastbracket, cbttid;
-                                    foreach (var tactictype in tacticTypeList)
-                                    {
-                                        litacticid = "liTT" + tactictype.TacticTypeId;
-                                        titielwithbracket = tactictype.Title + " (";
-                                        lastbracket = ")";
-                                        cbttid = "CbTT" + tactictype.TacticTypeId;
-                                        <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
-                                            <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
-                                            <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input> @*<span class="chkbx-icon"> </span>#1951 - sidebar design  checkbox styling*@
-                                        </li>
-                                    }
-                                }
-
-
-
-                            </ul>
-                            <div class="list-tab">
-                                @if (tacticTypeList != null && tacticTypeList.Count > 0)
-                                {
-                                    <ul id="TacticTypeAllModule">
-                                        <li><a onclick="BulkTTOperation(true)">select all</a></li>
-                                        <li>|</li>
-                                        <li><a onclick="BulkTTOperation(false)">@*deselect all*@clear</a></li>
-                                    </ul>
-                                    <div id="NoTTFound" class="NoDataFoundFilter" style="display: none;">No Tactic Type Found</div>
-                                }
-                                else
-                                {
-                                    <ul id="TacticTypeAllModule" style="display: none;">
-                                        <li><a onclick="BulkTTOperation(true)">select all</a></li>
-                                        <li>|</li>
-                                        <li><a onclick="BulkTTOperation(false)">@*deselect all*@clear</a></li>
-                                    </ul>
-                                    <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
-                                }
-
-
+                    <div id="accordion-Owner" class="dropdown-section accordion">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator fa fa-angle-down pull-right"></i>@*#1951 - sidebar design  checkbox styling*@<span id="tOwnercount" class="filter-count"></span><span id="cOwnercount" class="filter-count"></span></h2>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="accordion-Status" class="dropdown-section accordion">
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Status" href="#accordion-element-Status">Status<i class="indicator fa fa-angle-down pull-right"></i><span id="tStatuscount" class="filter-count"></span><span id="cStatuscount" class="filter-count"></span></h2>
-                        </div>
-                        <div id="accordion-element-Status" class="accordion-body collapse">
-                            <ul class="scroll-list" id="ulStatus">
-                                @*//Modified by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view*@
-                                <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /> </li>
-                                <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></li>
-                                <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></li>
-                                <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></li>
-                                <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></li>
-                                <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></li>
-
-                                @*#1951 - sidebar design  checkbox styling*@
-                                @*<li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /> </span> </li>
-                                    <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></span></li>
-                                    <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></span></li>
-                                    <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></span></li>
-                                    <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></span></li>
-                                    <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></span></li>*@
-                            </ul>
-                            <div class="list-tab">
-                                <ul id="StatusAllModule">
-                                    <li><a onclick="BulkStatusOperation(true)">select all</a></li>
-                                    <li>|</li>
-                                    <li><a onclick="BulkStatusOperation(false)">@*deselect all*@clear</a></li>
+                            <div id="accordion-element-Owner" class="accordion-body collapse">
+                                <ul class="scroll-list" id="ulSelectedOwner">
+                                    @{
+                                        string liid;
+                                        foreach (var owner in ownerList)
+                                        {
+                                            liid = "liOwner" + owner.OwnerId;
+                                            <li class="accordion-inner" title="@owner.Title + '" id="@liid">
+                                                <span class="sidebarliwidth">@owner.Title</span>
+                                                <input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input> @*<span class="chkbx-icon"></span> #1951 - sidebar design  checkbox styling*@
+                                            </li>
+                                        }
+                                    }
                                 </ul>
+                                <div class="list-tab">
+                                    @if (ownerList != null && ownerList.Count > 0)
+                                    {
+                                        <ul id="ulOwnerAllModule">
+                                            <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                            <li>|</li>
+                                            <li><a onclick="BulkOwnerOperation(false)">@*deselect all*@clear</a></li>
+                                        </ul>
+                                        <div id="NoOwnerFound" class="NoDataFoundFilter" style="display: none;">No Owner Found</div>
+                                    }
+                                    else
+                                    {
+                                        <ul id="ulOwnerAllModule" style="display: none;">
+                                            <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                            <li>|</li>
+                                            <li><a onclick="BulkOwnerOperation(false)">@*deselect all*@clear</a></li>
+                                        </ul>
+                                        <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="accordion-TacticType" class="dropdown-section accordion">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator fa fa-angle-down pull-right"></i><span id="tTTcount" class="filter-count"></span><span id="cTTcount" class="filter-count"></span></h2>
+                            </div>
+                            <div id="accordion-element-TacticType" class="accordion-body collapse">
+                                <ul class="scroll-list" id="ulTacticType">
+                                    @{
+                                        string litacticid, titielwithbracket, lastbracket, cbttid;
+                                        foreach (var tactictype in tacticTypeList)
+                                        {
+                                            litacticid = "liTT" + tactictype.TacticTypeId;
+                                            titielwithbracket = tactictype.Title + " (";
+                                            lastbracket = ")";
+                                            cbttid = "CbTT" + tactictype.TacticTypeId;
+                                            <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
+                                                <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
+                                                <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input> @*<span class="chkbx-icon"> </span>#1951 - sidebar design  checkbox styling*@
+                                            </li>
+                                        }
+                                    }
+
+
+
+                                </ul>
+                                <div class="list-tab">
+                                    @if (tacticTypeList != null && tacticTypeList.Count > 0)
+                                    {
+                                        <ul id="TacticTypeAllModule">
+                                            <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                            <li>|</li>
+                                            <li><a onclick="BulkTTOperation(false)">@*deselect all*@clear</a></li>
+                                        </ul>
+                                        <div id="NoTTFound" class="NoDataFoundFilter" style="display: none;">No Tactic Type Found</div>
+                                    }
+                                    else
+                                    {
+                                        <ul id="TacticTypeAllModule" style="display: none;">
+                                            <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                            <li>|</li>
+                                            <li><a onclick="BulkTTOperation(false)">@*deselect all*@clear</a></li>
+                                        </ul>
+                                        <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
+                                    }
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="accordion-Status" class="dropdown-section accordion">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Status" href="#accordion-element-Status">Status<i class="indicator fa fa-angle-down pull-right"></i><span id="tStatuscount" class="filter-count"></span><span id="cStatuscount" class="filter-count"></span></h2>
+                            </div>
+                            <div id="accordion-element-Status" class="accordion-body collapse">
+                                <ul class="scroll-list" id="ulStatus">
+                                    @*//Modified by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view*@
+                                    <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /> </li>
+                                    <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></li>
+                                    <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></li>
+                                    <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></li>
+                                    <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></li>
+                                    <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></li>
+
+                                    @*#1951 - sidebar design  checkbox styling*@
+                                    @*<li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /> </span> </li>
+                                        <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></span></li>
+                                        <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></span></li>
+                                        <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></span></li>
+                                        <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></span></li>
+                                        <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></span></li>*@
+                                </ul>
+                                <div class="list-tab">
+                                    <ul id="StatusAllModule">
+                                        <li><a onclick="BulkStatusOperation(true)">select all</a></li>
+                                        <li>|</li>
+                                        <li><a onclick="BulkStatusOperation(false)">@*deselect all*@clear</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
 
-            @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
-            {
+                @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+                {
             <!--First Static Accordion-->
             <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
-                <div class="accordion colors left-nav margin-bottom10" id="marketing-activities" style="display: none;">
+                    <div class="accordion colors left-nav margin-bottom10" id="marketing-activities" style="display: none;">
 
-                    <div class="accordion-group source-sans-proregular">
-                        <div class="accordion-heading">
-                            <a href="#DivAccordionMarketingActivities" data-parent="marketing-activities" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
-                                <div class="cf source-sans-prosemibold ">Marketing Activities</div>
-                            </a>
-                        </div>
-                        <div class="scrolled_div" style="position: relative; overflow: hidden; max-height: 230px;">
-                            <div class="accordion-body in collapse" id="DivAccordionMarketingActivities">
+                        <div class="accordion-group source-sans-proregular">
+                            <div class="accordion-heading">
+                                <a href="#DivAccordionMarketingActivities" data-parent="marketing-activities" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
+                                    <div class="cf source-sans-prosemibold ">Marketing Activities</div>
+                                </a>
+                            </div>
+                            <div class="scrolled_div" style="position: relative; overflow: hidden; max-height: 230px;">
+                                <div class="accordion-body in collapse" id="DivAccordionMarketingActivities">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
             <!--First Static Accordion END-->
             <!--Second Static Accordion-->
-                <div class="accordion colors left-nav improvements margin-bottom10" id="improvements" style="display:none">
-                    @*// added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters*@
-                    <div class="accordion-group source-sans-proregular">
-                        <div class="accordion-heading">
-                            <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
-                                <div class="cf source-sans-prosemibold">Improvements</div>
-                            </a>
-                        </div>
-                        <div class="accordion-body collapse" id="DivAccordionImprovementActivities">
+                    <div class="accordion colors left-nav improvements margin-bottom10" id="improvements" style="display:none">
+                        @*// added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters*@
+                        <div class="accordion-group source-sans-proregular">
+                            <div class="accordion-heading">
+                                <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
+                                    <div class="cf source-sans-prosemibold">Improvements</div>
+                                </a>
+                            </div>
+                            <div class="accordion-body collapse" id="DivAccordionImprovementActivities">
+                            </div>
                         </div>
                     </div>
-                </div>
             <!--Second Static Accordion END-->
-            }
-        </div>
-        <!--End sidebar-->
+                }
+            </div>
+            <!--End sidebar-->
     }
 
     @*<!--success message-->
@@ -1828,6 +1827,39 @@
 
 
     <div class="light-blue-chart cf full-width-header" id="planHeader">
+        @*This was added to handle the null case of objplanhomemodelheader to resolve the below issue*@
+        @*The model item passed into the dictionary is of type 'RevenuePlanner.Models.HomePlanModel', but this dictionary requires a model item of type 'RevenuePlanner.Models.HomePlanModelHeader'.*@
+        @if (Model.objplanhomemodelheader == null)
+        {
+            Model.objplanhomemodelheader = new RevenuePlanner.Models.HomePlanModelHeader();
+            try
+            {
+                var lstPlanAll = Common.GetPlan();
+                List<SelectListItem> planList1 = new List<SelectListItem>();
+                if (lstPlanAll.Count > 0)
+                {
+                    planList1 = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+
+                    var objexists = planList1.Where(plan => plan.Value == CurrentPlanId.ToString()).ToList();
+                    if (objexists.Count != 0)
+                    {
+                        planList1.Single(plan => plan.Value.Equals(CurrentPlanId.ToString())).Selected = true;
+                    }
+                    else
+                    {
+                        planList1.FirstOrDefault().Selected = true;
+                    }
+
+                    //// Set Plan dropdown values
+                    if (planList1 != null)
+                    {
+                        planList1 = planList1.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
+                    }
+                }
+                Model.objplanhomemodelheader.plans = planList1;
+            }
+            catch (Exception){}
+        }
         @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
     </div>
 
@@ -4727,8 +4759,8 @@
                         }
 
                         if ((!IsPackageView && ExistingAnchorTacticId != "0") || (IsPackageView && ExistingAnchorTacticId!="0" && ExistingAnchorTacticId != anchorTacticId)) {
-                                IsAlreadyPackaged.push($(this).find('h5').text());
-                       }
+                            IsAlreadyPackaged.push($(this).find('h5').text());
+                        }
 
                     });
                     //End
@@ -4802,7 +4834,7 @@
                                 }
                                 TaskHtml.firstChild.innerHTML = AllCHildNodes;
                             }
-                          
+
 
                             // Bind anchortacticid of the new package to honeycomb icons in the grid
                             $.each(promotionTacticIds, function (i) {
@@ -4858,12 +4890,12 @@
                 var anchorTacticId = 0;
                 if (CalendarTaskID != null && CalendarTaskID != undefined && CalendarTaskID != 'undefined')
                 {
-                var ListIds = CalendarTaskID.split('_');
-                $.each(ListIds, function (index, Id) {
-                    if (Id.indexOf('T') >= 0) {
-                        anchorTacticId = Id.replace("T", "");
-                    }
-                });
+                    var ListIds = CalendarTaskID.split('_');
+                    $.each(ListIds, function (index, Id) {
+                        if (Id.indexOf('T') >= 0) {
+                            anchorTacticId = Id.replace("T", "");
+                        }
+                    });
                 }
                 if ($('#IsGridView').val() == "True") {
                     var objAssetElement = $('.popover-content').find(".hc-block[roitactictype=@Enums.AssetType.Asset.ToString()]");
@@ -4880,8 +4912,8 @@
                         var TaskID = $(this).attr('entitytaskid');
                         AddRemovePackageItems.RemoveId.push(TaskID);
                     });
-                  }
-        
+                }
+
                 $.ajax({
                     url: '@Url.Content("~/Home/UnpackageTactics/")',
                     data: {
@@ -4910,13 +4942,13 @@
                                 var IsLinkIcon = TaskHtml.firstChild.getElementsByClassName("unlink-icon");
                                 if(FileNode != null && FileNode!= 'undefined' && FileNode != undefined)
                                 {
-                                   FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML
+                                    FileNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML
                                 }
                                 var AllCHildNodes = TaskHtml.firstChild.innerHTML;
                                 if(BlankDiv != null && BlankDiv!= 'undefined' && BlankDiv != undefined)
                                 {
-                                AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                                    
+                                    AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+
                                 }
                                 else
                                 {
@@ -4928,7 +4960,7 @@
                                     {
                                         AllCHildNodes = AllCHildNodes.replace(FileNode, "");
                                     }
-                                  
+
                                 }
                                 TaskHtml.firstChild.innerHTML = AllCHildNodes;
                             }
@@ -4970,7 +5002,7 @@
                         }
 
                         // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
-                      
+
                         $('.honeycombbox-icon-gantt[anchortacticid=' + anchorTacticId + ']').each(function () {
                             $(this).attr('anchortacticid', '0');
                         });
@@ -5007,7 +5039,7 @@
             for (i = 0; i < currentPkgIds.length; i++) {
                 var rowObject = $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']');
                 var id = $(rowObject).attr('taskid');
-                
+
                 if(rowObject.is(':visible') == true && id == $(rowObject).attr('anchortacticid')) {
                     PackageAnchorId = id;
                 }
@@ -5024,7 +5056,7 @@
             if (IdsNotinList.length != 0) {
                 $.ajax({
                     beforeSend: function (x) {
-                          myApp.hidePleaseWait();
+                        myApp.hidePleaseWait();
                     },
                     type: 'POST',
                     url: '@Url.Content("~/Home/GetPackageTacticDetails")',
@@ -5061,7 +5093,7 @@
                                     }
 
                                 });
-                            });                            
+                            });
                         }
                         else
                         {
@@ -5097,7 +5129,7 @@
                                 });
                             });
                         }
-                      
+
 
                         $("#totalEntity").text(ExportSelectedIds.TaskID.length);
                         $(".honeycombbox").show();
@@ -5110,11 +5142,11 @@
         // Added by Arpita Soni for Ticket #2354 to expand tactics for selected package
         function ExpandTacticsForSelectedPackage(PCPTId) {
             var arrEntityIds = PCPTId.split('_');
-            var CampaignId = "", ProgramId = "", TacticId = ""; 
+            var CampaignId = "", ProgramId = "", TacticId = "";
             if(arrEntityIds!= null && arrEntityIds.length > 2) {
                 CampaignId = arrEntityIds[1].replace('C','');
                 ProgramId = arrEntityIds[2].replace('P','');
-                
+
                 var divCamp = $('div[taskid="' + CampaignId + '"]').attr('dhtmlxrowid');
                 HomeGrid.openItem(divCamp);
                 var divProg = $('div[taskid="' + ProgramId + '"]').attr('dhtmlxrowid');
@@ -5336,7 +5368,7 @@
         });
         //Modified by Komal Rawal  on 14/12/2015 for PL #1782 :- export to csv from honeycomb not working.
         $(".popover-content").live('click', function (e) {
-            
+
             if (ExportToCsv) {
                 CloseClick = false;
             }
@@ -5592,16 +5624,16 @@
 
             }
 
-      
 
-        item.parentNode.parentNode.parentNode.remove();
-        var HoneyContent = $('.popover-content').find(".hc-block").length;
-        if (HoneyContent == 0) {
-            PreventUnPackageClick = true;
-            IsPackageView = false;
-            $(".popover ").hide();
-            $(".honeycombbox").hide();
-        }
+
+            item.parentNode.parentNode.parentNode.remove();
+            var HoneyContent = $('.popover-content').find(".hc-block").length;
+            if (HoneyContent == 0) {
+                PreventUnPackageClick = true;
+                IsPackageView = false;
+                $(".popover ").hide();
+                $(".honeycombbox").hide();
+            }
         };
 
 
@@ -5683,7 +5715,7 @@
                         if ($('#IsGridView').val() != "True" &&  ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]')
                         {
                             var taskToDelete = $("div[name1='" + taskId + "']");
-                            if(taskToDelete != undefined && taskToDelete.length > 0){ 
+                            if(taskToDelete != undefined && taskToDelete.length > 0){
                                 gantt.deleteTask(taskId);
                             }
                         }
@@ -5708,8 +5740,8 @@
                             var AllCHildNodes = TaskHtml.firstChild.innerHTML;
                             if(BlankDiv != null && BlankDiv!= 'undefined' && BlankDiv != undefined)
                             {
-                            AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                                    
+                                AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+
                             }
                             else
                             {
@@ -5722,7 +5754,7 @@
                                     AllCHildNodes = AllCHildNodes.replace(FileNode, "");
                                 }
                             }
-                          
+
                             TaskHtml.firstChild.innerHTML = AllCHildNodes;
                         }
 
@@ -5759,7 +5791,7 @@
 
                         $('.honeycombbox-icon-gantt[anchortacticid=' + anchorTacticId + ']').each(function () {
                             $(this).attr('anchortacticid', '0');
-                        });	
+                        });
 
                         ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful", 3000);
                     }
@@ -5836,7 +5868,7 @@
                         $('.honeycombbox-icon-gantt[anchortacticid=' + planTacticId + ']').each(function () {
                             $(this).attr('anchortacticid', '0');
                         });
-                        
+
                         // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
                         RemoveAllHoneyCombData();
                         ShowMessage(false,  "@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful", 3000);
@@ -7197,7 +7229,7 @@
                 gantt.detachEvent(eventTaskClick);
             }
 
-            //// Attaching single click event 
+            //// Attaching single click event
             eventTaskClick = gantt.attachEvent("onTaskClick", function (taskId, e) {
                 var where = e.target.getAttribute('class');
                 if (where == 'gantt_task_content' || where == 'gantt_tree_content'){
@@ -9128,7 +9160,7 @@
                                     $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html());
                                     return;
                                 }
-                                
+
                             }
                         }
                     });
@@ -10006,9 +10038,9 @@
                 AltId: []
             };
             $('#MediaCodeGrid').find('tr').find('td').find("div[class*='honeycombbox-icon-gantt-Active']").removeClass("honeycombbox-icon-gantt-Active");
-            $("#totalEntityMediacode").text(ExportSelectedIdsMediaCode.AltId.length);                 
+            $("#totalEntityMediacode").text(ExportSelectedIdsMediaCode.AltId.length);
             $("#divHoneyCombBoxMediaCode").hide();
             $('#MediaCodeSelectAll').removeAttr('checked');
         }
-       
+
     </script>
