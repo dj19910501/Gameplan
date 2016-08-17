@@ -267,8 +267,10 @@
     </Compile>
     <Compile Include="Services\Alerts.cs" />
     <Compile Include="Services\Currency.cs" />
+    <Compile Include="Services\Finance.cs" />
     <Compile Include="Services\IAlerts.cs" />
     <Compile Include="Services\ICurrency.cs" />
+    <Compile Include="Services\IFinance.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.SqlServer.sql" />

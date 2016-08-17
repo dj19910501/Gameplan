@@ -169,4 +169,13 @@ namespace RevenuePlanner.Models
         public List<ViewByModel> list { get; set; }
         public int parentId { get; set; }
     }
+    // Add By Nishant Sheth
+    // Use for marketing budget custom columns list
+    public class CustomColumnModel
+    {
+        public int CustomFieldId { get; set; }
+        public int CustomColumSetId { get; set; }
+        public string ColName { get; set; }
+        public string ValidationType { get; set; }
+    }
 }

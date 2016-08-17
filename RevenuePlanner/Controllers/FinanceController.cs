@@ -34,6 +34,8 @@ namespace RevenuePlanner.Controllers
         private bool _IsForecastCreate_Edit = true;
         List<User> lstUserDetails = new List<User>();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+        public RevenuePlanner.Services.IFinance objFinance = new RevenuePlanner.Services.Finance();
         #endregion
 
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
@@ -2853,7 +2855,25 @@ namespace RevenuePlanner.Controllers
                                     var CustomValue = CustomColumnsValue.Where(a => a.EntityId == item.Id && a.CustomFieldId == col.CustomFieldId).Select(a => a.Value).FirstOrDefault();
                                     if (col.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
                                     {
-                                        row[colname] = CustomValue != null ? CustomValue : "0";
+                                        // Modified By Nishant Sheth
+                                        // Handle the custom columns values if not an numeric
+                                        if (DoubleColumnValidation.Contains(col.ValidationType))
+                                        {
+                                            double n;
+                                            bool isNumeric = double.TryParse(CustomValue, out n);
+                                            if (isNumeric)
+                                            {
+                                                row[colname] = CustomValue;
+                                            }
+                                            else
+                                            {
+                                                row[colname] = 0;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            row[colname] = !string.IsNullOrEmpty(CustomValue) ? CustomValue : string.Empty;
+                                        }
                                     }
                                     else
                                     {
@@ -4420,6 +4440,8 @@ namespace RevenuePlanner.Controllers
                     xmlDoc.AppendChild(rootNode);
 
                     List<XmlColumns> listColumnIndex = new List<XmlColumns>();
+                    var ListCustomCols = objFinance.GetCustomColumns();// Get List of Custom Columns // Add By Nishant Sheth
+
                     foreach (Row row in rows)
                     {
                         //Use the first row to add columns to DataTable.
@@ -4434,11 +4456,39 @@ namespace RevenuePlanner.Controllers
                                 var CellData = listColumnIndex.Where(a => a.ColumnIndex == i).Select(a => a).FirstOrDefault();
                                 if (CellData != null)
                                 {
+                                    // Add By Nishant Sheth
+                                    // #2506 : To handle the multi currency for budget,foracast and custom columns which have currency validation type
+                                    string colName = string.Empty, colValue = string.Empty;
+                                    colName = Convert.ToString(CellData.ColumName);
+                                    colValue = GetCellValue(doc, cell).Trim();
+
+                                    double coldata;
+                                    double.TryParse(colValue, out coldata);
+
+                                    if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
+                                    {
+                                        colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata));
+                                    }
+                                    else if (ListCustomCols != null)
+                                    {
+                                        var CustomCol = ListCustomCols
+                                            .Where(a => a.ColName == colName)
+                                            .Select(a => a).FirstOrDefault();
+
+                                        if (CustomCol != null)
+                                        {
+                                            if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
+                                            {
+                                                colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata));
+                                            }
+                                        }
+                                    }
+                                    // End By Nishant Sheth
                                     XmlNode datanode = xmlDoc.CreateElement("value");
                                     XmlAttribute attribute = xmlDoc.CreateAttribute("code");
-                                    attribute.Value = Convert.ToString(CellData.ColumName);
+                                    attribute.Value = colName;
                                     datanode.Attributes.Append(attribute);
-                                    datanode.InnerText = GetCellValue(doc, cell).Trim();
+                                    datanode.InnerText = colValue;
                                     // RowIndex 3 is for first row
                                     if (row.RowIndex == 3)
                                     {
@@ -4536,6 +4586,7 @@ namespace RevenuePlanner.Controllers
             int RowCount = 0, ColumnCount = 0;
             try
             {
+                var ListCustomCols = objFinance.GetCustomColumns();// Get List of Custom Columns // Add By Nishant Sheth
                 if (ds != null && ds.Tables.Count > 0)
                 {
                     dtExcel = ds.Tables[0];
@@ -4610,11 +4661,40 @@ namespace RevenuePlanner.Controllers
 
                                 if (CellData != null)
                                 {
+                                    // Add By Nishant Sheth
+                                    // #2506 : To handle the multi currency for budget,foracast and custom columns which have currency validation type
+                                    string colName = string.Empty, colValue = string.Empty;
+                                    colName = CellData.ColumName;
+                                    colValue = Convert.ToString(dtExcel.Rows[i][k]).Trim();
+
+                                    double coldata;
+                                    double.TryParse(colValue, out coldata);
+
+                                    if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
+                                    {
+                                        colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata));
+                                    }
+                                    else if (ListCustomCols != null)
+                                    {
+                                        var CustomCol = ListCustomCols
+                                            .Where(a => a.ColName == colName)
+                                            .Select(a => a).FirstOrDefault();
+
+                                        if (CustomCol != null)
+                                        {
+                                            if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
+                                            {
+                                                colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata));
+                                            }
+                                        }
+                                    }
+                                    // End By Nishant Sheth
                                     XmlNode datanode = xmlDoc.CreateElement("value");
                                     XmlAttribute attribute = xmlDoc.CreateAttribute("code");
-                                    attribute.Value = Convert.ToString(CellData.ColumName);
+                                    attribute.Value = colName;
                                     datanode.Attributes.Append(attribute);
-                                    datanode.InnerText = Convert.ToString(dtExcel.Rows[i][k]).Trim();
+                                    datanode.InnerText = colValue;
+
                                     // RowIndex 2 is for first row
                                     if (i == 2)
                                     {
