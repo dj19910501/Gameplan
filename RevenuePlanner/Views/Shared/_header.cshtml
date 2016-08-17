@@ -132,18 +132,18 @@
                 </div>
             }
             @*Added by Bhumika for #2468 - alert & Notification dropdown*@
-            <div class="aler-list dropdown pull-right" id="divAlertSummary">
+            <div class="aler-list dropdown pull-right" >
                 <span class="count" id="spnAlertCnt" style="display:none"></span>
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="aAlertSummary"><i class="fa fa-bell-o" aria-hidden="true"></i></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="divAlertSummary"><i class="fa fa-bell-o" aria-hidden="true"></i></a>
                 <ul class="dropdown-menu UlAlertList" id="UlAlertsummary">
                     <p class="ul-top clearfix"><span class="pull-left">Alerts</span> <a href="@Url.Action("Alerts", "User")" class="pull-right">Settings</a></p>
 
                 </ul>
             </div>
 
-            <div class="notify-list dropdown pull-right">
+            <div class="notify-list dropdown pull-right"  >
                 <span class="count" id="spnNotificationCnt" style="display:none"></span>
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-globe" aria-hidden="true"></i></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="divNotificationSummary" ><i class="fa fa-globe" aria-hidden="true"></i></a>
                 <ul class="dropdown-menu" id="ulNotificationlisting" >
                     <p class="ul-top clearfix"><span class="pull-left">Notifications</span> <a href="@Url.Action("Notifications", "User")" class="pull-right">Settings</a></p>
                 </ul>
@@ -185,7 +185,7 @@
         $("#spnAlertCnt").css('display', 'none');
         BindAlertSummary();	
         GetNotificationListing();          
-		   $("#divAlertSummary").click(function (e) {
+        $("#divAlertSummary").click(function (e) {
             var alertType = '@Enums.AlertNotification.Alert.ToString()';
             var alertcnt = $("#spnAlertCnt").html();
             if (alertcnt!=null && parseInt(alertcnt) > 0) {
@@ -194,6 +194,7 @@
                 
                 $.ajax({
                     type: 'POST',
+                    async: true,
                     url: '@Url.Action("UpdateAlertNotification", "User")',
                     data: { type: alertType },
                     success: function (data) {
@@ -208,7 +209,34 @@
             }
 
 
+		   });
+
+        $("#divNotificationSummary").click(function (e) {
+            var alertType = '@Enums.AlertNotification.Notification.ToString()';
+            var Noticnt = $("#spnNotificationCnt").html();
+            if (Noticnt != null && parseInt(Noticnt) > 0) {
+                $("#spnNotificationCnt").html('');
+                $("#spnNotificationCnt").css('display', 'none');
+
+                $.ajax({
+                    type: 'POST',
+                    async: true,
+                    url: '@Url.Action("UpdateAlertNotification", "User")',
+                    data: { type: alertType },
+                    success: function (data) {
+                    }
+                });
+            }
+            else {
+                $('#ulNotificationlisting').css('display', 'none');
+                var url = '@Url.Action("ViewAlertNotification", "User")';
+                url = url + "?type=" + alertType;
+                window.location = url;
+            }
+
+
         });
+
 
      
     });
@@ -273,8 +301,10 @@
                                 htmlstring += '<li title="' + Item.Description + '" style="cursor:pointer"><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
                             }
                        });
-                            $('#ulNotificationlisting').append(htmlstringForRequests + htmlstring);
-                            $(ulNotificationlisting).append('<li><a href="#">See All</a></li>');
+                        $('#ulNotificationlisting').append(htmlstringForRequests + htmlstring);
+                        var url = '@Url.Action("ViewAlertNotification", "User")';
+                        url = url + "?type=" + '@Enums.AlertNotification.Notification.ToString()'
+                        $('#ulNotificationlisting').append('<li><a href="' + url + '">See All</a></li>');
                     }
                 }
                 else {
