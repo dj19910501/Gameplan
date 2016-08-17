@@ -11,19 +11,19 @@
     string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToLower();
     string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToLower();
     string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower();
-    bool isquarter = allocatedBy.ToLower() == strQuarters;
+    bool isquarter = allocatedBy.ToLower() == strQuarters;    
 }
 @{
-    BudgetMonth PercAllocated = ViewBag.PercAllocated; 
+    BudgetMonth PercAllocated = ViewBag.PercAllocated;
     double planAllocation = 0;
 
     // Modified by Rushil Bhuptani on 26/05/2016 for #2197
     double sumMonth = ViewBag.SumMonth;
     planAllocation = ViewBag.PlanAllocation;
     double budgeted = ViewBag.Budgeted;
-  
+
     //BudgetDHTMLXGridModel TestModel = (BudgetDHTMLXGridModel)Session["TestGrid"];
-   
+
 }
 @Styles.Render("~/Content/css/GetCSSBudget")
 <script src="~/Scripts/js/fileinput.js"></script>
@@ -776,12 +776,15 @@
             isquarter = true;
         }
         var inputArr = [];
+       
+        //Insertation Start 17/08/2016 Kausha #2503 Used SetValueByExchangeRate function to store value in dollar.
         $('.tooltip-field').find('input[type=text]').not('[disabled=disabled]').each(function () {
             inputArr.push({
                 key: $(this).attr('id'),
-                Value: $(this).val().replace(/,/g, "")
+                Value: SetValueByExchangeRate($(this).val().replace(/,/g, ""))
             });
         });
+        //Insertation end 17/08/2016 Kausha Used SetValueByExchangeRate function to store value in dollar.
         var jsonInputs = JSON.stringify(inputArr);
         $.ajax({
             type: 'POST',
@@ -843,14 +846,21 @@
         $(this).val(FormatCommasBudget(newYearBudget.toString(), false, false));
     });
     $('.tooltip-field').on('keydown', '#BudgetMonth,#BudgetYear', function (e) {
+     
+        //Insertation Start 17/08/2016 Kausha #2503 Used SetValueByExchangeRate function to store value in dollar.
         // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [110, 190]) !== -1)
+        {
+            return false;
+        }
+        //Insertation end 17/08/2016 Kausha #2503 Used SetValueByExchangeRate function to store value in dollar.
         if ($.inArray(e.keyCode, [8, 9, 27, 13, 46, 110]) !== -1 ||
             // Allow: Ctrl+A
             (e.keyCode == 65 && e.ctrlKey === true) ||
             // Allow: home, end, left, right
             (e.keyCode >= 35 && e.keyCode <= 39)) {
             // let it happen, don't do anything
-            return;
+            return ;
         }
         // Ensure that it is a number and stop the keypress
         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {

@@ -7187,22 +7187,27 @@ namespace RevenuePlanner.Controllers
             var plantacticids = tacticslist.Select(t => t.PlanTacticId).ToList();
             var tacticbudgetlist = db.Plan_Campaign_Program_Tactic_Budget.Where(tb => plantacticids.Contains(tb.PlanTacticId)).Select(tb => new { tb.Period, tb.Value, tb.PlanTacticId }).ToList();
 
+            #region Currency obj
+            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+            #endregion
             var campaignobj = campaign.Select(_campgn => new
             {
                 id = _campgn.PlanCampaignId,
                 title = _campgn.Title,
                 description = _campgn.Description,
                 isOwner = Sessions.User.UserId == _campgn.CreatedBy ? 1 : 0,
-                Budgeted = _campgn.CampaignBudget,
-                Budget = campaignbudgetlist.Where(cb => cb.PlanCampaignId == _campgn.PlanCampaignId).Select(b1 => new BudgetedValue { Period = b1.Period, Value = b1.Value }).ToList(),
+                //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
+                Budgeted = objCurrency.GetValueByExchangeRate(_campgn.CampaignBudget),
+                Budget = campaignbudgetlist.Where(cb => cb.PlanCampaignId == _campgn.PlanCampaignId).Select(b1 => new BudgetedValue { Period = b1.Period, Value = objCurrency.GetValueByExchangeRate(b1.Value) }).ToList(),
                 createdBy = _campgn.CreatedBy,
                 programs = programlist.Where(p => p.PlanCampaignId == _campgn.PlanCampaignId).Select(pcpj => new
                 {
                     id = pcpj.PlanProgramId,
                     title = pcpj.Title,
                     description = pcpj.Description,
-                    Budgeted = pcpj.ProgramBudget,
-                    Budget = programbudgetlist.Where(pb => pb.PlanProgramId == pcpj.PlanProgramId).Select(_budgt => new BudgetedValue { Period = _budgt.Period, Value = _budgt.Value }).ToList(),
+                    //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
+                    Budgeted = objCurrency.GetValueByExchangeRate(pcpj.ProgramBudget),
+                    Budget = programbudgetlist.Where(pb => pb.PlanProgramId == pcpj.PlanProgramId).Select(_budgt => new BudgetedValue { Period = _budgt.Period, Value = objCurrency.GetValueByExchangeRate(_budgt.Value) }).ToList(),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 1 : 0,
                     createdBy = pcpj.CreatedBy,
                     tactics = tacticslist.Where(t => t.PlanProgramId == pcpj.PlanProgramId).Select(pcptj => new
@@ -7210,8 +7215,9 @@ namespace RevenuePlanner.Controllers
                         id = pcptj.PlanTacticId,
                         title = pcptj.Title,
                         description = pcptj.Description,
-                        Cost = pcptj.TacticBudget,
-                        Budget = tacticbudgetlist.Where(tb => tb.PlanTacticId == pcptj.PlanTacticId).Select(t => new BudgetedValue { Period = t.Period, Value = t.Value }).ToList(),
+                        //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
+                        Cost = objCurrency.GetValueByExchangeRate(pcptj.TacticBudget),
+                        Budget = tacticbudgetlist.Where(tb => tb.PlanTacticId == pcptj.PlanTacticId).Select(t => new BudgetedValue { Period = t.Period, Value = objCurrency.GetValueByExchangeRate(t.Value) }).ToList(),
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 1 : 0,
                         createBy = pcptj.CreatedBy
 
@@ -7285,7 +7291,8 @@ namespace RevenuePlanner.Controllers
                                            select new BudgetedValue
                                            {
                                                Period = bv.Period,
-                                               Value = bv.Value
+                                               //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
+                                               Value = objCurrency.GetValueByExchangeRate(bv.Value)
                                            }).ToList();
                 //// Insert Plan data to Model.
                 obj = new BudgetModel();
@@ -7293,7 +7300,10 @@ namespace RevenuePlanner.Controllers
                 obj.ActivityName = objPlan.Title;
                 obj.ActivityType = ActivityType.ActivityPlan;
                 obj.ParentActivityId = "0";
-                obj.Budgeted = objPlan.Budget;
+                // obj.Budgeted = objPlan.Budget;
+                //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
+                obj.Budgeted = objCurrency.GetValueByExchangeRate(objPlan.Budget);
+
                 obj.IsOwner = true;
                 obj.isEditable = false;
                 obj.CreatedBy = objPlan.CreatedBy;
