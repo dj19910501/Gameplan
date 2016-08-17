@@ -1,0 +1,16 @@
+﻿@using RevenuePlanner.Helpers
+
+@{
+    ViewBag.Title = "ViewAlertNotification";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string Type = ViewBag.Type;
+}
+
+@if(Type==Enums.AlertNotification.Alert.ToString().ToLower())
+{
+    <h2>Alerts</h2>
+}
+else if (Type == Enums.AlertNotification.Notification.ToString().ToLower())
+{
+    <h2>Notification</h2>
+}

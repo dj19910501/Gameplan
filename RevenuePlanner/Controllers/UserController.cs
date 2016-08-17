@@ -2016,7 +2016,22 @@ namespace RevenuePlanner.Controllers
         //End
 
         #endregion
-      
+        #region Method to update IsRead column for alert & Notification
+        public async Task<JsonResult> UpdateAlertNotification(string type)
+        {
+            int result = objcommonalert.UpdateAlert_Notification_IsRead(type.ToLower(), Sessions.User.UserId);
+            await Task.Delay(1);
+            return Json(new { Success = true }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region method to see all Alert or Notification
+        public ActionResult ViewAlertNotification(string type)
+        {
+            ViewBag.Type = type.ToLower();
+            return View();
+        }
+        #endregion
         #endregion
     }
 }

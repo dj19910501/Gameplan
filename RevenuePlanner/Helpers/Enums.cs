@@ -1531,6 +1531,11 @@ namespace RevenuePlanner.Helpers
             {GoalNum.Hundered.ToString(), "100"}
           
         };
+        public enum AlertNotification
+        {
+            Alert,
+            Notification
+        }
         // Added by Arpita Soni for Ticket #2357 on 07/14/2016
         public static Dictionary<string, string> DictPlanGanttTypes = new Dictionary<string, string>()
         {

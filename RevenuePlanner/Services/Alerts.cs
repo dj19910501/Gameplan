@@ -259,6 +259,39 @@ namespace RevenuePlanner.Services
         }
 
         #endregion
+		   #region method to update Alert rule
+        public int UpdateAlert_Notification_IsRead(string Type, Guid UserId)
+        {
 
+            int result = 0;
+            var Connection = objDbMrpEntities.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            using (SqlCommand command = new SqlCommand("UpdateAlert_Notification", Connection))
+            {
+                try
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@UserId", UserId.ToString());
+                    command.Parameters.AddWithValue("@Type", Type.ToLower());
+
+                    SqlDataAdapter adp = new SqlDataAdapter(command);
+                    command.CommandTimeout = 0;
+                    result = command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                    return result;
+                }
+                finally
+                {
+                    if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                }
+            }
+
+            return result;
+        }
+        #endregion
     }
 }

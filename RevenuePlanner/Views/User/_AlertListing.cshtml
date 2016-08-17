@@ -1,15 +1,21 @@
 ﻿@model RevenuePlanner.Models.AlertRule
-
+<style>
+    .alertdiv-delet{position:absolute; right:0;right: 0; top: 5px;}
+    .alertdiv-delet a{color: #95989a;font-size: 18px;}
+</style>
 <div class="accordion-group ">
 
     <div class="accordion-body collapse" id="collapseGrp1">
         <div id="divrule0">
-
+            <div class="alertdiv-delet">
+                <a class="alert-delet" title="Cancle" onclick="CancleCreateNew('collapseGrp1');"><i class="fa fa-times-circle" aria-hidden="true"></i></a>
+            </div>
             <div class="accordion-row margin-top18">
                 <div class="alert-question"> 1. What item would you like to be alerted for?</div>
                 <div class="alert-value-box">
-                    <span class="searchtextbox"><input id="searchentity" class="searchtext" type="text" tabindex="1" onkeyup="searchtext(this);" /></span>
+                    <span class="searchtextbox"><input id="searchentity" class="searchtext" type="text" tabindex="1" onkeyup="searchtext(this);" placeholder="Enter atleast 4 character to search" /></span>
                 </div>
+                
             </div>
             <input id="hdnRuleId" type="hidden" value="0" />
             <input id="hdnEntityId" type="hidden" />
@@ -218,7 +224,8 @@
         $newPanel.removeClass('in');
         $("#copyAccourdingroup").append($newPanel.fadeIn());
         $('.accordion-body.in').collapse('hide');
-        
+        var onclickevent = "CancleCreateNew('collapseGrpCopy')";
+        $newPanel.find(".maindiv").append('<div class="alertdiv-delet"><a class="alert-delet" title="Cancle" onclick="' + onclickevent + ';"><i class="fa fa-times-circle" aria-hidden="true"></i></a></div>');
         $(".frequncy").change(function () {
             showHideOption(this);
         });
@@ -455,6 +462,7 @@
             $(hdntypeid).val('');
             $(el).attr("title", '');
             var lbl = $(maindiv).find("#lblentity");
+            $(lbl).attr("title", '');
             $(lbl).html('');
             //$(maindiv).find("#searchentity").addClass("error");
         }
@@ -555,5 +563,9 @@
                 }
     });
         }
+    }
+    function CancleCreateNew(e)
+    {
+        $('#'+e).collapse('hide');
     }
 </script>

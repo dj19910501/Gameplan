@@ -641,7 +641,76 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-      
+        #region method to delete alert rule
+        /// <summary>
+        /// To Delete the Alert rule
+        /// <author>Devanshi gandhi</author>
+        /// <createddate>17-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void DeleteAlertrule()
+        {
+
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            UserController objUserController = new UserController();
+            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
+            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            int ruleId = DataHelper.GetAlertruleId(Sessions.User.UserId);
+            var result = objUserController.DeleteAlertRule(ruleId) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+
+        }
+        #endregion
+        #region method to enable/disable alert rule
+        /// <summary>
+        /// To enable/disable the Alert rule
+        /// <author>Devanshi gandhi</author>
+        /// <createddate>17-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void EnableDisableAlertrule()
+        {
+
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            UserController objUserController = new UserController();
+            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
+            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            int ruleId = DataHelper.GetAlertruleId(Sessions.User.UserId);
+            bool turnOff = true;
+            var result = objUserController.DisableAlertRule(ruleId, turnOff) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+
+        }
+        #endregion
+        #region method to get rule list
+        /// <summary>
+        /// To Get the list of Top 5 alert
+        /// <author>Devanshi gandhi</author>
+        /// <createddate>17-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetAlertSummary()
+        {
+
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            UserController objUserController = new UserController();
+            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
+            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+
+            var result = objUserController.GetAlertSummary() as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+         
+        }
+        #endregion
         #endregion
     }
 

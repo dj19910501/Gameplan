@@ -585,5 +585,15 @@ namespace RevenuePlanner.Test.MockHelpers
         {
             return db.ImprovementTacticTypes.Where(pl => pl.ClientId == Clientid && pl.IsDeleted == false).Select(pl => pl).FirstOrDefault();
         }
+       
+        //added by devanshi to get Alertrule Id
+        public static int GetAlertruleId(Guid UserID)
+        {
+            int ruleId = 0;
+            var rules= db.Alert_Rules.Where(a=>a.UserId==UserID ).Select(a => a).FirstOrDefault();
+            if (rules != null)
+                ruleId = rules.RuleId;
+            return ruleId;
+        }
     }
 }
