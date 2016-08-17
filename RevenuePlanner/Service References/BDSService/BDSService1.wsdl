@@ -6,6 +6,7 @@
       <xsd:import schemaLocation="http://stage-new:8085/BDSServiceDev/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
       <xsd:import schemaLocation="http://stage-new:8085/BDSServiceDev/BDSService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" />
       <xsd:import schemaLocation="http://stage-new:8085/BDSServiceDev/BDSService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://stage-new:8085/BDSServiceDev/BDSService.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/BDSService" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IBDSService_ValidateUser_InputMessage">
@@ -494,23 +495,23 @@
   <wsdl:message name="IBDSService_GetClientCurrency_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetClientCurrencyResponse" />
   </wsdl:message>
-  <wsdl:message name="IBDSService_AddClientCurrency_InputMessage">
-    <wsdl:part name="parameters" element="tns:AddClientCurrency" />
+  <wsdl:message name="IBDSService_DeleteExchangeRate_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteExchangeRate" />
   </wsdl:message>
-  <wsdl:message name="IBDSService_AddClientCurrency_OutputMessage">
-    <wsdl:part name="parameters" element="tns:AddClientCurrencyResponse" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_DeleteClientCurrency_InputMessage">
-    <wsdl:part name="parameters" element="tns:DeleteClientCurrency" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_DeleteClientCurrency_OutputMessage">
-    <wsdl:part name="parameters" element="tns:DeleteClientCurrencyResponse" />
+  <wsdl:message name="IBDSService_DeleteExchangeRate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteExchangeRateResponse" />
   </wsdl:message>
   <wsdl:message name="IBDSService_SaveClientCurrency_InputMessage">
     <wsdl:part name="parameters" element="tns:SaveClientCurrency" />
   </wsdl:message>
   <wsdl:message name="IBDSService_SaveClientCurrency_OutputMessage">
     <wsdl:part name="parameters" element="tns:SaveClientCurrencyResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_SaveExchangeRate_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveExchangeRate" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_SaveExchangeRate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveExchangeRateResponse" />
   </wsdl:message>
   <wsdl:message name="IBDSService_GetCurrencyExchangeRate_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCurrencyExchangeRate" />
@@ -843,17 +844,17 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetClientCurrency" message="tns:IBDSService_GetClientCurrency_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetClientCurrencyResponse" message="tns:IBDSService_GetClientCurrency_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="AddClientCurrency">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/AddClientCurrency" message="tns:IBDSService_AddClientCurrency_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/AddClientCurrencyResponse" message="tns:IBDSService_AddClientCurrency_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="DeleteClientCurrency">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/DeleteClientCurrency" message="tns:IBDSService_DeleteClientCurrency_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/DeleteClientCurrencyResponse" message="tns:IBDSService_DeleteClientCurrency_OutputMessage" />
+    <wsdl:operation name="DeleteExchangeRate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/DeleteExchangeRate" message="tns:IBDSService_DeleteExchangeRate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/DeleteExchangeRateResponse" message="tns:IBDSService_DeleteExchangeRate_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="SaveClientCurrency">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/SaveClientCurrency" message="tns:IBDSService_SaveClientCurrency_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/SaveClientCurrencyResponse" message="tns:IBDSService_SaveClientCurrency_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveExchangeRate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/SaveExchangeRate" message="tns:IBDSService_SaveExchangeRate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/SaveExchangeRateResponse" message="tns:IBDSService_SaveExchangeRate_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetCurrencyExchangeRate">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate" message="tns:IBDSService_GetCurrencyExchangeRate_InputMessage" />
@@ -1591,17 +1592,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="AddClientCurrency">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/AddClientCurrency" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="DeleteClientCurrency">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/DeleteClientCurrency" style="document" />
+    <wsdl:operation name="DeleteExchangeRate">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/DeleteExchangeRate" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1611,6 +1603,15 @@
     </wsdl:operation>
     <wsdl:operation name="SaveClientCurrency">
       <soap:operation soapAction="http://tempuri.org/IBDSService/SaveClientCurrency" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveExchangeRate">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/SaveExchangeRate" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
