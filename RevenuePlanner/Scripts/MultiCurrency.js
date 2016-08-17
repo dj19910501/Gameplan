@@ -29,17 +29,23 @@ function setCurrencyDetails()
     }
 }
 //Added by Rahul Shah to Apply multicurrency on client side
-function ConvertDatatoPreferedCurrency(value) {
-   
-    if (value > 0) {
+function GetValueByExchangeRate(value) {
+    debugger;
+    value = value.replace(",", '')
+    value = parseFloat(value);
+    if (value > 0) {        
         value = value * PlanExchangeRate;
+        value = Math.round(value * Math.pow(10, 2)) / Math.pow(10, 2);
     }
     return value;   
 }
 
-function ConvertDatatoDollarCurrency(value) {
+function SetValueByExchangeRate(value) {
+    value = value.replace(",", '')
+    value = parseFloat(value);
     if (value > 0) {
         value = value / PlanExchangeRate;
+        value = Math.round(value * Math.pow(10, 2)) / Math.pow(10, 2);
     }
     return value;
 }

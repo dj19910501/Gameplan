@@ -175,7 +175,7 @@
                         </div>
                         @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                         <!--To call js for forms animations-->
-                        <script type="text/javascript" src="@Url.Content(" ~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+                        <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
                         <script>
                             var nlform = new NLForm(document.getElementById('nl-form'));
                         </script>
@@ -510,7 +510,7 @@
                 if (!$("#revenueSign").is(':visible')) {
                     $('#revenueSign').show();
                     $('#conjuntionWord').html('and ');
-                    var convertedGoalValue = ConvertDatatoPreferedCurrency($("#GoalValue").val());
+                    var convertedGoalValue = GetValueByExchangeRate($("#GoalValue").val());
                     $("#GoalValue").attr('value', convertedGoalValue);
                     $("#GoalValue").attr('placeholder', convertedGoalValue);
                     $("#GoalValue").prev().find('a').html(convertedGoalValue)
@@ -522,7 +522,7 @@
                 if ($("#revenueSign").is(':visible')) {
                     $('#revenueSign').hide();
                     $('#conjuntionWord').html('to deliver ');
-                    var convertedGoalValue = ConvertDatatoDollarCurrency($("#GoalValue").val());
+                    var convertedGoalValue = SetValueByExchangeRate($("#GoalValue").val());
                     $("#GoalValue").attr('value', convertedGoalValue);
                     $("#GoalValue").attr('placeholder', convertedGoalValue);
                     $("#GoalValue").prev().find('a').html(convertedGoalValue)
@@ -550,7 +550,7 @@
             }
 
             if (goalType != '' && goalType.toLowerCase() == 'revenue') {
-                goalValue = ConvertDatatoDollarCurrency(goalValue);
+                goalValue = SetValueByExchangeRate(goalValue);
                 calculateBudget(modelId, goalType, goalValue);
             }
             else {
@@ -590,7 +590,7 @@
                 modelId = $('#ModelId').val();
 
             if (goalType != '' && goalType.toLowerCase() == 'revenue') {
-                goalValue = ConvertDatatoDollarCurrency(goalValue);
+                goalValue = SetValueByExchangeRate(goalValue);
                 calculateBudget(modelId, goalType, goalValue);
             }
             else {
