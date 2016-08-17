@@ -104,6 +104,9 @@ namespace RevenuePlanner.Models
         [RegularExpression(@"^[0-9-+ #*]+", ErrorMessage = "Please enter proper phone number.")]
         public string Phone { get; set; }
         // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+
+        [Display(Name = "Currency")]
+        public string PreferredCurrencyCode { get; set; }
     }
 
     //For User Notification

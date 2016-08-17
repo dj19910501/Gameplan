@@ -122,6 +122,20 @@
             @*End Modified by Dharmraj for ticket #583 on 7th July 2014 *@
         </div>
 
+    <div class="cf inputs-aligned-horizontal">
+        @Html.LabelFor(model => model.PreferredCurrencyCode)
+        <div class="selectBox UserProfile">
+            @if (ViewData["lstClientCurrency"] != null)
+            { 
+                @Html.DropDownListFor(c => c.PreferredCurrencyCode, new SelectList((System.Collections.IEnumerable)ViewData["lstClientCurrency"], "Value", "Text"), new { Id = "ddlPrefCurrCode" })
+            }
+            else
+            {
+                @Html.DropDownListFor(c => c.PreferredCurrencyCode, Enumerable.Empty<SelectListItem>(), "Please Select", new { Id = "ddlPrefCurrCode" })
+            }
+        </div>
+    </div>
+
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.RoleId)
             @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))

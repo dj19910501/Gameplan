@@ -782,6 +782,41 @@ namespace RevenuePlanner.Controllers
                             ViewBag.DefaultImage = imageBytesBase64String;
                         }
                     }
+                    #region " Bind Preferred CurrencyCode Dropdown List "
+                    List<SelectListItem> lstPrefCurrCode = new List<SelectListItem>();
+                    IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrency(Sessions.User.ClientId);
+                    foreach (var item in lstClientCurrency)
+                    {
+                        if (!string.IsNullOrEmpty(item.CurrencySymbol) && !string.IsNullOrEmpty(item.ISOCurrencyCode))
+                        {
+                            SelectListItem objItem1 = new SelectListItem();
+                            objItem1.Text = item.CurrencySymbol + " " + item.ISOCurrencyCode;
+                            objItem1.Value = item.ISOCurrencyCode;
+                            lstPrefCurrCode.Add(objItem1);
+                        }
+                    }
+
+                    if (lstPrefCurrCode.Count > 0)
+                    {
+                        ViewData["lstClientCurrency"] = lstPrefCurrCode;
+                    }
+                    else
+                    {
+                        ViewData["lstClientCurrency"] = null;
+                    }
+
+                    #endregion
+                    if (Sessions.User.PreferredCurrencyCode != null)
+                    {
+                        objUserModel.PreferredCurrencyCode = Sessions.User.PreferredCurrencyCode;
+                    }
+                    else
+                    {
+                        if (lstClientCurrency.Where(w => w.IsDefault == true).Select(w => w.ISOCurrencyCode).Any())
+                        {
+                            objUserModel.PreferredCurrencyCode = lstClientCurrency.Where(w => w.IsDefault == true).Select(w => w.ISOCurrencyCode).FirstOrDefault();
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -914,6 +949,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     objUser.ClientId = form.ClientId;
+                    objUser.PreferredCurrencyCode = form.PreferredCurrencyCode;
                     objUser.RoleId = form.RoleId;
                     if (form.RoleId != null)
                     {
