@@ -223,7 +223,7 @@ namespace RevenuePlanner.Services
             return result;
         }
         #endregion
-        #region method to get alert summary
+        #region method to get alert and noti summary
         public List<Alert> GetAlertAummary(Guid UserId)
         {
             List<Alert> lstAlerts = new List<Alert>();
@@ -240,7 +240,25 @@ namespace RevenuePlanner.Services
             }
             return lstAlerts;
         }
+
+        public List<User_Notification_Messages> GetNotificationListing(Guid UserId)
+        {
+            List<User_Notification_Messages> lstNotifications = new List<User_Notification_Messages>();
+            try
+            {
+
+                lstNotifications = objDbMrpEntities.User_Notification_Messages.Where(a => a.RecipientId == UserId).OrderByDescending(a => a.CreatedDate).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+
+            }
+            return lstNotifications;
+        }
+
         #endregion
-        
+
     }
 }

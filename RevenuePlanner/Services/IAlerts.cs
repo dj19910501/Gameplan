@@ -15,6 +15,7 @@ namespace RevenuePlanner.Services
         int DeleteAlertRule(int RuleId);
         int DisableAlertRule(int RuleId, bool RuleOn);
         List<Alert> GetAlertAummary(Guid UserId);
-     
+        List<User_Notification_Messages> GetNotificationListing(Guid UserId);
+
     }
 }

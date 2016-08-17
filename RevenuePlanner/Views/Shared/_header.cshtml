@@ -142,14 +142,10 @@
             </div>
 
             <div class="notify-list dropdown pull-right">
-                <span class="count">12</span>
+                <span class="count" id="spnNotificationCnt" style="display:none"></span>
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-globe" aria-hidden="true"></i></a>
-                <ul class="dropdown-menu" >
-                    <p class="ul-top clearfix"><span class="pull-left">Notifications</span> <a href="#" class="pull-right">Settings</a></p>
-                    <li><span class="dd-left">Lorem ipsum dolor sit amet</span><span class="dd-right">11Aug2016</span></li>
-                    <li><span class="dd-left">Lorem ipsum dolor sit amet</span><span class="dd-right">11Aug2016</span></li>
-                    <li><span class="dd-left">Lorem ipsum dolor sit amet</span><span class="dd-right">11Aug2016</span></li>
-                    <li><a href="#">See All</a></li>
+                <ul class="dropdown-menu" id="ulNotificationlisting" >
+                    <p class="ul-top clearfix"><span class="pull-left">Notifications</span> <a href="@Url.Action("Notifications", "User")" class="pull-right">Settings</a></p>
                 </ul>
             </div>
 
@@ -187,7 +183,10 @@
     
     $(document).ready(function () {
         $("#spnAlertCnt").css('display', 'none');
-        BindAlertSummary();
+        BindAlertSummary();	
+        GetNotificationListing();          
+
+
      
     });
     function BindAlertSummary()
@@ -222,6 +221,46 @@
                    
                 }
             }
+        });
+    }	
+ //Added by Komal Rawal for #2466 display top 5 notifications
+ function GetNotificationListing() {
+        $.ajax({
+            type: "GET",
+            cache: false,
+            url: '@Url.Action("GetNotificationListing", "User")',
+            data: {
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.Success != null && data.Success == true && data.NotificationsData != 'undefined' && data.NotificationsData != null && data.NotificationsData.length > 0) {
+                    var htmlstring = "";            // Contains html for promotion tactics
+                    var htmlstringForRequests = "";
+                    var cnt = data.Noticount;
+                    if (cnt > 0) {
+                        $("#spnNotificationCnt").css('display', 'block');
+                        $("#spnNotificationCnt").html(data.Noticount);
+                        $.each(data.NotificationsData, function (i, Item) {
+                            if (Item.ActionName == '@Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()') {
+                                htmlstringForRequests += '<li title="' + Item.Description + '" style="cursor:pointer"><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
+                            }
+                            else
+                            {
+                                htmlstring += '<li title="' + Item.Description + '" style="cursor:pointer"><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
+                            }
+                       });
+                            $('#ulNotificationlisting').append(htmlstringForRequests + htmlstring);
+                            $(ulNotificationlisting).append('<li><a href="#">See All</a></li>');
+                    }
+                }
+                else {
+                    $("#spnNotificationCnt").html('');
+                    $("#spnNotificationCnt").css('display', 'none');
+                    $("#ulNotificationlisting").css('display', 'none');
+                }
+
+
+                }
         });
     }
     //**user menu-dropdown

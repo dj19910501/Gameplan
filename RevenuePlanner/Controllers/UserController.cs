@@ -1962,7 +1962,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region method to get alert summary
+        #region methods to get alert and notification summary
         public JsonResult GetAlertSummary()
         {
             int alertCount = 0;
@@ -1987,6 +1987,34 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { Success = true, Alertcount = alertCount, Alertsummary = lstalertSummary }, JsonRequestBehavior.AllowGet);
         }
+        //Added by Komal Rawal for #2466 display top 5 notifications
+        public JsonResult GetNotificationListing()
+        {
+            int NotificationCount = 0;
+            List<NotificationSummary> lstnotificationSummary = new List<NotificationSummary>();
+            try
+            {
+                var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.UserId);
+                if (AllNotification != null && AllNotification.Count > 0)
+                {
+                    NotificationCount = AllNotification.Where(a => a.IsRead == false).ToList().Count();
+                    lstnotificationSummary = AllNotification.Where(a => a.IsRead == false).Select(a => new NotificationSummary
+                    {
+                        Description = a.Description.Trim(),
+                        NotificationCreatedDate = Common.TimeAgo(a.CreatedDate),
+                        NotificationId = a.NotificationId,
+                        ActionName = a.ActionName
+                    }).Take(5).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(new { Success = true, Noticount = NotificationCount, NotificationsData = lstnotificationSummary }, JsonRequestBehavior.AllowGet);
+        }
+        //End
+
         #endregion
       
         #endregion

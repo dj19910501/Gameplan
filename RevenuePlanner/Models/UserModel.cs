@@ -190,4 +190,11 @@ namespace RevenuePlanner.Models
         public string AlertCreatedDate { get; set; }
         public int AlertId { get; set; }
     }
+    public class NotificationSummary
+    {
+        public string Description { get; set; }
+        public string NotificationCreatedDate { get; set; }
+        public int NotificationId { get; set; }
+        public string ActionName { get; set; }
+    }
 }
