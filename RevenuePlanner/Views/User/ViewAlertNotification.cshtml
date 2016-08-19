@@ -1,16 +1,34 @@
 ﻿@using RevenuePlanner.Helpers
 
 @{
-    ViewBag.Title = "ViewAlertNotification";
+    ViewBag.Title = ViewBag.Type;
     Layout = "~/Views/Shared/_Layout.cshtml";
     string Type = ViewBag.Type;
+    ViewBag.PageTitle = "Alerts";
+    ViewBag.ModuleTitle = "MyProfile";
 }
+@section Sidebar {
+    @Html.Partial("~/Views/shared/_preferences.cshtml")
+}
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong>Error!</strong> <span id="spanMessageError"></span>
+</div>
+<!--error message-->
+<div id="divlisting">
+    @Html.Action("AlertNotificationListing", "User", new { type = Type })
+</div> 
 
-@if(Type==Enums.AlertNotification.Alert.ToString().ToLower())
-{
-    <h2>Alerts</h2>
-}
-else if (Type == Enums.AlertNotification.Notification.ToString().ToLower())
-{
-    <h2>Notification</h2>
-}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+    });
+</script>

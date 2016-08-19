@@ -1,0 +1,66 @@
+﻿@model IEnumerable<RevenuePlanner.Models.UserAlertsNotification>
+@using RevenuePlanner.Helpers
+<div class="title-header source-sans-proregular margin-bottom25">
+   
+        <h2><i class="fa fa-bell-o" aria-hidden="true"></i> Alerts</h2>
+        
+    
+</div>
+<div id="content" class="padding-content cf source-sans-proregular padding-top0">
+    <div class="listing-link clearfix">
+        <a class="pull-right" href="@Url.Action("Alerts", "User")">Alert Settings</a>
+    </div>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+                <div class="list-wrap clearfix">
+                    <p class="list-p pull-left">@item.Description <span>@item.CreatedDate</span></p>
+
+                    <input type="checkbox" class="dismissAlert pull-right" alertid="@item.AlertId" title="Dismiss" onchange="DismissAlert(this);" />
+                </div>
+            }
+        }
+        else
+        {
+            <div class="content-panel-tab">
+                <div class="bold padding-top16 font-size18">No records available.</div>
+            </div>
+        }
+    </div>    
+    <script type="text/javascript">
+        $(".dismissAlert").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+        function DismissAlert(e) {
+            $(".tooltip").hide();
+            var id = $(e).attr("alertid");
+            var alerttype = '@Enums.AlertNotification.Alert.ToString()';
+            var result = confirm("Are you sure you want to dismiss the Alert?");
+            if (result) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DismissAlertNotification", "User")',
+                    data: {
+                        type: alerttype,
+                        Id: parseInt(id)
+                    },
+                    success: function (data) {
+                        if (data.Success != null && data.Success == true) {
+                            $("#successMessage").css("display", "block");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text("deleted succesfully");
+                            $("#errorMessage").css("display", "none");
+                            var url = '@Url.Action("AlertNotificationListing", "User")';
+                            url = url + "?type=" + alerttype;
+                            $("#divlisting").load(url);
+                        }
+                    }
+                });
+            }
+            else {
+                $(e).attr('checked', !e.checked);
+            }
+        }
+    </script>

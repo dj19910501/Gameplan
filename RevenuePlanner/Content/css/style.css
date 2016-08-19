@@ -16084,7 +16084,7 @@ input.selectInput{
 
 /* ==== #2457 Accordian for Alert Style ==== */
 .alert-form-wrap{margin-left:30px}
-.clearalert{width: 78%;}
+.clearalert{width: 82%;}
 .btn-create-alert{margin-top:-30px; float:right}
 .accordion.alert-accordian{width:78%}
 .accordion.alert-accordian .accordion-group {

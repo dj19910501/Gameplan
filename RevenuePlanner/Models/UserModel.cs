@@ -200,4 +200,15 @@ namespace RevenuePlanner.Models
         public int NotificationId { get; set; }
         public string ActionName { get; set; }
     }
+    public class UserAlertsNotification
+    {
+        public int? NotificationId { get; set; }
+        public int? AlertId { get; set; }
+        public string Description { get; set; }
+        public string CreatedDate { get; set; }
+        public string ActionName { get; set; }
+        public int? PlanID { get; set; }
+    }
+
+
 }
