@@ -1,0 +1,118 @@
+﻿@model IEnumerable<RevenuePlanner.Models.UserAlertsNotification>
+@using RevenuePlanner.Helpers
+@{
+    var NotificationList = Model.Where(list => list.ActionName != Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()).ToList();
+    var RequestList = Model.Where(list => list.ActionName == Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()).ToList();
+
+}
+
+<div class="title-header source-sans-proregular margin-bottom25">
+    <h2><i class="fa fa-globe" aria-hidden="true"></i> Notifications</h2>
+</div>
+<div id="content" class="padding-content cf source-sans-proregular padding-top0">
+    <div class="listing-link clearfix">
+        <a class="pull-right" href="@Url.Action("Notifications", "User")">Notification Settings</a>
+    </div>
+
+    @if (RequestList.Count > 0)
+    {
+        <div class="request-wrap">
+            <h3 class="sideline"><span>Requests</span></h3>
+
+            @foreach (var item in RequestList)
+            {
+                <div class="list-wrap clearfix" style="cursor:pointer" >
+                    <p class="list-p pull-left" PlanId="@item.PlanID" onclick="RequestItemClick(this)">@item.Description <span>@item.CreatedDate</span></p>
+                    <input type="checkbox" class="dismissAlert pull-right" id="@item.NotificationId" title="Dismiss" onchange="DismissNotification(this)" />
+                </div>
+
+            }
+        </div>
+    }
+    @if (NotificationList.Count > 0)
+    {
+        <div class="request-wrap margin-top23">
+            <h3 class="sideline"><span>Notifications</span></h3>
+
+            @foreach (var item in NotificationList)
+            {
+                <div class="list-wrap clearfix">
+                    <p class="list-p pull-left">@item.Description <span>@item.CreatedDate</span></p>
+                    <input type="checkbox" class="dismissAlert pull-right" id="@item.NotificationId" title="Dismiss" onchange="DismissNotification(this)" />
+                </div>
+            }
+        </div>
+    }
+
+    @if (NotificationList.Count == 0 && RequestList.Count == 0)
+    {
+        <div class="content-panel-tab">
+            <div class="bold padding-top16 font-size18">No records available.</div>
+        </div>
+    }
+</div>
+
+
+
+
+
+<script type="text/javascript">
+    $("#content_wraper").removeClass("all-height").addClass("padding-top40");
+    $(".dismissAlert").tooltip({
+        'container': 'body',
+        'placement': 'bottom'
+    });
+    function DismissNotification(e)
+    {
+        var id = $(e).attr("id");
+        var alerttype = '@Enums.AlertNotification.Notification.ToString().ToLower()';
+        var result = confirm("Are you sure you want to delete the Alert?");
+        if (result) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DismissAlertNotification", "User")',
+                data: {
+                    type: alerttype,
+                    Id: parseInt(id)
+                },
+                success: function (data) {
+                    if (data.Success != null && data.Success == true) {
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text("deleted succesfully");
+                        $("#errorMessage").css("display", "none");
+                        var url = '@Url.Action("AlertNotificationListing", "User")';
+                        url = url + "?type=" + alerttype;
+                        $("#divlisting").load(url);
+                    }
+                }
+            });
+        }
+        else {
+            $(e).attr('checked', !e.checked);
+        }
+    }
+
+    function RequestItemClick(e)
+    {
+        var PlanId = $(e).attr("PlanId");
+        if (PlanId != null) {
+            var queryStringArr = [];
+
+            queryStringArr.push(
+                {
+                    key: 'currentPlanId',
+                    Value: PlanId
+                });
+
+            queryStringArr.push(
+             {
+                 key: 'IsRequest',
+                 Value: "true"
+             });
+         
+            formSubmitEvent('@Url.Content("~/Home/Index")', queryStringArr);
+        }
+
+    }
+</script>

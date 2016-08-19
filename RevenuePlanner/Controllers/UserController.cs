@@ -2080,7 +2080,7 @@ namespace RevenuePlanner.Controllers
         {
             List<UserAlertsNotification> DataList = new List<UserAlertsNotification>();
 
-            if (type == Convert.ToString(Enums.AlertNotification.Notification))
+            if (type.ToLower() == Convert.ToString(Enums.AlertNotification.Notification).ToLower())
             {
                 var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.UserId);
                 if (AllNotification != null && AllNotification.Count > 0)

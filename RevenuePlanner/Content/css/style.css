@@ -16302,6 +16302,8 @@ input.serach-input {
     margin-top:0;
     line-height:20px;
 } 
+.request-wrap{ width: 85%;}
+.request-wrap .list-wrap{ width: 100%;}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

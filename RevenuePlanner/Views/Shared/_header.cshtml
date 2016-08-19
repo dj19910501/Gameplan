@@ -233,13 +233,30 @@
                 url = url + "?type=" + alertType;
                 window.location = url;
             }
+        });   
+    });
 
-
-        });
-
-
+    $(document).on('click',"#ulNotificationlisting li",function (e) {
+        var Title = $(this).attr('title');
+        if (Title != "All")
+        {
+            e.stopPropagation();
+            e.preventDefault();
+        }
      
     });
+
+    $(document).on('click', "#UlAlertsummary li", function (e) {
+        var Title = $(this).attr('title');
+        if (Title != "All") {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+
+    });
+
+
+
     function BindAlertSummary()
     {
         $.ajax({
@@ -260,7 +277,7 @@
                             });
                             var url = '@Url.Action("ViewAlertNotification", "User")';
                             url = url + "?type="+'@Enums.AlertNotification.Alert.ToString()'
-                            $(cList).append('<li><a href="'+url+'">See All</a></li>');
+                            $(cList).append('<li title="All"><a href="' + url + '">See All</a></li>');
                         }
                     }
                     else
@@ -294,17 +311,17 @@
                         $("#spnNotificationCnt").html(data.Noticount);
                         $.each(data.NotificationsData, function (i, Item) {
                             if (Item.ActionName == '@Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()') {
-                                htmlstringForRequests += '<li title="' + Item.Description + '" style="cursor:pointer"><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
+                                htmlstringForRequests += '<li title="' + Item.Description + '"><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
                             }
                             else
                             {
-                                htmlstring += '<li title="' + Item.Description + '" style="cursor:pointer"><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
+                                htmlstring += '<li title="' + Item.Description + '"><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
                             }
                        });
                         $('#ulNotificationlisting').append(htmlstringForRequests + htmlstring);
                         var url = '@Url.Action("ViewAlertNotification", "User")';
                         url = url + "?type=" + '@Enums.AlertNotification.Notification.ToString()'
-                        $('#ulNotificationlisting').append('<li><a href="' + url + '">See All</a></li>');
+                        $('#ulNotificationlisting').append('<li  title="All"><a href="' + url + '">See All</a></li>');
                     }
                 }
                 else {
