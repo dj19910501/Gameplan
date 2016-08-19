@@ -16278,6 +16278,30 @@ input.serach-input {
     margin: 10px 0;
 }
 .selectyear label{float: left; margin: 0 10px 0 0; line-height: 25px;}
+
+.list-wrap{
+    background: #f0f0f0 none repeat scroll 0 0;
+    margin-bottom: 5px;
+    padding: 5px 8px;
+    width: 85%;
+}
+.list-p{
+    margin-bottom: 0;
+}
+.list-p > span {
+    color: #aaa;
+    display: block;
+    font-size: 12px;
+}
+.listing-link{width: 85%;}
+.listing-link a {
+    color: inherit;
+    margin-top: -44px;
+}
+.request-wrap h3 {
+    margin-top:0;
+    line-height:20px;
+} 
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
