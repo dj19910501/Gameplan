@@ -28,6 +28,7 @@
     var ListBudgetingPlan = Model.objplanhomemodelheader != null ? Model.objplanhomemodelheader.plans : new List<SelectListItem>(); //Added By Komal Rawal for new homepage UI
     var IsGridView = (bool)ViewBag.GridView;
     var IsPlanSelector = (bool)ViewBag.IsPlanSelector;
+    var RedirectToRequest = (bool)ViewBag.IsRequest;
     //   var IsSavedPlan = (string)ViewBag.LastSavedPlanIDs;
     var PreviousPlanID = (int)ViewBag.PreviousPlanID;
 
@@ -5202,6 +5203,11 @@
         //// Global variable to hold current tab.
         var type = '@PlanGanttTypes.Tactic.ToString()';
         var isRequest = false;
+        var RedirectToRequest = '@RedirectToRequest.ToString().ToLower()'
+        if(RedirectToRequest == "true")
+        {
+            isRequest = true;
+        }
         var showTacticStatus = false;   //// Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
 
         //// Function to refresh current tab.

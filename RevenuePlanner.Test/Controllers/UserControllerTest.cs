@@ -618,7 +618,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objUserController.GetAlertRuleList() as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.IsNotNull(result.Model);
-            Assert.AreEqual("_AlertListing", result.ViewName);
+            Assert.AreEqual("_AlertRuleListing", result.ViewName);
 
         }
         #endregion

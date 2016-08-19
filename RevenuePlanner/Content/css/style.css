@@ -1703,7 +1703,7 @@ span.requests-logo-icon {
     text-shadow: none !important;
     transition: background 0.2s ease-out;
 }
-.btn:hover, .btn:focus {
+.btn:hover {
     color: #fff;
 }
 .btn-blue, .btn-blue-disable { /* Edited for #2219 - Bhumika */
@@ -15477,7 +15477,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 162px;
+    width: 150px;
 }
 .dd-right{
     float: right;
@@ -16084,7 +16084,8 @@ input.selectInput{
 
 /* ==== #2457 Accordian for Alert Style ==== */
 .alert-form-wrap{margin-left:30px}
-.btn-create-alert{margin-top:-30px}
+.clearalert{width: 82%;}
+.btn-create-alert{margin-top:-30px; float:right}
 .accordion.alert-accordian{width:78%}
 .accordion.alert-accordian .accordion-group {
     background: #f2f2f2 none repeat scroll 0 0;
@@ -16195,10 +16196,11 @@ input.selectInput{
 .pref-msg-row .wraper-checkbox > span { 
     display: inline-block;
     float: left;
-    width: 30%;
+    width: 38%;
     padding-right:15px;
 }
-
+.alertdiv-delet{position:absolute; right:0;right: 0; top: 5px;}
+.alertdiv-delet a{color: #95989a;font-size: 18px;} 
 /* Currency listing Style */
 #liConversionrate{ margin-bottom: 12px;}
 
@@ -16215,10 +16217,9 @@ input.selectInput{
 }
 .currency-wrap ul > li {padding:2px 2px 4px;}
 .currency-wrap ul li > a {color: inherit;}
+.currency-txt{font-size:13px}
 .searchactive{background: #ddd none repeat scroll 0 0;}
-.searchinactive {
-        background: none;
-    }
+.searchinactive {background: none;}
 .row-fluid .currency-content .span5 { width: 48%;}
 #divCurrencyList{margin-right:15px}
 .currency-wrap{
@@ -16241,7 +16242,7 @@ input.selectInput{
 }
 input.serach-input {
     border-radius: 5px 0 0 5px;
-    width: 85%;
+    width: 85.5%;
 }
 .btn.btn-add-remove {
     height: 35px;
@@ -16251,6 +16252,58 @@ input.serach-input {
     /*color: #908d88;*/
 }
 .currency-content h4{font-weight:normal}
+/*line on side of header */
+.sideline {
+    position: relative;
+    text-align: left;
+    font-weight: normal;
+}
+.sideline span {
+  background: #fff;
+  padding: 0 20px 0 0;
+  position: relative;
+  z-index: 1;
+}
+.sideline:before {
+  background: #ddd;
+  content: "";
+  display: block;
+  height: 1px;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  left: 0;
+}
+.selectyear {
+    margin: 10px 0;
+}
+.selectyear label{float: left; margin: 0 10px 0 0; line-height: 25px;}
+
+.list-wrap{
+    background: #f0f0f0 none repeat scroll 0 0;
+    margin-bottom: 5px;
+    padding: 5px 8px;
+    width: 85%;
+}
+.list-p{
+    margin-bottom: 0;
+}
+.list-p > span {
+    color: #aaa;
+    display: block;
+    font-size: 12px;
+}
+.listing-link{width: 85%;}
+.listing-link a {
+    color: inherit;
+    margin-top: -44px;
+}
+.request-wrap h3 {
+    margin-top:0;
+    line-height:20px;
+} 
+.request-wrap{ width: 85%;}
+.request-wrap .list-wrap{ width: 100%;}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

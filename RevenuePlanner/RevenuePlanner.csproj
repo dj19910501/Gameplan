@@ -369,10 +369,10 @@
     <Content Include="Content\css\NaturalLanguageForm\component.css" />
     <Content Include="Content\css\NaturalLanguageForm\default.css" />
     <Content Include="Content\css\Select2\select2.css" />
-    <Content Include="Content\css\style_min_Aug_13.css" />
+    <Content Include="Content\css\style_min_Aug_19_1.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
-    <Content Include="Content\css\style_extended_min_Aug_3.css" />
+    <Content Include="Content\css\style_extended_min_Aug_1.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -945,7 +945,7 @@
     <Content Include="Views\MeasureDashboard\Index.cshtml" />
     <Content Include="Views\User\Currency.cshtml" />
     <Content Include="Views\User\Alerts.cshtml" />
-    <Content Include="Views\User\_AlertListing.cshtml" />
+    <Content Include="Views\User\_AlertRuleListing.cshtml" />
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.AppConfiguration.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
@@ -992,6 +992,8 @@
     <Content Include="Views\User\_PlanCurrencyGrid.cshtml" />
     <Content Include="Views\User\_ReportCurrencyGrid.cshtml" />
     <Content Include="Views\User\ViewAlertNotification.cshtml" />
+    <Content Include="Views\User\_AllAlertListing.cshtml" />
+    <Content Include="Views\User\_NotificationListing.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

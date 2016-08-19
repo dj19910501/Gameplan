@@ -1386,7 +1386,6 @@ namespace RevenuePlanner.Controllers
         #region Currency
         //insertation start 09/08/2016 kausha #2492 Following  is added to get and save currency.
         public ActionResult Currency()
-
         {
             List<CurrencyModel> lstCurrency = new List<CurrencyModel>();
             IEnumerable<BDSService.Currency> lstCurrencydata = objBDSServiceClient.GetAllCurrency();
@@ -1767,6 +1766,7 @@ namespace RevenuePlanner.Controllers
             List<vClientWise_EntityList> lstentity = new List<vClientWise_EntityList>();
             try
             {
+             
                 var ClientEntityList = (List<vClientWise_EntityList>)objCache.Returncache(Enums.CacheObject.ClientEntityList.ToString());
 
                 if (ClientEntityList != null)
@@ -1784,7 +1784,7 @@ namespace RevenuePlanner.Controllers
                     category = a.Entity,
                     value = a.EntityId,
                     label = a.EntityTitle
-                }).ToList();
+                }).Take(500).ToList();
             }
             catch (Exception ex)
             {
@@ -1830,9 +1830,9 @@ namespace RevenuePlanner.Controllers
                 {
 
                     AlertRuleDetail objRule = RuleDetail;
-                     Int32.TryParse(objRule.EntityID, out EntityID);
-                     Int32.TryParse(objRule.IndicatorGoal, out indicatorGoal);
-                     Int32.TryParse(objRule.CompletionGoal, out Completiongoal);
+                    Int32.TryParse(objRule.EntityID, out EntityID);
+                    Int32.TryParse(objRule.IndicatorGoal, out indicatorGoal);
+                    Int32.TryParse(objRule.CompletionGoal, out Completiongoal);
 
                     if (objRule.EntityID != null && Int32.Parse(objRule.EntityID) != 0)
                     {
@@ -1947,7 +1947,7 @@ namespace RevenuePlanner.Controllers
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
-            return PartialView("_AlertListing", objalert);
+            return PartialView("_AlertRuleListing", objalert);
         }
         #endregion
         #region method to delete alert rule
@@ -1984,7 +1984,7 @@ namespace RevenuePlanner.Controllers
                 if (RuleId != 0)
                 {
                     int result = objcommonalert.DisableAlertRule(RuleId, RuleOn);
-                    if(result>0)
+                    if (result > 0)
                         return Json(new { Success = true, SuccessMessage = Common.objCached.UpdateAlertRule }, JsonRequestBehavior.AllowGet);
 
                 }
@@ -2002,18 +2002,18 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetAlertSummary()
         {
             int alertCount = 0;
-            List<AlertSummary> lstalertSummary= new List<AlertSummary>();
+            List<AlertSummary> lstalertSummary = new List<AlertSummary>();
             try
             {
                 var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
-                if(AllAlert!=null && AllAlert.Count>0)
+                if (AllAlert != null && AllAlert.Count > 0)
                 {
                     alertCount = AllAlert.Where(a => a.IsRead == false).ToList().Count();
                     lstalertSummary = AllAlert.Where(a => a.IsRead == false).Select(a => new AlertSummary
                         {
-                        Description=a.Description.Trim(),
-                        AlertCreatedDate=Common.TimeAgo(a.CreatedDate),
-                        AlertId=a.AlertId
+                            Description = a.Description.Trim(),
+                            AlertCreatedDate = Common.TimeAgo(a.CreatedDate),
+                            AlertId = a.AlertId
                         }).Take(5).ToList();
                 }
             }
@@ -2055,7 +2055,14 @@ namespace RevenuePlanner.Controllers
         #region Method to update IsRead column for alert & Notification
         public async Task<JsonResult> UpdateAlertNotification(string type)
         {
-            int result = objcommonalert.UpdateAlert_Notification_IsRead(type.ToLower(), Sessions.User.UserId);
+            try
+            {
+                int result = objcommonalert.UpdateAlert_Notification_IsRead(type.ToLower(), Sessions.User.UserId);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
             await Task.Delay(1);
             return Json(new { Success = true }, JsonRequestBehavior.AllowGet);
         }
@@ -2068,6 +2075,65 @@ namespace RevenuePlanner.Controllers
             return View();
         }
         #endregion
+
+        public ActionResult AlertNotificationListing(string type)
+        {
+            List<UserAlertsNotification> DataList = new List<UserAlertsNotification>();
+
+            if (type.ToLower() == Convert.ToString(Enums.AlertNotification.Notification).ToLower())
+            {
+                var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.UserId);
+                if (AllNotification != null && AllNotification.Count > 0)
+                {
+                    DataList = AllNotification.Select(a => new UserAlertsNotification
+                    {
+                        Description = a.Description.Trim(),
+                        CreatedDate = Common.TimeAgo(a.CreatedDate),
+                        NotificationId = a.NotificationId,
+                        ActionName = a.ActionName,
+                        PlanID = a.ComponentId
+
+                    }).ToList();
+                }
+
+                return PartialView("_NotificationListing", DataList.AsEnumerable());
+            }
+            else
+            {
+                var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
+                if (AllAlert != null && AllAlert.Count > 0)
+                {
+                    DataList = AllAlert.Select(a => new UserAlertsNotification
+                    {
+                        Description = a.Description.Trim(),
+                        CreatedDate = Common.TimeAgo(a.CreatedDate),
+                        AlertId = a.AlertId
+                    }).ToList();
+                }
+                return PartialView("_AllAlertListing", DataList.AsEnumerable());
+            }
+
+        }
+
+        #region method to Dismiss alert and Notification
+        public JsonResult DismissAlertNotification(string type, int Id)
+        {
+            try
+            {
+                int result = objcommonalert.DismissAlert_Notification(type.ToLower(), Id);
+                if (result > 0)
+                    return Json(new { Success = true }, JsonRequestBehavior.AllowGet);
+                else
+                    return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
         #endregion
     }
 }

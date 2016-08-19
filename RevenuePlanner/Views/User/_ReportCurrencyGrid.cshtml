@@ -21,11 +21,10 @@
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
 
-    <div>
-        <h2>Reporting</h2>
-        <div id="ReportCurrencyGrid" class="gridViewGrid" style="padding:3%;"></div>
 
-    </div>
+        <h3 class="sideline"><span>Reporting</span></h3>
+        <div id="ReportCurrencyGrid" class="gridViewGrid"></div>
+
     
 
 @Html.Hidden("hdnErrorUnarchive", errorUnarchive, new { id = "hdnErrorUnarchive" })

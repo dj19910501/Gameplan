@@ -17,5 +17,6 @@ namespace RevenuePlanner.Services
         List<Alert> GetAlertAummary(Guid UserId);
         List<User_Notification_Messages> GetNotificationListing(Guid UserId);
 		 int UpdateAlert_Notification_IsRead(string Type, Guid UserId);
+         int DismissAlert_Notification(string Type, int Id);
     }
 }

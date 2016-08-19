@@ -63,7 +63,7 @@
                             {
                                 <li id="licurrency_@item.ISOCurrencyCode">
                                     <a href="#">
-                                        <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
+                                        <strong>@item.CurrencySymbol @item.ISOCurrencyCode</strong> <span class="currency-txt">(@item.CurrencyDetail)</span>
                                     </a>
                                 </li>
                             }
@@ -85,7 +85,7 @@
                             {
                                 <li id="limycurrency_@item.ISOCurrencyCode" isdefault='@item.IsDefault'>
                                     <a href="#">
-                                        <span>@item.CurrencySymbol @item.ISOCurrencyCode (@item.CurrencyDetail)</span>
+                                        <strong>@item.CurrencySymbol @item.ISOCurrencyCode</strong> <span class="currency-txt">(@item.CurrencyDetail)</span>
                                     </a>
                                 </li>
 
@@ -143,7 +143,7 @@
     }
     $(document).ready(function () {
 
-        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        $("#content_wraper").removeClass("all-height").addClass("padding-top40");
 
         /*close x event on message*/
         $(".close").click(function (e) {
