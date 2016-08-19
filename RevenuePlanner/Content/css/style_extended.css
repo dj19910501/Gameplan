@@ -1678,9 +1678,9 @@ a {
     left: 50%;
     z-index: 1050;
     text-align: center;
-    width: 320px;
-    height: 350px;
-    padding: 15px 20px 5px 20px;
+    /*width: 320px;
+    height: 350px;*/ /*Commented by Bhumika 17-8-2016 */
+    padding: 15px 20px;
     margin: -175px 0 0 -160px;
     background-color: #3f3f3f;
     -webkit-border-radius: 5px;
@@ -1714,9 +1714,8 @@ a {
 
     .form-inspect-delete-tactic button {
         float: left;
-        height: 17px;
-        background: url("../images/btn-login.jpg") repeat-x #3b9de4;
-        background-color: #3b9de4;
+        background: /*url("../images/btn-login.jpg") repeat-x*/ #89cede;
+        /*background-color: #3b9de4;*/
         border: none;
         font-size: 18px;
         margin-top: 20px;
@@ -1726,7 +1725,8 @@ a {
         padding-left: 15px;
         padding-right: 15px;
     }
-
+    .form-inspect-delete-tactic button#btnDeleteImpTactic:hover,
+    .form-inspect-delete-tactic button#btnDeleteImpTactic:focus{background: #70bbcc;}
     .form-inspect-delete-tactic .cancel {
         background: none;
         box-shadow: none;

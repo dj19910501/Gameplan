@@ -1,41 +1,66 @@
 ﻿@using RevenuePlanner.Helpers;
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
     var countrows = 0;
 
     ViewBag.PageTitle = "Currency";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     ViewBag.ModuleTitle = "Currency";
 
 }
-
+<style>
+     .currency-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+        text-align: center;
+        padding-left: 0px !important;
+    }
+   .currency-tbl div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
+   .currency-tbl div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px,
+   div.gridbox{
+        width: 100% !important;
+    }
+    .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td {
+        padding-left: 8px;padding-right: 8px;
+    }
+   .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj tr.ev_dhx_skyblue{background: #f0f0f0}
+     /*div.gridbox_dhx_skyblue.gridbox div.xhdr{background: #88cede; }
+   div.gridbox_dhx_skyblue.gridbox table.hdr tr:nth-child(2) td {
+        border-top: medium none;
+    }
+    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {color: #fff !important;}*/
+</style>
 @section Sidebar {
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
+
 @using (Html.BeginForm())
 {
-    <h2>
-        Currency Exchange rate
-    </h2>
-    <div>
-        <div id="errorMessage" class="alert hide alert-error ">
-            <a class="close">×</a>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
-            <strong>Error !</strong><span id="diverrormsg"></span>
+   
+        
+            <div id="errorMessage" class="alert hide alert-error ">
+                <a class="close">×</a>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+                <strong>Error !</strong><span id="diverrormsg"></span>
+
+            </div>
+        
+        //changed by Bhumika for design #2492
+        <div class="title-header source-sans-proregular margin-bottom25">
+            <h2>
+                Currency Exchange rate
+            </h2>
+        </div>
+        <div class="padding-content  cf source-sans-proregular">
+            <div class="selectyear">
+                <label>Select Year</label> @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
+            </div>
+
+
+            <div id="PlanGrid" class="gridViewGrid currency-tbl"></div>
+
+
+            <div id="ReportGrid" class="gridViewGrid currency-tbl margin-top40"></div>
 
         </div>
-    </div>
-    <div>
-        @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
-    </div>
-
-    <div>
-        <div id="PlanGrid" class="gridViewGrid"></div>
-    </div>
-    <div>
-        <div id="ReportGrid" class="gridViewGrid"></div>
-    </div>
-
-}
-
+        }
+ 
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 
 
@@ -50,7 +75,7 @@
 
     });
     $(document).ready(function () {
-
+        $("#content_wraper").removeClass("all-height").addClass("padding-top40");
         $('.nav').addClass('no-bottom-border');
         var year = $("#drpYear option:selected").text();
         if (year != '') {
