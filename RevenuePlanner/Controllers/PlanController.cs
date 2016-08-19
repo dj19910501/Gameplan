@@ -8507,67 +8507,70 @@ namespace RevenuePlanner.Controllers
             //Added Sp part by mitesh
             List<BudgetModel> model1 = new List<BudgetModel>();
             DataTable dt = objSp.GetPlannedActualDetail(PlanId, budgetTab.ToString());
+            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+            //Insertation Start 19/08/2016 Kausha #2503 Used GetValuebyExchnagerate function to display values in users currency. 
             model = dt.AsEnumerable().Select(row => new BudgetModel
                 {
                     Id = row["Id"].ToString(),
                     ActivityId = row["ActivityId"].ToString(),
                     ActivityName = row["ActivityName"].ToString(),
                     ParentActivityId = row["ParentActivityId"].ToString(),
-                    Budgeted = ParseDoubleValue(row["Cost"].ToString()),
+                    Budgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Cost"].ToString())),
                     IsOwner = Convert.ToBoolean(row["IsOwner"]),
                     BudgetMonth = new BudgetMonth()
                     {
-                        Jan = ParseDoubleValue(row["Y1"].ToString()),
-                        Feb = ParseDoubleValue(row["Y2"].ToString()),
-                        Mar = ParseDoubleValue(row["Y3"].ToString()),
-                        Apr = ParseDoubleValue(row["Y4"].ToString()),
-                        May = ParseDoubleValue(row["Y5"].ToString()),
-                        Jun = ParseDoubleValue(row["Y6"].ToString()),
-                        Jul = ParseDoubleValue(row["Y7"].ToString()),
-                        Aug = ParseDoubleValue(row["Y8"].ToString()),
-                        Sep = ParseDoubleValue(row["Y9"].ToString()),
-                        Oct = ParseDoubleValue(row["Y10"].ToString()),
-                        Nov = ParseDoubleValue(row["Y11"].ToString()),
-                        Dec = ParseDoubleValue(row["Y12"].ToString())
+                        Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y1"].ToString())),
+                        Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y2"].ToString())),
+                        Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y3"].ToString())),
+                        Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y4"].ToString())),
+                        May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y5"].ToString())),
+                        Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y6"].ToString())),
+                        Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y7"].ToString())),
+                        Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y8"].ToString())),
+                        Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y9"].ToString())),
+                        Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y10"].ToString())),
+                        Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y11"].ToString())),
+                        Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y12"].ToString()))
                     },
-                    Allocated = ParseDoubleValue(row["TotalBudgetSum"].ToString()),
+                    Allocated = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["TotalBudgetSum"].ToString())),
                     Month = new BudgetMonth()
                     {
-                        Jan = ParseDoubleValue(row["CY1"].ToString()),
-                        Feb = ParseDoubleValue(row["CY2"].ToString()),
-                        Mar = ParseDoubleValue(row["CY3"].ToString()),
-                        Apr = ParseDoubleValue(row["CY4"].ToString()),
-                        May = ParseDoubleValue(row["CY5"].ToString()),
-                        Jun = ParseDoubleValue(row["CY6"].ToString()),
-                        Jul = ParseDoubleValue(row["CY7"].ToString()),
-                        Aug = ParseDoubleValue(row["CY8"].ToString()),
-                        Sep = ParseDoubleValue(row["CY9"].ToString()),
-                        Oct = ParseDoubleValue(row["CY10"].ToString()),
-                        Nov = ParseDoubleValue(row["CY11"].ToString()),
-                        Dec = ParseDoubleValue(row["CY12"].ToString())
+                        Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString())),
+                        Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString())),
+                        Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString())),
+                        Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString())),
+                        May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString())),
+                        Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString())),
+                        Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString())),
+                        Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString())),
+                        Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString())),
+                        Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString())),
+                        Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString())),
+                        Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()))
                     },
-                    MainBudgeted = ParseDoubleValue(row["MainBudgeted"].ToString()),
+                    MainBudgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["MainBudgeted"].ToString())),
                     CreatedBy = new Guid(row["CreatedBy"].ToString()),
                     isAfterApproved = Convert.ToBoolean(row["IsAfterApproved"]),
                     isEditable = Convert.ToBoolean(row["IsEditable"]),
                     ActivityType = row["ActivityType"].ToString(),
                     ParentMonth = row["ActivityType"].ToString() == ActivityType.ActivityLineItem.ToString() ? new BudgetMonth()
                     {
-                        Jan = ParseDoubleValue(row["CY1"].ToString()),
-                        Feb = ParseDoubleValue(row["CY2"].ToString()),
-                        Mar = ParseDoubleValue(row["CY3"].ToString()),
-                        Apr = ParseDoubleValue(row["CY4"].ToString()),
-                        May = ParseDoubleValue(row["CY5"].ToString()),
-                        Jun = ParseDoubleValue(row["CY6"].ToString()),
-                        Jul = ParseDoubleValue(row["CY7"].ToString()),
-                        Aug = ParseDoubleValue(row["CY8"].ToString()),
-                        Sep = ParseDoubleValue(row["CY9"].ToString()),
-                        Oct = ParseDoubleValue(row["CY10"].ToString()),
-                        Nov = ParseDoubleValue(row["CY11"].ToString()),
-                        Dec = ParseDoubleValue(row["CY12"].ToString())
+                        Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString())),
+                        Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString())),
+                        Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString())),
+                        Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString())),
+                        May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString())),
+                        Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString())),
+                        Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString())),
+                        Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString())),
+                        Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString())),
+                        Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString())),
+                        Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString())),
+                        Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()))
                     } : null
 
                 }).ToList();
+            //Insertation End 19/08/2016 Kausha #2503 Used GetValuebyExchnagerate function to display values in users currency. 
             //End Sp part by mitesh
 
 

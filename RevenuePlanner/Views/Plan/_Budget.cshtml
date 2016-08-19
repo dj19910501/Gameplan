@@ -1,5 +1,4 @@
 ﻿@model RevenuePlanner.Models.BudgetDHTMLXGridModel
-
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
 @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
@@ -7,8 +6,8 @@
 @{
     @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
     //BudgetDHTMLXGridModel objBudgetDHTMLXGrid = (BudgetDHTMLXGridModel)Session["objBudgetDHTMLXGrid"];
-  
-    
+
+
     string AllocatedBy = ViewBag.AllocatedBy;
     @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
     //BudgetModel plan = Model.Where(p => p.ActivityType == ActivityType.ActivityPlan).SingleOrDefault();
@@ -18,12 +17,12 @@
     string strViewBy = Convert.ToString(ViewBag.ViewBy).ToLower();
     BudgetMonth PercAllocated = ViewBag.PercAllocated;
     double planAllocation = 0;
-    
+
     // Modified by Rushil Bhuptani on 26/05/2016 for #2191
     double sumMonth = ViewBag.SumMonth;
     planAllocation = ViewBag.PlanAllocation;
     double mainBudgeted = ViewBag.MainBudgeted;
-    
+
     string strTab = Convert.ToString(ViewBag.Tab);
     bool isquarter = false;
     if (AllocatedBy.ToLower() == strQuarters)
@@ -39,49 +38,40 @@
 
 <script src="~/Scripts/jquery.cluetip.js"></script>
 <style>
-     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell
-    {
+    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
         text-align: center;
         padding-left: 0px !important;
     }
 
-    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr
-    {
+    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
         width: 100% !important;
     }
 
-        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr tr
-        {
+        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr tr {
             color: black;
         }
 
-    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px
-    {
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
         width: 100% !important;
     }
 
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr
-        {
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr {
             color: black;
         }
 
-            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.treegrid_cell
-            {
+            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.treegrid_cell {
                 text-align: left !important;
             }
 
-            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div
-            {
+            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div {
                 text-align: center;
             }
 
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar.budgetError
-        {
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar.budgetError {
             background: #ff1e26 none repeat scroll 0 0;
         }
 
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar
-        {
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar {
             background: #3fa9f5 none repeat scroll 0 0;
             bottom: 0;
             height: 2px !important;
@@ -92,18 +82,15 @@
             position: absolute;
         }
 
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.budgetError, span.budgetError
-        {
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.budgetError, span.budgetError {
             color: #ff1e26;
         }
 
-    #gridbox.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td
-    {
+    #gridbox.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td {
         position: relative;
     }
 
-    .dhxgrid_sort_asc, .dhxgrid_sort_desc
-    {
+    .dhxgrid_sort_asc, .dhxgrid_sort_desc {
         background-repeat: no-repeat;
         height: 26px;
         top: 44px !important;
@@ -118,11 +105,12 @@
 </style>
 
 <div id="errorMessageInspectPopup" class="alert hide alert-error message-position">
-    <a class="close">×</a> 
+    <a class="close">×</a>
     <div id="cErrorInspectPopup"></div>
 </div>
 <div class="tab-content all-height cf" style="position: relative">
-    <div class="ExpImp-Btnwrap clearfix"> @* Button style change by Bhumika #2446 *@
+    <div class="ExpImp-Btnwrap clearfix">
+        @* Button style change by Bhumika #2446 *@
         <a class="btn btn-fill-white budget-export-link" style="cursor: pointer" id="exportcsv" onclick="return ExportToExcel(); ">
             <span>Export</span>
         </a>
@@ -215,28 +203,27 @@
     </div>
 </div>
 <div id="loadme" class="loadme-true" style="display:none">
-   	<h3 class="source-sans-proregular"></h3>
-   	<div class="tooltip-field">
+    <h3 class="source-sans-proregular"></h3>
+    <div class="tooltip-field">
     </div>
     <p class="button-grp-tooltip"> <button class="btn btn-blue text-shadow-blue source-sans-proregular tooltip-button" id="btnClueTip">Save</button> </p>
-   </div>
- <div class="container-fluid all-height" id="modalMainContainer">
+</div>
+<div class="container-fluid all-height" id="modalMainContainer">
     <div class="row-fluid calc-height">
         <div class="container-fluid">
             <div class="row-fluid ">
                 <div class="span12">
-
-  <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed;overflow:hidden;">
-      <div class="partial_wrapper">
-                            <div id="successMessage" class="alert alert-success  messagewidth" >
+                    <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed;overflow:hidden;">
+                        <div class="partial_wrapper">
+                            <div id="successMessage" class="alert alert-success  messagewidth">
                                 <a class="close">×</a>
                                 <strong>Success.</strong> <span id="spanMessageSuccess"></span>
                             </div>
-                            <div id="errorMessage" class="alert alert-error hide  messagewidth" >
+                            <div id="errorMessage" class="alert alert-error hide  messagewidth">
                                 <a class="close">×</a>
                                 <strong>Error!</strong> <span id="spanMessageError">@Common.objCached.ValidateForEmptyField</span>
                             </div>
-          <div id="divPartial" class="partial_wrapper">
+                            <div id="divPartial" class="partial_wrapper">
                             </div>
                         </div>
                     </div>
@@ -246,7 +233,7 @@
             </div>
         </div>
     </div>
-                    </div>
+</div>
 <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
 <script type="text/javascript">
     var heights = $('.column1').find('div').map(function () {
@@ -259,7 +246,7 @@
         }
         return $(this).width();
     }).get();
-    var onCostVsBudget; 
+    var onCostVsBudget;
     $(document).ready(function () {
 
         // Added by Rushil Bhuptani for #2191 to bind DHTMLX grid for Plan and Actual tab.
@@ -283,8 +270,8 @@
             $("#aoffCost").addClass('request-btn-active');
             $("#divCostBudget").attr('style', 'display:none;')
         }
-    
-         SetHeader();
+
+        SetHeader();
         //AddTipsy();
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
@@ -294,7 +281,7 @@
             isquarter = true;
         }
         $('.clickme').cluetip({ activation: 'click', arrows: true, dropShadow: false, sticky: true, mouseOutClose: false, local: true, isQuarter: isquarter, positionBy: "mouse" }); //
-      
+
 
 
         // Budget Table
@@ -351,7 +338,7 @@
 
     });
 
-    function BindBudgetGrid() { 
+    function BindBudgetGrid() {
 
         var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
         @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2191. Need to remove this code after testing.*@
@@ -360,7 +347,7 @@
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
         HomeGrid.setImageSize(1, 1);
-        HomeGrid.setHeader('@Model.SetHeader'); 
+        HomeGrid.setHeader('@Model.SetHeader');
         HomeGrid.setColTypes('@Model.ColType');
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
@@ -387,7 +374,7 @@
 
         HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.setColumnHidden(0, true);
-         @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
+        @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
         HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
         //Commented by Rahul Shah for PL #2231 on 06/06/2016
         //var parsedJSON = $.parseJSON(JsonModel);
@@ -404,7 +391,7 @@
                 selectedrowid='tacticcpt_' + selectedid;
             else if(selecteditemtype.toLowerCase()=='lineitem')
                 selectedrowid='lineitemcptl_' + selectedid;
-         
+
             HomeGrid.forEachRow(function (rowid) {
 
                 if (rowid == selectedrowid) {
@@ -417,7 +404,7 @@
                         HomeGrid.openItem(HomeGrid.getParentId(HomeGrid.getParentId(HomeGrid.getParentId(pid))));
                     }
 
-                   HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+                    HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
 
                     if ($("#gridbox").find(".rowselected").length >= 1) {
                         var scrolltop = $(".rowselected").offset().top;
@@ -428,7 +415,7 @@
         }
         //end
     }
-    
+
     function SetHeader() {
         $('#divViewBy').show();
         if ('@AllocatedBy' != '@strDefault') {
@@ -657,7 +644,7 @@
         $('#monthContainer').html(strMonthHTML);
 
     }
-  
+
     var Assortment = 'Budgeting';
     @*$('#aPlanDetails').click(function (e) {
         var id = CurrentPlanId;
@@ -708,7 +695,6 @@
         ShowModel("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
     });*@
 </script>
-
 <script type="text/javascript">
     $(document).ready(function () {
         $("#monthContainer").mCustomScrollbar({
@@ -761,273 +747,294 @@
         $(this).val(FormatCommasBudget(newYearBudget.toString(), false, false));
         var section = $('#entityDetails').attr('section').toString();
     });
-
-    $('#btnClueTip').click(function () {
-
-        var entityId = $('#entityDetails').val();
-        var section = $('#entityDetails').attr('section').toString();
-        var month = $('#entityDetails').attr('mnth').toString();
-        //tab
-        var tab = $('#entityDetails').attr('tab').toString();
-        var isquarter = false;
-        if ('@isquarter' == 'True') {
-            isquarter = true;
-        }
-        var inputArr = [];
-        $('.tooltip-field').find('input[type=text]').not('[disabled=disabled]').each(function () {
-            inputArr.push({
-                key: $(this).attr('id'),
-                Value: $(this).val().replace(/,/g, "")
-            });
-        });
-        var jsonInputs = JSON.stringify(inputArr);
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/SavePlannedCell/")',
-            dataType: "json",
-            data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
-            success: function (data) {
-             
-                if (data.isSuccess == true) {
-                    section = section.toLowerCase();
-                    $("#hdnBudgetingIsSave").val("true");
-                    if (currentTab == 'aActuals') {
-                        $("#hdnBudgetingExpandId").val(section + entityId);
-                        $('#aActuals').trigger('click');
-                    }
-                    else {
-                        var sectionIntializer = section == "tactic" ? "cpt" : section == "program" ? "cp" : section == "campaign" ? "c" : "";
-                        $("#hdnBudgetingExpandId").val(section + sectionIntializer + '_' + entityId);
-                        $('#aPlanned').trigger('click');
-                    }
-                    // updatePopupDetails(data, entityId, section, month);
-                }
-                else {
-                    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
-                    //$("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-                    $('#errorMessageDuplicatePlan').slideDown(700);
-                    
-                }
-            }
-        });
-    });
-    $('.column2,.column1').scroll(function () {
-        $('.cluetip').css('display', 'none');
-    });
-    //$(".tacticLevel").find('.red-corner-budget').bind('click', function (event) {
-    //    $(this).parent().find('a').get(0).click();
-    //    return false;
-    //});
-
-    // Added by Rushil Bhuptani for #2191 to show red corner triangle based on Cost vs Budget value.
-  
-    $("#aonCost").click(function () {
-        onCostVsBudget = true;
-        $("#aoffCost").removeClass('request-btn-active');
-        $("#aonCost").addClass('request-btn-active');
-        $('.red-corner-budget').css('display', 'block');
-        $('.programLevel').find('.red-corner-budget').css('display', 'block');
-        $('.tacticLevel').find('.red-corner-budget').css('display', 'block');
-
-        var isquarter = false;
-        if ('@isquarter' == 'True') {
-            isquarter = true;
-        }
-
-        var selfProgram = $('.clickmeprogram');
-
-        if (!selfProgram.data('cluetip-initd')) {
-            selfProgram.cluetip({
-                activation: 'click',
-                arrows: true,
-                dropShadow: false,
-                sticky: true,
-                mouseOutClose: false,
-                local: true,
-                isQuarter: isquarter,
-                positionBy: "mouse"
-            }).data('cluetip-initd', true);
-        }
-
-        var selfTactic = $('.clickmetactic');
-
-        if (!selfTactic.data('cluetip-initd')) {
-            selfTactic.cluetip({
-                activation: 'click',
-                arrows: true,
-                dropShadow: false,
-                sticky: true,
-                mouseOutClose: false,
-                local: true,
-                isQuarter: isquarter,
-                positionBy: "mouse"
-            }).data('cluetip-initd', true);
-        }
-    });
-
-    // Added by Rushil Bhuptani for #2191 to hide red corner triangle based on Cost vs Budget value.
-    $("#aoffCost").click(function () {
-        onCostVsBudget = false;
-        $("#aonCost").removeClass('request-btn-active');
-        $("#aoffCost").addClass('request-btn-active');
-        $('.red-corner-budget').css('display', 'none');
-        $('.programLevel').find('.red-corner-budget').css('display', 'none');
-        $('.tacticLevel').find('.red-corner-budget').css('display', 'none');
-    });
-
-    // Added by Rushil Bhuptani for #2191 to display red triangle and initalize cluetip on expand collapse of row.
-    HomeGrid.attachEvent("onOpenEnd", function (id, state) {       
-        var isquarter = false;
-        if ('@isquarter' == 'True') {
-            isquarter = true;
-        }
-        setTimeout(function () {
-            HomeGrid.saveOpenStates();
-        }, 500);
-        $('.clickmeAnchor').each(function () {
-            var selfClickMe = $(this);
-            if (!selfClickMe.data('cluetip-initd')) {
-
-                selfClickMe.cluetip({
-                    activation: 'click',
-                    arrows: true,
-                    dropShadow: false,
-                    sticky: true,
-                    mouseOutClose: false,
-                    local: true,
-                    isQuarter: isquarter,
-                    positionBy: "mouse"
-                }).data('cluetip-initd', true);
-            }
-        });
-
-        $('.clickmeAnchorProgram').each(function () {
-            var selfClickMeAnchorProgram = $(this);
-            if (!selfClickMeAnchorProgram.data('cluetip-initd')) {
-                selfClickMeAnchorProgram.cluetip({
-                    activation: 'click',
-                    arrows: true,
-                    dropShadow: false,
-                    sticky: true,
-                    mouseOutClose: false,
-                    local: true,
-                    isQuarter: isquarter,
-                    positionBy: "mouse"
-                }).data('cluetip-initd', true);
-            }
-        });
-
-        $('.clickmeAnchorTactic').each(function() {
-            var selfClickMeAnchorTactic = $(this);
-            if (!selfClickMeAnchorTactic.data('cluetip-initd')) {
-                selfClickMeAnchorTactic.cluetip({
-                    activation: 'click',
-                    arrows: true,
-                    dropShadow: false,
-                    sticky: true,
-                    mouseOutClose: false,
-                    local: true,
-                    isQuarter: isquarter,
-                    positionBy: "mouse"
-                }).data('cluetip-initd', true);
-            }
-        });
+    $('.tooltip-field').on('keydown', '#CostMonth,#CostYear', function (e) {
        
-
-        $('.clickmeAnchorLineItem').each(function () {
-        var selfClickMeAnchorLineItem = $(this);
-        if (!selfClickMeAnchorLineItem.data('cluetip-initd')) {
-            selfClickMeAnchorLineItem.cluetip({
-                activation: 'click',
-                arrows: true,
-                dropShadow: false,
-                sticky: true,
-                mouseOutClose: false,
-                local: true,
-                isQuarter: isquarter,
-                positionBy: "mouse"
-            }).data('cluetip-initd', true);
+        //Insertation Start 17/08/2016 Kausha #2503 Used set validation for decimal points.
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [110, 190]) !== -1)
+        {
+            return false;
         }
-        });
-        if (onCostVsBudget && (@strViewBy == "0")) {
-            $('.red-corner-budget').css('display', 'block');
-
-            $('.clickmeprogram').each(function() {
-
-                var selfProgram = $(this);
-
-                if (!selfProgram.data('cluetip-initd')) {
-                    selfProgram.cluetip({
-                        activation: 'click',
-                        arrows: true,
-                        dropShadow: false,
-                        sticky: true,
-                        mouseOutClose: false,
-                        local: true,
-                        isQuarter: isquarter,
-                        positionBy: "mouse"
-                    }).data('cluetip-initd', true);
-                }
-            });
-
-            $('.clickmetactic').each(function() {
-
-                var selfTactic = $(this);
-
-                if (!selfTactic.data('cluetip-initd')) {
-                    selfTactic.cluetip({
-                        activation: 'click',
-                        arrows: true,
-                        dropShadow: false,
-                        sticky: true,
-                        mouseOutClose: false,
-                        local: true,
-                        isQuarter: isquarter,
-                        positionBy: "mouse"
-                    }).data('cluetip-initd', true);
-                }
-            });
-        } else {
-            $('.red-corner-budget').css('display', 'none');
-
-
+        //Insertation end 17/08/2016 Kausha #2503 Used set validation for decimal points.
+        if ($.inArray(e.keyCode, [8, 9, 27, 13, 46, 110]) !== -1 ||
+            // Allow: Ctrl+A
+    (e.keyCode >= 35 && e.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
           
         }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
     });
+        $('#btnClueTip').click(function () {
 
-    @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
-    function ExportToExcelPlannedActuals() {
-     
-        var JsonExportModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
+            var entityId = $('#entityDetails').val();
+            var section = $('#entityDetails').attr('section').toString();
+            var month = $('#entityDetails').attr('mnth').toString();
+            //tab
+            var tab = $('#entityDetails').attr('tab').toString();
+            var isquarter = false;
+            if ('@isquarter' == 'True') {
+                isquarter = true;
+            }
+            var inputArr = [];
+            //Insertation Start 19/08/2016 Kausha #2503 Used SetValueByExchangeRate function to store value in dollar.
+            $('.tooltip-field').find('input[type=text]').not('[disabled=disabled]').each(function () {
+                inputArr.push({
+                    key: $(this).attr('id'),
+                    Value: SetValueByExchangeRate($(this).val().replace(/,/g, ""))
+                });
+            });
+            var jsonInputs = JSON.stringify(inputArr);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/SavePlannedCell/")',
+                dataType: "json",
+                data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
+                success: function (data) {
 
-        var exportGrid = new dhtmlXGridObject('gridExport');
-    
-        var imgpath = '@Url.Content("~/codebase/imgs/")';
-        exportGrid.setImagePath(imgpath);
-        exportGrid.setImageSize(1, 1);
-        exportGrid.setHeader('@Model.SetHeader');
-        exportGrid.setColTypes('@Model.ColType');
-        exportGrid.setInitWidths('@Model.Width');
-        exportGrid.setColSorting('@Model.ColSorting');
+                    if (data.isSuccess == true) {
+                        section = section.toLowerCase();
+                        $("#hdnBudgetingIsSave").val("true");
+                        if (currentTab == 'aActuals') {
+                            $("#hdnBudgetingExpandId").val(section + entityId);
+                            $('#aActuals').trigger('click');
+                        }
+                        else {
+                            var sectionIntializer = section == "tactic" ? "cpt" : section == "program" ? "cp" : section == "campaign" ? "c" : "";
+                            $("#hdnBudgetingExpandId").val(section + sectionIntializer + '_' + entityId);
+                            $('#aPlanned').trigger('click');
+                        }
+                        // updatePopupDetails(data, entityId, section, month);
+                    }
+                    else {
+                        $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                        //$("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+                        $('#errorMessageDuplicatePlan').slideDown(700);
 
-        exportGrid.enableAutoHeight(true);
-        exportGrid.enableAutoWidth(false);
-        exportGrid.setEditable(false);
+                    }
+                }
+            });
+        });
+        $('.column2,.column1').scroll(function () {
+            $('.cluetip').css('display', 'none');
+        });
+        //$(".tacticLevel").find('.red-corner-budget').bind('click', function (event) {
+        //    $(this).parent().find('a').get(0).click();
+        //    return false;
+        //});
 
-        exportGrid.init();
-       
-        setTimeout(function () {
-            exportGrid.setSizes();
-        }, 200);
+        // Added by Rushil Bhuptani for #2191 to show red corner triangle based on Cost vs Budget value.
 
-        var mainGridData = JsonExportModel;
-        mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-        exportGrid.parse(GridDataHomeGrid, "json");
-        exportGrid.setColumnHidden(exportGrid.getColumnsNum() - 1, true);
-        exportGrid.expandAll();
+        $("#aonCost").click(function () {
+            onCostVsBudget = true;
+            $("#aoffCost").removeClass('request-btn-active');
+            $("#aonCost").addClass('request-btn-active');
+            $('.red-corner-budget').css('display', 'block');
+            $('.programLevel').find('.red-corner-budget').css('display', 'block');
+            $('.tacticLevel').find('.red-corner-budget').css('display', 'block');
 
-        exportGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
-    }
-    
+            var isquarter = false;
+            if ('@isquarter' == 'True') {
+                isquarter = true;
+            }
+
+            var selfProgram = $('.clickmeprogram');
+
+            if (!selfProgram.data('cluetip-initd')) {
+                selfProgram.cluetip({
+                    activation: 'click',
+                    arrows: true,
+                    dropShadow: false,
+                    sticky: true,
+                    mouseOutClose: false,
+                    local: true,
+                    isQuarter: isquarter,
+                    positionBy: "mouse"
+                }).data('cluetip-initd', true);
+            }
+
+            var selfTactic = $('.clickmetactic');
+
+            if (!selfTactic.data('cluetip-initd')) {
+                selfTactic.cluetip({
+                    activation: 'click',
+                    arrows: true,
+                    dropShadow: false,
+                    sticky: true,
+                    mouseOutClose: false,
+                    local: true,
+                    isQuarter: isquarter,
+                    positionBy: "mouse"
+                }).data('cluetip-initd', true);
+            }
+        });
+
+        // Added by Rushil Bhuptani for #2191 to hide red corner triangle based on Cost vs Budget value.
+        $("#aoffCost").click(function () {
+            onCostVsBudget = false;
+            $("#aonCost").removeClass('request-btn-active');
+            $("#aoffCost").addClass('request-btn-active');
+            $('.red-corner-budget').css('display', 'none');
+            $('.programLevel').find('.red-corner-budget').css('display', 'none');
+            $('.tacticLevel').find('.red-corner-budget').css('display', 'none');
+        });
+
+        // Added by Rushil Bhuptani for #2191 to display red triangle and initalize cluetip on expand collapse of row.
+        HomeGrid.attachEvent("onOpenEnd", function (id, state) {
+            var isquarter = false;
+            if ('@isquarter' == 'True') {
+                isquarter = true;
+            }
+            setTimeout(function () {
+                HomeGrid.saveOpenStates();
+            }, 500);
+            $('.clickmeAnchor').each(function () {
+                var selfClickMe = $(this);
+                if (!selfClickMe.data('cluetip-initd')) {
+
+                    selfClickMe.cluetip({
+                        activation: 'click',
+                        arrows: true,
+                        dropShadow: false,
+                        sticky: true,
+                        mouseOutClose: false,
+                        local: true,
+                        isQuarter: isquarter,
+                        positionBy: "mouse"
+                    }).data('cluetip-initd', true);
+                }
+            });
+
+            $('.clickmeAnchorProgram').each(function () {
+                var selfClickMeAnchorProgram = $(this);
+                if (!selfClickMeAnchorProgram.data('cluetip-initd')) {
+                    selfClickMeAnchorProgram.cluetip({
+                        activation: 'click',
+                        arrows: true,
+                        dropShadow: false,
+                        sticky: true,
+                        mouseOutClose: false,
+                        local: true,
+                        isQuarter: isquarter,
+                        positionBy: "mouse"
+                    }).data('cluetip-initd', true);
+                }
+            });
+
+            $('.clickmeAnchorTactic').each(function() {
+                var selfClickMeAnchorTactic = $(this);
+                if (!selfClickMeAnchorTactic.data('cluetip-initd')) {
+                    selfClickMeAnchorTactic.cluetip({
+                        activation: 'click',
+                        arrows: true,
+                        dropShadow: false,
+                        sticky: true,
+                        mouseOutClose: false,
+                        local: true,
+                        isQuarter: isquarter,
+                        positionBy: "mouse"
+                    }).data('cluetip-initd', true);
+                }
+            });
+
+
+            $('.clickmeAnchorLineItem').each(function () {
+                var selfClickMeAnchorLineItem = $(this);
+                if (!selfClickMeAnchorLineItem.data('cluetip-initd')) {
+                    selfClickMeAnchorLineItem.cluetip({
+                        activation: 'click',
+                        arrows: true,
+                        dropShadow: false,
+                        sticky: true,
+                        mouseOutClose: false,
+                        local: true,
+                        isQuarter: isquarter,
+                        positionBy: "mouse"
+                    }).data('cluetip-initd', true);
+                }
+            });
+            if (onCostVsBudget && (@strViewBy == "0")) {
+                $('.red-corner-budget').css('display', 'block');
+
+                $('.clickmeprogram').each(function() {
+
+                    var selfProgram = $(this);
+
+                    if (!selfProgram.data('cluetip-initd')) {
+                        selfProgram.cluetip({
+                            activation: 'click',
+                            arrows: true,
+                            dropShadow: false,
+                            sticky: true,
+                            mouseOutClose: false,
+                            local: true,
+                            isQuarter: isquarter,
+                            positionBy: "mouse"
+                        }).data('cluetip-initd', true);
+                    }
+                });
+
+                $('.clickmetactic').each(function() {
+
+                    var selfTactic = $(this);
+
+                    if (!selfTactic.data('cluetip-initd')) {
+                        selfTactic.cluetip({
+                            activation: 'click',
+                            arrows: true,
+                            dropShadow: false,
+                            sticky: true,
+                            mouseOutClose: false,
+                            local: true,
+                            isQuarter: isquarter,
+                            positionBy: "mouse"
+                        }).data('cluetip-initd', true);
+                    }
+                });
+            } else {
+                $('.red-corner-budget').css('display', 'none');
+
+
+
+            }
+        });
+
+        @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
+        function ExportToExcelPlannedActuals() {
+
+            var JsonExportModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
+
+            var exportGrid = new dhtmlXGridObject('gridExport');
+
+            var imgpath = '@Url.Content("~/codebase/imgs/")';
+            exportGrid.setImagePath(imgpath);
+            exportGrid.setImageSize(1, 1);
+            exportGrid.setHeader('@Model.SetHeader');
+            exportGrid.setColTypes('@Model.ColType');
+            exportGrid.setInitWidths('@Model.Width');
+            exportGrid.setColSorting('@Model.ColSorting');
+
+            exportGrid.enableAutoHeight(true);
+            exportGrid.enableAutoWidth(false);
+            exportGrid.setEditable(false);
+
+            exportGrid.init();
+
+            setTimeout(function () {
+                exportGrid.setSizes();
+            }, 200);
+
+            var mainGridData = JsonExportModel;
+            mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+            var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+            exportGrid.parse(GridDataHomeGrid, "json");
+            exportGrid.setColumnHidden(exportGrid.getColumnsNum() - 1, true);
+            exportGrid.expandAll();
+
+            exportGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
+        }
+
 </script>
