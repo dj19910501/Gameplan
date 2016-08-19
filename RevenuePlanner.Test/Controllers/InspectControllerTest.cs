@@ -4,6 +4,7 @@ using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using RevenuePlanner.Test.MockHelpers;
 using System;
+//using System.Web;
 using System.Linq;
 using System.Web.Mvc;
 using System.Collections.Generic;
@@ -15,9 +16,13 @@ using System.Web.Routing;
 namespace RevenuePlanner.Test.Controllers
 {
     [TestClass]
-    public class InspectControllerTest : CommonController
+    public class InspectControllerTest //: CommonController
     {
-
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region Save Plan
         ///// <summary>
         ///// To Save the Plan

@@ -21,6 +21,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class ModelControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region Display channel and Program type selection for marketo under Model-Tactictype
         /// <summary>
         /// To Save Marketo Settings on Model-TacticType scrren

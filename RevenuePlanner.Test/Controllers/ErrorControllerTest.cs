@@ -14,6 +14,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class ErrorControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region Error
         /// <summary>
         /// Error View.

@@ -17,8 +17,13 @@ using System.Data;
 namespace RevenuePlanner.Test.Controllers
 {
     [TestClass]
-    public class FinanceControllerTest : CommonController
+    public class FinanceControllerTest //: CommonController
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region Finance view Related Function
 
         #region Finance page with no parameters

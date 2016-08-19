@@ -16,9 +16,15 @@ using System.Web.Routing;
 
 namespace RevenuePlanner.Test.Controllers
 {
+
     [TestClass]
     public class ReportControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region "Overview section of Report"
         MRPEntities db = new MRPEntities();
         #region "GetOverviewData function TestCases"

@@ -17,6 +17,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class ExternalServiceControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region PL#998 Eloqua Folders: Way to specifiy folder paths on Gameplan
 
         #region Get Integratoin Folder

@@ -20,6 +20,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class BoostControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region Best In Class
         /// <summary>
         /// To Return BestInClass View.

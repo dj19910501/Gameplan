@@ -20,6 +20,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class HomeControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region PL#1134 Multi select: Home/Plan page changes for custom fields
 
         #region Home page with no parameters

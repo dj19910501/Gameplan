@@ -19,6 +19,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class UserControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region Team Member Listing.
         /// <summary>
         /// Team Member Listing.

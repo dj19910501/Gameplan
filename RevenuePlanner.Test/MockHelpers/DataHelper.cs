@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Data;
+using System.IO;
+using System.Reflection;
+using System.Web.Caching;
 
 namespace RevenuePlanner.Test.MockHelpers
 {
@@ -78,6 +81,16 @@ namespace RevenuePlanner.Test.MockHelpers
             HttpContext.Current.Session["User"] = objBDSServiceClient.ValidateUser(applicationId, userName, singlehash);
 
             HttpContext.Current.Session["Permission"] = objBDSServiceClient.GetPermission(applicationId, ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).RoleId);
+
+
+            Message msg = new Message();
+            var xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");
+            msg.loadMsg(xmlMsgFilePath);
+            HttpContext.Current.Cache["CommonMsg"] = msg;
+            CacheDependency dependency = new CacheDependency(xmlMsgFilePath);
+            HttpContext.Current.Cache.Insert("CommonMsg", msg, dependency);
+            Common.objCached = msg;
+
 
             return HttpContext.Current;
         }

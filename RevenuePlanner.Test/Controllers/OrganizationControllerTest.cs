@@ -15,6 +15,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class OrganizationControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region PL#1139 Custom Fields: Changes to custom restriction - db design/development
 
         #region ViewEditPermission in View Mode with no userId

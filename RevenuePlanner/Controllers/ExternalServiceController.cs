@@ -38,22 +38,22 @@ namespace RevenuePlanner.Controllers
         string DateFormat = "MM/dd/yy h:mm tt";
         #endregion
 
-        public ExternalServiceController()
-        {
-            if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
-            {
-                Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
-                Common.objCached.loadMsg(Common.xmlMsgFilePath);
-                System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
-                CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
-                System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
-            }
-            else
-            {
-                Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
+        //public ExternalServiceController()
+        //{
+        //    if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
+        //    {
+        //        Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
+        //        Common.objCached.loadMsg(Common.xmlMsgFilePath);
+        //        System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
+        //        CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
+        //        System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
+        //    }
+        //    else
+        //    {
+        //        Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
 
-            }
-        }
+        //    }
+        //}
 
         #region Integration Listing
 

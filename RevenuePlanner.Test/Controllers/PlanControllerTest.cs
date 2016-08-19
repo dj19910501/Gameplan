@@ -20,6 +20,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class PlanControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         // Test Methods according to Old UI
         #region PL #975 Plans need to be able to have a goal of 0
 
