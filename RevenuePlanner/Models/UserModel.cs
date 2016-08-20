@@ -199,6 +199,9 @@ namespace RevenuePlanner.Models
         public string NotificationCreatedDate { get; set; }
         public int NotificationId { get; set; }
         public string ActionName { get; set; }
+        public string PlanTitle { get; set; }
+        public int? RequestCount { get; set; }
+        public int? ComponentId { get; set; }
     }
     public class UserAlertsNotification
     {
