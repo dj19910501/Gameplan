@@ -1479,7 +1479,7 @@ GO
 
 	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'TacticIsSubmitted')) 
 	Begin
-	 insert into Notification(NotificationInternalUseOnly,Title,[Description],NotificationType,EmailContent,IsDeleted,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,[Subject]) values('TacticIsSubmitted','When my tactic is submitted for approval',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following tactic has been submitted for approval.<br><br><table><tr><td>Tactic Name</td><td>:</td><td>[TacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Submitted by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr><tr><td>URL</td><td>:</td><td>[URL]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan: Tactic submitted for approval')
+	 insert into Notification(NotificationInternalUseOnly,Title,[Description],NotificationType,EmailContent,IsDeleted,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,[Subject]) values('TacticIsSubmitted','When a tactic is submitted for my approval',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following tactic has been submitted for approval.<br><br><table><tr><td>Tactic Name</td><td>:</td><td>[TacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Submitted by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr><tr><td>URL</td><td>:</td><td>[URL]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan: Tactic submitted for approval')
 	End
 
 	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'EntityOwnershipAssigned')) 

@@ -1118,6 +1118,8 @@ namespace RevenuePlanner.Controllers
                 List<User_Notification> lstUserNotification = new List<User_Notification>();
                 lstUserNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.UserId == Sessions.User.UserId).ToList();
 
+                TempData["SuccessMessage"] = Common.objCached.UserNotificationsSaved;
+
                 //// Remove all current Notifications set for User
                 foreach (var item in lstUserNotification)
                 {
@@ -1145,13 +1147,15 @@ namespace RevenuePlanner.Controllers
                         db.SaveChanges();
                     }
                 }
+
+              
             }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
                 TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
             }
-            TempData["SuccessMessage"] = Common.objCached.UserNotificationsSaved;
+           
         }
 
         #endregion

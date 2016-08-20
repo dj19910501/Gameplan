@@ -5,7 +5,7 @@
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
 
 @{
-    ViewBag.Title = "My Notifications";
+    ViewBag.Title = "Notification Settings";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
     int SMCount = (int)ViewBag.SMCount;
@@ -75,20 +75,42 @@
         }
 </style>
 
-<!--success message-->
-<div id="successMessage" class="alert hide alert-success message-position">
-    <a class="close">×</a>
-    <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
-</div>
-<!--success message-->
-<!--error message-->
-<div id="errorMessage" class="alert hide alert-error message-position">
-    <a class="close">×</a>
-    <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
-</div>
+@if (TempData["SuccessMessage"] != null)
+{
+    if (!Convert.ToString(TempData["SuccessMessage"]).ToLower().Contains("model"))
+    {
+
+    <!--success message-->
+
+        <div id="successMessage" class="alert hide alert-success message-position">
+            <a class="close">×</a>
+            <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+        </div>
+
+    <!--success message-->
+        TempData["SuccessMessage"] = "";
+    }
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    if (!Convert.ToString(TempData["ErrorMessage"]).ToLower().Contains("model"))
+    {
+
+    <!--error message-->
+
+        <div id="errorMessage" class="alert hide alert-error message-position">
+            <a class="close">×</a>
+            <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+        </div>
+
+    <!--error message-->
+        TempData["ErrorMessage"] = "";
+    }
+}
 <!--error message-->
 <div class="title-header source-sans-proregular margin-bottom25">
-    <h2>My Notifications</h2>
+    <h2>Notifications</h2>
 </div> @*#2312*@
 @*<ul class="nav nav-tabs">
         <li class="source-sans-proregular">
@@ -205,10 +227,6 @@
     });
 
     $('#saveNotifications').click(function () {
-        CheckUserSession("#saveNotifications", true);
-        if (reason == 'user') {
-            return false;
-        }
         var checkedList = '';
         $('input[type=checkbox]').each(function () {
             if (this.checked) {
@@ -222,7 +240,7 @@
            url: 'SaveNotifications',
            data: { notifications: checkedList.substring(0, checkedList.length - 1) },
            success: function (data) {
-               window.location.href = "@Url.Content("~/User/Notifications")";
+               window.location = "@Url.Content("~/User/Notifications")";
            }
        });
     });

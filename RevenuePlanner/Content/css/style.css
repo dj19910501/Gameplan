@@ -16197,7 +16197,7 @@ input.selectInput{
 .pref-msg-row .wraper-checkbox > span { 
     display: inline-block;
     float: left;
-    width: 38%;
+    width: 50%;
     padding-right:15px;
 }
 .alertdiv-delet{position:absolute; right:0;right: 0; top: 5px;}
