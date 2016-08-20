@@ -392,6 +392,7 @@ namespace RevenuePlanner.Controllers
                     }
                     #endregion
                     //end
+                    Sessions.IsAlertPermission = IsClientAlertsPermission();
                     //Redirect users logging in for the first time to the change password module
                     TempData.Clear();
                     if (obj.LastLoginDate == null)
@@ -567,6 +568,36 @@ namespace RevenuePlanner.Controllers
             }
             return isMediaCodePermission;
         }
+        /// <summary>
+        /// Added by devanshi on 19-8-2016 for #2476 to set permission of alerts for client
+        /// </summary>
+        /// <returns></returns>
+          private bool IsClientAlertsPermission()
+        {
+            bool isAlertPermission = false;
+            try
+            {
+                if (Sessions.User.ClientId != Guid.Empty)
+                {
+                    int appActivityId = 0;
+                    BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
+                    string strAlertActivity = Enums.clientAcivityType.Alerts.ToString().ToLower();
+                    var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(Sessions.ApplicationId);
+                    if (ApplicationActivityList != null && ApplicationActivityList.Count > 0)
+                        appActivityId = ApplicationActivityList.Where(act => act.Code.ToLower() == strAlertActivity).Select(act => act.ApplicationActivityId).FirstOrDefault();
+                    //GetClientApplicationactivitylist(_applicationId);
+
+                    if (db.Client_Activity.Any(act => act.ClientId == Sessions.User.ClientId && act.ApplicationActivityId == appActivityId))
+                        isAlertPermission = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return isAlertPermission;
+        }
+        
         private ActionResult RedirectLocal(string returnUrl)
         {
             var questionMarkIndex = returnUrl.IndexOf('?');

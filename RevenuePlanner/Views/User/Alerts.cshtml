@@ -1,4 +1,5 @@
-﻿@{
+﻿@using RevenuePlanner.Helpers
+@{
     ViewBag.Title = "Alerts";
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.PageTitle = "Alerts";
@@ -40,6 +41,8 @@
     <strong>Error!</strong> <span id="spanMessageError"></span>
 </div>
 <!--error message-->
+@if(Sessions.IsAlertPermission)
+{
 <div class="title-header source-sans-proregular margin-bottom25">
     <h2>Alerts</h2>
 </div>
@@ -49,6 +52,7 @@
     <div class="row">
         @Html.Partial("~/Views/User/_myprofile.cshtml")
         <div class="span10 content-colum-right">
+
             <div class="alert-form-wrap clearfix">
                 <div class="pull-left clearalert"><input type="button" value="Create Alert" id="btnCreateAlert" class="btn btn-blue btn-create-alert" /></div>
                 <div class="clearfix"></div>
@@ -58,9 +62,11 @@
                     <div class="bold padding-top16 font-size18">No Rules available.</div>
             </div>
             </div>
+
         </div>
     </div>
 </div>
+}
 <style>
     .ui-autocomplete-group {
         line-height: 30px;

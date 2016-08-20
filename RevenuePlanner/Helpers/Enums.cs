@@ -266,8 +266,8 @@ namespace RevenuePlanner.Helpers
         public enum clientAcivityType
         {
             DefaultBudgetForFinanace,
-            MediaCodes
-
+            MediaCodes,
+            Alerts
         }
         //#region User
         ///// <summary>

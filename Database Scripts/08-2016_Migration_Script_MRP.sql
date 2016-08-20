@@ -3001,8 +3001,23 @@ END
 
 GO
 
+------ NOTE: Execute 'Alerts' acitivity insert attached in BDSAuth DatabaseScript folder prior to execute below script and pick ApplicationActivityId by above BDSAuth script and replace @applicationActivityId variable value with picked value.
 
+-- Add by Devanshi gandhi
+-- Created Date: 08/19/2016
+-- Desc: Insert 'Alerts' permission to Client_Activity table in Plan database.
 
+------ START: Please modify the below variable value as per requirement.
+Declare @clientId uniqueidentifier ='464EB808-AD1F-4481-9365-6AADA15023BD'
+Declare @applicationActivityId int = 55  -- Set 'Alerts' application activity Id from Application_Activity table in BDSAuth db.
+Declare @createdBy uniqueidentifier ='D3238077-161A-405F-8F0E-10F4D6E50631'
+------------ END ------------ 
+
+IF NOT EXISTS(Select 1 from Client_Activity where ClientId=@clientId and ApplicationActivityId=@applicationActivityId)
+BEGIN
+	INSERT INTO Client_Activity(ClientId,ApplicationActivityId,CreatedBy,CreatedDate) VALUES(@clientId,@applicationActivityId,@createdBy,GETDATE())
+END
+Go
 -- ===========================Please put your script above this script=============================
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016

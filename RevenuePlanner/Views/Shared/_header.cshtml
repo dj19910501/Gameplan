@@ -132,6 +132,8 @@
                 </div>
             }
             @*Added by Bhumika for #2468 - alert & Notification dropdown*@
+            @if (Sessions.IsAlertPermission) //added by devanshi #2476 : client permission for Alert 
+            {
             <div class="aler-list dropdown pull-right" >
                 <span class="count" id="spnAlertCnt" style="display:none"></span>
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="divAlertSummary"><i class="fa fa-bell-o" aria-hidden="true"></i></a>
@@ -140,7 +142,8 @@
 
                 </ul>
             </div>
-
+             }
+            
             <div class="notify-list dropdown pull-right"  >
                 <span class="count" id="spnNotificationCnt" style="display:none"></span>
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="divNotificationSummary" ><i class="fa fa-globe" aria-hidden="true"></i></a>
@@ -148,6 +151,7 @@
                     <p class="ul-top clearfix"><span class="pull-left">Notifications</span> <a href="@Url.Action("Notifications", "User")" class="pull-right">Settings</a></p>
                 </ul>
             </div>
+           
 
         </div>
     </div>

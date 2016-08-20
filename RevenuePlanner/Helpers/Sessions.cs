@@ -617,5 +617,19 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["EndDate"] = value;
             }
         }
+        //Added By devanshi on 19-8-2016 #2476 to store alerts permission
+        public static bool IsAlertPermission
+        {
+
+            get
+            {
+                return Convert.ToBoolean(HttpContext.Current.Session["IsAlertPermission"]);
+            }
+            set
+            {
+                HttpContext.Current.Session["IsAlertPermission"] = value;
+            }
+
+        }
     }
 }
