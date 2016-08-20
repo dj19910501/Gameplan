@@ -1,7 +1,7 @@
 ﻿@using RevenuePlanner.Helpers
 <div id="nl-form2" class="nl-form">
     @{
-        int MarketingDealSize=(int)ViewBag.MarketingDealSize;
+        double MarketingDealSize=(double)ViewBag.MarketingDealSize;
         @Html.GenerateFunnel( MarketingDealSize)
     }
     <div class="nl-overlay"></div>
