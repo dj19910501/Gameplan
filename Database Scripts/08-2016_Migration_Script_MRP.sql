@@ -3018,6 +3018,689 @@ BEGIN
 	INSERT INTO Client_Activity(ClientId,ApplicationActivityId,CreatedBy,CreatedDate) VALUES(@clientId,@applicationActivityId,@createdBy,GETDATE())
 END
 Go
+
+
+/*===================================================================================
+Added By : Arpita Soni on 08/20/2016
+Ticket : #2475
+Description: Backend logic to run alert rules and generate alerts based on conditions
+===================================================================================*/
+
+-- Create default constraint on CreatedDate on Alerts table
+DECLARE @ConstraintName nvarchar(200)
+SELECT @ConstraintName = Name FROM SYS.DEFAULT_CONSTRAINTS
+WHERE PARENT_OBJECT_ID = OBJECT_ID('[dbo].[Alerts]')
+AND PARENT_COLUMN_ID = (SELECT column_id FROM sys.columns
+                        WHERE NAME = N'CreatedDate'
+                        AND object_id = OBJECT_ID(N'[dbo].[Alerts]'))
+
+IF @ConstraintName IS NULL
+BEGIN
+	ALTER TABLE Alerts ADD CONSTRAINT DF_Alerts_CreatedDate DEFAULT GETDATE() FOR CreatedDate
+END
+GO
+
+-- Create User Defined Table Type
+/****** Object:  UserDefinedTableType [dbo].[TacticForRuleEntities]    Script Date: 08/19/2016 06:37:10 PM ******/
+IF NOT EXISTS (SELECT * FROM sys.types WHERE is_table_type = 1 AND name = 'TacticForRuleEntities')
+CREATE TYPE [dbo].[TacticForRuleEntities] AS TABLE(
+	[RuleId] [int] NULL,
+	[EntityId] [int] NULL,
+	[EntityType] [nvarchar](50) NULL,
+	[Indicator] [nvarchar](50) NULL,
+	[IndicatorComparision] [nvarchar](10) NULL,
+	[IndicatorGoal] [int] NULL,
+	[CompletionGoal] [int] NULL,
+	[ClientId] [uniqueidentifier] NULL,
+	[EntityTitle] [nvarchar](255) NULL,
+	[StartDate] [datetime] NULL,
+	[EndDate] [datetime] NULL,
+	[PercentComplete] [int] NULL,
+	[ProjectedStageValue] [int] NULL,
+	[ActualStageValue] [int] NULL,
+	[CalculatedPercentGoal] [int] NULL
+)
+GO
+
+-- ======================================================
+-- Author:		Arpita Soni
+-- Create date: 08/09/2016
+-- Description:	Convert date differenct into percentage
+-- ======================================================
+-- DROP AND CREATE FUNCTION
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[ConvertDateDifferenceToPercentage]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[ConvertDateDifferenceToPercentage]
+GO
+CREATE FUNCTION [dbo].[ConvertDateDifferenceToPercentage]
+(
+	@StartDate DATETIME,
+	@EndDate DATETIME
+)
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Percent INT = (DATEDIFF(DAY, @StartDate,GETDATE()) * 100) / DATEDIFF(DAY, @StartDate,@EndDate)
+	
+	IF(@Percent > 100)
+		SET @Percent = 100
+
+	RETURN @Percent
+END
+GO
+
+-- =================================================================================
+-- Author:		Arpita Soni
+-- Create date: 08/19/2016
+-- Description:	Get entities from the rules which satisfy the entity completion goal
+-- =================================================================================
+-- DROP AND CREATE FUNCTION
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[GetEntitiesReachedCompletionGoal]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[GetEntitiesReachedCompletionGoal]
+GO
+CREATE FUNCTION [dbo].[GetEntitiesReachedCompletionGoal]()
+RETURNS @TempTable TABLE
+   (RuleId INT,
+    EntityId INT,
+	EntityType NVARCHAR(50),
+	Indicator NVARCHAR(50),
+	IndicatorComparision NVARCHAR(10),
+	IndicatorGoal INT,
+	CompletionGoal INT,
+	ClientId UNIQUEIDENTIFIER, 
+    EntityTitle NVARCHAR(255),
+	StartDate DATETIME,
+	EndDate DATETIME,
+	PercentComplete INT)
+AS
+BEGIN
+	INSERT INTO @TempTable 
+			SELECT AR.RuleId,AR.EntityId,AR.EntityType,AR.Indicator,AR.IndicatorComparision,AR.IndicatorGoal,AR.CompletionGoal,AR.ClientId, P.Title, P.StartDate, P.EndDate, dbo.ConvertDateDifferenceToPercentage(P.StartDate,P.EndDate) AS PercentComplete
+			FROM Alert_Rules AR
+			CROSS APPLY (
+				SELECT P1.PlanId, P1.Title, ISNULL(PC.StartDate,DATEADD(yy, DATEDIFF(yy,0,P1.[Year]), 0)) AS StartDate, ISNULL(PC.EndDate,DATEADD(yy, DATEDIFF(yy,0,P1.[Year]) + 1, -1)) AS EndDate FROM [Plan] P1 
+				CROSS APPLY (
+					SELECT MIN(PC1.StartDate) AS StartDate, MAX(PC1.EndDate) AS EndDate FROM Plan_Campaign PC1 
+					WHERE P1.PlanId = PC1.PlanId AND PC1.IsDeleted = 0) PC
+				WHERE P1.PlanId = AR.EntityId AND AR.EntityType = 'Plan' AND P1.IsDeleted = 0
+			) P
+			UNION ALL 
+			SELECT AR.RuleId,AR.EntityId,AR.EntityType,AR.Indicator,AR.IndicatorComparision,AR.IndicatorGoal,AR.CompletionGoal,AR.ClientId, PC.Title, PC.StartDate, PC.EndDate, dbo.ConvertDateDifferenceToPercentage(PC.StartDate,PC.EndDate) AS PercentComplete
+			FROM Alert_Rules AR
+			CROSS APPLY (SELECT * FROM [Plan_Campaign] PC WHERE PC.PlanCampaignId = AR.EntityId AND AR.EntityType = 'Campaign' AND PC.IsDeleted = 0) PC
+			UNION ALL 
+			SELECT AR.RuleId,AR.EntityId,AR.EntityType,AR.Indicator,AR.IndicatorComparision,AR.IndicatorGoal,AR.CompletionGoal,AR.ClientId, PCP.Title, PCP.StartDate, PCP.EndDate, dbo.ConvertDateDifferenceToPercentage(PCP.StartDate,PCP.EndDate) AS PercentComplete
+			FROM Alert_Rules AR
+			CROSS APPLY (SELECT * FROM [Plan_Campaign_Program] PCP WHERE PCP.PlanProgramId = AR.EntityId AND AR.EntityType = 'Program' AND PCP.IsDeleted = 0) PCP
+			UNION ALL 
+			SELECT AR.RuleId,AR.EntityId,AR.EntityType,AR.Indicator,AR.IndicatorComparision,AR.IndicatorGoal,AR.CompletionGoal,AR.ClientId, PCPT.Title, PCPT.StartDate, PCPT.EndDate, dbo.ConvertDateDifferenceToPercentage(PCPT.StartDate,PCPT.EndDate) AS PercentComplete
+			FROM Alert_Rules AR
+			CROSS APPLY (SELECT * FROM [Plan_Campaign_Program_Tactic] PCPT WHERE AR.EntityId = PCPT.PlanTacticId AND AR.EntityType = 'Tactic' AND PCPT.IsDeleted = 0 AND PCPT.[Status] IN ('In-Progress','Complete','Approved') ) PCPT
+			UNION ALL 
+			SELECT AR.RuleId,AR.EntityId,AR.EntityType,AR.Indicator,AR.IndicatorComparision,AR.IndicatorGoal,AR.CompletionGoal,AR.ClientId, PCPTL.Title, PCPTL.StartDate, PCPTL.EndDate, dbo.ConvertDateDifferenceToPercentage(PCPTL.StartDate,PCPTL.EndDate) AS PercentComplete
+			FROM Alert_Rules AR
+			CROSS APPLY (
+				SELECT PCPTLineItem.PlanLineItemId, PCPTLineItem.Title, PCPTLT.StartDate, PCPTLT.EndDate FROM [Plan_Campaign_Program_Tactic_LineItem] PCPTLineItem 
+				CROSS APPLY (
+					SELECT PCPT.StartDate,PCPT.EndDate FROM [Plan_Campaign_Program_Tactic] PCPT 
+					WHERE PCPTLineItem.PlanTacticId = PCPT.PlanTacticId AND PCPT.IsDeleted = 0 AND PCPT.[Status] IN ('In-Progress','Complete','Approved') ) PCPTLT
+				WHERE PCPTLineItem.PlanLineItemId = AR.EntityId AND AR.EntityType = 'LineItem' AND PCPTLineItem.IsDeleted = 0
+			) PCPTL
+			WHERE AR.EntityType IN ('Plan','Campaign','Program','Tactic','LineItem')
+					
+	RETURN
+END
+GO
+
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 08/19/2016
+-- Description:	Get projected value for tactic
+-- =============================================
+-- DROP AND CREATE FUNCTION
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[TacticIndicatorProjectedValue]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[TacticIndicatorProjectedValue]
+GO
+CREATE FUNCTION [dbo].[TacticIndicatorProjectedValue]
+(
+	@TacticId INT,
+	@ModelId INT,
+	@TacticStageCode NVARCHAR(255),
+	@IndicatorCode NVARCHAR(50),
+	@ClientId UNIQUEIDENTIFIER
+)
+RETURNS FLOAT
+AS
+BEGIN
+	DECLARE @INQCode NVARCHAR(10) = 'INQ',
+			@MQLCode NVARCHAR(10) = 'MQL',
+			@CWCode NVARCHAR(10) = 'CW',
+			@RevenueCode NVARCHAR(10) = 'REVENUE',
+			@PlannedCostCode NVARCHAR(10) = 'PLANNEDCOST',
+			@ProjectedStageValue FLOAT,
+			@TacticStageLevel INT
+					
+	
+	SET @ProjectedStageValue = (SELECT ProjectedStageValue FROM Plan_Campaign_Program_Tactic WHERE PlanTacticId = @TacticId)
+	SET @TacticStageLevel = (SELECT [Level] FROM Stage WHERE Code = @TacticStageCode AND ClientId = @ClientId AND IsDeleted = 0) 
+
+	-- Calculate projected revenue for the tactic
+	IF(@IndicatorCode = @RevenueCode)
+	BEGIN
+		
+		SELECT @ProjectedStageValue = @ProjectedStageValue * MIN(M.AverageDealSize) * 
+										Exp(Sum(IIf([Value]=0,0,Log([Value]/100))))*IIf(Min([Value])=0,0,1)
+										FROM Model_Stage MS
+										INNER JOIN Stage S ON MS.StageId = S.StageId
+										INNER JOIN [Model] M ON MS.ModelId = M.ModelId
+										WHERE MS.ModelId = @ModelId AND MS.StageType ='CR' AND S.[Level] >= @TacticStageLevel 
+											  AND S.ClientId = @ClientId AND S.IsDeleted = 0
+		
+	END
+	ELSE
+	BEGIN
+		IF (@IndicatorCode = @TacticStageCode)
+		BEGIN
+			SELECT @ProjectedStageValue = @ProjectedStageValue
+		END
+		ELSE
+		BEGIN
+			-- Variables
+			DECLARE @AboveMQLStageLevels NVARCHAR(50),
+					@AboveMQLStageIds NVARCHAR(50),
+					@IndicatorStageLevel INT,
+					@MQLLevel INT,
+					@ProjectedMQLValue INT = 0
+
+			-- Fetch levels of stages
+			SET @IndicatorStageLevel = (SELECT [Level] FROM Stage WHERE Code = @IndicatorCode AND ClientId = @ClientId AND IsDeleted = 0) 
+			
+			SET @MQLLevel = (SELECT [Level] FROM Stage WHERE Code = @MQLCode AND ClientId = @ClientId AND IsDeleted = 0) 
+
+			IF(@TacticStageLevel > @IndicatorStageLevel OR @IndicatorCode = @INQCode)
+			BEGIN
+				SELECT @ProjectedStageValue = 0 
+			END
+			ELSE
+			BEGIN
+				-- Get stages and levels before MQL stage
+				SELECT @AboveMQLStageLevels = COALESCE(@AboveMQLStageLevels + ', ' ,'') + CAST([Level] AS NVARCHAR(10)),
+					   @AboveMQLStageIds = COALESCE(@AboveMQLStageIds + ', ' ,'') + CAST(StageId AS NVARCHAR(10))
+				FROM Stage WHERE [Level] < @MQLLevel AND [Level] >= @TacticStageLevel AND ClientId = @ClientId AND IsDeleted = 0
+
+				-- Calculate MQL from any stage
+				IF(@TacticStageLevel = @MQLLevel)
+				BEGIN
+					SET @ProjectedMQLValue = @ProjectedStageValue
+				END
+				ELSE IF(@TacticStageLevel < @MQLLevel)
+				BEGIN
+					-- Aggregate all stages which are above MQL
+					SET @ProjectedMQLValue = (SELECT ROUND(@ProjectedStageValue * Exp(Sum(IIf([Value]=0,0,Log([Value]/100))))*IIf(Min([Value])=0,0,1),0)
+											  FROM Model_Stage M INNER JOIN dbo.SplitString(@AboveMQLStageIds,',') CSVTable
+											  ON M.StageId = CSVTable.Item WHERE ModelId = @ModelId AND StageType ='CR')
+				END
+			
+				-- Calculation for final projected stage value
+				IF (@IndicatorCode = @MQLCode)
+				BEGIN
+					SELECT @ProjectedStageValue = @ProjectedMQLValue 
+				END
+				-- Calculate CW from any stage
+				ELSE IF (@IndicatorCode = @CWCode)
+				BEGIN
+					-- If level of tactic stage is more than MQL then calculate from that level itself to CW
+					IF (@TacticStageLevel > @MQLLevel)
+					BEGIN
+						SET @ProjectedMQLValue = @ProjectedStageValue
+						SET @MQLLevel = @TacticStageLevel
+					END
+
+					-- If level of tactic stage is less or equal to MQL then calculate from MQL to CW
+					SELECT @ProjectedStageValue = ROUND(@ProjectedMQLValue * Exp(Sum(IIf([Value]=0,0,Log([Value]/100))))*IIf(Min([Value])=0,0,1),0) 
+					FROM Model_Stage M INNER JOIN Stage S
+					ON M.StageId = S.StageId WHERE ModelId = @ModelId AND StageType ='CR' 
+					AND S.[Level] < @IndicatorStageLevel AND S.[Level] >= @MQLLevel AND S.ClientId = @ClientId AND S.IsDeleted = 0
+				END
+			END
+		END
+	END
+
+	RETURN @ProjectedStageValue
+END
+GO
+
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 08/19/2016
+-- Description:	Get projected value for Plan
+-- =============================================
+-- DROP AND CREATE FUNCTION
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[PlanIndicatorProjectedValue]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[PlanIndicatorProjectedValue]
+GO
+CREATE FUNCTION [dbo].[PlanIndicatorProjectedValue]
+(
+	@PlanId INT,
+	@ModelId INT,
+	@PlanStageCode NVARCHAR(255),
+	@IndicatorCode NVARCHAR(50),
+	@ClientId UNIQUEIDENTIFIER
+)
+RETURNS FLOAT
+AS
+BEGIN
+	-- Variables
+	DECLARE @INQCode NVARCHAR(10) = 'INQ',
+			@MQLCode NVARCHAR(10) = 'MQL',
+			@CWCode NVARCHAR(10) = 'CW',
+			@RevenueCode NVARCHAR(10) = 'REVENUE',
+			@ProjectedStageValue INT,
+			@ResultValue FLOAT,
+			@AboveStageLevels NVARCHAR(MAX),
+			@AboveStageIds NVARCHAR(MAX),
+			@IndicatorStageLevel INT,
+			@PlanStageLevel INT,
+			@MQLLevel INT,
+			@CWLevel INT
+	
+	SELECT @ProjectedStageValue = GoalValue FROM [Plan] WHERE PlanId = @PlanId AND IsDeleted = 0
+
+	IF(@PlanStageCode = @IndicatorCode)
+	BEGIN
+		RETURN @ProjectedStageValue
+	END
+	
+	-- Fetch levels of stages
+	SELECT @IndicatorStageLevel = [Level] FROM Stage WHERE Code = @IndicatorCode AND ClientId = @ClientId AND IsDeleted = 0
+	SELECT @PlanStageLevel = [Level] FROM Stage WHERE Code = @PlanStageCode AND ClientId = @ClientId AND IsDeleted = 0
+	
+	SELECT @MQLLevel = [Level] FROM Stage WHERE Code = @MQLCode AND ClientId = @ClientId AND IsDeleted = 0
+	SELECT @CWLevel = [Level] FROM Stage WHERE Code = @CWCode AND ClientId = @ClientId AND IsDeleted = 0
+	
+	IF(@PlanStageCode != @RevenueCode AND (@IndicatorCode = @MQLCode OR @IndicatorStageLevel < @PlanStageLevel))
+	BEGIN
+		DECLARE @CalStageFrom INT = @PlanStageLevel
+
+		IF(@IndicatorStageLevel < @PlanStageLevel)
+		BEGIN
+			SET @CalStageFrom = @IndicatorStageLevel
+		END
+
+		-- Get stages and levels before MQL stage
+		SELECT @AboveStageLevels = COALESCE(@AboveStageLevels + ', ' ,'') + CAST([Level] AS NVARCHAR(10)),
+				@AboveStageIds = COALESCE(@AboveStageIds + ', ' ,'') + CAST(StageId AS NVARCHAR(10))
+		FROM Stage WHERE [Level] < @MQLLevel AND [Level] >= @CalStageFrom AND ClientId = @ClientId AND IsDeleted = 0
+	END
+	ELSE
+	BEGIN
+		-- Get stages and levels upto CW stage
+		SELECT @AboveStageLevels = COALESCE(@AboveStageLevels + ', ' ,'') + CAST([Level] AS NVARCHAR(10)),
+				@AboveStageIds = COALESCE(@AboveStageIds + ', ' ,'') + CAST(StageId AS NVARCHAR(10))
+		FROM Stage WHERE [Level] < @CWLevel AND [Level] >= ISNULL(@PlanStageLevel, @IndicatorStageLevel) AND ClientId = @ClientId AND IsDeleted = 0
+	END
+
+	IF(@PlanStageCode = @RevenueCode OR @IndicatorStageLevel < ISNULL(@PlanStageLevel,0))
+	BEGIN
+		-- Calculate INQ/MQL/CW from Revenue
+		SET @ResultValue = (SELECT @ProjectedStageValue / Exp(Sum(IIf([Value]=0,0,Log([Value]/100))))*IIf(Min([Value])=0,0,1)
+							FROM Model_Stage M INNER JOIN dbo.SplitString(@AboveStageIds,',')  CSVTable
+							ON M.StageId = CSVTable.Item WHERE ModelId = @ModelId AND StageType ='CR') 
+		IF(@PlanStageCode = @RevenueCode)
+		BEGIN
+			SET @ResultValue = ISNULL(@ResultValue, @ProjectedStageValue) / (SELECT AverageDealSize FROM [Model] WHERE ModelId = @ModelId AND IsDeleted = 0)
+		END
+			
+	END
+	ELSE
+	BEGIN
+		-- Calculate INQ/MQL/CW/REVENUE from INQ/MQL/CW
+		SET @ResultValue = (SELECT @ProjectedStageValue * 
+							Exp(Sum(IIf([Value]=0,0,Log([Value]/100))))*IIf(Min([Value])=0,0,1)
+							FROM Model_Stage M INNER JOIN dbo.SplitString(@AboveStageIds,',') CSVTable
+							ON M.StageId = CSVTable.Item WHERE ModelId = @ModelId AND StageType ='CR') 
+
+		-- Multiply with AverageDealSize to calculate Revenue
+		IF(@IndicatorCode = @RevenueCode)
+		BEGIN
+			SET @ResultValue = @ResultValue * (SELECT AverageDealSize FROM [Model] WHERE ModelId = @ModelId AND IsDeleted = 0)
+		END
+	END
+	RETURN ROUND(ISNULL(@ResultValue,0),0) 
+	
+END
+GO
+
+
+-- ======================================================================================================
+-- Author:		Arpita Soni
+-- Create date: 08/17/2016
+-- Description:	List of tactics with projected and actual values for all entities involved in alert rules
+-- ======================================================================================================
+-- DROP AND CREATE FUNCTION
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[GetTacticsForAllRuleEntities]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[GetTacticsForAllRuleEntities]
+GO
+CREATE FUNCTION [dbo].[GetTacticsForAllRuleEntities](
+	@TempEntityTable [TacticForRuleEntities] READONLY
+)
+RETURNS @TempTable TABLE
+(
+	PlanTacticId INT,
+	PlanProgramId INT,
+	PlanCampaignId INT,
+	PlanId INT,
+	Indicator NVARCHAR(50),
+	ProjectedStageValue FLOAT,
+	ActualStageValue FLOAT
+)
+AS
+BEGIN
+		INSERT INTO @TempTable
+		SELECT PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue , 
+		(	CASE WHEN Indicator = 'REVENUE' THEN SUM(ActualValue) 
+			ELSE SUM(ActualValue) END ) AS ActualStageValue 
+		FROM
+		(
+			SELECT Tactic.PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId, [Plan].PlanId, dbo.TacticIndicatorProjectedValue(Tactic.PlanTacticId,[Model].ModelId, [Stage].Code,RuleEntityTable.indicator,[Model].ClientId) AS ProjectedStageValue 
+			,ISNULL(MIN(ActualValue),0) ActualValue,RuleEntityTable.Indicator
+			FROM @TempEntityTable RuleEntityTable 
+			CROSS APPLY (SELECT PlanId,ModelId From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId = RuleEntityTable.EntityId AND [Plan].IsDeleted=0) [Plan]
+			CROSS APPLY (SELECT ModelId,ClientId From [Model] WITH (NOLOCK) WHERE [Model].ModelId = [Plan].ModelId AND [Model].IsDeleted=0) [Model]
+			CROSS APPLY (SELECT PlanCampaignId,PlanId FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanId = [Plan].PlanId AND Campaign.IsDeleted=0) Campaign 
+			CROSS APPLY (SELECT PlanProgramId,PlanCampaignId FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanCampaignId=Campaign.PlanCampaignId AND Program.IsDeleted=0) Program
+			CROSS APPLY (SELECT PlanTacticId,StageId,TacticTypeId,PlanProgramId FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) 
+						 WHERE Tactic.PlanProgramId=Program.PlanProgramId AND Tactic.IsDeleted = 0
+						 AND Tactic.[Status] IN ('In-Progress','Complete','Approved')) Tactic
+			CROSS APPLY (SELECT StageId, Code FROM Stage WHERE Stage.StageId = Tactic.StageId AND STAGE.IsDeleted = 0) Stage
+			OUTER APPLY (
+							SELECT Distinct ActualValue,StageTitle,Period FROM Plan_Campaign_Program_Tactic_Actual Actual
+							WHERE Tactic.PlanTacticId = Actual.PlanTacticId 
+						) Actual
+			WHERE RuleEntityTable.EntityType = 'Plan'  
+			AND StageTitle = CASE WHEN RuleEntityTable.INDICATOR = STAGE.CODE AND RuleEntityTable.INDICATOR NOT IN ('MQL','CW','REVENUE') 
+													THEN 'PROJECTEDSTAGEVALUE' 
+													ELSE RuleEntityTable.INDICATOR END
+			GROUP BY [Tactic].PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId,[Plan].PlanId,Actual.Period,RuleEntityTable.Indicator,Model.ModelId,Model.ClientId,Stage.Code
+		) P
+		GROUP BY PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue
+		
+		UNION 
+		SELECT PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue , SUM(ActualValue) ActualStageValue FROM
+		(
+			SELECT Tactic.PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId, [Plan].PlanId, dbo.TacticIndicatorProjectedValue(Tactic.PlanTacticId,[Model].ModelId, [Stage].Code,RuleEntityTable.indicator,[Model].ClientId) AS ProjectedStageValue 
+			,ISNULL(MIN(ActualValue),0) ActualValue,RuleEntityTable.Indicator
+			FROM @TempEntityTable  RuleEntityTable 
+			CROSS APPLY (SELECT PlanCampaignId,PlanId  FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId = RuleEntityTable.EntityId AND Campaign.IsDeleted=0) Campaign 
+			CROSS APPLY (SELECT PlanId,ModelId From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId = Campaign.PlanId AND [Plan].IsDeleted=0) [Plan]
+			CROSS APPLY (SELECT ModelId,ClientId From [Model] WITH (NOLOCK) WHERE [Model].ModelId = [Plan].ModelId AND [Model].IsDeleted=0) [Model]
+			CROSS APPLY (SELECT PlanProgramId,PlanCampaignId FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanCampaignId=Campaign.PlanCampaignId AND Program.IsDeleted=0) Program
+			CROSS APPLY (SELECT PlanTacticId,StageId,TacticTypeId,PlanProgramId FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE Tactic.PlanProgramId=Program.PlanProgramId AND Tactic.IsDeleted=0
+						AND Tactic.[Status] IN ('In-Progress','Complete','Approved')) Tactic
+			CROSS APPLY (SELECT StageId, Code FROM Stage WHERE Stage.StageId = Tactic.StageId AND STAGE.IsDeleted=0) Stage
+			OUTER APPLY (
+							SELECT ActualValue,StageTitle,Period FROM Plan_Campaign_Program_Tactic_Actual Actual
+							WHERE Tactic.PlanTacticId = Actual.PlanTacticId 
+						) Actual
+			WHERE RuleEntityTable.EntityType = 'Campaign'
+			AND StageTitle = CASE WHEN RuleEntityTable.INDICATOR = STAGE.CODE AND RuleEntityTable.INDICATOR NOT IN ('MQL','CW','REVENUE')  
+													THEN 'PROJECTEDSTAGEVALUE' 
+													ELSE RuleEntityTable.INDICATOR END
+			GROUP BY [Tactic].PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId,[Plan].PlanId,Actual.Period,RuleEntityTable.Indicator,Model.ModelId,Model.ClientId,Stage.Code
+		) PC
+		GROUP BY PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue
+		
+		UNION 
+		SELECT PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue , SUM(ActualValue) ActualStageValue FROM
+		(
+			SELECT Tactic.PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId, [Plan].PlanId, dbo.TacticIndicatorProjectedValue(Tactic.PlanTacticId,[Model].ModelId, [Stage].Code,RuleEntityTable.indicator,[Model].ClientId) AS ProjectedStageValue 
+			,ISNULL(MIN(ActualValue),0) ActualValue,RuleEntityTable.Indicator
+			FROM @TempEntityTable  RuleEntityTable 
+			CROSS APPLY (SELECT PlanProgramId,PlanCampaignId FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=RuleEntityTable.EntityId AND Program.IsDeleted=0) Program
+			CROSS APPLY (SELECT PlanCampaignId,PlanId  FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId = Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
+			CROSS APPLY (SELECT PlanId,ModelId From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId = Campaign.PlanId AND [Plan].IsDeleted=0) [Plan]
+			CROSS APPLY (SELECT ModelId,ClientId From [Model] WITH (NOLOCK) WHERE [Model].ModelId = [Plan].ModelId AND [Model].IsDeleted=0) [Model]
+			CROSS APPLY (SELECT PlanTacticId,StageId,TacticTypeId,PlanProgramId FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE Tactic.PlanProgramId=Program.PlanProgramId AND Tactic.IsDeleted=0
+						AND Tactic.[Status] IN ('In-Progress','Complete','Approved')) Tactic
+			CROSS APPLY (SELECT StageId, Code FROM Stage WHERE Stage.StageId = Tactic.StageId AND STAGE.IsDeleted=0) Stage
+			OUTER APPLY (
+							SELECT ActualValue,StageTitle,Period FROM Plan_Campaign_Program_Tactic_Actual Actual
+							WHERE Tactic.PlanTacticId = Actual.PlanTacticId 
+						) Actual
+			WHERE RuleEntityTable.EntityType = 'Program'
+			AND StageTitle = CASE WHEN RuleEntityTable.INDICATOR = STAGE.CODE AND RuleEntityTable.INDICATOR NOT IN ('MQL','CW','REVENUE')  
+													THEN 'PROJECTEDSTAGEVALUE' 
+													ELSE RuleEntityTable.INDICATOR END
+			GROUP BY [Tactic].PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId,[Plan].PlanId,Actual.Period,RuleEntityTable.Indicator,Model.ModelId,Model.ClientId,Stage.Code
+		) PCP
+		GROUP BY PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue
+		
+		UNION 
+		SELECT PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue , SUM(ActualValue) ActualStageValue FROM
+		(
+			SELECT Tactic.PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId, [Plan].PlanId, dbo.TacticIndicatorProjectedValue(Tactic.PlanTacticId,[Model].ModelId, [Stage].Code,RuleEntityTable.indicator,[Model].ClientId) AS ProjectedStageValue 
+			,ISNULL(MIN(ActualValue),0) ActualValue,RuleEntityTable.Indicator
+			FROM @TempEntityTable  RuleEntityTable 
+			CROSS APPLY (SELECT PlanTacticId,StageId,TacticTypeId,PlanProgramId FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE Tactic.PlanTacticId=RuleEntityTable.EntityId AND Tactic.IsDeleted=0
+						AND Tactic.[Status] IN ('In-Progress','Complete','Approved')) Tactic
+			CROSS APPLY (SELECT StageId, Code FROM Stage WHERE Stage.StageId = Tactic.StageId AND STAGE.IsDeleted=0) Stage
+			CROSS APPLY (SELECT PlanProgramId,PlanCampaignId FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
+			CROSS APPLY (SELECT PlanCampaignId,PlanId  FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId = Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
+			CROSS APPLY (SELECT PlanId,ModelId From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId = Campaign.PlanId AND [Plan].IsDeleted=0) [Plan]
+			CROSS APPLY (SELECT ModelId,ClientId From [Model] WITH (NOLOCK) WHERE [Model].ModelId = [Plan].ModelId AND [Model].IsDeleted=0) [Model]
+			OUTER APPLY (
+							SELECT ActualValue,StageTitle,Period FROM Plan_Campaign_Program_Tactic_Actual Actual
+							WHERE Tactic.PlanTacticId = Actual.PlanTacticId 
+						) Actual
+			WHERE RuleEntityTable.EntityType = 'Tactic'
+			AND StageTitle = CASE WHEN RuleEntityTable.INDICATOR = STAGE.CODE AND RuleEntityTable.INDICATOR NOT IN ('MQL','CW','REVENUE')  
+													THEN 'PROJECTEDSTAGEVALUE' 
+													ELSE RuleEntityTable.INDICATOR END
+			GROUP BY [Tactic].PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId,[Plan].PlanId,Actual.Period,RuleEntityTable.Indicator,Model.ModelId,Model.ClientId,Stage.Code
+		) PCPT
+		GROUP BY PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue
+		
+		UNION 
+		SELECT PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue , SUM(ActualValue) ActualStageValue FROM
+		(
+			SELECT Tactic.PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId, [Plan].PlanId, dbo.TacticIndicatorProjectedValue(Tactic.PlanTacticId,[Model].ModelId, [Stage].Code,RuleEntityTable.indicator,[Model].ClientId) AS ProjectedStageValue 
+			,ISNULL(MIN(ActualValue),0) ActualValue,RuleEntityTable.Indicator
+			FROM @TempEntityTable  RuleEntityTable 
+			CROSS APPLY (SELECT PlanLineItemId,PlanTacticId FROM [Plan_Campaign_Program_Tactic_LineItem] AS LineItem WITH (NOLOCK) WHERE LineItem.PlanLineItemId=RuleEntityTable.EntityId AND LineItem.IsDeleted=0) LineItem
+			CROSS APPLY (SELECT PlanTacticId,StageId,TacticTypeId,PlanProgramId FROM Plan_Campaign_Program_Tactic AS Tactic WITH (NOLOCK) WHERE Tactic.PlanTacticId=LineItem.PlanTacticId AND Tactic.IsDeleted=0
+						 AND Tactic.[Status] IN ('In-Progress','Complete','Approved')) Tactic
+			CROSS APPLY (SELECT StageId, Code FROM Stage WHERE Stage.StageId = Tactic.StageId AND STAGE.IsDeleted=0) Stage
+			CROSS APPLY (SELECT PlanProgramId,PlanCampaignId FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE Program.PlanProgramId=Tactic.PlanProgramId AND Program.IsDeleted=0) Program
+			CROSS APPLY (SELECT PlanCampaignId,PlanId  FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE Campaign.PlanCampaignId = Program.PlanCampaignId AND Campaign.IsDeleted=0) Campaign 
+			CROSS APPLY (SELECT PlanId,ModelId From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId = Campaign.PlanId AND [Plan].IsDeleted=0) [Plan]
+			CROSS APPLY (SELECT ModelId,ClientId From [Model] WITH (NOLOCK) WHERE [Model].ModelId = [Plan].ModelId AND [Model].IsDeleted=0) [Model]
+			OUTER APPLY (
+							SELECT ActualValue,StageTitle,Period FROM Plan_Campaign_Program_Tactic_Actual Actual
+							WHERE Tactic.PlanTacticId = Actual.PlanTacticId 
+						) Actual
+			WHERE RuleEntityTable.EntityType = 'LineItem'
+			AND StageTitle = CASE WHEN RuleEntityTable.INDICATOR = STAGE.CODE AND RuleEntityTable.INDICATOR NOT IN ('MQL','CW','REVENUE')  
+													THEN 'PROJECTEDSTAGEVALUE' 
+													ELSE RuleEntityTable.INDICATOR END
+			GROUP BY [Tactic].PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId,[Plan].PlanId,Actual.Period,RuleEntityTable.Indicator,Model.ModelId,Model.ClientId,Stage.Code
+		) PCPTL
+		GROUP BY PlanTacticId, PlanProgramId, PlanCampaignId, PlanId, Indicator, ProjectedStageValue
+					
+	RETURN
+END
+GO
+
+
+-- =============================================
+-- Author:		Arpita Soni
+-- Create date: 08/17/2016
+-- Description:	List of plans with projected and actual values for all entities involved in alert rules
+-- =============================================
+-- DROP AND CREATE FUNCTION
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[ProjectedValuesForPlans]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[ProjectedValuesForPlans]
+GO
+CREATE FUNCTION [dbo].[ProjectedValuesForPlans](
+	@TempEntityTable [TacticForRuleEntities] READONLY
+)
+RETURNS @TempTable TABLE
+(
+	PlanTacticId INT NULL,
+	PlanProgramId INT NULL,
+	PlanCampaignId INT NULL,
+	PlanId INT,
+	Indicator NVARCHAR(50),
+	ProjectedStageValue FLOAT,
+	ActualStageValue FLOAT NULL
+)
+AS
+BEGIN
+		INSERT INTO @TempTable
+		SELECT NULL, NULL, NULL, PlanId, Indicator, ProjectedStageValue ,NULL
+		FROM
+		(
+			SELECT [Plan].PlanId, 
+			[dbo].[PlanIndicatorProjectedValue]([Plan].PlanId,[Model].ModelId, [Plan].GoalType,RuleEntityTable.Indicator,[Model].ClientId) AS ProjectedStageValue 
+			,RuleEntityTable.Indicator
+			FROM @TempEntityTable RuleEntityTable 
+			CROSS APPLY (SELECT PlanId,ModelId,GoalType From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId = RuleEntityTable.EntityId AND [Plan].IsDeleted=0) [Plan]
+			CROSS APPLY (SELECT ModelId,ClientId From [Model] WITH (NOLOCK) WHERE [Model].ModelId = [Plan].ModelId AND [Model].IsDeleted=0) [Model]
+			WHERE RuleEntityTable.EntityType = 'Plan'  
+			GROUP BY [Plan].PlanId,RuleEntityTable.Indicator,Model.ModelId,Model.ClientId,[Plan].GoalType
+		) P
+		GROUP BY PlanId, Indicator, ProjectedStageValue
+		RETURN 
+END
+GO
+
+-- ===================================================
+-- Author:		Arpita Soni
+-- Create date: 08/08/2016
+-- Description:	Run alert rules and generate alerts
+-- ===================================================
+-- DROP AND CREATE STORED PROCEDURE [dbo].[RunAlertRules]
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[RunAlertRules]') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[RunAlertRules]
+END
+GO
+CREATE PROCEDURE RunAlertRules
+ @RuleId INT = 0,
+ @UserId NVARCHAR(50) = NULL,
+ @ClientId NVARCHAR(50) = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	IF (ISNULL(@UserId,'') = '' AND ISNULL(@ClientId,'') = '')
+	BEGIN
+		-- Constant variables
+		DECLARE @txtLessThan	NVARCHAR(20) = 'less than',
+				@txtGreaterThan NVARCHAR(20) = 'greater than',
+				@txtEqualTo		NVARCHAR(20) = 'equal to'
+
+		DECLARE @TacticsDataForRules			NVARCHAR(MAX) = '',
+				@UPDATEQUERYCOMMON				NVARCHAR(MAX) = '',
+				@UpdatePlanQuery				NVARCHAR(MAX) = '',
+				@UpdateProjectedValuesForPlan	NVARCHAR(MAX) = '',
+				@UpdateCampaignQuery			NVARCHAR(MAX) = '',
+				@UpdateProgramQuery				NVARCHAR(MAX) = '',
+				@UpdateTacticQuery				NVARCHAR(MAX) = '',
+				@CalculatePercentGoalQuery		NVARCHAR(MAX) = '',
+				@INSERTALERTQUERYCOMMON			NVARCHAR(MAX) = '',
+				@InsertQueryForLT				NVARCHAR(MAX) = '',
+				@InsertQueryForGT				NVARCHAR(MAX) = '',
+				@InsertQueryForEQ				NVARCHAR(MAX) = '',
+				@CommonQueryToIgnoreDuplicate	NVARCHAR(MAX) = ''
+				
+
+		-- Get projected and actual values of tactic belongs to plan/campaign/program
+		SET @TacticsDataForRules = 'DECLARE @TempEntityTable [TacticForRuleEntities];
+
+									-- Get entities from the rule which are reached to completion goal
+									INSERT INTO @TempEntityTable([RuleId],[EntityId],[EntityType],[Indicator],[IndicatorComparision],[IndicatorGoal],[CompletionGoal],[ClientId],
+																 [EntityTitle],[StartDate],[EndDate],[PercentComplete]) 
+									SELECT Entity.* FROM dbo.GetEntitiesReachedCompletionGoal() Entity 
+									WHERE Entity.PercentComplete >= Entity.CompletionGoal
+									
+									-- Table with projected and actual values of tactic belongs to plan/campaign/program
+									SELECT * INTO #TacticsDataForAllRuleEntities FROM dbo.[GetTacticsForAllRuleEntities](@TempEntityTable)
+									--SELECT * FROM #TacticsDataForAllRuleEntities 
+									'
+		
+		-- Common query to update projected and actual values of indicators for entities
+		SET @UPDATEQUERYCOMMON =  ';	UPDATE A SET A.ProjectedStageValue = ISNULL(B.ProjectedStageValue,0), A.ActualStageValue = ISNULL(B.ActualStageValue,0)
+										FROM @TempEntityTable A INNER JOIN  
+										(
+											SELECT B.##ENTITYIDCOLNAME##,B.INDICATOR,SUM(B.ProjectedStageValue) AS ProjectedStageValue,SUM(B.ActualStageValue) AS ActualStageValue
+											FROM @TempEntityTable A
+											INNER JOIN #TacticsDataForAllRuleEntities B
+											ON A.EntityId = B.##ENTITYIDCOLNAME## AND A.EntityType = ##ENTITYTYPE## AND A.Indicator = B.Indicator
+											GROUP BY B.##ENTITYIDCOLNAME##, B.Indicator
+										) B ON A.EntityId = B.##ENTITYIDCOLNAME##  AND A.Indicator = B.Indicator AND A.EntityType = ##ENTITYTYPE## 
+											
+										'
+
+		-- Update query for plan
+		SET @UpdatePlanQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanId')
+		SET @UpdatePlanQuery = REPLACE(@UpdatePlanQuery,'##ENTITYTYPE##','''Plan''')
+		-- Update query for campaign
+		SET @UpdateCampaignQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanCampaignId')
+		SET @UpdateCampaignQuery = REPLACE(@UpdateCampaignQuery,'##ENTITYTYPE##','''Campaign''')
+		-- Update query for program
+		SET @UpdateProgramQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanProgramId')
+		SET @UpdateProgramQuery = REPLACE(@UpdateProgramQuery,'##ENTITYTYPE##','''Program''')
+		-- Update query for tactic
+		SET @UpdateTacticQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanTacticId')
+		SET @UpdateTacticQuery = REPLACE(@UpdateTacticQuery,'##ENTITYTYPE##','''Tactic''')
+
+		-- For plan update projected value using different calculation
+		SET @UpdateProjectedValuesForPlan = ';  UPDATE A SET A.ProjectedStageValue = ISNULL(B.ProjectedStageValue,0)
+												FROM @TempEntityTable A INNER JOIN
+												[dbo].[ProjectedValuesForPlans](@TempEntityTable) B ON A.EntityId = B.PlanId  
+												AND A.Indicator = B.Indicator AND A.EntityType = ''Plan''
+												'
+		-- Convert percent of goal from Projected and Actual values
+		SET @CalculatePercentGoalQuery = ' UPDATE @TempEntityTable SET CalculatedPercentGoal = 
+											CASE WHEN ProjectedStageValue = 0 AND ActualStageValue = 0 THEN 0 
+												 WHEN (ProjectedStageValue = 0 AND ActualStageValue != 0) OR (ActualStageValue * 100 / ProjectedStageValue) > 100 THEN 100 
+												 ELSE ActualStageValue * 100 / ProjectedStageValue END ;
+										   SELECT * FROM @TempEntityTable 
+										   '
+		-- Common query to create alerts
+		SET @INSERTALERTQUERYCOMMON = '	SELECT AR.RuleId, ##DESCRIPTION## AS [Description], AR.UserId FROM @TempEntityTable FinalTable
+										INNER JOIN Alert_Rules AR ON FinalTable.RuleId = AR.RuleId '
+
+		-- For less than rule
+		DECLARE @LessThanWhere		NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal < AR.IndicatorGoal AND AR.IndicatorComparision = ''LT'' '
+		-- For greater than rule
+		DECLARE @GreaterThanWhere	NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal > AR.IndicatorGoal AND AR.IndicatorComparision = ''GT'' '
+		-- For equal to rule
+		DECLARE @EqualToWhere		NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal = AR.IndicatorGoal AND AR.IndicatorComparision = ''EQ'' '
+
+		SET @InsertQueryForLT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' FinalTable.EntityTitle +''''''s ''+ AR.Indicator +'' is ' + @txtLessThan +' '' + CAST(AR.IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @LessThanWhere
+		SET @InsertQueryForGT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' FinalTable.EntityTitle +''''''s ''+ AR.Indicator +'' is ' + @txtGreaterThan +' '' + CAST(AR.IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @GreaterThanWhere
+		SET @InsertQueryForEQ = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' FinalTable.EntityTitle +''''''s ''+ AR.Indicator +'' is ' + @txtEqualTo +' '' + CAST(AR.IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @EqualToWhere
+		
+		SET @CommonQueryToIgnoreDuplicate = '	INSERT INTO Alerts([RuleId],[Description],[UserId])
+												##INSERTQUERY##
+												EXCEPT
+												SELECT [RuleId],[Description],[UserId] FROM Alerts'
+
+		SET @InsertQueryForLT = REPLACE(@CommonQueryToIgnoreDuplicate, '##INSERTQUERY##', @InsertQueryForLT)
+		SET @InsertQueryForGT = REPLACE(@CommonQueryToIgnoreDuplicate, '##INSERTQUERY##', @InsertQueryForGT)
+		SET @InsertQueryForEQ = REPLACE(@CommonQueryToIgnoreDuplicate, '##INSERTQUERY##', @InsertQueryForEQ)
+
+		EXEC (@TacticsDataForRules + @UpdatePlanQuery + @UpdateCampaignQuery + @UpdateProgramQuery + @UpdateTacticQuery + @UpdateProjectedValuesForPlan + 
+				@CalculatePercentGoalQuery + @InsertQueryForLT + @InsertQueryForGT +@InsertQueryForEQ)
+	END	
+	
+END
+GO
+/*===================================================================================
+Completed By : Arpita Soni
+===================================================================================*/
+
+
 -- ===========================Please put your script above this script=============================
 -- Added By : Maitri Gandhi
 -- Added Date : 2/22/2016
