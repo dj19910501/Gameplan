@@ -19,6 +19,7 @@ namespace RevenuePlanner.Controllers
         #region Variable Delaration
         private MRPEntities db = new MRPEntities();
         static Random rnd = new Random();
+        public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
         #endregion
         //public BoostController()
         //{
@@ -210,7 +211,7 @@ namespace RevenuePlanner.Controllers
             {
                 Id = itt.ImprovementTacticTypeId,
                 Title = itt.Title,
-                Cost = itt.Cost,
+                Cost = objCurrency.GetValueByExchangeRate(itt.Cost), //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
                 IsDeployed = itt.IsDeployed,
                 TargetStage = (db.Stages.Where(stages => stages.IsDeleted == false && stages.ClientId == Sessions.User.ClientId && stages.Code != StageTypeCW)//Add M
                                         .OrderBy(stages => stages.Level).ToList())
@@ -245,7 +246,7 @@ namespace RevenuePlanner.Controllers
                 ImprovementTacticType ittobj = GetImprovementTacticTypeRecordbyId(id);
                 bittobj.Title = System.Web.HttpUtility.HtmlDecode(ittobj.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 bittobj.Description = System.Web.HttpUtility.HtmlDecode(ittobj.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                bittobj.Cost = ittobj.Cost;
+                bittobj.Cost = objCurrency.GetValueByExchangeRate(ittobj.Cost); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
                 bittobj.IsDeployed = ittobj.IsDeployed;
                 bittobj.ImprovementTacticTypeId = id;
                 bittobj.ColorCode = ittobj.ColorCode;
@@ -357,7 +358,7 @@ namespace RevenuePlanner.Controllers
                         objIt.ImprovementTacticTypeId = improvementId;
                         objIt.Title = title;
                         objIt.Description = desc;
-                        objIt.Cost = cost;
+                        objIt.Cost = objCurrency.SetValueByExchangeRate(cost); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
                         objIt.IsDeployed = status;
                         objIt.IsDeployedToIntegration = deployToIntegrationStatus;
                         db.Entry(objIt).State = EntityState.Modified;
@@ -386,7 +387,7 @@ namespace RevenuePlanner.Controllers
                     {
                         objIt.Title = title;
                         objIt.Description = desc;
-                        objIt.Cost = cost;
+                        objIt.Cost = objCurrency.SetValueByExchangeRate(cost); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
                         objIt.IsDeployed = status;
                         objIt.ClientId = Sessions.User.ClientId;
                         objIt.CreatedBy = Sessions.User.UserId;

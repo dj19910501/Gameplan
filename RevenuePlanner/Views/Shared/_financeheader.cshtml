@@ -1,8 +1,9 @@
 ﻿@model RevenuePlanner.Models.FinanceModelHeaders
+@using RevenuePlanner.Helpers;
 @{
     ViewBag.Title = "Finance";
     Layout = "";
-    
+    string CurrencySymbol = Sessions.PlanCurrencySymbol; //Modified by Rahul Shah for PL #2505 to apply multi currency on boost screen
 }
 
 
@@ -10,25 +11,21 @@
     <div class="plancart-box clearfix"> @* /* Div Added for #2219 - Bhumika */ *@
         <div class="white-chart">
             <p class="source-sans-probold" id="actualLabel" title="@Html.DisplayFor(model => model.ActualTitle)">@Html.DisplayFor(model => model.ActualTitle)</p>
-            <p class="value source-sans-prolight" id="ActualID">$ @Html.DisplayFor(model => model.Actual)</p>
-            @*<a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
+            <p class="value source-sans-prolight" id="ActualID">@CurrencySymbol @Html.DisplayFor(model => model.Actual)</p> @*Modified by Rahul Shah for PL #2505 to apply multi currency on boost screen*@
+                       
         </div>
         <div class="white-chart">
             <p class="source-sans-probold" id="plannedLabel" title="@Html.DisplayFor(model => model.PlannedTitle)">@Html.DisplayFor(model => model.PlannedTitle)</p>
-            <p class="value source-sans-prolight" id="PlannedID">$ @Html.DisplayFor(model => model.Planned)</p>
-            @*<a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
+            <p class="value source-sans-prolight" id="PlannedID">@CurrencySymbol @Html.DisplayFor(model => model.Planned)</p>  @*Modified by Rahul Shah for PL #2505 to apply multi currency on boost screen*@           
         </div>
         <div class="white-chart">
             <p class="source-sans-probold" id="forecastLabel" title="@Html.DisplayFor(model => model.ForecastTitle)">@Html.DisplayFor(model => model.ForecastTitle)</p>
-            <p class="value source-sans-prolight" id="ForecastID">$ @Html.DisplayFor(model => model.Forecast)</p>
-            @*<a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
+            <p class="value source-sans-prolight" id="ForecastID">@CurrencySymbol @Html.DisplayFor(model => model.Forecast)</p> @*Modified by Rahul Shah for PL #2505 to apply multi currency on boost screen*@          
         </div>
         <div id="dvBudgetHeader" class="white-chart">
             <p class="source-sans-probold" id="budgetLabel" title="@Html.DisplayFor(model => model.BudgetTitle)">@Html.DisplayFor(model => model.BudgetTitle)</p>
-            <p class="value source-sans-prolight" id="budgetID">$ @Html.DisplayFor(model => model.Budget)</p>
+            <p class="value source-sans-prolight" id="budgetID">@CurrencySymbol @Html.DisplayFor(model => model.Budget)</p> @*Modified by Rahul Shah for PL #2505 to apply multi currency on boost screen*@
 
-
-            @* <a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
         </div>
     </div>
         <div style="margin-top: 27px; width:30% ; margin-left: 22px;">
@@ -42,37 +39,11 @@
 
     </div>
 
-@*<div style="width: 100%;" >
-     @Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
-
-
-     <div style="float:right">
-                            <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
-            @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
-
-                            </span>
-                        </div>
-    </div> *@
-
-
-@*<script type="text/javascript">
-        $(document).ready(function () {
-            $("#ddlParentFinance,#ddlRevenueTimeFrame").multiselect({
-                multiple: false,
-                noneSelectedText: "Please Select",
-                selectedList: 1
-            }).multiselectfilter({
-            });
-        });
-    </script>*@
 <script type="text/javascript">
-    // var pageName = "MainGrid";
-   
     formatBudgetValues("#budgetID");
     formatForecastValues("#ForecastID");
     formatPlannedValues("#PlannedID");
     formatActualValues("#ActualID");
-    //setBootstrapTooltip("#budgetID", 45144, 4, false);
     function FinanceBack() {
         //Modified for #1721
         myTreeGrid.editStop();
@@ -91,40 +62,22 @@
             if (pageName == "UserPermission") {
                 $("#DivFilter").css('display', 'block');
             }
-            // Add BY Nishant Sheth
-            // Desc : display selected columns
           
-            // End by nishant sheth
         RefreshBudgetDropdown();
         pageName = "MainGrid";
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
             $('#divGridView').load(url + '?budgetId=' + backBudgetid + '&mainTimeFrame=' + _mainTimeFrame + '&ListofCheckedColums=' + CheckedColumns);
-            ShowHideControls("MainGrid");
-           
+            ShowHideControls("MainGrid");           
         GetFinanceHeaderValue(backBudgetid, true);
-        }
-    @*    else if (pageName = "UserPermission") {
-            RefreshBudgetDropdown();
-            pageName = "MainGrid";
-            var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
-            $('#divGridView').load(url + '?budgetId=' + backBudgetid);
-            ShowHideControls("MainGrid");
-            $("#DivFilter").css('display', 'block');
-            GetFinanceHeaderValue(backBudgetid, true);
-        }*@
+        }   
         else {
-            //RefreshBudgetDropdown();
             pageName = "EditBudget";
             var budgetDetailId = backlineBudgetDetailId;
             EditBudget(budgetDetailId, false, GlobalLevel, GlobalEditPermission);
-            //var url = '@Url.Content("~/Finance/EditBudget/")';
-            //$('#divGridView').load(url + '?budgetId=' + backBudgetid);
             ShowHideControls("EditBudget");
-            //GetFinanceHeaderValue(0, false);
         }
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
-        //myApp.hidePleaseWait();
     }
 
    

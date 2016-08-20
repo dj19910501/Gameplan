@@ -167,7 +167,7 @@
         $(".priceValue").keydown(function (e) { priceFormatKeydown(e); });
         $(".priceValue").change(function (e) { priceFormatChange(e) });
 
-        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
 
         $('.close-form', this.$panel).click(function (e) {
             $("#slidepanel").css("display", "none");

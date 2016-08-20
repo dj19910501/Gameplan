@@ -376,6 +376,7 @@ namespace RevenuePlanner.Controllers
             List<DhtmlxGridRowDataModel> gridRowData = new List<DhtmlxGridRowDataModel>();
             try
             {
+                var DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString(), Enums.ColumnValidation.ValidNumeric.ToString() };
                 // Add By Nishant Sheth
                 // Desc #1678 
                 StringBuilder setHeader = new StringBuilder();
@@ -723,28 +724,58 @@ namespace RevenuePlanner.Controllers
                                     var CustomValue = CustomColumnsValue.Where(a => a.EntityId == i.Id && a.CustomFieldId == col.CustomFieldId).Select(a => a.Value).FirstOrDefault();
                                     if (col.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
                                     {
-                                        Datarow[colname] = CustomValue != null ? CustomValue : "0";
-                                    }
-                                    else
-                                    {
-                                        var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
-                                        //Added By Bhumika for #1771 on 1/4/2016
-                                        if (Convert.ToString(DropDownVal) != null)
+                                        // Modified By Rahul Shah
+                                        // Handle the custom columns values if not an numeric
+                                        //Moidified by Rahul Shah for PL #2505 to Apply multicurrency on custom collumn.
+                                        if (DoubleColumnValidation.Contains(col.ValidationType))
                                         {
-                                            Datarow[colname] = Convert.ToString(DropDownVal);
-                                        }
-                                        else
-                                        {
-                                            if (isEdit == "None")
+                                            double n;
+                                            bool isNumeric = double.TryParse(CustomValue, out n);
+                                            if (isNumeric)
                                             {
-                                                Datarow[colname] = "---";
-
+                                                if (col.ValidationType == Enums.ColumnValidation.ValidCurrency.ToString())
+                                                {
+                                                    Datarow[colname] = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(CustomValue)));
+                                                }
+                                                else {
+                                                    Datarow[colname] = CustomValue != null ? CustomValue : "0";
+                                                }
                                             }
                                             else
                                             {
-                                                Datarow[colname] = "<div style='color: #000 ;'> --- </div>";
+                                                Datarow[colname] = 0;
                                             }
+                                        }
+                                        else
+                                        {
+                                            Datarow[colname] = !string.IsNullOrEmpty(CustomValue) ? CustomValue : string.Empty;
+                                        }                                        
+                                    }
+                                    else
+                                    {
+                                        int n;
+                                        bool isNumeric = int.TryParse(CustomValue, out n);
+                                        if (isNumeric)
+                                        {
+                                            var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
+                                            //Added By Bhumika for #1771 on 1/4/2016
+                                            if (Convert.ToString(DropDownVal) != null)
+                                            {
+                                                Datarow[colname] = Convert.ToString(DropDownVal);
+                                            }
+                                            else
+                                            {
+                                                if (isEdit == "None")
+                                                {
+                                                    Datarow[colname] = "---";
 
+                                                }
+                                                else
+                                                {
+                                                    Datarow[colname] = "<div style='color: #000 ;'> --- </div>";
+                                                }
+
+                                            }
                                         }
                                     }
                                 }
@@ -857,7 +888,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     rowId = rowId + "_" + "False";
-                }	 
+                }
                 //Modified by Komal Rawal for #2346 on 02-08-2016
                 if ((lstChildren != null && lstChildren.Count() > 0) && parentId > 0) // LineItem count will be not set for Most Parent Item & last Child Item.
                 {
@@ -988,7 +1019,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
-                
+
             }
             else
             {
@@ -2758,13 +2789,42 @@ namespace RevenuePlanner.Controllers
                                         var CustomValue = CustomColumnsValue.Where(a => a.EntityId == item.Id && a.CustomFieldId == col.CustomFieldId).Select(a => a.Value).FirstOrDefault();
                                         if (col.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
                                         {
-                                            row[colname] = CustomValue != null ? CustomValue : "0";
+                                            // Modified By Rahul Shah
+                                            // Handle the custom columns values if not an numeric
+                                            //Moidified by Rahul Shah for PL #2505 to Apply multicurrency on custom collumn.
+                                            if (DoubleColumnValidation.Contains(col.ValidationType))
+                                            {
+                                                double n;
+                                                bool isNumeric = double.TryParse(CustomValue, out n);
+                                                if (isNumeric)
+                                                {
+                                                    if (col.ValidationType == Enums.ColumnValidation.ValidCurrency.ToString())
+                                                    {
+                                                        row[colname] = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(CustomValue)));
+                                                    }
+                                                    else {
+                                                        row[colname] = CustomValue != null ? CustomValue : "0";
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    row[colname] = 0;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                row[colname] = !string.IsNullOrEmpty(CustomValue) ? CustomValue : string.Empty;
+                                            }                                            
                                         }
                                         else
                                         {
-                                            var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
-
-                                            row[colname] = DropDownVal;
+                                            int n;
+                                            bool isNumeric = int.TryParse(CustomValue, out n);
+                                            if (isNumeric)
+                                            {
+                                                var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
+                                                row[colname] = DropDownVal;
+                                            }                                            
                                         }
                                     }
                                 }
@@ -2857,13 +2917,20 @@ namespace RevenuePlanner.Controllers
                                     {
                                         // Modified By Nishant Sheth
                                         // Handle the custom columns values if not an numeric
+                                        //Moidified by Rahul Shah for PL #2505 to Apply multicurrency on custom collumn.
                                         if (DoubleColumnValidation.Contains(col.ValidationType))
                                         {
                                             double n;
                                             bool isNumeric = double.TryParse(CustomValue, out n);
                                             if (isNumeric)
                                             {
-                                                row[colname] = CustomValue;
+                                                if (col.ValidationType == Enums.ColumnValidation.ValidCurrency.ToString())
+                                                {
+                                                    row[colname] = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(CustomValue)));
+                                                }
+                                                else {
+                                                    row[colname] = CustomValue;
+                                                }
                                             }
                                             else
                                             {
@@ -2877,9 +2944,13 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-                                        var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
-
-                                        row[colname] = DropDownVal;
+                                        int n;
+                                        bool isNumeric = int.TryParse(CustomValue, out n);
+                                        if (isNumeric)
+                                        {
+                                            var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
+                                            row[colname] = DropDownVal;
+                                        }
                                     }
                                 }
                             }
@@ -3222,7 +3293,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = IsTitleEdit });
-                strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id.ToString(), lineitemcount.ToString());
+                    strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id.ToString(), lineitemcount.ToString());
                 }
             }
             ParentData.Add(addRow);
@@ -3467,14 +3538,14 @@ namespace RevenuePlanner.Controllers
                                {
                                    Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
                                }).ToList().Sum(a => a.Value);
-
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                     _Budget = Budget_DetailAmountList.Where(a => _curentBudget.Contains(a.Period)).Sum(a => a.Budget);
-                    _budgetlist.Add(_Budget);
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
 
                     _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
-                    _forecastlist.Add(_ForeCast);
-                    _planlist.Add(_Plan);
-                    _actuallist.Add(_Actual);
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));
                 }
                 #endregion
             }
@@ -3499,14 +3570,13 @@ namespace RevenuePlanner.Controllers
                                {
                                    Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
                                }).ToList().Sum(a => a.Value);
-
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                     _Budget = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Budget);
-                    _budgetlist.Add(_Budget);
-
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
                     _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
-                    _forecastlist.Add(_ForeCast);
-                    _planlist.Add(_Plan);
-                    _actuallist.Add(_Actual);
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));
                 }
             }
             else
@@ -3548,12 +3618,12 @@ namespace RevenuePlanner.Controllers
                                }).ToList().Sum(a => a.Value);
 
                     _Budget = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Budget);
-                    _budgetlist.Add(_Budget);
-
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
                     _ForeCast = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Forecast);
-                    _forecastlist.Add(_ForeCast);
-                    _planlist.Add(_Plan);
-                    _actuallist.Add(_Actual);
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));                   
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));
                 }
             }
             objbudget.Budget = _budgetlist;
@@ -3645,8 +3715,9 @@ namespace RevenuePlanner.Controllers
                         _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
 
                     }
-                    _budgetlist.Add(_Budget);
-                    _forecastlist.Add(_ForeCast);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
                     if (PlanDetailAmount != null && LineItemidBudgetList != null)
                     {
                         _Plan = (from plandetail in PlanDetailAmount
@@ -3669,8 +3740,9 @@ namespace RevenuePlanner.Controllers
                                        Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
                                    }).ToList().Sum(a => a.Value);
                     }
-                    _planlist.Add(_Plan);
-                    _actuallist.Add(_Actual);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));
                 }
                 #endregion
             }
@@ -3683,8 +3755,9 @@ namespace RevenuePlanner.Controllers
                         _Budget = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Budget);
                         _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
                     }
-                    _budgetlist.Add(_Budget);
-                    _forecastlist.Add(_ForeCast);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
                     if (PlanDetailAmount != null && LineItemidBudgetList != null)
                     {
                         _Plan = (from plandetail in PlanDetailAmount
@@ -3707,8 +3780,9 @@ namespace RevenuePlanner.Controllers
                                        Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
                                    }).ToList().Sum(a => a.Value);
                     }
-                    _planlist.Add(_Plan);
-                    _actuallist.Add(_Actual);
+                    //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));                    
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));                    
                 }
             }
             objbudget.Budget = _budgetlist;
@@ -3723,6 +3797,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult UpdateBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0, string GlobalEditLevel = "", bool isFromForecastChild = false)
         {
+            var DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString() };
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
             if (!string.IsNullOrEmpty(nValue))
             {
@@ -3732,7 +3807,7 @@ namespace RevenuePlanner.Controllers
             {
                 nValue = "0";
                 nValue = HttpUtility.HtmlDecode(nValue.Trim());
-            }
+            }            
             List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
                                                join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
                                                where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
@@ -3861,11 +3936,11 @@ namespace RevenuePlanner.Controllers
                     {
                         if (ColumnName == BudgetColName)
                         {
-                            objBudAmount.Budget = Convert.ToDouble(nValue);
+                            objBudAmount.Budget = Convert.ToDouble(objCurrency.SetValueByExchangeRate(double.Parse(nValue))); //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                         }
                         else if (ColumnName == ForecastColName)
                         {
-                            objBudAmount.Forecast = Convert.ToDouble(nValue);
+                            objBudAmount.Forecast = Convert.ToDouble(objCurrency.SetValueByExchangeRate(double.Parse(nValue))); //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                         }
                         if (BudgetId > 0)
                         {
@@ -3894,7 +3969,7 @@ namespace RevenuePlanner.Controllers
                         FirstNew = FirstOld = Convert.ToDouble(ColumnName == BudgetColName ? BudgetAmountList[0].Budget : BudgetAmountList[0].Forecast);
                         SecondNew = SecondOld = Convert.ToDouble(BudgetAmountList.Count >= 2 ? (ColumnName == BudgetColName ? BudgetAmountList[1].Budget : BudgetAmountList[1].Forecast) : 0);
                         ThirdNew = ThirdOld = Convert.ToDouble(BudgetAmountList.Count >= 3 ? (ColumnName == BudgetColName ? BudgetAmountList[2].Budget : BudgetAmountList[2].Forecast) : 0);
-
+                        nValue = Convert.ToString(objCurrency.SetValueByExchangeRate(Convert.ToDouble(nValue))); //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                         if (Convert.ToDouble(nValue) > QuaterSum)
                         {
                             Maindiff = Convert.ToDouble(nValue) - QuaterSum;
@@ -4024,6 +4099,15 @@ namespace RevenuePlanner.Controllers
                     {
                         CustomField_Entity objCustomFieldEnity = new CustomField_Entity();
                         objCustomFieldEnity = db.CustomField_Entity.Where(a => a.EntityId == (BudgetId != null ? BudgetId : 0) && a.CustomFieldId == CustomCol.CustomFieldId).FirstOrDefault();
+                        //Moidified by Rahul Shah for PL #2505 to Apply multicurrency on custom collumn.
+                        if (DoubleColumnValidation.Contains(CustomCol.ValidationType)) {
+                            double n;
+                            bool isNumeric = double.TryParse(nValue, out n);
+                            if (isNumeric)
+                            {                                
+                                nValue = Convert.ToString(objCurrency.SetValueByExchangeRate(double.Parse(nValue)));
+                            }
+                        }
                         if (objCustomFieldEnity != null)
                         {
                             objCustomFieldEnity.Value = nValue;
