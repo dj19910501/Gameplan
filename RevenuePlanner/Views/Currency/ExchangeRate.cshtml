@@ -86,7 +86,7 @@
     });
     function LoadReportGrid(yearValue) {
 
-        var url = '@Url.Content("~/User/PlanGrid/")';
+        var url = '@Url.Content("~/Currency/PlanGrid/")';
       
         $("#PlanGrid").load(url + '?year=' + yearValue , function (response, status, xhr) {
 
@@ -94,7 +94,7 @@
     }
     function SaveExchangeRate(code, oldValue, newValue, component, monthValue) {
       
-        var url = '@Url.Content("~/User/SaveExchangeRate/")';
+        var url = '@Url.Content("~/Currency/SaveExchangeRate/")';
         var compo = '';
         if (component == 'plan')
         {
@@ -125,7 +125,7 @@
     }
     function LoadPlanGrid(yearValue) {
 
-        var url = '@Url.Content("~/User/ReportGrid/")';
+        var url = '@Url.Content("~/Currency/ReportGrid/")';
     
         $("#ReportGrid").load(url + '?year=' + yearValue , function (response, status, xhr) {
 

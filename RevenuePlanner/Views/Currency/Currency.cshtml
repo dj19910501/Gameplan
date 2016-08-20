@@ -130,7 +130,7 @@
     //insertation start 09/08/2016 kausha #2492.
     $('#aConversionrate').click(function () {
         var url = '';
-        url = '@Url.Action("ExchangeRate", "User")';
+        url = '@Url.Action("ExchangeRate", "Currency")';
         window.location.href = url;
     });
     //end insertation start 09/08/2016 kausha #2492.
@@ -274,7 +274,7 @@
     //Click of Save button which will save all records which is in my list
     $('#btnSave').click(function () {
         $.post('/User/SaveClientCurrency', $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {
-            window.location.href = "@Url.Content("~/User/Currency")";
+            window.location.href = "@Url.Content("~/Currency/Currency")";
         });
     });
     function ShowMessages() {
