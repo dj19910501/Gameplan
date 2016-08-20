@@ -30,8 +30,7 @@ function setCurrencyDetails()
 }
 //Added by Rahul Shah to Apply multicurrency on client side
 function GetValueByExchangeRate(value) {
-    debugger;
-    value = value.replace(",", '')
+    value = value.toString().replace(",", '');
     value = parseFloat(value);
     if (value > 0) {        
         value = value * PlanExchangeRate;
@@ -41,7 +40,7 @@ function GetValueByExchangeRate(value) {
 }
 
 function SetValueByExchangeRate(value) {
-    value = value.replace(",", '')
+    value = value.toString().replace(",", '');
     value = parseFloat(value);
     if (value > 0) {
         value = value / PlanExchangeRate;

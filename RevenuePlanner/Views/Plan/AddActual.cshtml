@@ -507,7 +507,7 @@
         });
 
         var curId1 = curId.replace('collapse', 'divTable');
-        $(curId1).find('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+        $(curId1).find('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
         $(curId1).find('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
 
         $(curId1).find('.currency_dollarCost').each(function () {
@@ -522,7 +522,7 @@
             var txtvalue = $(this).val();
             $(this).attr('title', txtvalue);
         });
-        $(curId1).find('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+        $(curId1).find('.currency_dollarCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
 
         var ua = window.navigator.userAgent;
         var msie = ua.indexOf("MSIE ");
@@ -1319,7 +1319,7 @@
             });
 
             var curId1 = curId.replace('collapse', 'divTable');
-            $(curId1).find('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+            $(curId1).find('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
             $(curId1).find('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
 
             $(curId1).find('.currency_dollarCost').each(function () {
@@ -1334,7 +1334,7 @@
                 var txtvalue = $(this).val();
                 $(this).attr('title', txtvalue);
             });
-            $(curId1).find('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+            $(curId1).find('.currency_dollarCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
 
         //});
            
@@ -1747,7 +1747,7 @@ function LoadPage() {
         });
 
         var curId1 = curId.replace('collapse', 'divTable');
-        $(curId1).find('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+        $(curId1).find('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
         $(curId1).find('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
 
         $(curId1).find('.currency_dollarCost').each(function () {
@@ -1762,7 +1762,7 @@ function LoadPage() {
             var txtvalue = $(this).val();
             $(this).attr('title', txtvalue);
         });
-        $(curId1).find('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+        $(curId1).find('.currency_dollarCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
 
     });
 
@@ -2323,7 +2323,12 @@ function fillActualsTable() {
                     var comStr1 = _actualData[k].title + _actualData[k].period;
                     var comStr2 = arrStage[p] + "Y" + j;
                     if (comStr1 == comStr2) {
-                        $html += 'value="' + _actualData[k].actualValue + '"';
+                        if (arrStage[p] == 'Revenue') {
+                            $html += 'value="' + GetValueByExchangeRate(_actualData[k].actualValue) + '"';
+                        }
+                        else {
+                            $html += 'value="' + _actualData[k].actualValue + '"';
+                        }
                     }
                     //updateBy = _actualData[k].UpdateBy;
                     stat = _actualData[k].IsUpdate;
@@ -2332,7 +2337,6 @@ function fillActualsTable() {
             }
             $html += '</tr>';
         }
-
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
         $html += '<tr id=' + "tr" + _id + "Cost" + ' TacticId=' + _id + '>';
         for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
@@ -2343,16 +2347,15 @@ function fillActualsTable() {
             if (_LineItemsData.length <= 0) {
                 $html += '<input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                 $html += ' class="currency_dollar "  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
-                $html += 'value="' + FormatCurrency(_costActualData[newCounterTactic].Cost, true) + '"';
+                $html += 'value="' + FormatCurrency(GetValueByExchangeRate(_costActualData[newCounterTactic].Cost), true) + '"';
                 $html += ' ></input>';
             }
             else {
-                $html += '<div id="' + divId + '" class="table-info-actual-left addFormatterActualCurrency " style="float: right;">' + FormatCurrency(_costActualData[newCounterTactic].Cost, true) + '</div>';
+                $html += '<div id="' + divId + '" class="table-info-actual-left addFormatterActualCurrency " style="float: right;">' + FormatCurrency(GetValueByExchangeRate(_costActualData[newCounterTactic].Cost), true) + '</div>';
             }
             $html += '</td>';
         }
         $html += '</tr>';
-
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
         for (var p = 0; p < _LineItemsData.length; p = p + 1) {
             //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
@@ -2372,7 +2375,7 @@ function fillActualsTable() {
                 if (typeof Data != 'undefined') {
                     var val = _LineItemsData[p].LineItemActual[newCounter].Cost;
                     if (val != null && val != 'undefined' && val.length > 0) {
-                        $html += 'value="' + FormatCurrency(_LineItemsData[p].LineItemActual[newCounter].Cost, true) + '"';
+                        $html += 'value="' + FormatCurrency(GetValueByExchangeRate(_LineItemsData[p].LineItemActual[newCounter].Cost), true) + '"';
                     }
                     //$html += 'value="' +  + '"';
                 }
@@ -2437,24 +2440,24 @@ function fillActualsTable() {
 
         $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">Revenue</span><span class="table-info-actual-left-wraper">' +
                                         '<span class="table-info-actual-left truncate setBudget" id="ProjectedlblValueRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                            FormatCurrency(_revenueProjected, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                            FormatCurrency(GetValueByExchangeRate(_revenueProjected), true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                         '</span>' +
-                                        '<span orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                            FormatCurrency(_revenueActual, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                        '<span orignal-value="' + GetValueByExchangeRate(_revenueActual) + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                            FormatCurrency(GetValueByExchangeRate(_revenueActual), true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                         '</span>' +
-                                        '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + _revenueProjected + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
+                                        '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + GetValueByExchangeRate(_revenueProjected) + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
                                     '</span>' +
                                 '</div></div>';
 
         $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">Cost</span>' +
                             '<span id="border-right" class="table-info-actual-left-wraper">' +
                                 '<span class="table-info-actual-left truncate setBudget" id="ProjectedlblCCost' + _id + '">' +   // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
-                                    FormatCurrency(_costProjected, true) +  // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
+                                    FormatCurrency(GetValueByExchangeRate(_costProjected), true) +  // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
                                 '</span>';
 
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-        $html += '<span orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(_costActual, true) + '</span>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-        $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + _costProjected + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
+        $html += '<span orignal-value="' + GetValueByExchangeRate(_costActual) + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(GetValueByExchangeRate(_costActual), true) + '</span>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+        $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + GetValueByExchangeRate(_costProjected) + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
         $html += '</span>' +
                         '</div></div>';
 
@@ -2465,10 +2468,10 @@ function fillActualsTable() {
             $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="inner-lineItem truncate testTacticTitle"  title="' + _LineItemsData[line].Title + '">' + _LineItemsData[line].Title +
                                          '</span><span id="border-right" class="table-info-actual-left-wraper">' +
                                              '<span class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                                 FormatCurrency(_LineItemsData[line].LineItemCost, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                                 FormatCurrency(GetValueByExchangeRate(_LineItemsData[line].LineItemCost), true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                              '</span>' +
-                                             '<span lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
-                                              FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                             '<span lineValue="' + GetValueByExchangeRate(_LineItemsData[line].LineItemActualCost) + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
+                                              FormatCurrency(GetValueByExchangeRate(_LineItemsData[line].LineItemActualCost), true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                 '</span>' +
                             '</span>' +
                         '</div></div>';
@@ -2571,7 +2574,12 @@ function fillActualsTable() {
                         var comStr1 = _actualData[k].title + _actualData[k].period;
                         var comStr2 = arrStage[p] + "Y" + j;
                         if (comStr1 == comStr2) {
-                            $html += 'value="' + _actualData[k].actualValue + '"';
+                            if (arrStage[p] == 'Revenue') {
+                                $html += 'value="' + GetValueByExchangeRate(_actualData[k].actualValue) + '"';
+                            }
+                            else {
+                                $html += 'value="' + _actualData[k].actualValue + '"';
+                            }
                         }
                         //updateBy = _actualData[k].UpdateBy;
                         stat = _actualData[k].IsUpdate;
@@ -2580,7 +2588,6 @@ function fillActualsTable() {
                 }
                 $html += '</tr>';
             }
-
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
             $html += '<tr id=' + "tr" + _id + "Cost" + ' TacticId=' + _id + '>';
             for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
@@ -2591,16 +2598,15 @@ function fillActualsTable() {
                 if (_LineItemsData.length <= 0) {
                     $html += '<input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     $html += ' class="currency_dollar "  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
-                    $html += 'value="' + FormatCurrency(_costActualData[newCounterTactic].Cost, true) + '"';
+                    $html += 'value="' + FormatCurrency(GetValueByExchangeRate(_costActualData[newCounterTactic].Cost), true) + '"';
                     $html += ' ></input>';
                 }
                 else {
-                    $html += '<div id="' + divId + '" class="table-info-actual-left addFormatterActualCurrency " style="float: right;">' + FormatCurrency(_costActualData[newCounterTactic].Cost, true) + '</div>';
+                    $html += '<div id="' + divId + '" class="table-info-actual-left addFormatterActualCurrency " style="float: right;">' + FormatCurrency(GetValueByExchangeRate(_costActualData[newCounterTactic].Cost), true) + '</div>';
                 }
                 $html += '</td>';
             }
             $html += '</tr>';
-
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
             for (var p = 0; p < _LineItemsData.length; p = p + 1) {
                 //// Modified by Arpita Soni on 01/12/2015 for ticket #1093
@@ -2620,7 +2626,7 @@ function fillActualsTable() {
                     if (typeof Data != 'undefined') {
                         var val = _LineItemsData[p].LineItemActual[newCounter].Cost;
                         if (val != null && val != 'undefined' && val.length > 0) {
-                            $html += 'value="' + FormatCurrency(_LineItemsData[p].LineItemActual[newCounter].Cost, true) + '"';
+                            $html += 'value="' + FormatCurrency(GetValueByExchangeRate(_LineItemsData[p].LineItemActual[newCounter].Cost), true) + '"';
                         }
                         //$html += 'value="' +  + '"';
                     }
@@ -2685,24 +2691,24 @@ function fillActualsTable() {
 
         $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">Revenue</span><span class="table-info-actual-left-wraper">' +
                                         '<span class="table-info-actual-left truncate setBudget" id="ProjectedlblValueRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                            FormatCurrency(_revenueProjected, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                            FormatCurrency(GetValueByExchangeRate(_revenueProjected), true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                         '</span>' +
-                                        '<span orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                            FormatCurrency(_revenueActual, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                        '<span orignal-value="' + GetValueByExchangeRate(_revenueActual) + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                            FormatCurrency(GetValueByExchangeRate(_revenueActual), true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                         '</span>' +
-                                        '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + _revenueProjected + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
+                                        '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + GetValueByExchangeRate(_revenueProjected) + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
                                     '</span>' +
                                 '</div></div>';
 
         $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="testTacticTitle">Cost</span>' +
                             '<span id="border-right" class="table-info-actual-left-wraper">' +
                                 '<span class="table-info-actual-left truncate setBudget" id="ProjectedlblCCost' + _id + '">' +   // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
-                                    FormatCurrency(_costProjected, true) +  // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
+                                    FormatCurrency(GetValueByExchangeRate(_costProjected), true) +  // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
                                 '</span>';
 
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-        $html += '<span orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(_costActual, true) + '</span>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-        $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + _costProjected + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
+        $html += '<span orignal-value="' + GetValueByExchangeRate(_costActual) + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(GetValueByExchangeRate(_costActual), true) + '</span>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+        $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + GetValueByExchangeRate(_costProjected) + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
         $html += '</span>' +
                         '</div></div>';
 
@@ -2713,10 +2719,10 @@ function fillActualsTable() {
             $html += '<div class="body-toogle-actual"><div class="body-toogle-left"><span class="inner-lineItem truncate testTacticTitle"  title="' + _LineItemsData[line].Title + '">' + _LineItemsData[line].Title +
                                          '</span><span id="border-right" class="table-info-actual-left-wraper">' +
                                              '<span class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
-                                                 FormatCurrency(_LineItemsData[line].LineItemCost, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                                 FormatCurrency(GetValueByExchangeRate(_LineItemsData[line].LineItemCost), true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                              '</span>' +
-                                             '<span lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
-                                              FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                             '<span lineValue="' + GetValueByExchangeRate(_LineItemsData[line].LineItemActualCost) + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
+                                              FormatCurrency(GetValueByExchangeRate(_LineItemsData[line].LineItemActualCost), true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                 '</span>' +
                             '</span>' +
                         '</div></div>';
