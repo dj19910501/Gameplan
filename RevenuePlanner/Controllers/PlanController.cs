@@ -17864,7 +17864,7 @@ namespace RevenuePlanner.Controllers
 
                         for (int i = 0; i < dt.Columns.Count; i++)
                         {
-                            //insertation start 20/08/2016 #2304 Multi-Currency: used SetValueByExchangeRate method to update cell value
+                            //insertation start 20/08/2016 #2504 Multi-Currency: used SetValueByExchangeRate method to update cell value
                             RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
                             for (int j = 0; j < dt.Rows.Count; j++)
                             {
@@ -17880,7 +17880,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                             }
-                            //insertation End 20/08/2016 #2304 Multi-Currency: used SetValueByExchangeRate method to update cell value
+                            //insertation End 20/08/2016 #2504 Multi-Currency: used SetValueByExchangeRate method to update cell value
                         }
                         dt.AcceptChanges();
 
