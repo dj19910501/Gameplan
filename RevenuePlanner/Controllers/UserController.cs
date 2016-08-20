@@ -1679,19 +1679,50 @@ namespace RevenuePlanner.Controllers
         {
             int NotificationCount = 0;
             List<NotificationSummary> lstnotificationSummary = new List<NotificationSummary>();
+            List<NotificationSummary> lstnotifications = new List<NotificationSummary>();
+            List<NotificationSummary> RequestList = new List<NotificationSummary>();
             try
             {
                 var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.UserId);
+
                 if (AllNotification != null && AllNotification.Count > 0)
                 {
                     NotificationCount = AllNotification.Where(a => a.IsRead == false).ToList().Count();
-                    lstnotificationSummary = AllNotification.Where(a => a.IsRead == false).Select(a => new NotificationSummary
+
+                    RequestList = (from objNotification in AllNotification
+                               where objNotification.ActionName == "submitted"
+                               group objNotification by objNotification.ComponentId into g
+                               join objPlan in db.Plans on g.FirstOrDefault().ComponentId equals objPlan.PlanId
+                               select new NotificationSummary
+                               {
+                                   NotificationCreatedDate = Common.TimeAgo(g.FirstOrDefault().CreatedDate),
+                                   NotificationId = g.FirstOrDefault().NotificationId,
+                                   ActionName = g.FirstOrDefault().ActionName,
+                                   PlanTitle = objPlan.Title,
+                                   ComponentId = g.FirstOrDefault().ComponentId,
+                                   RequestCount = g.Count()
+                               }).ToList();
+
+                    lstnotifications = AllNotification.Where(a => a.IsRead == false && a.ActionName != "submitted").Select(a => new NotificationSummary
                     {
                         Description = a.Description.Trim(),
                         NotificationCreatedDate = Common.TimeAgo(a.CreatedDate),
                         NotificationId = a.NotificationId,
-                        ActionName = a.ActionName
-                    }).Take(5).ToList();
+                        ActionName = a.ActionName,
+                        ComponentId = a.ComponentId
+                    }).ToList();
+
+                    if(RequestList != null && RequestList.Count > 0)
+                    {
+                        RequestList.AddRange(lstnotifications);
+
+                        lstnotificationSummary = RequestList.Take(5).ToList();
+                    }
+                    else
+                    {
+                        lstnotificationSummary = lstnotifications.Take(5).ToList();
+                    }
+                 
                 }
             }
             catch (Exception ex)

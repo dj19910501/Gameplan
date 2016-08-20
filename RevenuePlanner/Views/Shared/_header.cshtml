@@ -134,9 +134,9 @@
             @*Added by Bhumika for #2468 - alert & Notification dropdown*@
             @if (Sessions.IsAlertPermission) //added by devanshi #2476 : client permission for Alert 
             {
-            <div class="aler-list dropdown pull-right" >
+              <div class="aler-list dropdown pull-right" id="divAlertSummary">
                 <span class="count" id="spnAlertCnt" style="display:none"></span>
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="divAlertSummary"><i class="fa fa-bell-o" aria-hidden="true"></i></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-bell-o" aria-hidden="true"></i></a>
                 <ul class="dropdown-menu UlAlertList" id="UlAlertsummary">
                     <p class="ul-top clearfix"><span class="pull-left">Alerts</span> <a href="@Url.Action("Alerts", "User")" class="pull-right">Settings</a></p>
 
@@ -151,7 +151,6 @@
                     <p class="ul-top clearfix"><span class="pull-left">Notifications</span> <a href="@Url.Action("Notifications", "User")" class="pull-right">Settings</a></p>
                 </ul>
             </div>
-           
 
         </div>
     </div>
@@ -240,27 +239,6 @@
         });   
     });
 
-    $(document).on('click',"#ulNotificationlisting li",function (e) {
-        var Title = $(this).attr('title');
-        if (Title != "All")
-        {
-            e.stopPropagation();
-            e.preventDefault();
-        }
-     
-    });
-
-    $(document).on('click', "#UlAlertsummary li", function (e) {
-        var Title = $(this).attr('title');
-        if (Title != "All") {
-            e.stopPropagation();
-            e.preventDefault();
-        }
-
-    });
-
-
-
     function BindAlertSummary()
     {
         $.ajax({
@@ -277,7 +255,7 @@
                         if (data.Alertsummary != null) {
                             $.each(data.Alertsummary, function (i, item) {
 
-                                $(cList).append('<li title="' + item.Description + '"><span class="dd-left">' + item.Description + '</span><span class="dd-right">' + item.AlertCreatedDate + '</span></li>');
+                                $(cList).append('<li style="cursor:pointer" title="' + item.Description + '"><span class="dd-left">' + item.Description + '</span><span class="dd-right">' + item.AlertCreatedDate + '</span></li>');
                             });
                             var url = '@Url.Action("ViewAlertNotification", "User")';
                             url = url + "?type="+'@Enums.AlertNotification.Alert.ToString()'
@@ -313,18 +291,25 @@
                     if (cnt > 0) {
                         $("#spnNotificationCnt").css('display', 'block');
                         $("#spnNotificationCnt").html(data.Noticount);
+                        var url = '@Url.Action("ViewAlertNotification", "User")';
+                        url = url + "?type=" + '@Enums.AlertNotification.Notification.ToString()'
                         $.each(data.NotificationsData, function (i, Item) {
                             if (Item.ActionName == '@Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()') {
-                                htmlstringForRequests += '<li title="' + Item.Description + '"><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
+                                if (Item.RequestCount == '1')
+                                {
+                                    htmlstringForRequests += '<li style="cursor:pointer" id="Request" PlanId= "' + Item.ComponentId + '" onclick="RequestItemClick(this)" title="You have ' + Item.RequestCount + ' new approval request for plan ' + Item.PlanTitle + '"><span class="dd-left">You have ' + Item.RequestCount + ' new approval request for plan ' + Item.PlanTitle + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
                             }
                             else
                             {
-                                htmlstring += '<li title="' + Item.Description + '"><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
+                                    htmlstringForRequests += '<li style="cursor:pointer" id="Request" PlanId= "' + Item.ComponentId + '" onclick="RequestItemClick(this)" title="You have ' + Item.RequestCount + ' new approval requests for plan ' + Item.PlanTitle + '"><span class="dd-left">You have ' + Item.RequestCount + ' new approval requests for plan ' + Item.PlanTitle + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
+                                }
+                            }
+                            else
+                            {
+                                htmlstring += '<li id="Notification" style="cursor:pointer" title="' + Item.Description + '" onclick="RequestItemClick(this)" ><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
                             }
                        });
                         $('#ulNotificationlisting').append(htmlstringForRequests + htmlstring);
-                        var url = '@Url.Action("ViewAlertNotification", "User")';
-                        url = url + "?type=" + '@Enums.AlertNotification.Notification.ToString()'
                         $('#ulNotificationlisting').append('<li  title="All"><a href="' + url + '">See All</a></li>');
                     }
                 }
@@ -338,28 +323,43 @@
                 }
         });
     }
-    //**user menu-dropdown
-    //$(".user-drop-down").click(function () {
-    //    var X = $(this).attr('id');
-    //    if (X == 1) {
-    //        $(".dropdown-info-user").hide();
-    //        $(".info-user").removeClass("selected");
-    //        $(this).attr('id', '0');
-    //    } else {
-    //        $(".dropdown-info-user").show();
-    //        $(".info-user").addClass("selected");
 
-    //        //set width to dropdown container
-    //        //var vWidth = $(".info-user").width() + 20;
-    //        //$(".dropdown-info-user").css("width", vWidth);
-    //       // $(this).attr('id', '1');
-    //    }
-    //});
+    function RequestItemClick(e) {
+        var Id = $(e).attr("id");
+        var queryStringArr = [];
+        if (Id == "Request")
+        {
+            var PlanId = $(e).attr("PlanId");
+            if (PlanId != null) {
+               
 
-    //**This function hide dropdown when user click outside of container
-    //$(document).mouseup(function () {
-    //    $(".dropdown-info-user").hide();
-    //    $(".info-user").removeClass("selected");
-    //    //$(".user-drop-down").attr('id', '');
-    //});
+                queryStringArr.push(
+                    {
+                        key: 'currentPlanId',
+                        Value: PlanId
+                    });
+
+                queryStringArr.push(
+                 {
+                     key: 'IsRequest',
+                     Value: "true"
+                 });
+
+                formSubmitEvent('@Url.Content("~/Home/Index")', queryStringArr);
+            }
+        }
+        else
+        {
+            queryStringArr.push(
+              {
+                  key: 'type',
+                  Value: '@Enums.AlertNotification.Notification.ToString()'
+              });
+
+            formSubmitEvent('@Url.Action("ViewAlertNotification", "User")', queryStringArr);
+        }
+
+
+    }
+
 </script>
