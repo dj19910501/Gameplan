@@ -964,10 +964,10 @@ namespace RevenuePlanner.Helpers
         public enum EntityType
         {
             //Modified for #1282
+            Plan,
             Campaign,
             Program,
             Tactic,
-            Plan,
             ImprovementTactic,
             Lineitem,
             MediaCode // added by devanshi for #2368

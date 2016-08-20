@@ -710,7 +710,7 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
 
-            var result = objUserController.GetAlertSummary() as JsonResult;
+            var result = objUserController.GetAlertNotificationSummary() as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
          

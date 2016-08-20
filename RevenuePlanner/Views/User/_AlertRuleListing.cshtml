@@ -97,7 +97,7 @@
         string ruleId = alertrule.RuleId.ToString();
         string collapsid = "collapseGrp" + ruleId;
         string divrulid = "divrule" + ruleId;
-        string groupid = "group-" + @ruleId;
+        string groupid = "group-" + ruleId;
         bool isdisable = alertrule.IsDisable == true ? false : true;
         <div class="accordion-group" id="group-@ruleId">
             <div class="accordion-heading clearfix">
@@ -107,7 +107,7 @@
                 <div class="pull-right acco-icons">
                     <a class="alert-delet" title="Delete" onclick="DeleteAlrtRule(@alertrule.RuleId);"><i class="fa fa-times-circle" aria-hidden="true"></i></a>
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#Ruleaccordion" href="#@collapsid" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                    <a class="alert-copy" onclick="CopyAlertRule('@collapsid');" title="Copy"><i class="fa fa-clone" aria-hidden="true"></i></a>
+                    <a class="alert-copy" onclick="CopyAlertRule('@collapsid',@ruleId);" title="Copy" ><i class="fa fa-clone" aria-hidden="true"></i></a>
                     <div  class="pull-right alert-rule-check">
                         Alert On 
                         <input id="chkOnOff" class="chkbxfilter" type="checkbox" checked="@isdisable"  onchange="OnOffAlert(this);" ruleid="@ruleId">
@@ -205,29 +205,35 @@
 
 <script type="text/javascript">
     
-    function CopyAlertRule(groupid) {
+    function CopyAlertRule(groupid,ruleId) {
         var clongroupid = "#" + groupid;
         $("#successMessage").css("display", "none");
         $("#errorMessage").css("display", "none");
         $("#spanMessageSuccess").empty();
         $("#spanMessageError").empty();
         $("#copyAccourdingroup").empty();
-        $newPanel = $(clongroupid).clone();
-       
-        $newPanel.attr("id", "collapseGrpCopy");
-        $newPanel.find(".maindiv").attr("id", "divrule-1");
-        $newPanel.find(".maindiv").find("#hdnRuleId").val('0');
-        $newPanel.find(".btn-save").attr("ruleid", "-1");
-        $newPanel.removeClass('in');
-        $("#copyAccourdingroup").append($newPanel.fadeIn());
-        $('.accordion-body.in').collapse('hide');
-        var onclickevent = "CancleCreateNew('collapseGrpCopy')";
-        $newPanel.find(".maindiv").append('<div class="alertdiv-delet"><a class="alert-delet" title="Cancle" onclick="' + onclickevent + ';"><i class="fa fa-times-circle" aria-hidden="true"></i></a></div>');
-        $(".frequncy").change(function () {
-            showHideOption(this);
-        });
-            $('#copyAccourdingroup').find('.accordion-body').collapse('show');
+        $(clongroupid).find(".maindiv").find("#hdnRuleId").val('0');
+        var tableId = "#divrule" + ruleId;
+        var isvalid = CheckValidate(tableId);
+        if (isvalid) {
+            $newPanel = $(clongroupid).clone();
 
+            $newPanel.attr("id", "collapseGrpCopy");
+            $newPanel.find(".maindiv").attr("id", "divrule-1");
+            $newPanel.find(".maindiv").find("#hdnRuleId").val('0');
+            $newPanel.find(".btn-save").attr("ruleid", "-1");
+            $newPanel.removeClass('in');
+            $("#copyAccourdingroup").append($newPanel.fadeIn());
+            $('.accordion-body.in').collapse('hide');
+            var onclickevent = "CancleCreateNew('collapseGrpCopy')";
+            $newPanel.find(".maindiv").append('<div class="alertdiv-delet"><a class="alert-delet" title="Cancle" onclick="' + onclickevent + ';"><i class="fa fa-times-circle" aria-hidden="true"></i></a></div>');
+            $(".frequncy").change(function () {
+                showHideOption(this);
+            });
+            $('#copyAccourdingroup').find('.accordion-body').collapse('show');
+        }
+        else
+            return false;
     }
 
     $("#txtDateofmonth").blur(function (e) {

@@ -1433,13 +1433,17 @@ namespace RevenuePlanner.Controllers
                     lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId);
                     objCache.AddCache(Enums.CacheObject.ClientEntityList.ToString(), lstentity);
                 }
-
-                EntityList = lstentity.Where(a => a.ClientId == Sessions.User.ClientId && a.EntityTitle.ToLower().Contains(term.ToLower())).Select(a => new SearchEntity
+                 var lstentityType = Enum.GetValues(typeof(Enums.EntityType)).Cast<Enums.EntityType>().Select(a => a.ToString()).ToList();
+                foreach(string EntityType in lstentityType)
+                {
+                    var entity = lstentity.Where(a => a.ClientId == Sessions.User.ClientId && a.EntityTitle.ToLower().Contains(term.ToLower()) && a.Entity.Replace(" ",string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
                 {
                     category = a.Entity,
                     value = a.EntityId,
                     label = HttpUtility.HtmlDecode(a.EntityTitle)
-                }).Take(500).ToList();
+                }).Take(100).ToList();
+                EntityList.AddRange(entity);
+                }
             }
             catch (Exception ex)
             {
@@ -1633,10 +1637,14 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region methods to get alert and notification summary
-        public JsonResult GetAlertSummary()
+        public JsonResult GetAlertNotificationSummary()
         {
             int alertCount = 0;
             List<AlertSummary> lstalertSummary = new List<AlertSummary>();
+            int NotificationCount = 0;
+            List<NotificationSummary> lstnotificationSummary = new List<NotificationSummary>();
+            List<NotificationSummary> lstnotifications = new List<NotificationSummary>();
+            List<NotificationSummary> RequestList = new List<NotificationSummary>();
             try
             {
                 var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
@@ -1650,22 +1658,7 @@ namespace RevenuePlanner.Controllers
                             AlertId = a.AlertId
                         }).Take(5).ToList();
                 }
-            }
-            catch (Exception ex)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-            }
-            return Json(new { Success = true, Alertcount = alertCount, Alertsummary = lstalertSummary }, JsonRequestBehavior.AllowGet);
-        }
-        //Added by Komal Rawal for #2466 display top 5 notifications
-        public JsonResult GetNotificationListing()
-        {
-            int NotificationCount = 0;
-            List<NotificationSummary> lstnotificationSummary = new List<NotificationSummary>();
-            List<NotificationSummary> lstnotifications = new List<NotificationSummary>();
-            List<NotificationSummary> RequestList = new List<NotificationSummary>();
-            try
-            {
+                #region code for get notification listing
                 var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.UserId);
 
                 if (AllNotification != null && AllNotification.Count > 0)
@@ -1707,14 +1700,14 @@ namespace RevenuePlanner.Controllers
                     }
                  
                 }
+                #endregion
             }
             catch (Exception ex)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
-            return Json(new { Success = true, Noticount = NotificationCount, NotificationsData = lstnotificationSummary }, JsonRequestBehavior.AllowGet);
+            return Json(new { Success = true, Alertcount = alertCount, Alertsummary = lstalertSummary, Noticount = NotificationCount, NotificationsData = lstnotificationSummary }, JsonRequestBehavior.AllowGet);
         }
-        //End
 
         #endregion
         #region Method to update IsRead column for alert & Notification
@@ -1736,7 +1729,10 @@ namespace RevenuePlanner.Controllers
         #region method to see all Alert or Notification
         public ActionResult ViewAlertNotification(string type)
         {
+            if (!string.IsNullOrEmpty(type))
             ViewBag.Type = type.ToLower();
+            else
+                ViewBag.Type = Convert.ToString(Enums.AlertNotification.Alert).ToLower();
             return View();
         }
         #endregion

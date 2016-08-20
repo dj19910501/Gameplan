@@ -136,7 +136,7 @@
             {
               <div class="aler-list dropdown pull-right" id="divAlertSummary">
                 <span class="count" id="spnAlertCnt" style="display:none"></span>
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-bell-o" aria-hidden="true"></i></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Alerts" ><i class="fa fa-bell-o" aria-hidden="true"></i></a>
                 <ul class="dropdown-menu UlAlertList" id="UlAlertsummary">
                     <p class="ul-top clearfix"><span class="pull-left">Alerts</span> <a href="@Url.Action("Alerts", "User")" class="pull-right">Settings</a></p>
 
@@ -146,7 +146,7 @@
             
             <div class="notify-list dropdown pull-right"  >
                 <span class="count" id="spnNotificationCnt" style="display:none"></span>
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="divNotificationSummary" ><i class="fa fa-globe" aria-hidden="true"></i></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="divNotificationSummary" title="Notifications"><i class="fa fa-globe" aria-hidden="true"></i></a>
                 <ul class="dropdown-menu" id="ulNotificationlisting" >
                     <p class="ul-top clearfix"><span class="pull-left">Notifications</span> <a href="@Url.Action("Notifications", "User")" class="pull-right">Settings</a></p>
                 </ul>
@@ -186,8 +186,8 @@
     
     $(document).ready(function () {
         $("#spnAlertCnt").css('display', 'none');
-        BindAlertSummary();	
-        GetNotificationListing();          
+        BindAlertNotificationSummary();
+               
         $("#divAlertSummary").click(function (e) {
             var alertType = '@Enums.AlertNotification.Alert.ToString()';
             var alertcnt = $("#spnAlertCnt").html();
@@ -239,11 +239,11 @@
         });   
     });
 
-    function BindAlertSummary()
+    function BindAlertNotificationSummary()
     {
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("GetAlertSummary", "User")',
+            url: '@Url.Action("GetAlertNotificationSummary", "User")',
             success: function (data) {
                 if (data.Success != null && data.Success == true && data.Alertcount != null) {
                     var cnt = data.Alertcount;
@@ -271,19 +271,6 @@
                    
                    
                 }
-            }
-        });
-    }	
- //Added by Komal Rawal for #2466 display top 5 notifications
- function GetNotificationListing() {
-        $.ajax({
-            type: "GET",
-            cache: false,
-            url: '@Url.Action("GetNotificationListing", "User")',
-            data: {
-            },
-            dataType: "json",
-            success: function (data) {
                 if (data.Success != null && data.Success == true && data.NotificationsData != 'undefined' && data.NotificationsData != null && data.NotificationsData.length > 0) {
                     var htmlstring = "";            // Contains html for promotion tactics
                     var htmlstringForRequests = "";
@@ -295,20 +282,17 @@
                         url = url + "?type=" + '@Enums.AlertNotification.Notification.ToString()'
                         $.each(data.NotificationsData, function (i, Item) {
                             if (Item.ActionName == '@Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()') {
-                                if (Item.RequestCount == '1')
-                                {
+                                if (Item.RequestCount == '1') {
                                     htmlstringForRequests += '<li style="cursor:pointer" id="Request" PlanId= "' + Item.ComponentId + '" onclick="RequestItemClick(this)" title="You have ' + Item.RequestCount + ' new approval request for plan ' + Item.PlanTitle + '"><span class="dd-left">You have ' + Item.RequestCount + ' new approval request for plan ' + Item.PlanTitle + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
-                            }
-                            else
-                            {
+                                }
+                                else {
                                     htmlstringForRequests += '<li style="cursor:pointer" id="Request" PlanId= "' + Item.ComponentId + '" onclick="RequestItemClick(this)" title="You have ' + Item.RequestCount + ' new approval requests for plan ' + Item.PlanTitle + '"><span class="dd-left">You have ' + Item.RequestCount + ' new approval requests for plan ' + Item.PlanTitle + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
                                 }
                             }
-                            else
-                            {
+                            else {
                                 htmlstring += '<li id="Notification" style="cursor:pointer" title="' + Item.Description + '" onclick="RequestItemClick(this)" ><span class="dd-left">' + Item.Description + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
                             }
-                       });
+                        });
                         $('#ulNotificationlisting').append(htmlstringForRequests + htmlstring);
                         $('#ulNotificationlisting').append('<li  title="All"><a href="' + url + '">See All</a></li>');
                     }
@@ -318,11 +302,10 @@
                     $("#spnNotificationCnt").css('display', 'none');
                     $("#ulNotificationlisting").css('display', 'none');
                 }
-
-
-                }
+            }
         });
-    }
+    }	
+ 
 
     function RequestItemClick(e) {
         var Id = $(e).attr("id");
