@@ -1503,6 +1503,13 @@ namespace RevenuePlanner.Helpers
             CW,
             PlannedCost
         }
+        public static Dictionary<string, string> DictPerformanceFector = new Dictionary<string, string>()
+        {
+            {PerformanceFector.Revenue.ToString(), "Revenue"},
+            {PerformanceFector.PlannedCost.ToString(), "Planned Cost"},
+           
+          
+        };
         public enum PerformanceComparison
         {
             LT,

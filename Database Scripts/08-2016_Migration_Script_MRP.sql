@@ -3699,6 +3699,165 @@ GO
 /*===================================================================================
 Completed By : Arpita Soni
 ===================================================================================*/
+/****** Object:  StoredProcedure [dbo].[SP_Save_AlertRule]    Script Date: 08/20/2016 4:31:26 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SP_Save_AlertRule]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[SP_Save_AlertRule]
+GO
+/****** Object:  View [dbo].[vClientWise_EntityList]    Script Date: 08/20/2016 4:31:26 PM ******/
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[vClientWise_EntityList]'))
+DROP VIEW [dbo].[vClientWise_EntityList]
+GO
+/****** Object:  View [dbo].[vClientWise_EntityList]    Script Date: 08/20/2016 4:31:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[vClientWise_EntityList]'))
+EXEC dbo.sp_executesql @statement = N'
+CREATE VIEW [dbo].[vClientWise_EntityList] AS
+WITH AllPlans AS(
+SELECT P.PlanId EntityId, P.Title EntityTitle, M.ClientId, ''Plan'' Entity, 1 EntityOrder 
+FROM [Plan] P 
+INNER JOIN Model M ON M.ModelId = P.ModelId AND P.IsDeleted = 0
+WHERE  M.IsDeleted = 0
+),
+AllCampaigns AS
+(
+       SELECT P.PlanCampaignId EntityId, P.Title EntityTitle,C.ClientId, ''Campaign'' Entity, 2 EntityOrder 
+       FROM Plan_Campaign P
+              INNER JOIN AllPlans C ON P.PlanId = C.EntityId 
+       WHERE P.IsDeleted = 0
+),
+AllProgram AS
+(
+       SELECT P.PlanProgramId EntityId, P.Title EntityTitle,C.ClientId, ''Program'' Entity, 3 EntityOrder 
+       FROM Plan_Campaign_Program P
+              INNER JOIN AllCampaigns C ON P.PlanCampaignId = C.EntityId 
+       WHERE P.IsDeleted = 0
+),
+AllLinkedTactic as
+(
+SELECT P.LinkedTacticId 
+       FROM Plan_Campaign_Program_Tactic P
+              INNER JOIN AllProgram C ON P.PlanProgramId = C.EntityId 
+       WHERE P.IsDeleted = 0 and P.Status in (''In-Progress'',''Approved'',''Complete'') and P.LinkedTacticId is not null
+	   and (DATEPART(year,P.EndDate)-DATEPART(year,P.StartDate))>0
+),
+AllTactic AS
+(
+       SELECT P.PlanTacticId EntityId, P.Title EntityTitle,C.ClientId, ''Tactic'' Entity, 4 EntityOrder 
+       FROM Plan_Campaign_Program_Tactic P
+              INNER JOIN AllProgram C ON P.PlanProgramId = C.EntityId 
+			  LEFT OUTER JOIN AllLinkedTactic L on P.PlanTacticId=L.LinkedTacticId
+       WHERE P.IsDeleted = 0 and P.Status in (''In-Progress'',''Approved'',''Complete'') and L.LinkedTacticId is null
+),
+AllLineitem AS
+(
+       SELECT P.PlanLineItemId EntityId, P.Title EntityTitle, C.ClientId, ''Line Item'' Entity, 5 EntityOrder 
+       FROM Plan_Campaign_Program_Tactic_LineItem P
+              INNER JOIN AllTactic C ON P.PlanTacticId = C.EntityId 
+       WHERE P.IsDeleted = 0 and P.LineItemTypeId is not null
+)
+SELECT * FROM AllPlans
+UNION ALL 
+SELECT * FROM AllCampaigns
+UNION ALL 
+SELECT * FROM AllProgram
+UNION ALL 
+SELECT * FROM AllTactic
+UNION ALL 
+SELECT * FROM AllLineitem
+' 
+GO
+---------------Add column UniqueRuleCode to table Alert_Rules
+IF Not EXISTS (SELECT *   FROM   sys.columns   WHERE  object_id = OBJECT_ID(N'[dbo].[Alert_Rules]') AND name = 'UniqueRuleCode')
+Begin
+	ALTER TABLE Alert_Rules 
+	ADD UniqueRuleCode nvarchar(500)
+End
+---------
+Go
+/****** Object:  StoredProcedure [dbo].[SP_Save_AlertRule]    Script Date: 08/20/2016 4:31:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SP_Save_AlertRule]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[SP_Save_AlertRule] AS' 
+END
+GO
+-- =============================================
+-- Author:		Devanshi gandhi
+-- Create date: 20-08-2016
+-- Description:	method to save Alert rule 
+-- =============================================
+ALTER PROCEDURE [dbo].[SP_Save_AlertRule]
+
+	@ClientId NVARCHAR(255)  ,
+	@RuleId int,
+	@RuleSummary nvarchar(max),
+	@EntityId int,
+	@EntityType nvarchar(100),
+	@Indicator nvarchar(50),
+	@IndicatorComparision nvarchar(10),
+	@IndicatorGoal int,
+	@CompletionGoal int,
+	@Frequency nvarchar(50),
+	@DayOfWeek tinyint=null,
+	@DateOfMonth tinyint=null,
+	@UserId NVARCHAR(255),
+	@CreatedBy NVARCHAR(255),
+	@ModifiedBy  NVARCHAR(255),
+	@IsExists int Output
+
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	Declare @UniqueRule nvarchar(max)
+	Declare @FrequencyValue nvarchar(100)=null
+	if(@DayOfWeek is not null and @DateOfMonth is null)
+		set @FrequencyValue=@DayOfWeek
+	else if(@DayOfWeek is null and @DateOfMonth is not null)
+		set @FrequencyValue=@DateOfMonth
+
+	set @UniqueRule=CONVERT(nvarchar(50),@EntityId)+'_'+CONVERT(nvarchar(50),@Indicator)+'_'+CONVERT(nvarchar(50),@IndicatorComparision)+'_'+CONVERT(nvarchar(50),@IndicatorGoal)+'_'+CONVERT(nvarchar(50),@CompletionGoal)+'_'+CONVERT(nvarchar(50),@Frequency)
+	if(@FrequencyValue is not null)
+		set @UniqueRule=@UniqueRule+'_'+@FrequencyValue
+	
+	If(@RuleId!=0)
+	Begin
+		If not exists (Select RuleId from Alert_Rules where UniqueRuleCode=@UniqueRule and RuleId!=@RuleId)
+		Begin
+			Update Alert_Rules set EntityId=@EntityId,EntityType=@EntityType,Indicator=@Indicator,IndicatorComparision=@IndicatorComparision,IndicatorGoal=@IndicatorGoal,
+			CompletionGoal=@CompletionGoal,Frequency=@Frequency,DateOfMonth=@DateOfMonth,DayOfWeek=@DayOfWeek,ModifiedBy=@ModifiedBy,ModifiedDate=GETDATE(),
+			RuleSummary=@RuleSummary,LastProcessingDate=GETDATE(),UniqueRuleCode=@UniqueRule
+			where RuleId=@RuleId
+			set @IsExists=0
+		End
+		Else
+		set @IsExists=1
+	End
+	Else
+	Begin
+		If not exists (Select RuleId from Alert_Rules where UniqueRuleCode=@UniqueRule)
+		Begin
+			Insert into Alert_Rules (RuleSummary,EntityId,EntityType,Indicator,IndicatorComparision,IndicatorGoal,CompletionGoal,Frequency,DayOfWeek,DateOfMonth,LastProcessingDate,
+				UserId,ClientId,IsDisabled,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,UniqueRuleCode)
+			values(@RuleSummary,@EntityId,@EntityType,@Indicator,@IndicatorComparision,@IndicatorGoal,@CompletionGoal,@Frequency,@DayOfWeek,@DateOfMonth,GETDATE(),
+				@UserId,@ClientId,0,GETDATE(),@CreatedBy,null,null,@UniqueRule)
+			set @IsExists=0
+		End
+		Else
+		set @IsExists=1
+	End
+	
+END
+
+--exec SP_Save_AlertRule '464eb808-ad1f-4481-9365-6aada15023bd',25,'<h4>Test Plan eCopy_Test_cases  Closed Won are greater than 50% of Goal</h4><span>Start at 50% completion</span><span>Repeat Weekly</span>',295,'Plan','CW','GT',50,50,'Weekly',4,null,'14d7d588-cf4d-46be-b4ed-a74063b67d66','14d7d588-cf4d-46be-b4ed-a74063b67d66','14d7d588-cf4d-46be-b4ed-a74063b67d66',0
+GO
 
 
 -- ===========================Please put your script above this script=============================

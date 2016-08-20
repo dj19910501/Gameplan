@@ -10,7 +10,7 @@
             <div class="accordion-row margin-top18">
                 <div class="alert-question"> 1. What item would you like to be alerted for?</div>
                 <div class="alert-value-box">
-                    <span class="searchtextbox"><input id="searchentity" class="searchtext" type="text" tabindex="1" onkeyup="searchtext(this);" placeholder="Enter atleast 4 character to search" /></span>
+                    <span class="searchtextbox"><input id="searchentity" class="searchtext" type="text" tabindex="1" onkeyup="searchtext(this);" placeholder="Enter at least 4 characters to search" /></span>
                 </div>
                 
             </div>
@@ -45,10 +45,10 @@
                 <div class="alert-question"> 3. When would you like to be alerted?</div>
                 <div class="alert-value-box inline-span">
                     <span class="vb-text">When</span> <span id="lblentity"></span><span class="vb-text"> is </span>
-                    <span class="selectBox ">
-                        @Html.DropDownList("ddlpercentage", (SelectList)Model.GoalNum, "Select", new { tabindex = "5" })
+                    <span class="selectBox">
+                        @Html.DropDownList("ddlpercentage", (SelectList)Model.GoalNum, "Select", new { tabindex = "5", style="line-height: 20px;"})
                     </span>
-                    <span class="vb-text "> % completed</span>
+                    <span class="vb-text"> % completed</span>
                 </div>
             </div>
             <div class="accordion-row calendar_div clearfix" id="divque4">
@@ -159,11 +159,11 @@
                         <div class="alert-question"> 3. When would you like to be alerted?</div>
                         <div class="alert-value-box inline-span">
                             <span class="vb-text">When</span> <span id="lblentity" title="@alertrule.EntityName">@alertrule.EntityName</span><span class="vb-text"> is </span>
-                            <span class="selectBox ">
+                            <span class="selectBox">
                                 @{tabndex = tabndex + 1;}
-                                @Html.DropDownList("ddlpercentage", new SelectList(Model.GoalNum, "Value", "Text", alertrule.CompletionGoal), new { tabindex = tabndex })
+                                @Html.DropDownList("ddlpercentage", new SelectList(Model.GoalNum, "Value", "Text", alertrule.CompletionGoal), new { tabindex = tabndex, style = "line-height: 20px;" })
                             </span>
-                            <span class="vb-text "> % completed</span>
+                            <span class="vb-text"> % completed</span>
                         </div>
                     </div>
                     <div class="accordion-row calendar_div clearfix" id="divque4">
@@ -485,7 +485,7 @@
             var EntityName = $(tableId).find("#lblentity").html();
             var DayOfWeek = $(tableId).find("#dayOptions").val();
             var DateofMonth = $(tableId).find("#txtDateofmonth").val();
-            var rulesummary = "<h4>" + EntityName + "  " + $(tableId).find("#ddlindicator option:selected").text() + " are " + $(tableId).find("#ddlperformance option:selected").text() + " " + GoalNum + "% of Goal</h4>" +
+            var rulesummary = "<h4>" + EntityName + "  " + $(tableId).find("#ddlindicator option:selected").text() + " are " + $(tableId).find("#ddlperformance option:selected").text().toString().toLowerCase() + " " + GoalNum + "% of Goal</h4>" +
                 "<span>Start at " + ComplettionGoal + "% completion</span><span>Repeat " + frequency + "</span>";
 
             if (EntityId != "" && EntityId != null && parseInt(EntityId) != 0) {

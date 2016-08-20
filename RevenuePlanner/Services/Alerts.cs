@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Web;
 
 namespace RevenuePlanner.Services
 {
@@ -33,70 +34,7 @@ namespace RevenuePlanner.Services
         }
         #endregion
 
-        #region Method to save Alert Rule
-        public int SaveAlert(AlertRuleDetail objRule, Guid ClientId, Guid UserId)
-        {
-            Alert_Rules objalertRule = new Alert_Rules();
-            int result = 0;
-            try
-            {
-                objalertRule.EntityId = Int32.Parse(objRule.EntityID);
-                objalertRule.EntityType = objRule.EntityType;
-                objalertRule.Indicator = objRule.Indicator;
-                objalertRule.IndicatorComparision = objRule.IndicatorComparision;
-                objalertRule.IndicatorGoal = Int32.Parse(objRule.IndicatorGoal);
-                objalertRule.CompletionGoal = Int32.Parse(objRule.CompletionGoal);
-                objalertRule.Frequency = objRule.Frequency;
-                if (objRule.Frequency == Convert.ToString(SyncFrequencys.Weekly))
-                    objalertRule.DayOfWeek = Convert.ToByte(objRule.DayOfWeek);
-                if (objRule.Frequency == Convert.ToString(SyncFrequencys.Monthly))
-                {
-                    if (objRule.DateOfMonth != null)
-                        objalertRule.DateOfMonth = Convert.ToByte(objRule.DateOfMonth);
-                    else
-                        objalertRule.DateOfMonth = 10;
-                }
-                objalertRule.ClientId = ClientId;
-                objalertRule.UserId = UserId;
-                objalertRule.CreatedDate = DateTime.Now;
-                objalertRule.CreatedBy = UserId;
-                objalertRule.RuleSummary = objRule.RuleSummary;
-                objalertRule.LastProcessingDate = DateTime.Now;
-                objalertRule.IsDisabled = false;
-
-                objDbMrpEntities.Entry(objalertRule).State = EntityState.Added;
-                result = objDbMrpEntities.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-            }
-            return result;
-        }
-        #endregion
-
-        #region method to check alert rule already exists or not
-        public bool IsAlertRuleExists(int EntityID, int Completiongoal, int indicatorGoal, string Indicator, string Comparison, Guid UserId, int Ruleid)
-        {
-            bool IsExists = false;
-            try
-            {
-                if (Ruleid != 0)
-                {
-                    IsExists = objDbMrpEntities.Alert_Rules.Any(a => a.EntityId == EntityID && a.CompletionGoal == Completiongoal && a.IndicatorGoal == indicatorGoal && a.Indicator == Indicator && a.IndicatorComparision == Comparison && a.RuleId != Ruleid && a.UserId == UserId);
-
-                }
-                else
-                    IsExists = objDbMrpEntities.Alert_Rules.Any(a => a.EntityId == EntityID && a.CompletionGoal == Completiongoal && a.IndicatorGoal == indicatorGoal && a.Indicator == Indicator && a.IndicatorComparision == Comparison && a.UserId == UserId);
-            }
-            catch (Exception ex)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-
-            }
-            return IsExists;
-        }
-        #endregion
+    
         #region method to get list or alert rules created
         public List<AlertRuleDetail> GetAletRuleList(Guid UserId, Guid ClientId)
         {
@@ -122,7 +60,7 @@ namespace RevenuePlanner.Services
                     DayOfWeek = Convert.ToString(a.ar.DayOfWeek),
                     RuleSummary = a.ar.RuleSummary,
                     RuleId = a.ar.RuleId,
-                    EntityName = a.EntityTitle,
+                    EntityName =  HttpUtility.HtmlDecode(a.EntityTitle),
                     IsDisable = a.ar.IsDisabled
                 }).ToList();
             }
@@ -202,7 +140,7 @@ namespace RevenuePlanner.Services
             return result;
         }
         #endregion
-        #region method to delete alert rule
+        #region method to disable alert rule
         public int DisableAlertRule(int RuleId, bool RuleOn)
         {
             int result = 0;
@@ -259,7 +197,7 @@ namespace RevenuePlanner.Services
         }
 
         #endregion
-        #region method to update Alert rule
+        #region method to update Alert rule IsRead
         public int UpdateAlert_Notification_IsRead(string Type, Guid UserId)
         {
 
@@ -319,6 +257,70 @@ namespace RevenuePlanner.Services
             return result;
         }
 
+        #endregion
+
+        #region method to Add update Alert rule
+        public int AddUpdate_AlertRule(AlertRuleDetail objRule, Guid ClientId, Guid UserId, int RuleId)
+        {
+
+            int result = 0;
+            int IsExists = 0;
+            var Connection = objDbMrpEntities.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            byte? DayOfWeek=null, DateOfMonth=null;
+            using (SqlCommand command = new SqlCommand("SP_Save_AlertRule", Connection))
+            {
+                try
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+              
+                    if (objRule.Frequency == Convert.ToString(SyncFrequencys.Weekly))
+                        DayOfWeek = Convert.ToByte(objRule.DayOfWeek);
+                    if (objRule.Frequency == Convert.ToString(SyncFrequencys.Monthly))
+                    {
+                        if (objRule.DateOfMonth != null)
+                            DateOfMonth = Convert.ToByte(objRule.DateOfMonth);
+                        else
+                            DateOfMonth = 10;
+                    }
+                  
+                    command.Parameters.AddWithValue("@ClientId", ClientId.ToString());
+                    command.Parameters.AddWithValue("@RuleId", RuleId);
+                    command.Parameters.AddWithValue("@RuleSummary", objRule.RuleSummary);
+                    command.Parameters.AddWithValue("@EntityId", Int32.Parse(objRule.EntityID));
+                    command.Parameters.AddWithValue("@EntityType", objRule.EntityType);
+                    command.Parameters.AddWithValue("@Indicator", objRule.Indicator);
+                    command.Parameters.AddWithValue("@IndicatorComparision", objRule.IndicatorComparision);
+                    command.Parameters.AddWithValue("@IndicatorGoal", Int32.Parse(objRule.IndicatorGoal));
+                    command.Parameters.AddWithValue("@CompletionGoal", Int32.Parse(objRule.CompletionGoal));
+                    command.Parameters.AddWithValue("@Frequency", objRule.Frequency);
+                    command.Parameters.AddWithValue("@DayOfWeek", DayOfWeek);
+                    command.Parameters.AddWithValue("@DateOfMonth", DateOfMonth);
+                    command.Parameters.AddWithValue("@UserId", UserId.ToString());
+                    command.Parameters.AddWithValue("@CreatedBy", UserId.ToString());
+                    command.Parameters.AddWithValue("@ModifiedBy", UserId.ToString());
+                    command.Parameters.AddWithValue("@IsExists",IsExists).Direction=ParameterDirection.Output;
+
+                    SqlDataAdapter adp = new SqlDataAdapter(command);
+                    command.CommandTimeout = 0;
+                    command.ExecuteNonQuery();
+
+                    result = Convert.ToInt32(command.Parameters["@IsExists"].Value);
+                }
+                catch (Exception ex)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                    return -1;
+                }
+                finally
+                {
+                    if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                }
+            }
+
+            return result;
+        }
         #endregion
     }
 }

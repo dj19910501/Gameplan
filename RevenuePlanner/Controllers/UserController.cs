@@ -1434,7 +1434,7 @@ namespace RevenuePlanner.Controllers
                 {
                     category = a.Entity,
                     value = a.EntityId,
-                    label = a.EntityTitle
+                    label = HttpUtility.HtmlDecode(a.EntityTitle)
                 }).Take(500).ToList();
             }
             catch (Exception ex)
@@ -1456,7 +1456,7 @@ namespace RevenuePlanner.Controllers
             objStage.Code = revGoalType.ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
             objStage = new Stage();
-            revGoalType = Convert.ToString(Enums.PerformanceFector.PlannedCost);
+            revGoalType = Convert.ToString(Enums.DictPerformanceFector[Convert.ToString(Enums.PerformanceFector.PlannedCost)]);
             objStage.Title = revGoalType;
             objStage.Code = revGoalType.ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
@@ -1471,9 +1471,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveAlertRule(AlertRuleDetail RuleDetail, int RuleID = 0)
         {
-            int EntityID = 0;
-            int indicatorGoal;
-            int Completiongoal;
+         
             try
             {
                 //Insert Rule
@@ -1481,42 +1479,23 @@ namespace RevenuePlanner.Controllers
                 {
 
                     AlertRuleDetail objRule = RuleDetail;
-                    Int32.TryParse(objRule.EntityID, out EntityID);
-                    Int32.TryParse(objRule.IndicatorGoal, out indicatorGoal);
-                    Int32.TryParse(objRule.CompletionGoal, out Completiongoal);
 
                     if (objRule.EntityID != null && Int32.Parse(objRule.EntityID) != 0)
                     {
-                        if (RuleID == 0)
+                        int result = objcommonalert.AddUpdate_AlertRule(objRule, Sessions.User.ClientId, Sessions.User.UserId, RuleID);
+                        if (result == 0)
                         {
-                            Boolean IsExists = objcommonalert.IsAlertRuleExists(EntityID, Completiongoal, indicatorGoal, objRule.Indicator, objRule.IndicatorComparision, Sessions.User.UserId, 0);
-                            if (!IsExists)
-                            {
-                                int result = objcommonalert.SaveAlert(objRule, Sessions.User.ClientId, Sessions.User.UserId);
-                                if (result > 0)
+                        if (RuleID == 0)
                                     return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessAlertRule }, JsonRequestBehavior.AllowGet);
                                 else
-                                    return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+                                    return Json(new { Success = true, SuccessMessage = Common.objCached.UpdateAlertRule }, JsonRequestBehavior.AllowGet);
 
                             }
-                            else
+                        else if (result == 1)
                                 return Json(new { Success = false, ErrorMessage = Common.objCached.DuplicateAlertRule }, JsonRequestBehavior.AllowGet);
-                        }
                         else
-                        {
-                            //update rule
-                            Boolean IsExists = objcommonalert.IsAlertRuleExists(EntityID, Completiongoal, indicatorGoal, objRule.Indicator, objRule.IndicatorComparision, Sessions.User.UserId, RuleID);
-                            if (!IsExists)
-                            {
-                                int result = objcommonalert.UpdateAlertRule(objRule, Sessions.User.UserId);
-                                if (result > 0)
-                                    return Json(new { Success = true, SuccessMessage = Common.objCached.UpdateAlertRule }, JsonRequestBehavior.AllowGet);
-                                else
-                                    return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
-                            }
-                            else
-                                return Json(new { Success = false, ErrorMessage = Common.objCached.DuplicateAlertRule }, JsonRequestBehavior.AllowGet);
-                        }
+                            return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+
                     }
                     else
                         return Json(new { Success = false }, JsonRequestBehavior.AllowGet);

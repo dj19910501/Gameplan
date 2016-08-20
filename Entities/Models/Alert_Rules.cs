@@ -38,6 +38,7 @@ namespace RevenuePlanner.Models
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public string UniqueRuleCode { get; set; }
     
         public virtual ICollection<Alert> Alerts { get; set; }
     }

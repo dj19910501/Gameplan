@@ -36,6 +36,7 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="UniqueRuleCode" Type="nvarchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="Alerts">
           <Key>
@@ -1277,7 +1278,7 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_EntityList' does not have a
           <Property Name="EntityId" Type="int" Nullable="false" />
           <Property Name="EntityTitle" Type="nvarchar" MaxLength="512" Nullable="false" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Entity" Type="varchar" MaxLength="8" Nullable="false" />
+          <Property Name="Entity" Type="varchar" MaxLength="9" Nullable="false" />
           <Property Name="EntityOrder" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
@@ -1759,18 +1760,6 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_IntegrationInstanceLog_IntegrationInstance">
-          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
-          <End Role="IntegrationInstanceLog" Type="Self.IntegrationInstanceLog" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="IntegrationInstanceLog">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstance">
           <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
           <End Role="IntegrationInstancePlanEntityLog" Type="Self.IntegrationInstancePlanEntityLog" Multiplicity="*" />
@@ -1792,18 +1781,6 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
             </Principal>
             <Dependent Role="IntegrationInstancePlanEntityLog">
               <PropertyRef Name="IntegrationInstanceSectionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_IntegrationInstanceSection_IntegrationInstance">
-          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
-          <End Role="IntegrationInstanceSection" Type="Self.IntegrationInstanceSection" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="IntegrationInstanceSection">
-              <PropertyRef Name="IntegrationInstanceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2843,10 +2820,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="IntegrationWorkFrontTemplates" EntitySet="IntegrationWorkFrontTemplates" />
           </AssociationSet>
-          <AssociationSet Name="FK_IntegrationInstanceLog_IntegrationInstance" Association="Self.FK_IntegrationInstanceLog_IntegrationInstance">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
-            <End Role="IntegrationInstanceLog" EntitySet="IntegrationInstanceLog" />
-          </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstance" Association="Self.FK_IntegrationInstancePlanEntityLog_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="IntegrationInstancePlanEntityLog" EntitySet="IntegrationInstancePlanEntityLog" />
@@ -2854,10 +2827,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <AssociationSet Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection" Association="Self.FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection">
             <End Role="IntegrationInstanceSection" EntitySet="IntegrationInstanceSection" />
             <End Role="IntegrationInstancePlanEntityLog" EntitySet="IntegrationInstancePlanEntityLog" />
-          </AssociationSet>
-          <AssociationSet Name="FK_IntegrationInstanceSection_IntegrationInstance" Association="Self.FK_IntegrationInstanceSection_IntegrationInstance">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
-            <End Role="IntegrationInstanceSection" EntitySet="IntegrationInstanceSection" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstanceSection_IntegrationInstanceLog" Association="Self.FK_IntegrationInstanceSection_IntegrationInstanceLog">
             <End Role="IntegrationInstanceLog" EntitySet="IntegrationInstanceLog" />
@@ -6392,7 +6361,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           </Key>
           <Property Name="EntityId" Type="Int32" Nullable="false" />
           <Property Name="EntityTitle" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
-          <Property Name="Entity" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="Entity" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="false" />
           <Property Name="EntityOrder" Type="Int32" Nullable="false" />
           <Property Name="ClientId" Type="Guid" Nullable="false" />
         </EntityType>
@@ -6420,6 +6389,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <Property Name="ModifiedBy" Type="Guid" />
           <NavigationProperty Name="Alerts" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert_Rules" ToRole="Alert" />
+          <Property Name="UniqueRuleCode" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Alert">
           <Key>
@@ -7805,6 +7775,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="Alert_Rules">
             <EntityTypeMapping TypeName="MRPModel.Alert_Rules">
               <MappingFragment StoreEntitySet="Alert_Rules">
+                <ScalarProperty Name="UniqueRuleCode" ColumnName="UniqueRuleCode" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
