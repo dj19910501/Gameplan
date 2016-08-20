@@ -17864,14 +17864,23 @@ namespace RevenuePlanner.Controllers
 
                         for (int i = 0; i < dt.Columns.Count; i++)
                         {
+                            //insertation start 20/08/2016 #2304 Multi-Currency: used SetValueByExchangeRate method to update cell value
+                            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
                             for (int j = 0; j < dt.Rows.Count; j++)
                             {
                                 if (i > 1 && dt.Rows[j][i].ToString().Trim() != "")
                                 {
                                     dt.Rows[j][i] = dt.Rows[j][i].ToString().Replace(",", "").Replace("---", "");
-                                }
+                                    if (!string.IsNullOrEmpty(Convert.ToString(dt.Rows[j][i])))
+                                    {
+                                        double value=0;
+                                         double.TryParse(Convert.ToString(dt.Rows[j][i]),out value);
+                                        dt.Rows[j][i] = Convert.ToString(objCurrency.SetValueByExchangeRate(value));
 
+                                    }
+                                }
                             }
+                            //insertation End 20/08/2016 #2304 Multi-Currency: used SetValueByExchangeRate method to update cell value
                         }
                         dt.AcceptChanges();
 
