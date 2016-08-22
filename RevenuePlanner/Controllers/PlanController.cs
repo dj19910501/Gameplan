@@ -244,7 +244,7 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.Year = objplan.Year;
                     objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Value).FirstOrDefault();
                     //objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
-                    if (objPlanModel.GoalType == Enums.PlanGoalType.Revenue.ToString())
+                    if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                     {
                         objPlanModel.GoalValue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.GoalValue))).ToString();
                     }
@@ -383,14 +383,18 @@ namespace RevenuePlanner.Controllers
                         plan.GoalType = objPlanModel.GoalType;
                         if (objPlanModel.GoalValue != null)
                         {
-                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
+                            if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
+                            {
+                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
+                            }
                         }
                         else
                         {
                             plan.GoalValue = 0;
                         }
                         plan.AllocatedBy = objPlanModel.AllocatedBy;
-                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                         plan.ModelId = objPlanModel.ModelId;
                         plan.Year = objPlanModel.Year;
                         db.Plans.Add(plan);
@@ -423,7 +427,12 @@ namespace RevenuePlanner.Controllers
                         plan.GoalType = objPlanModel.GoalType;
                         if (objPlanModel.GoalValue != null)
                         {
-                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
+                            if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
+                            {                                
+                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
+                            }
+                            
                         }
                         else
                         {
@@ -431,7 +440,7 @@ namespace RevenuePlanner.Controllers
                         }
                         plan.AllocatedBy = objPlanModel.AllocatedBy;
                         plan.Description = objPlanModel.Description;    /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
-                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                         plan.ModelId = objPlanModel.ModelId;
                         if (plan.Year != objPlanModel.Year) //// Added by Sohel Pathan on 12/01/2015 for PL ticket #1102
                         {
@@ -662,7 +671,11 @@ namespace RevenuePlanner.Controllers
                         plan.GoalType = objPlanModel.GoalType;
                         if (objPlanModel.GoalValue != null)
                         {
-                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
+                            if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
+                            {                                
+                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
+                            }
                         }
                         else
                         {
@@ -708,7 +721,11 @@ namespace RevenuePlanner.Controllers
                         plan.GoalType = objPlanModel.GoalType;
                         if (objPlanModel.GoalValue != null)
                         {
-                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
+                            if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
+                            {                               
+                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
+                            }
                         }
                         else
                         {
@@ -2606,7 +2623,7 @@ namespace RevenuePlanner.Controllers
 
             return Json(new
             {
-                revenue = tt.ProjectedRevenue == null ? 0 : tt.ProjectedRevenue,
+                revenue = tt.ProjectedRevenue == null ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tt.ProjectedRevenue))),
                 IsDeployedToIntegration = tt.IsDeployedToIntegration,
                 stageId = tt.StageId,
                 stageTitle = tt.Stage.Title,
@@ -3287,6 +3304,7 @@ namespace RevenuePlanner.Controllers
                 if (im.StageType == Enums.StageType.Size.ToString())
                 {
                     modelvalue = db.Models.Where(m => m.ModelId == ModelId).Select(m => m.AverageDealSize).FirstOrDefault();
+                    modelvalue = objCurrency.GetValueByExchangeRate(modelvalue);
                 }
                 else
                 {
@@ -4646,7 +4664,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>json flag for success or failure</returns>
         public JsonResult SaveBudgetCell(string entityId, string section, string month, string inputs, bool isquarter)
         {
-            Dictionary<string, string> monthList = new Dictionary<string, string>() { 
+            Dictionary<string, string> monthList = new Dictionary<string, string>() {
                 {Enums.Months.January.ToString(), "Y1" },
                 {Enums.Months.February.ToString(), "Y2" },
                 {Enums.Months.March.ToString(), "Y3" },
@@ -5291,7 +5309,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>json flag for success or failure</returns>
         public JsonResult SavePlannedCell(string entityId, string section, string month, string inputs, string tab, bool isquarter)
         {
-            Dictionary<string, string> monthList = new Dictionary<string, string>() { 
+            Dictionary<string, string> monthList = new Dictionary<string, string>() {
                 {Enums.Months.January.ToString(), "Y1" },
                 {Enums.Months.February.ToString(), "Y2" },
                 {Enums.Months.March.ToString(), "Y3" },
@@ -8063,7 +8081,7 @@ namespace RevenuePlanner.Controllers
                         {4,obj.Apr},
                         {7,obj.Jul},
                         {10,obj.Oct}
-                        
+
                     };
 
                 Dictionary<int, double> campaignParentMonth = new Dictionary<int, double>()
@@ -8510,66 +8528,66 @@ namespace RevenuePlanner.Controllers
             RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
             //Insertation Start 19/08/2016 Kausha #2503 Used GetValuebyExchnagerate function to display values in users currency. 
             model = dt.AsEnumerable().Select(row => new BudgetModel
+            {
+                Id = row["Id"].ToString(),
+                ActivityId = row["ActivityId"].ToString(),
+                ActivityName = row["ActivityName"].ToString(),
+                ParentActivityId = row["ParentActivityId"].ToString(),
+                Budgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Cost"].ToString())),
+                IsOwner = Convert.ToBoolean(row["IsOwner"]),
+                BudgetMonth = new BudgetMonth()
                 {
-                    Id = row["Id"].ToString(),
-                    ActivityId = row["ActivityId"].ToString(),
-                    ActivityName = row["ActivityName"].ToString(),
-                    ParentActivityId = row["ParentActivityId"].ToString(),
-                    Budgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Cost"].ToString())),
-                    IsOwner = Convert.ToBoolean(row["IsOwner"]),
-                    BudgetMonth = new BudgetMonth()
-                    {
-                        Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y1"].ToString())),
-                        Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y2"].ToString())),
-                        Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y3"].ToString())),
-                        Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y4"].ToString())),
-                        May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y5"].ToString())),
-                        Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y6"].ToString())),
-                        Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y7"].ToString())),
-                        Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y8"].ToString())),
-                        Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y9"].ToString())),
-                        Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y10"].ToString())),
-                        Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y11"].ToString())),
-                        Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y12"].ToString()))
-                    },
-                    Allocated = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["TotalBudgetSum"].ToString())),
-                    Month = new BudgetMonth()
-                    {
-                        Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString())),
-                        Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString())),
-                        Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString())),
-                        Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString())),
-                        May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString())),
-                        Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString())),
-                        Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString())),
-                        Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString())),
-                        Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString())),
-                        Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString())),
-                        Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString())),
-                        Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()))
-                    },
-                    MainBudgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["MainBudgeted"].ToString())),
-                    CreatedBy = new Guid(row["CreatedBy"].ToString()),
-                    isAfterApproved = Convert.ToBoolean(row["IsAfterApproved"]),
-                    isEditable = Convert.ToBoolean(row["IsEditable"]),
-                    ActivityType = row["ActivityType"].ToString(),
-                    ParentMonth = row["ActivityType"].ToString() == ActivityType.ActivityLineItem.ToString() ? new BudgetMonth()
-                    {
-                        Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString())),
-                        Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString())),
-                        Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString())),
-                        Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString())),
-                        May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString())),
-                        Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString())),
-                        Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString())),
-                        Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString())),
-                        Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString())),
-                        Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString())),
-                        Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString())),
-                        Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()))
-                    } : null
+                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y1"].ToString())),
+                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y2"].ToString())),
+                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y3"].ToString())),
+                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y4"].ToString())),
+                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y5"].ToString())),
+                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y6"].ToString())),
+                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y7"].ToString())),
+                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y8"].ToString())),
+                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y9"].ToString())),
+                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y10"].ToString())),
+                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y11"].ToString())),
+                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y12"].ToString()))
+                },
+                Allocated = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["TotalBudgetSum"].ToString())),
+                Month = new BudgetMonth()
+                {
+                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString())),
+                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString())),
+                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString())),
+                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString())),
+                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString())),
+                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString())),
+                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString())),
+                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString())),
+                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString())),
+                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString())),
+                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString())),
+                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()))
+                },
+                MainBudgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["MainBudgeted"].ToString())),
+                CreatedBy = new Guid(row["CreatedBy"].ToString()),
+                isAfterApproved = Convert.ToBoolean(row["IsAfterApproved"]),
+                isEditable = Convert.ToBoolean(row["IsEditable"]),
+                ActivityType = row["ActivityType"].ToString(),
+                ParentMonth = row["ActivityType"].ToString() == ActivityType.ActivityLineItem.ToString() ? new BudgetMonth()
+                {
+                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString())),
+                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString())),
+                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString())),
+                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString())),
+                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString())),
+                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString())),
+                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString())),
+                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString())),
+                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString())),
+                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString())),
+                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString())),
+                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()))
+                } : null
 
-                }).ToList();
+            }).ToList();
             //Insertation End 19/08/2016 Kausha #2503 Used GetValuebyExchnagerate function to display values in users currency. 
             //End Sp part by mitesh
 
@@ -15637,12 +15655,12 @@ namespace RevenuePlanner.Controllers
                                       }).ToList();
                 LineItemList = (from LineItem in DBLineItemList
                                 select new Plan_Tactic_LineItem_Values
-                                      {
-                                          PlanTacticId = LineItem.PlanTacticId,
-                                          Cost = LineItem.Cost,
-                                          CampaignId = LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId,
-                                          Programid = LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId
-                                      }).ToList();
+                                {
+                                    PlanTacticId = LineItem.PlanTacticId,
+                                    Cost = LineItem.Cost,
+                                    CampaignId = LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId,
+                                    Programid = LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId
+                                }).ToList();
                 TotalMqls = ListTacticMQLValue.Sum(tactic => tactic.MQL);
                 TotalCost = DBLineItemList.Sum(l => l.Cost);
                 //ViewBag.TotalCost = TotalCost;
@@ -17873,8 +17891,8 @@ namespace RevenuePlanner.Controllers
                                     dt.Rows[j][i] = dt.Rows[j][i].ToString().Replace(",", "").Replace("---", "");
                                     if (!string.IsNullOrEmpty(Convert.ToString(dt.Rows[j][i])))
                                     {
-                                        double value=0;
-                                         double.TryParse(Convert.ToString(dt.Rows[j][i]),out value);
+                                        double value = 0;
+                                        double.TryParse(Convert.ToString(dt.Rows[j][i]), out value);
                                         dt.Rows[j][i] = Convert.ToString(objCurrency.SetValueByExchangeRate(value));
 
                                     }
