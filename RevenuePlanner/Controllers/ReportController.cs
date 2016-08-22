@@ -46,7 +46,7 @@ namespace RevenuePlanner.Controllers
         private int currentMonth = DateTime.Now.Month;
         bool isPublishedPlanExist = false;
         private string strPercentage = "%";
-        private string strCurrency = "$";
+        private string strCurrency = Sessions.PlanCurrencySymbol;
         private const string strPlannedCost = "Planned Cost";
         private const string strActualCost = "Actual Cost";
         private const string strBudget = "Budget";
@@ -56,6 +56,7 @@ namespace RevenuePlanner.Controllers
         private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
+        public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
         // Add By Nishant Sheth
         // Desc #1842
 
@@ -2178,7 +2179,7 @@ namespace RevenuePlanner.Controllers
                 Month = (tact.StartYear + tact.NumPeriod) + PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
                 Year = tact.StartYear + tact.NumPeriod,
                 Id = tact.Id,
-                Value = tact.Value,
+                Value = objCurrency.GetReportValueByExchangeRate(tact.StartDate, tact.Value, tact.Period), // Modified By Nishant Sheth //#2508 Convert value as per reporting exchange rate
                 StartDate = tact.StartDate,
                 EndDate = tact.EndDate
             }).ToList();
@@ -2317,16 +2318,16 @@ namespace RevenuePlanner.Controllers
         /// <param name="optionalMessage">Optional message.</param>
         /// <param name="htmlOfCurrentView">Html of current view.</param>
         /// <returns>Returns json result which indicates report is generated and sent sucessfully.</returns>
-        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView, string url = "",string RecipientUserIds = "")
+        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView, string url = "", string RecipientUserIds = "")
         {
             //Modified regarding #2484 save notifications by komal rawal on 16-08-2016
             int result = 0;
             var ChangeLogComponentType = Enums.ChangeLog_ComponentType.Summary;
-            if(reportType == Enums.ReportType.Revenue.ToString())
+            if (reportType == Enums.ReportType.Revenue.ToString())
             {
                 ChangeLogComponentType = Enums.ChangeLog_ComponentType.Revenue;
             }
-            else if(reportType == Enums.ReportType.Waterfall.ToString())
+            else if (reportType == Enums.ReportType.Waterfall.ToString())
             {
                 ChangeLogComponentType = Enums.ChangeLog_ComponentType.Waterfall;
             }
@@ -5149,16 +5150,20 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                    StageValue = (objActual.Actualvalue * weightage.Value) / 100;
                     objActualTacticdt.PlanTacticId = objActual.PlanTacticId;
                     objActualTacticdt.Period = objActual.Period;
-                    objActualTacticdt.ActualValue = StageValue;
                     objActualTacticdt.StageTitle = objActual.StageTitle;
                     objActualTacticdt.PlanYear = Convert.ToInt32(objActual.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year.FirstOrDefault());// Add By Nishant Sheth #1838
                     // Add By Nishant Sheth #1839
                     objActualTacticdt.StartDate = objActual.Plan_Campaign_Program_Tactic.StartDate;
                     objActualTacticdt.EndDate = objActual.Plan_Campaign_Program_Tactic.EndDate;
                     // End By Nishant Sheth
+
+                    // Add By Nishant Sheth //#2508 Convert value as per reporting exchange rate
+                    double ActualValue = objCurrency.GetReportValueByExchangeRate(objActualTacticdt.StartDate, objActual.Actualvalue, int.Parse(Convert.ToString(objActual.Period.Replace("Y", ""))));
+                    StageValue = (ActualValue * weightage.Value) / 100;
+                    objActualTacticdt.ActualValue = StageValue;
+                    // End Nishant Sheth
                     Actualtacticdata.Add(objActualTacticdt);
                 }
             }
@@ -5180,15 +5185,19 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                    StageValue = (objActual.Actualvalue * weightage.Value) / 100;
                     objActualTacticdt.PlanTacticId = objActual.PlanTacticId;
                     objActualTacticdt.Period = objActual.Period;
-                    objActualTacticdt.ActualValue = StageValue;
                     objActualTacticdt.StageTitle = objActual.StageTitle;
                     objActualTacticdt.PlanYear = Convert.ToInt32(objActual.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year.FirstOrDefault());// Add By Nishant Sheth #1838
                     // Add By Nishant Sheth #1839
                     objActualTacticdt.StartDate = objActual.Plan_Campaign_Program_Tactic.StartDate;
                     objActualTacticdt.EndDate = objActual.Plan_Campaign_Program_Tactic.EndDate;
+                    // End By Nishant Sheth
+
+                    // Modified By Nishant Sheth //#2508 Convert value as per reporting exchange rate
+                    double ActualValue = objCurrency.GetReportValueByExchangeRate(objActualTacticdt.StartDate, objActual.Actualvalue, int.Parse(Convert.ToString(objActual.Period.Replace("Y", ""))));
+                    StageValue = (ActualValue * weightage.Value) / 100;
+                    objActualTacticdt.ActualValue = StageValue;
                     // End By Nishant Sheth
                     Actualtacticdata.Add(objActualTacticdt);
                 }
@@ -6480,6 +6489,11 @@ namespace RevenuePlanner.Controllers
                             ActualTacticListbyTactic = new List<Plan_Campaign_Program_Tactic_Actual>();
                             //// Filter CurrentMonthActualTacticList by current PlanTacticId.
                             ActualTacticListbyTactic = ActualTacticList.Where(actual => actual.PlanTacticId.Equals(_planTacticId)).ToList();
+                            // Convert Actual value with respective reporting months
+                            ActualTacticListbyTactic.ForEach(a =>
+                            {
+                                a.Actualvalue = objCurrency.GetReportValueByExchangeRate(a.Plan_Campaign_Program_Tactic.StartDate, a.Actualvalue, int.Parse(Convert.ToString(a.Period.Replace("Y", ""))));
+                            });
                             //// Get ActualValue sum.
                             TotalActualUpToCurrentMonth = ActualTacticListbyTactic.Sum(actual => actual.Actualvalue);
                             //// Get No. of involved month till current month.
@@ -8152,7 +8166,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     // #2186 Set End month for multi year
                                     int TacticEndMonth = tactic.EndDate.Month;
-                                    int TacticEndYear = tactic.EndDate.Year; 
+                                    int TacticEndYear = tactic.EndDate.Year;
                                     int VelocityMonth = 0, VelocityYear = 0;
                                     // Modofied By Nishant Sheth
                                     // Desc ::  For Manage velocity for single year tactic and multi year tactic #2471.
@@ -8391,6 +8405,7 @@ namespace RevenuePlanner.Controllers
                     List<string> _curntQuarterListProjected = new List<string>();// Add By Nishant Sheth
                     List<string> _curntQuarterListGoal = new List<string>();// Add By Nishant Sheth
                     List<string> _curntQuarterListActProjected2 = new List<string>();// Add By Nishant Sheth
+                    List<string> _curntQuarterListGoalYTD = new List<string>();
                     var Quarterbase = 1; bool isMonthList = false;
                     for (int i = 1; i <= categorieslength; i++)
                     {
@@ -8436,7 +8451,9 @@ namespace RevenuePlanner.Controllers
                             {
                                 List<string> Quarters = new List<string>() { PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++) };
                                 // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
+                                int CurrentMonth = DateTime.Now.Month;
                                 _curntQuarterListActual = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= 12).ToList(); // Modified By Nishant Sheth #1839
+                                _curntQuarterListGoalYTD = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= CurrentMonth).ToList(); 
                                 _curntQuarterListProjected = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) >= (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : 12)).ToList(); // Modified By Nishant Sheth #1839
                                 _curntQuarterListGoal = Quarters;
                                 // Get list of Month After current month for Projected2 calculation.
@@ -8457,14 +8474,14 @@ namespace RevenuePlanner.Controllers
                                 _projectedlist.Add(_Projected);
 
                                 _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate) && _projected.Year == year)
-                                    && _curntQuarterListGoal.Contains(_projected.Month)).Sum(_projected => _projected.Value);
+                                && _curntQuarterListGoal.Contains(_projected.Month)).Sum(_projected => _projected.Value);
                                 _goallist.Add(_Goal);
 
                                 // Addd For Rveneue header value Goal Yeat to Date
                                 //DateTime CurrentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                                 // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
                                 _GoalYTD = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
-                                    && _curntQuarterListActual.Contains(_projected.Month) && _projected.Year == year).Sum(_projected => _projected.Value); // Modified By Nishant Sheth #1839
+                                                                && _curntQuarterListGoalYTD.Contains(_projected.Month) && _projected.Year == year).Sum(_projected => _projected.Value); // Modified By Nishant Sheth #1839
                                 _goalYTDList.Add(_GoalYTD);
                             }
                             isMonthList = true;

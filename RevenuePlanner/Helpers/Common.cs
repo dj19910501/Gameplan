@@ -26,7 +26,7 @@ using System.Text.RegularExpressions;
 using Integration;
 using System.Web.Caching;
 using System.Data.SqlClient;
-using System.Runtime.CompilerServices;	 
+using System.Runtime.CompilerServices;
 using System.Xml;
 using RevenuePlanner.Services;
 
@@ -1559,7 +1559,7 @@ namespace RevenuePlanner.Helpers
 
         /********************** Function to handle changelog for model & plan ************************/
 
-        public static int InsertChangeLog(int? objectId, int? parentObjectId, int? componentId, string componentTitle, Enums.ChangeLog_ComponentType componentType, Enums.ChangeLog_TableName TableName, Enums.ChangeLog_Actions action, string actionSuffix = "",string EntityOwnerId ="",string ReportRecipientUserIds="")
+        public static int InsertChangeLog(int? objectId, int? parentObjectId, int? componentId, string componentTitle, Enums.ChangeLog_ComponentType componentType, Enums.ChangeLog_TableName TableName, Enums.ChangeLog_Actions action, string actionSuffix = "", string EntityOwnerId = "", string ReportRecipientUserIds = "")
         {
             /************************** Get value of component type ******************************/
             var type = typeof(Enums.ChangeLog_ComponentType);
@@ -1596,7 +1596,7 @@ namespace RevenuePlanner.Helpers
             //db.ChangeLogs.Add(c1);
             var OwnerID = EntityOwnerId;
             var UserName = Convert.ToString(Sessions.User.FirstName + " " + Sessions.User.LastName);
-            int ret = objSp.SaveLogNoticationdata(action.ToString(), actionSuffix,componentId,componentTitle,description,objectId,parentObjectId,TableName.ToString(), Sessions.User.ClientId,Sessions.User.UserId, UserName,OwnerID, ReportRecipientUserIds);
+            int ret = objSp.SaveLogNoticationdata(action.ToString(), actionSuffix, componentId, componentTitle, description, objectId, parentObjectId, TableName.ToString(), Sessions.User.ClientId, Sessions.User.UserId, UserName, OwnerID, ReportRecipientUserIds);
             if (ret >= 1)
             {
                 retval = 1;
@@ -2874,62 +2874,62 @@ namespace RevenuePlanner.Helpers
             {
                 MRPEntities db = new MRPEntities();
 
-            try
-            {
-                string modelPublished = Enums.ModelStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
-                string modelDraft = Enums.ModelStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
-                string planPublished = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-                string planDraft = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value;
-
-                var models = db.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m);
-
-                var allModelIds = models.Select(m => m.ModelId).ToList();
-                if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.None)
+                try
                 {
-                    return new MVCUrl { actionName = "HomeZero", controllerName = "Home", queryString = "" };
-                }
-                else
-                {
-                    if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.Home)
+                    string modelPublished = Enums.ModelStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
+                    string modelDraft = Enums.ModelStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
+                    string planPublished = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+                    string planDraft = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value;
+
+                    var models = db.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m);
+
+                    var allModelIds = models.Select(m => m.ModelId).ToList();
+                    if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.None)
                     {
-                        if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate))
+                        return new MVCUrl { actionName = "HomeZero", controllerName = "Home", queryString = "" };
+                    }
+                    else
+                    {
+                        if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.Home)
+                        {
+                            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate))
+                            {
+                                return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
+                            }
+                            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit))
+                            {
+                                return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };
+                            }
+                        }
+
+                        var publishedModelIds = models.Where(m => m.Status.Equals(modelPublished)).Select(m => m.ModelId).ToList();
+                        var draftModelIds = models.Where(m => m.Status.Equals(modelDraft)).Select(m => m.ModelId).ToList();
+
+                        var tblPlan = db.Plans.Where(p => (publishedModelIds.Contains(p.Model.ModelId) || draftModelIds.Contains(p.Model.ModelId)) && p.IsDeleted.Equals(false));
+                        var draftPlan = tblPlan.Where(p => p.Status.Equals(planDraft));
+                        var publishedPlan = tblPlan.Where(p => p.Status.Equals(planPublished));
+
+                        if (publishedPlan != null && publishedPlan.Any())
+                        {
+                            return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Home" };
+                        }
+                        else if (draftPlan != null && draftPlan.Any())
+                        {
+                            return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Plan" };
+                        }
+                        else if (allModelIds != null || allModelIds.Count > 0)
                         {
                             return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
                         }
-                        if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit))
+                        else
                         {
                             return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };
                         }
                     }
-
-                    var publishedModelIds = models.Where(m => m.Status.Equals(modelPublished)).Select(m => m.ModelId).ToList();
-                    var draftModelIds = models.Where(m => m.Status.Equals(modelDraft)).Select(m => m.ModelId).ToList();
-
-                    var tblPlan = db.Plans.Where(p => (publishedModelIds.Contains(p.Model.ModelId) || draftModelIds.Contains(p.Model.ModelId)) && p.IsDeleted.Equals(false));
-                    var draftPlan = tblPlan.Where(p => p.Status.Equals(planDraft));
-                    var publishedPlan = tblPlan.Where(p => p.Status.Equals(planPublished));
-
-                    if (publishedPlan != null && publishedPlan.Any())
-                    {
-                        return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Home" };
-                    }
-                    else if (draftPlan != null && draftPlan.Any())
-                    {
-                        return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Plan" };
-                    }
-                    else if (allModelIds != null || allModelIds.Count > 0)
-                    {
-                        return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
-                    }
-                    else
-                    {
-                        return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };
-                    }
                 }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
 
                     //To handle unavailability of BDSService
                     if (e is System.ServiceModel.EndpointNotFoundException)
@@ -3984,7 +3984,7 @@ namespace RevenuePlanner.Helpers
                 tacticStageValueObj.INQValue = projectedStageLevel <= levelINQ ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => inqStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
                 tacticStageValueObj.MQLValue = projectedStageLevel <= levelMQL ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => mqlStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
                 tacticStageValueObj.CWValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => cwStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
-                tacticStageValueObj.RevenueValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => revenueStagelist.Contains(sr.StageId) && (sr.StageType == CR || sr.StageType == Size)).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                tacticStageValueObj.RevenueValue = objCurrency.GetValueByExchangeRate(projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => revenueStagelist.Contains(sr.StageId) && (sr.StageType == CR || sr.StageType == Size)).Aggregate(1.0, (x, y) => x * y.Value)) : 0); // Modified By Nishant Sheth //#2508 Convert value as per reporting exchange rate
                 tacticStageValueObj.INQVelocity = stageRelation.Where(sr => inqVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.MQLVelocity = stageRelation.Where(sr => mqlVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
@@ -6483,12 +6483,12 @@ namespace RevenuePlanner.Helpers
 
             // Remove all tactics from the package when anchor tactic is deleted
             delROIPackage.AddRange((from pkg in lstROIPackage
-                                        join package in db.ROI_PackageDetail on pkg.AnchorTacticID equals package.AnchorTacticID
-                                        where pkg.AnchorTacticID == pkg.PlanTacticId
-                                        select package).ToList());
+                                    join package in db.ROI_PackageDetail on pkg.AnchorTacticID equals package.AnchorTacticID
+                                    where pkg.AnchorTacticID == pkg.PlanTacticId
+                                    select package).ToList());
 
             // Remove only one tactic from the package when promotion tactic is deleted
-            delROIPackage.AddRange( (from pkg in lstROIPackage
+            delROIPackage.AddRange((from pkg in lstROIPackage
                                     join package in db.ROI_PackageDetail on pkg.PlanTacticId equals package.PlanTacticId
                                     select package).ToList());
 
@@ -6500,14 +6500,14 @@ namespace RevenuePlanner.Helpers
             delROIPackage.ForEach(x => db.Entry(x).State = EntityState.Deleted);
             db.SaveChanges();
         }
-		
+
         /// <summary>
         /// Update package details in tactic list in cache
         /// Added By : Arpita Soni 
         /// Ticket : #2357
         /// </summary>
         /// <param name="dictPlanTacticAnchorTactic"></param>
-        public static void UpdateAnchorTacticInCache(Dictionary<int,int> dictPlanTacticAnchorTactic)
+        public static void UpdateAnchorTacticInCache(Dictionary<int, int> dictPlanTacticAnchorTactic)
         {
             CacheObject objCache = new CacheObject();
             List<Custom_Plan_Campaign_Program_Tactic> lstTacticPer = new List<Custom_Plan_Campaign_Program_Tactic>();
@@ -6528,7 +6528,7 @@ namespace RevenuePlanner.Helpers
 
                 objCache.AddCache(Enums.CacheObject.CustomTactic.ToString(), lstTacticPer);
             }
-            
+
             //Added by komal rawal for #2358 to update cache object
             List<Custom_Plan_Campaign_Program_Tactic> PlanTacticListforpackageing = new List<Custom_Plan_Campaign_Program_Tactic>();
 
@@ -6568,21 +6568,21 @@ namespace RevenuePlanner.Helpers
             }
         }
         #endregion
-	 // added by devanshi #2386 Remove media codes
+        // added by devanshi #2386 Remove media codes
         #region remove MediaCode
         public static void RemoveTacticMediaCode(List<int> TacticIDs)
         {
             MRPEntities db = new MRPEntities();
             var MediaCodeCustomfields = db.Tactic_MediaCodes_CustomFieldMapping.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
             MediaCodeCustomfields.ForEach(custmfield => db.Entry(custmfield).State = EntityState.Deleted);
-           int resultmedia= db.SaveChanges();
-           if (resultmedia > 0)
-           {
-            var TacticMediacode = db.Tactic_MediaCodes.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
-            TacticMediacode.ForEach(mediacode => db.Entry(mediacode).State = EntityState.Deleted);
-            db.SaveChanges();
-           }
-           
+            int resultmedia = db.SaveChanges();
+            if (resultmedia > 0)
+            {
+                var TacticMediacode = db.Tactic_MediaCodes.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
+                TacticMediacode.ForEach(mediacode => db.Entry(mediacode).State = EntityState.Deleted);
+                db.SaveChanges();
+            }
+
         }
         #endregion
         //end
@@ -7846,9 +7846,9 @@ namespace RevenuePlanner.Helpers
                             //var onlyedittactic = lstAllTacticCustomFieldEntities.Where(tac => !onlyviewnonetacticids.Contains(tac.EntityId)).Select(tac => tac.EntityId).Distinct().ToList();
                             //Added By Manoj & John 
                             var onlyedittactic = (from c in lstAllTacticCustomFieldEntities
-                                                   join v in onlyviewnonetacticids on c.EntityId equals v into cv
-                                                   from f in cv.DefaultIfEmpty(-1)
-                                                   select new { c.EntityId, f}).Where(x => x.f == -1).Select(x => x.EntityId).Distinct().ToList();
+                                                  join v in onlyviewnonetacticids on c.EntityId equals v into cv
+                                                  from f in cv.DefaultIfEmpty(-1)
+                                                  select new { c.EntityId, f }).Where(x => x.f == -1).Select(x => x.EntityId).Distinct().ToList();
                             if (isDefaultRestrictionsEditable)
                             {
                                 lstEditableEntityIds = onlyedittactic;
@@ -8322,7 +8322,7 @@ namespace RevenuePlanner.Helpers
             ParentId = tblBudgetDetails.Where(dtl => dtl.Id == BudgetDetailId).Select(dtl => dtl.ParentId).FirstOrDefault();
             mostParentId = tblBudgetDetails.Where(dtl => dtl.Id == ParentId).Select(dtl => dtl.ParentId).FirstOrDefault();
             var filterParentList = (from detail1 in tblBudgetDetails
-                                    where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name) 
+                                    where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
                                     select new { detail1.Name, detail1.Id }).Distinct().ToList();
             lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
 
@@ -8899,7 +8899,7 @@ namespace RevenuePlanner.Helpers
             // End
         }
 
-       
+
     }
     // Add By Nishant Sheth
     // Desc :: common methods for cache memory
@@ -9441,7 +9441,7 @@ namespace RevenuePlanner.Helpers
             return data;
         }
         //Added by komal rawal on 16-08-2016 regarding #2484 save notifications 
-        public int SaveLogNoticationdata( string action, string actionSuffix, int? componentId,string componentTitle,string description,int? objectid, int? parentObjectId,string TableName, Guid ClientId,Guid User,string  UserName,string EntityOwnerID,string ReportRecipientUserIds)
+        public int SaveLogNoticationdata(string action, string actionSuffix, int? componentId, string componentTitle, string description, int? objectid, int? parentObjectId, string TableName, Guid ClientId, Guid User, string UserName, string EntityOwnerID, string ReportRecipientUserIds)
         {
             int returnvalue = 0;
             MRPEntities db = new MRPEntities();
@@ -9460,12 +9460,12 @@ namespace RevenuePlanner.Helpers
             }
             string RecipientIds = null;
 
-            if(lst_RecipientId.Count > 0)
+            if (lst_RecipientId.Count > 0)
             {
                 RecipientIds = String.Join(",", lst_RecipientId);
 
             }
-            else if(TableName == Convert.ToString(Enums.ChangeLog_TableName.Report) && action == Convert.ToString(Enums.ChangeLog_Actions.shared))
+            else if (TableName == Convert.ToString(Enums.ChangeLog_TableName.Report) && action == Convert.ToString(Enums.ChangeLog_Actions.shared))
             {
                 RecipientIds = ReportRecipientUserIds;
             }
@@ -9499,7 +9499,7 @@ namespace RevenuePlanner.Helpers
                 returnvalue = Convert.ToInt32(returnvalue1);
                 if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
             }
-          
+
             return returnvalue;
         }
 

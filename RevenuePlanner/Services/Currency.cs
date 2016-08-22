@@ -31,8 +31,8 @@ namespace RevenuePlanner.Services
                 BDSService.Currency objUserCurrency = new BDSService.Currency();
 
                 DateTime now = DateTime.Now;
-                DateTime CurrentMonthStartDate = new DateTime(now.Year, now.Month, 1);
-                DateTime CurrentMonthEndDate = CurrentMonthStartDate.AddMonths(1).AddDays(-1);
+                DateTime CurrentMonthStartDate = GetFirstDayOfMonth(now.Month, now.Year);
+                DateTime CurrentMonthEndDate = GetLastDayOfMonth(now.Month, now.Year);
 
                 objUserCurrency = objBDSServiceClient.GetCurrencyExchangeRate(ClientId, UserId); // Call the BDS Sevice for get exchange rate 
 
@@ -55,6 +55,11 @@ namespace RevenuePlanner.Services
                     if (UserPlanCurrency != null)
                     {
                         objCache.AddCache(Convert.ToString(Enums.CacheObject.UserPlanCurrency), UserPlanCurrency);
+                        Sessions.PlanExchangeRate = UserPlanCurrency.ExchangeRate;
+                    }
+                    else
+                    {
+                        Sessions.PlanExchangeRate = 1;
                     }
 
                     // Get Reporting Exchange rate
@@ -79,15 +84,10 @@ namespace RevenuePlanner.Services
                     }
                     Sessions.PlanCurrencySymbol = Currency.UserPreferredCurrencySymbol;
                 }
-
-                var CacheExchangeRate = (RevenuePlanner.Models.CurrencyModel.PlanCurrency)objCache.Returncache(Enums.CacheObject.UserPlanCurrency.ToString());
-                if (CacheExchangeRate != null)
-                {
-                    Sessions.PlanExchangeRate = CacheExchangeRate.ExchangeRate;
-                }
                 else
                 {
                     Sessions.PlanExchangeRate = 1;
+                    Sessions.PlanCurrencySymbol = Convert.ToString(Enums.CurrencySymbolsValues[Enums.CurrencySymbols.USD.ToString()]);
                 }
 
             }
@@ -135,5 +135,134 @@ namespace RevenuePlanner.Services
             }
             return ConvertedValue;
         }
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Get Exchange rate with start date, end date 
+        /// </summary>
+        /// <param name="DataValue"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="Period"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double GetReportValueByExchangeRate(DateTime StartDate, double DataValue = 0, int Period = 0)
+        {
+            double ConvertedValue = DataValue;
+            DateTime date = StartDate;
+            DateTime MonthStartDate, MonthEndDate = DateTime.Now.Date;
+            if (StartDate != null)
+            {
+                MonthStartDate = GetFirstDayOfMonth(Period, StartDate.Year);
+                MonthEndDate = GetLastDayOfMonth(MonthStartDate.Month, MonthStartDate.Year);
+                List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> objReportCache = (List<RevenuePlanner.Models.CurrencyModel.ClientCurrency>)objCache.Returncache(Enums.CacheObject.ListUserReportCurrency.ToString());
+                if (objReportCache != null)
+                {
+                    var GetExchangeRate = objReportCache.Where(a => a.StartDate >= MonthStartDate && a.EndDate <= MonthEndDate)
+                                                .Select(a => a)
+                                                .FirstOrDefault();
+                    if (GetExchangeRate != null)
+                    {
+                        ConvertedValue = Math.Round((DataValue * GetExchangeRate.ExchangeRate), 2);
+                    }
+                }
+            }
+            return ConvertedValue;
+        }
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Set Exchange rate with start date, end date 
+        /// </summary>
+        /// <param name="DataValue"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="Period"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double SetReportValueByExchangeRate(DateTime StartDate, double DataValue = 0, int Period = 0)
+        {
+            double ConvertedValue = DataValue;
+            DateTime date = StartDate;
+            DateTime MonthStartDate, MonthEndDate = DateTime.Now.Date;
+            if (StartDate != null)
+            {
+                MonthStartDate = GetFirstDayOfMonth(Period, StartDate.Year);
+                MonthEndDate = GetLastDayOfMonth(MonthStartDate.Month, MonthStartDate.Year);
+                List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> objReportCache = (List<RevenuePlanner.Models.CurrencyModel.ClientCurrency>)objCache.Returncache(Enums.CacheObject.ListUserReportCurrency.ToString());
+                if (objReportCache != null)
+                {
+                    var GetExchangeRate = objReportCache.Where(a => a.StartDate >= MonthStartDate && a.EndDate <= MonthEndDate)
+                                                .Select(a => a)
+                                                .FirstOrDefault();
+                    if (GetExchangeRate != null)
+                    {
+                        ConvertedValue = DataValue / GetExchangeRate.ExchangeRate;
+                    }
+                }
+            }
+            return ConvertedValue;
+        }
+
+        /// <summary>
+        /// Get the first day of the month for a
+        /// month passed by it's integer value
+        /// </summary>
+        /// <param name="iMonth"></param>
+        /// <param name="iYear"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateTime GetFirstDayOfMonth(int iMonth, int iYear)
+        {
+            // set return value to the last day of the month
+            // for any date passed in to the method
+            // If multi year months
+            int NumPeriod = iMonth / 13;
+            if (NumPeriod >= 1)
+            {
+                iYear += NumPeriod;
+                iMonth = Common.ReportMultiyearMonth(iMonth, NumPeriod);
+            }
+            // End multi year
+            // create a datetime variable set to the passed in date
+            DateTime dtFrom = new DateTime(iYear, iMonth, 1);
+
+            // remove all of the days in the month
+            // except the first day and set the
+            // variable to hold that date
+            dtFrom = dtFrom.AddDays(-(dtFrom.Day - 1));
+
+            // return the first day of the month
+            return dtFrom;
+        }
+
+        /// <summary>
+        /// Get the last day of a month expressed by it's
+        /// integer value
+        /// </summary>
+        /// <param name="iMonth"></param>
+        /// <param name="iYear"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateTime GetLastDayOfMonth(int iMonth, int iYear)
+        {
+
+            // set return value to the last day of the month
+            // for any date passed in to the method
+
+            // create a datetime variable set to the passed in date
+            DateTime dtTo = new DateTime(iYear, iMonth, 1);
+
+            // overshoot the date by a month
+            dtTo = dtTo.AddMonths(1);
+
+            // remove all of the days in the next month
+            // to get bumped down to the last day of the 
+            // previous month
+            dtTo = dtTo.AddDays(-(dtTo.Day));
+
+            // return the last day of the month
+            return dtTo;
+
+        }
+
     }
 }
