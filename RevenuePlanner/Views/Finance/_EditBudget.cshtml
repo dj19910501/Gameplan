@@ -742,6 +742,9 @@
         CollapseExpand = true;
         _isNewRowAdd = false;
 
+        //Enable single click to trigger edit - zz
+        myTreeGrid.enableEditEvents(true, false, true);
+
     }
     $("#ddlRevenueTimeFrame").change(function () {
         AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
