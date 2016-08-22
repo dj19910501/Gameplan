@@ -114,28 +114,52 @@
         var budgetValue = $(idName).html();
         if (typeof (maxsize) === 'undefined') maxsize = 5;
         $(idName).popover('destroy');
-        setBootstrapTooltip(idName, budgetValue, maxsize, true);
+        // Modified By Nishant Sheth
+        // Desc :: To display bootstraip tool tip 
+        if (budgetValue != undefined && budgetValue != null && budgetValue != '') {
+            budgetValue = budgetValue.replace(CurrencySybmol, '').trim();
+            $(idName).attr("data-original-title", budgetValue);
+            setBootstrapTooltip(idName, budgetValue, maxsize, true);
+        }
     }
 
     function formatForecastValues(idName) {
         var budgetValue = $(idName).html();
         if (typeof (maxsize) === 'undefined') maxsize = 5;
         $(idName).popover('destroy');
-        setBootstrapTooltip(idName, budgetValue, maxsize, true);
+        // Modified By Nishant Sheth
+        // Desc :: To display bootstraip tool tip 
+        if (budgetValue != undefined && budgetValue != null && budgetValue != '') {
+            budgetValue = budgetValue.replace(CurrencySybmol, '').trim();
+            $(idName).attr("data-original-title", budgetValue);
+            setBootstrapTooltip(idName, budgetValue, maxsize, true);
+        }
     }
 
     function formatPlannedValues(idName) {
         var budgetValue = $(idName).html();
         if (typeof (maxsize) === 'undefined') maxsize = 5;
         $(idName).popover('destroy');
-        setBootstrapTooltip(idName, budgetValue, maxsize, true);
+        // Modified By Nishant Sheth
+        // Desc :: To display bootstraip tool tip 
+        if (budgetValue != undefined && budgetValue != null && budgetValue != '') {
+            budgetValue = budgetValue.replace(CurrencySybmol, '').trim();
+            $(idName).attr("data-original-title", budgetValue);
+            setBootstrapTooltip(idName, budgetValue, maxsize, true);
+        }
     }
 
     function formatActualValues(idName) {
         var budgetValue = $(idName).html();
         if (typeof (maxsize) === 'undefined') maxsize = 5;
         $(idName).popover('destroy');
-        setBootstrapTooltip(idName, budgetValue, maxsize, true);
+        // Modified By Nishant Sheth
+        // Desc :: To display bootstraip tool tip 
+        if (budgetValue != undefined && budgetValue != null && budgetValue != '') {
+            budgetValue = budgetValue.replace(CurrencySybmol, '').trim();
+            $(idName).attr("data-original-title", budgetValue);
+            setBootstrapTooltip(idName, budgetValue, maxsize, true);
+        }
     }
 
 
