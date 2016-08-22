@@ -16085,9 +16085,9 @@ input.selectInput{
 
 /* ==== #2457 Accordian for Alert Style ==== */
 .alert-form-wrap{margin-left:30px}
-.clearalert{width: 82%;}
 .btn-create-alert{margin-top:-30px; float:right}
-.accordion.alert-accordian{width:78%}
+.accordion.alert-accordian, 
+.clearalert{width:78%}
 .accordion.alert-accordian .accordion-group {
     background: #f2f2f2 none repeat scroll 0 0;
     padding: 0 15px;
@@ -16104,7 +16104,7 @@ input.selectInput{
 .accordion.alert-accordian .accordion-heading a.accordion-toggle{ margin-right:10px}
 .accordion.alert-accordian .accordion-heading .fa{font-size:18px; color:#95989A;}
 .accordion.alert-accordian .accordion-heading .fa.fa-clone {font-size: 16px;}
-.alert-heading h4{margin:0; font-weight:normal}
+.alert-heading h4{margin:0; font-weight:normal; display: inline;}
 .alert-heading:first-child span{margin-right:50px}
 .acco-icons  .alert-rule-check{margin-right:10px;color:#95989A; font-size:13px}
 .alert-rule-check input[type="checkbox"]{
@@ -16128,19 +16128,21 @@ input.selectInput{
 .searchtextbox {
     display: inline-block;
     position: relative;
-    width: 45%;
+    width: 355px;
 }
-.searchtextbox input{width:100%; margin: 0;}
+.searchtextbox input{width:100%; margin: 0;padding-right: 27px;}
 .searchtextbox::after {
-    background: #f2f2f2 none repeat scroll 0 0;
+    /*background: #f2f2f2 none repeat scroll 0 0;*/
     border-radius: 0 5px 5px 0;
-    content: "Search";
+    content: "\f002";
     font-size: 12px;
     line-height: 28px;
     padding: 0 6px;
     position: absolute;
-    right: 1px;
-    top: 1px;
+    right: 5px;
+    top: 0;
+    color: #95989a;
+    font-family: fontawesome;
 }
 .accordion-row .selectBox select {
   display: inline-block;
@@ -16154,7 +16156,7 @@ input.selectInput{
   -moz-appearance: none;
    background: #fff url("../images/big-arrow-down-accordion.png") no-repeat scroll right 10px center / 8px auto;
    background-position:  right 10px center;  
-   outline:0 none;
+   /*outline:0 none;*/
    width: 130px;
    font-size:13px;
 }
@@ -16179,7 +16181,7 @@ input.selectInput{
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 300px;
-    padding:0 5px;
+    padding:0 0 0 5px;
 
 } 
 .alert-value-box.inline-span span {
@@ -16188,7 +16190,7 @@ input.selectInput{
 }
 /* Notification settings */
 .pref-msg-row{margin-bottom:35px}
-.pref-msg-row h4{font-weight:normal;}
+/*.pref-msg-row h4{font-weight:normal;}*/
 .pref-msg-row .wraper-checkbox {
     margin-bottom: 10px;
     display: inline-block;
@@ -16202,6 +16204,7 @@ input.selectInput{
 }
 .alertdiv-delet{position:absolute; right:0;right: 0; top: 5px;}
 .alertdiv-delet a{color: #95989a;font-size: 18px;} 
+.accordion.alert-accordian .accordion-heading .alert-delet .fa:hover{color:#C1272D}
 /* Currency listing Style */
 #liConversionrate{ margin-bottom: 12px;}
 
@@ -16243,7 +16246,7 @@ input.selectInput{
 }
 input.serach-input {
     border-radius: 5px 0 0 5px;
-    width: 85.5%;
+    width: 80%;
 }
 .btn.btn-add-remove {
     height: 35px;

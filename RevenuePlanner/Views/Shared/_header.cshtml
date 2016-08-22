@@ -118,15 +118,15 @@
                         <div class=" proflie_pic">
                         <img class="avatar-user img-circle" src="@Url.Action("UserPhoto", "Home")" alt="User avatar" />
                         </div>
-                        <div class="username">
-                            @Sessions.User.FirstName @Sessions.User.LastName 
+                        <div class="username" title="@Sessions.User.FirstName @Sessions.User.LastName">
+                            @Sessions.User.FirstName @Sessions.User.LastName
                         </div>
                     </a>
                         <ul class="dropdown-menu">
                             <p class="ul-top clearfix"><span class="pull-left">Profile</span> <a href="#" id="ContactSupport" class="pull-right">Support</a></p>
                             <li><a href="@Url.Action("Edit", "User")">My Account</a></li>  @* Modified by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
                             <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li> 
-                            <li><a href="http://www.hive9.com/apidae/release-notes" target="_blank">Update</a></li>
+                            <li><a href="http://www.hive9.com/apidae/release-notes" target="_blank">Updates</a></li>
                             <li><a href="@Url.Action("LogOff", "Login")">Sign Out</a></li>
                         </ul>
                 </div>
