@@ -28,7 +28,7 @@
 	}
 
 	NLForm.prototype = {
-		_init : function() {
+	    _init : function() {
 			var self = this;
 			Array.prototype.slice.call( this.el.querySelectorAll( 'select' ) ).forEach( function( el, i ) {
 				self.fldOpen++;
@@ -47,7 +47,7 @@
 		    // Add For format Price & currency Value.
 		    //Addded By Bhavesh Dobariya Date : 20-12-2013
 			$(".priceValue").priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-			$('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); //Modified by Rahul Shah for PL #2498.
+			$('.currency_dollar').priceFormat({ prefix: htmlDecode(CurrencySybmol), centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); //Modified by Rahul Shah for PL#2499. to resolve special Character issue 
 			$('.dollarValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
 			$('.percentValue').priceFormat({ prefix: '', suffix: '%', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true, });
@@ -78,7 +78,7 @@
 				this._createInput();	
 			}
 		},
-		_createDropDown: function () {
+		_createDropDown: function () {		   
 			var self = this;
 			this.fld = document.createElement( 'div' );
 			this.fld.className = 'nl-field nl-dd';
@@ -135,7 +135,7 @@
 			this.elOriginal.parentNode.insertBefore( this.fld, this.elOriginal );
 			this.elOriginal.style.display = 'none';
 		},
-		_createInput: function () {
+		_createInput: function () {	
 			var self = this;
 			this.fld = document.createElement( 'div' );
 			this.fld.className = 'nl-field nl-ti-text';
@@ -159,6 +159,7 @@
 		    // Addded by Bhavesh Dobariya
 		    // IN edit mode text is large then display short.
 		    // Date: 28-3-2014
+			changeValue = htmlDecode(changeValue); //Added by Rahul Shah for PL#2499. to resolve special Character issue 
 			var elvalue = changeValue;
 			if (elvalue.length > 15) {
 			    this.toggle.setAttribute('title', elvalue);
@@ -209,7 +210,7 @@
 			this.elOriginal.style.display = 'none';
 
 		},
-		_initEvents: function () {
+		_initEvents: function () {		   
 			var self = this;
 			this.toggle.addEventListener( 'click', function( ev ) { ev.preventDefault(); ev.stopPropagation(); self._open(); } );
 			this.toggle.addEventListener( 'touchstart', function( ev ) { ev.preventDefault(); ev.stopPropagation(); self._open(); } );
@@ -276,7 +277,7 @@
 
 				}
 			}
-			else if (this.type === 'input') {
+			else if (this.type === 'input') {			  
 			    this.getinput.blur();
 				this.elOriginal.value = this.getinput.value;
 				var elvalue = this.getinput.value;
