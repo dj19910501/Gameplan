@@ -1653,7 +1653,7 @@ namespace RevenuePlanner.Controllers
                     alertCount = AllAlert.Where(a => a.IsRead == false).ToList().Count();
                     lstalertSummary = AllAlert.Where(a => a.IsRead == false).Select(a => new AlertSummary
                         {
-                            Description = a.Description.Trim(),
+                            Description = HttpUtility.HtmlDecode(a.Description.Trim()),
                             AlertCreatedDate = Common.TimeAgo(a.CreatedDate),
                             AlertId = a.AlertId
                         }).Take(5).ToList();
@@ -1766,7 +1766,7 @@ namespace RevenuePlanner.Controllers
                 {
                     DataList = AllAlert.Select(a => new UserAlertsNotification
                     {
-                        Description = a.Description.Trim(),
+                        Description = HttpUtility.HtmlDecode(a.Description.Trim()),
                         CreatedDate = Common.TimeAgo(a.CreatedDate),
                         AlertId = a.AlertId
                     }).ToList();

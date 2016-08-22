@@ -7,16 +7,15 @@
     {
         IsIntegrationCredentialCreateEditAuthorized = (bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized;
     }
-    ViewBag.IsMultiCurrencyNone = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyNone);
-
-    bool IsMultiCurrencyNone = true;
-    if (ViewBag.IsMultiCurrencyNone != null)
+    bool IsMultiCurrencyDisplay = true;
+    if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyEdit)==false && AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyViewOnly)==false)
     {
 
-        IsMultiCurrencyNone = (bool)ViewBag.IsMultiCurrencyNone;
+        IsMultiCurrencyDisplay = false;
+    }
+
 
     }
-}
 
 <div class="padding-content">
     <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
@@ -37,7 +36,7 @@
 }
 
     @*insertation start 09/08/2016 kausha #2492.- class change by Bhumika 16-8-2016 *@
-    @if (IsMultiCurrencyNone == false)
+    @if (IsMultiCurrencyDisplay == true)
     {
         <li id="liCurrency" class="item">
             <a class="source-sans-probold currency" href="#" id="aCurrency"><span></span>CURRENCY</a>

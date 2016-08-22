@@ -1170,8 +1170,12 @@
 	<!--//insertation start 09/08/2016 kausha #2492 Currency Msg is added.-->
 	<Field>
 		<Name>CurrencySaved</Name>
-		<value>User currency have been saved successfully.</value>
+		<value>Currency have been saved successfully.</value>
 	</Field>
+  <Field>
+    <Name>ExchangeRateSaved</Name>
+    <value>Exchange rate have been saved successfully.</value>
+  </Field>
 	<!--//insertation End 09/08/2016 kausha #2492 -->
 	<!--//added by devanshi for #2469 alert message.-->
 	<Field>

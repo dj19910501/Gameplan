@@ -18,7 +18,7 @@
 
 
 
-    <h3 class="sideline"><span>Planing</span></h3>
+    <h3 class="sideline"><span>Planning</span></h3>
     <div id="PlanCurrencyGrid" class="gridViewGrid"></div> @*inline style remvoed by Bhumika #2492*@  
 
 
@@ -77,12 +77,14 @@
                 $('#diverrormsg').text(" 0 is not allowed.");
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
+                $("#successMessage").slideUp(400);
                 return false;
             }
             if (nValue == '') {
                 $('#diverrormsg').text(" Exchange rate can't be null.");
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
+                $("#successMessage").slideUp(400);
                 return false;
                 //PlanCurrencyGrid.cells(rowId, cellInd).setValue("1");
                 //nValue = "1";
@@ -94,13 +96,14 @@
                     $('#diverrormsg').text(" Please enter valid exchange rate.");
                     $("#errorMessage").slideDown(400);
                     $("html, body").animate({ scrollTop: 0 }, 1000);
+                    $("#successMessage").slideUp(400);
                     return false;
                 }
             }
             
             var monthValue = PlanCurrencyGrid.cells(rowId, cellInd).getAttribute("actval");
             if (nValue != oValue)
-                SaveExchangeRate(rowId, oValue, nValue, "plan", monthValue);
+                SaveExchangeRate(rowId, oValue, nValue, "plan", monthValue, cellInd);
         }
         return true;
     }

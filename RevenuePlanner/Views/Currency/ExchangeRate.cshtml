@@ -2,77 +2,178 @@
 @{
     //Layout = "~/Views/Shared/_Layout.cshtml";
     var countrows = 0;
-
+    ViewBag.Title = "Conversion Rate";
     ViewBag.PageTitle = "Currency";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     ViewBag.ModuleTitle = "Currency";
+    bool Editpermission = true;
+    if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyEdit))
+    { Editpermission = true; }
+    else if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyViewOnly))
+    {
+        Editpermission = false;
+    }
 
+    //string permission = Convert.ToString(ViewData["permission"]);
 }
 <style>
-     .currency-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+    .currency-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
         text-align: center;
         padding-left: 0px !important;
     }
-   .currency-tbl div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
-   .currency-tbl div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px,
-   div.gridbox{
+
+    .currency-tbl div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
+    .currency-tbl div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px,
+    div.gridbox {
         width: 100% !important;
     }
+
     .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td {
-        padding-left: 8px;padding-right: 8px;
+        padding-left: 8px;
+        padding-right: 8px;
     }
-   .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj tr.ev_dhx_skyblue{background: #f0f0f0}
-     /*div.gridbox_dhx_skyblue.gridbox div.xhdr{background: #88cede; }
-   div.gridbox_dhx_skyblue.gridbox table.hdr tr:nth-child(2) td {
-        border-top: medium none;
+
+    .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj tr.ev_dhx_skyblue {
+        background: #f0f0f0;
     }
-    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {color: #fff !important;}*/
+    /*div.gridbox_dhx_skyblue.gridbox div.xhdr{background: #88cede; }
+    div.gridbox_dhx_skyblue.gridbox table.hdr tr:nth-child(2) td {
+         border-top: medium none;
+     }
+     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {color: #fff !important;}*/
 </style>
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+@Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 @section Sidebar {
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
 
 @using (Html.BeginForm())
 {
-   
-        
-            <div id="errorMessage" class="alert hide alert-error ">
-                <a class="close">×</a>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
-                <strong>Error !</strong><span id="diverrormsg"></span>
-
-            </div>
-        
-        //changed by Bhumika for design #2492
-        <div class="title-header source-sans-proregular margin-bottom25">
-            <h2>
-                Currency Exchange rate
-            </h2>
-        </div>
-        <div class="padding-content  cf source-sans-proregular">
-            <div class="selectyear">
-                <label>Select Year</label> @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
-            </div>
-
-
-            <div id="PlanGrid" class="gridViewGrid currency-tbl"></div>
-
-
-            <div id="ReportGrid" class="gridViewGrid currency-tbl margin-top40"></div>
+    <div id="confirmMsg" class="alert hide alert-error ">
+        @*<a class="close">×</a>
+            <strong>Error.</strong> You have unsaved changes. Do you wish to leave this page and lose your work?
+            <a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>
+            <span id="divsuccessmsg"></span>*@
+        <div id="errorMsg">
 
         </div>
-        }
- 
+    </div>
+
+
+ <!--success message-->
+    <div id="successMessage" class="alert hide alert-success ">
+        <a class="close">×</a>
+        <strong>Success.</strong>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+        <span id="divsuccessmsg"></span>
+    </div>
+    <!--success message-->
+    <!--error message-->
+    <div id="errorMessage" class="alert hide alert-error ">
+        <a class="close">×</a>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+        <strong>Error ! </strong><span id="diverrormsg"></span>
+
+    </div>
+    <!--error message-->
+
+    //changed by Bhumika for design #2492
+    <div class="title-header source-sans-proregular margin-bottom25">
+        <h2>
+            Currency Exchange rate
+        </h2>
+    </div>
+    <div class="padding-content  cf source-sans-proregular">
+        <div class="selectyear">
+            <label>Select Year</label> @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
+            @if (Editpermission == true)
+                {
+                <input type="button" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20" />
+            }
+        </div>
+
+
+        <div id="PlanGrid" class="gridViewGrid currency-tbl"></div>
+
+        <div>
+            <input type="checkbox" id="chkSameasplanning" value=""> Same as planning
+        </div>
+        <div id="ReportGrid" class="gridViewGrid currency-tbl margin-top40"></div>
+
+    </div>
+
+    @*@if (permission == Enums.ApplicationActivity.MultiCurrencyEdit.ToString())
+        {
+            <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20" />
+        }*@
+}
+
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 
 
 <script type="text/javascript">
+    var planData = [];
+    var reportData = [];
     $("#drpYear").change(function () {
+        planData = [];
+        reportData = [];
         var year = this.value;
         if (year != '') {
             LoadReportGrid(year);
             LoadPlanGrid(year);
 
         }
+        $("#errorMessage").slideUp(400);
+        $("#successMessage").slideUp(400);
+    });
+    $('#chkSameasplanning').change(function () {
 
+        if ($(this).is(":checked")) {
+            reportData = [];
+
+            var year = $("#drpYear option:selected").text();
+            PlanCurrencyGrid.forEachRow(function (id) {
+
+              
+                PlanCurrencyGrid.forEachCell(id, function (cellObj, col_index) {
+
+                  
+                    if (col_index > 0) {
+                        var val = PlanCurrencyGrid.cells(id, col_index).getValue();
+                        ReportCurrencyGrid.cells(id, col_index).setValue(val);
+                        var monthValue = PlanCurrencyGrid.cells(id, col_index).getAttribute("actval");
+                        reportData.push({ CurrencyCode: id, Component: '@Enums.CurrencyComponent.Report.ToString()', OldExchangeRate: val, NewExchangeRate: val, Year: year, Month: monthValue });
+                    }
+                });
+
+            });
+        }
+    });
+
+    $('#btnConfirmOK').click(function () {
+
+    });
+    $('#btnSave').click(function () {
+        var exchangerateObj = JSON.stringify({ 'lstPlan': planData, sameAsPlan: false, 'lstReport': reportData });
+
+        $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: '/Currency/SaveExchangeRateList',
+            async: false,
+            data: exchangerateObj,
+            success: function () {
+                // $('#result').html('"PassThings()" successfully called.');
+                planData = [];
+                reportData = [];
+                var year = $("#drpYear option:selected").text();
+                var url = '@Url.Content("~/Currency/ExchangeRate")';
+                window.location.replace(url + "?id=" + year);
+
+            },
+            failure: function (response) {
+                $('#result').html(response);
+            }
+        });
     });
     $(document).ready(function () {
         $("#content_wraper").removeClass("all-height").addClass("padding-top40");
@@ -83,52 +184,143 @@
             LoadReportGrid(year);
             LoadPlanGrid(year);
         }
-    });
-    function LoadReportGrid(yearValue) {
-
-        var url = '@Url.Content("~/Currency/PlanGrid/")';
-      
-        $("#PlanGrid").load(url + '?year=' + yearValue , function (response, status, xhr) {
-
+        $(".close").click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
         });
-    }
-    function SaveExchangeRate(code, oldValue, newValue, component, monthValue) {
-      
-        var url = '@Url.Content("~/Currency/SaveExchangeRate/")';
-        var compo = '';
-        if (component == 'plan')
-        {
-            compo='@Enums.CurrencyComponent.Plan.ToString()';
-        }
-        else if (component == 'report')
-        {
-            compo='@Enums.CurrencyComponent.Report.ToString()';
-        }
-        var year = $("#drpYear option:selected").text();
-        if (year != '') {
-            //$("#PlanGrid").load(url + '?year=' + year + '&component=' + compo + '&currencyCode=' + code + '&oldValue=' + oldValue + '&newValue=' + newValue + '&month=' + monthValue, function (response, status, xhr) {
 
-            //});
 
-            $.ajax(
-   {
-       type: "GET",
-       cache: false,
-       url: 'SaveExchangeRate',
-       data: { year: year, component: compo, currencyCode: code, oldValue :oldValue,newValue:newValue,month:monthValue},
-       success: function (data) {
-         
-       }
-   });
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+
+            $("#errorMessage").slideUp(400);
         }
-     
-    }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideUp(400);
+            $("#successMessage").slideDown(1200);
+        }
+
+    });
     function LoadPlanGrid(yearValue) {
 
-        var url = '@Url.Content("~/Currency/ReportGrid/")';
-    
-        $("#ReportGrid").load(url + '?year=' + yearValue , function (response, status, xhr) {
+        var url = '@Url.Content("~/Currency/PlanGrid/")';
+
+        $("#PlanGrid").load(url + '?year=' + yearValue, function (response, status, xhr) {
 
         });
     }
+    function SaveExchangeRate(code, oldValue, newValue, component, monthValue, cellInd) {
+
+        var url = '@Url.Content("~/Currency/SaveExchangeRate/")';
+        var compo = '';
+        var year = $("#drpYear option:selected").text();
+        if (component == 'plan') {
+            compo = '@Enums.CurrencyComponent.Plan.ToString()';
+            planData.push({ CurrencyCode: code, Component: component, OldExchangeRate: oldValue, NewExchangeRate: newValue, Year: year, Month: monthValue });
+            if ($('#chkSameasplanning').is(":checked")) {
+                ReportCurrencyGrid.cells(code, cellInd).setValue(newValue);
+                reportData.push({ CurrencyCode: code, Component: '@Enums.CurrencyComponent.Report.ToString()', OldExchangeRate: newValue, NewExchangeRate: newValue, Year: year, Month: monthValue });
+            }
+
+        }
+        else if (component == 'report') {
+            compo = '@Enums.CurrencyComponent.Report.ToString()';
+            reportData.push({ CurrencyCode: code, Component: component, OldExchangeRate: oldValue, NewExchangeRate: newValue, Year: year, Month: monthValue });
+        }
+
+      
+    }
+    function LoadReportGrid(yearValue) {
+        var url = '@Url.Content("~/Currency/ReportGrid/")';
+        $("#ReportGrid").load(url + '?year=' + yearValue, function (response, status, xhr) {
+        });
+    }
+    $("#header a").not("#ContactSupport").click(function () {
+       
+        sidebarlink = $(this).attr('id');
+        if (reportData.length > 0 || planData.length > 0) {
+            displayConfirmBox($(this).attr('href'), sidebarlink);
+            return false;
+        }
+        else {
+            return true;
+        }
+    });
+    var sidebarlink = '';
+    function displayConfirmBox(strURL, id) {
+        $('#confirmMsg').html("<strong>Error! </strong> <span id='spanMsgError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' id='" + id + "' href='" + strURL + "' class='btn-gray' onclick='CallUrl(this);'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a></span><a id='aclose' class='close confirmClose'>×</a>");
+        $("#confirmMsg").slideDown(400);
+    }
+    
+    function CallUrl(alink) {
+    
+        if ($(alink).attr('href') == '#') {
+
+            if ($(alink).attr('id') == 'aMyProfile') {
+               // $('#aMyProfile').preventDefault();
+                var url = '';
+                url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+                window.location.href = url;
+            }
+            else if ($(alink).attr('id') == 'aOrganization') {
+              //  $('#aOrganization').preventDefault();
+                var url = '';
+                url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
+
+                window.location.href = url;
+
+            }
+            else if ($(alink).attr('id') == 'aIntegrations') {
+              //  $('#aIntegrations').preventDefault();
+                var url = '';
+                url = '@Url.Content("~/ExternalService/Index")';
+                window.location.href = url;
+
+            }
+            else if ($(alink).attr('id') == 'aCurrency') {
+              //  $('#aCurrency').preventDefault();
+                var url = '';
+                url = '@Url.Action("Currency", "Currency")';
+                window.location.href = url;
+            }
+        }
+    }
+    $("#sidebar a").click(function (event) {
+        //alert($(this).attr('id'));
+       
+        sidebarlink = $(this).attr('id');
+        displayConfirmBox($(this).attr('href'), sidebarlink);
+        if (reportData.length > 0 || planData.length > 0) {
+            event.preventDefault();
+            event.stopPropagation();
+            //if ($(this).attr('id') == 'aMyProfile') {
+            //    event.stopPropagation();
+            //    return false;
+            //}
+            //else if ($(this).attr('id') == 'aOrganization') {
+            //    event.preventDefault();
+            //    return false;
+            //}
+            //else if ($(this).attr('id') == 'aIntegrations') {
+            //    event.preventDefault();
+            //    return false;
+            //}
+            //else if ($(this).attr('id') == 'aCurrency') {
+            //    event.preventDefault();
+            //    return false;
+            //}
+            return false;
+        }
+        else {
+            return true;
+        }
+    });
 </script>

@@ -30,7 +30,7 @@
 <!--error message-->
 <div id="errorMessage" class="alert hide alert-error ">
     <a class="close">×</a>@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
-    <strong>Error!</strong><span id="diverrormsg"></span>
+    <strong>Error ! </strong><span id="diverrormsg"></span>
 
 </div>
 <!--error message-->
@@ -273,7 +273,7 @@
     });
     //Click of Save button which will save all records which is in my list
     $('#btnSave').click(function () {
-        $.post('/User/SaveClientCurrency', $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {
+        $.post('/Currency/SaveClientCurrency', $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {
             window.location.href = "@Url.Content("~/Currency/Currency")";
         });
     });
@@ -310,5 +310,5 @@
         }
     });
     //insertation end
-
+   
 </script>

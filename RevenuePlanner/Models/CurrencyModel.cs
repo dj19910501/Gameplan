@@ -36,6 +36,10 @@ namespace RevenuePlanner.Models
             public System.DateTime EndDate { get; set; }
             public double ExchangeRate { get; set; }
             public string Component { get; set; }
+            public string Year { get; set; }
+            public string Month { get; set; }
+            public double OldExchangeRate { get; set; }
+            public double NewExchangeRate { get; set; }
         }
 
         public class PlanCurrency

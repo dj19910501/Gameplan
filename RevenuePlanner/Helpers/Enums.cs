@@ -1428,7 +1428,10 @@ namespace RevenuePlanner.Helpers
         {
             USD,
         }
-
+        public enum CurrencyCode
+        {
+            USD,
+        }
         public static Dictionary<string, string> CurrencySymbolsValues = new Dictionary<string, string>()
         {
             {CurrencySymbols.USD.ToString(), "$"}

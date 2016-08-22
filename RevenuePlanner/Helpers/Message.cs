@@ -2924,6 +2924,18 @@ namespace RevenuePlanner.Helpers
                 _CurrencySaved = value;
             }
         }
+        private string _ExchangeRateSaved;
+        public string ExchangeRateSaved
+        {
+            get
+            {
+                return _ExchangeRateSaved;
+            }
+            set
+            {
+                _ExchangeRateSaved = value;
+            }
+        }
         // added by devanshi for Alerts and Notiffications #2417
         private string _DuplicateAlertRule;
         public string DuplicateAlertRule
@@ -3913,6 +3925,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "CurrencySaved":
                                             _CurrencySaved = strMsgValue;
+                                            break;
+                                        case "ExchangeRateSaved":
+                                            _ExchangeRateSaved = strMsgValue;
                                             break;
                                         case "DuplicateAlertRule":
                                             _DuplicateAlertRule = strMsgValue;
