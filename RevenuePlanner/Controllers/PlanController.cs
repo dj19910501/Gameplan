@@ -429,10 +429,10 @@ namespace RevenuePlanner.Controllers
                         {
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
-                            {                                
+                            {
                                 plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
                             }
-                            
+
                         }
                         else
                         {
@@ -673,7 +673,7 @@ namespace RevenuePlanner.Controllers
                         {
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
-                            {                                
+                            {
                                 plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
                             }
                         }
@@ -723,7 +723,7 @@ namespace RevenuePlanner.Controllers
                         {
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
-                            {                               
+                            {
                                 plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
                             }
                         }
@@ -12887,7 +12887,7 @@ namespace RevenuePlanner.Controllers
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
-                        string planTotalCost = Convert.ToString(double.Parse(Convert.ToString(totalcost))); // Add By Nishant Sheth #2497
+                        string planTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(totalcost))));  // Add By Nishant Sheth #2497
                         plandataobj = new Plandataobj();
                         plandataobj.value = planTotalCost;
                         plandataobj.actval = planTotalCost;
@@ -17566,7 +17566,7 @@ namespace RevenuePlanner.Controllers
                         {
                             totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.MQL) : 0;
                             totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
-
+                            totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                             var ProgTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
                                        && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
                             totalPlannedCostCSV = ProgTacticCostlist.Sum();
