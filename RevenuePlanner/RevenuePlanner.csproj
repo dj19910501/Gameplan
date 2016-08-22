@@ -990,7 +990,7 @@
     <Content Include="Views\User\ViewAlertNotification.cshtml" />
     <Content Include="Views\User\_AllAlertListing.cshtml" />
     <Content Include="Views\User\_NotificationListing.cshtml" />
-    <Content Include="Views\Currency\Currency.cshtml" />
+    <Content Include="Views\Currency\Index.cshtml" />
     <Content Include="Views\Currency\ExchangeRate.cshtml" />
     <Content Include="Views\Currency\_PlanCurrencyGrid.cshtml" />
     <Content Include="Views\Currency\_ReportCurrencyGrid.cshtml" />

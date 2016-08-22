@@ -44,7 +44,7 @@ namespace RevenuePlanner.Controllers
 
         #region Currency
         //insertation start 09/08/2016 kausha #2492 Following  is added to get and save currency.
-        public ActionResult Currency()
+        public ActionResult Index()
         {
             List<CurrencyModel> lstCurrency = new List<CurrencyModel>();
             IEnumerable<BDSService.Currency> lstCurrencydata = objBDSServiceClient.GetAllCurrency();
@@ -79,7 +79,7 @@ namespace RevenuePlanner.Controllers
 
 
             }
-            return View("Currency", lstCurrency.AsEnumerable());
+            return View("Index", lstCurrency.AsEnumerable());
         }
         public JsonResult SaveClientCurrency(List<string> curruncies)
         {

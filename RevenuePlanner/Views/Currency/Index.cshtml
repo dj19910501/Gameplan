@@ -274,7 +274,7 @@
     //Click of Save button which will save all records which is in my list
     $('#btnSave').click(function () {
         $.post('/Currency/SaveClientCurrency', $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {
-            window.location.href = "@Url.Content("~/Currency/Currency")";
+            window.location.href = "@Url.Content("~/Currency/Index")";
         });
     });
     function ShowMessages() {

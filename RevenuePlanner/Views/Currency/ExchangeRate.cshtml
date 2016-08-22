@@ -188,9 +188,17 @@
             e.stopPropagation();
             e.preventDefault();
             $(this).closest(".alert").slideUp(400);
+            $("#confirmMsg").slideUp(400);
+          //  $("#errorMsg").slideUp(1000);
         });
-
-
+       
+        $("#confirmClose").click(function (e) {
+            alert('hello');
+            $("#confirmMsg").slideUp(400);
+        });
+        //$(document).on("click", "#confirmClose, .confirmClose", function (e) {
+        //    $("#errorMsg").slideUp(1000);
+        //});
         if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
 
             $("#errorMessage").slideUp(400);
@@ -256,10 +264,12 @@
     });
     var sidebarlink = '';
     function displayConfirmBox(strURL, id) {
-        $('#confirmMsg').html("<strong>Error! </strong> <span id='spanMsgError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' id='" + id + "' href='" + strURL + "' class='btn-gray' onclick='CallUrl(this);'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a></span><a id='aclose' class='close confirmClose'>×</a>");
+        $('#confirmMsg').html("<strong>Error! </strong> <span id='spanMsgError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' id='" + id + "' href='" + strURL + "' class='btn-gray' onclick='CallUrl(this);'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' onclick='closeMsg(this);' class='underline'>Cancel</a></span><a id='aclose' onclick='closeMsg(this);' class='close confirmClose'>×</a>");
         $("#confirmMsg").slideDown(400);
     }
-    
+    function closeMsg() {
+        $("#confirmMsg").slideUp(400);
+    }
     function CallUrl(alink) {
     
         if ($(alink).attr('href') == '#') {
