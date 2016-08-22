@@ -438,6 +438,19 @@
         $('body').removeClass('bodyOverflow');
         addDefaultModalPopupBackgroungColor();
     });
+    $('#hdnCost').keypress(function (event) {
+        return isNumber(event, this)
+    });
+    //only allowd numeric value and single decimal point
+    function isNumber(evt, element) {        
+        var charCode = (evt.which) ? evt.which : event.keyCode
 
+        if (           
+            (charCode != 46 || $(element).val().indexOf('.') != -1) &&      // “.” CHECK DOT, AND ONLY ONE.
+            (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
     
 </script>
