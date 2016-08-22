@@ -15,6 +15,459 @@ namespace RevenuePlanner.BDSService {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Currency", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class Currency : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid ClientIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid CreatedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime CreatedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CurrencyDetailField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CurrencySymbolField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ISOCurrencyCodeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsDefaultField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsDeletedField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private RevenuePlanner.BDSService.Currency.UserCurrencyRate UserCurrencyField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid ClientId {
+            get {
+                return this.ClientIdField;
+            }
+            set {
+                if ((this.ClientIdField.Equals(value) != true)) {
+                    this.ClientIdField = value;
+                    this.RaisePropertyChanged("ClientId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid CreatedBy {
+            get {
+                return this.CreatedByField;
+            }
+            set {
+                if ((this.CreatedByField.Equals(value) != true)) {
+                    this.CreatedByField = value;
+                    this.RaisePropertyChanged("CreatedBy");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime CreatedDate {
+            get {
+                return this.CreatedDateField;
+            }
+            set {
+                if ((this.CreatedDateField.Equals(value) != true)) {
+                    this.CreatedDateField = value;
+                    this.RaisePropertyChanged("CreatedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string CurrencyDetail {
+            get {
+                return this.CurrencyDetailField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CurrencyDetailField, value) != true)) {
+                    this.CurrencyDetailField = value;
+                    this.RaisePropertyChanged("CurrencyDetail");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string CurrencySymbol {
+            get {
+                return this.CurrencySymbolField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CurrencySymbolField, value) != true)) {
+                    this.CurrencySymbolField = value;
+                    this.RaisePropertyChanged("CurrencySymbol");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ISOCurrencyCode {
+            get {
+                return this.ISOCurrencyCodeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ISOCurrencyCodeField, value) != true)) {
+                    this.ISOCurrencyCodeField = value;
+                    this.RaisePropertyChanged("ISOCurrencyCode");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsDefault {
+            get {
+                return this.IsDefaultField;
+            }
+            set {
+                if ((this.IsDefaultField.Equals(value) != true)) {
+                    this.IsDefaultField = value;
+                    this.RaisePropertyChanged("IsDefault");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsDeleted {
+            get {
+                return this.IsDeletedField;
+            }
+            set {
+                if ((this.IsDeletedField.Equals(value) != true)) {
+                    this.IsDeletedField = value;
+                    this.RaisePropertyChanged("IsDeleted");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public RevenuePlanner.BDSService.Currency.UserCurrencyRate UserCurrency {
+            get {
+                return this.UserCurrencyField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.UserCurrencyField, value) != true)) {
+                    this.UserCurrencyField = value;
+                    this.RaisePropertyChanged("UserCurrency");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+        
+        [System.Diagnostics.DebuggerStepThroughAttribute()]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+        [System.Runtime.Serialization.DataContractAttribute(Name="Currency.UserCurrencyRate", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+        [System.SerializableAttribute()]
+        public partial class UserCurrencyRate : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+            
+            [System.NonSerializedAttribute()]
+            private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Collections.Generic.List<RevenuePlanner.BDSService.Currency.CurrencyExchangeRate> CurrencyExchangeRateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string UserPreferredCurrencyCodeField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string UserPreferredCurrencySymbolField;
+            
+            public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+                get {
+                    return this.extensionDataField;
+                }
+                set {
+                    this.extensionDataField = value;
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Collections.Generic.List<RevenuePlanner.BDSService.Currency.CurrencyExchangeRate> CurrencyExchangeRate {
+                get {
+                    return this.CurrencyExchangeRateField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.CurrencyExchangeRateField, value) != true)) {
+                        this.CurrencyExchangeRateField = value;
+                        this.RaisePropertyChanged("CurrencyExchangeRate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string UserPreferredCurrencyCode {
+                get {
+                    return this.UserPreferredCurrencyCodeField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.UserPreferredCurrencyCodeField, value) != true)) {
+                        this.UserPreferredCurrencyCodeField = value;
+                        this.RaisePropertyChanged("UserPreferredCurrencyCode");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string UserPreferredCurrencySymbol {
+                get {
+                    return this.UserPreferredCurrencySymbolField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.UserPreferredCurrencySymbolField, value) != true)) {
+                        this.UserPreferredCurrencySymbolField = value;
+                        this.RaisePropertyChanged("UserPreferredCurrencySymbol");
+                    }
+                }
+            }
+            
+            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+            
+            protected void RaisePropertyChanged(string propertyName) {
+                System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+                if ((propertyChanged != null)) {
+                    propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+                }
+            }
+        }
+        
+        [System.Diagnostics.DebuggerStepThroughAttribute()]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+        [System.Runtime.Serialization.DataContractAttribute(Name="Currency.CurrencyExchangeRate", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+        [System.SerializableAttribute()]
+        public partial class CurrencyExchangeRate : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+            
+            [System.NonSerializedAttribute()]
+            private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Guid ClientIdField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string ComponentField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Guid CreatedByField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.DateTime CreatedDateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string CurrencyCodeField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string CurrencySymbolField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.DateTime EndDateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private double ExchangeRateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Nullable<System.Guid> LastModifiedByField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Nullable<System.DateTime> LastModifiedDateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.DateTime StartDateField;
+            
+            public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+                get {
+                    return this.extensionDataField;
+                }
+                set {
+                    this.extensionDataField = value;
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Guid ClientId {
+                get {
+                    return this.ClientIdField;
+                }
+                set {
+                    if ((this.ClientIdField.Equals(value) != true)) {
+                        this.ClientIdField = value;
+                        this.RaisePropertyChanged("ClientId");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string Component {
+                get {
+                    return this.ComponentField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.ComponentField, value) != true)) {
+                        this.ComponentField = value;
+                        this.RaisePropertyChanged("Component");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Guid CreatedBy {
+                get {
+                    return this.CreatedByField;
+                }
+                set {
+                    if ((this.CreatedByField.Equals(value) != true)) {
+                        this.CreatedByField = value;
+                        this.RaisePropertyChanged("CreatedBy");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.DateTime CreatedDate {
+                get {
+                    return this.CreatedDateField;
+                }
+                set {
+                    if ((this.CreatedDateField.Equals(value) != true)) {
+                        this.CreatedDateField = value;
+                        this.RaisePropertyChanged("CreatedDate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string CurrencyCode {
+                get {
+                    return this.CurrencyCodeField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.CurrencyCodeField, value) != true)) {
+                        this.CurrencyCodeField = value;
+                        this.RaisePropertyChanged("CurrencyCode");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string CurrencySymbol {
+                get {
+                    return this.CurrencySymbolField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.CurrencySymbolField, value) != true)) {
+                        this.CurrencySymbolField = value;
+                        this.RaisePropertyChanged("CurrencySymbol");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.DateTime EndDate {
+                get {
+                    return this.EndDateField;
+                }
+                set {
+                    if ((this.EndDateField.Equals(value) != true)) {
+                        this.EndDateField = value;
+                        this.RaisePropertyChanged("EndDate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public double ExchangeRate {
+                get {
+                    return this.ExchangeRateField;
+                }
+                set {
+                    if ((this.ExchangeRateField.Equals(value) != true)) {
+                        this.ExchangeRateField = value;
+                        this.RaisePropertyChanged("ExchangeRate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Nullable<System.Guid> LastModifiedBy {
+                get {
+                    return this.LastModifiedByField;
+                }
+                set {
+                    if ((this.LastModifiedByField.Equals(value) != true)) {
+                        this.LastModifiedByField = value;
+                        this.RaisePropertyChanged("LastModifiedBy");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Nullable<System.DateTime> LastModifiedDate {
+                get {
+                    return this.LastModifiedDateField;
+                }
+                set {
+                    if ((this.LastModifiedDateField.Equals(value) != true)) {
+                        this.LastModifiedDateField = value;
+                        this.RaisePropertyChanged("LastModifiedDate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.DateTime StartDate {
+                get {
+                    return this.StartDateField;
+                }
+                set {
+                    if ((this.StartDateField.Equals(value) != true)) {
+                        this.StartDateField = value;
+                        this.RaisePropertyChanged("StartDate");
+                    }
+                }
+            }
+            
+            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+            
+            protected void RaisePropertyChanged(string propertyName) {
+                System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+                if ((propertyChanged != null)) {
+                    propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+                }
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="User", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
     [System.SerializableAttribute()]
     public partial class User : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
@@ -2356,459 +2809,6 @@ namespace RevenuePlanner.BDSService {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Currency", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class Currency : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid ClientIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid CreatedByField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.DateTime CreatedDateField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CurrencyDetailField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CurrencySymbolField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ISOCurrencyCodeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IsDefaultField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IsDeletedField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private RevenuePlanner.BDSService.Currency.UserCurrencyRate UserCurrencyField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid ClientId {
-            get {
-                return this.ClientIdField;
-            }
-            set {
-                if ((this.ClientIdField.Equals(value) != true)) {
-                    this.ClientIdField = value;
-                    this.RaisePropertyChanged("ClientId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid CreatedBy {
-            get {
-                return this.CreatedByField;
-            }
-            set {
-                if ((this.CreatedByField.Equals(value) != true)) {
-                    this.CreatedByField = value;
-                    this.RaisePropertyChanged("CreatedBy");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.DateTime CreatedDate {
-            get {
-                return this.CreatedDateField;
-            }
-            set {
-                if ((this.CreatedDateField.Equals(value) != true)) {
-                    this.CreatedDateField = value;
-                    this.RaisePropertyChanged("CreatedDate");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string CurrencyDetail {
-            get {
-                return this.CurrencyDetailField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CurrencyDetailField, value) != true)) {
-                    this.CurrencyDetailField = value;
-                    this.RaisePropertyChanged("CurrencyDetail");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string CurrencySymbol {
-            get {
-                return this.CurrencySymbolField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CurrencySymbolField, value) != true)) {
-                    this.CurrencySymbolField = value;
-                    this.RaisePropertyChanged("CurrencySymbol");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ISOCurrencyCode {
-            get {
-                return this.ISOCurrencyCodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ISOCurrencyCodeField, value) != true)) {
-                    this.ISOCurrencyCodeField = value;
-                    this.RaisePropertyChanged("ISOCurrencyCode");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsDefault {
-            get {
-                return this.IsDefaultField;
-            }
-            set {
-                if ((this.IsDefaultField.Equals(value) != true)) {
-                    this.IsDefaultField = value;
-                    this.RaisePropertyChanged("IsDefault");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsDeleted {
-            get {
-                return this.IsDeletedField;
-            }
-            set {
-                if ((this.IsDeletedField.Equals(value) != true)) {
-                    this.IsDeletedField = value;
-                    this.RaisePropertyChanged("IsDeleted");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public RevenuePlanner.BDSService.Currency.UserCurrencyRate UserCurrency {
-            get {
-                return this.UserCurrencyField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.UserCurrencyField, value) != true)) {
-                    this.UserCurrencyField = value;
-                    this.RaisePropertyChanged("UserCurrency");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-        
-        [System.Diagnostics.DebuggerStepThroughAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-        [System.Runtime.Serialization.DataContractAttribute(Name="Currency.UserCurrencyRate", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-        [System.SerializableAttribute()]
-        public partial class UserCurrencyRate : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-            
-            [System.NonSerializedAttribute()]
-            private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Collections.Generic.List<RevenuePlanner.BDSService.Currency.CurrencyExchangeRate> CurrencyExchangeRateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string UserPreferredCurrencyCodeField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string UserPreferredCurrencySymbolField;
-            
-            public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-                get {
-                    return this.extensionDataField;
-                }
-                set {
-                    this.extensionDataField = value;
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Collections.Generic.List<RevenuePlanner.BDSService.Currency.CurrencyExchangeRate> CurrencyExchangeRate {
-                get {
-                    return this.CurrencyExchangeRateField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.CurrencyExchangeRateField, value) != true)) {
-                        this.CurrencyExchangeRateField = value;
-                        this.RaisePropertyChanged("CurrencyExchangeRate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string UserPreferredCurrencyCode {
-                get {
-                    return this.UserPreferredCurrencyCodeField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.UserPreferredCurrencyCodeField, value) != true)) {
-                        this.UserPreferredCurrencyCodeField = value;
-                        this.RaisePropertyChanged("UserPreferredCurrencyCode");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string UserPreferredCurrencySymbol {
-                get {
-                    return this.UserPreferredCurrencySymbolField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.UserPreferredCurrencySymbolField, value) != true)) {
-                        this.UserPreferredCurrencySymbolField = value;
-                        this.RaisePropertyChanged("UserPreferredCurrencySymbol");
-                    }
-                }
-            }
-            
-            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-            
-            protected void RaisePropertyChanged(string propertyName) {
-                System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-                if ((propertyChanged != null)) {
-                    propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-                }
-            }
-        }
-        
-        [System.Diagnostics.DebuggerStepThroughAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-        [System.Runtime.Serialization.DataContractAttribute(Name="Currency.CurrencyExchangeRate", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-        [System.SerializableAttribute()]
-        public partial class CurrencyExchangeRate : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-            
-            [System.NonSerializedAttribute()]
-            private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Guid ClientIdField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string ComponentField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Guid CreatedByField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.DateTime CreatedDateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string CurrencyCodeField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string CurrencySymbolField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.DateTime EndDateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private double ExchangeRateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Nullable<System.Guid> LastModifiedByField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Nullable<System.DateTime> LastModifiedDateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.DateTime StartDateField;
-            
-            public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-                get {
-                    return this.extensionDataField;
-                }
-                set {
-                    this.extensionDataField = value;
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Guid ClientId {
-                get {
-                    return this.ClientIdField;
-                }
-                set {
-                    if ((this.ClientIdField.Equals(value) != true)) {
-                        this.ClientIdField = value;
-                        this.RaisePropertyChanged("ClientId");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string Component {
-                get {
-                    return this.ComponentField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.ComponentField, value) != true)) {
-                        this.ComponentField = value;
-                        this.RaisePropertyChanged("Component");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Guid CreatedBy {
-                get {
-                    return this.CreatedByField;
-                }
-                set {
-                    if ((this.CreatedByField.Equals(value) != true)) {
-                        this.CreatedByField = value;
-                        this.RaisePropertyChanged("CreatedBy");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.DateTime CreatedDate {
-                get {
-                    return this.CreatedDateField;
-                }
-                set {
-                    if ((this.CreatedDateField.Equals(value) != true)) {
-                        this.CreatedDateField = value;
-                        this.RaisePropertyChanged("CreatedDate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string CurrencyCode {
-                get {
-                    return this.CurrencyCodeField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.CurrencyCodeField, value) != true)) {
-                        this.CurrencyCodeField = value;
-                        this.RaisePropertyChanged("CurrencyCode");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string CurrencySymbol {
-                get {
-                    return this.CurrencySymbolField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.CurrencySymbolField, value) != true)) {
-                        this.CurrencySymbolField = value;
-                        this.RaisePropertyChanged("CurrencySymbol");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.DateTime EndDate {
-                get {
-                    return this.EndDateField;
-                }
-                set {
-                    if ((this.EndDateField.Equals(value) != true)) {
-                        this.EndDateField = value;
-                        this.RaisePropertyChanged("EndDate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public double ExchangeRate {
-                get {
-                    return this.ExchangeRateField;
-                }
-                set {
-                    if ((this.ExchangeRateField.Equals(value) != true)) {
-                        this.ExchangeRateField = value;
-                        this.RaisePropertyChanged("ExchangeRate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Nullable<System.Guid> LastModifiedBy {
-                get {
-                    return this.LastModifiedByField;
-                }
-                set {
-                    if ((this.LastModifiedByField.Equals(value) != true)) {
-                        this.LastModifiedByField = value;
-                        this.RaisePropertyChanged("LastModifiedBy");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Nullable<System.DateTime> LastModifiedDate {
-                get {
-                    return this.LastModifiedDateField;
-                }
-                set {
-                    if ((this.LastModifiedDateField.Equals(value) != true)) {
-                        this.LastModifiedDateField = value;
-                        this.RaisePropertyChanged("LastModifiedDate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.DateTime StartDate {
-                get {
-                    return this.StartDateField;
-                }
-                set {
-                    if ((this.StartDateField.Equals(value) != true)) {
-                        this.StartDateField = value;
-                        this.RaisePropertyChanged("StartDate");
-                    }
-                }
-            }
-            
-            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-            
-            protected void RaisePropertyChanged(string propertyName) {
-                System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-                if ((propertyChanged != null)) {
-                    propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-                }
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="ExchangeRate_Log", Namespace="http://schemas.datacontract.org/2004/07/BDSService")]
     [System.SerializableAttribute()]
     public partial class ExchangeRate_Log : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
@@ -3015,6 +3015,12 @@ namespace RevenuePlanner.BDSService {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="BDSService.IBDSService")]
     public interface IBDSService {
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate", ReplyAction="http://tempuri.org/IBDSService/GetCurrencyExchangeRateResponse")]
+        RevenuePlanner.BDSService.Currency GetCurrencyExchangeRate(System.Guid clientId, System.Guid UserId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate", ReplyAction="http://tempuri.org/IBDSService/GetCurrencyExchangeRateResponse")]
+        System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateAsync(System.Guid clientId, System.Guid UserId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/ValidateUser", ReplyAction="http://tempuri.org/IBDSService/ValidateUserResponse")]
         RevenuePlanner.BDSService.User ValidateUser(System.Guid applicationId, string userEmail, string userPassword);
@@ -3520,11 +3526,11 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/SaveExchangeRate", ReplyAction="http://tempuri.org/IBDSService/SaveExchangeRateResponse")]
         System.Threading.Tasks.Task<bool> SaveExchangeRateAsync(RevenuePlanner.BDSService.ExchangeRate_Log objExchnageRate);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate", ReplyAction="http://tempuri.org/IBDSService/GetCurrencyExchangeRateResponse")]
-        RevenuePlanner.BDSService.Currency GetCurrencyExchangeRate(System.Guid clientId, System.Guid UserId);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/SaveExchangeRateList", ReplyAction="http://tempuri.org/IBDSService/SaveExchangeRateListResponse")]
+        bool SaveExchangeRateList(System.Collections.Generic.List<RevenuePlanner.BDSService.ExchangeRate_Log> lstExchnageRate);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate", ReplyAction="http://tempuri.org/IBDSService/GetCurrencyExchangeRateResponse")]
-        System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateAsync(System.Guid clientId, System.Guid UserId);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/SaveExchangeRateList", ReplyAction="http://tempuri.org/IBDSService/SaveExchangeRateListResponse")]
+        System.Threading.Tasks.Task<bool> SaveExchangeRateListAsync(System.Collections.Generic.List<RevenuePlanner.BDSService.ExchangeRate_Log> lstExchnageRate);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -3552,6 +3558,14 @@ namespace RevenuePlanner.BDSService {
         
         public BDSServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
+        }
+        
+        public RevenuePlanner.BDSService.Currency GetCurrencyExchangeRate(System.Guid clientId, System.Guid UserId) {
+            return base.Channel.GetCurrencyExchangeRate(clientId, UserId);
+        }
+        
+        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateAsync(System.Guid clientId, System.Guid UserId) {
+            return base.Channel.GetCurrencyExchangeRateAsync(clientId, UserId);
         }
         
         public RevenuePlanner.BDSService.User ValidateUser(System.Guid applicationId, string userEmail, string userPassword) {
@@ -4226,12 +4240,12 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.SaveExchangeRateAsync(objExchnageRate);
         }
         
-        public RevenuePlanner.BDSService.Currency GetCurrencyExchangeRate(System.Guid clientId, System.Guid UserId) {
-            return base.Channel.GetCurrencyExchangeRate(clientId, UserId);
+        public bool SaveExchangeRateList(System.Collections.Generic.List<RevenuePlanner.BDSService.ExchangeRate_Log> lstExchnageRate) {
+            return base.Channel.SaveExchangeRateList(lstExchnageRate);
         }
         
-        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateAsync(System.Guid clientId, System.Guid UserId) {
-            return base.Channel.GetCurrencyExchangeRateAsync(clientId, UserId);
+        public System.Threading.Tasks.Task<bool> SaveExchangeRateListAsync(System.Collections.Generic.List<RevenuePlanner.BDSService.ExchangeRate_Log> lstExchnageRate) {
+            return base.Channel.SaveExchangeRateListAsync(lstExchnageRate);
         }
     }
 }
