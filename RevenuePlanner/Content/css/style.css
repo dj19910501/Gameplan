@@ -16087,7 +16087,7 @@ input.selectInput{
 .alert-form-wrap{margin-left:30px}
 .btn-create-alert{margin-top:-30px; float:right}
 .accordion.alert-accordian, 
-.clearalert{width:78%}
+.clearalert{width:82%}
 .accordion.alert-accordian .accordion-group {
     background: #f2f2f2 none repeat scroll 0 0;
     padding: 0 15px;
@@ -16204,7 +16204,7 @@ input.selectInput{
 }
 .alertdiv-delet{position:absolute; right:0;right: 0; top: 5px;}
 .alertdiv-delet a{color: #95989a;font-size: 18px;} 
-.accordion.alert-accordian .accordion-heading .alert-delet .fa:hover{color:#C1272D}
+.accordion.alert-accordian .accordion-heading .alert-delet .fa:hover, .alert-delet .fa:hover {color:#C1272D}
 /* Currency listing Style */
 #liConversionrate{ margin-bottom: 12px;}
 
@@ -16302,6 +16302,7 @@ input.serach-input {
     color: inherit;
     margin-top: -44px;
 }
+.listing-link a:hover{text-decoration: underline !important;}
 .request-wrap h3 {
     margin-top:0;
     line-height:20px;

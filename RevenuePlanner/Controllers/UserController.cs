@@ -1436,7 +1436,7 @@ namespace RevenuePlanner.Controllers
                  var lstentityType = Enum.GetValues(typeof(Enums.EntityType)).Cast<Enums.EntityType>().Select(a => a.ToString()).ToList();
                 foreach(string EntityType in lstentityType)
                 {
-                    var entity = lstentity.Where(a => a.ClientId == Sessions.User.ClientId && a.EntityTitle.ToLower().Contains(term.ToLower()) && a.Entity.Replace(" ",string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
+                    var entity = lstentity.Where(a => a.ClientId == Sessions.User.ClientId && HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).Contains(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
                 {
                     category = a.Entity,
                     value = a.EntityId,
@@ -1466,7 +1466,7 @@ namespace RevenuePlanner.Controllers
             objStage = new Stage();
             revGoalType = Convert.ToString(Enums.DictPerformanceFector[Convert.ToString(Enums.PerformanceFector.PlannedCost)]);
             objStage.Title = revGoalType;
-            objStage.Code = revGoalType.ToUpper();
+            objStage.Code = revGoalType.Replace(" ",string.Empty).ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
             objStage = new Stage();
             objStage.Title = "Select";

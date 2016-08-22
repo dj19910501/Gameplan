@@ -369,7 +369,7 @@
     <Content Include="Content\css\NaturalLanguageForm\component.css" />
     <Content Include="Content\css\NaturalLanguageForm\default.css" />
     <Content Include="Content\css\Select2\select2.css" />
-    <Content Include="Content\css\style_min_Aug_22.css" />
+    <Content Include="Content\css\style_min_Aug_22_1.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Aug_1.css" />
