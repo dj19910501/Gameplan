@@ -3867,6 +3867,50 @@ EXEC sys.sp_executesql N'CREATE SCHEMA [INT]'
 
 GO
 
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[GETMeasureClientDbName]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [INT].[GETMeasureClientDbName] AS' 
+END
+GO
+-- =============================================
+-- Author:		Mitesh Vaishnav
+-- Create date: 08/20/2016
+-- Description:	Sp will get Measure client database name
+-- =============================================
+ALTER PROCEDURE [INT].[GETMeasureClientDbName]
+(
+@ClientId nvarchar(36),
+@AuthDatabaseName Nvarchar(1000)
+)
+AS
+BEGIN
+	
+DECLARE @CustomQuery NVARCHAR(MAX)
+
+		SET @CustomQuery='DECLARE @ApplicationId nvarchar(36)=''''
+						  DECLARE @ClientConnection NVARCHAR(1000)=''''
+						  DECLARE @DatabaseName NVARCHAR(1000)=''''
+						
+						  SELECT TOP 1 @ApplicationId=ApplicationId 
+						  FROM '+@AuthDatabaseName+'.[Dbo].[Application] 
+						  WHERE Code=''RPC''
+
+						 SELECT TOP 1 @ClientConnection='+@AuthDatabaseName+'.[dbo].[DecryptString](EncryptedConnectionString) 
+						 FROM '+@AuthDatabaseName+'.[dbo].[ClientDatabase] 
+						 WHERE clientid='''+@ClientID+''' 
+								AND ApplicationId=@ApplicationId
+						IF (@ClientConnection IS NOT NULL AND @ClientConnection<>'''')
+						BEGIN
+
+						SELECT @DatabaseName=dimension FROM [dbo].fnSplitString(@ClientConnection,'';'') WHERE dimension like ''%initial catalog=%''
+						SET @DatabaseName= REPLACE(@DatabaseName,''initial catalog='','''')
+						END
+						SELECT @DatabaseName AS DbName'
+
+EXEC (@CustomQuery);
+
+END
+
 GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[CreateMeasureSFDCActualTable]') AND type in (N'P', N'PC'))
 BEGIN
@@ -3930,51 +3974,7 @@ END
 GO
 /****** Object:  StoredProcedure [INT].[GETMeasureClientDbName]    Script Date: 08/20/2016 18:07:10 ******/
 
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[GETMeasureClientDbName]') AND type in (N'P', N'PC'))
-BEGIN
-EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [INT].[GETMeasureClientDbName] AS' 
-END
-GO
--- =============================================
--- Author:		Mitesh Vaishnav
--- Create date: 08/20/2016
--- Description:	Sp will create temp table for MEasure SFDC actuals data 
--- =============================================
-ALTER PROCEDURE [INT].[GETMeasureClientDbName]
-(
-@ClientId nvarchar(36),
-@AuthDatabaseName Nvarchar(1000)
-)
-AS
-BEGIN
-	
-DECLARE @CustomQuery NVARCHAR(MAX)
 
-		SET @CustomQuery='DECLARE @ApplicationId nvarchar(36)=''''
-						  DECLARE @ClientConnection NVARCHAR(1000)=''''
-						  DECLARE @DatabaseName NVARCHAR(1000)=''''
-						
-						  SELECT TOP 1 @ApplicationId=ApplicationId 
-						  FROM '+@AuthDatabaseName+'.[Dbo].[Application] 
-						  WHERE Code=''RPC''
-
-						 SELECT TOP 1 @ClientConnection='+@AuthDatabaseName+'.[dbo].[DecryptString](EncryptedConnectionString) 
-						 FROM '+@AuthDatabaseName+'.[dbo].[ClientDatabase] 
-						 WHERE clientid='''+@ClientID+''' 
-								AND ApplicationId=@ApplicationId
-						IF (@ClientConnection IS NOT NULL AND @ClientConnection<>'''')
-						BEGIN
-
-						SELECT @DatabaseName=dimension FROM [dbo].fnSplitString(@ClientConnection,'';'') WHERE dimension like ''%initial catalog=%''
-						SET @DatabaseName= REPLACE(@DatabaseName,''initial catalog='','''')
-						END
-						SELECT @DatabaseName AS DbName'
-
-EXEC (@CustomQuery);
-
-END
-
-GO
 /****** Object:  StoredProcedure [INT].[PullCw]    Script Date: 08/20/2016 18:07:10 ******/
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[PullCw]') AND type in (N'P', N'PC'))
 BEGIN
@@ -4120,57 +4120,7 @@ BEGIN
 END
 
 GO
-/****** Object:  StoredProcedure [INT].[PullMeasureSFDCActual]    Script Date: 08/20/2016 18:07:10 ******/
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[PullMeasureSFDCActual]') AND type in (N'P', N'PC'))
-BEGIN
-EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [INT].[PullMeasureSFDCActual] AS' 
-END
-GO
--- =============================================
--- Author:Mitesh Vaishnav
--- Create date:12/08/2016
--- Description:	pull actuals from Measure database
--- =============================================
-ALTER PROCEDURE [INT].[PullMeasureSFDCActual]
-	(
-	@ClientId nvarchar(36),
-	@AuthDatabaseName Nvarchar(1000)
-	)
-AS
-BEGIN
-DECLARE @MeasureSFDCActualTableName nvarchar(255)
-DECLARE @CustomQuery NVARCHAR(MAX)
-DECLARE @tempDbName TABLE
-	(
-		DbName NVARCHAR(100)
-	)
-	INSERT INTO @tempDbName
-	EXEC [INT].[CreateMeasureSFDCActualTable] @ClientId=@ClientId,@AuthDatabaseName=@AuthDatabaseName
 
-	SELECT @MeasureSFDCActualTableName=DbName from @tempDbName
-
-		--START:- Pulling CW
-		EXEC [INT].[PullCw] @MeasureSFDCActualTableName
-		--END:- Pulling CW
-
-		--START:- Pulling Responses
-		BEGIN
-			EXEC [INT].[PullResponses] @MeasureSFDCActualTableName
-		END
-		--END:- Pulling Responses
-
-		--START:- Pulling MQL
-		BEGIN
-			     EXEC [INT].[PullMQL] @MeasureSFDCActualTableName,@ClientId 
-		END
-		--END:- Pulling MQL
-
-		--Remove SFDC table which will created from Measure database function
-		EXEC [INT].[RemoveMeasureSFDCActualTable] @MeasureSFDCActualTableName=@MeasureSFDCActualTableName
-END
-
-
-GO
 /****** Object:  StoredProcedure [INT].[PullMQL]    Script Date: 08/20/2016 18:07:10 ******/
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[PullMQL]') AND type in (N'P', N'PC'))
 BEGIN
@@ -4471,6 +4421,58 @@ BEGIN
 
 
 END
+
+GO
+
+/****** Object:  StoredProcedure [INT].[PullMeasureSFDCActual]    Script Date: 08/20/2016 18:07:10 ******/
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[PullMeasureSFDCActual]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [INT].[PullMeasureSFDCActual] AS' 
+END
+GO
+-- =============================================
+-- Author:Mitesh Vaishnav
+-- Create date:12/08/2016
+-- Description:	pull actuals from Measure database
+-- =============================================
+ALTER PROCEDURE [INT].[PullMeasureSFDCActual]
+	(
+	@ClientId nvarchar(36),
+	@AuthDatabaseName Nvarchar(1000)
+	)
+AS
+BEGIN
+DECLARE @MeasureSFDCActualTableName nvarchar(255)
+DECLARE @CustomQuery NVARCHAR(MAX)
+DECLARE @tempDbName TABLE
+	(
+		DbName NVARCHAR(100)
+	)
+	INSERT INTO @tempDbName
+	EXEC [INT].[CreateMeasureSFDCActualTable] @ClientId=@ClientId,@AuthDatabaseName=@AuthDatabaseName
+
+	SELECT @MeasureSFDCActualTableName=DbName from @tempDbName
+
+		--START:- Pulling CW
+		EXEC [INT].[PullCw] @MeasureSFDCActualTableName
+		--END:- Pulling CW
+
+		--START:- Pulling Responses
+		BEGIN
+			EXEC [INT].[PullResponses] @MeasureSFDCActualTableName
+		END
+		--END:- Pulling Responses
+
+		--START:- Pulling MQL
+		BEGIN
+			     EXEC [INT].[PullMQL] @MeasureSFDCActualTableName,@ClientId 
+		END
+		--END:- Pulling MQL
+
+		--Remove SFDC table which will created from Measure database function
+		EXEC [INT].[RemoveMeasureSFDCActualTable] @MeasureSFDCActualTableName=@MeasureSFDCActualTableName
+END
+
 
 GO
 
