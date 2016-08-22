@@ -136,7 +136,7 @@ namespace RevenuePlanner.Controllers
             string customFieldEntityValue = string.Empty;
             string DropdowList = Enums.CustomFieldType.DropDownList.ToString();
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
-            string stylecolorgray = "color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:85%;";
+            
             try
             {
                 string Gridheder = string.Empty;
@@ -268,7 +268,7 @@ namespace RevenuePlanner.Controllers
             string coltype = string.Empty;
             List<PlanOptions> viewoptionlist = new List<PlanOptions>();
             // string mode = Mode;
-            bool IsRequired = false;
+            
             List<RequriedCustomField> lstRequiredcustomfield = new List<RequriedCustomField>();
             try
             {
@@ -372,7 +372,7 @@ namespace RevenuePlanner.Controllers
 
 
                 //var columncnt = lstmediaCodeCustomfield.Count;
-                var colwidth = 200;
+                
                 //if (columncnt != 0 && columncnt < 4)
                 //{
                 //    colwidth = 725 / columncnt;

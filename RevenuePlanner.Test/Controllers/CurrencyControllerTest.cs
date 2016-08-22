@@ -18,6 +18,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class CurrencyControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         /// <summary>
         /// Add By Nishant Sheth
         /// Set Plan Currency Symbol and exchange rate in sessions varibles without UserId ClientId.
