@@ -3060,6 +3060,128 @@ EXEC sys.sp_executesql N'CREATE SCHEMA [INT]'
 
 GO
 
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[AddIntegrationInstanceLog]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [INT].[AddIntegrationInstanceLog] AS' 
+END
+GO
+-- =============================================
+-- Author:		Mitesh Vaishnav
+-- Create date: 08/20/2016
+-- Description:	Add log for integration instance
+-- =============================================
+ALTER PROCEDURE [INT].[AddIntegrationInstanceLog]
+	(
+	@IntegrationInstanceId INT,
+	@UserID NVARCHAR(36),
+	@IntegrationInstanceLogId INT,
+	@Status NVARCHAR(20) NULL=NULL,
+	@ErrorDescription NVARCHAR(MAX) NULL=NULL,
+	@OutPutLogid int output
+	)
+AS
+BEGIN
+	IF (@IntegrationInstanceLogId=0)
+		BEGIN
+	INSERT INTO [dbo].[IntegrationInstanceLog]
+           ([IntegrationInstanceId]
+           ,[SyncStart]
+           ,[SyncEnd]
+           ,[Status]
+           ,[ErrorDescription]
+           ,[CreatedDate]
+           ,[CreatedBy]
+           ,[IsAutoSync])
+     VALUES
+           (@IntegrationInstanceId
+           ,GETDATE()
+           ,NULL
+           ,NULL
+           ,NULL
+           ,GETDATE()
+           ,@UserID
+           ,NULL)
+
+		   select @IntegrationInstanceLogId=SCOPE_IDENTITY()
+		END
+	ELSE
+		BEGIN
+		UPDATE [dbo].[IntegrationInstanceLog]
+		SET [SyncEnd]=GETDATE()
+		   ,[Status]=@Status
+		   ,[ErrorDescription]=@ErrorDescription
+		WHERE IntegrationInstanceLogId=@IntegrationInstanceLogId
+		END
+		set @OutPutLogid=@IntegrationInstanceLogId
+
+END
+
+GO
+/****** Object:  StoredProcedure [INT].[AddIntegrationInstanceSectionLog]    Script Date: 08/23/2016 13:02:36 ******/
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[AddIntegrationInstanceSectionLog]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [INT].[AddIntegrationInstanceSectionLog] AS' 
+END
+GO
+-- =============================================
+-- Author:		Mitesh Vaishnav 
+-- Create date: 08/22/2016
+-- Description:	Add integration instance log with section details
+-- =============================================
+ALTER PROCEDURE [INT].[AddIntegrationInstanceSectionLog]
+	(
+	@IntegrationInstanceSectionLogId INT=0,
+	@IntegrationInstanceId INT,
+	@UserID NVARCHAR(36),
+	@IntegrationInstanceLogId INT,
+	@sectionName NVARCHAR(1000),
+	@Status NVARCHAR(20) NULL=NULL,
+	@ErrorDescription NVARCHAR(MAX) NULL=NULL,
+	@OutPutLogId INT OUTPUT
+	)
+AS
+BEGIN
+	IF (@IntegrationInstanceSectionLogId=0)
+	BEGIN
+	INSERT INTO [dbo].[IntegrationInstanceSection]
+           ([IntegrationInstanceLogId]
+           ,[IntegrationInstanceId]
+           ,[SectionName]
+           ,[SyncStart]
+           ,[SyncEnd]
+           ,[Status]
+           ,[Description]
+           ,[CreatedDate]
+           ,[CreateBy])
+     VALUES
+           (@IntegrationInstanceLogId
+           ,@IntegrationInstanceId
+           ,@sectionName
+           ,GETDATE()
+           ,NULL
+           ,@Status
+           ,@ErrorDescription
+           ,GETDATE()
+           ,@UserID)
+
+		   SELECT @IntegrationInstanceSectionLogId=SCOPE_IDENTITY()
+		   END
+	ELSE
+	BEGIN
+	UPDATE [dbo].[IntegrationInstanceSection]
+			SET [SyncEnd]=GETDATE(),
+				[Status]=@Status,
+				[Description]=@ErrorDescription
+			WHERE IntegrationInstanceSectionId=@IntegrationInstanceSectionLogId
+			SELECT @IntegrationInstanceSectionLogId=0
+	END
+
+	SET @OutPutLogId=@IntegrationInstanceSectionLogId
+END
+
+GO
+
+/****** Object:  StoredProcedure [INT].[GETMeasureClientDbName]    Script Date: 08/23/2016 12:53:22 ******/
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[GETMeasureClientDbName]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [INT].[GETMeasureClientDbName] AS' 
@@ -3070,6 +3192,7 @@ GO
 -- Create date: 08/20/2016
 -- Description:	Sp will get Measure client database name
 -- =============================================
+
 ALTER PROCEDURE [INT].[GETMeasureClientDbName]
 (
 @ClientId nvarchar(36),
@@ -3098,13 +3221,14 @@ DECLARE @CustomQuery NVARCHAR(MAX)
 						SELECT @DatabaseName=dimension FROM [dbo].fnSplitString(@ClientConnection,'';'') WHERE dimension like ''%initial catalog=%''
 						SET @DatabaseName= REPLACE(@DatabaseName,''initial catalog='','''')
 						END
-						SELECT @DatabaseName AS DbName'
+						SELECT TOP 1 @DatabaseName AS DbName'
 
 EXEC (@CustomQuery);
 
 END
 
 GO
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[CreateMeasureSFDCActualTable]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [INT].[CreateMeasureSFDCActualTable] AS' 
@@ -3118,7 +3242,8 @@ GO
 ALTER PROCEDURE [INT].[CreateMeasureSFDCActualTable]
 (
 @ClientId nvarchar(36),
-@AuthDatabaseName Nvarchar(1000)
+@AuthDatabaseName Nvarchar(1000),
+@SFDCActualTempTable  NVARCHAR(1000) OUTPUT
 )
 AS
 BEGIN
@@ -3157,15 +3282,15 @@ BEGIN
 								ModifiedDate DateTime
 								)
 				INSERT INTO ['+@NewSFDCActualTableName+' ]
-				SELECT * FROM '+@DataBaseName+'.[INT].[GetTacticActuals](GETDATE(),GETDATE()-1);
-				SELECT '''+@NewSFDCActualTableName+''''
+				SELECT * FROM '+@DataBaseName+'.[INT].[GetTacticActuals](GETDATE(),GETDATE()-1);'
 		
-		EXEC(@CustomQuery)
+		EXEC (@CustomQuery)
+		SELECT @SFDCActualTempTable=@NewSFDCActualTableName
 	END
 END
 
+
 GO
-/****** Object:  StoredProcedure [INT].[GETMeasureClientDbName]    Script Date: 08/20/2016 18:07:10 ******/
 
 
 /****** Object:  StoredProcedure [INT].[PullCw]    Script Date: 08/20/2016 18:07:10 ******/
@@ -3617,7 +3742,7 @@ END
 
 GO
 
-/****** Object:  StoredProcedure [INT].[PullMeasureSFDCActual]    Script Date: 08/20/2016 18:07:10 ******/
+/****** Object:  StoredProcedure [INT].[PullMeasureSFDCActual]    Script Date: 08/23/2016 12:53:22 ******/
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[INT].[PullMeasureSFDCActual]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [INT].[PullMeasureSFDCActual] AS' 
@@ -3635,39 +3760,160 @@ ALTER PROCEDURE [INT].[PullMeasureSFDCActual]
 	)
 AS
 BEGIN
+
+--set integration instance id which have type as "Measure Actual"
+DECLARE @IntegrationInstanceId INT=0
+DECLARE @IntegrationInstanceUserId NVARCHAR(36)=''
+DECLARE @SectionName NVARCHAR(1000)=''
+DECLARE @IntegrationInstanceLogId INT=0 -- set output perameter in this veriable of add log function
+
+	SELECT TOP 1 @IntegrationInstanceId=I.IntegrationInstanceId
+				,@IntegrationInstanceUserId=I.CreatedBy
+	FROM IntegrationInstance I INNER JOIN IntegrationType It ON It.IntegrationTypeId=I.IntegrationTypeId AND It.Code='MA'
+	WHERE ClientId=@ClientId
+	--Add initial instance log
+	EXEC [INT].[AddIntegrationInstanceLog] @IntegrationInstanceId=@IntegrationInstanceId,@UserID=@IntegrationInstanceUserId,@IntegrationInstanceLogId=@IntegrationInstanceLogId,@OutPutLogid=@IntegrationInstanceLogId OUTPUT
+
+
+BEGIN TRY
+
 DECLARE @MeasureSFDCActualTableName nvarchar(255)
 DECLARE @CustomQuery NVARCHAR(MAX)
+DECLARE @IntegrationInstanceSectionLogId INT=0
 DECLARE @tempDbName TABLE
 	(
 		DbName NVARCHAR(100)
 	)
-	INSERT INTO @tempDbName
-	EXEC [INT].[CreateMeasureSFDCActualTable] @ClientId=@ClientId,@AuthDatabaseName=@AuthDatabaseName
 
-	SELECT @MeasureSFDCActualTableName=DbName from @tempDbName
+	--Fetch name of the temp table at where SFDC data inserted in plan database
+	SET @SectionName='Create Measure Actuals Temp Table'
+	EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+												,@UserID=@IntegrationInstanceUserId
+												,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+												,@sectionName=@SectionName
+												,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
+
+			--INSERT INTO @tempDbName
+			EXEC [INT].[CreateMeasureSFDCActualTable] @ClientId=@ClientId,@AuthDatabaseName=@AuthDatabaseName,@SFDCActualTempTable=@MeasureSFDCActualTableName OUTPUT
+
+			--SELECT @MeasureSFDCActualTableName=DbName from @tempDbName
+
+		IF (@MeasureSFDCActualTableName IS NOT NULL)
+		BEGIN
+		EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+												,@UserID=@IntegrationInstanceUserId
+												,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+												,@sectionName=@SectionName
+												,@Status='Success'
+												,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
+
 
 		--START:- Pulling CW
+		SET @SectionName='Pulling CW'
+		EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+												,@UserID=@IntegrationInstanceUserId
+												,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+												,@sectionName=@SectionName
+												,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
+
 		EXEC [INT].[PullCw] @MeasureSFDCActualTableName
+
+		EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+												,@UserID=@IntegrationInstanceUserId
+												,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+												,@sectionName=@SectionName
+												,@Status='Success'
+												,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
+												
 		--END:- Pulling CW
 
 		--START:- Pulling Responses
 		BEGIN
-			EXEC [INT].[PullResponses] @MeasureSFDCActualTableName
+		SET @SectionName='Pulling Responses'
+		EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+												,@UserID=@IntegrationInstanceUserId
+												,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+												,@sectionName=@SectionName
+												,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
+
+		EXEC [INT].[PullResponses] @MeasureSFDCActualTableName
+
+		EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+										,@UserID=@IntegrationInstanceUserId
+										,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+										,@sectionName=@SectionName
+										,@Status='Success'
+										,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
 		END
 		--END:- Pulling Responses
 
 		--START:- Pulling MQL
 		BEGIN
+		SET @SectionName='Pulling MQL'
+		EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+												,@UserID=@IntegrationInstanceUserId
+												,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+												,@sectionName=@SectionName
+												,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
 			     EXEC [INT].[PullMQL] @MeasureSFDCActualTableName,@ClientId 
+
+		EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+										,@UserID=@IntegrationInstanceUserId
+										,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+										,@sectionName=@SectionName
+										,@Status='Success'
+										,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
 		END
 		--END:- Pulling MQL
 
 		--Remove SFDC table which will created from Measure database function
 		EXEC [INT].[RemoveMeasureSFDCActualTable] @MeasureSFDCActualTableName=@MeasureSFDCActualTableName
+		END
+	ELSE
+		BEGIN
+		EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+												,@UserID=@IntegrationInstanceUserId
+												,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+												,@sectionName=@SectionName
+												,@Status='Error'
+												,@ErrorDescription='Measure Sfdc Actual table not created.'
+												,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
+		END
+
+		EXEC [INT].[AddIntegrationInstanceLog] @IntegrationInstanceId=@IntegrationInstanceId
+										,@UserID=@IntegrationInstanceUserId,
+										@IntegrationInstanceLogId=@IntegrationInstanceLogId,
+										@Status='Success',
+										@OutPutLogid=@IntegrationInstanceLogId OUTPUT
+END TRY
+BEGIN CATCH
+DECLARE @ErrorMsg NVARCHAR(MAX)
+SELECT  @ErrorMsg=ERROR_MESSAGE()
+EXEC [INT].[AddIntegrationInstanceSectionLog] @IntegrationInstanceId=@IntegrationInstanceId
+												,@UserID=@IntegrationInstanceUserId
+												,@IntegrationInstanceLogId=@IntegrationInstanceLogId
+												,@sectionName=@SectionName
+												,@Status='Error'
+												,@ErrorDescription=@ErrorMsg
+												,@OutPutLogId=@IntegrationInstanceSectionLogId OUTPUT
+
+EXEC [INT].[AddIntegrationInstanceLog] @IntegrationInstanceId=@IntegrationInstanceId
+										,@UserID=@IntegrationInstanceUserId,
+										@IntegrationInstanceLogId=@IntegrationInstanceLogId,
+										@Status='Error',
+										@ErrorDescription=@ErrorMsg,
+										@OutPutLogid=@IntegrationInstanceLogId OUTPUT
+END CATCH
 END
 
-
 GO
+
+
+
+
+
+
+
 
 
 -- ===========================Please put your script above this script=============================
