@@ -226,6 +226,9 @@
                 }
             });
         }
+        else {
+            $('#DivBulldollerbg').hide();
+        }
         //  to apply custom restriction logic on Business Units
         if ('@isPlanDefinationDisable'.toLowerCase().toString() == "true") {
             $('#form1 :input').each(function () {
@@ -549,13 +552,13 @@
                 $('#ModelTitle').hide();
             }
 
-            if (goalType != '' && goalType.toLowerCase() == 'revenue') {
-                goalValue = SetValueByExchangeRate(goalValue);
+            //if (goalType != '' && goalType.toLowerCase() == 'revenue') {
+            //    goalValue = SetValueByExchangeRate(goalValue);
+            //    calculateBudget(modelId, goalType, goalValue);
+            //}
+            //else {
                 calculateBudget(modelId, goalType, goalValue);
-            }
-            else {
-                calculateBudget(modelId, goalType, goalValue);
-            }
+            //}
         }
     });
 
