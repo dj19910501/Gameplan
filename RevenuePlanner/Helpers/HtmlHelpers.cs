@@ -47,7 +47,7 @@ namespace RevenuePlanner.Helpers
 
             StringBuilder sb = new StringBuilder();
             StringBuilder sbHidden = new StringBuilder();
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             TagBuilder textboxMarketingDealSize = new TagBuilder("input");
             textboxMarketingDealSize.Attributes.Add("type", "text");
             textboxMarketingDealSize.Attributes.Add("id", "MarketingDealSize");

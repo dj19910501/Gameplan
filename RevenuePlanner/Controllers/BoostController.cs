@@ -206,7 +206,7 @@ namespace RevenuePlanner.Controllers
         {
             //Modified By : Mitesh Vaishnav on 03/06/2014 for Customized Target stage - Boost Improvement Tactic
             string StageTypeCW = Enums.Stage.CW.ToString();
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             var objImprovementTactic = db.ImprovementTacticTypes.Where(_imprvTacType => _imprvTacType.IsDeleted == false && _imprvTacType.ClientId == Sessions.User.ClientId).Select(_imprvTacType => _imprvTacType).ToList();
             var ImprovementTacticList = objImprovementTactic.Select(itt => new
             {
@@ -235,7 +235,7 @@ namespace RevenuePlanner.Controllers
         public PartialViewResult DetailImprovementTacticData(int id = 0)
         {
             BoostImprovementTacticModel bittobj = new BoostImprovementTacticModel();
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             string StageType_CR = Enums.StageType.CR.ToString();
             string StageType_SV = Enums.StageType.SV.ToString();
             string StageType_Size = Enums.MetricType.Size.ToString();
@@ -346,6 +346,7 @@ namespace RevenuePlanner.Controllers
             string successMessage = string.Empty;
             string ErrorMessage = string.Empty;
             string[] value = improvementDetails.Split(',');
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 /* if id !=0 then its update into db other wise add new record in db*/

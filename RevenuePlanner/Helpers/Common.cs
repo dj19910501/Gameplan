@@ -36,7 +36,7 @@ namespace RevenuePlanner.Helpers
     {
         #region Declarations
         public static RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
-        public static double PlanExchangeRate = Sessions.PlanExchangeRate;
+        public static double PlanExchangeRate = 0;
         public const string InvalidCharactersForEmail = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
         public const string InvalidCharactersForAnswer = "^[^~^|]+$";
         public const string InvalidCharactersForAnswerMsg = "~|^ ";
@@ -1688,6 +1688,7 @@ namespace RevenuePlanner.Helpers
         /// <returns>returns  HomePlanModelHeader object</returns>
         public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false, string TabId = "", bool IsHeaderActuals = false)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
             //List<string> tacticStatus = GetStatusListAfterApproved();  // Commented by Rahul Shah on 16/09/2015 for PL #1610
@@ -1997,6 +1998,7 @@ namespace RevenuePlanner.Helpers
         // Desc :: For Get Header value from cache objcet #2111
         public static HomePlanModelHeader GetPlanHeaderValuePerformance(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false, string TabId = "", bool IsHeaderActuals = false)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
             CacheObject dataCache = new CacheObject();
@@ -2302,6 +2304,7 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds, string activeMenu, string year, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities db = new MRPEntities();
             //List<string> tacticStatus = GetStatusListAfterApproved();// Commented By Rahul Shah on 16/09/2015 for PL #1610
@@ -3926,6 +3929,7 @@ namespace RevenuePlanner.Helpers
 
         public static List<TacticStageValue> GetTacticStageValueList(List<Plan_Campaign_Program_Tactic> tlist, List<TacticStageValueRelation> tacticValueRelationList, List<Stage> stageList, bool isSinglePlan = false, bool IsReport = false)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             MRPEntities dbStage = new MRPEntities();
             List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
             string stageINQ = Enums.Stage.INQ.ToString();
@@ -5587,6 +5591,7 @@ namespace RevenuePlanner.Helpers
             try
             {
                 MRPEntities dbStage = new MRPEntities();
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
                 string stageINQ = Enums.Stage.INQ.ToString();
                 int levelINQ = stageList.FirstOrDefault(s => s.Code.Equals(stageINQ)).Level.Value;
@@ -6325,7 +6330,7 @@ namespace RevenuePlanner.Helpers
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
                                 //// when campaign deleted then custom field's value for this campaign and custom field's value of appropriate program and tactic will be deleted
-                               
+
                                 string sectionProgram = Enums.EntityType.Program.ToString();
                                 var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
                                 string sectionTactic = Enums.EntityType.Tactic.ToString();
@@ -6379,7 +6384,7 @@ namespace RevenuePlanner.Helpers
 
                                 var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == id).ToList();
                                 Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-                                RemoveAlertRule(Plan_Campaign_ProgramList.Select(a=>a.PlanProgramId).ToList());
+                                RemoveAlertRule(Plan_Campaign_ProgramList.Select(a => a.PlanProgramId).ToList());
 
                                 ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
                                 var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
@@ -6600,8 +6605,8 @@ namespace RevenuePlanner.Helpers
                 var TacticMediacode = db.Tactic_MediaCodes.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
                 TacticMediacode.ForEach(mediacode => db.Entry(mediacode).State = EntityState.Deleted);
                 db.SaveChanges();
-           }
-           
+            }
+
         }
         #endregion
         //end

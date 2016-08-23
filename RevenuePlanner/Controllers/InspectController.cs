@@ -3637,6 +3637,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult UploadResult(List<InspectActual> tacticactual, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActual, string UserId = "", string tactictitle = "")
         {
             bool isLineItemForTactic = false;
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //// check whether UserId is current loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
             {

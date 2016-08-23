@@ -278,7 +278,7 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Create(FormCollection collection, ICollection<string> txtStageId, ICollection<string> txtTargetStage, ICollection<string> txtMCR, ICollection<string> txtMSV)
         {
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             int intFunnelTeleprospecting = 0;
             int intFunnelSales = 0;
             string mode = Convert.ToString(Request.Form["whichButton"]);
@@ -1287,7 +1287,7 @@ namespace RevenuePlanner.Controllers
         {
             //// Added by Dharmraj , ticket #592 Tactic type data model
             var objTacticList = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.ModelId == id && tacticType.IsDeleted == false).ToList();
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //// Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
             string StageType = Enums.StageType.CR.ToString();
             var stagesList = objDbMrpEntities.Model_Stage.Where(modelFunnelStage => modelFunnelStage.ModelId == id && modelFunnelStage.AllowedTargetStage == true && modelFunnelStage.StageType == StageType)
@@ -1327,6 +1327,7 @@ namespace RevenuePlanner.Controllers
             Tactic_TypeModel objTacticTypeMdoel = new Tactic_TypeModel();
             try
             {
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 bool isIntegratedWithMarketo = false;
                 var objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                 ViewBag.CampaignFolderList = "";
@@ -1662,6 +1663,7 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 TacticType objtactic = new TacticType();
                 int ModelId;
                 int.TryParse(modelID, out ModelId);

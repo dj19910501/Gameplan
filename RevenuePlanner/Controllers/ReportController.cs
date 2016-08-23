@@ -948,11 +948,12 @@ namespace RevenuePlanner.Controllers
         public List<TacticMonthValue> GetProjectedRevenueDataWithVelocity(List<TacticStageValue> planTacticList)
         {
             //// Get tactic INQ with Velocity data from planTacticlist.
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             List<TacticDataTable> tacticdata = (from tactic in planTacticList
                                                 select new TacticDataTable
                                                 {
                                                     TacticId = tactic.TacticObj.PlanTacticId,
-                                                    Value = tactic.RevenueValue,
+                                                    Value = tactic.RevenueValue, // Modified By Nishant Sheth To Convert projected value with current exchange rate
                                                     StartMonth = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.StartDate.Month : tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month,
                                                     EndMonth = tactic.TacticObj.EndDate.Month > tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.EndDate.Month : tactic.TacticObj.EndDate.AddDays(tactic.CWVelocity).Month,
                                                     //StartYear = tactic.TacticObj.StartDate.Month > tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Month ? tactic.TacticObj.StartDate.Year : tactic.TacticObj.StartDate.AddDays(tactic.CWVelocity).Year,
@@ -2683,6 +2684,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetReportBudgetData(string Year, string AllocatedBy, string Tab, string SortingId)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             string ListYear = Year.Split(',').Min(); // TODO :: needd to remove this when we implement multi year support
             Year = ListYear;
             if (Year == "thisquarter")

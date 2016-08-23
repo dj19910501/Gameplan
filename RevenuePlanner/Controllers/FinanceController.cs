@@ -377,6 +377,7 @@ namespace RevenuePlanner.Controllers
             List<DhtmlxGridRowDataModel> gridRowData = new List<DhtmlxGridRowDataModel>();
             try
             {
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 var DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString(), Enums.ColumnValidation.ValidNumeric.ToString() };
                 // Add By Nishant Sheth
                 // Desc #1678 
@@ -1936,7 +1937,7 @@ namespace RevenuePlanner.Controllers
             StringBuilder setColValidators = new StringBuilder();
             StringBuilder setColumnIds = new StringBuilder();
             StringBuilder setColumnsVisibility = new StringBuilder();
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             bool _isBudgetCreateEdit = false;
             bool _isForecastCreateEdit = false;
 
@@ -3475,6 +3476,7 @@ namespace RevenuePlanner.Controllers
             List<double?> _actuallist = new List<double?>();
             int currentEndMonth = 12;
             double? _Budget = 0, _ForeCast = 0, _Plan = 0, _Actual = 0;
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             #endregion
 
             List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
@@ -3646,6 +3648,7 @@ namespace RevenuePlanner.Controllers
             List<double?> _actuallist = new List<double?>();
             int currentEndMonth = 12;
             double? _Budget = 0, _ForeCast = 0, _Plan = 0, _Actual = 0;
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             #endregion
 
             if (isQuaterly)
@@ -3802,6 +3805,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult UpdateBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0, string GlobalEditLevel = "", bool isFromForecastChild = false)
         {
             var DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString() };
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
             if (!string.IsNullOrEmpty(nValue))
             {
@@ -4508,7 +4512,7 @@ namespace RevenuePlanner.Controllers
             dtColumns.Columns.Add("Month", typeof(string));
             dtColumns.Columns.Add("ColumnName", typeof(string));
             dtColumns.Columns.Add("ColumnIndex", typeof(Int64));
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 using (SpreadsheetDocument doc = SpreadsheetDocument.Open(fileLocation, false))
@@ -4672,6 +4676,7 @@ namespace RevenuePlanner.Controllers
             dtColumns.Columns.Add("Month", typeof(string));
             dtColumns.Columns.Add("ColumnName", typeof(string));
             dtColumns.Columns.Add("ColumnIndex", typeof(Int64));
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             int RowCount = 0, ColumnCount = 0;
             try
             {

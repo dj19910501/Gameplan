@@ -108,7 +108,7 @@ namespace RevenuePlanner.Services
         public double GetValueByExchangeRate(double DataValue = 0, double ExchangeRate = 1)
         {
             double ConvertedValue = DataValue;
-            if (DataValue > 0)
+            if (ExchangeRate != 0)
             {
                 ConvertedValue = Math.Round((DataValue * ExchangeRate), 2);
             }
@@ -126,10 +126,9 @@ namespace RevenuePlanner.Services
         public double SetValueByExchangeRate(double DataValue = 0, double ExchangeRate = 1)
         {
             double ConvertedValue = DataValue;
-            if (DataValue > 0)
+            if (ExchangeRate != 0)
             {
                 ConvertedValue = DataValue / ExchangeRate;
-
             }
             return ConvertedValue;
         }

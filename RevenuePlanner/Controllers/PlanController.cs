@@ -114,6 +114,7 @@ namespace RevenuePlanner.Controllers
             {
                 TempData["isPlanSelecter"] = true;
             }
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             /*End :Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
             // Added by dharmraj to check user activity permission
             bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -341,7 +342,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SavePlan(PlanModel objPlanModel, string BudgetInputValues = "", string RedirectType = "", string UserId = "")
         {
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 // Start - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
@@ -628,7 +629,7 @@ namespace RevenuePlanner.Controllers
         //Added By Komal Rawal for new Home Page UI
         public JsonResult SavePlanDefination(PlanModel objPlanModel, string UserId = "", bool IsPlanChange = false) //Modified BY Komal Rawal for #2072 to check if plan is changed
         {
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 var ReloadAllFilters = false;
@@ -792,7 +793,7 @@ namespace RevenuePlanner.Controllers
             string msg1 = "", msg2 = "";
             string input1 = "0", input2 = "0";
             double ADS = 0;
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 if (modelId != 0)
@@ -2620,7 +2621,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult LoadTacticTypeValue(int tacticTypeId)
         {
             TacticType tt = db.TacticTypes.Where(tacType => tacType.TacticTypeId == tacticTypeId).FirstOrDefault();
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             return Json(new
             {
                 revenue = tt.ProjectedRevenue == null ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tt.ProjectedRevenue)), PlanExchangeRate),
@@ -3159,6 +3160,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result.</returns>
         public JsonResult GetImprovementTactic(int PlanId)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //Modified By Komal Rawal for #1432 to get improvement tactics according to current plan .
             var tactics = db.Plan_Improvement_Campaign_Program_Tactic.Where(pc => pc.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var tacticobj = tactics.Select(_tac => new
@@ -3267,6 +3269,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return list of ImprovementStages object.</returns>
         public List<ImprovementStage> GetImprovementStages(int ImprovementPlanTacticId, int ImprovementTacticTypeId, DateTime EffectiveDate)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             List<ImprovementStage> ImprovementMetric = new List<ImprovementStage>();
             string CR = Enums.StageType.CR.ToString();
             //// Get List of Stages Associated with selected Improvement Tactic Type.
@@ -3504,6 +3507,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetImprovementContainerValue()
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
                                                                              tactic.IsDeleted == false)
                                                                  .ToList();
@@ -3580,6 +3584,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetRecommendedImprovementTacticType()
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             var improvementTacticList = db.ImprovementTacticTypes.Where(_imprvTacType => _imprvTacType.IsDeployed == true && _imprvTacType.ClientId == Sessions.User.ClientId && _imprvTacType.IsDeleted.Equals(false)).ToList();       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
             List<Plan_Campaign_Program_Tactic> marketingActivities = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) && _tac.IsDeleted == false).Select(_tac => _tac).ToList();
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTac => _imprvTac.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && _imprvTac.IsDeleted == false).Select(_imprvTac => _imprvTac).ToList();
@@ -3726,6 +3731,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult AddSuggestedImprovementTactic(int improvementPlanProgramId, int improvementTacticTypeId)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //// Check for duplicate exist or not.
             var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
                           where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.ImprovementTacticTypeId == improvementTacticTypeId && pcpt.IsDeleted.Equals(false)
@@ -7187,6 +7193,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetAllocatedBugetData(int PlanId)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             List<Guid> lstSubordinatesIds = new List<Guid>();
             bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             if (IsTacticAllowForSubordinates)
@@ -8508,6 +8515,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetBudgetedData(int PlanId, Enums.BudgetTab budgetTab = Enums.BudgetTab.Planned, Enums.ViewBy viewBy = Enums.ViewBy.Campaign)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //int _viewBy = 6;//1025;
             List<Guid> lstSubordinatesIds = new List<Guid>();
             bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
@@ -12431,6 +12439,7 @@ namespace RevenuePlanner.Controllers
 
         public PartialViewResult LoadImprovementGrid(int id)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             PlanImprovement objimprovement = new PlanImprovement();
             bool IsTacticExist = false;
             double TotalMqls = 0;
@@ -12514,6 +12523,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns partial view HomeGrid</returns>
         public async Task<ActionResult> LoadHomeGrid(string PlanId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             bool IsPlanCreateAll = false;
             bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             bool IsFiltered = false;
@@ -13865,6 +13875,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult SaveGridDetail(string UpdateType, string UpdateColumn, string UpdateVal, int id = 0)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             string PeriodChar = "Y";
             Guid oldOwnerId = new Guid();
             int oldProgramId = 0;
@@ -15518,6 +15529,7 @@ namespace RevenuePlanner.Controllers
         #region method for getting goal value for homegrid
         protected void GetGoalValue(List<Plan> plandetail, int modelId, List<Stage> stageList, Plangrid objplangrid)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             string MQLLable = string.Empty;
             string INQLable = string.Empty;
             string MQLValue = string.Empty;
@@ -17325,6 +17337,7 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult ExportToCsv(string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string HoneycombIds = null, int PlanId = 0)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
 
             List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
@@ -17722,6 +17735,7 @@ namespace RevenuePlanner.Controllers
         //create an item including the child collection. This function will recurse down the hierarchy
         CSVItem CreateItem(DataTable dataTable, DataRow row, DataColumnCollection columnNames, DataTable insertDataTable, List<User> listOfClientId, List<int> TacticIdsList)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             var id = row.Field<Int32>("EntityId");
             var Section = row.Field<String>("Section");
             var ChildSection = Section;
@@ -17810,6 +17824,7 @@ namespace RevenuePlanner.Controllers
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 if (Request.Files[0].ContentLength > 0)
