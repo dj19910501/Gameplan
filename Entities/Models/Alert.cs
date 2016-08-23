@@ -20,6 +20,7 @@ namespace RevenuePlanner.Models
         public bool IsRead { get; set; }
         public System.Guid UserId { get; set; }
         public System.DateTime CreatedDate { get; set; }
+        public System.DateTime DisplayDate { get; set; }
     
         public virtual Alert_Rules Alert_Rules { get; set; }
     }

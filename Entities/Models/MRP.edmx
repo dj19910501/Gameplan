@@ -48,6 +48,7 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="IsRead" Type="bit" Nullable="false" />
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="DisplayDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="BestInClass">
           <Key>
@@ -1273,10 +1274,9 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_EntityList' does not have a
             <PropertyRef Name="ClientId" />
             <PropertyRef Name="Entity" />
             <PropertyRef Name="EntityOrder" />
-            <PropertyRef Name="EntityTitle" />
           </Key>
           <Property Name="EntityId" Type="int" Nullable="false" />
-          <Property Name="EntityTitle" Type="nvarchar" MaxLength="512" Nullable="false" />
+          <Property Name="EntityTitle" Type="nvarchar" MaxLength="512" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Entity" Type="varchar" MaxLength="9" Nullable="false" />
           <Property Name="EntityOrder" Type="int" Nullable="false" />
@@ -3627,7 +3627,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Tactic_MediaCodes_CustomFieldMapping" EntitySet="Tactic_MediaCodes_CustomFieldMapping" />
           </AssociationSet>
           <EntitySet Name="vClientWise_Tactic" EntityType="MRPModel.vClientWise_Tactic" />
-          <EntitySet Name="vClientWise_EntityList" EntityType="MRPModel.vClientWise_EntityList" />
           <EntitySet Name="Alert_Rules" EntityType="MRPModel.Alert_Rules" />
           <EntitySet Name="Alerts" EntityType="MRPModel.Alert" />
           <AssociationSet Name="FK_Alerts_Alert_Rules" Association="MRPModel.FK_Alerts_Alert_Rules">
@@ -3635,6 +3634,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Alert" EntitySet="Alerts" />
           </AssociationSet>
           <EntitySet Name="User_Notification_Messages" EntityType="MRPModel.User_Notification_Messages" />
+          <EntitySet Name="vClientWise_EntityList" EntityType="MRPModel.vClientWise_EntityList" />
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -6351,20 +6351,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="IsDeleted" Type="Boolean" />
           <Property Name="ClientId" Type="Guid" Nullable="false" />
         </EntityType>
-        <EntityType Name="vClientWise_EntityList">
-          <Key>
-            <PropertyRef Name="EntityId" />
-            <PropertyRef Name="EntityTitle" />
-            <PropertyRef Name="Entity" />
-            <PropertyRef Name="EntityOrder" />
-            <PropertyRef Name="ClientId" />
-          </Key>
-          <Property Name="EntityId" Type="Int32" Nullable="false" />
-          <Property Name="EntityTitle" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
-          <Property Name="Entity" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="false" />
-          <Property Name="EntityOrder" Type="Int32" Nullable="false" />
-          <Property Name="ClientId" Type="Guid" Nullable="false" />
-        </EntityType>
         <EntityType Name="Alert_Rules">
           <Key>
             <PropertyRef Name="RuleId" />
@@ -6402,6 +6388,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="UserId" Type="Guid" Nullable="false" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Alert_Rules" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert" ToRole="Alert_Rules" />
+          <Property Name="DisplayDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <Association Name="FK_Alerts_Alert_Rules">
           <End Type="MRPModel.Alert_Rules" Role="Alert_Rules" Multiplicity="1" />
@@ -6431,6 +6418,19 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="RecipientId" Type="Guid" Nullable="false" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ClientID" Type="Guid" />
+        </EntityType>
+        <EntityType Name="vClientWise_EntityList">
+          <Key>
+            <PropertyRef Name="EntityId" />
+            <PropertyRef Name="ClientId" />
+            <PropertyRef Name="Entity" />
+            <PropertyRef Name="EntityOrder" />
+          </Key>
+          <Property Name="EntityId" Type="Int32" Nullable="false" />
+          <Property Name="EntityTitle" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
+          <Property Name="ClientId" Type="Guid" Nullable="false" />
+          <Property Name="Entity" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="false" />
+          <Property Name="EntityOrder" Type="Int32" Nullable="false" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -7761,17 +7761,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="vClientWise_EntityList">
-            <EntityTypeMapping TypeName="MRPModel.vClientWise_EntityList">
-              <MappingFragment StoreEntitySet="vClientWise_EntityList">
-                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
-                <ScalarProperty Name="EntityOrder" ColumnName="EntityOrder" />
-                <ScalarProperty Name="Entity" ColumnName="Entity" />
-                <ScalarProperty Name="EntityTitle" ColumnName="EntityTitle" />
-                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Alert_Rules">
             <EntityTypeMapping TypeName="MRPModel.Alert_Rules">
               <MappingFragment StoreEntitySet="Alert_Rules">
@@ -7801,6 +7790,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="Alerts">
             <EntityTypeMapping TypeName="MRPModel.Alert">
               <MappingFragment StoreEntitySet="Alerts">
+                <ScalarProperty Name="DisplayDate" ColumnName="DisplayDate" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="IsRead" ColumnName="IsRead" />
@@ -7825,6 +7815,17 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
                 <ScalarProperty Name="ComponentId" ColumnName="ComponentId" />
                 <ScalarProperty Name="ComponentName" ColumnName="ComponentName" />
                 <ScalarProperty Name="NotificationId" ColumnName="NotificationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vClientWise_EntityList">
+            <EntityTypeMapping TypeName="MRPModel.vClientWise_EntityList">
+              <MappingFragment StoreEntitySet="vClientWise_EntityList">
+                <ScalarProperty Name="EntityOrder" ColumnName="EntityOrder" />
+                <ScalarProperty Name="Entity" ColumnName="Entity" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="EntityTitle" ColumnName="EntityTitle" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

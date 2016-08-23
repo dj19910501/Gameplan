@@ -16,8 +16,8 @@ namespace RevenuePlanner.Models
     {
         public int EntityId { get; set; }
         public string EntityTitle { get; set; }
+        public System.Guid ClientId { get; set; }
         public string Entity { get; set; }
         public int EntityOrder { get; set; }
-        public System.Guid ClientId { get; set; }
     }
 }

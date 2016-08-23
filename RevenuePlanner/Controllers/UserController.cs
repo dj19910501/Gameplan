@@ -1436,7 +1436,7 @@ namespace RevenuePlanner.Controllers
                 var lstentityType = Enum.GetValues(typeof(Enums.EntityType)).Cast<Enums.EntityType>().Select(a => a.ToString()).ToList();
                 foreach (string EntityType in lstentityType)
                 {
-                    var entity = lstentity.Where(a => a.ClientId == Sessions.User.ClientId && HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).Contains(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
+                    var entity = lstentity.Where(a =>  HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).Contains(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
                 {
                     category = a.Entity,
                     value = a.EntityId,
@@ -1652,8 +1652,8 @@ namespace RevenuePlanner.Controllers
                     var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
                     if (AllAlert != null && AllAlert.Count > 0)
                     {
-                        alertCount = AllAlert.Where(a => a.IsRead == false).ToList().Count();
-                        lstalertSummary = AllAlert.Where(a => a.IsRead == false).Select(a => new AlertSummary
+                        alertCount = AllAlert.Where(a => a.IsRead == false && DateTime.Compare(a.DisplayDate.Date, DateTime.Now.Date) <= 0).ToList().Count();
+                        lstalertSummary = AllAlert.Select(a => new AlertSummary
                             {
                                 Description = HttpUtility.HtmlDecode(a.Description.Trim()),
                                 AlertCreatedDate = Common.TimeAgo(a.CreatedDate),
@@ -1682,7 +1682,7 @@ namespace RevenuePlanner.Controllers
                                        RequestCount = g.Count()
                                    }).ToList();
 
-                    lstnotifications = AllNotification.Where(a => a.IsRead == false && a.ActionName != "submitted").Select(a => new NotificationSummary
+                    lstnotifications = AllNotification.Where(a => a.ActionName != "submitted").Select(a => new NotificationSummary
                     {
                         Description = a.Description.Trim(),
                         NotificationCreatedDate = Common.TimeAgo(a.CreatedDate),

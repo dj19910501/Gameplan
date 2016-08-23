@@ -1517,13 +1517,13 @@ namespace RevenuePlanner.Helpers
         {
             LT,
             GT,
-            ET
+            EQ
         }
         public static Dictionary<string, string> DictPerformanceComparison = new Dictionary<string, string>()
         {
             {PerformanceComparison.LT.ToString(), "Less than"},
             {PerformanceComparison.GT.ToString(), "Greater than"},
-            {PerformanceComparison.ET.ToString(), "Equal to"}
+            {PerformanceComparison.EQ.ToString(), "Equal to"}
         };
         public enum GoalNum
         {

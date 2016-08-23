@@ -3,6 +3,7 @@ using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Objects;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
@@ -22,19 +23,34 @@ namespace RevenuePlanner.Services
         public List<vClientWise_EntityList> SearchEntities(Guid ClientId)
         {
             List<vClientWise_EntityList> EntityList = new List<vClientWise_EntityList>();
+            DataTable datatable = new DataTable();
+            var Connection = objDbMrpEntities.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+
             try
             {
-                EntityList = objDbMrpEntities.vClientWise_EntityList.Where(a => a.ClientId == ClientId).ToList();
+                SqlParameter[] para = new SqlParameter[1];
+
+                para[0] = new SqlParameter
+                {
+                    ParameterName = "ClientId",
+                    Value = ClientId
+                };
+
+                EntityList = objDbMrpEntities.Database.SqlQuery<RevenuePlanner.Models.vClientWise_EntityList>("GetClientEntityList @ClientId", para).ToList();
             }
             catch (Exception ex)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
+
+
             return EntityList;
         }
         #endregion
 
-    
+
         #region method to get list or alert rules created
         public List<AlertRuleDetail> GetAletRuleList(Guid UserId, Guid ClientId)
         {
@@ -60,7 +76,7 @@ namespace RevenuePlanner.Services
                     DayOfWeek = Convert.ToString(a.ar.DayOfWeek),
                     RuleSummary = a.ar.RuleSummary,
                     RuleId = a.ar.RuleId,
-                    EntityName =  HttpUtility.HtmlDecode(a.EntityTitle),
+                    EntityName = HttpUtility.HtmlDecode(a.EntityTitle),
                     IsDisable = a.ar.IsDisabled
                 }).ToList();
             }
@@ -167,8 +183,9 @@ namespace RevenuePlanner.Services
             List<Alert> lstAlerts = new List<Alert>();
             try
             {
-
-                lstAlerts = objDbMrpEntities.Alerts.Where(a => a.UserId == UserId).OrderByDescending(a => a.CreatedDate).ToList();
+               // var abc = objDbMrpEntities.Alerts.Where(a => a.UserId == UserId).FirstOrDefault().DisplayDate.Date;
+                var currentdate = DateTime.Now.Date;
+                lstAlerts = objDbMrpEntities.Alerts.Where(a => a.UserId == UserId && EntityFunctions.TruncateTime(a.DisplayDate) <= currentdate).OrderByDescending(a => a.CreatedDate).ToList();
 
             }
             catch (Exception ex)
@@ -268,13 +285,13 @@ namespace RevenuePlanner.Services
             var Connection = objDbMrpEntities.Database.Connection as SqlConnection;
             if (Connection.State == System.Data.ConnectionState.Closed)
                 Connection.Open();
-            byte? DayOfWeek=null, DateOfMonth=null;
+            byte? DayOfWeek = null, DateOfMonth = null;
             using (SqlCommand command = new SqlCommand("SP_Save_AlertRule", Connection))
             {
                 try
                 {
                     command.CommandType = CommandType.StoredProcedure;
-              
+
                     if (objRule.Frequency == Convert.ToString(SyncFrequencys.Weekly))
                         DayOfWeek = Convert.ToByte(objRule.DayOfWeek);
                     if (objRule.Frequency == Convert.ToString(SyncFrequencys.Monthly))
@@ -284,7 +301,7 @@ namespace RevenuePlanner.Services
                         else
                             DateOfMonth = 10;
                     }
-                  
+
                     command.Parameters.AddWithValue("@ClientId", ClientId.ToString());
                     command.Parameters.AddWithValue("@RuleId", RuleId);
                     command.Parameters.AddWithValue("@RuleSummary", objRule.RuleSummary);
@@ -300,7 +317,7 @@ namespace RevenuePlanner.Services
                     command.Parameters.AddWithValue("@UserId", UserId.ToString());
                     command.Parameters.AddWithValue("@CreatedBy", UserId.ToString());
                     command.Parameters.AddWithValue("@ModifiedBy", UserId.ToString());
-                    command.Parameters.AddWithValue("@IsExists",IsExists).Direction=ParameterDirection.Output;
+                    command.Parameters.AddWithValue("@IsExists", IsExists).Direction = ParameterDirection.Output;
 
                     SqlDataAdapter adp = new SqlDataAdapter(command);
                     command.CommandTimeout = 0;
