@@ -965,12 +965,10 @@ BEGIN
 			IF(@CustomQuery != '') --In case of custom query is configured for the report
 			BEGIN
 			
-				SELECT TOP 1 
-					@DateDimensionId = D.Id
-				FROM ReportGraph G 
-					LEFT JOIN ReportAxis A			ON G.id = A.ReportGraphId 
-					INNER JOIN Dimension D			ON D.id = A.Dimensionid AND D.IsDateDimension = 1 AND D.IsDeleted = 0
-				WHERE G.Id = @Id
+				SELECT TOP 1 @DateDimensionId = DateD.id FROM ReportAxis A 
+					INNER JOIN Dimension D ON D.id = A.Dimensionid AND D.IsDeleted = 0
+					INNER JOIN Dimension DateD ON D.TableName = DateD.TableName and DateD.IsDateDimension = 1 AND DateD.IsDeleted = 0
+				WHERE A.ReportGraphId = @Id
 
 				IF(@GT = 'columnrange')
 				BEGIN

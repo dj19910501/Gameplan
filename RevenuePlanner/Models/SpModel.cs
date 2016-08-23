@@ -213,4 +213,19 @@ namespace RevenuePlanner.Models
         public decimal Width { get; set; }
         public string DisplayName { get; set; }
     }
+
+    public class ReportParameters
+    {
+        public int Id { get; set; }
+        public string ConnectionString { get; set; }
+        public string Container { get; set; }
+        public string[] SDV { get; set; }
+        public bool TopOnly { get; set; }
+        public string ViewBy { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public string[] CurrencyRate { get; set; }
+    }
 }

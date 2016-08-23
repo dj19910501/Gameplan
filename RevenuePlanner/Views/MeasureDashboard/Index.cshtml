@@ -157,16 +157,13 @@
 
     function LoadReport(obj) {
         var id = $(obj).attr('ReportGraphId');
-
         var ViewBy = $("#ddlViewBy").val();
-
         var StartDate = '';
         var EndDate = '';
         $('div[id=reportrange]').each(function () {
             StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
             EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
         });
-
         var ulListing = [];
         var SelectedDimensionValue = [];
         $('ul[id^=ulListing]').each(function () {
@@ -182,19 +179,12 @@
                 });
             }
         });
-        var URL;
-        if ('@ApiUrl'.slice(-1) == '/') {
-            URL = '@ApiUrl' + 'api/Report/Chart';
-        }
-        else {
-            URL = '@ApiUrl' + '/api/Report/Chart';
-        }
 
+        var URL;
         if ('@ApiUrl' == '') {
             $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured");
         }
         else {
-
             var params = {};
             params.Id = id;
             params.ConnectionString = '@ReportDBConnString';
@@ -204,17 +194,15 @@
             params.ViewBy = ViewBy;
             params.StartDate = StartDate;
             params.EndDate = EndDate;
-            params.UserName = '@AuthorizedReportAPIUserName';
-            params.Password = '@AuthorizedReportAPIPassword';
-
+            URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
             $.ajax({
                 url: URL,
-                async: true,
+                async: false,
                 traditional: true,
                 data: $.param(params, true),
                 dataType: "json",
                 success: function (data) {
-                    eval(data);
+                    eval(JSON.parse(data.data));
                 },
                 error: function (err) {
                     $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
@@ -347,14 +335,7 @@ function () {
             var cbMainDate = function (start, end, label) {
                 console.log(start.toISOString(), end.toISOString(), label);
                 $('div[id=reportrange]').each(function () {
-                    @*if ('@Sessions.StartDate' != null && '@Sessions.StartDate' != 'null' && '@Sessions.StartDate' != 'Invalid date' && '@Sessions.StartDate' != '') {
-                        start = '@Sessions.StartDate';
-                        end = '@Sessions.EndDate';
-                        $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
-                    }
-                    else {*@
-                        $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
-                    //}
+                    $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
                 });
             };
 
@@ -389,38 +370,9 @@ function () {
                 }
             };
 
-            // add fiscal date range if required
-            @*var objFiscal = {
-                'Fiscal Year to Date': eval($('<div/>').html('@Sessions.CustomDateRanges.FYtoDate').text()),
-                'Fiscal Quarter to Date': eval($('<div/>').html('@Sessions.CustomDateRanges.FQtoDate').text()),
-                'Fiscal Month to Date': eval($('<div/>').html('@Sessions.CustomDateRanges.FMtoDate').text()),
-                'Last Fiscal Year': eval($('<div/>').html('@Sessions.CustomDateRanges.LastFYtoDate').text()),
-                'Last Fiscal Quarter': eval($('<div/>').html('@Sessions.CustomDateRanges.LastFQtoDate').text()),
-                'Last Fiscal Month': eval($('<div/>').html('@Sessions.CustomDateRanges.LastFMtoDate').text())
-            };*@
-            //optionSet1.ranges = jQuery.extend(true, {}, optionSet1.ranges, objFiscal);
-
             $('div[id=reportrange]').each(function () {
-                @*if ('@Sessions.StartDate' != null && '@Sessions.StartDate' != 'null' && '@Sessions.StartDate' != 'Invalid date' && '@Sessions.StartDate' != '') {*@
                 optionSet1.startDate = '@Sessions.StartDate';
                 optionSet1.endDate = '@Sessions.EndDate';
-                //}
-                //else {
-                //    var stdt = $(this).find('span').html().split(' - ')[0];
-                //    var Eddt = $(this).find('span').html().split(' - ')[1];
-                //    var Stdate = new Date(stdt),
-                //        Eddate = new Date(Eddt),
-                //    styr = Stdate.getFullYear(),
-                //    stmonth = Stdate.getMonth() < 9 ? '0' + (Stdate.getMonth() + 1) : (Stdate.getMonth() + 1),
-                //    stday = Stdate.getDate() < 10 ? '0' + Stdate.getDate() : Stdate.getDate(),
-                //    edyr = Eddate.getFullYear(),
-                //    edmonth = Eddate.getMonth() < 9 ? '0' + (Eddate.getMonth() + 1) : (Eddate.getMonth() + 1),
-                //    edday = Eddate.getDate() < 10 ? '0' + Eddate.getDate() : Eddate.getDate(),
-                //    FinStDate = stmonth + '/' + stday + '/' + styr;
-                //    FinEdDate = edmonth + '/' + edday + '/' + edyr;
-                //    optionSet1.startDate = FinStDate;
-                //    optionSet1.endDate = FinEdDate;
-                //}
                 $(this).daterangepicker(optionSet1, cbMainDate);
             });
         }
@@ -471,22 +423,6 @@ function () {
         var DashboardID = $(this).attr('id').replace('CustomReportli', '');
         var url = '@Url.Action("ReportCustom", "Report", new { DashboardId = "FIRST" })';
         window.location.href = url.replace('FIRST', DashboardID);
-        @*var url = '@Url.Content("~/Report/GetCustomReport/")';
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: {
-                DashboardId: DashboardID
-            },
-            success: function (response) {
-                $('#divMainReportPart').html('');
-                $('#divMainReportPart').html(response);
-                isAllowClick = true;
-                if ($(".popover.fade.top.in").length != 0) {
-                    $(".popover.fade.top.in").remove();
-                }
-            }
-        });*@
     });
 
     function RemoveAllActiveItem() {

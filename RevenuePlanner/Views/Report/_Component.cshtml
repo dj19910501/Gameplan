@@ -114,13 +114,6 @@
         }
 
         var URL;
-        if ('@ApiUrl'.slice(-1) == '/') {
-            URL = '@ApiUrl' + 'api/Report/Chart';
-        }
-        else {
-            URL = '@ApiUrl' + '/api/Report/Chart';
-        }
-
         if ('@ApiUrl' == '') {
             $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured");
         }
@@ -193,7 +186,7 @@
                     }
                 });
             }
-            
+
 
             var CheckedCounterTacTyp = 0, AllCounterTacTyp = 0, UncheckedCounterTacTypn = 0;
             AllCounterTacTyp = $("#accordion-element-TacticType ul li").find("input[type=checkbox]").length;
@@ -268,9 +261,8 @@
             params.ViewBy = ViewBy;
             params.StartDate = StartDate;
             params.EndDate = EndDate;
-            params.UserName = '@AuthorizedReportAPIUserName';
-            params.Password = '@AuthorizedReportAPIPassword';
 
+            URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
             $.ajax({
                 url: URL,
                 async: true,
@@ -278,7 +270,7 @@
                 data: $.param(params, true),
                 dataType: "json",
                 success: function (data) {
-                    eval(data);
+                    eval(JSON.parse(data.data));
                 },
                 error: function (err) {
                     $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
