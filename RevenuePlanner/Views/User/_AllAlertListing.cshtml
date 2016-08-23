@@ -26,7 +26,7 @@
         else
         {
             <div class="content-panel-tab">
-                <div class="bold padding-top16 font-size18">No records available.</div>
+                <div class="bold padding-top16 font-size18">No records available, please check your alert settings.</div>
             </div>
         }
     </div>    
@@ -37,7 +37,7 @@
             'placement': 'bottom'
         });
         function DismissAlert(e) {
-            $(".tooltip").hide();
+            $(".tooltip").remove();
             var id = $(e).attr("alertid");
             var alerttype = '@Enums.AlertNotification.Alert.ToString()';
             var result = confirm("Are you sure you want to dismiss the Alert?");
@@ -53,11 +53,12 @@
                         if (data.Success != null && data.Success == true) {
                             $("#successMessage").css("display", "block");
                             $("#spanMessageSuccess").empty();
-                            $("#spanMessageSuccess").text("deleted succesfully");
+                            $("#spanMessageSuccess").text("Alert deleted succesfully.");
                             $("#errorMessage").css("display", "none");
                             var url = '@Url.Action("AlertNotificationListing", "User")';
                             url = url + "?type=" + alerttype;
                             $("#divlisting").load(url);
+                            $(".tooltip").remove();
                         }
                     }
                 });

@@ -6210,17 +6210,23 @@ namespace RevenuePlanner.Helpers
                                 RemoveTacticMediaCode(tacticIds);
                                 //end
                                 //tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic).ToList().ForEach(a => customFieldList.Add(a));
+                                RemoveAlertRule(tacticIds);
 
                                 var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
                                 programList.ForEach(pcp => { pcp.IsDeleted = true; pcp.ModifiedDate = System.DateTime.Now; pcp.ModifiedBy = Sessions.User.UserId; });
                                 var programIds = programList.Select(a => a.PlanProgramId).ToList();
                                 //tblCustomField.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram).ToList().ForEach(a => customFieldList.Add(a));
+                                RemoveAlertRule(programIds);
 
                                 var campaignList = db.Plan_Campaign.Where(pc => pc.PlanId == PlanId && pc.IsDeleted == false).ToList();
                                 campaignList.ForEach(pc => { pc.IsDeleted = true; pc.ModifiedDate = System.DateTime.Now; pc.ModifiedBy = Sessions.User.UserId; });
                                 var campaignIds = campaignList.Select(a => a.PlanCampaignId).ToList();
                                 //tblCustomField.Where(a => campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(a => customFieldList.Add(a));
+                                RemoveAlertRule(campaignIds);
+
                                 db.Plans.Where(p => p.PlanId == PlanId && p.IsDeleted == false).ToList().ForEach(p => p.IsDeleted = true);
+                                List<int> lstplanid = new List<int>(PlanId);
+                                RemoveAlertRule(lstplanid);
 
                                 var customFieldList = db.CustomField_Entity.Where(a => (campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign) || (programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic) || (linkedTacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic)).ToList();
                                 customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
@@ -6302,18 +6308,23 @@ namespace RevenuePlanner.Helpers
 
                                 var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.PlanCampaignId == id).ToList();
                                 Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                var programIds = Plan_Campaign_ProgramList.Select(a => a.PlanProgramId).ToList();
+                                RemoveAlertRule(programIds);
 
                                 var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.PlanCampaignId == id).ToList();
                                 Plan_CampaignList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                var campaignIds = Plan_CampaignList.Select(a => a.PlanCampaignId).ToList();
+                                RemoveAlertRule(campaignIds);
 
                                 ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
                                 var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
                                 var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
                                 plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                RemoveAlertRule(lineItemIds);
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
                                 //// when campaign deleted then custom field's value for this campaign and custom field's value of appropriate program and tactic will be deleted
-                                var programIds = Plan_Campaign_ProgramList.Select(a => a.PlanProgramId).ToList();
+                               
                                 string sectionProgram = Enums.EntityType.Program.ToString();
                                 var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
                                 string sectionTactic = Enums.EntityType.Tactic.ToString();
@@ -6325,6 +6336,8 @@ namespace RevenuePlanner.Helpers
                                 // added by devanshi #2386 Remove media codes
                                 RemoveTacticMediaCode(tacticIds);
                                 //end
+
+                                RemoveAlertRule(tacticIds);
 
                             }
                             else if (section == Enums.Section.Program.ToString() && id != 0)
@@ -6365,9 +6378,11 @@ namespace RevenuePlanner.Helpers
 
                                 var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == id).ToList();
                                 Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                RemoveAlertRule(Plan_Campaign_ProgramList.Select(a=>a.PlanProgramId).ToList());
 
                                 ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
                                 var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
+                                RemoveAlertRule(lineItemIds);
                                 var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
                                 plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
@@ -6379,6 +6394,7 @@ namespace RevenuePlanner.Helpers
                                 program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
                                 RemoveTacticMediaCode(tacticIds);
+                                RemoveAlertRule(tacticIds);
                                 //var tactic_customFieldList = tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
                                 //tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
@@ -6419,6 +6435,7 @@ namespace RevenuePlanner.Helpers
                                 #endregion
                                 ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
                                 var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
+                                RemoveAlertRule(lineItemIds);
                                 var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
                                 plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
@@ -6436,6 +6453,7 @@ namespace RevenuePlanner.Helpers
                                 TacticMediacode.ForEach(mediacode => db.Entry(mediacode).State = EntityState.Deleted);
                                 #endregion
                                 //end
+                                RemoveAlertRule(Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList());
                             }
                             else if (section == Enums.Section.LineItem.ToString() && id != 0)
                             {
@@ -6581,6 +6599,27 @@ namespace RevenuePlanner.Helpers
                 var TacticMediacode = db.Tactic_MediaCodes.Where(a => TacticIDs.Contains(a.TacticId)).ToList();
                 TacticMediacode.ForEach(mediacode => db.Entry(mediacode).State = EntityState.Deleted);
                 db.SaveChanges();
+           }
+           
+        }
+        #endregion
+        //end
+        // added by devanshi Remove Alerts and alertRule
+        #region remove Alert Rule
+        public static void RemoveAlertRule(List<int> Ids)
+        {
+            MRPEntities db = new MRPEntities();
+            if (Ids.Count > 0)
+            {
+                var AlertsRule = db.Alert_Rules.Where(a => Ids.Contains(a.EntityId)).ToList();
+                foreach (var objrule in AlertsRule)
+                {
+                    var lstAlerts = db.Alerts.Where(a => a.RuleId == objrule.RuleId).ToList();
+                    lstAlerts.ForEach(alert => db.Entry(alert).State = EntityState.Deleted);
+                    db.SaveChanges();
+                    db.Entry(objrule).State = EntityState.Deleted;
+                    db.SaveChanges();
+                }
             }
 
         }

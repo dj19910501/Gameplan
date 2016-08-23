@@ -297,6 +297,12 @@
         $("#Ruleaccordion").find('.frequncy').each(function () {
             showHideOption(this);
         });
+        $('.searchtext').bind('paste', function (e) {
+            setTimeout(function () {
+                //  $('#ID').trigger('autocomplete');
+                searchtext(this);
+            }, 0);
+        });
      
     });
     function OnOffAlert(e)
@@ -340,12 +346,15 @@
                 $(parentdiv).find("#divDateOptions").hide();
                 }
                 else if (selectedSpan == "Weekly") {
-                $(parentdiv).find("#divDayOptions").show();
+                    $(parentdiv).find("#divDayOptions").show();
+                    $(parentdiv).find("#divDayOptions").focus();
                 $(parentdiv).find("#divDateOptions").hide();
                 }
                 else if (selectedSpan == "Monthly") {
-                $(parentdiv).find("#divDayOptions").hide();
-                $(parentdiv).find("#divDateOptions").show();
+                    $(parentdiv).find("#divDayOptions").hide();
+                    $(parentdiv).find("#divDateOptions").show();
+                    $(parentdiv).find("#divDateOptions").focus();
+
             }
         }
     }
@@ -452,6 +461,20 @@
                     var a = e.items;
                     return false;
 
+                },
+                change: function (event, ui) {
+                    if (!ui.item) {
+                        $(el).val("");
+                        var hdnid = $(maindiv).find("#hdnEntityId");
+                        $(hdnid).val('');
+
+                        var hdntypeid = $(maindiv).find("#hdnEntityType");
+                        $(hdntypeid).val('');
+                        $(el).attr("title", '');
+                        var lbl = $(maindiv).find("#lblentity");
+                        $(lbl).attr("title", '');
+                        $(lbl).html('');
+                    }
                 }
 
             });
