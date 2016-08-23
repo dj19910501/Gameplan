@@ -388,7 +388,7 @@ namespace RevenuePlanner.Controllers
                 headobjother.id = "Currency";
                 headobjother.sort = "str";
                 headobjother.width = 140;
-                headobjother.value = "Currency";
+                headobjother.value = "CURRENCY";
                 headobjlist.Add(headobjother);
 
 
@@ -416,63 +416,63 @@ namespace RevenuePlanner.Controllers
                     if (i == 0)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()].ToUpper().ToString();
                     }
                     else if (i == 1)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()].ToUpper().ToString();
                     }
                     else if (i == 2)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()].ToUpper().ToString();
                     }
 
                     else if (i == 3)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()].ToUpper().ToString();
                     }
                     else if (i == 4)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()].ToUpper().ToString();
                     }
                     else if (i == 5)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jun.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jun.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jun.ToString()].ToUpper().ToString();
                     }
                     else if (i == 6)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()].ToUpper().ToString();
                     }
                     else if (i == 7)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()].ToUpper().ToString();
                     }
                     else if (i == 8)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()].ToUpper().ToString();
                     }
                     else if (i == 9)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()].ToUpper().ToString();
                     }
                     else if (i == 10)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()].ToUpper().ToString();
                     }
                     else if (i == 11)
                     {
                         headobjother.id = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()].ToString();
-                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()].ToString();
+                        headobjother.value = Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()].ToUpper().ToString();
                     }
                     headobjlist.Add(headobjother);
                 }

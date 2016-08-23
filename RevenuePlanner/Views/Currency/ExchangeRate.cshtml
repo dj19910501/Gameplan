@@ -3,7 +3,7 @@
     //Layout = "~/Views/Shared/_Layout.cshtml";
     var countrows = 0;
     ViewBag.Title = "Conversion Rate";
-    ViewBag.PageTitle = "Currency";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
+    ViewBag.PageTitle = "ExchangeRates";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     ViewBag.ModuleTitle = "Currency";
     bool Editpermission = true;
     if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyEdit))
@@ -81,6 +81,7 @@
             Currency Exchange rate
         </h2>
     </div>
+    @Html.Partial("~/Views/Currency/_currencyMenu.cshtml")
     <div class="padding-content  cf source-sans-proregular">
         <div class="selectyear">
             <label>Select Year</label> @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
@@ -99,11 +100,6 @@
         <div id="ReportGrid" class="gridViewGrid currency-tbl margin-top40"></div>
 
     </div>
-
-    @*@if (permission == Enums.ApplicationActivity.MultiCurrencyEdit.ToString())
-        {
-            <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20" />
-        }*@
 }
 
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
@@ -132,10 +128,10 @@
             var year = $("#drpYear option:selected").text();
             PlanCurrencyGrid.forEachRow(function (id) {
 
-              
+
                 PlanCurrencyGrid.forEachCell(id, function (cellObj, col_index) {
 
-                  
+
                     if (col_index > 0) {
                         var val = PlanCurrencyGrid.cells(id, col_index).getValue();
                         ReportCurrencyGrid.cells(id, col_index).setValue(val);
@@ -191,7 +187,7 @@
             $("#confirmMsg").slideUp(400);
           //  $("#errorMsg").slideUp(1000);
         });
-       
+
         $("#confirmClose").click(function (e) {
             alert('hello');
             $("#confirmMsg").slideUp(400);
@@ -244,7 +240,7 @@
             reportData.push({ CurrencyCode: code, Component: component, OldExchangeRate: oldValue, NewExchangeRate: newValue, Year: year, Month: monthValue });
         }
 
-      
+
     }
     function LoadReportGrid(yearValue) {
         var url = '@Url.Content("~/Currency/ReportGrid/")';
@@ -252,7 +248,7 @@
         });
     }
     $("#header a").not("#ContactSupport").click(function () {
-       
+
         sidebarlink = $(this).attr('id');
         if (reportData.length > 0 || planData.length > 0) {
             displayConfirmBox($(this).attr('href'), sidebarlink);
@@ -271,17 +267,17 @@
         $("#confirmMsg").slideUp(400);
     }
     function CallUrl(alink) {
-    
-        if ($(alink).attr('href') == '#') {
+
+        @*if ($(alink).attr('href') == '#') {
 
             if ($(alink).attr('id') == 'aMyProfile') {
-               // $('#aMyProfile').preventDefault();
+             
                 var url = '';
                 url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
                 window.location.href = url;
             }
             else if ($(alink).attr('id') == 'aOrganization') {
-              //  $('#aOrganization').preventDefault();
+              
                 var url = '';
                 url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
 
@@ -289,44 +285,31 @@
 
             }
             else if ($(alink).attr('id') == 'aIntegrations') {
-              //  $('#aIntegrations').preventDefault();
+              
                 var url = '';
                 url = '@Url.Content("~/ExternalService/Index")';
                 window.location.href = url;
 
             }
             else if ($(alink).attr('id') == 'aCurrency') {
-              //  $('#aCurrency').preventDefault();
-                var url = '';
-                url = '@Url.Action("Currency", "Currency")';
+               var url = '';
+                url = '@Url.Content("~/Currency/Index")';
                 window.location.href = url;
             }
-        }
+        }*@
     }
     $("#sidebar a").click(function (event) {
         //alert($(this).attr('id'));
-       
+        debugger;
         sidebarlink = $(this).attr('id');
         displayConfirmBox($(this).attr('href'), sidebarlink);
+        $('#aMyProfile').click('click');
         if (reportData.length > 0 || planData.length > 0) {
+          //  if (event.stopPropagation) event.stopPropagation();
+
             event.preventDefault();
             event.stopPropagation();
-            //if ($(this).attr('id') == 'aMyProfile') {
-            //    event.stopPropagation();
-            //    return false;
-            //}
-            //else if ($(this).attr('id') == 'aOrganization') {
-            //    event.preventDefault();
-            //    return false;
-            //}
-            //else if ($(this).attr('id') == 'aIntegrations') {
-            //    event.preventDefault();
-            //    return false;
-            //}
-            //else if ($(this).attr('id') == 'aCurrency') {
-            //    event.preventDefault();
-            //    return false;
-            //}
+           
             return false;
         }
         else {

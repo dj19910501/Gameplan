@@ -994,6 +994,7 @@
     <Content Include="Views\Currency\ExchangeRate.cshtml" />
     <Content Include="Views\Currency\_PlanCurrencyGrid.cshtml" />
     <Content Include="Views\Currency\_ReportCurrencyGrid.cshtml" />
+    <Content Include="Views\Currency\_currencyMenu.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>
