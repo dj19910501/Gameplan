@@ -6470,7 +6470,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="TacticList"> List of Tactic</param>
         /// <returns>Return List of Sparklinechart data</returns>
-        public List<ActualTrendModel> GetActualTrendModelForRevenueOverview(List<TacticStageValue> TacticData, List<ActualTacticListByStage> ActualTacticStageList, string timeframe = "")
+        public List<ActualTrendModel> GetActualTrendModelForRevenueOverview(List<TacticStageValue> TacticData, List<ActualTacticListByStage> ActualTacticStageList, string timeframe = "", bool IsMultiCurrency = true)
         {
             #region "Declare local Variables"
             List<ActualTrendModel> ActualTrendModelList = new List<ActualTrendModel>();
@@ -6551,10 +6551,14 @@ namespace RevenuePlanner.Controllers
                             //// Filter CurrentMonthActualTacticList by current PlanTacticId.
                             ActualTacticListbyTactic = ActualTacticList.Where(actual => actual.PlanTacticId.Equals(_planTacticId)).ToList();
                             // Convert Actual value with respective reporting months
-                            ActualTacticListbyTactic.ForEach(a =>
+                            //#2509 Add condition for if report waterfall / conversion then no need to convert actuals into multicurreny because we are dsiplay count on waterfall report.
+                            if (IsMultiCurrency)
                             {
-                                a.Actualvalue = objCurrency.GetReportValueByExchangeRate(a.Plan_Campaign_Program_Tactic.StartDate, a.Actualvalue, int.Parse(Convert.ToString(a.Period.Replace("Y", ""))));
-                            });
+                                ActualTacticListbyTactic.ForEach(a =>
+                                {
+                                    a.Actualvalue = objCurrency.GetReportValueByExchangeRate(a.Plan_Campaign_Program_Tactic.StartDate, a.Actualvalue, int.Parse(Convert.ToString(a.Period.Replace("Y", ""))));
+                                });
+                            }
                             //// Get ActualValue sum.
                             TotalActualUpToCurrentMonth = ActualTacticListbyTactic.Sum(actual => actual.Actualvalue);
                             //// Get No. of involved month till current month.
@@ -11392,7 +11396,7 @@ namespace RevenuePlanner.Controllers
                 ActualStageCodeList.Add(cwStageCode);
                 ActualTacticStageList = GetActualListInTacticInterval(tacticStageList, timeFrameOption, ActualStageCodeList, IsTillCurrentMonth);
 
-                List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList, timeFrameOption);
+                List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList, timeFrameOption, false);
                 ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
                 ActualTacticTrendList = ActualTacticTrendList.Select(tac => new
                 {
@@ -12473,7 +12477,7 @@ namespace RevenuePlanner.Controllers
                         }
 
                         ActualTacticStageList = GetActualListInTacticInterval(_tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);
-                        ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList, option);
+                        ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList, option, false);// Modified By Nishant Sheth #2509
                         ActualTacticTrendList = ActualTacticTrendList.Select(tac => new
                         {
                             Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
@@ -12511,7 +12515,7 @@ namespace RevenuePlanner.Controllers
 
                         List<ActualTacticListByStage> MqlTacticStageLsit = GetActualListInTacticInterval(_tacticdata, option, MqlStageList, IsTillCurrentMonth);
 
-                        MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, MqlTacticStageLsit, option);
+                        MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, MqlTacticStageLsit, option, false);// Modified By Nishant Sheth #2509
                         MqlActual = MqlActual.Select(tac => new
                         {
                             Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
@@ -12921,13 +12925,13 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList, option);
+                            ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList, option, false);// Modified By Nishant Sheth #2509
                             List<string> MqlStageList = new List<string>();
                             MqlStageList.Add(Enums.Stage.MQL.ToString());
 
                             List<ActualTacticListByStage> MqlTacticStageLsit = GetActualListInTacticInterval(_tacticdata, option, MqlStageList, IsTillCurrentMonth);
 
-                            MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, MqlTacticStageLsit, option);
+                            MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, MqlTacticStageLsit, option, false);// Modified By Nishant Sheth #2509
                             MqlActual = MqlActual.Select(tac => new
                             {
                                 Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
@@ -13520,7 +13524,7 @@ namespace RevenuePlanner.Controllers
             ActualStageCodeList.Add(cwStageCode);
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             ActualTacticStageList = GetActualListInTacticInterval(_TacticData, timeframeOption, ActualStageCodeList, IsTillCurrentMonth);//
-            ActualTacticTrendListOverall = GetActualTrendModelForRevenueOverview(_TacticData, ActualTacticStageList, timeframeOption);
+            ActualTacticTrendListOverall = GetActualTrendModelForRevenueOverview(_TacticData, ActualTacticStageList, timeframeOption, false);// Modified By Nishant Sheth #2509
             ActualTacticTrendListOverall = ActualTacticTrendListOverall.Select(tac => new
             {
                 Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
