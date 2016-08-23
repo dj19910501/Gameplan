@@ -1148,14 +1148,14 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
-              
+
             }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
                 TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
             }
-           
+
         }
 
         #endregion
@@ -1387,7 +1387,7 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-       
+
 
         #region alerts
         #region User Alerts
@@ -1421,7 +1421,7 @@ namespace RevenuePlanner.Controllers
             List<vClientWise_EntityList> lstentity = new List<vClientWise_EntityList>();
             try
             {
-             
+
                 var ClientEntityList = (List<vClientWise_EntityList>)objCache.Returncache(Enums.CacheObject.ClientEntityList.ToString());
 
                 if (ClientEntityList != null)
@@ -1433,8 +1433,8 @@ namespace RevenuePlanner.Controllers
                     lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId);
                     objCache.AddCache(Enums.CacheObject.ClientEntityList.ToString(), lstentity);
                 }
-                 var lstentityType = Enum.GetValues(typeof(Enums.EntityType)).Cast<Enums.EntityType>().Select(a => a.ToString()).ToList();
-                foreach(string EntityType in lstentityType)
+                var lstentityType = Enum.GetValues(typeof(Enums.EntityType)).Cast<Enums.EntityType>().Select(a => a.ToString()).ToList();
+                foreach (string EntityType in lstentityType)
                 {
                     var entity = lstentity.Where(a => a.ClientId == Sessions.User.ClientId && HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).Contains(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
                 {
@@ -1442,7 +1442,7 @@ namespace RevenuePlanner.Controllers
                     value = a.EntityId,
                     label = HttpUtility.HtmlDecode(a.EntityTitle)
                 }).Take(100).ToList();
-                EntityList.AddRange(entity);
+                    EntityList.AddRange(entity);
                 }
             }
             catch (Exception ex)
@@ -1466,7 +1466,7 @@ namespace RevenuePlanner.Controllers
             objStage = new Stage();
             revGoalType = Convert.ToString(Enums.DictPerformanceFector[Convert.ToString(Enums.PerformanceFector.PlannedCost)]);
             objStage.Title = revGoalType;
-            objStage.Code = revGoalType.Replace(" ",string.Empty).ToUpper();
+            objStage.Code = revGoalType.Replace(" ", string.Empty).ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
             objStage = new Stage();
             objStage.Title = "Select";
@@ -1479,7 +1479,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveAlertRule(AlertRuleDetail RuleDetail, int RuleID = 0)
         {
-         
+
             try
             {
                 //Insert Rule
@@ -1493,23 +1493,22 @@ namespace RevenuePlanner.Controllers
                         int result = objcommonalert.AddUpdate_AlertRule(objRule, Sessions.User.ClientId, Sessions.User.UserId, RuleID);
                         if (result == 0)
                         {
-                        if (RuleID == 0)
-                                    return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessAlertRule }, JsonRequestBehavior.AllowGet);
-                                else
-                                    return Json(new { Success = true, SuccessMessage = Common.objCached.UpdateAlertRule }, JsonRequestBehavior.AllowGet);
+                            if (RuleID == 0)
+                                return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessAlertRule }, JsonRequestBehavior.AllowGet);
+                            else
+                                return Json(new { Success = true, SuccessMessage = Common.objCached.UpdateAlertRule }, JsonRequestBehavior.AllowGet);
 
-                            }
+                        }
                         else if (result == 1)
-                                return Json(new { Success = false, ErrorMessage = Common.objCached.DuplicateAlertRule }, JsonRequestBehavior.AllowGet);
+                            return Json(new { Success = false, ErrorMessage = Common.objCached.DuplicateAlertRule }, JsonRequestBehavior.AllowGet);
                         else
                             return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
 
                     }
-                    else
-                        return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
+
                 }
-                else
-                    return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
+
+                return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
 
             }
             catch (Exception ex)
@@ -1518,6 +1517,7 @@ namespace RevenuePlanner.Controllers
                 return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
 
             }
+
         }
         #endregion
         /// <summary>
@@ -1569,10 +1569,10 @@ namespace RevenuePlanner.Controllers
                 lstSyncFreq.Add(objItem1);
 
                 objalert.lstFrequency = new SelectList(lstSyncFreq, "Value", "Text", lstSyncFreq.First());
-
+                SelectListItem objTime;
                 foreach (var item in Enum.GetValues(typeof(DayOfWeek)))
                 {
-                    SelectListItem objTime = new SelectListItem();
+                    objTime = new SelectListItem();
                     objTime.Text = item.ToString();
                     objTime.Value = ((int)item).ToString();
                     lstWeekdays.Add(objTime);
@@ -1647,16 +1647,19 @@ namespace RevenuePlanner.Controllers
             List<NotificationSummary> RequestList = new List<NotificationSummary>();
             try
             {
-                var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
-                if (AllAlert != null && AllAlert.Count > 0)
+                if (Sessions.IsAlertPermission)
                 {
-                    alertCount = AllAlert.Where(a => a.IsRead == false).ToList().Count();
-                    lstalertSummary = AllAlert.Where(a => a.IsRead == false).Select(a => new AlertSummary
-                        {
-                            Description = HttpUtility.HtmlDecode(a.Description.Trim()),
-                            AlertCreatedDate = Common.TimeAgo(a.CreatedDate),
-                            AlertId = a.AlertId
-                        }).Take(5).ToList();
+                    var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
+                    if (AllAlert != null && AllAlert.Count > 0)
+                    {
+                        alertCount = AllAlert.Where(a => a.IsRead == false).ToList().Count();
+                        lstalertSummary = AllAlert.Where(a => a.IsRead == false).Select(a => new AlertSummary
+                            {
+                                Description = HttpUtility.HtmlDecode(a.Description.Trim()),
+                                AlertCreatedDate = Common.TimeAgo(a.CreatedDate),
+                                AlertId = a.AlertId
+                            }).Take(5).ToList();
+                    }
                 }
                 #region code for get notification listing
                 var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.UserId);
@@ -1666,18 +1669,18 @@ namespace RevenuePlanner.Controllers
                     NotificationCount = AllNotification.Where(a => a.IsRead == false).ToList().Count();
 
                     RequestList = (from objNotification in AllNotification
-                               where objNotification.ActionName == "submitted"
-                               group objNotification by objNotification.ComponentId into g
-                               join objPlan in db.Plans on g.FirstOrDefault().ComponentId equals objPlan.PlanId
-                               select new NotificationSummary
-                               {
-                                   NotificationCreatedDate = Common.TimeAgo(g.FirstOrDefault().CreatedDate),
-                                   NotificationId = g.FirstOrDefault().NotificationId,
-                                   ActionName = g.FirstOrDefault().ActionName,
-                                   PlanTitle = objPlan.Title,
-                                   ComponentId = g.FirstOrDefault().ComponentId,
-                                   RequestCount = g.Count()
-                               }).ToList();
+                                   where objNotification.ActionName == "submitted"
+                                   group objNotification by objNotification.ComponentId into g
+                                   join objPlan in db.Plans on g.FirstOrDefault().ComponentId equals objPlan.PlanId
+                                   select new NotificationSummary
+                                   {
+                                       NotificationCreatedDate = Common.TimeAgo(g.FirstOrDefault().CreatedDate),
+                                       NotificationId = g.FirstOrDefault().NotificationId,
+                                       ActionName = g.FirstOrDefault().ActionName,
+                                       PlanTitle = objPlan.Title,
+                                       ComponentId = g.FirstOrDefault().ComponentId,
+                                       RequestCount = g.Count()
+                                   }).ToList();
 
                     lstnotifications = AllNotification.Where(a => a.IsRead == false && a.ActionName != "submitted").Select(a => new NotificationSummary
                     {
@@ -1688,7 +1691,7 @@ namespace RevenuePlanner.Controllers
                         ComponentId = a.ComponentId
                     }).ToList();
 
-                    if(RequestList != null && RequestList.Count > 0)
+                    if (RequestList != null && RequestList.Count > 0)
                     {
                         RequestList.AddRange(lstnotifications);
 
@@ -1698,7 +1701,7 @@ namespace RevenuePlanner.Controllers
                     {
                         lstnotificationSummary = lstnotifications.Take(5).ToList();
                     }
-                 
+
                 }
                 #endregion
             }
@@ -1730,7 +1733,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult ViewAlertNotification(string type)
         {
             if (!string.IsNullOrEmpty(type))
-            ViewBag.Type = type.ToLower();
+                ViewBag.Type = type.ToLower();
             else
                 ViewBag.Type = Convert.ToString(Enums.AlertNotification.Alert).ToLower();
             return View();
@@ -1761,15 +1764,18 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
-                if (AllAlert != null && AllAlert.Count > 0)
+                if (Sessions.IsAlertPermission)
                 {
-                    DataList = AllAlert.Select(a => new UserAlertsNotification
+                    var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
+                    if (AllAlert != null && AllAlert.Count > 0)
                     {
-                        Description = HttpUtility.HtmlDecode(a.Description.Trim()),
-                        CreatedDate = Common.TimeAgo(a.CreatedDate),
-                        AlertId = a.AlertId
-                    }).ToList();
+                        DataList = AllAlert.Select(a => new UserAlertsNotification
+                        {
+                            Description = HttpUtility.HtmlDecode(a.Description.Trim()),
+                            CreatedDate = Common.TimeAgo(a.CreatedDate),
+                            AlertId = a.AlertId
+                        }).ToList();
+                    }
                 }
                 return PartialView("_AllAlertListing", DataList.AsEnumerable());
             }
