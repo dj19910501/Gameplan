@@ -57,6 +57,7 @@ namespace RevenuePlanner.Controllers
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+        public double PlanExchangeRate = Sessions.PlanExchangeRate;
         // Add By Nishant Sheth
         // Desc #1842
 
@@ -2761,7 +2762,11 @@ namespace RevenuePlanner.Controllers
                         obj.TabActivityId = p.PlanId.ToString();
                         obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                         obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                        obj = GetMonthWiseDataReport(obj, planbudgetlist.Where(planbudget => planbudget.PlanId == p.PlanId).Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                        obj = GetMonthWiseDataReport(obj, planbudgetlist.Where(planbudget => planbudget.PlanId == p.PlanId).Select(b => new BudgetedValue
+                        {
+                            Period = b.Period,
+                            Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                        }).ToList(), ReportColumnType.Allocated.ToString());
                         model.Add(obj);
                         parentPlanId = "plan_" + p.PlanId.ToString();
                         campaignObj = new List<Plan_Campaign>();
@@ -2778,7 +2783,11 @@ namespace RevenuePlanner.Controllers
                             obj.TabActivityId = p.PlanId.ToString();
                             obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                             obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                            obj = GetMonthWiseDataReport(obj, campaignbudgetlist.Where(pcb => pcb.PlanCampaignId == c.PlanCampaignId).Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                            obj = GetMonthWiseDataReport(obj, campaignbudgetlist.Where(pcb => pcb.PlanCampaignId == c.PlanCampaignId).Select(b => new BudgetedValue
+                            {
+                                Period = b.Period,
+                                Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                            }).ToList(), ReportColumnType.Allocated.ToString());
                             model.Add(obj);
                             parentCampaignId = "c_" + c.PlanCampaignId.ToString();
                             ProgramObj = new List<Plan_Campaign_Program>();
@@ -2795,7 +2804,11 @@ namespace RevenuePlanner.Controllers
                                 obj.TabActivityId = p.PlanId.ToString();
                                 obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                                 obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                                obj = GetMonthWiseDataReport(obj, programbudgetlist.Where(pcpb => pcpb.PlanProgramId == pr.PlanProgramId).Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                                obj = GetMonthWiseDataReport(obj, programbudgetlist.Where(pcpb => pcpb.PlanProgramId == pr.PlanProgramId).Select(b => new BudgetedValue
+                                {
+                                    Period = b.Period,
+                                    Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                                }).ToList(), ReportColumnType.Allocated.ToString());
                                 model.Add(obj);
                                 parentProgramId = "cp_" + pr.PlanProgramId.ToString();
                                 TacticObj = new List<Plan_Campaign_Program_Tactic>();
@@ -2810,9 +2823,21 @@ namespace RevenuePlanner.Controllers
                                     obj.ActivityType = ActivityType.ActivityTactic;
                                     obj.ParentActivityId = parentProgramId;
                                     obj.TabActivityId = p.PlanId.ToString();
-                                    obj = GetMonthWiseDataReport(obj, tacticcostlist.Where(pcptc => pcptc.PlanTacticId == t.PlanTacticId).Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                    obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                                    obj = GetMonthWiseDataReport(obj, tacticcostlist.Where(pcptc => pcptc.PlanTacticId == t.PlanTacticId).Select(b => new BudgetedValue
+                                    {
+                                        Period = b.Period,
+                                        Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                                    }).ToList(), ReportColumnType.Planned.ToString());
+                                    obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue
+                                    {
+                                        Period = b.Period,
+                                        Value = objCurrency.GetReportValueByExchangeRate(t.StartDate, b.Actualvalue, int.Parse(Convert.ToString(b.Period).Replace("Y", "")))
+                                    }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Budget.Select(b => new BudgetedValue
+                                    {
+                                        Period = b.Period,
+                                        Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                                    }).ToList(), ReportColumnType.Allocated.ToString());
                                     model.Add(obj);
                                     parentTacticId = "cpt_" + t.PlanTacticId.ToString();
 
@@ -2829,8 +2854,16 @@ namespace RevenuePlanner.Controllers
                                         obj.ActivityType = ActivityType.ActivityLineItem;
                                         obj.ParentActivityId = parentTacticId;
                                         obj.TabActivityId = p.PlanId.ToString();
-                                        obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                        obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                                        obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue
+                                        {
+                                            Period = b.Period,
+                                            Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                                        }).ToList(), ReportColumnType.Planned.ToString());
+                                        obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue
+                                        {
+                                            Period = b.Period,
+                                            Value = objCurrency.GetReportValueByExchangeRate(l.Plan_Campaign_Program_Tactic.StartDate, b.Value, int.Parse(Convert.ToString(b.Period).Replace("Y", "")))
+                                        }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                                         obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
                                         model.Add(obj);
                                     }
@@ -2948,7 +2981,11 @@ namespace RevenuePlanner.Controllers
                                 obj.TabActivityId = p.Id.ToString();
                                 obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                                 obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                                obj = GetMonthWiseDataReport(obj, c.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                                obj = GetMonthWiseDataReport(obj, c.Plan_Campaign_Budget.Select(b => new BudgetedValue
+                                {
+                                    Period = b.Period,
+                                    Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                                }).ToList(), ReportColumnType.Allocated.ToString());
                                 model.Add(obj);
                                 parentCampaignId = "c_" + p.Id + c.PlanCampaignId.ToString();
                                 ProgramObj = new List<Plan_Campaign_Program>();
@@ -2966,7 +3003,11 @@ namespace RevenuePlanner.Controllers
                                     obj.TabActivityId = p.Id.ToString();
                                     obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                                     obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                                    obj = GetMonthWiseDataReport(obj, pr.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                                    obj = GetMonthWiseDataReport(obj, pr.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue
+                                    {
+                                        Period = b.Period,
+                                        Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                                    }).ToList(), ReportColumnType.Allocated.ToString());
                                     model.Add(obj);
                                     parentProgramId = "cp_" + p.Id + pr.PlanProgramId.ToString();
                                     TacticObj = new List<Plan_Campaign_Program_Tactic>();
@@ -2982,9 +3023,21 @@ namespace RevenuePlanner.Controllers
                                         obj.ActivityType = ActivityType.ActivityTactic;
                                         obj.ParentActivityId = parentProgramId;
                                         obj.TabActivityId = p.Id.ToString();
-                                        obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                        obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
-                                        obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                                        obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue
+                                        {
+                                            Period = b.Period,
+                                            Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                                        }).ToList(), ReportColumnType.Planned.ToString());
+                                        obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue
+                                        {
+                                            Period = b.Period,
+                                            Value = objCurrency.GetReportValueByExchangeRate(t.StartDate, b.Actualvalue, int.Parse(Convert.ToString(b.Period).Replace("Y", "")))
+                                        }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                                        obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Budget.Select(b => new BudgetedValue
+                                        {
+                                            Period = b.Period,
+                                            Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                                        }).ToList(), ReportColumnType.Allocated.ToString());
                                         obj.CustomFieldType = customFieldType;
                                         model.Add(obj);
                                         parentTacticId = "cpt_" + p.Id + t.PlanTacticId.ToString();
@@ -3011,8 +3064,16 @@ namespace RevenuePlanner.Controllers
                                             obj.ActivityType = ActivityType.ActivityLineItem;
                                             obj.ParentActivityId = parentTacticId;
                                             obj.TabActivityId = p.Id.ToString();
-                                            obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                            obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                                            obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue
+                                            {
+                                                Period = b.Period,
+                                                Value = objCurrency.GetValueByExchangeRate(b.Value, PlanExchangeRate)
+                                            }).ToList(), ReportColumnType.Planned.ToString());
+                                            obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue
+                                            {
+                                                Period = b.Period,
+                                                Value = objCurrency.GetReportValueByExchangeRate(l.Plan_Campaign_Program_Tactic.StartDate, b.Value, int.Parse(Convert.ToString(b.Period).Replace("Y", "")))
+                                            }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                                             obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
                                             model.Add(obj);
                                         }
@@ -8453,7 +8514,7 @@ namespace RevenuePlanner.Controllers
                                 // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
                                 int CurrentMonth = DateTime.Now.Month;
                                 _curntQuarterListActual = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= 12).ToList(); // Modified By Nishant Sheth #1839
-                                _curntQuarterListGoalYTD = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= CurrentMonth).ToList(); 
+                                _curntQuarterListGoalYTD = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= CurrentMonth).ToList();
                                 _curntQuarterListProjected = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) >= (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : 12)).ToList(); // Modified By Nishant Sheth #1839
                                 _curntQuarterListGoal = Quarters;
                                 // Get list of Month After current month for Projected2 calculation.

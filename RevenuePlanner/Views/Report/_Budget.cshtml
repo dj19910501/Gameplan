@@ -168,15 +168,15 @@
 
     function AddTipsy() {
         $("div[Allocated]").each(function () {
-            bootstrapetitle($(this), 'Allocated : $' + $(this).attr('Allocated'), "tipsy-innerWhite");
+            bootstrapetitle($(this), 'Allocated : ' + CurrencySybmol + '' + $(this).attr('Allocated'), "tipsy-innerWhite");
         });
 
         $("div[Remaining]").each(function () {
-            bootstrapetitle($(this), 'Remaining : $' + $(this).attr('Remaining'), "tipsy-innerWhite");
+            bootstrapetitle($(this), 'Remaining : ' + CurrencySybmol + '' + $(this).attr('Remaining'), "tipsy-innerWhite");
         });
 
         $("div[OverBudget]").each(function () {
-            bootstrapetitle($(this), 'Over Budget by : $' + $(this).attr('OverBudget'), "tipsy-innerRed");
+            bootstrapetitle($(this), 'Over Budget by : ' + CurrencySybmol + '' + $(this).attr('OverBudget'), "tipsy-innerRed");
         });
     }
 
@@ -226,13 +226,13 @@
 
             var sumMonth = number_format('@MainTotalActual', 0, '.', ',');
             var allocated = number_format('@MainTotalAllocated', 0, '.', ',');
-            $('#SpanTotalSpend').prop('title', '$' + sumMonth);
+            $('#SpanTotalSpend').prop('title', CurrencySybmol + sumMonth);
             $('#SpanTotalSpend').popover('destroy');
-            bootstrapetitle("#SpanTotalSpend", '$' + sumMonth, "tipsy-innerWhite");
+            bootstrapetitle("#SpanTotalSpend", CurrencySybmol + sumMonth, "tipsy-innerWhite");
 
-            $('#SpanTotalBudgeted').prop('title', '$' + allocated);
+            $('#SpanTotalBudgeted').prop('title', CurrencySybmol + allocated);
             $('#SpanTotalBudgeted').popover('destroy');
-            bootstrapetitle("#SpanTotalBudgeted", '$' + allocated, "tipsy-innerWhite");
+            bootstrapetitle("#SpanTotalBudgeted", CurrencySybmol + allocated, "tipsy-innerWhite");
 
             $('#SpanCurrentQuarter').html('@CurrentQuarter');
             $('#SpanTodayDate').html('@TodayDate');

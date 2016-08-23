@@ -36,6 +36,7 @@ namespace RevenuePlanner.Helpers
     {
         #region Declarations
         public static RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+        public static double PlanExchangeRate = Sessions.PlanExchangeRate;
         public const string InvalidCharactersForEmail = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
         public const string InvalidCharactersForAnswer = "^[^~^|]+$";
         public const string InvalidCharactersForAnswerMsg = "~|^ ";
@@ -1919,7 +1920,7 @@ namespace RevenuePlanner.Helpers
                     {
                         objHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
                     }
-                    objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(objPlan.Budget);// Modified By Nishant Sheth #2497
+                    objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(objPlan.Budget, PlanExchangeRate);// Modified By Nishant Sheth #2497
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
                 }
                 else
@@ -1947,7 +1948,7 @@ namespace RevenuePlanner.Helpers
                         List<Plan_Campaign_Program_Tactic_LineItem> planTacticLineItemIds = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).ToList();
                         if (planTacticLineItemIds.Count() > 0)
                         {
-                            objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(planTacticLineItemIds.Sum(lineItem => lineItem.Cost));// Modified By Nishant Sheth #2497
+                            objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(planTacticLineItemIds.Sum(lineItem => lineItem.Cost), PlanExchangeRate);// Modified By Nishant Sheth #2497
                         }
 
                     }
@@ -2216,7 +2217,7 @@ namespace RevenuePlanner.Helpers
                     {
                         objHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
                     }
-                    objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(objPlan.Budget);// Modified By Nishant Sheth #2497
+                    objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(objPlan.Budget, PlanExchangeRate);// Modified By Nishant Sheth #2497
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
                 }
                 else
@@ -2244,7 +2245,7 @@ namespace RevenuePlanner.Helpers
                         List<Plan_Campaign_Program_Tactic_LineItem> planTacticLineItemIds = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).ToList();
                         if (planTacticLineItemIds.Count() > 0)
                         {
-                            objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(planTacticLineItemIds.Sum(lineItem => lineItem.Cost));// Modified By Nishant Sheth #2497
+                            objHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(planTacticLineItemIds.Sum(lineItem => lineItem.Cost), PlanExchangeRate);// Modified By Nishant Sheth #2497
                         }
 
                     }
@@ -2528,7 +2529,7 @@ namespace RevenuePlanner.Helpers
             }
 
             newHomePlanModelHeader.MQLs = TotalMQLs;
-            newHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(TotalBudget); // To set multi-currency
+            newHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(TotalBudget, PlanExchangeRate); // To set multi-currency
             newHomePlanModelHeader.TacticCount = TotalTacticCount;
             newHomePlanModelHeader.PercentageMQLImproved = TotalPercentageMQLImproved;
             if (activeMenu == Enums.ActiveMenu.Home.ToString().ToLower())
@@ -2808,7 +2809,7 @@ namespace RevenuePlanner.Helpers
             }
 
             newHomePlanModelHeader.MQLs = TotalMQLs;
-            newHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(TotalBudget);// Modified By Nishant Sheth #2497
+            newHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(TotalBudget, PlanExchangeRate);// Modified By Nishant Sheth #2497
             newHomePlanModelHeader.TacticCount = TotalTacticCount;
             newHomePlanModelHeader.PercentageMQLImproved = TotalPercentageMQLImproved;
             if (activeMenu == Enums.ActiveMenu.Home.ToString().ToLower())
@@ -3984,7 +3985,7 @@ namespace RevenuePlanner.Helpers
                 tacticStageValueObj.INQValue = projectedStageLevel <= levelINQ ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => inqStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
                 tacticStageValueObj.MQLValue = projectedStageLevel <= levelMQL ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => mqlStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
                 tacticStageValueObj.CWValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => cwStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
-                tacticStageValueObj.RevenueValue = objCurrency.GetValueByExchangeRate(projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => revenueStagelist.Contains(sr.StageId) && (sr.StageType == CR || sr.StageType == Size)).Aggregate(1.0, (x, y) => x * y.Value)) : 0); // Modified By Nishant Sheth //#2508 Convert value as per reporting exchange rate
+                tacticStageValueObj.RevenueValue = objCurrency.GetValueByExchangeRate((projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => revenueStagelist.Contains(sr.StageId) && (sr.StageType == CR || sr.StageType == Size)).Aggregate(1.0, (x, y) => x * y.Value)) : 0), PlanExchangeRate); // Modified By Nishant Sheth //#2508 Convert value as per reporting exchange rate
                 tacticStageValueObj.INQVelocity = stageRelation.Where(sr => inqVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.MQLVelocity = stageRelation.Where(sr => mqlVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
@@ -5657,7 +5658,7 @@ namespace RevenuePlanner.Helpers
                     else if (goalType == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                     {
                         // Calculate INQ
-                        double avdDealSize = objCurrency.GetValueByExchangeRate(averageDealSize);
+                        double avdDealSize = objCurrency.GetValueByExchangeRate(averageDealSize, PlanExchangeRate);
                         cwStagelist = stageList.Where(s => s.Level >= levelINQ && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
                         double convalue = ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * avdDealSize);

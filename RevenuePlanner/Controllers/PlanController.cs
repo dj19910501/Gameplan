@@ -79,7 +79,7 @@ namespace RevenuePlanner.Controllers
         //    List<CustomField_Entity> tacticcustomfieldsentity = new List<CustomField_Entity>();
         List<TacticType> TacticTypeListForHC = new List<TacticType>();
         List<Plan_Campaign_Program_Tactic_LineItem> DBLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
-
+        public double PlanExchangeRate = Sessions.PlanExchangeRate;
         #endregion
         //public PlanController()
         //{
@@ -246,7 +246,7 @@ namespace RevenuePlanner.Controllers
                     //objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
                     if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                     {
-                        objPlanModel.GoalValue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.GoalValue))).ToString();
+                        objPlanModel.GoalValue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.GoalValue)), PlanExchangeRate).ToString();
                     }
                     else
                     {
@@ -254,7 +254,7 @@ namespace RevenuePlanner.Controllers
                     }
                     objPlanModel.AllocatedBy = objplan.AllocatedBy;
                     //objPlanModel.Budget = objplan.Budget;
-                    objPlanModel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.Budget)));
+                    objPlanModel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.Budget)), PlanExchangeRate);
                     objPlanModel.Version = objplan.Version;
                     objPlanModel.ModelTitle = objplan.Model.Title + " " + objplan.Model.Version;
                     double TotalAllocatedCampaignBudget = 0;
@@ -386,7 +386,7 @@ namespace RevenuePlanner.Controllers
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                             {
-                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
+                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
                             }
                         }
                         else
@@ -430,7 +430,7 @@ namespace RevenuePlanner.Controllers
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                             {
-                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
+                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
                             }
 
                         }
@@ -674,7 +674,7 @@ namespace RevenuePlanner.Controllers
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                             {
-                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
+                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
                             }
                         }
                         else
@@ -683,7 +683,7 @@ namespace RevenuePlanner.Controllers
                         }
                         plan.AllocatedBy = objPlanModel.AllocatedBy;
                         //plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
-                        plan.Budget = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(objPlanModel.Budget).Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, "")));
+                        plan.Budget = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(objPlanModel.Budget).Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, "")), PlanExchangeRate);
                         plan.ModelId = objPlanModel.ModelId;
                         plan.Year = objPlanModel.Year;
                         db.Plans.Add(plan);
@@ -724,7 +724,7 @@ namespace RevenuePlanner.Controllers
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                             {
-                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)));
+                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
                             }
                         }
                         else
@@ -734,7 +734,7 @@ namespace RevenuePlanner.Controllers
                         plan.AllocatedBy = objPlanModel.AllocatedBy;
                         plan.Description = objPlanModel.Description;
                         //plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
-                        plan.Budget = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(objPlanModel.Budget).Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, "")));
+                        plan.Budget = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(objPlanModel.Budget).Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, "")), PlanExchangeRate);
                         plan.ModelId = objPlanModel.ModelId;
                         if (plan.Year != objPlanModel.Year)
                         {
@@ -822,7 +822,7 @@ namespace RevenuePlanner.Controllers
                         msg2 = " in revenue";
                         input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
                         //input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
-                        input2 = isGoalValueExists.Equals(false) ? "0" : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objBudgetAllocationModel.RevenueValue))).ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objBudgetAllocationModel.RevenueValue)), PlanExchangeRate).ToString();
 
                     }
                     else if (goalType.ToString().ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
@@ -831,7 +831,7 @@ namespace RevenuePlanner.Controllers
                         msg2 = " in revenue";
                         input1 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
                         //input2 = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
-                        input2 = isGoalValueExists.Equals(false) ? "0" : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objBudgetAllocationModel.RevenueValue))).ToString();
+                        input2 = isGoalValueExists.Equals(false) ? "0" : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objBudgetAllocationModel.RevenueValue)), PlanExchangeRate).ToString();
 
                     }
                     else if (goalType.ToString().ToLower() == Enums.PlanGoalType.Revenue.ToString().ToLower())
@@ -848,7 +848,7 @@ namespace RevenuePlanner.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
-            return Json(new { msg1 = msg1, msg2 = msg2, input1 = input1, input2 = input2, ADS = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(ADS))) }, JsonRequestBehavior.AllowGet);
+            return Json(new { msg1 = msg1, msg2 = msg2, input1 = input1, input2 = input2, ADS = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(ADS)), PlanExchangeRate) }, JsonRequestBehavior.AllowGet);
         }
         #endregion
 
@@ -2623,7 +2623,7 @@ namespace RevenuePlanner.Controllers
 
             return Json(new
             {
-                revenue = tt.ProjectedRevenue == null ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tt.ProjectedRevenue))),
+                revenue = tt.ProjectedRevenue == null ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tt.ProjectedRevenue)), PlanExchangeRate),
                 IsDeployedToIntegration = tt.IsDeployedToIntegration,
                 stageId = tt.StageId,
                 stageTitle = tt.Stage.Title,
@@ -3165,7 +3165,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = _tac.ImprovementPlanTacticId,
                 title = _tac.Title,
-                cost = objCurrency.GetValueByExchangeRate(_tac.Cost), // Modified By Nishant Sheth // To apply Multi-Currency rates
+                cost = objCurrency.GetValueByExchangeRate(_tac.Cost, PlanExchangeRate), // Modified By Nishant Sheth // To apply Multi-Currency rates
                 ImprovementProgramId = _tac.ImprovementPlanProgramId,
                 isOwner = Sessions.User.UserId == _tac.CreatedBy ? 0 : 1,
             }).Select(_tac => _tac).Distinct().OrderBy(_tac => _tac.id).OrderBy(tac => tac.title, new AlphaNumericComparer());
@@ -3304,7 +3304,7 @@ namespace RevenuePlanner.Controllers
                 if (im.StageType == Enums.StageType.Size.ToString())
                 {
                     modelvalue = db.Models.Where(m => m.ModelId == ModelId).Select(m => m.AverageDealSize).FirstOrDefault();
-                    modelvalue = objCurrency.GetValueByExchangeRate(modelvalue);
+                    modelvalue = objCurrency.GetValueByExchangeRate(modelvalue, PlanExchangeRate);
                 }
                 else
                 {
@@ -3565,10 +3565,10 @@ namespace RevenuePlanner.Controllers
             {
                 MQL = Math.Round(differenceMQL),
                 CW = Math.Round(differenceCW, 1),
-                ADS = Math.Round(objCurrency.GetValueByExchangeRate(differenceDealSize)),// Modified By Nishant Sheth // To apply Multi-Currency rates
+                ADS = Math.Round(objCurrency.GetValueByExchangeRate(differenceDealSize, PlanExchangeRate)),// Modified By Nishant Sheth // To apply Multi-Currency rates
                 Velocity = Math.Round(differenceSV),
-                Revenue = Math.Round(objCurrency.GetValueByExchangeRate(differenceProjectedRevenue), 1),// Modified By Nishant Sheth // To apply Multi-Currency rates
-                Cost = Math.Round(objCurrency.GetValueByExchangeRate(improvedCost))// Modified By Nishant Sheth // To apply Multi-Currency rates
+                Revenue = Math.Round(objCurrency.GetValueByExchangeRate(differenceProjectedRevenue, PlanExchangeRate), 1),// Modified By Nishant Sheth // To apply Multi-Currency rates
+                Cost = Math.Round(objCurrency.GetValueByExchangeRate(improvedCost, PlanExchangeRate))// Modified By Nishant Sheth // To apply Multi-Currency rates
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -3705,10 +3705,10 @@ namespace RevenuePlanner.Controllers
                 ImprovementPlanTacticId = si.ImprovementPlanTacticId,
                 ImprovementTacticTypeId = si.ImprovementTacticTypeId,
                 ImprovementTacticTypeTitle = si.ImprovementTacticTypeTitle,
-                Cost = objCurrency.GetValueByExchangeRate(si.Cost),// Modified By Nishant Sheth // To Convert in selected currency rate
-                ProjectedRevenueWithoutTactic = Math.Round(objCurrency.GetValueByExchangeRate(si.ProjectedRevenueWithoutTactic), 1),// Modified By Nishant Sheth // To Convert in selected currency rate
-                ProjectedRevenueWithTactic = Math.Round(objCurrency.GetValueByExchangeRate(si.ProjectedRevenueWithTactic), 1),// Modified By Nishant Sheth // To Convert in selected currency rate
-                ProjectedRevenueLift = Math.Round(objCurrency.GetValueByExchangeRate(si.ProjectedRevenueLift), 1),// Modified By Nishant Sheth // To Convert in selected currency rate
+                Cost = objCurrency.GetValueByExchangeRate(si.Cost, PlanExchangeRate),// Modified By Nishant Sheth // To Convert in selected currency rate
+                ProjectedRevenueWithoutTactic = Math.Round(objCurrency.GetValueByExchangeRate(si.ProjectedRevenueWithoutTactic, PlanExchangeRate), 1),// Modified By Nishant Sheth // To Convert in selected currency rate
+                ProjectedRevenueWithTactic = Math.Round(objCurrency.GetValueByExchangeRate(si.ProjectedRevenueWithTactic, PlanExchangeRate), 1),// Modified By Nishant Sheth // To Convert in selected currency rate
+                ProjectedRevenueLift = Math.Round(objCurrency.GetValueByExchangeRate(si.ProjectedRevenueLift, PlanExchangeRate), 1),// Modified By Nishant Sheth // To Convert in selected currency rate
                 RevenueToCostRatio = Math.Round(si.RevenueToCostRatio, 1),
                 IsExits = si.isExits,
                 IsOwner = si.isOwner
@@ -3746,7 +3746,7 @@ namespace RevenuePlanner.Controllers
                 picpt.ImprovementPlanProgramId = improvementPlanProgramId;
                 picpt.Title = SingleImprovementTactic.Title;
                 picpt.ImprovementTacticTypeId = improvementTacticTypeId;
-                picpt.Cost = objCurrency.GetValueByExchangeRate(SingleImprovementTactic.Cost);
+                picpt.Cost = objCurrency.GetValueByExchangeRate(SingleImprovementTactic.Cost, PlanExchangeRate);
                 picpt.EffectiveDate = DateTime.Now.Date;
                 picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
                 picpt.CreatedBy = Sessions.User.UserId;
@@ -7215,8 +7215,8 @@ namespace RevenuePlanner.Controllers
                 description = _campgn.Description,
                 isOwner = Sessions.User.UserId == _campgn.CreatedBy ? 1 : 0,
                 //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
-                Budgeted = objCurrency.GetValueByExchangeRate(_campgn.CampaignBudget),
-                Budget = campaignbudgetlist.Where(cb => cb.PlanCampaignId == _campgn.PlanCampaignId).Select(b1 => new BudgetedValue { Period = b1.Period, Value = objCurrency.GetValueByExchangeRate(b1.Value) }).ToList(),
+                Budgeted = objCurrency.GetValueByExchangeRate(_campgn.CampaignBudget, PlanExchangeRate),
+                Budget = campaignbudgetlist.Where(cb => cb.PlanCampaignId == _campgn.PlanCampaignId).Select(b1 => new BudgetedValue { Period = b1.Period, Value = objCurrency.GetValueByExchangeRate(b1.Value, PlanExchangeRate) }).ToList(),
                 createdBy = _campgn.CreatedBy,
                 programs = programlist.Where(p => p.PlanCampaignId == _campgn.PlanCampaignId).Select(pcpj => new
                 {
@@ -7224,8 +7224,8 @@ namespace RevenuePlanner.Controllers
                     title = pcpj.Title,
                     description = pcpj.Description,
                     //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
-                    Budgeted = objCurrency.GetValueByExchangeRate(pcpj.ProgramBudget),
-                    Budget = programbudgetlist.Where(pb => pb.PlanProgramId == pcpj.PlanProgramId).Select(_budgt => new BudgetedValue { Period = _budgt.Period, Value = objCurrency.GetValueByExchangeRate(_budgt.Value) }).ToList(),
+                    Budgeted = objCurrency.GetValueByExchangeRate(pcpj.ProgramBudget, PlanExchangeRate),
+                    Budget = programbudgetlist.Where(pb => pb.PlanProgramId == pcpj.PlanProgramId).Select(_budgt => new BudgetedValue { Period = _budgt.Period, Value = objCurrency.GetValueByExchangeRate(_budgt.Value, PlanExchangeRate) }).ToList(),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 1 : 0,
                     createdBy = pcpj.CreatedBy,
                     tactics = tacticslist.Where(t => t.PlanProgramId == pcpj.PlanProgramId).Select(pcptj => new
@@ -7234,8 +7234,8 @@ namespace RevenuePlanner.Controllers
                         title = pcptj.Title,
                         description = pcptj.Description,
                         //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
-                        Cost = objCurrency.GetValueByExchangeRate(pcptj.TacticBudget),
-                        Budget = tacticbudgetlist.Where(tb => tb.PlanTacticId == pcptj.PlanTacticId).Select(t => new BudgetedValue { Period = t.Period, Value = objCurrency.GetValueByExchangeRate(t.Value) }).ToList(),
+                        Cost = objCurrency.GetValueByExchangeRate(pcptj.TacticBudget, PlanExchangeRate),
+                        Budget = tacticbudgetlist.Where(tb => tb.PlanTacticId == pcptj.PlanTacticId).Select(t => new BudgetedValue { Period = t.Period, Value = objCurrency.GetValueByExchangeRate(t.Value, PlanExchangeRate) }).ToList(),
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 1 : 0,
                         createBy = pcptj.CreatedBy
 
@@ -7310,7 +7310,7 @@ namespace RevenuePlanner.Controllers
                                            {
                                                Period = bv.Period,
                                                //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
-                                               Value = objCurrency.GetValueByExchangeRate(bv.Value)
+                                               Value = objCurrency.GetValueByExchangeRate(bv.Value, PlanExchangeRate)
                                            }).ToList();
                 //// Insert Plan data to Model.
                 obj = new BudgetModel();
@@ -7320,7 +7320,7 @@ namespace RevenuePlanner.Controllers
                 obj.ParentActivityId = "0";
                 // obj.Budgeted = objPlan.Budget;
                 //Insertation Start 17/08/2016 Kausha #2503 Used GetalueByExchangeRate function to store value in dollar.
-                obj.Budgeted = objCurrency.GetValueByExchangeRate(objPlan.Budget);
+                obj.Budgeted = objCurrency.GetValueByExchangeRate(objPlan.Budget, PlanExchangeRate);
 
                 obj.IsOwner = true;
                 obj.isEditable = false;
@@ -8533,58 +8533,58 @@ namespace RevenuePlanner.Controllers
                 ActivityId = row["ActivityId"].ToString(),
                 ActivityName = row["ActivityName"].ToString(),
                 ParentActivityId = row["ParentActivityId"].ToString(),
-                Budgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Cost"].ToString())),
+                Budgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Cost"].ToString()), PlanExchangeRate),
                 IsOwner = Convert.ToBoolean(row["IsOwner"]),
                 BudgetMonth = new BudgetMonth()
                 {
-                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y1"].ToString())),
-                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y2"].ToString())),
-                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y3"].ToString())),
-                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y4"].ToString())),
-                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y5"].ToString())),
-                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y6"].ToString())),
-                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y7"].ToString())),
-                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y8"].ToString())),
-                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y9"].ToString())),
-                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y10"].ToString())),
-                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y11"].ToString())),
-                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y12"].ToString()))
+                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y2"].ToString()), PlanExchangeRate),
+                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y1"].ToString()), PlanExchangeRate),
+                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y3"].ToString()), PlanExchangeRate),
+                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y4"].ToString()), PlanExchangeRate),
+                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y5"].ToString()), PlanExchangeRate),
+                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y6"].ToString()), PlanExchangeRate),
+                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y7"].ToString()), PlanExchangeRate),
+                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y8"].ToString()), PlanExchangeRate),
+                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y9"].ToString()), PlanExchangeRate),
+                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y10"].ToString()), PlanExchangeRate),
+                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y11"].ToString()), PlanExchangeRate),
+                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["Y12"].ToString()), PlanExchangeRate)
                 },
-                Allocated = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["TotalBudgetSum"].ToString())),
+                Allocated = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["TotalBudgetSum"].ToString()), PlanExchangeRate),
                 Month = new BudgetMonth()
                 {
-                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString())),
-                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString())),
-                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString())),
-                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString())),
-                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString())),
-                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString())),
-                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString())),
-                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString())),
-                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString())),
-                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString())),
-                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString())),
-                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()))
+                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString()), PlanExchangeRate),
+                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString()), PlanExchangeRate),
+                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString()), PlanExchangeRate),
+                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString()), PlanExchangeRate),
+                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString()), PlanExchangeRate),
+                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString()), PlanExchangeRate),
+                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString()), PlanExchangeRate),
+                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString()), PlanExchangeRate),
+                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString()), PlanExchangeRate),
+                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString()), PlanExchangeRate),
+                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString()), PlanExchangeRate),
+                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()), PlanExchangeRate)
                 },
-                MainBudgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["MainBudgeted"].ToString())),
+                MainBudgeted = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["MainBudgeted"].ToString()), PlanExchangeRate),
                 CreatedBy = new Guid(row["CreatedBy"].ToString()),
                 isAfterApproved = Convert.ToBoolean(row["IsAfterApproved"]),
                 isEditable = Convert.ToBoolean(row["IsEditable"]),
                 ActivityType = row["ActivityType"].ToString(),
                 ParentMonth = row["ActivityType"].ToString() == ActivityType.ActivityLineItem.ToString() ? new BudgetMonth()
                 {
-                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString())),
-                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString())),
-                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString())),
-                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString())),
-                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString())),
-                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString())),
-                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString())),
-                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString())),
-                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString())),
-                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString())),
-                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString())),
-                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()))
+                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString()), PlanExchangeRate),
+                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString()), PlanExchangeRate),
+                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString()), PlanExchangeRate),
+                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString()), PlanExchangeRate),
+                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString()), PlanExchangeRate),
+                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString()), PlanExchangeRate),
+                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString()), PlanExchangeRate),
+                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString()), PlanExchangeRate),
+                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString()), PlanExchangeRate),
+                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString()), PlanExchangeRate),
+                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString()), PlanExchangeRate),
+                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()), PlanExchangeRate)
                 } : null
 
             }).ToList();
@@ -12476,11 +12476,11 @@ namespace RevenuePlanner.Controllers
                                                            {
                                                                PlanTacticId = tactic.TacticObj.PlanTacticId,
                                                                MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
-                                                               Revenue = objCurrency.GetValueByExchangeRate(tactic.RevenueValue)// Modified By Nishant Sheth // To Convert in selected currency rate
+                                                               Revenue = objCurrency.GetValueByExchangeRate(tactic.RevenueValue, PlanExchangeRate)// Modified By Nishant Sheth // To Convert in selected currency rate
                                                            }).ToList();
 
             TotalMqls = ListTacticMQLValue.Sum(tactic => tactic.MQL);
-            TotalCost = objCurrency.GetValueByExchangeRate(LineItemList.Sum(l => l.Cost)); // Modified By Nishant Sheth // To Convert in selected currency rate
+            TotalCost = objCurrency.GetValueByExchangeRate(LineItemList.Sum(l => l.Cost), PlanExchangeRate); // Modified By Nishant Sheth // To Convert in selected currency rate
             objimprovement.TotalCost = TotalCost;
             objimprovement.TotalMqls = TotalMqls;
             objimprovement.Progrmas = NoOfPrograms;
@@ -12887,7 +12887,7 @@ namespace RevenuePlanner.Controllers
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
-                        string planTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(totalcost))));  // Add By Nishant Sheth #2497
+                        string planTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(totalcost)), PlanExchangeRate));  // Add By Nishant Sheth #2497
                         plandataobj = new Plandataobj();
                         plandataobj.value = planTotalCost;
                         plandataobj.actval = planTotalCost;
@@ -12933,7 +12933,7 @@ namespace RevenuePlanner.Controllers
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
-                        double planTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(totalrevenue))); // Add By Nishant Sheth #2497
+                        double planTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(totalrevenue)), PlanExchangeRate); // Add By Nishant Sheth #2497
                         plandataobj = new Plandataobj();
                         plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(planTotalRevenue).ToString();
                         plandataobj.actval = planTotalRevenue.ToString();
@@ -13068,7 +13068,7 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
-                                    string campTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Campaignitem.totalcost)))); // Add By Nishant Sheth #2497
+                                    string campTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Campaignitem.totalcost)), PlanExchangeRate)); // Add By Nishant Sheth #2497
                                     campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = campTotalCost;
                                     campaigndataobj.actval = campTotalCost;
@@ -13105,7 +13105,7 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj.actval = Campaignitem.totalmql.ToString();
                                     campaigndataobjlist.Add(campaigndataobj);
 
-                                    double campTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Campaignitem.totalrevenue))); // Add By Nishant Sheth #2497
+                                    double campTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Campaignitem.totalrevenue)), PlanExchangeRate); // Add By Nishant Sheth #2497
                                     campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = dollarsymbol + ConvertNumberToRoundFormate(campTotalRevenue).ToString();
                                     campaigndataobj.actval = campTotalRevenue.ToString();
@@ -13238,7 +13238,7 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
-                                                double progToatalCost = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Programitem.totalcost)));
+                                                double progToatalCost = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Programitem.totalcost)), PlanExchangeRate);
                                                 programdataobj = new Plandataobj();
                                                 programdataobj.value = progToatalCost.ToString();
                                                 programdataobj.actval = progToatalCost.ToString();
@@ -13275,7 +13275,7 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
-                                                double progTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Programitem.totalrevenue)));// Add By Nishant Sheth #2497
+                                                double progTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Programitem.totalrevenue)), PlanExchangeRate);// Add By Nishant Sheth #2497
                                                 programdataobj = new Plandataobj();
                                                 programdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(progTotalRevenue).ToString();
                                                 programdataobj.actval = progTotalRevenue.ToString();
@@ -13404,7 +13404,7 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
-                                                        string tacTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tactic.totalcost))));// Add By Nishant Sheth #2497
+                                                        string tacTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tactic.totalcost)), PlanExchangeRate));// Add By Nishant Sheth #2497
                                                         tacticdataobj = new Plandataobj();
                                                         tacticdataobj.value = tacTotalCost;
                                                         tacticdataobj.actval = tacTotalCost;
@@ -13445,7 +13445,7 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
-                                                        double tacTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tactic.totalrevenue)));// Add By Nishant Sheth #2497
+                                                        double tacTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tactic.totalrevenue)), PlanExchangeRate);// Add By Nishant Sheth #2497
                                                         tacticdataobj = new Plandataobj();
                                                         tacticdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(tacTotalRevenue).ToString();
                                                         tacticdataobj.actval = tacTotalRevenue.ToString();
@@ -13521,7 +13521,7 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemdataobj.locked = lockedstateone;
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
-                                                                string lineTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(lineitem.Cost)); // Add By Nishant Sheth #2497
+                                                                string lineTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(lineitem.Cost, PlanExchangeRate)); // Add By Nishant Sheth #2497
                                                                 lineitemdataobj = new Plandataobj();
                                                                 lineitemdataobj.value = lineTotalCost;
                                                                 lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
@@ -14083,7 +14083,7 @@ namespace RevenuePlanner.Controllers
                         // Convert value from other currency to USD
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
-                            UpdateVal = Convert.ToString(objCurrency.SetValueByExchangeRate(double.Parse(UpdateVal)));
+                            UpdateVal = Convert.ToString(objCurrency.SetValueByExchangeRate(double.Parse(UpdateVal), PlanExchangeRate));
                         }
                         tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == id).ToList();
                         UpdateTacticPlannedCost(ref pcpobj, ref linkedTactic, ref totalLineitemCost, UpdateVal, tblTacticLineItem, linkedTacticId, yearDiff);
@@ -14663,7 +14663,7 @@ namespace RevenuePlanner.Controllers
                     {
                         double lCost = 0;
                         if (!string.IsNullOrEmpty(UpdateVal))
-                            lCost = Convert.ToDouble(UpdateVal);
+                            lCost = objCurrency.SetValueByExchangeRate(double.Parse(UpdateVal), PlanExchangeRate);
                         if (lCost > objLineitem.Cost)
                         {
                             var diffcost = lCost - objLineitem.Cost;
@@ -15582,7 +15582,7 @@ namespace RevenuePlanner.Controllers
                 objplangrid.INQLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(INQLable);
                 objplangrid.MQLValue = MQLValue;
                 objplangrid.INQValue = INQValue;
-                objplangrid.Revenue = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Revenue))));// Add By Nishant Sheth #2497
+                objplangrid.Revenue = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Revenue)), PlanExchangeRate));// Add By Nishant Sheth #2497
                 objplangrid.CWLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(CWLable);
                 objplangrid.CWValue = CWValue;
                 //ViewBag.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
@@ -17528,7 +17528,7 @@ namespace RevenuePlanner.Controllers
                 {
                     totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
                     totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
-                    totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
+                    totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                     DataRow[] dr = dtCSV.Select("EntityId = " + PlanList[plan] + "AND Section = '" + Enums.Section.Plan.ToString() + "'");
 
                     OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
@@ -17549,7 +17549,7 @@ namespace RevenuePlanner.Controllers
                     {
                         totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.MQL) : 0;
                         totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.Revenue) : 0;
-                        totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
+                        totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                         var ProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
                            && int.Parse(x.Field<string>("ParentId")) == CampList[camp]).OrderBy(x => x.Field<string>("Program")).Select(x => x.Field<int>("EntityId")).ToList();
 
@@ -17566,7 +17566,7 @@ namespace RevenuePlanner.Controllers
                         {
                             totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.MQL) : 0;
                             totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
-                            totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
+                            totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                             var ProgTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
                                        && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
                             totalPlannedCostCSV = ProgTacticCostlist.Sum();
@@ -17584,7 +17584,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.MQL) : 0;
                                     totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.Revenue) : 0;
-                                    totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
+                                    totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                                     dr = dtCSV.Select("EntityId = " + TacticList[Tac] + "AND Section = '" + Enums.Section.Tactic.ToString() + "'");
                                     totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
                                     OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
@@ -17763,8 +17763,8 @@ namespace RevenuePlanner.Controllers
                 totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.PlanTacticId == id).Sum(l => l.Revenue) : 0;
                 totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => l.PlanTacticId == id).Sum(l => l.Cost) : 0;
             }
-            totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV); // Add By Nishant Sheth #2502 : Export csv with multi-currency
-            totalPlannedCostCSV = objCurrency.GetValueByExchangeRate(totalPlannedCostCSV); // Add By Nishant Sheth #2502 : Export csv with multi-currency
+            totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth #2502 : Export csv with multi-currency
+            totalPlannedCostCSV = objCurrency.GetValueByExchangeRate(totalPlannedCostCSV, PlanExchangeRate); // Add By Nishant Sheth #2502 : Export csv with multi-currency
             DataRow[] dr = dataTable.Select("EntityId = " + id + "AND Section = '" + Section + "'");
 
             OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
@@ -17893,7 +17893,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         double value = 0;
                                         double.TryParse(Convert.ToString(dt.Rows[j][i]), out value);
-                                        dt.Rows[j][i] = Convert.ToString(objCurrency.SetValueByExchangeRate(value));
+                                        dt.Rows[j][i] = Convert.ToString(objCurrency.SetValueByExchangeRate(value, PlanExchangeRate));
 
                                     }
                                 }

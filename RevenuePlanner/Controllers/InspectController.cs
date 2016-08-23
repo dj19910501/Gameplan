@@ -55,6 +55,7 @@ namespace RevenuePlanner.Controllers
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
         List<BudgetCheckedItem> ListbudgetCheckedItem = new List<BudgetCheckedItem>(); // Add By Nishant Sheth #2325
+        public double PlanExchangeRate = Sessions.PlanExchangeRate;
         #endregion
 
         #region "Inspect Index"
@@ -3718,7 +3719,7 @@ namespace RevenuePlanner.Controllers
                         if (lineItemActual != null && lineItemActual.Count > 0)
                         {
                             lineItemActual.ForEach(al => { al.CreatedBy = Sessions.User.UserId; al.CreatedDate = DateTime.Now; });
-                            lineItemActual.ForEach(al => { al.Value = objCurrency.SetValueByExchangeRate(al.Value); });
+                            lineItemActual.ForEach(al => { al.Value = objCurrency.SetValueByExchangeRate(al.Value, PlanExchangeRate); });
                             List<int> lstLineItemIds = lineItemActual.Select(al => al.PlanLineItemId).Distinct().ToList();
                             var prevlineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => lstLineItemIds.Contains(al.PlanLineItemId)).ToList();
                             prevlineItemActual.ForEach(al => db.Entry(al).State = EntityState.Deleted);
@@ -4001,7 +4002,7 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString() || t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString())
                                                 {
-                                                    t.ActualValue = objCurrency.SetValueByExchangeRate(t.ActualValue);
+                                                    t.ActualValue = objCurrency.SetValueByExchangeRate(t.ActualValue, PlanExchangeRate);
                                                 }
                                                 Plan_Campaign_Program_Tactic_Actual objpcpta = new Plan_Campaign_Program_Tactic_Actual();
                                                 objpcpta.PlanTacticId = t.PlanTacticId;

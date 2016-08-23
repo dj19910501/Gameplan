@@ -13,8 +13,9 @@ using Elmah;
 namespace RevenuePlanner.Helpers
 {
     public static class HtmlHelpers
-    {        
+    {
         public static RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();//Added by Rahul Shah for PL #2498.
+        public static double PlanExchangeRate = Sessions.PlanExchangeRate;
         /// <summary>
         /// To truncate the string 
         /// </summary>
@@ -56,8 +57,8 @@ namespace RevenuePlanner.Helpers
             if (MSize > 0)
             {
                 //Modified by Rahul Shah for PL #2498.
-                textboxMarketingDealSize.Attributes.Add("value", objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(MSize))).ToString());
-                textboxMarketingDealSize.Attributes.Add("placeholder", objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(MSize))).ToString());
+                textboxMarketingDealSize.Attributes.Add("value", objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(MSize)), PlanExchangeRate).ToString());
+                textboxMarketingDealSize.Attributes.Add("placeholder", objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(MSize)), PlanExchangeRate).ToString());
             }
             else
             {

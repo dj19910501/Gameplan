@@ -20,6 +20,7 @@ namespace RevenuePlanner.Controllers
         private MRPEntities db = new MRPEntities();
         static Random rnd = new Random();
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+        public double PlanExchangeRate = Sessions.PlanExchangeRate;
         #endregion
         //public BoostController()
         //{
@@ -69,26 +70,26 @@ namespace RevenuePlanner.Controllers
 
                 //// Add all  BestInClassModel details to list except CW Stage Code.
                 foreach (var item in stagefilter.Where(stage => stage.Level != null && stage.Code != CW).OrderBy(stage => stage.Level).ToList())
-                    {
-                        BestInClassModel objBestInClassModel = new BestInClassModel();
-                        objBestInClassModel.StageName = Common.GetReplacedString(item.ConversionTitle);
-                        objBestInClassModel.ConversionValue = bicfilter.Where(cls => cls.StageId == item.StageId && cls.StageType == StageType_CR).Select(cls => cls.Value).FirstOrDefault();
-                        objBestInClassModel.VelocityValue = bicfilter.Where(cls => cls.StageId == item.StageId && cls.StageType == StageType_SV).Select(cls => cls.Value).FirstOrDefault();
-                        objBestInClassModel.StageID_CR = item.StageId;
-                        objBestInClassModel.StageID_SV = item.StageId;
-                        objBestInClassModel.StageType = StageType_CR;
-                            listBestInClassModel.Add(objBestInClassModel);
+                {
+                    BestInClassModel objBestInClassModel = new BestInClassModel();
+                    objBestInClassModel.StageName = Common.GetReplacedString(item.ConversionTitle);
+                    objBestInClassModel.ConversionValue = bicfilter.Where(cls => cls.StageId == item.StageId && cls.StageType == StageType_CR).Select(cls => cls.Value).FirstOrDefault();
+                    objBestInClassModel.VelocityValue = bicfilter.Where(cls => cls.StageId == item.StageId && cls.StageType == StageType_SV).Select(cls => cls.Value).FirstOrDefault();
+                    objBestInClassModel.StageID_CR = item.StageId;
+                    objBestInClassModel.StageID_SV = item.StageId;
+                    objBestInClassModel.StageType = StageType_CR;
+                    listBestInClassModel.Add(objBestInClassModel);
                 }
-               
+
                 //// Add Stage level null BestInClassModel details to list.
                 List<Stage> lstStages = GetStageListbyClientId(Sessions.User.ClientId);
                 foreach (var itemSize in lstStages.Where(stage => stage.Level == null))
                 {
                     BestInClassModel objBestInClassModel = new BestInClassModel();
-                        objBestInClassModel.StageID_Size = itemSize.StageId;
-                        objBestInClassModel.StageName = itemSize.Title;
-                        objBestInClassModel.StageType = StageType_Size;
-                        objBestInClassModel.ConversionValue = bicfilter.Where(cls => cls.StageId == itemSize.StageId && cls.StageType == StageType_Size).Select(cls => cls.Value).FirstOrDefault();
+                    objBestInClassModel.StageID_Size = itemSize.StageId;
+                    objBestInClassModel.StageName = itemSize.Title;
+                    objBestInClassModel.StageType = StageType_Size;
+                    objBestInClassModel.ConversionValue = bicfilter.Where(cls => cls.StageId == itemSize.StageId && cls.StageType == StageType_Size).Select(cls => cls.Value).FirstOrDefault();
                     listBestInClassModel.Add(objBestInClassModel);
                 }
             }
@@ -121,8 +122,8 @@ namespace RevenuePlanner.Controllers
                     {
                         db.Entry(item).State = EntityState.Modified;
                         db.BestInClasses.Remove(item);
-                            db.SaveChanges();
-                        }
+                        db.SaveChanges();
+                    }
                     foreach (var bCls in bic)
                     {
                         BestInClass objBestInClass = new BestInClass();
@@ -162,7 +163,7 @@ namespace RevenuePlanner.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
-           
+
             return Json(new { id = 0 });
         }
 
@@ -189,7 +190,7 @@ namespace RevenuePlanner.Controllers
             {
                 return RedirectToAction("Index", "NoAccess");
             }
-            
+
             ViewBag.IsBoostImprovementTacticCreateEditAuthorized = IsBoostImprovementTacticCreateEditAuthorized;
             ViewBag.IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
@@ -211,18 +212,18 @@ namespace RevenuePlanner.Controllers
             {
                 Id = itt.ImprovementTacticTypeId,
                 Title = itt.Title,
-                Cost = objCurrency.GetValueByExchangeRate(itt.Cost), //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
+                Cost = objCurrency.GetValueByExchangeRate(itt.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
                 IsDeployed = itt.IsDeployed,
                 TargetStage = (db.Stages.Where(stages => stages.IsDeleted == false && stages.ClientId == Sessions.User.ClientId && stages.Code != StageTypeCW)//Add M
                                         .OrderBy(stages => stages.Level).ToList())
                                          .Select(ittmobj => new
                                          {
-                                            Stages = ittmobj.Title,
-                                            Active = TargetStage(itt.ImprovementTacticTypeId, ittmobj.StageId)
+                                             Stages = ittmobj.Title,
+                                             Active = TargetStage(itt.ImprovementTacticTypeId, ittmobj.StageId)
                                          }).Select(ittmobj => ittmobj),
                 IsDeployedToIntegration = itt.IsDeployedToIntegration
             }).Select(itt => itt);
-            return Json(ImprovementTacticList.OrderBy(_imprvTac => _imprvTac.Title,new AlphaNumericComparer()).ToList(), JsonRequestBehavior.AllowGet); // Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 to provide sorting for Listings
+            return Json(ImprovementTacticList.OrderBy(_imprvTac => _imprvTac.Title, new AlphaNumericComparer()).ToList(), JsonRequestBehavior.AllowGet); // Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 to provide sorting for Listings
         }
 
         /// <summary>
@@ -246,7 +247,7 @@ namespace RevenuePlanner.Controllers
                 ImprovementTacticType ittobj = GetImprovementTacticTypeRecordbyId(id);
                 bittobj.Title = System.Web.HttpUtility.HtmlDecode(ittobj.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 bittobj.Description = System.Web.HttpUtility.HtmlDecode(ittobj.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                bittobj.Cost = objCurrency.GetValueByExchangeRate(ittobj.Cost); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
+                bittobj.Cost = objCurrency.GetValueByExchangeRate(ittobj.Cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
                 bittobj.IsDeployed = ittobj.IsDeployed;
                 bittobj.ImprovementTacticTypeId = id;
                 bittobj.ColorCode = ittobj.ColorCode;
@@ -268,7 +269,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.CanDelete = false;     //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                 ViewBag.IsCreated = true;      //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
             }
-            
+
             /*get the metrics related to improvement Tactic and display in view*/
             List<MetricModel> listMetrics = new List<MetricModel>();
             List<MetricModel> listMetricssize = new List<MetricModel>();
@@ -276,7 +277,7 @@ namespace RevenuePlanner.Controllers
             List<Stage> lstStages = GetStageListbyClientId(Sessions.User.ClientId);
             var stageFilterCR = lstStages;//modified by Mitesh Vaishnav on 13/06/2014 to address #500 Customized Target stage - Boost Improvement Tactic 
             var stageFilterSV = lstStages;//modified by Mitesh Vaishnav on 13/06/2014 to address #500 Customized Target stage - Boost Improvement Tactic 
-            
+
             //// Add MetricModel data to list except CW Stage Type data.
             MetricModel Metricsobj = null;
             foreach (var itemCR in stageFilterCR.Where(stage => stage.Level != null && stage.Code != StageTypeCW).OrderBy(stage => stage.Level).ToList())
@@ -358,7 +359,7 @@ namespace RevenuePlanner.Controllers
                         objIt.ImprovementTacticTypeId = improvementId;
                         objIt.Title = title;
                         objIt.Description = desc;
-                        objIt.Cost = objCurrency.SetValueByExchangeRate(cost); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
+                        objIt.Cost = objCurrency.SetValueByExchangeRate(cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
                         objIt.IsDeployed = status;
                         objIt.IsDeployedToIntegration = deployToIntegrationStatus;
                         db.Entry(objIt).State = EntityState.Modified;
@@ -387,7 +388,7 @@ namespace RevenuePlanner.Controllers
                     {
                         objIt.Title = title;
                         objIt.Description = desc;
-                        objIt.Cost = objCurrency.SetValueByExchangeRate(cost); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
+                        objIt.Cost = objCurrency.SetValueByExchangeRate(cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
                         objIt.IsDeployed = status;
                         objIt.ClientId = Sessions.User.ClientId;
                         objIt.CreatedBy = Sessions.User.UserId;
@@ -396,11 +397,11 @@ namespace RevenuePlanner.Controllers
                         int intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
                         objIt.ColorCode = Convert.ToString(Common.ColorcodeList[intRandomColorNumber]);
                         objIt.IsDeployedToIntegration = deployToIntegrationStatus;
-                      //  db.ImprovementTacticTypes.Attach(objIt);
+                        //  db.ImprovementTacticTypes.Attach(objIt);
                         db.Entry(objIt).State = EntityState.Added;
                         db.ImprovementTacticTypes.Add(objIt);
                         int result = db.SaveChanges();
-                        
+
                         improvementId = objIt.ImprovementTacticTypeId;
                         successMessage = string.Format(Common.objCached.NewImprovementTacticSaveSucess);
                     }
@@ -587,7 +588,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     TempData["SuccessMessage"] = string.Empty;
-                    return Json(new { status = 1,  errormsg = Common.objCached.NoRecordFound }, JsonRequestBehavior.AllowGet);
+                    return Json(new { status = 1, errormsg = Common.objCached.NoRecordFound }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception e)
@@ -619,7 +620,7 @@ namespace RevenuePlanner.Controllers
                 active = false;
             return active;
         }
-        
+
         public class StageDetails
         {
             public string StageId { get; set; }
@@ -638,7 +639,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 lstStages = db.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == clientId).ToList();
-                if(lstStages == null)
+                if (lstStages == null)
                     lstStages = new List<Stage>();
             }
             catch (Exception ex)

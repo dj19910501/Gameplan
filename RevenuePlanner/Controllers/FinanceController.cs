@@ -36,6 +36,7 @@ namespace RevenuePlanner.Controllers
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
         public RevenuePlanner.Services.IFinance objFinance = new RevenuePlanner.Services.Finance();
+        public double PlanExchangeRate = Sessions.PlanExchangeRate;
         #endregion
 
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
@@ -735,9 +736,10 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 if (col.ValidationType == Enums.ColumnValidation.ValidCurrency.ToString())
                                                 {
-                                                    Datarow[colname] = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(CustomValue)));
+                                                    Datarow[colname] = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(CustomValue), PlanExchangeRate));
                                                 }
-                                                else {
+                                                else
+                                                {
                                                     Datarow[colname] = CustomValue != null ? CustomValue : "0";
                                                 }
                                             }
@@ -749,7 +751,7 @@ namespace RevenuePlanner.Controllers
                                         else
                                         {
                                             Datarow[colname] = !string.IsNullOrEmpty(CustomValue) ? CustomValue : string.Empty;
-                                        }                                        
+                                        }
                                     }
                                     else
                                     {
@@ -2800,9 +2802,10 @@ namespace RevenuePlanner.Controllers
                                                 {
                                                     if (col.ValidationType == Enums.ColumnValidation.ValidCurrency.ToString())
                                                     {
-                                                        row[colname] = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(CustomValue)));
+                                                        row[colname] = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(CustomValue),PlanExchangeRate));
                                                     }
-                                                    else {
+                                                    else
+                                                    {
                                                         row[colname] = CustomValue != null ? CustomValue : "0";
                                                     }
                                                 }
@@ -2814,7 +2817,7 @@ namespace RevenuePlanner.Controllers
                                             else
                                             {
                                                 row[colname] = !string.IsNullOrEmpty(CustomValue) ? CustomValue : string.Empty;
-                                            }                                            
+                                            }
                                         }
                                         else
                                         {
@@ -2824,7 +2827,7 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
                                                 row[colname] = DropDownVal;
-                                            }                                            
+                                            }
                                         }
                                     }
                                 }
@@ -2926,9 +2929,10 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 if (col.ValidationType == Enums.ColumnValidation.ValidCurrency.ToString())
                                                 {
-                                                    row[colname] = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(CustomValue)));
+                                                    row[colname] = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(CustomValue),PlanExchangeRate));
                                                 }
-                                                else {
+                                                else
+                                                {
                                                     row[colname] = CustomValue;
                                                 }
                                             }
@@ -3540,12 +3544,12 @@ namespace RevenuePlanner.Controllers
                                }).ToList().Sum(a => a.Value);
                     //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                     _Budget = Budget_DetailAmountList.Where(a => _curentBudget.Contains(a.Period)).Sum(a => a.Budget);
-                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
 
                     _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
-                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
-                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));
-                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
                 }
                 #endregion
             }
@@ -3572,11 +3576,11 @@ namespace RevenuePlanner.Controllers
                                }).ToList().Sum(a => a.Value);
                     //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                     _Budget = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Budget);
-                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
                     _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
-                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
-                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));
-                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
                 }
             }
             else
@@ -3619,11 +3623,11 @@ namespace RevenuePlanner.Controllers
 
                     _Budget = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Budget);
                     //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
-                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
                     _ForeCast = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Forecast);
-                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
-                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));                   
-                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
                 }
             }
             objbudget.Budget = _budgetlist;
@@ -3716,8 +3720,8 @@ namespace RevenuePlanner.Controllers
 
                     }
                     //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
-                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
-                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
                     if (PlanDetailAmount != null && LineItemidBudgetList != null)
                     {
                         _Plan = (from plandetail in PlanDetailAmount
@@ -3741,8 +3745,8 @@ namespace RevenuePlanner.Controllers
                                    }).ToList().Sum(a => a.Value);
                     }
                     //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
-                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));
-                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
                 }
                 #endregion
             }
@@ -3756,8 +3760,8 @@ namespace RevenuePlanner.Controllers
                         _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
                     }
                     //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
-                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget))));
-                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast))));
+                    _budgetlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Budget)), PlanExchangeRate));
+                    _forecastlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_ForeCast)), PlanExchangeRate));
                     if (PlanDetailAmount != null && LineItemidBudgetList != null)
                     {
                         _Plan = (from plandetail in PlanDetailAmount
@@ -3781,8 +3785,8 @@ namespace RevenuePlanner.Controllers
                                    }).ToList().Sum(a => a.Value);
                     }
                     //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
-                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan))));                    
-                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual))));                    
+                    _planlist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Plan)), PlanExchangeRate));
+                    _actuallist.Add(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_Actual)), PlanExchangeRate));
                 }
             }
             objbudget.Budget = _budgetlist;
@@ -3807,7 +3811,7 @@ namespace RevenuePlanner.Controllers
             {
                 nValue = "0";
                 nValue = HttpUtility.HtmlDecode(nValue.Trim());
-            }            
+            }
             List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
                                                join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
                                                where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
@@ -3936,11 +3940,11 @@ namespace RevenuePlanner.Controllers
                     {
                         if (ColumnName == BudgetColName)
                         {
-                            objBudAmount.Budget = Convert.ToDouble(objCurrency.SetValueByExchangeRate(double.Parse(nValue))); //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                            objBudAmount.Budget = Convert.ToDouble(objCurrency.SetValueByExchangeRate(double.Parse(nValue), PlanExchangeRate)); //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                         }
                         else if (ColumnName == ForecastColName)
                         {
-                            objBudAmount.Forecast = Convert.ToDouble(objCurrency.SetValueByExchangeRate(double.Parse(nValue))); //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                            objBudAmount.Forecast = Convert.ToDouble(objCurrency.SetValueByExchangeRate(double.Parse(nValue), PlanExchangeRate)); //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                         }
                         if (BudgetId > 0)
                         {
@@ -3969,7 +3973,7 @@ namespace RevenuePlanner.Controllers
                         FirstNew = FirstOld = Convert.ToDouble(ColumnName == BudgetColName ? BudgetAmountList[0].Budget : BudgetAmountList[0].Forecast);
                         SecondNew = SecondOld = Convert.ToDouble(BudgetAmountList.Count >= 2 ? (ColumnName == BudgetColName ? BudgetAmountList[1].Budget : BudgetAmountList[1].Forecast) : 0);
                         ThirdNew = ThirdOld = Convert.ToDouble(BudgetAmountList.Count >= 3 ? (ColumnName == BudgetColName ? BudgetAmountList[2].Budget : BudgetAmountList[2].Forecast) : 0);
-                        nValue = Convert.ToString(objCurrency.SetValueByExchangeRate(Convert.ToDouble(nValue))); //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
+                        nValue = Convert.ToString(objCurrency.SetValueByExchangeRate(Convert.ToDouble(nValue), PlanExchangeRate)); //Moidified by Rahul Shah for PL #2505 to Apply multicurrency.
                         if (Convert.ToDouble(nValue) > QuaterSum)
                         {
                             Maindiff = Convert.ToDouble(nValue) - QuaterSum;
@@ -4100,12 +4104,13 @@ namespace RevenuePlanner.Controllers
                         CustomField_Entity objCustomFieldEnity = new CustomField_Entity();
                         objCustomFieldEnity = db.CustomField_Entity.Where(a => a.EntityId == (BudgetId != null ? BudgetId : 0) && a.CustomFieldId == CustomCol.CustomFieldId).FirstOrDefault();
                         //Moidified by Rahul Shah for PL #2505 to Apply multicurrency on custom collumn.
-                        if (DoubleColumnValidation.Contains(CustomCol.ValidationType)) {
+                        if (DoubleColumnValidation.Contains(CustomCol.ValidationType))
+                        {
                             double n;
                             bool isNumeric = double.TryParse(nValue, out n);
                             if (isNumeric)
-                            {                                
-                                nValue = Convert.ToString(objCurrency.SetValueByExchangeRate(double.Parse(nValue)));
+                            {
+                                nValue = Convert.ToString(objCurrency.SetValueByExchangeRate(double.Parse(nValue), PlanExchangeRate));
                             }
                         }
                         if (objCustomFieldEnity != null)
@@ -4551,7 +4556,7 @@ namespace RevenuePlanner.Controllers
 
                                     if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
                                     {
-                                        colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata));
+                                        colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                     }
                                     else if (ListCustomCols != null)
                                     {
@@ -4563,7 +4568,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
                                             {
-                                                colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata));
+                                                colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                             }
                                         }
                                     }
@@ -4756,7 +4761,7 @@ namespace RevenuePlanner.Controllers
 
                                     if (colName == Convert.ToString(Enums.FinanceHeader_Label.Budget) || colName == Convert.ToString(Enums.FinanceHeader_Label.Forecast))
                                     {
-                                        colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata));
+                                        colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                     }
                                     else if (ListCustomCols != null)
                                     {
@@ -4768,7 +4773,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             if (CustomCol.ValidationType == Convert.ToString(Enums.ColumnValidation.ValidCurrency))
                                             {
-                                                colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata));
+                                                colValue = Convert.ToString(objCurrency.SetValueByExchangeRate(coldata, PlanExchangeRate));
                                             }
                                         }
                                     }

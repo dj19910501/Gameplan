@@ -105,9 +105,8 @@ namespace RevenuePlanner.Services
         /// <param name="ExchangeRate"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public double GetValueByExchangeRate(double DataValue = 0)
+        public double GetValueByExchangeRate(double DataValue = 0, double ExchangeRate = 1)
         {
-            double ExchangeRate = Sessions.PlanExchangeRate;
             double ConvertedValue = DataValue;
             if (DataValue > 0)
             {
@@ -124,9 +123,8 @@ namespace RevenuePlanner.Services
         /// <param name="ExchangeRate"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public double SetValueByExchangeRate(double DataValue = 0)
+        public double SetValueByExchangeRate(double DataValue = 0, double ExchangeRate = 1)
         {
-            double ExchangeRate = Sessions.PlanExchangeRate;
             double ConvertedValue = DataValue;
             if (DataValue > 0)
             {
