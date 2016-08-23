@@ -30,8 +30,9 @@
     .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td {
         padding-left: 8px;
         padding-right: 8px;
+        text-align:center;
     }
-
+    .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td:first-child{text-align:left;}
     .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj tr.ev_dhx_skyblue {
         background: #f0f0f0;
     }
@@ -81,24 +82,31 @@
             Currency Exchange rate
         </h2>
     </div>
-    @Html.Partial("~/Views/Currency/_currencyMenu.cshtml")
     <div class="padding-content  cf source-sans-proregular">
-        <div class="selectyear">
-            <label>Select Year</label> @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
-            @if (Editpermission == true)
-                {
-                <input type="button" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20" />
-            }
-        </div>
+        <div class="row">
+            @Html.Partial("~/Views/Currency/_currencyMenu.cshtml")
+            <div class="span10 currency-content">
+                <div class="selectyear">
+                    <label>Select Year</label> @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
+                    @if (Editpermission == true)
+                    {
+                        <input type="button" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20" />
+                    }
+                </div>
 
 
-        <div id="PlanGrid" class="gridViewGrid currency-tbl"></div>
+                <div id="PlanGrid" class="gridViewGrid currency-tbl margin-bottom36"></div>
 
-        <div>
-            <input type="checkbox" id="chkSameasplanning" value=""> Same as planning
-        </div>
-        <div id="ReportGrid" class="gridViewGrid currency-tbl margin-top40"></div>
-
+                <div class="checkbox-wrap clearfix">
+                    <div class="pull-right">
+                        <input type="checkbox" id="chkSameasplanning" value=""> <span>Same as planning</span>
+                    </div>
+                    </div>
+                <div id="ReportGrid" class="gridViewGrid currency-tbl">
+                   
+                </div>
+            </div>
+         </div>
     </div>
 }
 

@@ -13367,7 +13367,9 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
 .time-frame .geography-dropdown .revenue-summary-custom {
     float: left;
 }
-
+.time-frame .geography-dropdown .revenue-summary-custom  .sbHolder{ /*Added by Bhumika to solve top header Profile-dropdown issue*/
+    z-index:2;
+}
 .time-frame {
     float: right;
     position: relative;
@@ -15458,6 +15460,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 
 .header-right .dropdown-menu{padding:0; background: #f2f2f2 none repeat scroll 0 0; right:0; left:auto}
 .header-right .dropdown-menu li{text-align:left; border-bottom:1px solid #ccc;font-size:13px}
+.header-right .dropdown-menu li:hover{background:#ddd}
 .header-right .dropdown-menu > li:last-child{ border-bottom:0 none;}
 .header-right .dropdown-menu > li > a{padding: 4px 10px;}
 .header-right .dropdown-menu > li > a:hover{background:none; color:inherit}
@@ -16225,6 +16228,12 @@ input.selectInput{
 .searchactive{background: #ddd none repeat scroll 0 0;}
 .searchinactive {background: none;}
 .row-fluid .currency-content .span5 { width: 48%;}
+/* #2492 changes */
+.span10.currency-content{width:82%; padding-left: 30px; } 
+.currency-content h4.align-top{margin-top: 0;}
+.checkbox-wrap{padding:10px 0 0 0}
+.checkbox-wrap input[type="checkbox"]{margin-top:0}
+
 #divCurrencyList{margin-right:15px}
 .currency-wrap{
     border:1px solid #ccc; 
@@ -16309,6 +16318,12 @@ input.serach-input {
 } 
 .request-wrap{ width: 85%;}
 .request-wrap .list-wrap{ width: 100%;}
+
+.no_data{
+    min-height: 100px;
+    padding-top: 35px !important;
+    text-align: center !important;
+} 
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
@@ -16342,6 +16357,11 @@ input.serach-input {
 
  .accordion.alert-accordian{width:82%}/* #2457 */
 }
+
+ @media (max-width: 1550px){
+    .span10.currency-content { width: 75%; }
+
+ }
  @media (max-width: 1440px) {
     /*.row-fluid .hierarchy_wrapper {
      overflow: auto;
