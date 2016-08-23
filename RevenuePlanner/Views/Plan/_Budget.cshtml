@@ -426,10 +426,11 @@
 
             var sumMonth = number_format('@sumMonth', 0, '.', ',');
             var allocated = number_format('@mainBudgeted', 0, '.', ',');
-            $('#planCostValue').prop('title', '$' + sumMonth + '/' + '$' + allocated);
+            //Insertation Start #2503 Used preferred currency symbol.
+            $('#planCostValue').prop('title', CurrencySybmol + sumMonth + '/' + CurrencySybmol + allocated);
             $('#planCostValue').popover('destroy');
-            bootstrapetitle($('#planCostValue'), '$' + sumMonth + '/' + '$' + allocated, "tipsy-innerWhite");
-
+            bootstrapetitle($('#planCostValue'),CurrencySybmol + sumMonth + '/' + CurrencySybmol + allocated, "tipsy-innerWhite");
+            //Insertation Start #2503 Used preferred currency symbol.
             sumMonth = FormatNumber('@sumMonth', false);
             allocated = FormatNumber('@mainBudgeted', false);
             $('#planCostValue').html(sumMonth + '/' + allocated);
