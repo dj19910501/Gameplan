@@ -105,8 +105,8 @@ namespace RevenuePlanner.Controllers
             for (int i = 2000; i <= DateTime.Now.Year; i++)
             {
                 obj = new SelectListItem();
-                obj.Text = i.ToString();
-                obj.Value = i.ToString();
+                obj.Text = Convert.ToString(i);
+                obj.Value = Convert.ToString(i);
                 if (i == id)
                 {
                     obj.Selected = true;
@@ -193,37 +193,37 @@ namespace RevenuePlanner.Controllers
                             int month = 0;
 
                             #region MonthNo
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.Jan + 1;
 
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.Feb + 1;
 
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.Mar + 1;
 
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.April + 1;
 
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.May + 1;
 
                             if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jun.ToString()].ToString())
                                 month = (int)Enums.ReportMonthDisplay.Jun + 1;
 
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.July + 1;
 
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.Aug + 1;
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.Sep + 1;
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.Oct + 1;
 
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.Nov + 1;
-                            if (headobjlist.ElementAt(j).id == Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()].ToString())
+                            if (headobjlist.ElementAt(j).id == Convert.ToString(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()]))
                                 month = (int)Enums.ReportMonthDisplay.Dec + 1;
                             #endregion
 

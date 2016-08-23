@@ -8,7 +8,7 @@
 
 <body>
 
-    <div class="span2 myaccount-colum">
+    <div id="divCurrencyMenu" class="span2 myaccount-colum">
         <div class="padding-right70">
             <ul class="nav nav-pills nav-stacked width216">
 
@@ -25,15 +25,16 @@
 <script>
     $(document).ready(
         function () {
-          
+           
                 if ('@ViewBag.PageTitle' == 'Currency') {
-
+              
                     if (!$('#currency').hasClass('active')) {
                         $('#currency').addClass('active');
 
                     }
                 }
                 else if ('@ViewBag.PageTitle' == 'ExchangeRates') {
+                   
                     if (!$('#exchangerates').hasClass('active')) {
                         $('#exchangerates').addClass('active');
 

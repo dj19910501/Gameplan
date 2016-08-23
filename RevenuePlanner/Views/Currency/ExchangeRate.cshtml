@@ -266,54 +266,37 @@
     function closeMsg() {
         $("#confirmMsg").slideUp(400);
     }
-    function CallUrl(alink) {
-
-        @*if ($(alink).attr('href') == '#') {
-
-            if ($(alink).attr('id') == 'aMyProfile') {
-             
-                var url = '';
-                url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-                window.location.href = url;
-            }
-            else if ($(alink).attr('id') == 'aOrganization') {
-              
-                var url = '';
-                url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
-
-                window.location.href = url;
-
-            }
-            else if ($(alink).attr('id') == 'aIntegrations') {
-              
-                var url = '';
-                url = '@Url.Content("~/ExternalService/Index")';
-                window.location.href = url;
-
-            }
-            else if ($(alink).attr('id') == 'aCurrency') {
-               var url = '';
-                url = '@Url.Content("~/Currency/Index")';
-                window.location.href = url;
-            }
-        }*@
+    function CallUrl(alink) {       
+        $("#" + alink.id).attr("isDataUpdated", "false");
+        $("#" + alink.id).click();
     }
-    $("#sidebar a").click(function (event) {
-        //alert($(this).attr('id'));
-        debugger;
-        sidebarlink = $(this).attr('id');
-        displayConfirmBox($(this).attr('href'), sidebarlink);
-        $('#aMyProfile').click('click');
+    $("#sidebar a").click(function (event) {       
+        sidebarlink = $(this).attr('id');     
         if (reportData.length > 0 || planData.length > 0) {
-          //  if (event.stopPropagation) event.stopPropagation();
-
+            displayConfirmBox($(this).attr('href'), sidebarlink);
+            if($("#" + sidebarlink).attr("isDataUpdated")!='false')
+            $("#" + sidebarlink).attr("isDataUpdated", "true")                      
             event.preventDefault();
-            event.stopPropagation();
-           
+            event.stopPropagation();           
             return false;
         }
         else {
             return true;
         }
     });
+    $("#divCurrencyMenu a").click(function (event) {
+        sidebarlink = $(this).attr('id');
+        if (reportData.length > 0 || planData.length > 0) {
+            displayConfirmBox($(this).attr('href'), sidebarlink);
+            if ($("#" + sidebarlink).attr("isDataUpdated") != 'false')
+                $("#" + sidebarlink).attr("isDataUpdated", "true")         
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+        else {
+            return true;
+        }
+    });
+ 
 </script>
