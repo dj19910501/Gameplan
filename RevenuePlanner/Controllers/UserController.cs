@@ -1642,6 +1642,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult AlertNotificationListing(string type)
         {
             List<UserAlertsNotification> DataList = new List<UserAlertsNotification>();
+            NotificationRequestList FinalDataList = new NotificationRequestList();
 
             if (type.ToLower() == Convert.ToString(Enums.AlertNotification.Notification).ToLower())
             {
@@ -1657,9 +1658,12 @@ namespace RevenuePlanner.Controllers
                         PlanID = a.ComponentId
 
                     }).ToList();
+
+                    FinalDataList.RequestList = DataList.Where(list => list.ActionName == Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()).ToList();
+                    FinalDataList.NotificationList = DataList.Where(list => list.ActionName != Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()).ToList();
                 }
 
-                return PartialView("_NotificationListing", DataList.AsEnumerable());
+                return PartialView("_NotificationListing", FinalDataList);
             }
             else
             {

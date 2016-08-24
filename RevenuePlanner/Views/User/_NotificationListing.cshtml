@@ -1,8 +1,8 @@
-﻿@model IEnumerable<RevenuePlanner.Models.UserAlertsNotification>
+﻿@model RevenuePlanner.Models.NotificationRequestList
 @using RevenuePlanner.Helpers
 @{
-    var NotificationList = Model.Where(list => list.ActionName != Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()).ToList();
-    var RequestList = Model.Where(list => list.ActionName == Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()).ToList();
+    var NotificationList = Model.NotificationList;
+    var RequestList = Model.RequestList;
 
 }
 

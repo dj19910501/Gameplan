@@ -213,6 +213,13 @@ namespace RevenuePlanner.Models
         public int? PlanID { get; set; }
     }
 
+    public class NotificationRequestList
+    {
+        public List<UserAlertsNotification> RequestList { get; set; }
+        public List<UserAlertsNotification> NotificationList { get; set; }
+
+    }
+
     public class sharereportdetails
     {
         public string Email { get; set; }
