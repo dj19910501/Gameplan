@@ -17434,6 +17434,7 @@ namespace RevenuePlanner.Controllers
             DataTable CSVDataTable = (DataTable)Session["CSVDataTable"];
             Response.ContentType = "Application/x-excel";
             Response.ContentEncoding = System.Text.Encoding.Default; // Add By Nishant Sheth // #2502 For handle multicurrency symbol in exported file
+            Response.Charset = "UTF-8";
             // Modified By Nishant Sheth
             // Export csv does not work in Firefox #2430
             if (!string.IsNullOrEmpty(FileName))
@@ -17663,7 +17664,7 @@ namespace RevenuePlanner.Controllers
                           && CampList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => x.Field<int>("EntityId")).ToList();
 
                     var PlanTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                                   && PlanProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
+                                   && PlanProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => x.Field<double>("PlannedCost")).ToList();
 
                     totalPlannedCostCSV = PlanTacticCostlist.Sum();
 
@@ -17678,7 +17679,7 @@ namespace RevenuePlanner.Controllers
                            && int.Parse(x.Field<string>("ParentId")) == CampList[camp]).OrderBy(x => x.Field<string>("Program")).Select(x => x.Field<int>("EntityId")).ToList();
 
                         var CampTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                                       && ProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
+                                       && ProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => x.Field<double>("PlannedCost")).ToList();
 
                         totalPlannedCostCSV = CampTacticCostlist.Sum();
 
@@ -17692,7 +17693,7 @@ namespace RevenuePlanner.Controllers
                             totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
                             totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                             var ProgTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                                       && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
+                                       && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => x.Field<double>("PlannedCost")).ToList();
                             totalPlannedCostCSV = ProgTacticCostlist.Sum();
 
                             dr = dtCSV.Select("EntityId = " + ProgramList[prog] + "AND Section = '" + Enums.Section.Program.ToString() + "'");
@@ -17767,7 +17768,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                row[columns[j].ToString()] = totalmqlCSV;
+                                row[columns[j].ToString()] = (Int64)totalmqlCSV;
                             }
                         }
                         else if (columns[j].ToString() == Enums.DownloadCSV.Revenue.ToString())
@@ -17778,7 +17779,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                row[columns[j].ToString()] = Sessions.PlanCurrencySymbol + totalrevenueCSV;
+                                row[columns[j].ToString()] = Sessions.PlanCurrencySymbol + Math.Round(totalrevenueCSV, 2);
                             }
                         }
                         else if (columns[j].ToString() == Enums.DownloadCSV.Owner.ToString())
