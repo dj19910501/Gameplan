@@ -1563,7 +1563,7 @@ Declare @CommentAddedToProgram nvarchar(50) = 'CommentAddedToProgram'
 Declare @CampaignIsApproved nvarchar(50) = 'CampaignIsApproved'
 Declare @ProgramIsApproved nvarchar(50) = 'ProgramIsApproved'
 Declare @OwnerChange nvarchar(50) = 'EntityOwnershipAssigned'
-
+Declare @NotificationName nvarchar(50)
 
 IF OBJECT_ID('tempdb..#tempNotificationdata') IS NOT NULL
 Drop Table #tempNotificationdata
@@ -1584,38 +1584,29 @@ BEGIN
 
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @TacticEdited and @action='updated' and (@description ='tactic' or @description ='tactic results'))) 
 	Begin
-		select @NotificationMessage = 'Tactic '+ @componentTitle +' has been changed by ' + @UserName
-		if(@Userid <> @EntityOwnerID)
-		Begin
-			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
-			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
-		End
+		SET @NotificationMessage = 'Tactic '+ @componentTitle +' has been changed by ' + @UserName
 	End
 
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @CampaignIsEdited and @action='updated' and  @description ='campaign' )) 
 	Begin
 		
 	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
-	    select @NotificationMessage = @description + ' '+ @componentTitle +' has been changed by ' + @UserName
+	    SET @NotificationMessage = @description + ' '+ @componentTitle +' has been changed by ' + @UserName
 		
-		if(@Userid <> @EntityOwnerID)
-		Begin
-			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
-			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
-		End
 	End
 
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @ProgramIsEdited  and @action='updated' and @description ='program')) 
 	Begin
 		
 	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
-		select @NotificationMessage = @description + ' '+ @componentTitle +' has been changed by ' + @UserName
+		SET @NotificationMessage = @description + ' '+ @componentTitle +' has been changed by ' + @UserName
 	
-		if(@Userid <> @EntityOwnerID)
-		Begin
+	End
+
+	if(@Userid <> @EntityOwnerID and @action='updated' and (@description ='tactic' or @description ='tactic results' or @description ='campaign' or @description ='program'))
+    Begin
 			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
 			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
-		End
 	End
 
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @ReportShared and  @TableName ='Report' and @action='shared' )) 
@@ -1626,62 +1617,62 @@ BEGIN
 		WHERE NotificationInternalUseOnly = @ReportShared and UserId <> @Userid
 	End
 
-	 IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @CommentAddedToTactic and @description ='tactic' and @action='commentadded' )) 
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @CommentAddedToTactic and @description ='tactic' and @action='commentadded' )) 
 	Begin
 	
-		select @NotificationMessage =  @UserName +' has added comment to ' + @description + ' ' + @componentTitle 
+	  SET @NotificationMessage =  @UserName +' has added comment to ' + @description + ' ' + @componentTitle 
+	  SET  @NotificationName = @CommentAddedToTactic
 	
-		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
-		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
-		WHERE NotificationInternalUseOnly = @CommentAddedToTactic and UserId <> @Userid
 	End
 
 	 IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @CommentAddedToCampaign and @description ='campaign'and @action='commentadded' )) 
 	Begin
 	
-		select @NotificationMessage =  @UserName +' has added comment to ' + @description + ' ' + @componentTitle 
-	
-		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
-		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
-		WHERE NotificationInternalUseOnly = @CommentAddedToCampaign  and UserId <> @Userid
+	   SET @NotificationMessage =  @UserName +' has added comment to ' + @description + ' ' + @componentTitle 
+       SET	@NotificationName = @CommentAddedToCampaign
 	End
 
-	 IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @CommentAddedToProgram and @description ='program'and @action='commentadded' )) 
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @CommentAddedToProgram and @description ='program'and @action='commentadded' )) 
 	Begin
 	
-		select @NotificationMessage =  @UserName +' has added comment to ' + @description + ' ' + @componentTitle 
-	
+		SET @NotificationMessage =  @UserName +' has added comment to ' + @description + ' ' + @componentTitle 
+	    SET  @NotificationName = @CommentAddedToProgram
+	End
+
+	if(@action='commentadded' and (@description ='tactic' or @description ='campaign' or @description ='program'))
+	begin
 		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
 		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
-		WHERE NotificationInternalUseOnly = @CommentAddedToProgram and UserId <> @Userid
-	End
+		WHERE NotificationInternalUseOnly = @NotificationName and UserId <> @Userid
+    End
 
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @TacticIsApproved and @action='approved' and @description ='tactic' )) 
 	Begin
 	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
-		select @NotificationMessage = @description +' '+ @componentTitle +' has been approved by ' + @UserName
-		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
-		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
-		WHERE (NotificationInternalUseOnly = @TacticIsApproved) and UserId <> @Userid
+		SET @NotificationMessage = @description +' '+ @componentTitle +' has been approved by ' + @UserName
+		SET	@NotificationName = @TacticIsApproved
 	End
 
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @CampaignIsApproved  and @action='approved' and  @description ='campaign' )) 
 	Begin
 	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
-		select @NotificationMessage = @description +' '+ @componentTitle +' has been approved by ' + @UserName
-		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
-		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
-		WHERE NotificationInternalUseOnly = @CampaignIsApproved and UserId <> @Userid
+		SET @NotificationMessage = @description +' '+ @componentTitle +' has been approved by ' + @UserName
+		SET	@NotificationName = @CampaignIsApproved
 	End
 
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @ProgramIsApproved  and @action='approved' and @description ='program')) 
 	Begin
 	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
-		select @NotificationMessage = @description +' '+ @componentTitle +' has been approved by ' + @UserName
+		SET @NotificationMessage = @description +' '+ @componentTitle +' has been approved by ' + @UserName
+		SET	@NotificationName = @ProgramIsApproved
+	End
+
+    if(@action='approved' and (@description ='tactic' or @description ='campaign' or @description ='program'))
+	begin
 		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
 		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
-		WHERE  NotificationInternalUseOnly = @ProgramIsApproved and UserId <> @Userid
-	End
+		WHERE NotificationInternalUseOnly = @NotificationName and UserId <> @Userid
+    End
 
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @TacticIsSubmitted and @description ='tactic' and @action='submitted' )) 
 	Begin

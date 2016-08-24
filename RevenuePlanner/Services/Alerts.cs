@@ -201,8 +201,9 @@ namespace RevenuePlanner.Services
             List<User_Notification_Messages> lstNotifications = new List<User_Notification_Messages>();
             try
             {
+                DateTime DateBefore = DateTime.Today.AddMonths(-3);
 
-                lstNotifications = objDbMrpEntities.User_Notification_Messages.Where(a => a.RecipientId == UserId).OrderByDescending(a => a.CreatedDate).ToList();
+                lstNotifications = objDbMrpEntities.User_Notification_Messages.Where(a => a.RecipientId == UserId  && DateTime.Compare(a.CreatedDate, DateBefore) >= 0).OrderByDescending(a => a.CreatedDate).ToList();
 
             }
             catch (Exception ex)

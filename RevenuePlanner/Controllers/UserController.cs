@@ -1006,16 +1006,15 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-                if (!string.IsNullOrEmpty(notifications))
-                {
+                
                 List<User_Notification> lstUserNotification = new List<User_Notification>();
                 lstUserNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.UserId == Sessions.User.UserId).ToList();
 
                 TempData["SuccessMessage"] = Common.objCached.UserNotificationsSaved;
 
                 //// Remove all current Notifications set for User
-                    if (lstUserNotification.Count > 0)
-                    {
+                if (lstUserNotification.Count > 0)
+                {
                 foreach (var item in lstUserNotification)
                 {
                     db.Entry(item).State = EntityState.Modified;
@@ -1026,7 +1025,8 @@ namespace RevenuePlanner.Controllers
                 }
 
                 //// Save User Notifications
-
+                if (!string.IsNullOrEmpty(notifications))
+                {
                     string[] arrNotify = notifications.Split(',');
                     User_Notification objUser_Notification;
                     int notificationId = 0;
@@ -1652,7 +1652,7 @@ namespace RevenuePlanner.Controllers
                     DataList = AllNotification.Select(a => new UserAlertsNotification
                     {
                         Description = a.Description.Trim(),
-                        CreatedDate = Common.TimeAgo(a.CreatedDate),
+                        CreatedDate = Common.TimeAgo(a.CreatedDate,true),
                         NotificationId = a.NotificationId,
                         ActionName = a.ActionName,
                         PlanID = a.ComponentId
@@ -1675,7 +1675,7 @@ namespace RevenuePlanner.Controllers
                         DataList = AllAlert.Select(a => new UserAlertsNotification
                         {
                             Description = HttpUtility.HtmlDecode(a.Description.Trim()),
-                            CreatedDate = Common.TimeAgo(a.CreatedDate),
+                            CreatedDate = Common.TimeAgo(a.CreatedDate,true),
                             AlertId = a.AlertId
                         }).ToList();
                     }

@@ -8962,10 +8962,31 @@ namespace RevenuePlanner.Helpers
         /// <param name="dt"></param>
         /// <returns></returns>
         #region Method for timestamp formation for Alert & Notifications
-        public static string TimeAgo(DateTime dt)
+        public static string TimeAgo(DateTime dt,bool IsListing = false)
         {
             TimeSpan span = DateTime.Now - dt;
+            if(IsListing)
+            {
             if (span.Days > 0 && span.Days != 1)
+                {
+                    return dt.ToString("MMM d yyyy") + " at " + dt.ToString("hh:mm tt");
+                }
+                if (span.Days > 0 && span.Days == 1)
+                    return "Yesterday";
+                if (span.Hours > 0)
+                    return String.Format("{0} {1} ago",
+                    span.Hours, span.Hours == 1 ? "hour" : "hours");
+                if (span.Minutes > 0)
+                    return String.Format("{0} {1} ago",
+                    span.Minutes, span.Minutes == 1 ? "minute" : "minutes");
+                if (span.Seconds > 5)
+                    return String.Format("{0} seconds ago", span.Seconds);
+                if (span.Seconds <= 5)
+                    return "Just now";
+            }
+            else
+            {
+                if (span.Days > 0 && span.Days != 1)
             {
                 return dt.ToString("MMM d yyyy");
             }
@@ -8981,6 +9002,8 @@ namespace RevenuePlanner.Helpers
                 return String.Format("{0} seconds ago", span.Seconds);
             if (span.Seconds <= 5)
                 return "Just now";
+            }
+          
             return string.Empty;
         }
         #endregion
@@ -9574,6 +9597,9 @@ namespace RevenuePlanner.Helpers
         {
             int returnvalue = 0;
             MRPEntities db = new MRPEntities();
+            var Connection = db.Database.Connection as SqlConnection;
+            try
+            {
             List<string> lst_RecipientId = new List<string>();
             if (description == Convert.ToString(Enums.ChangeLog_ComponentType.tactic).ToLower() && componentId != null)
             {
@@ -9610,7 +9636,7 @@ namespace RevenuePlanner.Helpers
                 RecipientIds = ReportRecipientUserIds;
             }
             ///If connection is closed then it will be open
-            var Connection = db.Database.Connection as SqlConnection;
+              
             if (Connection.State == System.Data.ConnectionState.Closed)
                 Connection.Open();
             SqlCommand command = null;
@@ -9641,6 +9667,15 @@ namespace RevenuePlanner.Helpers
             }
 
             return returnvalue;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
         }
 
         //ENd
