@@ -19,7 +19,7 @@
                 <div class="list-wrap clearfix">
                     <p class="list-p pull-left">@item.Description <span>@item.CreatedDate</span></p>
 
-                    <input type="checkbox" class="dismissAlert pull-right" alertid="@item.AlertId" title="Dismiss" onchange="DismissAlert(this);" />
+                    <input type="checkbox" class="dismissAlert pull-right" alertid="@item.AlertId" title="Delete" onchange="DismissAlert(this);" />
                 </div>
             }
         }
@@ -40,7 +40,7 @@
             $(".tooltip").remove();
             var id = $(e).attr("alertid");
             var alerttype = '@Enums.AlertNotification.Alert.ToString()';
-            var result = confirm("Are you sure you want to dismiss the Alert?");
+            var result = confirm("Are you sure you want to delete the Alert?");
             if (result) {
                 $.ajax({
                     type: 'POST',
