@@ -8196,14 +8196,14 @@ namespace RevenuePlanner.Helpers
                                     Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
                                     TacticId = tac.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId,
                                     Value = tac.Value,
-                                    StartYear = tac.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.StartDate.Year
+                                    StartDate = tac.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.StartDate // Modified By Nishant Sheth #2507
                                 }).ToList().Select(tac => new
                                 {
                                     Period = tac.Period,
                                     NumPeriod = (tac.Period / 13),
                                     TacticId = tac.TacticId,
-                                    Value = tac.Value,
-                                    StartYear = tac.StartYear
+                                    Value = objCurrency.GetReportValueByExchangeRate(tac.StartDate, tac.Value, int.Parse(Convert.ToString(tac.Period).Replace("Y", ""))), // Modified By Nishant Sheth #2507
+                                    StartYear = tac.StartDate.Year
                                 }).ToList().Select(tact => new
                                 {
                                     Period = "Y" + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
@@ -8275,7 +8275,7 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public static List<MultiYearModel> CalculatePlannedCostTacticslist(List<int> PlanTacticIds)
         {
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             List<MultiYearModel> MultiYearList = new List<MultiYearModel>();
             List<String> ApprovedTacticStatus = Common.GetStatusListAfterApproved();
             string PeriodPrefix = "Y";
@@ -8298,7 +8298,7 @@ namespace RevenuePlanner.Helpers
                             {
                                 Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
                                 LineItemId = tac.PlanLineItemId,
-                                Value = tac.Value,
+                                Value = objCurrency.GetValueByExchangeRate(tac.Value, PlanExchangeRate), // Modified By Nishant Sheth #2507
                                 StartYear = tac.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.StartDate.Year
                             }).ToList().Select(tac => new
                             {

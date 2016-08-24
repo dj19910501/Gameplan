@@ -246,10 +246,11 @@
            
 
         } else {
-            var tdheight = (parseFloat($(".highcharts-markers.highcharts-tracker").last().attr("height")) / _catCount) - 9;
+            // Modified By Nishant Sheth #2507
+            // To set line hieght for finance section 
+            var lineheight = (parseFloat($(".highcharts-series.highcharts-tracker").find("rect").first().attr("width")) * _catCount * 2) / _catCount - 10;
             $(".budgetchart-table table thead tr th").css("padding-bottom", "" + (100 / _catCount) * 4 + "px");
-            $(".budgetchart-table table tbody tr td").css("line-height", "0px");
-            $(".budgetchart-table table tbody tr td").css("height", "" + tdheight + "px");
+            $(".budgetchart-table table tbody tr td").css("line-height", lineheight +"px");
             $(".budgetchart-table table tbody tr th").css("height", "18px");
         }
         // End By Nishant Sheth

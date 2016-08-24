@@ -4881,6 +4881,7 @@ namespace RevenuePlanner.Controllers
         public List<ActualDataTable> GetCostLineItemActualListbyWeightage(int CustomFieldId, string CustomFieldOptionId, string customfieldType, int PlanTacticId, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstLineItemActuallist, TacticStageValue TacticData, bool IsTacticCustomField)
         {
             #region "Declare local variables"
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             int? weightage = 0;
             TacticStageValue objTacticStageValue = new TacticStageValue();
             TacticCustomFieldStageWeightage objTacticStageWeightage = new TacticCustomFieldStageWeightage();
@@ -4908,7 +4909,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                    StageValue = (objActual.Value * weightage.Value) / 100;
+                    StageValue = (objCurrency.GetValueByExchangeRate(objActual.Value, PlanExchangeRate) * weightage.Value) / 100; // Modified By Nishant Sheth #2507
                     objActualTacticdt.PlanTacticId = objActual.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId;
                     objActualTacticdt.Period = objActual.Period;
                     objActualTacticdt.ActualValue = StageValue;
@@ -5107,7 +5108,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="planTacticList"></param>
         /// <returns>Return list of ActualDataTable</returns>
-        public List<ActualDataTable> GetActualTacticDataTablebyStageCode(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, Enums.InspectStage stagecode, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<TacticStageValue> TacticData, bool IsTacticCustomField = false)
+        public List<ActualDataTable> GetActualTacticDataTablebyStageCode(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, Enums.InspectStage stagecode, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<TacticStageValue> TacticData, bool IsTacticCustomField = false, bool IsMultiCurrency = true)
         {
             double StageValue = 0;
             int? weightage = 0;
@@ -5237,7 +5238,12 @@ namespace RevenuePlanner.Controllers
                     // End By Nishant Sheth
 
                     // Add By Nishant Sheth //#2508 Convert value as per reporting exchange rate
-                    double ActualValue = objCurrency.GetReportValueByExchangeRate(objActualTacticdt.StartDate, objActual.Actualvalue, int.Parse(Convert.ToString(objActual.Period.Replace("Y", ""))));
+                    // Modified By Nishant Sheth #2507
+                    double ActualValue = objActual.Actualvalue;
+                    if (IsMultiCurrency)
+                    {
+                        ActualValue = objCurrency.GetReportValueByExchangeRate(objActualTacticdt.StartDate, objActual.Actualvalue, int.Parse(Convert.ToString(objActual.Period.Replace("Y", ""))));
+                    }
                     StageValue = (ActualValue * weightage.Value) / 100;
                     objActualTacticdt.ActualValue = StageValue;
                     // End Nishant Sheth
@@ -5272,7 +5278,12 @@ namespace RevenuePlanner.Controllers
                     // End By Nishant Sheth
 
                     // Modified By Nishant Sheth //#2508 Convert value as per reporting exchange rate
-                    double ActualValue = objCurrency.GetReportValueByExchangeRate(objActualTacticdt.StartDate, objActual.Actualvalue, int.Parse(Convert.ToString(objActual.Period.Replace("Y", ""))));
+                    // Add Condition By Nishant Sheth #2507 for convert value when stage code as revenue
+                    double ActualValue = objActual.Actualvalue;
+                    if (IsMultiCurrency)
+                    {
+                        ActualValue = objCurrency.GetReportValueByExchangeRate(objActualTacticdt.StartDate, objActual.Actualvalue, int.Parse(Convert.ToString(objActual.Period.Replace("Y", ""))));
+                    }
                     StageValue = (ActualValue * weightage.Value) / 100;
                     objActualTacticdt.ActualValue = StageValue;
                     // End By Nishant Sheth
@@ -5463,7 +5474,7 @@ namespace RevenuePlanner.Controllers
 
             #region "Declare Local Variables"
             //Common.GetReportStartEndDate(timeframeOption, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             ReportOverviewModel objReportOverviewModel = new ReportOverviewModel();
             RevenueOverviewModel objRevenueOverviewModel = new RevenueOverviewModel();
             ConversionOverviewModel objConversionOverviewModel = new ConversionOverviewModel();
@@ -5916,28 +5927,6 @@ namespace RevenuePlanner.Controllers
                     _TacticIds = _tacList.Select(tac => tac.PlanTacticId).ToList();
 
 
-                    var _tacBudgetList = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => _TacticIds.Contains(tac.PlanTacticId)).ToList()
-                         .Select(tac => new
-                         {
-                             Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
-                             TacticId = tac.PlanTacticId,
-                             Value = tac.Value,
-                             StartYear = tac.Plan_Campaign_Program_Tactic.StartDate.Year
-                         }).ToList().Select(tac => new
-                         {
-                             Period = tac.Period,
-                             NumPeriod = (tac.Period / 13),
-                             TacticId = tac.TacticId,
-                             Value = tac.Value,
-                             StartYear = tac.StartYear
-                         }).ToList().Select(tact => new
-                         {
-                             Period = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                             Year = tact.StartYear + tact.NumPeriod,
-                             TacticId = tact.TacticId,
-                             Value = tact.Value
-                         }).ToList();
-
                     // Add By Nishant Sheth
                     // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
                     var _planBudgetList = db.Plan_Budget.Where(plan => lstPlanIds.Contains(plan.PlanId)).ToList()
@@ -5952,7 +5941,7 @@ namespace RevenuePlanner.Controllers
                                             Period = tac.Period,
                                             NumPeriod = (tac.Period / 13),
                                             TacticId = tac.TacticId,
-                                            Value = tac.Value,
+                                            Value = objCurrency.GetValueByExchangeRate(tac.Value, PlanExchangeRate),// Modified By Nishant Sheth #2507
                                             StartYear = int.Parse(tac.StartYear.ToString())
                                         }).ToList().Select(tact => new
                                         {
@@ -6568,7 +6557,7 @@ namespace RevenuePlanner.Controllers
                             ActualTacticListbyTactic = ActualTacticList.Where(actual => actual.PlanTacticId.Equals(_planTacticId)).ToList();
                             // Convert Actual value with respective reporting months
                             //#2509 Add condition for if report waterfall / conversion then no need to convert actuals into multicurreny because we are dsiplay count on waterfall report.
-                            if (IsMultiCurrency)
+                            if (IsMultiCurrency && stagecode == Convert.ToString(Enums.InspectStage.Revenue))
                             {
                                 ActualTacticListbyTactic.ForEach(a =>
                                 {
@@ -7056,7 +7045,7 @@ namespace RevenuePlanner.Controllers
                         #region "Get Actuals List"
                         lstActuals = ActualTacticList.Where(ta => _obj.planTacticList.Contains(ta.PlanTacticId)).ToList();
                         //// Get Actuals Tactic list by weightage for Revenue.
-                        ActualDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, lstActuals, Tacticdata, IsTacticCustomField);
+                        ActualDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, lstActuals, Tacticdata, IsTacticCustomField, false);
 
                         //// Get ActualList upto CurrentMonth.
                         CurrentMonthActualTacticList = ActualDataTable.Where(actual => IncludeCurrentMonth.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
@@ -7194,7 +7183,7 @@ namespace RevenuePlanner.Controllers
                         CurrentActualTacticList = ActualTacticList.Where(ta => _obj.planTacticList.Contains(ta.PlanTacticId)).ToList();
 
                         ////// Get Actuals Tactic list by weightage for Revenue.
-                        ActualDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, CurrentActualTacticList, fltrTacticData, IsTacticCustomField);
+                        ActualDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, CurrentActualTacticList, fltrTacticData, IsTacticCustomField, false);
 
                         #endregion
 
@@ -7208,7 +7197,9 @@ namespace RevenuePlanner.Controllers
                             EndMonth = tac.EndMonth,
                             Value = tac.Value,
                             Year = tac.StartYear,
-                            VeloCity = tac.VeloCity
+                            VeloCity = tac.VeloCity,
+                            StartDate = tac.StartDate,
+                            EndDate = tac.EndDate
                         }).Distinct().ToList();
                         ProjectedRevenueTrendList = GetProjectedTrendModel(TacticList);
                         ProjectedRevenueTrendList = (from _prjTac in ProjectedRevenueTrendList
@@ -7310,7 +7301,9 @@ namespace RevenuePlanner.Controllers
                         EndMonth = tac.EndMonth,
                         Value = tac.Value,
                         Year = tac.StartYear,
-                        VeloCity = tac.VeloCity
+                        VeloCity = tac.VeloCity,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate
                     }).Distinct().ToList();
 
                     List<ProjectedTrendModel> lstTotalProjectedTrendModel = GetProjectedTrendModel(lstTotalTacticModel);
@@ -7523,7 +7516,7 @@ namespace RevenuePlanner.Controllers
                         #region "Get Revenue Actuals List"
                         revFltrActuals = revActualTacticList.Where(ta => _obj.planTacticList.Contains(ta.PlanTacticId)).ToList();
                         //// Get Actuals Tactic list by weightage for Revenue.
-                        ActualDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, revFltrActuals, Tacticdata, IsTacticCustomField);
+                        ActualDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, revFltrActuals, Tacticdata, IsTacticCustomField, false);// Modified By Nishant Sheth #2507
                         //// Get ActualList upto CurrentMonth.
                         revCurrentMonthList = ActualDataTable.Where(actual => IncludeCurrentMonth.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
                         TotalRevenueValueCurrentMonth = revCurrentMonthList.Sum(ta => ta.ActualValue); // Get Total of Actual Revenue value. 
