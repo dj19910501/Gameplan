@@ -23,73 +23,89 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(Sessions.StartDate))
+                if (Sessions.AppMenus.Where(w => w.Description == "javascript:void(0)" && w.MenuApplicationId == DashboardId).Any())
                 {
-                    Sessions.StartDate = DateTime.Now.AddMonths(6).ToString("MM/dd/yyyy");
-                    Sessions.EndDate = DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy");
-                    if (Convert.ToDateTime(Sessions.StartDate) > Convert.ToDateTime(Sessions.EndDate))
+                    if (string.IsNullOrEmpty(Sessions.StartDate))
                     {
-                        Sessions.StartDate = Convert.ToDateTime(Sessions.EndDate).AddMonths(-6).ToString("MM/dd/yyyy");
-                    }
-                }
-                WebClient client = new WebClient();
-                string regularConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
-                string ReportDBConnString = string.Empty;
-                if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
-                {
-                    ReportDBConnString = Convert.ToString(regularConnectionString);
-                }
-                string AuthorizedReportAPIUserName = string.Empty;
-                string AuthorizedReportAPIPassword = string.Empty;
-                string ApiUrl = string.Empty;
-                if (ConfigurationManager.AppSettings.Count > 0)
-                {
-                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
-                    {
-                        AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
-                    }
-                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
-                    {
-                        AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
-                    }
-                    if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
-                    {
-                        ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
-                        if (!string.IsNullOrEmpty(ApiUrl) && !ApiUrl.EndsWith("/"))
+                        Sessions.StartDate = DateTime.Now.AddMonths(6).ToString("MM/dd/yyyy");
+                        Sessions.EndDate = DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy");
+                        if (Convert.ToDateTime(Sessions.StartDate) > Convert.ToDateTime(Sessions.EndDate))
                         {
-                            ApiUrl += "/";
+                            Sessions.StartDate = Convert.ToDateTime(Sessions.EndDate).AddMonths(-6).ToString("MM/dd/yyyy");
                         }
                     }
+                    WebClient client = new WebClient();
+                    string regularConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
+                    string ReportDBConnString = string.Empty;
+                    if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
+                    {
+                        ReportDBConnString = Convert.ToString(regularConnectionString);
+                    }
+                    string AuthorizedReportAPIUserName = string.Empty;
+                    string AuthorizedReportAPIPassword = string.Empty;
+                    string ApiUrl = string.Empty;
+                    if (ConfigurationManager.AppSettings.Count > 0)
+                    {
+                        if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                        {
+                            AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                        }
+                        if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                        {
+                            AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                        }
+                        if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                        {
+                            ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                            if (!string.IsNullOrEmpty(ApiUrl) && !ApiUrl.EndsWith("/"))
+                            {
+                                ApiUrl += "/";
+                            }
+                        }
+                    }
+                    Custom_Dashboard model = new Custom_Dashboard();
+                    string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashboardId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                    try
+                    {
+                        ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+                        string result = client.DownloadString(url);
+                        List<DashboardContentModel> list = JsonConvert.DeserializeObject<List<DashboardContentModel>>(result);
+                        model.DashboardContent = list;
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorSignal.FromCurrentContext().Raise(ex);
+                    }
+
+                    List<SelectListItem> li = new List<SelectListItem>();
+                    li.Add(new SelectListItem { Text = "Years", Value = "Y" });
+                    li.Add(new SelectListItem { Text = "Quarters", Value = "Q" });
+                    li.Add(new SelectListItem { Text = "Months", Value = "M" });
+                    li.Add(new SelectListItem { Text = "Weeks", Value = "W" });
+                    ViewData["ViewBy"] = li;
+
+                    ViewBag.DashboardID = DashboardId;
+                    ViewBag.ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                    ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
+                    ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
+                    ViewBag.ApiUrl = ApiUrl;
+                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.UserId.ToString());
+                    ViewBag.DashboardAccess = true;
+
+                    return View("Index", model);
                 }
-                Custom_Dashboard model = new Custom_Dashboard();
-                string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashboardId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
-                try
+                else
                 {
-                    ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                    string result = client.DownloadString(url);
-                    List<DashboardContentModel> list = JsonConvert.DeserializeObject<List<DashboardContentModel>>(result);
-                    model.DashboardContent = list;
+                    ViewBag.DashboardID = DashboardId;
+                    ViewBag.ReportDBConnString = string.Empty;
+                    ViewBag.AuthorizedReportAPIUserName = string.Empty;
+                    ViewBag.AuthorizedReportAPIPassword = string.Empty;
+                    ViewBag.ApiUrl = string.Empty;
+                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.UserId.ToString());
+                    ViewBag.DashboardAccess = false;
+                    Custom_Dashboard model = new Custom_Dashboard();
+                    return View("Index", model);
                 }
-                catch (Exception ex)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(ex);
-                }
-
-                List<SelectListItem> li = new List<SelectListItem>();
-                li.Add(new SelectListItem { Text = "Years", Value = "Y" });
-                li.Add(new SelectListItem { Text = "Quarters", Value = "Q" });
-                li.Add(new SelectListItem { Text = "Months", Value = "M" });
-                li.Add(new SelectListItem { Text = "Weeks", Value = "W" });
-                ViewData["ViewBy"] = li;
-
-                ViewBag.DashboardID = DashboardId;
-                ViewBag.ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
-                ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
-                ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
-                ViewBag.ApiUrl = ApiUrl;
-                ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.UserId.ToString());
-
-                return View("Index", model);
             }
             catch (Exception ex)
             {
@@ -173,7 +189,7 @@ namespace RevenuePlanner.Controllers
         /// Get Chart Data
         /// </summary>
         /// <returns>List<CurrencyModel.ClientCurrency></returns>
-        public JsonResult GetChart(int Id, string ConnectionString, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100")
+        public async Task<JsonResult> GetChart(int Id, string ConnectionString, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100")
         {
             RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
             HttpResponseMessage response = new HttpResponseMessage();

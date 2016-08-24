@@ -45,13 +45,16 @@
                         Update Results
                     </button>
                 </div>
-            </div>    
-            <div id="divCustomFieldsFilter">
-                @{
-                    int DashboardID = (int)ViewBag.DashboardID;
-                    @Html.Raw(@Html.GetFilterData(DashboardID, 0))
-                }
             </div>
+            @if (Model.DashboardContent.Count > 0 && ViewBag.DashboardAccess == true)
+            {
+                <div id="divCustomFieldsFilter">
+                    @{
+                        int DashboardID = (int)ViewBag.DashboardID;
+                        @Html.Raw(@Html.GetFilterData(DashboardID, 0))
+                    }
+                </div>
+            }
         </div>
     </div>
 }
@@ -60,11 +63,12 @@
 <div class="col-sm-9  col-md-9 col-lg-10 main report-main">
     <div id="mainContent" class="col-md-12 content">
         <div class="clearfix report-handing">
-           
-            <span class="selectBox" id="ddlMeasureVB">
-                @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewData["ViewBy"], "Value", "Text"), new { @class = "ddlStyleReport hide" })
-            </span>
-            <span class="viewby">View by</span>
+           @if (ViewData["ViewBy"] != null) {
+                <span class="selectBox" id="ddlMeasureVB">                
+                    @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewData["ViewBy"], "Value", "Text"), new { @class = "ddlStyleReport hide" })                
+                </span>
+                <span class="viewby">View by</span>
+           }
         </div>
         <div class="report-wrap clearfix">
             @if (Model.DashboardContent.Count > 0)
@@ -99,12 +103,18 @@
                 }
             }
         </div>
-        @if (Model.DashboardContent.Count == 0)
+        @if (Model.DashboardContent.Count == 0 && ViewBag.DashboardAccess == true)
         {
             <div class="noreportsfound" style="padding:25px">
                 <p>"@RevenuePlanner.Helpers.Common.objCached.ReportNotConfigured"</p>
             </div>
         }
+        else
+	    {
+            <div class="noreportsfound" style="padding:25px">
+                <p>"You have no access for this dashboard"</p>
+            </div>
+	    }
 </div>
 </div>
 

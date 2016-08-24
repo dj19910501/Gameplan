@@ -16382,6 +16382,9 @@ background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
     transition: background-position 0.1s linear 0s;
 }
 /* For Notification page only  End */
+
+.report-handing .sbHolder{z-index:2}
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

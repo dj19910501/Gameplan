@@ -266,15 +266,26 @@ namespace RevenuePlanner.Services
         /// Get User Currency Month wise
         /// </summary>
         /// <returns>List<CurrencyModel.ClientCurrency></returns>
-        public List<CurrencyModel.ClientCurrency> GetUserCurrencyMonthwise(string StartDate, string EndDate)
+        public List<CurrencyModel.ClientCurrency> GetUserCurrencyMonthwise(string dtStartDate, string dtEndDate)
         {
+            DateTime dtParse;
+            DateTime StartDate = new DateTime();
+            DateTime EndDate = new DateTime();
+            if (DateTime.TryParse(dtStartDate, out dtParse))
+            {
+                StartDate = dtParse;
+            }
+            if (DateTime.TryParse(dtEndDate, out dtParse))
+            {
+                EndDate = dtParse;
+            }
             List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> UserReportCurrency = (List<RevenuePlanner.Models.CurrencyModel.ClientCurrency>)objCache.Returncache(Enums.CacheObject.ListUserReportCurrency.ToString());
-            int TotalMonths = (DateTime.Parse(EndDate).Month) + 12 * (DateTime.Parse(EndDate).Year - DateTime.Parse(StartDate).Year);
+            int TotalMonths = (EndDate.Month) + 12 * (EndDate.Year - StartDate.Year);
             List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> MonthWiseUserReportCurrency = new List<CurrencyModel.ClientCurrency>();
 
             if (UserReportCurrency != null && UserReportCurrency.Count > 0)
             {
-                for (int i = DateTime.Parse(StartDate).Month; i <= TotalMonths; i++)
+                for (int i = StartDate.Month; i <= TotalMonths; i++)
                 {
                     int TotalMonth = 12;
                     int YearNo = 0;
@@ -286,7 +297,7 @@ namespace RevenuePlanner.Services
                     {
                         YearNo = (i - 1) / TotalMonth;
                     }
-                    DateTime dt = new DateTime(DateTime.Parse(StartDate).Year + YearNo, (i % TotalMonth) == 0 ? 12 : (i % TotalMonth), 1);
+                    DateTime dt = new DateTime(StartDate.Year + YearNo, (i % TotalMonth) == 0 ? 12 : (i % TotalMonth), 1);
                     if (!UserReportCurrency.Where(w => w.StartDate == dt).Any())
                     {
                         CurrencyModel.ClientCurrency cc = new CurrencyModel.ClientCurrency();
@@ -306,7 +317,7 @@ namespace RevenuePlanner.Services
             }
             else
             {
-                for (int i = DateTime.Parse(StartDate).Month; i <= TotalMonths; i++)
+                for (int i = StartDate.Month; i <= TotalMonths; i++)
                 {
                     int TotalMonth = 12;
                     int YearNo = 0;
@@ -318,7 +329,7 @@ namespace RevenuePlanner.Services
                     {
                         YearNo = (i - 1) / TotalMonth;
                     }
-                    DateTime dt = new DateTime(DateTime.Parse(StartDate).Year + YearNo, (i % TotalMonth) == 0 ? 12 : (i % TotalMonth), 1);
+                    DateTime dt = new DateTime(StartDate.Year + YearNo, (i % TotalMonth) == 0 ? 12 : (i % TotalMonth), 1);
                     CurrencyModel.ClientCurrency cc = new CurrencyModel.ClientCurrency();
                     cc.StartDate = dt;
                     cc.EndDate = dt.AddMonths(1).AddDays(-1);
