@@ -2014,15 +2014,22 @@ DECLARE @query nvarchar(max)
 	While @Count<=@RowCount
 	BEGIN
 		SELECT @Colname = name FROM #tbldynamicColumns WHERE ROWNUM=@Count
-		SET @AlterTable +=' ALTER TABLE #EntityValues ADD [Col_'+(SELECT REPLACE(REPLACE(@Colname,' ','#'),'-','@'))+'] NVARCHAR(MAX) ';
+		IF(@Colname='PlannedCost')
+		BEGIN
+			SET @AlterTable +=' ALTER TABLE #EntityValues ADD [Col_'+(SELECT REPLACE(REPLACE(@Colname,' ','#'),'-','@'))+'] FLOAT ';
+		END
+		ELSE
+		BEGIN
+			SET @AlterTable +=' ALTER TABLE #EntityValues ADD [Col_'+(SELECT REPLACE(REPLACE(@Colname,' ','#'),'-','@'))+'] NVARCHAR(MAX) ';
+		END
 		SET @InsertStatement+='['+@Colname+']'+@Delimeter
 	SET @Count=@Count+1;
 	END
 	SET @InsertStatement+='Col_RowGroup) '
-	PRINT(@AlterTable)
+	--PRINT(@AlterTable)
 	EXEC(@AlterTable)
 	SET @InsertStatement+=' SELECT *,Col_RowGroup = ROW_NUMBER() OVER (PARTITION BY EntityId, EntityType,CustomFieldId ORDER BY (SELECT 100)) FROM #tblCustomData'
-	PRINT(@InsertStatement)
+	--PRINT(@InsertStatement)
 	EXEC(@InsertStatement)
 
 	select ROW_NUMBER() OVER (ORDER BY (SELECT 100)) AS ROWNUM,name into #tblEntityColumns from tempdb.sys.columns where object_id = object_id('tempdb..#EntityValues');
@@ -2042,9 +2049,17 @@ DECLARE @query nvarchar(max)
 		END
 		SET @Val =''
 		(SELECT @Val=name FROM #tblEntityColumns WHERE ROWNUM=@Count)
-		SET @MergeData+=' DECLARE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' NVARCHAR(MAX) '
+		IF(@Val='Col_PlannedCost')
+		BEGIN
+			SET @MergeData+=' DECLARE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' FLOAT '
+		END
+		ELSE 
+		BEGIN
+			SET @MergeData+=' DECLARE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' NVARCHAR(MAX) '
+		END
 		SET @Count=@Count+1;
 	END
+	PRINT(@MergeData)
 	-- END Dynamic Variables
 	
 	-- Update #EntityValues Tables row
@@ -2065,7 +2080,14 @@ DECLARE @query nvarchar(max)
 		BEGIN
 		IF (@Val!='Col_RowGroup' AND @Val!='Col_ROWNUM')
 		BEGIN
+		IF(@Val='Col_PlannedCost')
+		BEGIN
+			SET @UpdateStatement+='  @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' = ['+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'] = CASE WHEN Col_RowGroup=1 THEN CONVERT(FLOAT,['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+']) ELSE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'+'';''+ CONVERT(FLOAT,['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+']) END'+@Delimeter
+		END
+		ELSE 
+		BEGIN
 			SET @UpdateStatement+='  @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' = ['+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'] = CASE WHEN Col_RowGroup=1 THEN CONVERT(NVARCHAR(MAX),['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+']) ELSE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'+'';''+ CONVERT(NVARCHAR(MAX),['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+']) END'+@Delimeter
+		END
 		END
 		END
 		SET @Count=@Count+1;
@@ -2116,7 +2138,7 @@ DECLARE @query nvarchar(max)
 	SET @SelectGroup+=' WHEN ''Tactic'' THEN 4'
 	SET @SelectGroup+=' WHEN ''Lineitem'' THEN 5'
 	SET @SelectGroup+=' ELSE 6 END)';
-	PRINT(@SelectGroup)
+	--PRINT(@SelectGroup)
 	EXEC(@SelectGroup)
 	
 	-- End Update #EntityValues Tables row
@@ -2148,6 +2170,7 @@ ORDER BY (CASE EntityType WHEN 'Campaign' THEN 1
   END
 --End
 END
+
 GO
 -- End By Nishant Sheth
 
