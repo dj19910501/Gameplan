@@ -2,7 +2,7 @@
 @using RevenuePlanner.Helpers
 @if(Sessions.IsAlertPermission)
 { 
-<div class="title-header source-sans-proregular margin-bottom25">
+<div class="title-header source-sans-proregular margin-bottom25 padding-top40">
    
         <h2><i class="fa fa-bell-o" aria-hidden="true"></i> Alerts</h2>
         
@@ -32,6 +32,11 @@
     </div>    
 }
     <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#content_wraper").removeClass("all-height");
+
+        });
         $(".dismissAlert").tooltip({
             'container': 'body',
             'placement': 'bottom'
