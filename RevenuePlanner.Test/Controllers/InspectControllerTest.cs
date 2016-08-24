@@ -1593,7 +1593,7 @@ namespace RevenuePlanner.Test.Controllers
 
             var PlanTactic = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId && id.IsDeleted == false).FirstOrDefault();
             string tId=PlanTactic.PlanTacticId.ToString();
-            string newTitle=PlanTactic.Title+"New";
+            string newTitle= "Test Tactic" + "_ " + DateTime.Now;
             var result = objInspectController.SaveTitle("Tactic", newTitle, tId);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result);
@@ -1611,7 +1611,7 @@ namespace RevenuePlanner.Test.Controllers
             int planId = DataHelper.GetPlanId();
             var PlanCampaign = db.Plan_Campaign.Where(c => c.PlanId == planId && c.IsDeleted == false).FirstOrDefault();
             string cId = PlanCampaign.PlanCampaignId.ToString();
-            string newTitle = PlanCampaign.Title + "New";
+            string newTitle = "Test Campaign" + "_ " + DateTime.Now;
             var result = objInspectController.SaveTitle("Campaign", newTitle, cId);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result);
@@ -1631,7 +1631,7 @@ namespace RevenuePlanner.Test.Controllers
             var PlanProgram = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId && id.IsDeleted == false).FirstOrDefault();
 
             string pId = PlanProgram.PlanProgramId.ToString();
-            string newTitle = PlanProgram.Title + "New";
+            string newTitle = "Test Program" + "_ " + DateTime.Now;
             var result = objInspectController.SaveTitle("Program", newTitle, pId);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result);
@@ -1648,7 +1648,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             var LineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(l=> l.IsDeleted == false && l.LineItemType!=null).FirstOrDefault();
             string lId = LineItem.PlanLineItemId.ToString();
-            string newTitle = LineItem.Title + "New";
+            string newTitle = "Test Line Item" + "_ " + DateTime.Now;
             var result = objInspectController.SaveTitle("LineItem", newTitle, lId);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result);
