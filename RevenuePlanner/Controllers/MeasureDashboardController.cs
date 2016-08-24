@@ -19,11 +19,12 @@ namespace RevenuePlanner.Controllers
     public class MeasureDashboardController : CommonController
     {
         public CacheObject objCache = new CacheObject();
-        public ActionResult Index(int DashboardId)
+        public ActionResult Index(string DashboardId)
         {
             try
             {
-                if (Sessions.AppMenus.Where(w => w.Description == "javascript:void(0)" && w.MenuApplicationId == DashboardId).Any())
+                int DashId = 0;
+                if (int.TryParse(Convert.ToString(DashboardId), out DashId) && Sessions.AppMenus.Where(w => w.Description == "javascript:void(0)" && w.MenuApplicationId == DashId).Any())
                 {
                     if (string.IsNullOrEmpty(Sessions.StartDate))
                     {
@@ -64,7 +65,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     Custom_Dashboard model = new Custom_Dashboard();
-                    string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashboardId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                    string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
                     try
                     {
                         ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
@@ -84,7 +85,7 @@ namespace RevenuePlanner.Controllers
                     li.Add(new SelectListItem { Text = "Weeks", Value = "W" });
                     ViewData["ViewBy"] = li;
 
-                    ViewBag.DashboardID = DashboardId;
+                    ViewBag.DashboardID = DashId;
                     ViewBag.ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
                     ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                     ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
@@ -96,7 +97,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    ViewBag.DashboardID = DashboardId;
+                    ViewBag.DashboardID = DashId;
                     ViewBag.ReportDBConnString = string.Empty;
                     ViewBag.AuthorizedReportAPIUserName = string.Empty;
                     ViewBag.AuthorizedReportAPIPassword = string.Empty;
@@ -258,8 +259,8 @@ namespace RevenuePlanner.Controllers
                     objParams.UserName = AuthorizedReportAPIUserName;
                     objParams.Password = AuthorizedReportAPIPassword;
                     objParams.CurrencyRate = CurrencyRate;
-                    
-                    response = client.PostAsJsonAsync("api/Report/Chart ", objParams).Result;
+
+                    response = await client.PostAsJsonAsync("api/Report/Chart ", objParams);
                     result = response.Content.ReadAsStringAsync().Result;
                 }
                 catch (Exception ex)

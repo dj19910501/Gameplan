@@ -109,7 +109,7 @@
                 <p>"@RevenuePlanner.Helpers.Common.objCached.ReportNotConfigured"</p>
             </div>
         }
-        else
+        else if (ViewBag.DashboardAccess == false)
 	    {
             <div class="noreportsfound" style="padding:25px">
                 <p>"You have no access for this dashboard"</p>
@@ -128,7 +128,9 @@
         $('#aMeasure').addClass('active');
         $('#aPlan').removeClass('active');
         var LiId = 'Measure_' + '@DashId';
-        document.title = $('#' + LiId).find('.nav-text').html();
+        if ($('#' + LiId).find('.nav-text').html() != undefined && $('#' + LiId).find('.nav-text').html() != 'undefined') {
+            document.title = $('#' + LiId).find('.nav-text').html();
+        }
         $('#' + LiId).addClass('active');
         if ($('#' + LiId).parent().parent().hasClass('Other')) {
             $('#' + LiId).parent().parent().addClass('active');
@@ -207,7 +209,7 @@
             URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
             $.ajax({
                 url: URL,
-                async: false,
+                async: true,
                 traditional: true,
                 data: $.param(params, true),
                 dataType: "json",

@@ -271,75 +271,78 @@ namespace RevenuePlanner.Services
             DateTime dtParse;
             DateTime StartDate = new DateTime();
             DateTime EndDate = new DateTime();
-            if (DateTime.TryParse(dtStartDate, out dtParse))
-            {
-                StartDate = dtParse;
-            }
-            if (DateTime.TryParse(dtEndDate, out dtParse))
-            {
-                EndDate = dtParse;
-            }
-            List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> UserReportCurrency = (List<RevenuePlanner.Models.CurrencyModel.ClientCurrency>)objCache.Returncache(Enums.CacheObject.ListUserReportCurrency.ToString());
-            int TotalMonths = (EndDate.Month) + 12 * (EndDate.Year - StartDate.Year);
             List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> MonthWiseUserReportCurrency = new List<CurrencyModel.ClientCurrency>();
-
-            if (UserReportCurrency != null && UserReportCurrency.Count > 0)
+            if (DateTime.TryParse(dtStartDate, out dtParse) && DateTime.TryParse(dtEndDate, out dtParse))
             {
-                for (int i = StartDate.Month; i <= TotalMonths; i++)
+                if (DateTime.TryParse(dtStartDate, out dtParse))
                 {
-                    int TotalMonth = 12;
-                    int YearNo = 0;
-                    if (i % TotalMonth != 0)
+                    StartDate = dtParse;
+                }
+                if (DateTime.TryParse(dtEndDate, out dtParse))
+                {
+                    EndDate = dtParse;
+                }                
+                
+                List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> UserReportCurrency = (List<RevenuePlanner.Models.CurrencyModel.ClientCurrency>)objCache.Returncache(Enums.CacheObject.ListUserReportCurrency.ToString());
+                int TotalMonths = (EndDate.Month) + 12 * (EndDate.Year - StartDate.Year);
+                
+                if (UserReportCurrency != null && UserReportCurrency.Count > 0)
+                {
+                    for (int i = StartDate.Month; i <= TotalMonths; i++)
                     {
-                        YearNo = i / TotalMonth;
+                        int TotalMonth = 12;
+                        int YearNo = 0;
+                        if (i % TotalMonth != 0)
+                        {
+                            YearNo = i / TotalMonth;
+                        }
+                        else
+                        {
+                            YearNo = (i - 1) / TotalMonth;
+                        }
+                        DateTime dt = new DateTime(StartDate.Year + YearNo, (i % TotalMonth) == 0 ? 12 : (i % TotalMonth), 1);
+                        if (!UserReportCurrency.Where(w => w.StartDate == dt).Any())
+                        {
+                            CurrencyModel.ClientCurrency cc = new CurrencyModel.ClientCurrency();
+                            cc.StartDate = dt;
+                            cc.EndDate = dt.AddMonths(1).AddDays(-1);
+                            cc.CurrencySymbol = UserReportCurrency[0].CurrencySymbol;
+                            cc.ExchangeRate = 1.0;
+                            MonthWiseUserReportCurrency.Add(cc);
+                        }
+                        else
+                        {
+                            CurrencyModel.ClientCurrency cc = new CurrencyModel.ClientCurrency();
+                            cc = (CurrencyModel.ClientCurrency)UserReportCurrency.Where(w => w.StartDate == dt).FirstOrDefault();
+                            MonthWiseUserReportCurrency.Add(cc);
+                        }
                     }
-                    else
+                }
+                else
+                {
+                    for (int i = StartDate.Month; i <= TotalMonths; i++)
                     {
-                        YearNo = (i - 1) / TotalMonth;
-                    }
-                    DateTime dt = new DateTime(StartDate.Year + YearNo, (i % TotalMonth) == 0 ? 12 : (i % TotalMonth), 1);
-                    if (!UserReportCurrency.Where(w => w.StartDate == dt).Any())
-                    {
+                        int TotalMonth = 12;
+                        int YearNo = 0;
+                        if (i % TotalMonth != 0)
+                        {
+                            YearNo = i / TotalMonth;
+                        }
+                        else
+                        {
+                            YearNo = (i - 1) / TotalMonth;
+                        }
+                        DateTime dt = new DateTime(StartDate.Year + YearNo, (i % TotalMonth) == 0 ? 12 : (i % TotalMonth), 1);
                         CurrencyModel.ClientCurrency cc = new CurrencyModel.ClientCurrency();
                         cc.StartDate = dt;
                         cc.EndDate = dt.AddMonths(1).AddDays(-1);
-                        cc.CurrencySymbol = UserReportCurrency[0].CurrencySymbol;
+                        cc.CurrencySymbol = "";
                         cc.ExchangeRate = 1.0;
                         MonthWiseUserReportCurrency.Add(cc);
                     }
-                    else
-                    {
-                        CurrencyModel.ClientCurrency cc = new CurrencyModel.ClientCurrency();
-                        cc = (CurrencyModel.ClientCurrency)UserReportCurrency.Where(w => w.StartDate == dt).FirstOrDefault();
-                        MonthWiseUserReportCurrency.Add(cc);
-                    }
-                }
-            }
-            else
-            {
-                for (int i = StartDate.Month; i <= TotalMonths; i++)
-                {
-                    int TotalMonth = 12;
-                    int YearNo = 0;
-                    if (i % TotalMonth != 0)
-                    {
-                        YearNo = i / TotalMonth;
-                    }
-                    else
-                    {
-                        YearNo = (i - 1) / TotalMonth;
-                    }
-                    DateTime dt = new DateTime(StartDate.Year + YearNo, (i % TotalMonth) == 0 ? 12 : (i % TotalMonth), 1);
-                    CurrencyModel.ClientCurrency cc = new CurrencyModel.ClientCurrency();
-                    cc.StartDate = dt;
-                    cc.EndDate = dt.AddMonths(1).AddDays(-1);
-                    cc.CurrencySymbol = "";
-                    cc.ExchangeRate = 1.0;
-                    MonthWiseUserReportCurrency.Add(cc);
-                }
+                }                
             }
             return MonthWiseUserReportCurrency;
         }
-
     }
 }
