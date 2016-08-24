@@ -98,7 +98,7 @@
             }
         }
         if (stage == 2) {
-            if (nValue == "0") {
+            if (parseFloat(nValue).toFixed(2) == "0.00") {
                 $('#diverrormsg').text(" 0 is not allowed.");
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);

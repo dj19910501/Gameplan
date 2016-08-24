@@ -114,6 +114,7 @@
     var planData = [];
     var reportData = [];
     $("#drpYear").change(function () {
+        $('#chkSameasplanning').prop("checked", false);
         planData = [];
         reportData = [];
         var year = this.value;
