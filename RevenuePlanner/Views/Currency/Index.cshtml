@@ -273,7 +273,8 @@
     });
     //Click of Save button which will save all records which is in my list
     $('#btnSave').click(function () {
-        $.post('/Currency/SaveClientCurrency', $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {
+        var url="@Url.Content("~/Currency/SaveClientCurrency")"
+        $.post(url, $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {
             window.location.href = "@Url.Content("~/Currency/Index")";
         });
     });
@@ -310,5 +311,5 @@
         }
     });
     //insertation end
-   
+
 </script>

@@ -153,19 +153,19 @@
             else {
                 $('#chkSameasplanning').prop("checked", false);
             }
-            
+
         }
     });
 
-  
+
     $('#btnSave').click(function () {
         var exchangerateObj = JSON.stringify({ 'lstPlan': planData, sameAsPlan: false, 'lstReport': reportData });
-
+       var url="@Url.Content("~/Currency/SaveExchangeRateList")"
         $.ajax({
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             type: 'POST',
-            url: '/Currency/SaveExchangeRateList',
+            url: url,
             async: false,
             data: exchangerateObj,
             success: function () {
@@ -196,7 +196,7 @@
             e.preventDefault();
             $(this).closest(".alert").slideUp(400);
             $("#confirmMsg").slideUp(400);
-          //  $("#errorMsg").slideUp(1000);
+            //  $("#errorMsg").slideUp(1000);
         });
 
         $("#confirmClose").click(function (e) {
@@ -277,18 +277,18 @@
     function closeMsg() {
         $("#confirmMsg").slideUp(400);
     }
-    function CallUrl(alink) {       
+    function CallUrl(alink) {
         $("#" + alink.id).attr("isDataUpdated", "false");
         $("#" + alink.id).click();
     }
-    $("#sidebar a").click(function (event) {       
-        sidebarlink = $(this).attr('id');     
+    $("#sidebar a").click(function (event) {
+        sidebarlink = $(this).attr('id');
         if (reportData.length > 0 || planData.length > 0) {
             displayConfirmBox($(this).attr('href'), sidebarlink);
             if($("#" + sidebarlink).attr("isDataUpdated")!='false')
-            $("#" + sidebarlink).attr("isDataUpdated", "true")                      
+                $("#" + sidebarlink).attr("isDataUpdated", "true")
             event.preventDefault();
-            event.stopPropagation();           
+            event.stopPropagation();
             return false;
         }
         else {
@@ -300,7 +300,7 @@
         if (reportData.length > 0 || planData.length > 0) {
             displayConfirmBox($(this).attr('href'), sidebarlink);
             if ($("#" + sidebarlink).attr("isDataUpdated") != 'false')
-                $("#" + sidebarlink).attr("isDataUpdated", "true")         
+                $("#" + sidebarlink).attr("isDataUpdated", "true")
             event.preventDefault();
             event.stopPropagation();
             return false;
@@ -309,5 +309,5 @@
             return true;
         }
     });
- 
+
 </script>
