@@ -1529,7 +1529,6 @@
                     return true;
                 }
                 if (htmlDecode(nValue) != oValue) {//Modified by Rahul Shah on 30/11/2015 for PL #1778. here in special character nValue data carry with Extra character.
-
                     if (UpdateColumn != "Type" && UpdateColumn.toString().trim() != "Target Stage Goal") {
                         progid = HomeGrid.getParentId(rowId);
                         campid = HomeGrid.getParentId(progid);
@@ -1574,7 +1573,17 @@
                                         var PlanID = HomeGrid.cells(campid,3).getValue();
                                     }
                                     else{
-                                        var PlanID = HomeGrid.cells(progid,3).getValue();
+                                        if(progid != 0 && progid != null && progid != undefined )
+                                        {
+                                            var PlanID = HomeGrid.cells(progid,3).getValue();
+                                        }
+                                        else
+                                        {
+                                            var PlanID = HomeGrid.cells(rowId,3).getValue();
+                                        }
+
+                                            
+                                       
                                     }
                                     //var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
                                     $("#ulSelectedOwner li input[type=checkbox]").each(function () {

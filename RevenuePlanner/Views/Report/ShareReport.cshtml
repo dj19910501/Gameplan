@@ -132,9 +132,18 @@
                 var SelectedData = $("#select2Email").select2("data");
                 var Emails = "";
                 var UserIDs = "";
+                var UserData = [];
+
+              
+
+                
                 $.each(SelectedData, function (index, data) {
                     Emails +=  data.text + ",",
                     UserIDs += data.id + ","
+                    UserData.push({
+                        Id : data.id,
+                        Email : data.text,
+                    })
                 });
                 if(Emails != "")
                 {
@@ -146,7 +155,7 @@
                 }
                 
 
-                ShareReport(Emails, $("#TxtOptionalMessage").val(),UserIDs);
+                ShareReport(Emails, $("#TxtOptionalMessage").val(),UserIDs,UserData);
             }
 
             return false;
@@ -154,7 +163,7 @@
 
         //Start Share Report
         //Modified by komal rawal on 16-08-2016 regarding #2484 save notifications 
-        function ShareReport(email, optionalMessage,RecipientUserIds) {
+        function ShareReport(email, optionalMessage,RecipientUserIds,Userdata) {
             var reportType = '@reportType';
             var htmlOfCurrentView = GetHTML(reportType);
             
@@ -177,7 +186,8 @@
                     optionalMessage: optionalMessage,
                     htmlOfCurrentView : htmlOfCurrentView,
                     url:urlpdf,
-                    RecipientUserIds : RecipientUserIds
+                    RecipientUserIds : RecipientUserIds,
+                    data : JSON.stringify(Userdata)
                 },
                 success: function (data) {
                     if (data != 'undefined' && data != false) {

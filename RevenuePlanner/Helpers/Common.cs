@@ -721,6 +721,7 @@ namespace RevenuePlanner.Helpers
             List<string> lst_CollaboratorUserName = new List<string>();
             //List<string> lst_CollaboratorId = GetCollaboratorForTactic(planTacticId);
             List<string> lst_CollaboratorId = new List<string>();
+            List<string> List_NotificationUserIds = new List<string>();
             Guid createdBy = new Guid();
             if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
             {
@@ -738,9 +739,18 @@ namespace RevenuePlanner.Helpers
             {
                 lst_CollaboratorId = GetCollaboratorForImprovementTactic(planTacticId);
             }
+
+            if(Sessions.User != null && lst_CollaboratorId.Contains(Convert.ToString(Sessions.User.UserId)))
+            {
+                lst_CollaboratorId.Remove(Convert.ToString(Sessions.User.UserId));
+            }
+
             if (lst_CollaboratorId.Count > 0)
             {
+               
                 var csv = string.Join(", ", lst_CollaboratorId);
+                var NotificationName = status;
+
                 var UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
                 lst_CollaboratorEmail = UsersDetails.Select(u => u.Email).ToList();
                 lst_CollaboratorUserName = UsersDetails.Select(u => u.FirstName).ToList();
@@ -772,14 +782,32 @@ namespace RevenuePlanner.Helpers
                 {
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
+                        List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, Enums.Custom_Notification.TacticIsApproved.ToString().ToLower());
+                        if (List_NotificationUserIds.Count > 0)
+                        {
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                        }
+
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticApproved.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                     {
+                        List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, Enums.Custom_Notification.ProgramIsApproved.ToString().ToLower());
+                        if (List_NotificationUserIds.Count > 0)
+                        {
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                        }
+
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramApproved.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
+                        List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, Enums.Custom_Notification.CampaignIsApproved.ToString().ToLower());
+                        if (List_NotificationUserIds.Count > 0)
+                        {
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                        }
+
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignApproved.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
@@ -810,25 +838,33 @@ namespace RevenuePlanner.Helpers
                 else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                 {
                     var clientId = Sessions.User.ClientId;
-                    //var directorRoleCode = Enums.RoleCodes.D.ToString();
-                    //var lst_user = objBDSUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
-                    //var lst_director = lst_user.Where(ld => ld.RoleCode.Equals(directorRoleCode)).Select(l => l).ToList();
-                    //foreach (var item in lst_director)
-                    //{
-                    //    lst_CollaboratorEmail.Add(item.Email);
-                    //    lst_CollaboratorUserName.Add(item.FirstName);
-                    //}
+                    List<string> UserName = new List<string>();
+                    List<string> EmailId = new List<string>();
+                    List<string> UserId = new List<string>();
+                    UserName.Add(UsersDetails.FirstOrDefault(u => u.UserId == createdBy).FirstName);
+                    EmailId.Add(UsersDetails.FirstOrDefault(u => u.UserId == createdBy).Email);
+                    UserId.Add(createdBy.ToString());
                     // To add manager's email address, By dharmraj, Ticket #537
                     var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
                     var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
                     if (objOwnerUser.ManagerId != null)
                     {
-                        lst_CollaboratorEmail.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).Email);
-                        lst_CollaboratorUserName.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).FirstName);
+                        EmailId.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).Email);
+                        UserName.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).FirstName);
+                        UserId.Add(objOwnerUser.ManagerId.ToString());
+
+                        lst_CollaboratorEmail = EmailId;
+                        lst_CollaboratorUserName = UserName;
                     }
 
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
+                         List_NotificationUserIds = GetAllNotificationUserIds(UserId, Enums.Custom_Notification.TacticIsSubmitted.ToString().ToLower());
+                        if (List_NotificationUserIds.Count > 0)
+                        {
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                        }
+
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
                     }
                     else if (section == Convert.ToString(Enums.Section.Program).ToLower())
@@ -844,22 +880,40 @@ namespace RevenuePlanner.Helpers
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
-                else if (status.Equals(Enums.Custom_Notification.TacticCommentAdded.ToString()) && iscomment)
+                else if (status.Equals(Enums.Custom_Notification.CommentAddedToTactic.ToString()) && iscomment)
                 {
+                    List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, NotificationName.ToLower());
+                    if (List_NotificationUserIds.Count > 0)
+                    {
+                        lst_CollaboratorEmail = UsersDetails.Where(ids=> List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                    }
+
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
-                else if (status.Equals(Enums.Custom_Notification.ProgramCommentAdded.ToString()) && iscomment)
+                else if (status.Equals(Enums.Custom_Notification.CommentAddedToProgram.ToString()) && iscomment)
                 {
+                    List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, NotificationName.ToLower());
+                    if (List_NotificationUserIds.Count > 0)
+                    {
+                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                    }
+
                     if (section == Convert.ToString(Enums.Section.Program).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
-                else if (status.Equals(Enums.Custom_Notification.CampaignCommentAdded.ToString()) && iscomment)
+                else if (status.Equals(Enums.Custom_Notification.CommentAddedToCampaign.ToString()) && iscomment)
                 {
+                    List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, NotificationName.ToLower());
+                    if (List_NotificationUserIds.Count > 0)
+                    {
+                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                    }
+
                     if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
@@ -874,6 +928,28 @@ namespace RevenuePlanner.Helpers
                 }
             }
         }
+
+
+        /// <summary>
+        /// Added by Komal to get users who has notification on .
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        #region Method to get users who has notification on
+
+        public static List<string> GetAllNotificationUserIds(List<string> UserIds,string NotificationName)
+        {
+            List<string> userids = new List<string>();
+            MRPEntities db = new MRPEntities();
+           var users = (from Uids in db.User_Notification
+                       join Nids in db.Notifications on Uids.NotificationId equals Nids.NotificationId
+                       where Nids.IsDeleted == false && Nids.NotificationType == "AM" && Nids.NotificationInternalUseOnly == NotificationName
+                       select Uids
+                      ).ToList();
+            userids = users.Where(Uids => UserIds.Contains(Convert.ToString(Uids.UserId))).Select(UIds => Convert.ToString(UIds.UserId)).Distinct().ToList();
+            return userids;
+        }
+        #endregion
 
         #endregion
 
@@ -8892,7 +8968,7 @@ namespace RevenuePlanner.Helpers
                 return dt.ToString("MMM d yyyy");
             }
             if (span.Days > 0 && span.Days == 1)
-                return "yesterday";
+                return "Yesterday";
             if (span.Hours > 0)
                 return String.Format("{0} {1} ago",
                 span.Hours, span.Hours == 1 ? "hour" : "hours");
@@ -8902,10 +8978,16 @@ namespace RevenuePlanner.Helpers
             if (span.Seconds > 5)
                 return String.Format("{0} seconds ago", span.Seconds);
             if (span.Seconds <= 5)
-                return "just now";
+                return "Just now";
             return string.Empty;
         }
         #endregion
+
+
+     
+
+
+
     }
 
     /// <summary>
@@ -9493,7 +9575,18 @@ namespace RevenuePlanner.Helpers
             List<string> lst_RecipientId = new List<string>();
             if (description == Convert.ToString(Enums.ChangeLog_ComponentType.tactic).ToLower() && componentId != null)
             {
+                if(action == Convert.ToString(Enums.ChangeLog_Actions.submitted))
+                {
+                    BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                    var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                    var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == Guid.Parse(EntityOwnerID));
+                    lst_RecipientId.Add(Convert.ToString(objOwnerUser.ManagerId));
+                    lst_RecipientId.Add(EntityOwnerID);
+                }
+                else
+                {
                 lst_RecipientId = Common.GetCollaboratorForTactic(Convert.ToInt32(componentId));
+                }
             }
             else if (description == Convert.ToString(Enums.ChangeLog_ComponentType.program).ToLower() && componentId != null)
             {

@@ -213,5 +213,11 @@ namespace RevenuePlanner.Models
         public int? PlanID { get; set; }
     }
 
+    public class sharereportdetails
+    {
+        public string Email { get; set; }
+        public string Id { get; set; }
+    }
+
 
 }

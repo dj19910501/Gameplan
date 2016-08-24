@@ -491,7 +491,10 @@ namespace RevenuePlanner.Controllers
                                     string PlanTitle = plan.Title.ToString();
                                     //string CampaignTitle = pcobj.Title.ToString();
                                     //string ProgramTitle = pcobj.Title.ToString();
-                                    if (lstRecepientEmail.Count > 0)
+                                    List<string> NewOwnerID = new List<string>();
+                                    NewOwnerID.Add(objPlanModel.OwnerId.ToString());
+                                    List<string> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                                    if (List_NotificationUserIds.Count > 0 && objPlanModel.OwnerId != Sessions.User.UserId)
                                     {
                                         string strURL = GetNotificationURLbyStatus(plan.PlanId, plan.PlanId, Enums.Section.Plan.ToString().ToLower());
                                         Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, PlanTitle, PlanTitle, PlanTitle, PlanTitle, Enums.Section.Plan.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
@@ -1181,7 +1184,10 @@ namespace RevenuePlanner.Controllers
                                             string PlanTitle = pcobj.Plan.Title.ToString();
                                             string CampaignTitle = pcobj.Title.ToString();
                                             string ProgramTitle = pcobj.Title.ToString();
-                                            if (lstRecepientEmail.Count > 0)
+                                            List<string> NewOwnerID = new List<string>();
+                                            NewOwnerID.Add(form.OwnerId.ToString());
+                                            List<string> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                                            if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.UserId)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(pcobj.PlanId, campaignid, Enums.Section.Campaign.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
@@ -1344,14 +1350,23 @@ namespace RevenuePlanner.Controllers
 
                                     var tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
                                     objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
+
+                                    List<string> lst_Userids = new List<string>();
+                                    lst_Userids.Add(oldOwnerId.ToString());
+                                    List<string> List_NotificationUserIds = Common.GetAllNotificationUserIds(lst_Userids, Enums.Custom_Notification.CampaignIsEdited.ToString().ToLower());
+
                                     //Send Email Notification For Owner changed.
-                                    if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                    if (List_NotificationUserIds.Count > 0 || form.OwnerId != oldOwnerId)
                                     {
                                         if (Sessions.User != null)
                                         {
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
-                                            var csv = string.Concat(form.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+                                            var csv = string.Concat(oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+                                            if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                            {
+                                                csv = string.Concat(form.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+                                            }
 
                                             try
                                             {
@@ -1368,7 +1383,28 @@ namespace RevenuePlanner.Controllers
                                                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                                                 }
                                             }
+                                            string PlanTitle = pcobj.Plan.Title.ToString();
+                                            string CampaignTitle = pcobj.Title.ToString();
+                                            string ProgramTitle = pcobj.Title.ToString();
 
+                                            //Added by KOmal rawal to send mail for #2485 on 22-08-2016
+                                            #region send entity edited email notification
+                                            if (List_NotificationUserIds.Count > 0 && oldOwnerId != Sessions.User.UserId)
+                                            {
+                                                var CurrentOwner = UsersDetails.Where(u => u.UserId == oldOwnerId).Select(u => u).FirstOrDefault();
+                                                string oldownername = CurrentOwner.FirstName;
+                                                List<string> CurrentOwnerName = new List<string>();
+                                                CurrentOwnerName.Add(oldownername);
+                                                List<string> CurrentOwnerEmail = new List<string>();
+                                                CurrentOwnerEmail.Add(CurrentOwner.Email);
+                                                string strUrl = GetNotificationURLbyStatus(pcobj.PlanId, pcobj.PlanCampaignId, Convert.ToString(Enums.Section.Campaign).ToLower());
+                                                Common.SendNotificationMail(CurrentOwnerEmail, CurrentOwnerName, pcobj.Title, PlanTitle, Enums.Custom_Notification.CampaignIsEdited.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower(), pcobj.PlanCampaignId, pcobj.PlanId, strUrl);
+                                            }
+                                            #endregion
+                                            //ENd
+
+                                            if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                            {
                                             var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
                                             var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
                                             if (NewOwner.Email != string.Empty)
@@ -1377,10 +1413,11 @@ namespace RevenuePlanner.Controllers
                                             }
                                             string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
                                             string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
-                                            string PlanTitle = pcobj.Plan.Title.ToString();
-                                            string CampaignTitle = pcobj.Title.ToString();
-                                            string ProgramTitle = pcobj.Title.ToString();
-                                            if (lstRecepientEmail.Count > 0)
+
+                                                List<string> NewOwnerID = new List<string>();
+                                                NewOwnerID.Add(form.OwnerId.ToString());
+                                                List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                                                if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.UserId)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(pcobj.PlanId, form.PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
@@ -1388,6 +1425,7 @@ namespace RevenuePlanner.Controllers
                                             }
                                         }
                                     }
+                                }
                                 }
 
                                 // End - Added by Pratik on 11/03/2014 for PL ticket #711
@@ -2050,7 +2088,10 @@ namespace RevenuePlanner.Controllers
                                             string PlanTitle = pcpobj.Plan_Campaign.Plan.Title.ToString();
                                             string CampaignTitle = pcpobj.Plan_Campaign.Title.ToString();
                                             string ProgramTitle = pcpobj.Title.ToString();
-                                            if (lstRecepientEmail.Count > 0)
+                                            List<string> NewOwnerID = new List<string>();
+                                            NewOwnerID.Add(form.OwnerId.ToString());
+                                            List<string> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                                            if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.UserId)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign.PlanId, programid, Enums.Section.Program.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Program.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
@@ -2201,13 +2242,20 @@ namespace RevenuePlanner.Controllers
                                     objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
 
                                     //Send Email Notification For Owner changed.
-                                    if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                    List<string> lst_Userids = new List<string>();
+                                    lst_Userids.Add(oldOwnerId.ToString());
+                                    List<string> List_NotificationUserIds = Common.GetAllNotificationUserIds(lst_Userids, Enums.Custom_Notification.ProgramIsEdited.ToString().ToLower());
+                                    if (List_NotificationUserIds.Count > 0 || form.OwnerId != oldOwnerId)
                                     {
                                         if (Sessions.User != null)
                                         {
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
-                                            var csv = string.Concat(form.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+                                            var csv = string.Concat(oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+                                            if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                            {
+                                                csv = string.Concat(form.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+                                            }
 
                                             try
                                             {
@@ -2227,6 +2275,28 @@ namespace RevenuePlanner.Controllers
                                                 }
                                             }
 
+                                            string PlanTitle = pcpobj.Plan_Campaign.Plan.Title.ToString();
+                                            string CampaignTitle = pcpobj.Plan_Campaign.Title.ToString();
+                                            string ProgramTitle = pcpobj.Title.ToString();
+
+                                            //Added by KOmal rawal to send mail for #2485 on 22-08-2016
+                                            #region send entity edited email notification
+                                            if (List_NotificationUserIds.Count > 0 && oldOwnerId != Sessions.User.UserId)
+                                            {
+                                                var CurrentOwner = UsersDetails.Where(u => u.UserId == oldOwnerId).Select(u => u).FirstOrDefault();
+                                                string oldownername = CurrentOwner.FirstName;
+                                                List<string> CurrentOwnerName = new List<string>();
+                                                CurrentOwnerName.Add(oldownername);
+                                                List<string> CurrentOwnerEmail = new List<string>();
+                                                CurrentOwnerEmail.Add(CurrentOwner.Email);
+                                                string strUrl = GetNotificationURLbyStatus(planid, pcpobj.PlanProgramId, Convert.ToString(Enums.Section.Program).ToLower());
+                                                Common.SendNotificationMail(CurrentOwnerEmail, CurrentOwnerName, pcpobj.Title, PlanTitle, Enums.Custom_Notification.ProgramIsEdited.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower(), pcpobj.PlanProgramId, planid, strUrl);
+                                            }
+                                            #endregion
+                                            //ENd
+
+                                            if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                            {
                                             var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
                                             var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
                                             if (NewOwner.Email != string.Empty)
@@ -2235,10 +2305,10 @@ namespace RevenuePlanner.Controllers
                                             }
                                             string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
                                             string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
-                                            string PlanTitle = pcpobj.Plan_Campaign.Plan.Title.ToString();
-                                            string CampaignTitle = pcpobj.Plan_Campaign.Title.ToString();
-                                            string ProgramTitle = pcpobj.Title.ToString();
-                                            if (lstRecepientEmail.Count > 0)
+                                                List<string> NewOwnerID = new List<string>();
+                                                NewOwnerID.Add(form.OwnerId.ToString());
+                                                List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                                                if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.UserId)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign.PlanId, form.PlanProgramId, Enums.Section.Program.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Program.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
@@ -2246,6 +2316,7 @@ namespace RevenuePlanner.Controllers
                                             }
                                         }
                                     }
+                                }
                                 }
                                 // End - Added by Pratik on 11/03/2014 for PL ticket #711
 
@@ -4720,7 +4791,10 @@ namespace RevenuePlanner.Controllers
                                             string PlanTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString();
                                             string CampaignTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
                                             string ProgramTitle = pcpobj.Plan_Campaign_Program.Title.ToString();
-                                            if (lstRecepientEmail.Count > 0)
+                                            List<string> NewOwnerID = new List<string>();
+                                            NewOwnerID.Add(form.OwnerId.ToString());
+                                           List<string> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                                            if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.UserId)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, tacticId, Enums.Section.Tactic.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
@@ -5443,15 +5517,21 @@ namespace RevenuePlanner.Controllers
                                 // Start - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
                                 if (result > 0)
                                 {
-
-                                    //Send Email Notification For Owner changed.
-                                    if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                    List<string> lst_Userids = new List<string>();
+                                    lst_Userids.Add(oldOwnerId.ToString());
+                                    List<string> List_NotificationUserIds = Common.GetAllNotificationUserIds(lst_Userids, Enums.Custom_Notification.TacticIsEdited.ToString().ToLower());
+                                    if (List_NotificationUserIds.Count > 0 || form.OwnerId != oldOwnerId)
                                     {
+                                    //Send Email Notification For Owner changed.
                                         if (Sessions.User != null)
                                         {
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
-                                            var csv = string.Concat(form.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+                                            var csv = string.Concat(oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+                                            if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                            {
+                                                csv = string.Concat(form.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.UserId.ToString());
+                                            }
 
                                             try
                                             {
@@ -5471,6 +5551,28 @@ namespace RevenuePlanner.Controllers
                                                 }
                                             }
 
+                                            string PlanTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString();
+                                            string CampaignTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
+                                            string ProgramTitle = pcpobj.Plan_Campaign_Program.Title.ToString();
+
+                                            //Added by KOmal rawal to send mail for #2485 on 22-08-2016
+                                            #region send entity edited email notification
+                                            if (List_NotificationUserIds.Count > 0 && oldOwnerId != Sessions.User.UserId && Common.CheckAfterApprovedStatus(pcpobj.Status))
+                                            {
+                                                var CurrentOwner = UsersDetails.Where(u => u.UserId == oldOwnerId).Select(u => u).FirstOrDefault();
+                                                string oldownername = CurrentOwner.FirstName;
+                                                List<string> CurrentOwnerName = new List<string>();
+                                                CurrentOwnerName.Add(oldownername);
+                                                List<string> CurrentOwnerEmail = new List<string>();
+                                                CurrentOwnerEmail.Add(CurrentOwner.Email);
+                                                string strUrl = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, pcpobj.PlanTacticId, Convert.ToString(Enums.Section.Tactic).ToLower());
+                                                Common.SendNotificationMail(CurrentOwnerEmail, CurrentOwnerName, pcpobj.Title, PlanTitle, Enums.Custom_Notification.TacticIsEdited.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), pcpobj.PlanTacticId, pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, strUrl);
+                                            }
+                                            #endregion
+                                            //ENd
+                                            if (form.OwnerId != oldOwnerId && form.OwnerId != Guid.Empty)
+                                            {
+
                                             var NewOwner = UsersDetails.Where(u => u.UserId == form.OwnerId).Select(u => u).FirstOrDefault();
                                             var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
                                             if (NewOwner.Email != string.Empty)
@@ -5479,15 +5581,17 @@ namespace RevenuePlanner.Controllers
                                             }
                                             string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
                                             string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
-                                            string PlanTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString();
-                                            string CampaignTitle = pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
-                                            string ProgramTitle = pcpobj.Plan_Campaign_Program.Title.ToString();
-                                            if (lstRecepientEmail.Count > 0)
+
+                                                List<string> NewOwnerID = new List<string>();
+                                                NewOwnerID.Add(form.OwnerId.ToString());
+                                                List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                                                if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.UserId)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                                 Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", Convert.ToString(form.OwnerId));
                                             }
+                                        }
                                         }
 
                                     }
@@ -8310,7 +8414,8 @@ namespace RevenuePlanner.Controllers
                                             string CampaignTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
                                             string ProgramTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString();
                                             string TacticTitle = objLineitem.Plan_Campaign_Program_Tactic.Title.ToString();
-                                            if (lstRecepientEmail.Count > 0)
+                                           
+                                            if (lstRecepientEmail.Count > 0 && form.OwnerId != Sessions.User.UserId)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, lineItemId, Enums.Section.LineItem.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, TacticTitle, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL, objLineitem.Title);
@@ -9018,7 +9123,7 @@ namespace RevenuePlanner.Controllers
                                             string CampaignTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString();
                                             string ProgramTitle = objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString();
                                             string TacticTitle = objLineitem.Plan_Campaign_Program_Tactic.Title.ToString();
-                                            if (lstRecepientEmail.Count > 0)
+                                            if (lstRecepientEmail.Count > 0 && form.OwnerId != Sessions.User.UserId)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanLineItemId, Enums.Section.LineItem.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, TacticTitle, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL, objLineitem.Title);
@@ -11988,7 +12093,7 @@ namespace RevenuePlanner.Controllers
                             int PlanId = PlanIds.Where(pcpt => pcpt.PlanTacticId == planTacticId).Select(_tactic => _tactic.Plan_Campaign_Program.Plan_Campaign.PlanId).FirstOrDefault();
                             Plan_Campaign_Program_Tactic pct = ListOfTactics.Where(_tactic => _tactic.PlanTacticId == planTacticId).FirstOrDefault();
                             string strUrl = GetNotificationURLbyStatus(PlanId, planTacticId, section);
-                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.TacticCommentAdded.ToString(), pct.Title, true, comment, Convert.ToString(Enums.Section.Tactic).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.CommentAddedToTactic.ToString(), pct.Title, true, comment, Convert.ToString(Enums.Section.Tactic).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                           
                               Common.InsertChangeLog(PlanId, null, pct.PlanTacticId, pct.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.commentadded, "", Convert.ToString(pct.CreatedBy));
                          
@@ -12011,14 +12116,14 @@ namespace RevenuePlanner.Controllers
                             Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == planTacticId).FirstOrDefault();
                             int PlanId = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanProgramId == planTacticId).Select(program => program.Plan_Campaign.PlanId).FirstOrDefault();
                             string strUrl = GetNotificationURLbyStatus(PlanId, planTacticId, section);
-                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.ProgramCommentAdded.ToString(), pcp.Title, true, comment, Convert.ToString(Enums.Section.Program).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.CommentAddedToProgram.ToString(), pcp.Title, true, comment, Convert.ToString(Enums.Section.Program).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                             Common.InsertChangeLog(PlanId, null, pcp.PlanProgramId, pcp.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.commentadded, "", Convert.ToString(pcp.CreatedBy));
                         }
                         else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                         {
                             Plan_Campaign pc = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == planTacticId).FirstOrDefault();
                             string strUrl = GetNotificationURLbyStatus(pc.PlanId, planTacticId, section);
-                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.CampaignCommentAdded.ToString(), pc.Title, true, comment, Convert.ToString(Enums.Section.Campaign).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.CommentAddedToCampaign.ToString(), pc.Title, true, comment, Convert.ToString(Enums.Section.Campaign).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                             Common.InsertChangeLog(pc.PlanId, null, pc.PlanCampaignId, pc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.commentadded, "", Convert.ToString(pc.CreatedBy));
 
                         }

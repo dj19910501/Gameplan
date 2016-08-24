@@ -470,6 +470,17 @@ namespace RevenuePlanner.Helpers
             ShareTactic,
             UserCreated,
             TacticCommentAdded,
+            CommentAddedToTactic,
+            CommentAddedToCampaign,
+            CommentAddedToProgram,
+            ReportIsShared,
+            TacticIsApproved,
+            CampaignIsApproved,
+            ProgramIsApproved,
+            TacticIsEdited,
+            ProgramIsEdited,
+            CampaignIsEdited,
+            TacticIsSubmitted,
             TacticApproved,
             TacticDeclined,
             TacticSubmitted,
@@ -498,6 +509,7 @@ namespace RevenuePlanner.Helpers
             CampaignOwnerChanged,  // Added by : Pratik on 03/03/2014 for PL ticket #711            
             PlanOwnerChanged,     //Added by Rahul Shah on 09/03/2016 for PL #1939
             LineItemOwnerChanged, //Added by Rahul Shah on 18/03/2016 for PL #2068 
+            EntityOwnershipAssigned,
         }
         #endregion
 

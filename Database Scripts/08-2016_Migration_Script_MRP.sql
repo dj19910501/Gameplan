@@ -1463,7 +1463,7 @@ GO
 
 	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'TacticIsEdited')) 
 	Begin
-	 insert into Notification(NotificationInternalUseOnly,Title,[Description],NotificationType,EmailContent,IsDeleted,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,[Subject]) values('TacticIsEdited','When my tactic is edited',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following tactic has been edited.<br><br><table><tr><td>Tactic Name</td><td>:</td><td>[TacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Edited by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan :Tactic is edited')
+	 insert into Notification(NotificationInternalUseOnly,Title,[Description],NotificationType,EmailContent,IsDeleted,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,[Subject]) values('TacticIsEdited','When my tactic is edited',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following tactic has been edited.<br><br><table><tr><td>Tactic Name</td><td>:</td><td>[TacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Edited by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr><tr><td>URL</td><td>:</td><td>[URL]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan :Tactic is edited')
 	End
 
 	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'TacticIsApproved')) 
@@ -1478,12 +1478,12 @@ GO
 
 	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'CampaignIsEdited')) 
 	Begin
-	 insert into Notification(NotificationInternalUseOnly,Title,[Description],NotificationType,EmailContent,IsDeleted,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,[Subject]) values('CampaignIsEdited','When my campaign is edited',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following campaign has been edited.<br><br><table><tr><td>Campaign Name</td><td>:</td><td>[CampaignNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Edited by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : Campaign is edited')
+	 insert into Notification(NotificationInternalUseOnly,Title,[Description],NotificationType,EmailContent,IsDeleted,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,[Subject]) values('CampaignIsEdited','When my campaign is edited',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following campaign has been edited.<br><br><table><tr><td>Campaign Name</td><td>:</td><td>[CampaignNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Edited by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr><tr><td>URL</td><td>:</td><td>[URL]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : Campaign is edited')
 	End
 
 	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'ProgramIsEdited')) 
 	Begin
-	 insert into Notification(NotificationInternalUseOnly,Title,[Description],NotificationType,EmailContent,IsDeleted,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,[Subject]) values('ProgramIsEdited','When my program is edited',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following program has been edited.<br><br><table><tr><td>Program Name</td><td>:</td><td>[ProgramToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Edited by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : program is edited')
+	 insert into Notification(NotificationInternalUseOnly,Title,[Description],NotificationType,EmailContent,IsDeleted,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,[Subject]) values('ProgramIsEdited','When my program is edited',null,'AM','Dear [NameToBeReplaced],<br/><br/>Please note that following program has been edited.<br><br><table><tr><td>Program Name</td><td>:</td><td>[ProgramToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Edited by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr><tr><td>URL</td><td>:</td><td>[URL]</td></tr></table><br><br>Thank You,<br>Hive9 Plan Admin',0,GETDATE(),@Createdby,null,null,'Plan : program is edited')
 	End
 
 	IF (NOT EXISTS(SELECT * FROM Notification WHERE NotificationInternalUseOnly = 'TacticIsSubmitted')) 
@@ -1686,11 +1686,10 @@ BEGIN
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @TacticIsSubmitted and @description ='tactic' and @action='submitted' )) 
 	Begin
 		select @NotificationMessage = @UserName + ' has submitted tactic ' + @componentTitle +' for approval '
-		if(@Userid <> @EntityOwnerID)
-		Begin
-			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
-			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
-		End
+		
+		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
+		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
+		WHERE NotificationInternalUseOnly = @TacticIsSubmitted and UserId <> @Userid
 	End
 
 	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @OwnerChange  and @action='ownerchanged' )) 

@@ -295,116 +295,7 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-        //Commented By Komal Rawal for #1457
-        //#region Security Question
 
-        ///// <summary>
-        ///// Security Question
-        ///// </summary>
-        ///// <returns> return SecurityQuestion View</returns>
-        //public ActionResult SecurityQuestion()
-        //{
-        //    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        //    ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-        //    SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
-        //    try
-        //    {
-        //        BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-        //        var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
-        //        if (!string.IsNullOrEmpty(Sessions.User.Answer)) //PL #1457 Security question error during reset password :- added by dasharth prajapati 
-        //        {
-        //            objSecurityQuestionListModel.Answer = Common.Decrypt(Sessions.User.Answer);
-        //        }
-
-        //        objSecurityQuestionListModel.SecurityQuestionId = Convert.ToInt32(Sessions.User.SecurityQuestionId);
-        //        objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-
-        //        //To handle unavailability of BDSService
-        //        if (e is System.ServiceModel.EndpointNotFoundException)
-        //        {
-        //            return RedirectToAction("ServiceUnavailable", "Login");
-        //        }
-        //    }
-
-        //    return View(objSecurityQuestionListModel);
-        //}
-
-        ///// <summary>
-        ///// Post : security question view
-        ///// <param name="form">Security Question Data</param>
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpPost]
-        //public ActionResult SecurityQuestion(SecurityQuestionListModel form)
-        //{
-        //    // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
-        //    ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-
-        //    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-        //    try
-        //    {
-        //        BDSService.User objUser = new BDSService.User();
-        //        objUser.UserId = Sessions.User.UserId;
-        //        objUser.SecurityQuestionId = form.SecurityQuestionId;
-        //        objUser.Answer = Common.Encrypt(form.Answer);
-
-        //        //// Update User Security Question.
-        //        int retVal = objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
-
-        //        if (retVal == -1)
-        //        {
-        //            TempData["ErrorMessage"] = Common.objCached.SecurityQuestionChangesNotApplied;
-        //        }
-        //        else if (retVal == 1)
-        //        {
-
-        //            Sessions.User.SecurityQuestionId = form.SecurityQuestionId;
-        //            Sessions.User.Answer = Common.Encrypt(form.Answer);
-        //            TempData["SuccessMessage"] = Common.objCached.SecurityQuestionChangesApplied;
-        //        }
-        //        //// return Security Question list to View.
-        //    var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
-        //    form.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-
-        //        //To handle unavailability of BDSService
-        //        if (e is System.ServiceModel.EndpointNotFoundException)
-        //        {
-        //            return RedirectToAction("ServiceUnavailable", "Login");
-        //        }
-        //        else
-        //        {
-        //            TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
-        //        }
-        //    }
-
-        //    return View(form);
-        //}
-
-        ///// <summary>
-        ///// Method to get the Select list item
-        ///// </summary>
-        ///// <param name="QuestionList"> list of Questions</param>
-        ///// <returns> Returns list of Questions</returns>
-        //public List<SelectListItem> GetQuestionList(List<BDSService.SecurityQuestion> QuestionList)
-        //{
-        //    List<SelectListItem> optionslist = new List<SelectListItem>();
-        //    optionslist = QuestionList.AsEnumerable().Select(questn => new SelectListItem
-        //    {
-        //        Value = Convert.ToString(questn.SecurityQuestionId),
-        //        Text = questn.SecurityQuestion1
-        //    }).ToList();
-        //    return optionslist;
-        //}
-
-        //#endregion
 
         #region Delete User
 
@@ -1076,22 +967,23 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
-            string typeSM = Enums.NotificationType.SM.ToString().ToLower();
+            //  string typeSM = Enums.NotificationType.SM.ToString().ToLower();
             string typeAM = Enums.NotificationType.AM.ToString().ToLower();
 
             List<Notification> lstNotification = new List<Notification>();
             lstNotification = db.Notifications.Where(notfctn => notfctn.IsDeleted == false).ToList();
-            ViewBag.SMCount = lstNotification.Where(notfctn => notfctn.NotificationType.ToLower() == typeSM).Count();
+            //  ViewBag.SMCount = lstNotification.Where(notfctn => notfctn.NotificationType.ToLower() == typeSM).Count();
             ViewBag.AMCount = lstNotification.Where(notfctn => notfctn.NotificationType.ToLower() == typeAM).Count();
-
+            UserNotification userNotification;
             List<UserNotification> viewModelList = new List<UserNotification>();
+            int cntUsrNotification = 0;
             foreach (var item in lstNotification)
             {
-                UserNotification userNotification = new UserNotification();
+                userNotification = new UserNotification();
                 userNotification.NotificationId = item.NotificationId;
 
                 //// Get Current loggined user notification count.
-                int cntUsrNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.NotificationId == item.NotificationId && usrNotifctn.UserId == Sessions.User.UserId).Count();
+                cntUsrNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.NotificationId == item.NotificationId && usrNotifctn.UserId == Sessions.User.UserId).Count();
 
                 if (cntUsrNotification > 0)
                     userNotification.IsSelected = true;
@@ -1114,38 +1006,45 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-
+                if (!string.IsNullOrEmpty(notifications))
+                {
                 List<User_Notification> lstUserNotification = new List<User_Notification>();
                 lstUserNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.UserId == Sessions.User.UserId).ToList();
 
                 TempData["SuccessMessage"] = Common.objCached.UserNotificationsSaved;
 
                 //// Remove all current Notifications set for User
+                    if (lstUserNotification.Count > 0)
+                    {
                 foreach (var item in lstUserNotification)
                 {
                     db.Entry(item).State = EntityState.Modified;
                     db.User_Notification.Remove(item);
+
+                        }
                     db.SaveChanges();
                 }
 
                 //// Save User Notifications
-                if (!string.IsNullOrEmpty(notifications))
-                {
+
                     string[] arrNotify = notifications.Split(',');
+                    User_Notification objUser_Notification;
+                    int notificationId = 0;
                     foreach (var notification in arrNotify)
                     {
-                        int notificationId = Convert.ToInt32(notification);
+                        notificationId = Convert.ToInt32(notification);
 
                         //// Add User Notification data to table User_Notification.
-                        User_Notification objUser_Notification = new User_Notification();
+                        objUser_Notification = new User_Notification();
                         objUser_Notification.UserId = Sessions.User.UserId;
                         objUser_Notification.NotificationId = notificationId;
                         objUser_Notification.CreatedBy = Sessions.User.UserId;
                         objUser_Notification.CreatedDate = DateTime.Now;
                         db.Entry(objUser_Notification).State = EntityState.Added;
                         db.User_Notification.Add(objUser_Notification);
-                        db.SaveChanges();
+
                     }
+                        db.SaveChanges();
                 }
 
 

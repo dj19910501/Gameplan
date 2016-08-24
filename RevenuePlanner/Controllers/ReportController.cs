@@ -2320,10 +2320,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="optionalMessage">Optional message.</param>
         /// <param name="htmlOfCurrentView">Html of current view.</param>
         /// <returns>Returns json result which indicates report is generated and sent sucessfully.</returns>
-        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView, string url = "", string RecipientUserIds = "")
+        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView, string url = "",string RecipientUserIds = "" , string data = null)
         {
             //Modified regarding #2484 save notifications by komal rawal on 16-08-2016
             int result = 0;
+         
+
             var ChangeLogComponentType = Enums.ChangeLog_ComponentType.Summary;
             if (reportType == Enums.ReportType.Revenue.ToString())
             {
@@ -2349,6 +2351,18 @@ namespace RevenuePlanner.Controllers
                         optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
                         ////
                         string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
+
+                        if(data != null)
+                        {
+                            var UsersDetails = JsonConvert.DeserializeObject<List<sharereportdetails>>(data);
+                            var UserIds = RecipientUserIds.Split(',').ToList();
+                            var List_NotificationUserIds = Common.GetAllNotificationUserIds(UserIds, Enums.Custom_Notification.ReportIsShared.ToString().ToLower());
+                            if (List_NotificationUserIds.Count > 0)
+                            {
+                                var lst_Email = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.Id))).Select(u => u.Email).ToList();
+                                toEmailIds = string.Join(",", lst_Email);
+                            }
+                        }
                         foreach (string toEmail in toEmailIds.Split(','))
                         {
                             Report_Share reportShare = new Report_Share();
