@@ -8609,6 +8609,8 @@ namespace RevenuePlanner.Controllers
                     Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString()), PlanExchangeRate),
                     Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()), PlanExchangeRate)
                 } : null
+                ,
+                LineItemTypeId = ParseIntValue(Convert.ToString(row["LineItemTypeId"]))
 
             }).ToList();
             //Insertation End 19/08/2016 Kausha #2503 Used GetValuebyExchnagerate function to display values in users currency. 
