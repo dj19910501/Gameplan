@@ -8506,6 +8506,21 @@ namespace RevenuePlanner.Controllers
             return OutVal;
         }
 
+        //Added by Mitesh Vaishnav
+        //Function return value if passed perameter convertable then return otherwise return null
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int? ParseIntValue(string val)
+        {
+            int OutVal = 0;
+            int.TryParse(val, out OutVal);
+
+            if (OutVal==0)
+            {
+                return null;
+            }
+
+            return OutVal;
+        }
         /// <summary>
         /// Set the model for planned and actuals
         /// </summary>

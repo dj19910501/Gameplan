@@ -8629,23 +8629,21 @@ namespace RevenuePlanner.Controllers
                                         db.Entry(ObjLinkedTactic).State = EntityState.Modified;
                                         db.SaveChanges();
                                     }
+                                    //Changes made by mitesh vaishnav reg. PL ticket 2539 
+                                    //when we add new line item for tactic with cost 0, default line item will be created autometically
+                                    if (objTactic.Cost > totalLoneitemCost)
+                                    {
                                     Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
                                     objNewLineitem.PlanTacticId = tacticId;
                                     objNewLineitem.Title = Common.LineItemTitleDefault + objTactic.Title;
-                                    if (objTactic.Cost > totalLoneitemCost)
-                                    {
                                         objNewLineitem.Cost = objTactic.Cost - totalLoneitemCost;
-                                    }
-                                    else
-                                    {
-                                        objNewLineitem.Cost = 0;
-                                    }
                                     objNewLineitem.Description = string.Empty;
                                     //objNewLineitem.CreatedBy = Sessions.User.UserId;  // commented by Rahul Shah on 17/03/2016 for PL #2032 
                                     objNewLineitem.CreatedBy = form.OwnerId;            // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                     objNewLineitem.CreatedDate = DateTime.Now;
                                     objNewLineitem.LinkedLineItemId = objLinkedNewLineitem.PlanLineItemId;
                                     db.Entry(objNewLineitem).State = EntityState.Added;
+                                }
                                 }
                                 else
                                 {
