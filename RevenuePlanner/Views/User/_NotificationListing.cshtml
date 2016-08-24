@@ -14,7 +14,7 @@
         <a class="pull-right" href="@Url.Action("Notifications", "User")">Notification Settings</a>
     </div>
 
-    @if (RequestList.Count > 0)
+    @if (RequestList != null && RequestList.Count > 0)
     {
         <div class="request-wrap">
             <h3 class="sideline"><span>Requests</span></h3>
@@ -29,7 +29,7 @@
             }
         </div>
     }
-    @if (NotificationList.Count > 0)
+    @if (NotificationList != null &&  NotificationList.Count > 0)
     {
         <div class="request-wrap margin-top23">
             <h3 class="sideline"><span>Notifications</span></h3>
@@ -44,7 +44,7 @@
         </div>
     }
 
-    @if (NotificationList.Count == 0 && RequestList.Count == 0)
+    @if ((RequestList == null && NotificationList == null ) || ( NotificationList.Count == 0 && RequestList.Count == 0))
     {
         <div class="content-panel-tab">
             <div class="bold padding-top16 font-size18">No records available, please check your notification settings.</div>
