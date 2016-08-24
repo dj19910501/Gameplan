@@ -272,7 +272,7 @@ namespace RevenuePlanner.Services
             int TotalMonths = (DateTime.Parse(EndDate).Month) + 12 * (DateTime.Parse(EndDate).Year - DateTime.Parse(StartDate).Year);
             List<RevenuePlanner.Models.CurrencyModel.ClientCurrency> MonthWiseUserReportCurrency = new List<CurrencyModel.ClientCurrency>();
 
-            if (UserReportCurrency != null)
+            if (UserReportCurrency != null && UserReportCurrency.Count > 0)
             {
                 for (int i = DateTime.Parse(StartDate).Month; i <= TotalMonths; i++)
                 {
