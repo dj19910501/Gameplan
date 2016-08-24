@@ -133,7 +133,7 @@
         });        
         $('#hdnOwner').val($('#ddlOwner').val());
 
-        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
         var modelId = $('#ModelId').val();
         var goalType = $('#GoalType').val();
@@ -151,15 +151,15 @@
                 if (_goalType.toLowerCase() == '@Enums.PlanGoalType.INQ.ToString().ToLower()') {
                     $('#txtINQ').val(number_format(_goalValue.toString(), 0, '.', ','));
                     $('#txtMQL').val(number_format(data.input1.toString(), 0, '.', ','));
-                    $('#txtRevenue').val('$' + number_format(data.input2.toString(), 0, '.', ','));
+                    $('#txtRevenue').val(CurrencySybmol + number_format(data.input2.toString(), 0, '.', ','));
                 }
                 else if (_goalType.toLowerCase() == '@Enums.PlanGoalType.MQL.ToString().ToLower()') {
                     $('#txtMQL').val(number_format(_goalValue.toString(), 0, '.', ','));
                     $('#txtINQ').val(number_format(data.input1.toString(), 0, '.', ','));
-                    $('#txtRevenue').val('$' + number_format(data.input2.toString(), 0, '.', ','));
+                    $('#txtRevenue').val(CurrencySybmol + number_format(data.input2.toString(), 0, '.', ','));
                 }
                 else if (_goalType.toLowerCase() == '@Enums.PlanGoalType.Revenue.ToString().ToLower()') {
-                    $('#txtRevenue').val('$' + number_format(_goalValue.toString(), 0, '.', ','));
+                    $('#txtRevenue').val(CurrencySybmol + number_format(_goalValue.toString(), 0, '.', ','));
                     $('#txtINQ').val(number_format(data.input2.toString(), 0, '.', ','));
                     $('#txtMQL').val(number_format(data.input1.toString(), 0, '.', ','));
                 }
@@ -174,7 +174,7 @@
         var iserror = false;
         $('form').find('input[type=text], select').each(function () {
             if ($(this).attr('require') == 'true') {
-                if ($(this).val().toString().trim() == '' || (this.id.toString() == 'txtPlanBudget' && $(this).val() == '$0')) {
+                if ($(this).val().toString().trim() == '' || (this.id.toString() == 'txtPlanBudget' && $(this).val() == CurrencySybmol + '0')) {
                     $(this).addClass("error");
                     iserror = true;
                 }
@@ -269,7 +269,7 @@
             document.getElementById("txtDescription").value = htmlEncode($('#txtDescription').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
             $('#Title').val($('#txtTitle').val());
-            $('#txtPlanBudget').val($('#txtPlanBudget').val().replace(',', '').replace('$', ''));
+            $('#txtPlanBudget').val($('#txtPlanBudget').val().replace(',', '').replace(CurrencySybmol, ''));
             var formData = $("form").serialize();
             var RedirectType = "";
             var uId = $(window).attr('name');

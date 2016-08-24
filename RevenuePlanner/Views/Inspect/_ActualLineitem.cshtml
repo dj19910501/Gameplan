@@ -142,7 +142,7 @@
         $("#successMessageViewLineItem").slideUp(50);
         $("#errorMessageEditLineitem").slideUp(50);
         
-        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
         function ActualTab() {
             html = '<div class="bold padding-top16 font-size18"> Parent Tactic should be "Approved" for adding actuals.</div>'
             return html;
@@ -253,7 +253,7 @@
         function CalculateTotalCost() {
             var totalvalue = 0;
             $('#trActualCost').find('input').each(function () {
-                var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, ''));
                 if (!isNaN(cvalue)) {
                     totalvalue = cvalue + parseFloat(totalvalue);
                 }
@@ -326,7 +326,7 @@
                 }
             }*@
             $('#trActualCost').find('input').each(function () {
-                var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, ''));
                 if (isNaN(cvalue)) {
                     cvalue = ' ';
                 }

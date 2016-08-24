@@ -12,6 +12,7 @@
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
+    string CurrencySymbol = Sessions.PlanCurrencySymbol; // Add By Rahul Shah #2511
 }
 
 @*<script src="~/Scripts/js/bootstrap-datepicker.js"></script>*@
@@ -173,13 +174,13 @@
 
                                                                                                     <div class="width65px pull-left" style="width: 48%;">
                                                                                                         <p>Cost</p>
-                                                                                                        @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+                            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = CurrencySymbol + "0" })
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="cf width100">
                                                                                                     <div class="width65px pull-left" style="width: 48%;">
                                                                                                         <p>Revenue</p>
-                                                                                                        @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = "$0" })
+                            @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = CurrencySymbol + "0" })
                                                                                                     </div>
                                                                                                 </div>
                                                                                             }
@@ -489,7 +490,7 @@
           $("#successMessageViewCampaign").slideUp(50);
           $("#errorMessageEditCampaign").slideUp(50);
 
-          $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
           $(".selectBox select").selectbox();
@@ -717,7 +718,7 @@
         var ProgramBudgetValue = ReplaceCC($("#txtCampaignBudget").val());
         if (ProgramBudgetValue == '' || typeof ProgramBudgetValue == 'undefined') {
             ProgramBudgetValue = '0';
-            $("#txtCampaignBudget").val('$0')
+            $("#txtCampaignBudget").val(CurrencySybmol + '0')
         }
         var OldProgramBudgetValue = ReplaceCC($("#hdnOldCampaignBudget").val());
         var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);

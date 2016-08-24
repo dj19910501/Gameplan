@@ -773,7 +773,7 @@
 
         $("#successMessageViewLineItem").slideUp(50);
         $("#errorMessageEditLineitem").slideUp(50);
-        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         //$(".simpleSelectBox select").selectbox();
         $('#LineItemTypeId').multiselect({
             multiple: false,
@@ -967,7 +967,7 @@
     $("#txtLineItemCost").keyup(function () {
         var LineItemBudgetValue = ReplaceCC($("#txtLineItemCost").val());
         if (LineItemBudgetValue == '' || typeof LineItemBudgetValue == 'undefined') {
-            $("#txtLineItemCost").val('$0')
+            $("#txtLineItemCost").val(CurrencySybmol + '0')
         }
     });
     function SetupSaveLineitem() {

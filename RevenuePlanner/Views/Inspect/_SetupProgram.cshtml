@@ -9,6 +9,7 @@
     string MQLs = Convert.ToString(ViewBag.MQLs);
     string revenue = Convert.ToString(ViewBag.Revenue);
     var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
+    string CurrencySymbol = Sessions.PlanCurrencySymbol; // Add By Rahul Shah #2511
 }
 <style type="text/css">
     .inspect-column-parent input, .inspect-column-parent textarea {
@@ -64,13 +65,13 @@
 
                                 <div class="width65px pull-left" style="width:45%;">
                                     <p title="Cost">Cost</p>
-                                    @Html.TextBox("txtCost",cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                                    @Html.TextBox("txtCost",cost, new { placeholder = CurrencySymbol + "0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                 </div>
                                 </div>
                  <div class="cf width100">
                                 <div class="width65px pull-left" style="width:45%;">
                                     <p title="Revenue">Revenue</p>
-                                    @Html.TextBox("txtRevenue",revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                                    @Html.TextBox("txtRevenue",revenue, new { placeholder = CurrencySymbol + "0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                 </div>
                             </div>
                        
@@ -96,10 +97,10 @@
       function () {
           $('#EditProgram').removeClass('SpanDisable');
           $('#InspectTab').removeClass('SpanDisable');
-          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $(".selectBox select").selectbox();
-          $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
           $('form').find(".sbSelector").each(function () {

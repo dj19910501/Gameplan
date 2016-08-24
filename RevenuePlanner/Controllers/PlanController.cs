@@ -11761,7 +11761,7 @@ namespace RevenuePlanner.Controllers
                 string modifiedBy = string.Empty;
                 modifiedBy = Common.ActualLineItemModificationMessageByPlanLineItemId(planLineItemId);
                 string strLastUpdatedBy = modifiedBy != string.Empty ? modifiedBy : null;
-
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 //// Get LineItem monthly Actual data.
                 List<string> lstActualAllocationMonthly = Common.lstMonthly;
                 // Add By Nishant Sheth 
@@ -11830,10 +11830,11 @@ namespace RevenuePlanner.Controllers
                 var ActualCostData = lstMonthlyDynamicActual.Where(a => a.Id == planLineItemId).Select(a => a.listMonthly).FirstOrDefault().Select(period => new
                 {
                     periodTitle = period,
-                    costValue = lstActualLineItemCost.FirstOrDefault(c => c.Period == period && c.PlanLineItemId == planLineItemId) == null ? "" : lstActualLineItemCost.FirstOrDefault(lineCost => lineCost.Period == period && lineCost.PlanLineItemId == planLineItemId).Value.ToString()
+                    costValue = lstActualLineItemCost.FirstOrDefault(c => c.Period == period && c.PlanLineItemId == planLineItemId) == null ? "" : objCurrency.GetValueByExchangeRate(lstActualLineItemCost.FirstOrDefault(lineCost => lineCost.Period == period && lineCost.PlanLineItemId == planLineItemId).Value, PlanExchangeRate).ToString() //Modified by Rahul Shah for PL #2511 to apply multi currency
+
                 });
                 var projectedData = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(line => line.PlanLineItemId.Equals(planLineItemId));
-                double projectedval = projectedData != null ? projectedData.Cost : 0;
+                double projectedval = projectedData != null ? objCurrency.GetValueByExchangeRate(projectedData.Cost, PlanExchangeRate) : 0; //Modified by Rahul Shah for PL #2511 to apply multi currency
 
                 var returndata = new { ActualData = ActualCostData, ProjectedValue = projectedval, LastUpdatedBy = strLastUpdatedBy };
 
@@ -11870,7 +11871,7 @@ namespace RevenuePlanner.Controllers
             string[] arrActualCostInputValues = strActualsData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             int PlanLineItemId = int.Parse(strPlanItemId);
             int tid = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanLineItemId == PlanLineItemId).FirstOrDefault().PlanTacticId;
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //Added By Komal Rawal for LinkedLineItem change PL ticket #1853
             Plan_Campaign_Program_Tactic_LineItem Lineitemobj = new Plan_Campaign_Program_Tactic_LineItem();
             Plan_Campaign_Program_Tactic ObjLinkedTactic = new Plan_Campaign_Program_Tactic();
@@ -11983,7 +11984,7 @@ namespace RevenuePlanner.Controllers
                         Plan_Campaign_Program_Tactic_LineItem_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
                         obPlanCampaignProgramTacticActual.PlanLineItemId = PlanLineItemId;
                         obPlanCampaignProgramTacticActual.Period = PeriodChar + (i + 1);
-                        obPlanCampaignProgramTacticActual.Value = Convert.ToDouble(arrActualCostInputValues[i]);
+                        obPlanCampaignProgramTacticActual.Value = objCurrency.SetValueByExchangeRate(Convert.ToDouble(arrActualCostInputValues[i]), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                         obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
                         obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
                         db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;

@@ -13,6 +13,7 @@
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
+    string CurrencySymbol = Sessions.PlanCurrencySymbol; // Add By Rahul Shah #2511
 }
 
 @*<script src="~/Scripts/js/bootstrap-datepicker.js"></script>*@
@@ -178,13 +179,13 @@
 
                             <div class="width65px pull-left" style="width: 48%;">
                                 <p title="Cost">Cost</p>
-                                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                                @Html.TextBoxFor(model => model.Cost, new { placeholder = CurrencySymbol + "0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                             </div>
                         </div>
                         <div class="cf width100">
                             <div class="width65px pull-left" style="width: 48%;">
                                 <p title="Revenue">Revenue</p>
-                                @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                                @Html.TextBoxFor(model => model.Revenue, new { placeholder = CurrencySymbol + "0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                             </div>
                         </div>
                     }
@@ -499,7 +500,7 @@
         var SaveCampaignFlag = true;
         var isredirect = "@ViewBag.RedirectType";
         var hdnYear = @ViewBag.Year
-        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
 

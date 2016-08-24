@@ -7,6 +7,7 @@
     var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
     string customFieldWeightage = ViewBag.customFieldWeightage;
     string TacticTypeTitle = HttpUtility.HtmlDecode(Model.TacticTypeTitle);
+    string CurrencySymbol = Sessions.PlanCurrencySymbol; // Add By Rahul Shah #2511
 }
 
 <style type="text/css">
@@ -70,7 +71,7 @@
 
              <div class="pull-left" style="width: 47%">
                  <label title="Revenue" class="inspect-bolder-label">Revenue</label>
-                 @Html.TextBoxFor(model => model.Revenues, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                 @Html.TextBoxFor(model => model.Revenues, new { placeholder = CurrencySymbol + "0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
              </div>
          </div>
         </div>
@@ -122,10 +123,10 @@
               $('.dropdown-wrapper').css('display', 'none');
           });
 	  $(this).scrollTop(0);
-          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+	  $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point to add title tooltip 2-7-2014
           $(".selectBox select").selectbox();
-          $("#txtRevenue").val('$' + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
+          $("#txtRevenue").val(CurrencySybmol + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
           $('form').find(".sbSelector").each(function () {
               $(this).unbind("click");
               $(this).removeAttr("href");

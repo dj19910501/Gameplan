@@ -87,7 +87,7 @@
       function () {
           $('#btnEditlineItem').removeClass('SpanDisable');
           $('#InspectTab').removeClass('SpanDisable');
-          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
           $(".simpleSelectBox select").selectbox();
           

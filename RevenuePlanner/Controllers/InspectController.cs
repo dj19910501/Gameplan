@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Web.Caching;
 using System.Reflection;
 using System.Data.SqlClient;
+using System.Runtime.CompilerServices;
 
 
 
@@ -259,6 +260,7 @@ namespace RevenuePlanner.Controllers
                 if (ModelState.IsValid)
                 {
                     Plan plan = new Plan();
+                    PlanExchangeRate = Sessions.PlanExchangeRate;
                     //// Get Plan Updated message.
                     string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
 
@@ -269,7 +271,7 @@ namespace RevenuePlanner.Controllers
                         //Modified by Rahul Shah on 09/03/2016 for PL #1939
                         Guid oldOwnerId = plan.CreatedBy;
                         plan.Title = objPlanModel.Title.Trim();
-                        plan.Budget = objPlanModel.Budget;
+                        plan.Budget = objCurrency.SetValueByExchangeRate(objPlanModel.Budget, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
 
@@ -546,6 +548,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult LoadSetupCampaign(int id)
         {
             InspectModel _inspectmodel;
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             // Load Inspect Model data.
             //if (TempData["CampaignModel"] != null)
             //{
@@ -591,7 +594,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.CampaignDetail = _inspectmodel;
             double? objCampaign = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == id).FirstOrDefault().CampaignBudget;
-            ViewBag.CampaignBudget = objCampaign != null ? objCampaign : 0;
+            ViewBag.CampaignBudget = objCampaign != null ? objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objCampaign)), PlanExchangeRate) : 0; //Modified by Rahul Shah for PL #2511 to apply multi currency
 
             #endregion
 
@@ -811,7 +814,7 @@ namespace RevenuePlanner.Controllers
             //// Get Plan by Id.
             int planId = id;
             var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == planId);
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             #region "Set values in ViewBag"
 
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
@@ -839,7 +842,7 @@ namespace RevenuePlanner.Controllers
             var lstAllCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanId == planId && campaign.IsDeleted == false).ToList();
             double allCampaignBudget = lstAllCampaign.Sum(campaign => campaign.CampaignBudget);
             double planBudget = objPlan.Budget;
-            double planRemainingBudget = planBudget - allCampaignBudget;
+            double planRemainingBudget = objCurrency.GetValueByExchangeRate((planBudget - allCampaignBudget), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             ViewBag.planRemainingBudget = planRemainingBudget;
             #endregion
             // Added by Rahul Shah on 17/03/2016 for PL #2032 
@@ -896,6 +899,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult LoadEditSetupCampaign(int id)
         {
             ViewBag.IsCreated = false;
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //// Get Campaign list by Id.
             Plan_Campaign pc = db.Plan_Campaign.Where(pcobj => pcobj.PlanCampaignId.Equals(id) && pcobj.IsDeleted.Equals(false)).FirstOrDefault();
             if (pc == null)
@@ -967,14 +971,14 @@ namespace RevenuePlanner.Controllers
             pcm.MQLs = PlanTacticValuesList.Sum(tm => tm.MQL);
             pcm.Cost = Common.CalculateCampaignCost(pc.PlanCampaignId); //pc.Cost; // Modified for PL#440 by Dharmraj
             // Start Added By Dharmraj #567 : Budget allocation for campaign
-            pcm.CampaignBudget = pc.CampaignBudget;
+            pcm.CampaignBudget = objCurrency.GetValueByExchangeRate(pc.CampaignBudget, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             pcm.AllocatedBy = pc.Plan.AllocatedBy;
 
             #region "Calculate plan remaining budget"
             var lstAllCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanId == pc.PlanId && campaign.IsDeleted == false).ToList();
             double allCampaignBudget = lstAllCampaign.Sum(campaign => campaign.CampaignBudget);
             double planBudget = pc.Plan.Budget;
-            double planRemainingBudget = planBudget - allCampaignBudget;
+            double planRemainingBudget = objCurrency.GetValueByExchangeRate((planBudget - allCampaignBudget), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             ViewBag.planRemainingBudget = planRemainingBudget;
             #endregion
 
@@ -1082,7 +1086,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
-
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 //// Add New Record
                 if (form.PlanCampaignId == 0)
                 {
@@ -1114,7 +1118,7 @@ namespace RevenuePlanner.Controllers
                                 pcobj.CreatedBy = form.OwnerId; // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                 pcobj.CreatedDate = DateTime.Now;
                                 pcobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign table 
-                                pcobj.CampaignBudget = form.CampaignBudget;
+                                pcobj.CampaignBudget = objCurrency.SetValueByExchangeRate(form.CampaignBudget, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                                 db.Entry(pcobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
                                 #endregion
@@ -1292,7 +1296,7 @@ namespace RevenuePlanner.Controllers
                                 pcobj.EndDate = form.EndDate;
                                 pcobj.ModifiedBy = Sessions.User.UserId;
                                 pcobj.ModifiedDate = DateTime.Now;
-                                pcobj.CampaignBudget = form.CampaignBudget;
+                                pcobj.CampaignBudget = objCurrency.SetValueByExchangeRate(form.CampaignBudget, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                                 pcobj.CreatedBy = form.OwnerId;
                                 db.Entry(pcobj).State = EntityState.Modified;
                                 #endregion
@@ -1726,6 +1730,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult LoadSetupProgram(int id)
         {
             InspectModel _inspectmodel;
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //// Load Inspect Model data.
             //if (TempData["ProgramModel"] != null)
             //{
@@ -1777,7 +1782,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.Revenue = Math.Round(lstTacticValues.Sum(tm => tm.Revenue));
 
 
-            ViewBag.ProgramBudget = objPlanProgramBudget != null ? objPlanProgramBudget : 0;
+            ViewBag.ProgramBudget = objPlanProgramBudget != null ? objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlanProgramBudget)), PlanExchangeRate) : 0; //Modified by Rahul Shah for PL #2511 to apply multi currency
 
             return PartialView("_SetupProgram", _inspectmodel);
         }
@@ -1794,6 +1799,7 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             ViewBag.IsCreated = false;
             ViewBag.RedirectType = false;
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pcp.Plan_Campaign.Plan.Model);
@@ -1827,7 +1833,7 @@ namespace RevenuePlanner.Controllers
             //    t.Plan_Campaign_Program.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList());
             pcpm.Revenue = Math.Round(lstPlanTacticValues.Sum(tm => tm.Revenue));
 
-            pcpm.ProgramBudget = pcp.ProgramBudget;
+            pcpm.ProgramBudget = objCurrency.GetValueByExchangeRate(pcp.ProgramBudget, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == pcp.Plan_Campaign.PlanId);
             pcpm.AllocatedBy = objPlan.AllocatedBy;
 
@@ -1861,7 +1867,7 @@ namespace RevenuePlanner.Controllers
 
             var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
             double lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList().Sum(c => c.ProgramBudget);
-            ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - lstSelectedProgram);
+            ViewBag.planRemainingBudget = objCurrency.GetValueByExchangeRate(objPlanCampaign.CampaignBudget - lstSelectedProgram, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             //Added by Komal Rawal for #711
             ViewBag.IsProgramEdit = true;
             try
@@ -1932,6 +1938,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, string UserId = "", string title = "")
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -1982,7 +1989,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); //status field added for Plan_Campaign_Program table
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                pcpobj.ProgramBudget = form.ProgramBudget;
+                                pcpobj.ProgramBudget = objCurrency.SetValueByExchangeRate(form.ProgramBudget, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
                                 #endregion
@@ -2187,7 +2194,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 pcpobj.ModifiedBy = Sessions.User.UserId;
                                 pcpobj.ModifiedDate = DateTime.Now;
-                                pcpobj.ProgramBudget = form.ProgramBudget;
+                                pcpobj.ProgramBudget = objCurrency.SetValueByExchangeRate(form.ProgramBudget, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                                 pcpobj.CreatedBy = form.OwnerId;
                                 db.Entry(pcpobj).State = EntityState.Modified;
                                 #endregion
@@ -2822,6 +2829,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Program.</returns>
         public ActionResult CreateProgram(int id = 0)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).FirstOrDefault();
             if (pcp == null)
             {
@@ -2859,7 +2867,7 @@ namespace RevenuePlanner.Controllers
             var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == id);
             var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == id && p.IsDeleted == false).ToList();
             double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
-            ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
+            ViewBag.planRemainingBudget = objCurrency.GetValueByExchangeRate(objPlanCampaign.CampaignBudget - allProgramBudget, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             #endregion
             // Added by Rahul Shah on 17/03/2016 for PL #2032 
             ViewBag.IsProgramEdit = true;
@@ -3472,6 +3480,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Actuals Tab.</returns>
         public ActionResult LoadActuals(int id)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             InspectModel _inspectmodel;
             //// Load InspectModel Data.
             _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
@@ -3527,7 +3536,7 @@ namespace RevenuePlanner.Controllers
 
             _inspectmodel.ProjectedStageValueActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleProjectedStageValue).Sum(planTacticActuals => planTacticActuals.Actualvalue);
             _inspectmodel.CWsActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleCW).Sum(planTacticActuals => planTacticActuals.Actualvalue);
-            _inspectmodel.RevenuesActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleRevenue).Sum(planTacticActuals => planTacticActuals.Actualvalue);
+            _inspectmodel.RevenuesActual = objCurrency.GetValueByExchangeRate(tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleRevenue).Sum(planTacticActuals => planTacticActuals.Actualvalue), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             _inspectmodel.MQLsActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleMQL).Sum(planTacticActuals => planTacticActuals.Actualvalue);
             _inspectmodel.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).FirstOrDefault(), 1);
 
@@ -3558,6 +3567,7 @@ namespace RevenuePlanner.Controllers
             if (_inspectmodel.Cost > 0)
             {
                 _inspectmodel.ROI = ((_inspectmodel.Revenues - _inspectmodel.Cost) / _inspectmodel.Cost) * 100; // Modified By Nishant Sheth // #2376 Change the formula for ROI Projected
+                _inspectmodel.ROI = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_inspectmodel.ROI)), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             }
             else
                 _inspectmodel.ROI = 0;
@@ -3572,7 +3582,7 @@ namespace RevenuePlanner.Controllers
                                                                                             .ToList();
             if (lineItemListActuals.Count != 0)
             {
-                tacticCostActual = lineItemListActuals.Sum(lineitemActual => lineitemActual.Value);
+                tacticCostActual = objCurrency.GetValueByExchangeRate(lineItemListActuals.Sum(lineitemActual => lineitemActual.Value), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             }
             else
             {
@@ -3587,6 +3597,7 @@ namespace RevenuePlanner.Controllers
             if (tacticCostActual > 0)
             {
                 _inspectmodel.ROIActual = (_inspectmodel.RevenuesActual - tacticCostActual) / tacticCostActual;
+                _inspectmodel.ROIActual = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_inspectmodel.ROIActual)), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             }
             else
             {
@@ -3607,8 +3618,16 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.LastSync = string.Empty;
             }
+            //Modified by Rahul Shah for PL #2511 to apply multi currency
+            List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanTacticId == id && lineitem.IsDeleted == false).OrderByDescending(lineitem => lineitem.LineItemTypeId).ToList();
+            var LineItemList1 = LineItemList.Select(LList => new Plan_Campaign_Program_Tactic_LineItem
+            {
+                PlanLineItemId = LList.PlanLineItemId,
+                Title = LList.Title,
+                Cost = objCurrency.GetValueByExchangeRate(LList.Cost, PlanExchangeRate)
 
-            ViewBag.LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanTacticId == id && lineitem.IsDeleted == false).OrderByDescending(lineitem => lineitem.LineItemTypeId).ToList();
+            }).ToList();
+            ViewBag.LineItemList = LineItemList1.ToList();            
             return PartialView("Actual");
         }
 
@@ -3621,7 +3640,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetActualTacticData(int id)
         {
             listMonthDynamic listMonthDynamic = new listMonthDynamic();
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             var dtTactic = (from tacActual in db.Plan_Campaign_Program_Tactic_Actual
                             where tacActual.PlanTacticId == id
                             select new { tacActual.CreatedBy, tacActual.CreatedDate, tacActual.Plan_Campaign_Program_Tactic }).FirstOrDefault();
@@ -3657,13 +3676,14 @@ namespace RevenuePlanner.Controllers
             {
                 // Change by Nishant sheth
                 // Desc :: #1765 - add period condition to get value
-                var ActualData = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpta => pcpta.PlanTacticId == id)
+                var ActualData = db.Plan_Campaign_Program_Tactic_Actual.AsEnumerable().Where(pcpta => pcpta.PlanTacticId == id) //Modified by Rahul Shah for PL #2511 to apply multi currency
                     .Select(tacActual => new
                 {
                     id = tacActual.PlanTacticId,
                     stageTitle = tacActual.StageTitle,
                     period = tacActual.Period,
-                    actualValue = tacActual.Actualvalue
+                        //actualValue = tacActual.Actualvalue
+                        actualValue = GetRevenueValueByExchangeRate(tacActual.StageTitle, tacActual.Actualvalue) //Modified by Rahul Shah for PL #2511 to apply multi currency
                 }).ToList().Where(pcpta => (tacticMonth != null ? tacticMonth.Contains(pcpta.period) : pcpta.period.Contains(pcpta.period))).ToList();
 
                 ////// start-Added by Mitesh Vaishnav for PL ticket #571
@@ -3681,7 +3701,7 @@ namespace RevenuePlanner.Controllers
                     {
                         PlanLineItemId = al.PlanLineItemId,
                         Period = al.Period,
-                        Value = al.Value,
+                        Value = objCurrency.GetValueByExchangeRate(al.Value, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
                         Title = al.Plan_Campaign_Program_Tactic_LineItem.Title
                     }).ToList();
                     isLineItemForTactic = true;
@@ -3693,6 +3713,25 @@ namespace RevenuePlanner.Controllers
             }
 
             return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Add By Rahul Shah
+        /// Convert Value From USD dollar to Other currency for Revenue
+        /// </summary>
+        /// <param name="Stage Title"></param>
+        /// <param name="DataValue"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double GetRevenueValueByExchangeRate(string stageTitle, double DataValue = 0)
+        {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
+            double revenueValue = DataValue;
+            string stageCode = stageTitle.ToString().ToUpper();
+            if (stageCode == Enums.InspectStage.Revenue.ToString().ToUpper())
+            {
+                revenueValue = objCurrency.GetValueByExchangeRate(revenueValue, PlanExchangeRate);
+            }
+            return revenueValue;
         }
 
         /// <summary>
@@ -4182,6 +4221,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Tactic.</returns>
         public ActionResult EditTactic(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             Inspect_Popup_Plan_Campaign_Program_TacticModel ippctm = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
 
             Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
@@ -4348,7 +4388,7 @@ namespace RevenuePlanner.Controllers
                 ?
                 (pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpt.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost)
                 : pcpt.Cost;
-
+            ippctm.Cost = objCurrency.GetValueByExchangeRate(ippctm.Cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             //ippctm.Cost = pcpt.Cost; //modified by komal rawal
 
             ippctm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
@@ -4405,6 +4445,7 @@ namespace RevenuePlanner.Controllers
             objPlanCampaignProgram = objPlanCampaignProgram != null ? objPlanCampaignProgram : 0;
 
             ippctm.planRemainingBudget = (objPlanCampaignProgram - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
+            ippctm.planRemainingBudget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(ippctm.planRemainingBudget)), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             #endregion
 
             // Start - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
@@ -4511,6 +4552,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, string UserId = "", string strDescription = "", bool resubmission = false)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //// check whether UserId is current loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -4527,7 +4569,7 @@ namespace RevenuePlanner.Controllers
                 int planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == cid && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
                 int pid = form.PlanProgramId;
                 var customFields = JsonConvert.DeserializeObject<List<CustomFieldStageWeight>>(customFieldInputs);
-
+                form.Cost = objCurrency.SetValueByExchangeRate(form.Cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                 //// if PlanTacticId is null then Insert New record.
                 if (form.PlanTacticId == 0)
                 {
@@ -5947,7 +5989,7 @@ namespace RevenuePlanner.Controllers
             string stageMQL = Enums.Stage.MQL.ToString();
             int tacticStageLevel = 0;
             int levelMQL = db.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL) && stage.IsDeleted == false).Level.Value;
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             int planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == (db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == form.PlanProgramId && pcp.IsDeleted.Equals(false)).Select(pcp => pcp.PlanCampaignId).FirstOrDefault()) && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
             if (form.PlanTacticId != 0)
             {
@@ -5986,7 +6028,7 @@ namespace RevenuePlanner.Controllers
                 double CalculatedRevenue = 0;
                 calculatedMQL = lstTacticStageRelation.MQLValue;
                 CalculatedRevenue = lstTacticStageRelation.RevenueValue;
-                CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
+                CalculatedRevenue = objCurrency.GetValueByExchangeRate(Math.Round(CalculatedRevenue, 2), PlanExchangeRate); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760 //Modified by Rahul Shah for PL #2511 to apply multi currency
                 calculatedMQL = Math.Round(calculatedMQL, 0, MidpointRounding.AwayFromZero);
                 if (tacticStageLevel < levelMQL)
                 {
@@ -6034,7 +6076,7 @@ namespace RevenuePlanner.Controllers
                 double CalculatedRevenue = 0;
                 calculatedMQL = lstTacticStageRelation.MQLValue;
                 CalculatedRevenue = lstTacticStageRelation.RevenueValue;
-                CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
+                CalculatedRevenue = objCurrency.GetValueByExchangeRate(Math.Round(CalculatedRevenue, 2), PlanExchangeRate); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760 //Modified by Rahul Shah for PL #2511 to apply multi currency
 
                 if (tacticStageLevel < levelMQL)
                 {
@@ -7162,6 +7204,7 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 //// If ImprovementPlanTacticId is null then insert new record to Table.
                 if (form.ImprovementPlanTacticId == 0)
                 {
@@ -7192,7 +7235,7 @@ namespace RevenuePlanner.Controllers
                                 picpt.Title = form.Title;
                                 picpt.ImprovementTacticTypeId = form.ImprovementTacticTypeId;
                                 picpt.Description = form.Description;
-                                picpt.Cost = form.Cost ?? 0;
+                                picpt.Cost = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(form.Cost)), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                                 picpt.EffectiveDate = form.EffectiveDate;
                                 picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
                                 picpt.CreatedBy = Sessions.User.UserId;
@@ -7305,7 +7348,8 @@ namespace RevenuePlanner.Controllers
 
                                 if (pcpobj.Cost != form.Cost)
                                 {
-                                    pcpobj.Cost = form.Cost ?? 0;
+                                    //pcpobj.Cost = form.Cost ?? 0;
+                                    pcpobj.Cost = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(form.Cost)), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                                     if (!isManagerLevelUser) isReSubmission = true;
                                 }
 
@@ -7765,7 +7809,7 @@ namespace RevenuePlanner.Controllers
             PlanController objPlanController = new PlanController();
             Plangrid objplangrid = new Plangrid();
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 // Generate Json Header
@@ -7801,7 +7845,7 @@ namespace RevenuePlanner.Controllers
                             var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
                             {
                                 index = index,
-                                Cost = taskdata.Cost,
+                                Cost = objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
                                 lineitemtype = taskdata.LineItemTypeId,
                                 PlanLineItemId = taskdata.PlanLineItemId,
                                 title = taskdata.Title,
@@ -8047,7 +8091,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult LoadEditSetupLineitem(int id)
         {
             ViewBag.IsCreated = false;
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //// Get LineItem Data by ID.
             Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobj => pcpobj.PlanLineItemId.Equals(id));
             if (pcptl == null)
@@ -8091,7 +8135,7 @@ namespace RevenuePlanner.Controllers
             pcptlm.Description = HttpUtility.HtmlDecode(pcptl.Description);
             pcptlm.StartDate = Convert.ToDateTime(pcptl.StartDate);
             pcptlm.EndDate = Convert.ToDateTime(pcptl.EndDate);
-            pcptlm.Cost = pcptl.Cost;
+            pcptlm.Cost = objCurrency.GetValueByExchangeRate(pcptl.Cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             pcptlm.TStartDate = pcptl.Plan_Campaign_Program_Tactic.StartDate;
             pcptlm.TEndDate = pcptl.Plan_Campaign_Program_Tactic.EndDate;
             pcptlm.PStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.StartDate;
@@ -8176,6 +8220,7 @@ namespace RevenuePlanner.Controllers
 
         public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues, string customFieldInputs, string UserId = "", int tacticId = 0)
         {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             //// Check whether current user is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -8273,6 +8318,7 @@ namespace RevenuePlanner.Controllers
                 //End
 
                 //// if  PlanLineItemId is null then insert new record to table.
+                form.Cost = objCurrency.SetValueByExchangeRate(form.Cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                 if (form.PlanLineItemId == 0)
                 {
                     using (MRPEntities mrp = new MRPEntities())
@@ -11742,7 +11788,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns InspectModel.</returns>
         public InspectModel GetInspectModel(int id, string section, bool isStatusChange = true)
         {
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             InspectModel imodel = new InspectModel();
             string statusapproved = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString();
             string statusinprogress = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString();
@@ -11825,8 +11871,8 @@ namespace RevenuePlanner.Controllers
                     }
                     imodel.MQLs = Math.Round((double)imodel.MQLs, 0, MidpointRounding.AwayFromZero);
                     // Set Revenue
-                    imodel.Revenues = Math.Round(varTacticStageValue.RevenueValue, 2);
-
+                    imodel.Revenues = objCurrency.GetValueByExchangeRate(Math.Round(varTacticStageValue.RevenueValue, 2), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
+                    imodel.Cost = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(imodel.Cost)), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                     imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(pcpt.TacticType.Model);
                 }
                 else if (section == Convert.ToString(Enums.Section.Program).ToLower())  //// Get Inspect Model for Program InspectPopup.
@@ -11964,7 +12010,7 @@ namespace RevenuePlanner.Controllers
                                   EffectiveDate = pcpt.EffectiveDate,
                                   Title = pcpt.Title
                               }).FirstOrDefault();
-
+                    imodel.Cost = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(imodel.Cost)), PlanExchangeRate); //Added by Rahul Shah for PL #2511 to apply multi currency
                     imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(varT => varT.ImprovementPlanTacticId == id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model);
 
                 }
@@ -11983,8 +12029,18 @@ namespace RevenuePlanner.Controllers
                     imodel.ModelId = objPlan.ModelId;
                     imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Model.Version;
                     imodel.GoalType = objPlan.GoalType;
-                    imodel.GoalValue = objPlan.GoalValue.ToString();
-                    imodel.Budget = objPlan.Budget;
+                    //Modified by Rahul Shah for PL #2511 to apply multi currency
+                    if (objPlan.GoalType == Enums.PlanGoalType.Revenue.ToString())
+                    {
+                        imodel.GoalValue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlan.GoalValue)), PlanExchangeRate).ToString();
+                    }
+                    else
+                    {
+                        imodel.GoalValue = Convert.ToString(objPlan.GoalValue);
+                    }
+                    imodel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlan.Budget)), PlanExchangeRate);
+                    //imodel.GoalValue = objPlan.GoalValue.ToString();
+                    //imodel.Budget = objPlan.Budget;
                     imodel.AllocatedBy = objPlan.AllocatedBy;
                 }
                 // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811

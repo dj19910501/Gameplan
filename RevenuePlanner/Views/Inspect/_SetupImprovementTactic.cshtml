@@ -14,6 +14,7 @@
     bool ExtIntService = ViewBag.ExtIntService != null ? (bool)ViewBag.ExtIntService : false;
     bool isOwner = ViewBag.IsOwner != null ? (bool)ViewBag.IsOwner : false;
     var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
+    string CurrencySymbol = Sessions.PlanCurrencySymbol; // Add By Rahul Shah #2511
 }
 @using RevenuePlanner.Helpers
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
@@ -96,7 +97,7 @@
             {
                 <span class="Inspect-Popup-ImprovementTactic" style="min-width: 100%; position: relative;display:block">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })</span>
                 <p>Cost</p>    
-                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate resubmission input-setup", style = "", id = "txtCost", label = "Cost" })
+                @Html.TextBoxFor(model => model.Cost, new { placeholder = CurrencySymbol + "0", @class = "input-small truncate resubmission input-setup", style = "", id = "txtCost", label = "Cost" })
                 <p>Effective Date</p>
                 <span style="position: relative;">
                     <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker" style="padding:0 0 4px;">
@@ -111,7 +112,7 @@
             {
                 @Html.TextBox("txtTacticType", HttpUtility.HtmlDecode(tactic.TacticTypeTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.TacticTypeTitle })   
                 <p>Cost</p>
-                @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
+                @Html.TextBoxFor(model => model.Cost, new { placeholder = CurrencySymbol + "0", @class = "input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
                 <p>Effective Date</p>
                 @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "input-small truncate", style = "background:#F2F2F2;", id = "txtDate", @readonly = "true" })
             }
@@ -181,7 +182,7 @@
 
           assignDefaultValue(".resubmission");
 
-          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $("#txtCost").val(FormatCurrency($('#txtCost').val().toString(), false));
           $('#txtCost').attr("title", $('#txtCost').val());
 

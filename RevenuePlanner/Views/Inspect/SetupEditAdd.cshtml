@@ -21,6 +21,8 @@
         resubmission = " resubmission ";
     }
 
+    string CurrencySymbol = Sessions.PlanCurrencySymbol; // Add By Rahul Shah #2511
+
 }
 <style type="text/css">
      /* @@media screen and (-webkit-min-device-pixel-ratio:0) {
@@ -257,7 +259,7 @@
 
                 <div class="pull-left" style="width: 47.5%">
                     <p title="Revenue" class="inspect-bolder-label">Revenue</p>
-                    @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                    @Html.TextBoxFor(model => model.Revenue, new { placeholder = CurrencySymbol + "0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>
             </div>
         </div>
@@ -591,7 +593,7 @@
           // $('#EditForm').css('display', 'none');
           $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
           $('#EditForm').addClass('Save-icon-white');
-          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val());
           //$(".selectBox select").selectbox();
 
@@ -602,8 +604,8 @@
           //// Assign default values to controls having classname = .resubmission
           assignDefaultValue(".resubmission");
 
-          $("#txtRevenue").val('$' + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
-          $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $("#txtRevenue").val(CurrencySybmol + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
+          $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
           $("#liSetup,#liReview,#liBudget,#liActuals").removeClass('setdefultcursor');
@@ -1453,7 +1455,7 @@
     $("#TacticCost").focusout(function () {
         var tacticBudgetValue = ReplaceCC($("#TacticCost").val());
         if (tacticBudgetValue == '' || typeof tacticBudgetValue == 'undefined') {
-            $("#TacticCost").val('$0')
+            $("#TacticCost").val(CurrencySybmol + '0')
         }
     });
 
@@ -1487,7 +1489,7 @@
                         GetConversionRatePopup(projectedStageValue, true);
                         $("#TacticCost").val(pcost);
 
-                        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                        $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         if (data.IsDeployedToIntegration) {
                             $("#t_integration_status").val("Sync to integration");
@@ -1544,7 +1546,7 @@
             $("#txtRevenue").val('0');
 
             $("#TacticCost").val('0');
-            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
             $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
             $("#lblStageTitle").text("Stage");
             $("#hdnStageId").val("0");
@@ -1649,7 +1651,7 @@ if ('@Model.IsPackagedTactic' != null && '@Convert.ToString(Model.IsPackagedTact
                         $("#txtmql").attr("title", mqlValue);
                     }
 
-                    $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
+                    $("#txtRevenue").val(CurrencySybmol + number_format(data.revenue.toString(), 0, 0, ','));
                     $("#txtRevenue").attr("title", $("#txtRevenue").val());
 
                     $("#ddlcampaign").val(ddlcampaignValue);

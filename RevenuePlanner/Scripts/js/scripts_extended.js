@@ -151,7 +151,7 @@ function FormatCommasBudget(amount, showDecimals , showCurrencySymbol) {
     }
 
     if (showCurrencySymbol) {
-        amount = minus + "$" + amount;
+        amount = minus + CurrencySybmol + amount; //Modified by Rahul Shah for PL #2511 to apply multi currency 
     }
     else {
         amount = minus + amount;
@@ -167,7 +167,8 @@ function ReplaceCC(text) {
 //// Date 10/29/2014
 //// Remove extra code from this function cause it work same as setLabelToolTip function.
 function SetBudget(idName, maxsize) {
-    var budgetValue = $(idName).html();
+    //var budgetValue = $(idName).html();
+    var budgetValue = $(idName).html().replace(CurrencySybmol, ''); //Modified by Rahul Shah for PL #2511 to apply multi currency
     if (typeof (maxsize) === 'undefined') maxsize = 5;
     $(idName).popover('destroy');
     setBootstrapTooltip(idName, budgetValue, maxsize, true);

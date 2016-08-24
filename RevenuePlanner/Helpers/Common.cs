@@ -3832,8 +3832,9 @@ namespace RevenuePlanner.Helpers
             using (MRPEntities db = new MRPEntities())
             {
                 double cost = 0;
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 cost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == planCampaignId && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-                return cost;
+                return objCurrency.GetValueByExchangeRate(cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             }
         }
 
@@ -3847,6 +3848,7 @@ namespace RevenuePlanner.Helpers
         {
             using (MRPEntities db = new MRPEntities())
             {
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 var lstTactic = db.Plan_Campaign_Program.FirstOrDefault(varC => varC.PlanProgramId == planProgramId)
                                                  .Plan_Campaign_Program_Tactic
                                                  .Where(varP => varP.IsDeleted == false)
@@ -3856,7 +3858,7 @@ namespace RevenuePlanner.Helpers
                 /*Modified by Mitesh Vaishnav on 29/07/2014 for PL ticket #619*/
                 lstTactic.ForEach(varT => cost = cost + varT.Plan_Campaign_Program_Tactic_LineItem.Where(varL => varL.IsDeleted == false).Sum(varL => varL.Cost));
 
-                return cost;
+                return objCurrency.GetValueByExchangeRate(cost, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
 
             }
         }
