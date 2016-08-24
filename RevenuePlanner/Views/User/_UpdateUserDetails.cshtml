@@ -357,7 +357,7 @@
         });
         //
 
-        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        $("#content_wraper").removeClass("all-height");//.addClass("padding-top40"); // commnted by Bhumika
         $("#aRemoveImage").click(function () {
             var src = $(this).attr('prop');
             $('#userImage').attr('src', 'data:image/jpg;base64,' + src);

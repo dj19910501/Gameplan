@@ -21,59 +21,7 @@
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
 
-<style>
-    
-  .toggle.NotificationToggle, .toggle-on.NotificationToggle, .toggle-off.NotificationToggle { border-radius: 20px;-webkit-border-radius: 20px;-ms-border-radius: 20px;}
-  .toggle.NotificationToggle .toggle-handle { border-radius: 20px;-webkit-border-radius: 20px;-ms-border-radius: 20px; }
-  .NotificationToggle .toggle-group { transition: left 0.1s; -webkit-transition: left 0.1s; }
-  .toggle.NotificationToggle {min-height: 25px !important; min-width:45px !important}
-  .NotificationToggle .toggle-group label{font-size:10px; padding:2px 8px}
 
-    /* Add to solve Chrome Browser issue of on/off button radius #2296 - Bhumika*/
-    .btn.btn-success, .btn.toggle-off, .btn.toggle-handle, .btn.off {
-        backface-visibility: visible;
-        box-shadow: none;/*0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);*/
-        border-color:#ccc; /*rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);*/
-        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    }
-
-    .btn.NotificationToggle {
-        border-style: solid;
-        border-width: 1px;
-        box-shadow:none; /*0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05)*/
-    }
-    .NotificationToggle.btn-success{border-color:#89cede;}
-    .NotificationToggle .btn.btn-success {
-        background-image: none; /*linear-gradient(to bottom, #62c462, #51a351)*/
-        background-color: #89cede;
-        
-    }
-
-    .NotificationToggle .btn.toggle-off {
-        box-shadow:none ;/*0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05)*/
-        background-color: #eee;
-        background-image: none;
-        padding-left:14px;
-    }
-    .NotificationToggle .toggle-on.btn {
-    padding-right: 16px;
-}
-       .NotificationToggle .btn.toggle-off:hover {
-            color: #333;
-        }
-
-    .NotificationToggle .btn.toggle-handle {
-        background-color: #fff;
-        background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
-    }
-
-      .NotificationToggle   .btn.toggle-handle:hover, .NotificationToggle .btn.toggle-handle:focus {
-            background-position: 0 -15px;
-            color: #333;
-            text-decoration: none;
-            transition: background-position 0.1s linear 0s;
-        }
-</style>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -109,7 +57,7 @@
     }
 }
 <!--error message-->
-<div class="title-header source-sans-proregular margin-bottom25">
+<div class="title-header source-sans-proregular margin-bottom25 padding-top40">
     <h2>Notification Settings</h2>
 </div> @*#2312*@
 @*<ul class="nav nav-tabs">
@@ -201,7 +149,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        $("#content_wraper").removeClass("all-height");//.addClass("padding-top40"); // commnted by Bhumika
 
         /*close x event on message*/
         $(".close").click(function (e) {

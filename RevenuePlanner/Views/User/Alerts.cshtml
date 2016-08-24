@@ -45,7 +45,7 @@
 <!--error message-->
 @if(Sessions.IsAlertPermission)
 {
-<div class="title-header source-sans-proregular margin-bottom25">
+<div class="title-header source-sans-proregular margin-bottom25 padding-top40">
     <h2>Alert Settings</h2>
 </div>
 
@@ -83,7 +83,7 @@
     $(document).ready(function () {
         $("#divnoRecords").hide();
       
-        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        $("#content_wraper").removeClass("all-height");//.addClass("padding-top40"); // commnted by Bhumika
 
         /*close x event on message*/
         $(".close").click(function (e) {
