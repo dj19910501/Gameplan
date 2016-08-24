@@ -212,6 +212,7 @@
                     if (suffix) formatted = formatted + suffix;
 
                 }
+                centsLimit = options.centsLimit;
                 return formatted;
             }
 

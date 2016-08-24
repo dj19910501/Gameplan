@@ -189,8 +189,8 @@ function SetBudgetForPlanListing(idName, maxsize) {
 //This function is responsible for remove the sepcial char from the string and make it in such a way that we can use that string in our further process.
 function RemoveExtraCharactersFromString(value) {
     //Check that string consider a $ sign , if yes then we have remove the sign from the string .
-    if (value.indexOf("$") != -1) {
-        value = value.replace("$", "");
+    if (value.indexOf(CurrencySybmol) != -1) {
+        value = value.replace(CurrencySybmol, "");
     }
 
     //Remove the sepcial character such as (,) from the string ..
@@ -443,8 +443,8 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
 
     if (lengthvalue >= maxSize) {
         if (iscurrency) {
-            $(lableId).text("$" + GetAbberiviatedValue(numericval));
-            $(lableId).attr('title', "$" + number_format(roundValue, 0, '.', ','));
+            $(lableId).text(CurrencySybmol + GetAbberiviatedValue(numericval));
+            $(lableId).attr('title', CurrencySybmol + number_format(roundValue, 0, '.', ','));
         }
         else {
             $(lableId).text(GetAbberiviatedValue(numericval));
@@ -457,7 +457,7 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
         $(lableId).removeAttr('original-title');
         $(lableId).removeClass('north');
         if (iscurrency) {            
-            $(lableId).text("$" + number_format(roundValue, 0, '.', ','));
+            $(lableId).text(CurrencySybmol + number_format(roundValue, 0, '.', ','));
         }
         else {
               $(lableId).text(number_format(roundValue, 0, '.', ','));
