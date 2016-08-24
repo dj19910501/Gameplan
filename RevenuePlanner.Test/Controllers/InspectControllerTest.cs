@@ -1235,6 +1235,7 @@ namespace RevenuePlanner.Test.Controllers
             form.ImprovementTacticTypeId = ImprovementTactictypeid;
             form.Title = "Test ImprovementTactic" + "_ " + DateTime.Now;
             form.EffectiveDate = DateTime.Now;
+            form.Cost = 10;
             // form.Owner = "sys Admin";
 
             var result = objInspectController.SaveImprovementTactic(form, false) as JsonResult;
@@ -1312,6 +1313,7 @@ namespace RevenuePlanner.Test.Controllers
             form.ImprovementTacticTypeId = ImprovementTactictypeid;
             form.Title = Title;
             form.EffectiveDate = DateTime.Now;
+            form.Cost = 10;
 
 
             var result = objInspectController.SaveImprovementTactic(form, false) as JsonResult;

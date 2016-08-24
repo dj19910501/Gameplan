@@ -967,10 +967,19 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Save_Grid_Detail_Tactic()
         {
+            var routes = new RouteCollection();
             Console.WriteLine("To Check to Save the Grid Data for LineItem.\n");
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
+            controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            controller.Url = new UrlHelper(
+            new RequestContext(
+            controller.HttpContext, new RouteData()
+            ),
+            routes
+            );
             int PlanId = DataHelper.GetPlanId();
             Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
             var TaskData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
