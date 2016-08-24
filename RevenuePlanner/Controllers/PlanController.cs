@@ -8514,7 +8514,7 @@ namespace RevenuePlanner.Controllers
             int OutVal = 0;
             int.TryParse(val, out OutVal);
 
-            if (OutVal==0)
+            if (OutVal == 0)
             {
                 return null;
             }
@@ -13917,20 +13917,20 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
-                       
+
                         plan.CreatedBy = new Guid(UpdateVal);
                     }
 
                     db.Entry(plan).State = EntityState.Modified;
                     db.SaveChanges();
-                    
+
                     //Modified by Rahul Shah on 09/03/2016 for PL #1939
                     int result = Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", plan.CreatedBy.ToString());
                     if (result > 0)
                     {
 
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                            SendEmailnotification(plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateVal, plan.Title, plan.Title, plan.Title, plan.Title, Enums.Section.Plan.ToString().ToLower(),"",UpdateColumn);
+                            SendEmailnotification(plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateVal, plan.Title, plan.Title, plan.Title, plan.Title, Enums.Section.Plan.ToString().ToLower(), "", UpdateColumn);
 
                     }
 
@@ -14117,7 +14117,7 @@ namespace RevenuePlanner.Controllers
                         // Convert value from other currency to USD
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
-                            UpdateVal = Convert.ToString(objCurrency.SetValueByExchangeRate(double.Parse(UpdateVal)));
+                            UpdateVal = Convert.ToString(objCurrency.SetValueByExchangeRate(double.Parse(UpdateVal), PlanExchangeRate));
                         }
                         tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == id).ToList();
                         UpdateTacticPlannedCost(ref pcpobj, ref linkedTactic, ref totalLineitemCost, UpdateVal, tblTacticLineItem, linkedTacticId, yearDiff);
@@ -14254,7 +14254,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
-                    
+
                         pcpobj.CreatedBy = new Guid(UpdateVal);
                         if (linkedTacticId > 0)
                             linkedTactic.CreatedBy = pcpobj.CreatedBy;
@@ -14326,15 +14326,15 @@ namespace RevenuePlanner.Controllers
                     }
                     pcpobj.ModifiedBy = Sessions.User.UserId;
                     pcpobj.ModifiedDate = DateTime.Now;
-               
+
                     db.Entry(pcpobj).State = EntityState.Modified;
                     db.SaveChanges();
                     int result = 1;
 
                     if (Common.CheckAfterApprovedStatus(pcpobj.Status))
-                    { 
+                    {
                         result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcpobj.CreatedBy.ToString());
-                     }
+                    }
                     if (result > 0)
                     {
 
@@ -14343,7 +14343,7 @@ namespace RevenuePlanner.Controllers
                             UpdateValue = UpdateVal;
                         }
 
-                            SendEmailnotification(pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateValue, pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), pcpobj.Plan_Campaign_Program.Title.ToString(), pcpobj.Title.ToString(), Enums.Section.Tactic.ToString().ToLower(),"",UpdateColumn,pcpobj.Status);
+                        SendEmailnotification(pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateValue, pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), pcpobj.Plan_Campaign_Program.Title.ToString(), pcpobj.Title.ToString(), Enums.Section.Tactic.ToString().ToLower(), "", UpdateColumn, pcpobj.Status);
                         if (UpdateColumn == "ParentID")
                         {
                             if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0)
@@ -14475,7 +14475,7 @@ namespace RevenuePlanner.Controllers
                                                                     ((pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpobj.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
                                                                      : pcpobj.Cost;
                     }
-                
+
 
                     return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost, OwnerName = OwnerName, TacticCost = tacticCost }, JsonRequestBehavior.AllowGet);
                 }
@@ -14527,24 +14527,24 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
-                      
+
                         pcpobj.CreatedBy = new Guid(UpdateVal);
                     }
-                 
+
                     db.Entry(pcpobj).State = EntityState.Modified;
                     db.SaveChanges();
-                 
+
                     int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcpobj.CreatedBy.ToString());
 
                     if (result > 0)
                     {
-                       
+
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                            {
-                                UpdateValue = UpdateVal;
-                            }
-                        
-                            SendEmailnotification(pcpobj.Plan_Campaign.Plan.PlanId, id, Convert.ToString(oldOwnerId),UpdateValue, pcpobj.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign.Title.ToString(), pcpobj.Title.ToString(), pcpobj.Title.ToString(), Enums.Section.Program.ToString().ToLower(),"",UpdateColumn);
+                        {
+                            UpdateValue = UpdateVal;
+                        }
+
+                        SendEmailnotification(pcpobj.Plan_Campaign.Plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateValue, pcpobj.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign.Title.ToString(), pcpobj.Title.ToString(), pcpobj.Title.ToString(), Enums.Section.Program.ToString().ToLower(), "", UpdateColumn);
 
                     }
 
@@ -14594,13 +14594,13 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
-                     
+
                         pcobj.CreatedBy = new Guid(UpdateVal);
                     }
-                
+
                     db.Entry(pcobj).State = EntityState.Modified;
                     db.SaveChanges();
-                 
+
                     int result = Common.InsertChangeLog(Sessions.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcobj.CreatedBy.ToString());
 
                     if (result > 0)
@@ -14609,7 +14609,7 @@ namespace RevenuePlanner.Controllers
                         {
                             UpdateValue = UpdateVal;
                         }
-                        SendEmailnotification(pcobj.Plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateValue, pcobj.Plan.Title, pcobj.Title, pcobj.Title, pcobj.Title, Enums.Section.Campaign.ToString().ToLower(),"",UpdateColumn);
+                        SendEmailnotification(pcobj.Plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateValue, pcobj.Plan.Title, pcobj.Title, pcobj.Title, pcobj.Title, Enums.Section.Campaign.ToString().ToLower(), "", UpdateColumn);
 
                     }
 
@@ -14724,7 +14724,7 @@ namespace RevenuePlanner.Controllers
                     {
                         double lCost = 0;
                         if (!string.IsNullOrEmpty(UpdateVal))
-                            lCost = Convert.ToDouble(UpdateVal);
+                            lCost = objCurrency.SetValueByExchangeRate(double.Parse(UpdateVal), PlanExchangeRate);
                         if (lCost > objLineitem.Cost)
                         {
                             var diffcost = lCost - objLineitem.Cost;
@@ -15045,7 +15045,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
-                       
+
                         objLineitem.CreatedBy = new Guid(UpdateVal);
 
                     }
@@ -15065,11 +15065,11 @@ namespace RevenuePlanner.Controllers
                         //ENd
                         db.Entry(linkedLineItem).State = EntityState.Modified;
                     }
-                   
+
                     #endregion
                     int result = Common.InsertChangeLog(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", objLineitem.CreatedBy.ToString());
                     db.SaveChanges();
-                  
+
                     //Added by Rahul Shah on 17/03/2016 for PL #2068
                     if (result > 0)
                     {
@@ -15459,7 +15459,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #region "Send Email Notification For Owner changed"
-        public void SendEmailnotification(int PlanID, int ChangeID, string oldOwnerID, string NewOwnerID, string PlanTitle, string CampaignTitle, string ProgramTitle, string Title, string section, string LineItemTitle = "",string UpdateColumn = "",string TacticStatus = "") //modified by Rahul Shah on 17/03/2016 for PL #2068 to add line item email notification
+        public void SendEmailnotification(int PlanID, int ChangeID, string oldOwnerID, string NewOwnerID, string PlanTitle, string CampaignTitle, string ProgramTitle, string Title, string section, string LineItemTitle = "", string UpdateColumn = "", string TacticStatus = "") //modified by Rahul Shah on 17/03/2016 for PL #2068 to add line item email notification
         {
 
             try
@@ -15473,11 +15473,11 @@ namespace RevenuePlanner.Controllers
                 {
                     List_NotificationUserIds = Common.GetAllNotificationUserIds(lst_Userids, Enums.Custom_Notification.ProgramIsEdited.ToString().ToLower());
                 }
-                else if(Enums.Section.Campaign.ToString().ToLower() == section)
+                else if (Enums.Section.Campaign.ToString().ToLower() == section)
                 {
                     List_NotificationUserIds = Common.GetAllNotificationUserIds(lst_Userids, Enums.Custom_Notification.CampaignIsEdited.ToString().ToLower());
                 }
-                else if(Enums.Section.Tactic.ToString().ToLower() == section)
+                else if (Enums.Section.Tactic.ToString().ToLower() == section)
                 {
                     List_NotificationUserIds = Common.GetAllNotificationUserIds(lst_Userids, Enums.Custom_Notification.TacticIsEdited.ToString().ToLower());
                 }
@@ -15507,7 +15507,7 @@ namespace RevenuePlanner.Controllers
                         string strURL = GetNotificationURLbyStatus(PlanID, ChangeID, section);
                         //Added by KOmal rawal to send mail for #2485 on 22-08-2016
                         #region send entity edited email notification
-                        if (List_NotificationUserIds.Count > 0 && oldOwnerID != Sessions.User.UserId.ToString() )
+                        if (List_NotificationUserIds.Count > 0 && oldOwnerID != Sessions.User.UserId.ToString())
                         {
                             var CurrentOwner = UsersDetails.Where(u => u.UserId == Guid.Parse(oldOwnerID)).Select(u => u).FirstOrDefault();
                             string oldownername = CurrentOwner.FirstName;
@@ -15533,13 +15533,13 @@ namespace RevenuePlanner.Controllers
                         if (NewOwnerID != oldOwnerID && !string.IsNullOrEmpty(NewOwnerID) && UpdateColumn == Enums.PlanGrid_Column["owner"] && NewOwnerID != Sessions.User.UserId.ToString())
                         {
                             var NewOwner = UsersDetails.Where(u => u.UserId == Guid.Parse(NewOwnerID)).Select(u => u).FirstOrDefault();
-                        var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
-                        if (NewOwner.Email != string.Empty)
-                        {
-                            lstRecepientEmail.Add(NewOwner.Email);
-                        }
-                        string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
-                        string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                            var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                            if (NewOwner.Email != string.Empty)
+                            {
+                                lstRecepientEmail.Add(NewOwner.Email);
+                            }
+                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
                             List<string> NewOwnerIDs = new List<string>();
                             NewOwnerIDs.Add(NewOwnerID.ToString());
                             List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerIDs, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
@@ -15550,40 +15550,40 @@ namespace RevenuePlanner.Controllers
                             if (List_NotificationUserIds.Count > 0)
                             {
 
-                            var ComponentType = Enums.ChangeLog_ComponentType.tactic;
-                            ////Added by Rahul Shah on 10/09/2015 fo PL Ticket #1521
-                            if (Enums.Section.Program.ToString().ToLower() == section)
-                            {
-                                ComponentType = Enums.ChangeLog_ComponentType.program;
-                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Program.ToString().ToLower(), strURL);
-                            }
-                            else if (Enums.Section.Campaign.ToString().ToLower() == Campaign)
-                            {
-                                ComponentType = Enums.ChangeLog_ComponentType.campaign;
-                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);
-                            }
-                            else if (Enums.Section.Plan.ToString().ToLower() == section)
-                            {
-                                ComponentType = Enums.ChangeLog_ComponentType.plan;
-                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, PlanTitle, PlanTitle, PlanTitle, Enums.Section.Plan.ToString().ToLower(), strURL);
-                            }
-                            //Added by Rahul Shah on 17/03/2016 for PL #2068
-                            else if (Enums.Section.LineItem.ToString().ToLower() == section)
-                            {
-                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL, LineItemTitle);
-                            }
-                            else
-                            {
-                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);
-                            }
-                            //Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL); ////Added by Rahul Shah on 03/09/2015 fo PL Ticket #1521
-                            //Changes made regarding #2484 save notifications by komal rawal on 16-08-2016
-                            if (Enums.Section.LineItem.ToString().ToLower() != section)
-                            {
-                                Common.InsertChangeLog(PlanID, null, ChangeID, Title, ComponentType, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", NewOwnerID.ToString());
-                            }
+                                var ComponentType = Enums.ChangeLog_ComponentType.tactic;
+                                ////Added by Rahul Shah on 10/09/2015 fo PL Ticket #1521
+                                if (Enums.Section.Program.ToString().ToLower() == section)
+                                {
+                                    ComponentType = Enums.ChangeLog_ComponentType.program;
+                                    Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Program.ToString().ToLower(), strURL);
+                                }
+                                else if (Enums.Section.Campaign.ToString().ToLower() == Campaign)
+                                {
+                                    ComponentType = Enums.ChangeLog_ComponentType.campaign;
+                                    Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);
+                                }
+                                else if (Enums.Section.Plan.ToString().ToLower() == section)
+                                {
+                                    ComponentType = Enums.ChangeLog_ComponentType.plan;
+                                    Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, PlanTitle, PlanTitle, PlanTitle, Enums.Section.Plan.ToString().ToLower(), strURL);
+                                }
+                                //Added by Rahul Shah on 17/03/2016 for PL #2068
+                                else if (Enums.Section.LineItem.ToString().ToLower() == section)
+                                {
+                                    Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL, LineItemTitle);
+                                }
+                                else
+                                {
+                                    Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);
+                                }
+                                //Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL); ////Added by Rahul Shah on 03/09/2015 fo PL Ticket #1521
+                                //Changes made regarding #2484 save notifications by komal rawal on 16-08-2016
+                                if (Enums.Section.LineItem.ToString().ToLower() != section)
+                                {
+                                    Common.InsertChangeLog(PlanID, null, ChangeID, Title, ComponentType, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", NewOwnerID.ToString());
+                                }
 
-                        }
+                            }
                         }
 
 
@@ -15596,9 +15596,9 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(objException);
             }
         }
- 
-        
-        
+
+
+
         #endregion
         #region
         /// <summary>

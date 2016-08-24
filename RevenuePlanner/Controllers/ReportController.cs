@@ -7019,9 +7019,10 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             #endregion
-
+            
             try
             {
+                strCurrency = Sessions.PlanCurrencySymbol;
                 if (RevenueType.Equals(Enums.TOPRevenueType.Revenue))
                 {
                     #region "Code for TOPRevenue"
