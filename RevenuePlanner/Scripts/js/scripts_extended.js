@@ -492,7 +492,10 @@ function setBootstrapTooltip(lableId, value, maxSize, iscurrency, decimaldigit) 
     else {
         if (iscurrency) {
             //Modified by Rahul Shah for PL #2498 & #2499
-            $(lableId).text(CurrencySybmol + number_format(roundValue, digit, '.', ','));
+            //$(lableId).text(CurrencySybmol + number_format(roundValue, digit, '.', ','));
+            //Insertation start #2501 24/08/2016 kausha
+            $(lableId).text((CurrencySybmol + number_format(roundValue, digit, '.', ',')).replace(' ', ''));
+            //Insertation end #2501 24/08/2016 kausha
             
         }
         else {
