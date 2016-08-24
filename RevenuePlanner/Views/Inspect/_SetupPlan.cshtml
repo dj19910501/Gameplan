@@ -3,6 +3,7 @@
     var planDetails = (RevenuePlanner.Models.InspectModel)ViewBag.PlanDetails;
     var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
     var _editdescription = Common.GenerateHTMLDescription(Model.Description);   // Added by Viral Kadiya on 11/21/2014 for PL ticket #794.
+    string CurrencySymbol = Sessions.PlanCurrencySymbol; // Add By Rahul Shah #2511
 }
 @using RevenuePlanner.Helpers
 <style type="text/css">
@@ -65,15 +66,15 @@
          {
              <div style="width:50%; float:left;">
                  <p title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</p>
-                 @Html.TextBox("txtINQ", "", new { placeholder = "$0", id = "txtINQ", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                 @Html.TextBox("txtINQ", "", new { placeholder = CurrencySymbol + "0", id = "txtINQ", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
              </div>
              <div style="width:50%; float:left;">
                  <p title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</p>
-                 @Html.TextBox("txtMQL", "", new { placeholder = "$0", id = "txtMQL", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                 @Html.TextBox("txtMQL", "", new { placeholder = CurrencySymbol + "0", id = "txtMQL", @class = "span5 input-small truncate width96px priceValue", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
              </div>
              <div style="width:50%; float:left;">
                  <p>Revenue</p>
-                 @Html.TextBox("txtRevenue", "", new { placeholder = "$0", id = "txtRevenue", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                 @Html.TextBox("txtRevenue", "", new { placeholder = CurrencySymbol + "0", id = "txtRevenue", @class = "span5 input-small truncate width96px currency_dollar", style = "background:#F2F2F2;", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
              </div>
          }
          <!-- Added by Arpita Soni for Ticket #2236 on 06/20/2016 -->

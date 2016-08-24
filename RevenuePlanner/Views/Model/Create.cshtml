@@ -831,7 +831,7 @@
                     $(this).children('a').removeClass("error-form");
                 }
                 //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-                if ($("#MarketingLeads").val() == '' || $("#MarketingLeads").val() == "0" || $("#MarketingLeads").val() == "$0" || $("#MarketingLeads").val() == "$") {
+                if ($("#MarketingLeads").val() == '' || $("#MarketingLeads").val() == "0" || $("#MarketingLeads").val() == CurrencySybmol + "0" || $("#MarketingLeads").val() == CurrencySybmol) {
                     $(this).children('a').addClass("error-form");
                     needAlert = true;
                 }
@@ -849,7 +849,7 @@
                     $(this).children('a').removeClass("error-form");
                 }
                 //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-                if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0" || $("#MarketingDealSize").val() == "$0" || $("#MarketingDealSize").val() == "$") {
+                if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0" || $("#MarketingDealSize").val() == CurrencySybmol + "0" || $("#MarketingDealSize").val() == CurrencySybmol) {
                     $(this).children('a').addClass("error-form");
                     needAlert = true;
                 }
