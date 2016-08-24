@@ -266,7 +266,7 @@
         $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline" title="' + _title + '">' + GrapSubstring(_title, 40) + '</span></span>' +
                             '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel"></div></span>' +
                             '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
-                            '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities add-tatic-td">' + CurrencySybmol + '' + FormatCommas(_cost.toString(), false) + '</span>' +
+                            '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities add-tatic-td">' + FormatNumber(_cost.toString(), false) + '</span>' +
                             '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                         '</a>' +
                     '</div>';
@@ -613,7 +613,7 @@
         if (!isADS) {
             $html += ' class="noRightBorder SuggestedSection"';
         }
-        $html += ' >' + CurrencySybmol + '' + FormatCommas(Cost.toString(), false) + '</td>';
+        $html += ' >' + FormatNumber(Cost.toString(), false) + '</td>';
         var isDashedDisplay = false;
         if (isADS) {
             if (ProjectedRevenueWithoutTactic == ProjectedRevenueWithTactic) {
