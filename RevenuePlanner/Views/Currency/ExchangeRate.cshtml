@@ -51,10 +51,7 @@
 @using (Html.BeginForm())
 {
     <div id="confirmMsg" class="alert hide alert-error ">
-        @*<a class="close">×</a>
-            <strong>Error.</strong> You have unsaved changes. Do you wish to leave this page and lose your work?
-            <a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>
-            <span id="divsuccessmsg"></span>*@
+        
         <div id="errorMsg">
 
         </div>
@@ -131,30 +128,36 @@
     $('#chkSameasplanning').change(function () {
 
         if ($(this).is(":checked")) {
-            reportData = [];
+            //Insertation Start #2492 Added alert box when check checkbox like same as plan.
+            var r = confirm("Are you sure wnat to change report currency rate same as plan?");
+            if (r == true) {
+                reportData = [];
 
-            var year = $("#drpYear option:selected").text();
-            PlanCurrencyGrid.forEachRow(function (id) {
+                var year = $("#drpYear option:selected").text();
+                PlanCurrencyGrid.forEachRow(function (id) {
 
 
-                PlanCurrencyGrid.forEachCell(id, function (cellObj, col_index) {
+                    PlanCurrencyGrid.forEachCell(id, function (cellObj, col_index) {
 
 
-                    if (col_index > 0) {
-                        var val = PlanCurrencyGrid.cells(id, col_index).getValue();
-                        ReportCurrencyGrid.cells(id, col_index).setValue(val);
-                        var monthValue = PlanCurrencyGrid.cells(id, col_index).getAttribute("actval");
-                        reportData.push({ CurrencyCode: id, Component: '@Enums.CurrencyComponent.Report.ToString()', OldExchangeRate: val, NewExchangeRate: val, Year: year, Month: monthValue });
-                    }
+                        if (col_index > 0) {
+                            var val = PlanCurrencyGrid.cells(id, col_index).getValue();
+                            ReportCurrencyGrid.cells(id, col_index).setValue(val);
+                            var monthValue = PlanCurrencyGrid.cells(id, col_index).getAttribute("actval");
+                            reportData.push({ CurrencyCode: id, Component: '@Enums.CurrencyComponent.Report.ToString()', OldExchangeRate: val, NewExchangeRate: val, Year: year, Month: monthValue });
+                        }
+                    });
+
                 });
-
-            });
+            }
+            else {
+                $('#chkSameasplanning').prop("checked", false);
+            }
+            
         }
     });
 
-    $('#btnConfirmOK').click(function () {
-
-    });
+  
     $('#btnSave').click(function () {
         var exchangerateObj = JSON.stringify({ 'lstPlan': planData, sameAsPlan: false, 'lstReport': reportData });
 
