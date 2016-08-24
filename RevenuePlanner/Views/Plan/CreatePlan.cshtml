@@ -591,14 +591,9 @@
 
             if ($('#ModelId').val() != '')
                 modelId = $('#ModelId').val();
-
-            if (goalType != '' && goalType.toLowerCase() == 'revenue') {
-                goalValue = SetValueByExchangeRate(goalValue);
+            
                 calculateBudget(modelId, goalType, goalValue);
-            }
-            else {
-                calculateBudget(modelId, goalType, goalValue);
-            }
+            
         }
     });
 
