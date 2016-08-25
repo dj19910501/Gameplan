@@ -6784,6 +6784,9 @@ namespace RevenuePlanner.Controllers
                         if (totalLineitemCost > YearlyCost)
                         {
                             YearlyCost = totalLineitemCost;
+                            string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                            return Json(new { isSuccess = false, errormsg = strReduceTacticPlannedCostMessage });
+                        
                         }
 
                         if (!pcpobj.Plan_Campaign_Program_Tactic_Cost.Any())
