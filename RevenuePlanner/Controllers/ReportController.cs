@@ -2351,41 +2351,34 @@ namespace RevenuePlanner.Controllers
                         optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
                         ////
                         string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
+                        // var UsersDetails = JsonConvert.DeserializeObject<List<sharereportdetails>>(data);
 
-                        if (data != null)
+                        foreach (string toEmail in toEmailIds.Split(','))
                         {
-                            var UsersDetails = JsonConvert.DeserializeObject<List<sharereportdetails>>(data);
-                            var UserIds = RecipientUserIds.Split(',').ToList();
-                            var List_NotificationUserIds = Common.GetAllNotificationUserIds(UserIds, Enums.Custom_Notification.ReportIsShared.ToString().ToLower());
-                            if (List_NotificationUserIds.Count > 0)
+                            Report_Share reportShare = new Report_Share();
+                            reportShare.ReportType = reportType;
+                            reportShare.EmailId = toEmail;
+                            //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
+                            reportShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
+                            ////
+                            reportShare.CreatedDate = DateTime.Now;
+                            reportShare.CreatedBy = Sessions.User.UserId;
+                            mrp.Entry(reportShare).State = EntityState.Added;
+                            mrp.Report_Share.Add(reportShare);
+                            result = mrp.SaveChanges();
+                            if (result == 1)
                             {
-                                var lst_Email = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.Id))).Select(u => u.Email).ToList();
-                                toEmailIds = string.Join(",", lst_Email);
-
-                                foreach (string toEmail in toEmailIds.Split(','))
-                                {
-                                    Report_Share reportShare = new Report_Share();
-                                    reportShare.ReportType = reportType;
-                                    reportShare.EmailId = toEmail;
-                                    //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
-                                    reportShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
-                                    ////
-                                    reportShare.CreatedDate = DateTime.Now;
-                                    reportShare.CreatedBy = Sessions.User.UserId;
-                                    mrp.Entry(reportShare).State = EntityState.Added;
-                                    mrp.Report_Share.Add(reportShare);
-                                    result = mrp.SaveChanges();
-                                    if (result == 1)
-                                    {
-                                        //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
-                                        Common.sendMail(toEmail, Common.FromMail, emailBody, notification.Subject, new MemoryStream(pdfStream.ToArray()), string.Format("{0}.pdf", reportType));
-                                    }
-                                }
-
-                                Common.InsertChangeLog(null, null, null, null, ChangeLogComponentType, Enums.ChangeLog_TableName.Report, Enums.ChangeLog_Actions.shared, "", "", RecipientUserIds);
-
+                                //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
+                                Common.sendMail(toEmail, Common.FromMail, emailBody, notification.Subject, new MemoryStream(pdfStream.ToArray()), string.Format("{0}.pdf", reportType));
                             }
                         }
+                        if (RecipientUserIds != null && RecipientUserIds != "")
+                        {
+                            var UserIds = RecipientUserIds.Split(',').ToList();
+                            Common.InsertChangeLog(null, null, null, null, ChangeLogComponentType, Enums.ChangeLog_TableName.Report, Enums.ChangeLog_Actions.shared, "", "", RecipientUserIds);
+                        }
+
+
                         return Json(true, JsonRequestBehavior.AllowGet);
                     }
                 }

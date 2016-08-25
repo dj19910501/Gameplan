@@ -1653,7 +1653,7 @@ namespace RevenuePlanner.Controllers
                 {
                     DataList = AllNotification.Select(a => new UserAlertsNotification
                     {
-                        Description = a.Description.Trim(),
+                        Description = ConvertString(a.Description),
                         CreatedDate = Common.TimeAgo(a.CreatedDate,true),
                         NotificationId = a.NotificationId,
                         ActionName = a.ActionName,

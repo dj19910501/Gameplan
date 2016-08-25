@@ -1603,7 +1603,7 @@ BEGIN
 	
 	End
 
-	if(@Userid <> @EntityOwnerID and @action='updated' and @NotificationMessage <> '' and (@description ='tactic' or @description ='tactic results' or @description ='campaign' or @description ='program'))
+	if(@action='updated' and @Userid <> @EntityOwnerID and @NotificationMessage <> '' and (@description ='tactic' or @description ='tactic results' or @description ='campaign' or @description ='program'))
     Begin
 			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
 			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
