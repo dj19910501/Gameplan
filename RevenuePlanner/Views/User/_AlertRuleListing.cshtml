@@ -103,11 +103,11 @@
         <div class="accordion-group" id="group-@ruleId">
             <div class="accordion-heading clearfix">
                 <div class="alert-heading pull-left">
-                    <h4>@Alertsummary</h4> @Html.Raw(alertrule.RuleSummary)
+                    <h4 class="entity-name">@Alertsummary</h4> @Html.Raw(alertrule.RuleSummary)
                 </div>
                 <div class="pull-right acco-icons">
                     <a class="alert-delet" title="Delete" onclick="DeleteAlrtRule(@alertrule.RuleId);"><i class="fa fa-times-circle" aria-hidden="true"></i></a>
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#Ruleaccordion" href="#@collapsid" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                    <a class="accordion-toggle alert-edit" data-toggle="collapse" data-parent="#Ruleaccordion" href="#@collapsid" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                     <a class="alert-copy" onclick="CopyAlertRule('@collapsid',@ruleId);" title="Copy" ><i class="fa fa-clone" aria-hidden="true"></i></a>
                     <div  class="pull-right alert-rule-check">
                         Alert On 

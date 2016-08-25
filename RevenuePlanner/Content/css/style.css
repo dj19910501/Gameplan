@@ -15443,7 +15443,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     margin-left: 20px;
     margin-right: -20px;
 }
-.notify-list .fa, .aler-list .fa{ font-size: 20px;}
+.notify-list .fa, .aler-list .fa{ font-size: 26px;}
 .count {
     background: #f8710e none repeat scroll 0 0;
     border-radius: 10px;
@@ -15486,10 +15486,12 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .dd-right{
     float: right;
     font-size: 10px;}
-.dd-right, .ul-top a:last-child {
+.dd-right {
     color: #95989A;
 }
-
+.ul-top a:last-child {
+    color: #F8700E;
+}
 .header-right .notify-list .dropdown-menu li:last-child,
 .header-right .aler-list .dropdown-menu li:last-child {
     background: #fff none repeat scroll 0 0;
@@ -15498,7 +15500,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     text-align: center;
 }
 .header-right .notify-list .dropdown-menu > li:last-child > a,
-.header-right .aler-list .dropdown-menu > li:last-child > a{padding:0}
+.header-right .aler-list .dropdown-menu > li:last-child > a{padding:0; color: #F8700E;}
 
 /* ******************** Please add new styles here - Start ******************** */
 .password-requirement-box {
@@ -16088,7 +16090,7 @@ input.selectInput{
 
 /* ==== #2457 Accordian for Alert Style ==== */
 .alert-form-wrap{margin-left:30px}
-.btn-create-alert{margin-top:-30px; float:right}
+.btn-create-alert{margin-top:-54px; float:right}
 .accordion.alert-accordian, 
 .clearalert{width:82%}
 .accordion.alert-accordian .accordion-group {
@@ -16105,11 +16107,16 @@ input.selectInput{
 .acco-icons {width: 165px;margin-top: 8px;}
 .accordion.alert-accordian .accordion-heading a{color:#95989A; float:right;display:inline;}
 .accordion.alert-accordian .accordion-heading a.accordion-toggle{ margin-right:10px}
-.accordion.alert-accordian .accordion-heading .fa{font-size:18px; color:#95989A;}
+.accordion.alert-accordian .accordion-heading .fa{font-size:18px;}
+
 .accordion.alert-accordian .accordion-heading .fa.fa-clone {font-size: 16px;}
 .alert-heading h4{margin:0; font-weight:normal; display: inline;}
+.entity-name{color:#5F91B3}
 .alert-heading:first-child span{margin-right:50px}
 .acco-icons  .alert-rule-check{margin-right:10px;color:#95989A; font-size:13px}
+.accordion.alert-accordian .accordion-heading a.alert-copy:hover,
+.accordion.alert-accordian .accordion-heading a.alert-edit:hover{color:#F8700E } 
+
 .alert-rule-check input[type="checkbox"]{
     margin: -2px 0 0 2px;
     opacity: 0.6;
@@ -16290,8 +16297,8 @@ input.serach-input {
 .selectyear {
     margin: 10px 0;
 }
-.selectyear label{float: left; margin: 0 10px 0 0; line-height: 25px;}
-
+.selectyear label{float: left; margin: 0 10px 0 0; line-height: 25px; font-weight:bold}
+.currency-content .selectyear .selectBox{width:130px}
 .list-wrap{
     background: #f0f0f0 none repeat scroll 0 0;
     margin-bottom: 5px;
