@@ -12949,10 +12949,9 @@ namespace RevenuePlanner.Controllers
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
-                        double planTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(totalrevenue)), PlanExchangeRate); // Add By Nishant Sheth #2497
                         plandataobj = new Plandataobj();
-                        plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(planTotalRevenue).ToString();
-                        plandataobj.actval = planTotalRevenue.ToString();
+                        plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(totalrevenue).ToString();
+                        plandataobj.actval = totalrevenue.ToString();
                         plandataobj.style = cellTextColor;
                         plandataobjlist.Add(plandataobj);
 
@@ -13121,10 +13120,9 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj.actval = Campaignitem.totalmql.ToString();
                                     campaigndataobjlist.Add(campaigndataobj);
 
-                                    double campTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Campaignitem.totalrevenue)), PlanExchangeRate); // Add By Nishant Sheth #2497
                                     campaigndataobj = new Plandataobj();
-                                    campaigndataobj.value = dollarsymbol + ConvertNumberToRoundFormate(campTotalRevenue).ToString();
-                                    campaigndataobj.actval = campTotalRevenue.ToString();
+                                    campaigndataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Campaignitem.totalrevenue).ToString();
+                                    campaigndataobj.actval = Campaignitem.totalrevenue.ToString();
                                     campaigndataobj.style = cellTextColor;
                                     campaigndataobjlist.Add(campaigndataobj);
 
@@ -13291,10 +13289,9 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
-                                                double progTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Programitem.totalrevenue)), PlanExchangeRate);// Add By Nishant Sheth #2497
                                                 programdataobj = new Plandataobj();
-                                                programdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(progTotalRevenue).ToString();
-                                                programdataobj.actval = progTotalRevenue.ToString();
+                                                programdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Programitem.totalrevenue).ToString();
+                                                programdataobj.actval = Programitem.totalrevenue.ToString();
                                                 programdataobj.style = cellTextColor;
                                                 programdataobjlist.Add(programdataobj);
 
@@ -13461,10 +13458,10 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
-                                                        double tacTotalRevenue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tactic.totalrevenue)), PlanExchangeRate);// Add By Nishant Sheth #2497
+                                                        double tacTotalRevenue = double.Parse(Convert.ToString(tactic.totalrevenue));// Add By Nishant Sheth #2497
                                                         tacticdataobj = new Plandataobj();
-                                                        tacticdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(tacTotalRevenue).ToString();
-                                                        tacticdataobj.actval = tacTotalRevenue.ToString();
+                                                        tacticdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(tactic.totalrevenue).ToString();
+                                                        tacticdataobj.actval = tactic.totalrevenue.ToString();
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
@@ -17638,7 +17635,6 @@ namespace RevenuePlanner.Controllers
                 {
                     totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
                     totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
-                    totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                     DataRow[] dr = dtCSV.Select("EntityId = " + PlanList[plan] + "AND Section = '" + Enums.Section.Plan.ToString() + "'");
 
                     OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
@@ -17659,7 +17655,6 @@ namespace RevenuePlanner.Controllers
                     {
                         totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.MQL) : 0;
                         totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.Revenue) : 0;
-                        totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                         var ProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
                            && int.Parse(x.Field<string>("ParentId")) == CampList[camp]).OrderBy(x => x.Field<string>("Program")).Select(x => x.Field<int>("EntityId")).ToList();
 
@@ -17676,7 +17671,6 @@ namespace RevenuePlanner.Controllers
                         {
                             totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.MQL) : 0;
                             totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
-                            totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                             var ProgTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
                                        && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
                             totalPlannedCostCSV = ProgTacticCostlist.Sum();
@@ -17694,7 +17688,6 @@ namespace RevenuePlanner.Controllers
                                 {
                                     totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.MQL) : 0;
                                     totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.Revenue) : 0;
-                                    totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                                     dr = dtCSV.Select("EntityId = " + TacticList[Tac] + "AND Section = '" + Enums.Section.Tactic.ToString() + "'");
                                     totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
                                     OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
@@ -17874,7 +17867,6 @@ namespace RevenuePlanner.Controllers
                 totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.PlanTacticId == id).Sum(l => l.Revenue) : 0;
                 totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => l.PlanTacticId == id).Sum(l => l.Cost) : 0;
             }
-            totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth #2502 : Export csv with multi-currency
             totalPlannedCostCSV = objCurrency.GetValueByExchangeRate(totalPlannedCostCSV, PlanExchangeRate); // Add By Nishant Sheth #2502 : Export csv with multi-currency
             DataRow[] dr = dataTable.Select("EntityId = " + id + "AND Section = '" + Section + "'");
 
