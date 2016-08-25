@@ -86,7 +86,6 @@ namespace RevenuePlanner.Controllers
                     ViewData["ViewBy"] = li;
 
                     ViewBag.DashboardID = DashId;
-                    ViewBag.ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
                     ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                     ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                     ViewBag.ApiUrl = ApiUrl;
@@ -98,7 +97,6 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     ViewBag.DashboardID = DashId;
-                    ViewBag.ReportDBConnString = string.Empty;
                     ViewBag.AuthorizedReportAPIUserName = string.Empty;
                     ViewBag.AuthorizedReportAPIPassword = string.Empty;
                     ViewBag.ApiUrl = string.Empty;
@@ -190,7 +188,7 @@ namespace RevenuePlanner.Controllers
         /// Get Chart Data
         /// </summary>
         /// <returns>List<CurrencyModel.ClientCurrency></returns>
-        public async Task<JsonResult> GetChart(int Id, string ConnectionString, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100")
+        public async Task<JsonResult> GetChart(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100")
         {
             RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
             HttpResponseMessage response = new HttpResponseMessage();
@@ -198,6 +196,23 @@ namespace RevenuePlanner.Controllers
             string AuthorizedReportAPIUserName = string.Empty;
             string AuthorizedReportAPIPassword = string.Empty;
             string ApiUrl = string.Empty;
+            string ConnectionString = string.Empty;
+
+            if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
+            {
+                ConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
+            }
+            else if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.MRP))
+            {
+                var efConnectionString = ConfigurationManager.ConnectionStrings["MRPEntities"].ToString();
+                var builder = new EntityConnectionStringBuilder(efConnectionString);
+                string regularConnectionString = builder.ProviderConnectionString;
+
+                if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
+                {
+                    ConnectionString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
+                }
+            }
 
             if (ConfigurationManager.AppSettings.Count > 0)
             {

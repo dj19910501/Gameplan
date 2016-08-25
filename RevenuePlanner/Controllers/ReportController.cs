@@ -4722,16 +4722,6 @@ namespace RevenuePlanner.Controllers
                 int DashId = int.Parse(DashboardId.ToString());
                 model = cd.GetMainDashBoardInfo(DashId);
 
-                var efConnectionString = ConfigurationManager.ConnectionStrings["MRPEntities"].ToString();
-                var builder = new EntityConnectionStringBuilder(efConnectionString);
-                string regularConnectionString = builder.ProviderConnectionString;
-
-                string ReportDBConnString = string.Empty;
-                if (!string.IsNullOrEmpty(Convert.ToString(regularConnectionString)))
-                {
-                    ReportDBConnString = Convert.ToString(regularConnectionString.ToString().Replace(@"\", @"\\"));
-                }
-
                 string AuthorizedReportAPIUserName = string.Empty;
                 if (ConfigurationManager.AppSettings.Count > 0)
                 {
@@ -4759,7 +4749,6 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
-                ViewBag.ReportDBConnString = ReportDBConnString;
                 ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                 ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                 ViewBag.ApiUrl = ApiUrl;

@@ -149,6 +149,19 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        private string _UserEditedWithCurrency;
+        public string UserEditedWithCurrency
+        {
+            get
+            {
+                return _UserEditedWithCurrency;
+            }
+            set
+            {
+                _UserEditedWithCurrency = value;
+            }
+        }
+
         private string _UserDeleted;
         public string UserDeleted
         {
@@ -3044,6 +3057,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "UserEdited":
                                             _UserEdited = strMsgValue;
+                                            break;
+                                        case "UserEditedWithCurrency":
+                                            _UserEditedWithCurrency = strMsgValue;
                                             break;
                                         case "UserDeleted":
                                             _UserDeleted = strMsgValue;

@@ -1143,6 +1143,10 @@ BEGIN
 					WHERE RGC.ReportGraphId=@Id
 
 			END
+
+			SELECT ISNULL(m.IsCurrency, 0) AS IsCurrency 
+				FROM Measure m 
+				INNER JOIN ReportGraphColumn rgc ON (rgc.MeasureId = m.id AND rgc.ReportGraphId = @Id)
 		END
 END
 GO

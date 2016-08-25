@@ -41,6 +41,10 @@
 		<Name>UserEdited</Name>
 		<value>User edited successfully.</value>
 	</Field>
+  <Field>
+    <Name>UserEditedWithCurrency</Name>
+    <value>User edited successfully. The updated preferred currency would apply from next login.</value>
+  </Field>
 	<Field>
 		<Name>UserDeleted</Name>
 		<value>User deleted successfully.</value>

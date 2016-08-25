@@ -3,7 +3,6 @@
 @model RevenuePlanner.Models.Custom_Dashboard
 
 @{
-    string ReportDBConnString = Convert.ToString(ViewBag.ReportDBConnString);
     string AuthorizedReportAPIUserName = Convert.ToString(ViewBag.AuthorizedReportAPIUserName);
     string AuthorizedReportAPIPassword = Convert.ToString(ViewBag.AuthorizedReportAPIPassword);
     string ApiUrl = Convert.ToString(ViewBag.ApiUrl);
@@ -254,7 +253,7 @@
             });
             var params = {};
             params.Id = id;
-            params.ConnectionString = '@ReportDBConnString';
+            params.DbName = '@Enums.ApplicationCode.MRP.ToString()';
             params.Container = $(obj).attr('id');
             params.SDV = DistArr;
             params.TopOnly = 'True';

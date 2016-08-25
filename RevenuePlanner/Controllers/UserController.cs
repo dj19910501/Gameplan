@@ -865,6 +865,10 @@ namespace RevenuePlanner.Controllers
                         if (form.UserId == Sessions.User.UserId)
                         {
                             objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Sessions.ApplicationId);
+                            if (objUser.PreferredCurrencyCode != Sessions.User.PreferredCurrencyCode)
+                            {
+                                TempData["SuccessMessage"] = Common.objCached.UserEditedWithCurrency;
+                            }
                             if (objUser != null)
                                 Sessions.User = objUser;
                         }

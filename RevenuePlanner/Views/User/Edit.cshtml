@@ -16,14 +16,14 @@
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
 
-@if (TempData["SuccessMessage"] != null)
+@if (TempData["SuccessMessage"] != null && TempData["SuccessMessage"] != "")
 {
     if (!Convert.ToString(TempData["SuccessMessage"]).ToLower().Contains("model"))
     {
 
     <!--success message-->
 
-    <div id="successMessage" class="alert hide alert-success message-position">
+    <div id="successMessage" class="alert hide alert-success">
         <a class="close">×</a>
         <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
     </div>
@@ -67,7 +67,7 @@
                 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        //Added by Viral Kadiya on 11/06/2014 for PL ticket #917 
+        //Added by Viral Kadiya on 11/06/2014 for PL ticket #917
         // On document load page retrieve user details for editing purpose.
         $("#dvEditUserDetails").load("@Url.Action("EditUserDetails", "User")", function (response, status, xhr) {
             if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
@@ -77,5 +77,8 @@
                 window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
             }
         });
+    });
+    $('#btn-close').click(function () {
+        $('#divpartialsharetactic1').addClass('hide');
     });
 </script>
