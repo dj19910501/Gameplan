@@ -15062,7 +15062,7 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                            SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateVal, objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString());
+                            SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateVal, objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString(),UpdateColumn);
                     }
                     //// Calculate TotalLineItemCost.
                     double totalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
@@ -15558,6 +15558,7 @@ namespace RevenuePlanner.Controllers
                                 //Added by Rahul Shah on 17/03/2016 for PL #2068
                                 else if (Enums.Section.LineItem.ToString().ToLower() == section)
                                 {
+                                    ComponentType = Enums.ChangeLog_ComponentType.lineitem;
                                     Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL, LineItemTitle);
                                 }
                                 else
@@ -15566,12 +15567,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 //Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL); ////Added by Rahul Shah on 03/09/2015 fo PL Ticket #1521
                                 //Changes made regarding #2484 save notifications by komal rawal on 16-08-2016
-                                if (Enums.Section.LineItem.ToString().ToLower() != section)
-                                {
                                     Common.InsertChangeLog(PlanID, null, ChangeID, Title, ComponentType, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", NewOwnerID.ToString());
                                 }
-
-                            }
                         }
 
 

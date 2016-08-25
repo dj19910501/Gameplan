@@ -1603,7 +1603,7 @@ BEGIN
 	
 	End
 
-	if(@Userid <> @EntityOwnerID and @action='updated' and (@description ='tactic' or @description ='tactic results' or @description ='campaign' or @description ='program'))
+	if(@Userid <> @EntityOwnerID and @action='updated' and @NotificationMessage <> '' and (@description ='tactic' or @description ='tactic results' or @description ='campaign' or @description ='program'))
     Begin
 			insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
 			values(@TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,@EntityOwnerID,GETDATE(),@ClientId)
@@ -1639,7 +1639,7 @@ BEGIN
 	    SET  @NotificationName = @CommentAddedToProgram
 	End
 
-	if(@action='commentadded' and (@description ='tactic' or @description ='campaign' or @description ='program'))
+	if(@action='commentadded' and @NotificationMessage <> '' and (@description ='tactic' or @description ='campaign' or @description ='program'))
 	begin
 		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
 		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata
@@ -1667,7 +1667,7 @@ BEGIN
 		SET	@NotificationName = @ProgramIsApproved
 	End
 
-    if(@action='approved' and (@description ='tactic' or @description ='campaign' or @description ='program'))
+    if(@action='approved' and @NotificationMessage <> '' and (@description ='tactic' or @description ='campaign' or @description ='program'))
 	begin
 		insert into User_Notification_Messages(ComponentName,ComponentId,EntityId,[Description],ActionName,IsRead,UserId,RecipientId,CreatedDate,ClientID)
 		SELECT @TableName,@objectId,@componentId,@NotificationMessage,@action,0,@Userid,UserId,GETDATE(),@ClientId FROM #tempNotificationdata

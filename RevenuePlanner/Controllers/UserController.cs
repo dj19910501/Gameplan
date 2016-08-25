@@ -1581,9 +1581,11 @@ namespace RevenuePlanner.Controllers
                                        RequestCount = g.Count()
                                    }).ToList();
 
+                    var descoujt = AllNotification.Where(a => a.Description == null).Count();
+                    var descoujt1 = AllNotification.Where(a => a.CreatedDate == null).Count();
                     lstnotifications = AllNotification.Where(a => a.ActionName != "submitted").Select(a => new NotificationSummary
                     {
-                        Description = a.Description.Trim(),
+                        Description = ConvertString(a.Description),
                         NotificationCreatedDate = Common.TimeAgo(a.CreatedDate),
                         NotificationId = a.NotificationId,
                         ActionName = a.ActionName,
@@ -1705,5 +1707,17 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #endregion
+
+        private string ConvertString(string Val)
+        {
+            if (!string.IsNullOrEmpty(Val))
+            {
+                return Val.Trim();
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
     }
 }
