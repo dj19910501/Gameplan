@@ -2315,9 +2315,11 @@ BEGIN
 	
 	IF(@Percent > 100)
 		SET @Percent = 100
+	ELSE IF (@Percent < 0)
+		SET @Percent = 0
 
 	RETURN @Percent
-END
+END 
 GO
 
 -- =================================================================================
@@ -3000,13 +3002,13 @@ BEGIN
 
 		-- For less than rule
 		DECLARE @LessThanWhere		NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal < IndicatorGoal AND IndicatorComparision = ''LT'' AND 
-															ISNULL(ProjectedStageValue,0) != 0 AND ISNULL(ActualStageValue,0) != 0 '
+															(ISNULL(ProjectedStageValue,0) != 0 OR ISNULL(ActualStageValue,0) != 0) '
 		-- For greater than rule
 		DECLARE @GreaterThanWhere	NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal > IndicatorGoal AND IndicatorComparision = ''GT'' AND 
-															ISNULL(ProjectedStageValue,0) != 0 AND ISNULL(ActualStageValue,0) != 0 '
+															(ISNULL(ProjectedStageValue,0) != 0 OR ISNULL(ActualStageValue,0) != 0) '
 		-- For equal to rule
 		DECLARE @EqualToWhere		NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal = IndicatorGoal AND IndicatorComparision = ''EQ'' AND 
-															ISNULL(ProjectedStageValue,0) != 0 AND ISNULL(ActualStageValue,0) != 0 '
+															(ISNULL(ProjectedStageValue,0) != 0 OR ISNULL(ActualStageValue,0) != 0) '
 
 		SET @InsertQueryForLT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtLessThan +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @LessThanWhere
 		SET @InsertQueryForGT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtGreaterThan +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @GreaterThanWhere
@@ -3061,21 +3063,21 @@ IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[vCli
 EXEC dbo.sp_executesql @statement = N'
 CREATE VIEW [dbo].[vClientWise_EntityList] AS
 WITH AllPlans AS(
-SELECT P.PlanId EntityId, P.Title EntityTitle, M.ClientId, ''Plan'' Entity, 1 EntityOrder 
+SELECT P.PlanId EntityId, P.Title EntityTitle, M.ClientId, ''Plan'' Entity,P.CreatedDate, 1 EntityOrder 
 FROM [Plan] P 
 INNER JOIN Model M ON M.ModelId = P.ModelId AND P.IsDeleted = 0
 WHERE  M.IsDeleted = 0
 ),
 AllCampaigns AS
 (
-       SELECT P.PlanCampaignId EntityId, P.Title EntityTitle,C.ClientId, ''Campaign'' Entity, 2 EntityOrder 
+       SELECT P.PlanCampaignId EntityId, P.Title EntityTitle,C.ClientId, ''Campaign'' Entity,P.CreatedDate, 2 EntityOrder 
        FROM Plan_Campaign P
               INNER JOIN AllPlans C ON P.PlanId = C.EntityId 
        WHERE P.IsDeleted = 0
 ),
 AllProgram AS
 (
-       SELECT P.PlanProgramId EntityId, P.Title EntityTitle,C.ClientId, ''Program'' Entity, 3 EntityOrder 
+       SELECT P.PlanProgramId EntityId, P.Title EntityTitle,C.ClientId, ''Program'' Entity,P.CreatedDate, 3 EntityOrder 
        FROM Plan_Campaign_Program P
               INNER JOIN AllCampaigns C ON P.PlanCampaignId = C.EntityId 
        WHERE P.IsDeleted = 0
@@ -3090,7 +3092,7 @@ SELECT P.LinkedTacticId
 ),
 AllTactic AS
 (
-       SELECT P.PlanTacticId EntityId, P.Title EntityTitle,C.ClientId, ''Tactic'' Entity, 4 EntityOrder 
+       SELECT P.PlanTacticId EntityId, P.Title EntityTitle,C.ClientId, ''Tactic'' Entity,P.CreatedDate,  4 EntityOrder 
        FROM Plan_Campaign_Program_Tactic P
               INNER JOIN AllProgram C ON P.PlanProgramId = C.EntityId 
 			  LEFT OUTER JOIN AllLinkedTactic L on P.PlanTacticId=L.LinkedTacticId
@@ -3098,7 +3100,7 @@ AllTactic AS
 ),
 AllLineitem AS
 (
-       SELECT P.PlanLineItemId EntityId, P.Title EntityTitle, C.ClientId, ''Line Item'' Entity, 5 EntityOrder 
+       SELECT P.PlanLineItemId EntityId, P.Title EntityTitle, C.ClientId, ''Line Item'' Entity,P.CreatedDate, 5 EntityOrder 
        FROM Plan_Campaign_Program_Tactic_LineItem P
               INNER JOIN AllTactic C ON P.PlanTacticId = C.EntityId 
        WHERE P.IsDeleted = 0 and P.LineItemTypeId is not null
@@ -3241,6 +3243,7 @@ BEGIN
 	SET NOCOUNT ON;
 
 	select * from [vClientWise_EntityList] where clientid=@ClientId
+	order by CreatedDate
 
 END
 

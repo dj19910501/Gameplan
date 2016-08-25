@@ -14510,9 +14510,9 @@ namespace RevenuePlanner.Controllers
                         {
                             string MediaCodevalue = MediacodeObj.MediaCodeValue;
                             var Result = new object();
-                            if (IsLinkedTactic)
-                                Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId != linkedTacticID).FirstOrDefault();
-                            else
+                            //if (IsLinkedTactic)
+                            //    Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId != linkedTacticID).FirstOrDefault();
+                            //else
                                 Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId == tacticId).FirstOrDefault();
 
                             if (Result != null)
