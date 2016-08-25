@@ -3567,7 +3567,6 @@ namespace RevenuePlanner.Controllers
             if (_inspectmodel.Cost > 0)
             {
                 _inspectmodel.ROI = ((_inspectmodel.Revenues - _inspectmodel.Cost) / _inspectmodel.Cost) * 100; // Modified By Nishant Sheth // #2376 Change the formula for ROI Projected
-                _inspectmodel.ROI = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_inspectmodel.ROI)), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             }
             else
                 _inspectmodel.ROI = 0;
@@ -3597,7 +3596,6 @@ namespace RevenuePlanner.Controllers
             if (tacticCostActual > 0)
             {
                 _inspectmodel.ROIActual = (_inspectmodel.RevenuesActual - tacticCostActual) / tacticCostActual;
-                _inspectmodel.ROIActual = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(_inspectmodel.ROIActual)), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
             }
             else
             {
@@ -12036,7 +12034,8 @@ namespace RevenuePlanner.Controllers
                     imodel.ModelId = objPlan.ModelId;
                     imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Model.Version;
                     imodel.GoalType = objPlan.GoalType;                    
-                        imodel.GoalValue = Convert.ToString(objPlan.GoalValue);                   
+                        //imodel.GoalValue = Convert.ToString(objPlan.GoalValue);
+                    imodel.GoalValue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlan.GoalValue)), PlanExchangeRate).ToString();
                     imodel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlan.Budget)), PlanExchangeRate);
                     //imodel.GoalValue = objPlan.GoalValue.ToString();
                     //imodel.Budget = objPlan.Budget;
