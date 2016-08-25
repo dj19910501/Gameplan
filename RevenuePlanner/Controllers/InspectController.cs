@@ -14211,7 +14211,8 @@ namespace RevenuePlanner.Controllers
                         lstMediaCodeCustomField.Add(objmediacodecustomField);
                     }
                     NewMediacode = NewMediacode.TrimEnd('_');
-                    var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == NewMediacode).FirstOrDefault();
+                    int TacId = Convert.ToInt32(TacticId);
+                    var Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == NewMediacode && a.TacticId == TacId).FirstOrDefault();
                     if (Result != null)
                         IsValid = false;
                     else
@@ -14512,7 +14513,7 @@ namespace RevenuePlanner.Controllers
                             if (IsLinkedTactic)
                                 Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId != linkedTacticID).FirstOrDefault();
                             else
-                                Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue).FirstOrDefault();
+                                Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.ClientId && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId == tacticId).FirstOrDefault();
 
                             if (Result != null)
                                 IsValid = false;
