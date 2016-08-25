@@ -1710,6 +1710,12 @@ BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[ExportToCSV] AS' 
 END
 GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ExportToCSV]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[ExportToCSV] AS' 
+END
+GO
+
 ALTER PROCEDURE [dbo].[ExportToCSV]
 @PlanId int=0
 ,@ClientId nvarchar(max)=''
@@ -2014,14 +2020,8 @@ DECLARE @query nvarchar(max)
 	While @Count<=@RowCount
 	BEGIN
 		SELECT @Colname = name FROM #tbldynamicColumns WHERE ROWNUM=@Count
-		IF(@Colname='PlannedCost')
-		BEGIN
-			SET @AlterTable +=' ALTER TABLE #EntityValues ADD [Col_'+(SELECT REPLACE(REPLACE(@Colname,' ','#'),'-','@'))+'] FLOAT ';
-		END
-		ELSE
-		BEGIN
-			SET @AlterTable +=' ALTER TABLE #EntityValues ADD [Col_'+(SELECT REPLACE(REPLACE(@Colname,' ','#'),'-','@'))+'] NVARCHAR(MAX) ';
-		END
+		SET @AlterTable +=' ALTER TABLE #EntityValues ADD [Col_'+(SELECT REPLACE(REPLACE(@Colname,' ','#'),'-','@'))+'] NVARCHAR(MAX) ';
+		
 		SET @InsertStatement+='['+@Colname+']'+@Delimeter
 	SET @Count=@Count+1;
 	END
@@ -2049,14 +2049,7 @@ DECLARE @query nvarchar(max)
 		END
 		SET @Val =''
 		(SELECT @Val=name FROM #tblEntityColumns WHERE ROWNUM=@Count)
-		IF(@Val='Col_PlannedCost')
-		BEGIN
-			SET @MergeData+=' DECLARE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' FLOAT '
-		END
-		ELSE 
-		BEGIN
-			SET @MergeData+=' DECLARE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' NVARCHAR(MAX) '
-		END
+		SET @MergeData+=' DECLARE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' NVARCHAR(MAX) '
 		SET @Count=@Count+1;
 	END
 	PRINT(@MergeData)
@@ -2082,7 +2075,7 @@ DECLARE @query nvarchar(max)
 		BEGIN
 		IF(@Val='Col_PlannedCost')
 		BEGIN
-			SET @UpdateStatement+='  @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' = ['+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'] = CASE WHEN Col_RowGroup=1 THEN CONVERT(FLOAT,['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+']) ELSE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'+'';''+ CONVERT(FLOAT,['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+']) END'+@Delimeter
+			SET @UpdateStatement+='  @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+' = ['+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'] = CASE WHEN Col_RowGroup=1 THEN CONVERT(NVARCHAR(MAX),CAST(['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+'] AS decimal(38,2))) ELSE @Col_'+(SELECT REPLACE(REPLACE(@Val,' ','#'),'-','@'))+'+'';''+ CONVERT(NVARCHAR(MAX),CAST(['+(SELECT REPLACE( REPLACE(REPLACE(@Val,'#',' '),'@','-'),'Col_',''))+'] AS decimal(38,2))) END'+@Delimeter
 		END
 		ELSE 
 		BEGIN
@@ -2170,6 +2163,7 @@ ORDER BY (CASE EntityType WHEN 'Campaign' THEN 1
   END
 --End
 END
+
 
 GO
 -- End By Nishant Sheth

@@ -17652,7 +17652,7 @@ namespace RevenuePlanner.Controllers
                           && CampList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => x.Field<int>("EntityId")).ToList();
 
                     var PlanTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                                   && PlanProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => x.Field<double>("PlannedCost")).ToList();
+                                   && PlanProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
 
                     totalPlannedCostCSV = PlanTacticCostlist.Sum();
 
@@ -17667,7 +17667,7 @@ namespace RevenuePlanner.Controllers
                            && int.Parse(x.Field<string>("ParentId")) == CampList[camp]).OrderBy(x => x.Field<string>("Program")).Select(x => x.Field<int>("EntityId")).ToList();
 
                         var CampTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                                       && ProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => x.Field<double>("PlannedCost")).ToList();
+                                       && ProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
 
                         totalPlannedCostCSV = CampTacticCostlist.Sum();
 
@@ -17681,7 +17681,7 @@ namespace RevenuePlanner.Controllers
                             totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
                             totalrevenueCSV = objCurrency.GetValueByExchangeRate(totalrevenueCSV, PlanExchangeRate); // Add By Nishant Sheth // #2502 Apply MultiCurrency on export to csv
                             var ProgTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
-                                       && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => x.Field<double>("PlannedCost")).ToList();
+                                       && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
                             totalPlannedCostCSV = ProgTacticCostlist.Sum();
 
                             dr = dtCSV.Select("EntityId = " + ProgramList[prog] + "AND Section = '" + Enums.Section.Program.ToString() + "'");
