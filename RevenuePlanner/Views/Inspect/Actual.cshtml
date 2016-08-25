@@ -351,6 +351,9 @@
                     $('.setBudget').each(function () {
                         SetBudget("#" + $(this).attr('id'));  // Modified By : Viral Kadiya Internal Review Points 10/29/2014.
                     });
+                    if ($('#roiP').text().indexOf('%') < 0) {
+                        $('#roiP').text($('#roiP').text().replace(CurrencySybmol, '') + '%');
+                    }
                     // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
 
                     // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742.
@@ -573,8 +576,8 @@
 
             var pcost = $("#hdnCp").val();  // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             if (pcost != 0 && !isNaN(pcost)) {
-                var prevenue = $("#hdnRp").val();   // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
-                var roip = GetValueByExchangeRate((prevenue - pcost) / pcost);
+                var prevenue = $("#hdnRp").val();   // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points                
+                var roip = (prevenue - pcost) / pcost;
                 $("#roiP").text(roip.toFixed(2));
             }
             $('#months_container').parent().css("width", "970px");////modified by mitesh for PL ticket #812 change width 870 to 970
@@ -647,8 +650,8 @@
         function calculateRIO() {
             var pcost = $("#hdnCp").val(); // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             if (pcost != 0 && !isNaN(pcost)) {
-                var prevenue = $("#hdnRp").val();// Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
-                var roip = GetValueByExchangeRate(((prevenue - pcost) / pcost) * 100);// Modified By Nishant Sheth // #2376 Change the formula for ROI Projected
+                var prevenue = $("#hdnRp").val();// Modified by Sohel Pathan on 10/09/2014 for Internal Review Points                
+                var roip = ((prevenue - pcost) / pcost) * 100;  // Modified By Nishant Sheth // #2376 Change the formula for ROI Projected
                 $("#roiP").text(FormatCommas(roip.toFixed(2).toString()));
             }
 
