@@ -2259,12 +2259,12 @@ BEGIN
 END
 GO
 
--- DROP AND CREATE FUNCTION
+-- DROP FUNCTION
 IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[ProjectedValuesForPlans]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
   DROP FUNCTION [dbo].[ProjectedValuesForPlans]
 GO
 
--- DROP AND CREATE FUNCTION
+-- DROP FUNCTION
 IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'[dbo].[GetTacticsForAllRuleEntities]') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
   DROP FUNCTION [dbo].[GetTacticsForAllRuleEntities]
 GO
@@ -2357,20 +2357,20 @@ BEGIN
 				CROSS APPLY (
 					SELECT MIN(PC1.StartDate) AS StartDate, MAX(PC1.EndDate) AS EndDate FROM Plan_Campaign PC1 
 					WHERE P1.PlanId = PC1.PlanId AND PC1.IsDeleted = 0) PC
-				WHERE P1.PlanId = AR.EntityId AND AR.EntityType = 'Plan' AND P1.IsDeleted = 0
+				WHERE P1.PlanId = AR.EntityId AND AR.EntityType = 'Plan' AND P1.IsDeleted = 0 AND AR.IsDisabled = 0 
 			) P
 			UNION ALL 
 			SELECT AR.RuleId,AR.EntityId,AR.EntityType,AR.Indicator,AR.IndicatorComparision,AR.IndicatorGoal,AR.CompletionGoal,AR.ClientId, PC.Title, PC.StartDate, PC.EndDate, dbo.ConvertDateDifferenceToPercentage(PC.StartDate,PC.EndDate) AS PercentComplete
 			FROM Alert_Rules AR
-			CROSS APPLY (SELECT * FROM [Plan_Campaign] PC WHERE PC.PlanCampaignId = AR.EntityId AND AR.EntityType = 'Campaign' AND PC.IsDeleted = 0) PC
+			CROSS APPLY (SELECT * FROM [Plan_Campaign] PC WHERE PC.PlanCampaignId = AR.EntityId AND AR.EntityType = 'Campaign' AND PC.IsDeleted = 0 AND AR.IsDisabled = 0 ) PC
 			UNION ALL 
 			SELECT AR.RuleId,AR.EntityId,AR.EntityType,AR.Indicator,AR.IndicatorComparision,AR.IndicatorGoal,AR.CompletionGoal,AR.ClientId, PCP.Title, PCP.StartDate, PCP.EndDate, dbo.ConvertDateDifferenceToPercentage(PCP.StartDate,PCP.EndDate) AS PercentComplete
 			FROM Alert_Rules AR
-			CROSS APPLY (SELECT * FROM [Plan_Campaign_Program] PCP WHERE PCP.PlanProgramId = AR.EntityId AND AR.EntityType = 'Program' AND PCP.IsDeleted = 0) PCP
+			CROSS APPLY (SELECT * FROM [Plan_Campaign_Program] PCP WHERE PCP.PlanProgramId = AR.EntityId AND AR.EntityType = 'Program' AND PCP.IsDeleted = 0 AND AR.IsDisabled = 0 ) PCP
 			UNION ALL 
 			SELECT AR.RuleId,AR.EntityId,AR.EntityType,AR.Indicator,AR.IndicatorComparision,AR.IndicatorGoal,AR.CompletionGoal,AR.ClientId, PCPT.Title, PCPT.StartDate, PCPT.EndDate, dbo.ConvertDateDifferenceToPercentage(PCPT.StartDate,PCPT.EndDate) AS PercentComplete
 			FROM Alert_Rules AR
-			CROSS APPLY (SELECT * FROM [Plan_Campaign_Program_Tactic] PCPT WHERE AR.EntityId = PCPT.PlanTacticId AND AR.EntityType = 'Tactic' AND PCPT.IsDeleted = 0 AND PCPT.[Status] IN ('In-Progress','Complete','Approved') ) PCPT
+			CROSS APPLY (SELECT * FROM [Plan_Campaign_Program_Tactic] PCPT WHERE AR.EntityId = PCPT.PlanTacticId AND AR.EntityType = 'Tactic' AND PCPT.IsDeleted = 0 AND AR.IsDisabled = 0 AND PCPT.[Status] IN ('In-Progress','Complete','Approved') ) PCPT
 			UNION ALL 
 			SELECT AR.RuleId,AR.EntityId,AR.EntityType,AR.Indicator,AR.IndicatorComparision,AR.IndicatorGoal,AR.CompletionGoal,AR.ClientId, PCPTL.Title, PCPTL.StartDate, PCPTL.EndDate, dbo.ConvertDateDifferenceToPercentage(PCPTL.StartDate,PCPTL.EndDate) AS PercentComplete
 			FROM Alert_Rules AR
@@ -2380,7 +2380,7 @@ BEGIN
 					SELECT PCPT.StartDate,PCPT.EndDate FROM [Plan_Campaign_Program_Tactic] PCPT 
 					WHERE PCPTLineItem.PlanTacticId = PCPT.PlanTacticId AND PCPT.IsDeleted = 0 AND PCPT.[Status] IN ('In-Progress','Complete','Approved') 
 				) PCPTLT
-				WHERE PCPTLineItem.PlanLineItemId = AR.EntityId AND AR.EntityType = 'LineItem' AND AR.Indicator = 'PLANNEDCOST' AND PCPTLineItem.IsDeleted = 0
+				WHERE PCPTLineItem.PlanLineItemId = AR.EntityId AND AR.EntityType = 'LineItem' AND AR.Indicator = 'PLANNEDCOST' AND PCPTLineItem.IsDeleted = 0 AND AR.IsDisabled = 0 
 			) PCPTL
 			WHERE AR.EntityType IN ('Plan','Campaign','Program','Tactic','LineItem')
 					
@@ -2681,7 +2681,9 @@ BEGIN
 		FROM
 		(
 			SELECT Tactic.PlanTacticId, Program.PlanProgramId, Campaign.PlanCampaignId, [Plan].PlanId, 
-			dbo.TacticIndicatorProjectedValue(Tactic.PlanTacticId,[Model].ModelId, [Stage].Code,RuleEntityTable.indicator,[Model].ClientId) AS ProjectedStageValue,
+			(CASE WHEN Indicator = 'PLANNEDCOST' THEN
+				dbo.TacticIndicatorProjectedValue(Tactic.PlanTacticId,[Model].ModelId, [Stage].Code,RuleEntityTable.indicator,[Model].ClientId)
+			ELSE NULL END) AS ProjectedStageValue,
 			ISNULL(MIN(ActualValue),0) ActualValue,RuleEntityTable.Indicator,SUM(LineItemActuals) AS LineItemActuals
 			FROM @TempEntityTable  RuleEntityTable 
 			CROSS APPLY (SELECT PlanId,ModelId From [Plan] WITH (NOLOCK) WHERE [Plan].PlanId = RuleEntityTable.EntityId AND [Plan].IsDeleted=0) [Plan]
@@ -2919,12 +2921,13 @@ BEGIN
 		-- Get projected and actual values of tactic belongs to plan/campaign/program
 		SET @TacticsDataForRules = 'DECLARE @TempEntityTable [TacticForRuleEntities];
 
-									-- Get entities from the rule which are reached to completion goal
+									-- Get entities from the rule which have reached the completion goal
 									INSERT INTO @TempEntityTable([RuleId],[EntityId],[EntityType],[Indicator],[IndicatorComparision],[IndicatorGoal],[CompletionGoal],[ClientId],
 																 [EntityTitle],[StartDate],[EndDate],[PercentComplete]) 
 									SELECT Entity.* FROM dbo.GetEntitiesReachedCompletionGoal() Entity 
 									WHERE Entity.PercentComplete >= Entity.CompletionGoal
 
+									-- DROP TABLE TempEntityTable 
 									-- SELECT * INTO TempEntityTable from @TempEntityTable
 
 									-- Table with projected and actual values of tactic belongs to plan/campaign/program
@@ -2967,11 +2970,12 @@ BEGIN
 		SET @UpdateLineItemQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanLineItemId')
 		SET @UpdateLineItemQuery = REPLACE(@UpdateLineItemQuery,'##ENTITYTYPE##','''LineItem''')
 
-		-- For plan update projected value using different calculation
+		-- For plan update projected value using different calculation rest of PLANNEDCOST
 		SET @UpdateProjectedValuesForPlan = ';  UPDATE A SET A.ProjectedStageValue = ISNULL(B.ProjectedStageValue,0)
 												FROM @TempEntityTable A INNER JOIN
 												[dbo].[ProjectedValuesForPlans](@TempEntityTable) B ON A.EntityId = B.PlanId  
 												AND A.Indicator = B.Indicator AND A.EntityType = ''Plan''
+												AND A.Indicator != ''PLANNEDCOST''
 												'
 		-- Convert percent of goal from Projected and Actual values
 		SET @CalculatePercentGoalQuery = ' UPDATE @TempEntityTable SET CalculatedPercentGoal = 
@@ -2996,14 +3000,17 @@ BEGIN
 												DATEADD(DAY,DATEDIFF(DAY,DATEPART(DAY,GETDATE()),AR.DateOfMonth),GETDATE())  END
 										ELSE GETDATE() END ) AS DisplayDate										
 										FROM @TempEntityTable FinalTable
-										INNER JOIN Alert_Rules AR ON FinalTable.RuleId = AR.RuleId '
+										INNER JOIN Alert_Rules AR ON FinalTable.RuleId = AR.RuleId AND AR.IsDisabled = 0'
 
 		-- For less than rule
-		DECLARE @LessThanWhere		NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal < AR.IndicatorGoal AND AR.IndicatorComparision = ''LT'' '
+		DECLARE @LessThanWhere		NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal < AR.IndicatorGoal AND AR.IndicatorComparision = ''LT'' AND 
+															ISNULL(FinalTable.ProjectedStageValue,0) != 0 AND ISNULL(FinalTable.ActualStageValue,0) != 0 '
 		-- For greater than rule
-		DECLARE @GreaterThanWhere	NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal > AR.IndicatorGoal AND AR.IndicatorComparision = ''GT'' '
+		DECLARE @GreaterThanWhere	NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal > AR.IndicatorGoal AND AR.IndicatorComparision = ''GT'' AND 
+															ISNULL(FinalTable.ProjectedStageValue,0) != 0 AND ISNULL(FinalTable.ActualStageValue,0) != 0 '
 		-- For equal to rule
-		DECLARE @EqualToWhere		NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal = AR.IndicatorGoal AND AR.IndicatorComparision = ''EQ'' '
+		DECLARE @EqualToWhere		NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal = AR.IndicatorGoal AND AR.IndicatorComparision = ''EQ'' AND 
+															ISNULL(FinalTable.ProjectedStageValue,0) != 0 AND ISNULL(FinalTable.ActualStageValue,0) != 0 '
 
 		SET @InsertQueryForLT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' FinalTable.EntityTitle +''''''s ''+ FinalTable.IndicatorTitle +'' is ' + @txtLessThan +' '' + CAST(AR.IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @LessThanWhere
 		SET @InsertQueryForGT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' FinalTable.EntityTitle +''''''s ''+ FinalTable.IndicatorTitle +'' is ' + @txtGreaterThan +' '' + CAST(AR.IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @GreaterThanWhere
@@ -3023,7 +3030,7 @@ BEGIN
 		
 		EXEC (@TacticsDataForRules + @UpdatePlanQuery + @UpdateCampaignQuery + @UpdateProgramQuery + @UpdateTacticQuery + @UpdateLineItemQuery + @UpdateIndicatorTitle + @UpdateProjectedValuesForPlan + 
 				@CalculatePercentGoalQuery + @InsertQueryForLT + @InsertQueryForGT +@InsertQueryForEQ )
-	
+		
 	END TRY
 	BEGIN CATCH
 		--Get the details of the error
@@ -3036,6 +3043,8 @@ BEGIN
 		 RAISERROR (@ErMessage, @ErSeverity, @ErState)
 	END CATCH 
 END
+
+
 
 GO
 /*===================================================================================
