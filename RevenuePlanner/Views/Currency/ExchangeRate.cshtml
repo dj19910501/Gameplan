@@ -7,7 +7,9 @@
     ViewBag.ModuleTitle = "Currency";
     bool Editpermission = true;
     if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyEdit))
-    { Editpermission = true; }
+    {
+        Editpermission = true;
+    }
     else if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.MultiCurrencyViewOnly))
     {
         Editpermission = false;
@@ -30,9 +32,13 @@
     .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td {
         padding-left: 8px;
         padding-right: 8px;
-        text-align:center;
+        text-align: center;
     }
-    .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td:first-child{text-align:left;}
+
+        .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td:first-child {
+            text-align: left;
+        }
+
     .currency-tbl div.gridbox_dhx_skyblue.gridbox table.obj tr.ev_dhx_skyblue {
         background: #f0f0f0;
     }
@@ -51,7 +57,7 @@
 @using (Html.BeginForm())
 {
     <div id="confirmMsg" class="alert hide alert-error ">
-        
+
         <div id="errorMsg">
 
         </div>
@@ -79,15 +85,19 @@
             Currency Exchange rate
         </h2>
     </div>
+
     <div class="padding-content  cf source-sans-proregular">
         <div class="row">
             @Html.Partial("~/Views/Currency/_currencyMenu.cshtml")
             <div class="span10 currency-content">
                 <div class="selectyear">
-                    <label>Select Year</label> @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
+                    <label>Select Year</label>
+                    <span class="selectBox" id="select_year" style="width: 130px;">
+                        @Html.DropDownList("drpYear", (IEnumerable<SelectListItem>)ViewBag.yearList)
+                    </span>
                     @if (Editpermission == true)
                     {
-                        <input type="button" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20" />
+                        <input type="button" value="Save" title="Save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20" />
                     }
                 </div>
 
@@ -95,22 +105,26 @@
                 <div id="PlanGrid" class="gridViewGrid currency-tbl margin-bottom36"></div>
 
                 <div class="checkbox-wrap clearfix">
-                    <div class="pull-right">
-                        <input type="checkbox" id="chkSameasplanning" value=""> <span>Same as planning</span>
-                    </div>
-                    </div>
+                    @if (Editpermission == true)
+                    {
+                        <div class="pull-right">
+                            <input type="checkbox" id="chkSameasplanning" value=""> <span>Same as planning</span>
+                        </div>
+                    }
+                </div>
                 <div id="ReportGrid" class="gridViewGrid currency-tbl">
-                   
+
                 </div>
             </div>
-         </div>
+        </div>
     </div>
 }
-
+<div id="divClick"></div>
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 
 
 <script type="text/javascript">
+
     var planData = [];
     var reportData = [];
     $("#drpYear").change(function () {
@@ -160,30 +174,105 @@
 
 
     $('#btnSave').click(function () {
-        var exchangerateObj = JSON.stringify({ 'lstPlan': planData, sameAsPlan: false, 'lstReport': reportData });
-       var url="@Url.Content("~/Currency/SaveExchangeRateList")"
-        $.ajax({
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            type: 'POST',
-            url: url,
-            async: false,
-            data: exchangerateObj,
-            success: function () {
-                // $('#result').html('"PassThings()" successfully called.');
-                planData = [];
-                reportData = [];
-                var year = $("#drpYear option:selected").text();
-                var url = '@Url.Content("~/Currency/ExchangeRate")';
-                window.location.replace(url + "?id=" + year);
+        var isvalidData = true;
+        $('#divClick').click();
 
-            },
-            failure: function (response) {
-                $('#result').html(response);
-            }
-        });
+        if (CheckDataStatus() == true) {
+            var exchangerateObj = JSON.stringify({ 'lstPlan': planData, sameAsPlan: false, 'lstReport': reportData });
+            var url = "@Url.Content("~/Currency/SaveExchangeRateList")"
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                type: 'POST',
+                url: url,
+                async: false,
+                data: exchangerateObj,
+                success: function () {
+                    // $('#result').html('"PassThings()" successfully called.');
+                    planData = [];
+                    reportData = [];
+                    var year = $("#drpYear option:selected").text();
+                    var url = '@Url.Content("~/Currency/ExchangeRate")';
+                    window.location.replace(url + "?id=" + year);
+
+                },
+                failure: function (response) {
+                    $('#result').html(response);
+                }
+            });
+        }
+        else {
+            $('#diverrormsg').text(" Exchange rate can't be null or zero.");
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+            $("#successMessage").slideUp(400);
+            $("#confirmMsg").slideUp(400);
+
+        }
+        //isvalidData = true;
     });
+    function CheckDataStatus() {
+        var status = true;
+        PlanCurrencyGrid.forEachRow(function (id) {
+
+            PlanCurrencyGrid.forEachCell(id, function (cellObj, col_index) {
+                var planstatus = true;
+                if (col_index > 0) {
+                    var val = PlanCurrencyGrid.cells(id, col_index).getValue();
+                    if (parseFloat(val).toFixed(2) == "0.00") {
+                        planstatus = false;
+                    }
+                    if (val == '') {
+
+                        planstatus = false;
+
+                    }
+                    else {
+                        if ($.isNumeric(val) == false) {
+                            planstatus = false;
+                        }
+                    }
+                    if (planstatus == false) {
+                        status = false;
+                        PlanCurrencyGrid.setCellTextStyle(id, col_index, "border-color: #b94a48;background-color: #f1dbde!important");
+                    }
+                }
+            });
+        });
+
+        ReportCurrencyGrid.forEachRow(function (id) {
+
+            ReportCurrencyGrid.forEachCell(id, function (cellObj, col_index) {
+                var reportStatus = true;
+                if (col_index > 0) {
+                    var val = ReportCurrencyGrid.cells(id, col_index).getValue();
+                    if (parseFloat(val).toFixed(2) == "0.00") {
+                        reportStatus = false;
+                    }
+                    if (val == '') {
+
+                        reportStatus = false;
+
+                    }
+                    else {
+                        if ($.isNumeric(val) == false) {
+                            reportStatus = false;
+                        }
+                    }
+                    if (reportStatus == false) {
+                        status = false;
+                        ReportCurrencyGrid.setCellTextStyle(id, col_index, "border-color: #b94a48;background-color: #f1dbde!important");
+                    }
+                }
+            });
+        });
+
+        return status;
+    }
     $(document).ready(function () {
+
+        $(".selectBox select").selectbox();
+
         $("#content_wraper").removeClass("all-height").addClass("padding-top40");
         $('.nav').addClass('no-bottom-border');
         var year = $("#drpYear option:selected").text();
@@ -274,6 +363,9 @@
     function displayConfirmBox(strURL, id) {
         $('#confirmMsg').html("<strong>Error! </strong> <span id='spanMsgError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' id='" + id + "' href='" + strURL + "' class='btn-gray' onclick='CallUrl(this);'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' onclick='closeMsg(this);' class='underline'>Cancel</a></span><a id='aclose' onclick='closeMsg(this);' class='close confirmClose'>×</a>");
         $("#confirmMsg").slideDown(400);
+        $("#successMessage").slideUp(400);
+        $("#errorMessage").slideUp(400);
+
     }
     function closeMsg() {
         $("#confirmMsg").slideUp(400);
@@ -286,7 +378,7 @@
         sidebarlink = $(this).attr('id');
         if (reportData.length > 0 || planData.length > 0) {
             displayConfirmBox($(this).attr('href'), sidebarlink);
-            if($("#" + sidebarlink).attr("isDataUpdated")!='false')
+            if ($("#" + sidebarlink).attr("isDataUpdated") != 'false')
                 $("#" + sidebarlink).attr("isDataUpdated", "true")
             event.preventDefault();
             event.stopPropagation();
@@ -310,5 +402,20 @@
             return true;
         }
     });
+    function GridPriceFormatCurrencyKeydown(e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+            // Allow: Ctrl+A
+            (e.keyCode == 65 && e.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
 
+    };
 </script>

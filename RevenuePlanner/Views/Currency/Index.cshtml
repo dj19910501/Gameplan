@@ -45,8 +45,8 @@
         @Html.Partial("~/Views/Currency/_currencyMenu.cshtml")
         <div class="span10 currency-content">
             @*<div id="liConversionrate" class="clearfix">
-                <a class="source-sans-probold integrations" href="#" id="aConversionrate"><i class="fa fa-exchange" aria-hidden="true"></i> ConversionRate</a>
-            </div>*@
+                    <a class="source-sans-probold integrations" href="#" id="aConversionrate"><i class="fa fa-exchange" aria-hidden="true"></i> ConversionRate</a>
+                </div>*@
             <div class="span6" id="divCurrencyList">
                 <h4 class="align-top">Available Currencies</h4>
                 <div class="currency-wrap span-12">
@@ -71,9 +71,12 @@
                     </ul>
 
                 </div>
-                <div class="container-button clearfix">
-                    <input type="submit" value="Add To My List" title="save" id="btnAddtoMyList" class="btn btn-fill-white btn-add-remove" />
-                </div>
+                @if (permission == Enums.ApplicationActivity.MultiCurrencyEdit.ToString())
+                {
+                    <div class="container-button clearfix">
+                        <input type="submit" value="Add To My List" title="save" id="btnAddtoMyList" class="btn btn-fill-white btn-add-remove" />
+                    </div>
+                }
             </div>
             <div class="span5" id="divMyList">
                 <h4 class="align-top">My List</h4>
@@ -110,8 +113,9 @@
                     @if (permission == Enums.ApplicationActivity.MultiCurrencyEdit.ToString())
                     {
                         <input type="submit" value="Save" title="save" id="btnSave" class="btn btn-blue btn-save pull-right margin-left20" />
+                        <input type="submit" value="Remove" title="remove" id="btnRemove" class="btn btn-fill-white btn-add-remove" />
                     }
-                    <input type="submit" value="Remove" title="remove" id="btnRemove" class="btn btn-fill-white btn-add-remove" />
+
                 </div>
             </div>
             @*<div class="container-button clear">
@@ -233,12 +237,14 @@
     });
     //CLick of remove from my list
     $('#btnRemove').click(function () {
+
         var ulId = "#ulMyCurrency";
         var cnt = 0;
         var defaultcurrency = '';
         var isDefaultCurrencyExist = false;
         $(ulId + " li").each(function () {
             if ($(this).hasClass('searchactive')) {
+                cnt = cnt + 1;
                 if ($(this).attr("isdefault") == 1) {
                     isDefaultCurrencyExist = true;
                     defaultcurrency = $(this).find("span").text();
@@ -250,30 +256,48 @@
             ShowMessages();
             return;
         }
-        $(ulId + " li").each(function () {
-            if ($(this).hasClass('searchactive')) {
-                cnt = cnt + 1;
-                $(this).removeClass("searchactive");
-                $(this).css("display", "block");
-                $("#divCurrencyList ul").append(this)
+        if (cnt > 0) {
 
+            var r = confirm("Are you sure you want to remove currency?");
+            if (r == true) {
+              
+                //$(ulId + " li").each(function () {
+                //    if ($(this).hasClass('searchactive')) {
+                       
+                //    }
+                //});
+                
+                $(ulId + " li").each(function () {
+                    if ($(this).hasClass('searchactive')) {
+                        // cnt = cnt + 1;
+                        $(this).removeClass("searchactive");
+                        $(this).css("display", "block");
+                        $("#divCurrencyList ul").append(this)
+
+                    }
+                });
+                $("#diverrormsg").html("");
             }
-        });
-        if (cnt == 0) {
-            $("#diverrormsg").html("Please select at least one currency.");
-            //$("#errorMessage").slideDown(400);
-            // $("html, body").animate({ scrollTop: 0 }, 1000);
         }
         else {
-            $("#diverrormsg").html("");
-            //$("#errorMessage").slideUp(400);
 
+            if (cnt == 0) {
+                $("#diverrormsg").html("Please select at least one currency.");
+                //$("#errorMessage").slideDown(400);
+                // $("html, body").animate({ scrollTop: 0 }, 1000);
+            }
+            else {
+                $("#diverrormsg").html("");
+                //$("#errorMessage").slideUp(400);
+
+            }
         }
         ShowMessages();
+        
     });
     //Click of Save button which will save all records which is in my list
     $('#btnSave').click(function () {
-        var url="@Url.Content("~/Currency/SaveClientCurrency")"
+        var url = "@Url.Content("~/Currency/SaveClientCurrency")"
         $.post(url, $.param({ curruncies: ReturnCurrencyArray() }, true), function (data) {
             window.location.href = "@Url.Content("~/Currency/Index")";
         });

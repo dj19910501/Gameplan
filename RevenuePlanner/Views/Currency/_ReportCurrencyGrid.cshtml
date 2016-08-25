@@ -80,56 +80,87 @@
         ReportCurrencyGrid.parse(GridDataHomeGrid, "json");
     }
 
+    //function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+    //    debugger;
+    //    $('#diverrormsg').text('');
+    //    $("#errorMessage").slideUp(400);
+    //    if (stage == 1) {
+    //        $(".dhx_combo_edit").off("keydown");
+
+    //          $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatCurrencyKeydown(e); }));
+         
+    //    }
+    //    if (stage == 1) {
+
+    //    }
+    //    if (stage == 2) {
+    //        if (parseFloat(nValue).toFixed(2) == "0.00") {
+    //            $('#diverrormsg').text(" 0 is not allowed.");
+    //            $("#errorMessage").slideDown(400);
+    //            $("html, body").animate({ scrollTop: 0 }, 1000);
+    //            $("#successMessage").slideUp(400);
+    //            $("#confirmMsg").slideUp(400);
+    //            return false;
+    //        }
+    //        if (nValue == '') {
+    //            $('#diverrormsg').text(" Exchange rate can't be null.");
+    //            $("#errorMessage").slideDown(400);
+    //            $("html, body").animate({ scrollTop: 0 }, 1000);
+    //            $("#successMessage").slideUp(400);
+    //            $("#confirmMsg").slideUp(400);
+    //            return false;
+    //            //PlanCurrencyGrid.cells(rowId, cellInd).setValue("1");
+    //            //nValue = "1";
+    //        }
+    //        else {
+    //            if ($.isNumeric(nValue) == false) {
+    //                $('#diverrormsg').text("Please enter valid exchange rate.");
+    //                $("#errorMessage").slideDown(400);
+    //                $("html, body").animate({ scrollTop: 0 }, 1000);
+    //                $("#successMessage").slideUp(400);
+    //                $("#confirmMsg").slideUp(400);
+    //                return false;
+    //            }
+    //        }
+    //        var monthValue = ReportCurrencyGrid.cells(rowId, cellInd).getAttribute("actval");
+    //        if (nValue != oValue)
+    //            SaveExchangeRate(rowId, oValue, nValue, "report", monthValue);
+    //    }
+    //    return true;
+    //}
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+        ReportCurrencyGrid.setCellTextStyle(rowId, cellInd, "border-color: none;background-color: none");
+        var isValid = true;
         $('#diverrormsg').text('');
         $("#errorMessage").slideUp(400);
         if (stage == 1) {
             $(".dhx_combo_edit").off("keydown");
 
-            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
-            ReportCurrencyGrid.editor.obj.onkeypress = function (e) {
-                e = e || window.event;
-                if ((e.keyCode >= 47) || (e.keyCode == 0)) {
-                    var text = this.value;
-                    if (text.length > 10) { //max length of the text
-                        return false;
-                    }
-                }
-            }
+            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatCurrencyKeydown(e); }));
+
         }
         if (stage == 2) {
+
             if (parseFloat(nValue).toFixed(2) == "0.00") {
-                $('#diverrormsg').text(" 0 is not allowed.");
-                $("#errorMessage").slideDown(400);
-                $("html, body").animate({ scrollTop: 0 }, 1000);
-                $("#successMessage").slideUp(400);
-                $("#confirmMsg").slideUp(400);
-                return false;
+                isValid = false;
             }
             if (nValue == '') {
-                $('#diverrormsg').text(" Exchange rate can't be null.");
-                $("#errorMessage").slideDown(400);
-                $("html, body").animate({ scrollTop: 0 }, 1000);
-                $("#successMessage").slideUp(400);
-                $("#confirmMsg").slideUp(400);
-                return false;
-                //PlanCurrencyGrid.cells(rowId, cellInd).setValue("1");
-                //nValue = "1";
+
+                isValid = false;
+
             }
             else {
                 if ($.isNumeric(nValue) == false) {
-                    $('#diverrormsg').text("Please enter valid exchange rate.");
-                    $("#errorMessage").slideDown(400);
-                    $("html, body").animate({ scrollTop: 0 }, 1000);
-                    $("#successMessage").slideUp(400);
-                    $("#confirmMsg").slideUp(400);
-                    return false;
+                    isValid = false;
                 }
             }
-            var monthValue = ReportCurrencyGrid.cells(rowId, cellInd).getAttribute("actval");
-            if (nValue != oValue)
-                SaveExchangeRate(rowId, oValue, nValue, "report", monthValue);
+            if (isValid == true) {
+                var monthValue = ReportCurrencyGrid.cells(rowId, cellInd).getAttribute("actval");
+                if (nValue != oValue)
+                    SaveExchangeRate(rowId, oValue, nValue, "report", monthValue, cellInd);
+            }
         }
+
         return true;
     }
 </script>
