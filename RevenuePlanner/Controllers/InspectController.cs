@@ -8325,7 +8325,9 @@ namespace RevenuePlanner.Controllers
                     {
                         int lineItemId = 0;
                         int? NewLinkLineItemID = 0;
-                        using (var scope = new TransactionScope())
+                        var TransactionOption = new System.Transactions.TransactionOptions();
+                        TransactionOption.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+                        using (var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionOption))
                         {
                             //// Get duplicate record to check duplication.
                             var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
