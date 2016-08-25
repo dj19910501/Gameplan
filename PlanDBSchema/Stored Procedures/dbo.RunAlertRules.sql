@@ -40,30 +40,22 @@ BEGIN
 		-- Get projected and actual values of tactic belongs to plan/campaign/program
 		SET @TacticsDataForRules = 'DECLARE @TempEntityTable [TacticForRuleEntities];
 
-									-- Get entities from the rule which are reached to completion goal
-									INSERT INTO @TempEntityTable([RuleId],[EntityId],[EntityType],[Indicator],[IndicatorComparision],[IndicatorGoal],[CompletionGoal],[ClientId],
+									-- Get entities from the rule which have reached the completion goal
+									INSERT INTO @TempEntityTable([RuleId],[EntityId],[EntityType],[Indicator],[IndicatorComparision],[IndicatorGoal],[CompletionGoal],
+																 [Frequency],[DayOfWeek],[DateOfMonth],[UserId],[ClientId],
 																 [EntityTitle],[StartDate],[EndDate],[PercentComplete]) 
 									SELECT Entity.* FROM dbo.GetEntitiesReachedCompletionGoal() Entity 
 									WHERE Entity.PercentComplete >= Entity.CompletionGoal
 
-									-- SELECT * INTO TempEntityTable from @TempEntityTable
-
 									-- Table with projected and actual values of tactic belongs to plan/campaign/program
 									SELECT * INTO #TacticsDataForAllRuleEntities FROM dbo.[GetTacticsForAllRuleEntities](@TempEntityTable)
-									-- SELECT * FROM #TacticsDataForAllRuleEntities 
 									'
 		
 		-- Common query to update projected and actual values of indicators for entities
 		SET @UPDATEQUERYCOMMON =  ';	UPDATE A SET A.ProjectedStageValue = ISNULL(B.ProjectedStageValue,0), A.ActualStageValue = ISNULL(B.ActualStageValue,0)
 										FROM @TempEntityTable A INNER JOIN  
-										(
-											SELECT B.##ENTITYIDCOLNAME##,B.INDICATOR, SUM(B.ProjectedStageValue) AS ProjectedStageValue,SUM(B.ActualStageValue) AS ActualStageValue
-											FROM @TempEntityTable A
-											INNER JOIN #TacticsDataForAllRuleEntities B
-											ON A.EntityId = B.##ENTITYIDCOLNAME## AND A.EntityType = ##ENTITYTYPE## AND A.Indicator = B.Indicator
-											GROUP BY B.##ENTITYIDCOLNAME##, B.Indicator
-										) B ON A.EntityId = B.##ENTITYIDCOLNAME##  AND A.Indicator = B.Indicator AND A.EntityType = ##ENTITYTYPE## 
-																				
+										#TacticsDataForAllRuleEntities B
+										ON A.EntityId = B.EntityId AND A.EntityType = B.EntityType AND A.Indicator = B.Indicator
 										'
 		-- Update IndicatorTitle based on Indicator Code
 		DECLARE @UpdateIndicatorTitle NVARCHAR(MAX) = ' 
@@ -72,27 +64,12 @@ BEGIN
 														INNER JOIN vClientWise_EntityList B ON A.EntityId = B.EntityId AND A.EntityType = REPLACE(B.Entity,'' '','''')
 														'
 
-		-- Update query for plan
-		SET @UpdatePlanQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanId')
-		SET @UpdatePlanQuery = REPLACE(@UpdatePlanQuery,'##ENTITYTYPE##','''Plan''')
-		-- Update query for campaign
-		SET @UpdateCampaignQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanCampaignId')
-		SET @UpdateCampaignQuery = REPLACE(@UpdateCampaignQuery,'##ENTITYTYPE##','''Campaign''')
-		-- Update query for program
-		SET @UpdateProgramQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanProgramId')
-		SET @UpdateProgramQuery = REPLACE(@UpdateProgramQuery,'##ENTITYTYPE##','''Program''')
-		-- Update query for tactic
-		SET @UpdateTacticQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanTacticId')
-		SET @UpdateTacticQuery = REPLACE(@UpdateTacticQuery,'##ENTITYTYPE##','''Tactic''')
-		-- Update query for line item
-		SET @UpdateLineItemQuery = REPLACE(@UPDATEQUERYCOMMON,'##ENTITYIDCOLNAME##','PlanLineItemId')
-		SET @UpdateLineItemQuery = REPLACE(@UpdateLineItemQuery,'##ENTITYTYPE##','''LineItem''')
-
-		-- For plan update projected value using different calculation
+		-- For plan update projected value using different calculation rest of PLANNEDCOST
 		SET @UpdateProjectedValuesForPlan = ';  UPDATE A SET A.ProjectedStageValue = ISNULL(B.ProjectedStageValue,0)
 												FROM @TempEntityTable A INNER JOIN
 												[dbo].[ProjectedValuesForPlans](@TempEntityTable) B ON A.EntityId = B.PlanId  
 												AND A.Indicator = B.Indicator AND A.EntityType = ''Plan''
+												AND A.Indicator != ''PLANNEDCOST''
 												'
 		-- Convert percent of goal from Projected and Actual values
 		SET @CalculatePercentGoalQuery = ' UPDATE @TempEntityTable SET CalculatedPercentGoal = 
@@ -102,33 +79,35 @@ BEGIN
 										   SELECT * FROM @TempEntityTable 
 										   '
 		-- Common query to create alerts
-		SET @INSERTALERTQUERYCOMMON = '	SELECT AR.RuleId, ##DESCRIPTION## AS [Description], AR.UserId,
-										(CASE WHEN AR.Frequency = ''WEEKLY'' THEN
+		SET @INSERTALERTQUERYCOMMON = '	SELECT RuleId, ##DESCRIPTION## AS [Description], UserId,
+										(CASE WHEN Frequency = ''WEEKLY'' THEN
 											DATEADD(DAY,
-											CASE WHEN DATEDIFF(DAY,DATEPART(dw,GETDATE()),AR.DayOfWeek+1) < 0 THEN
-												DATEDIFF(DAY,DATEPART(dw,GETDATE()),AR.DayOfWeek + 1) + 7
+											CASE WHEN DATEDIFF(DAY,DATEPART(dw,GETDATE()),DayOfWeek+1) < 0 THEN
+												DATEDIFF(DAY,DATEPART(dw,GETDATE()),DayOfWeek + 1) + 7
 											ELSE 
-												DATEDIFF(DAY,DATEPART(dw,GETDATE()),AR.DayOfWeek + 1) END
+												DATEDIFF(DAY,DATEPART(dw,GETDATE()),DayOfWeek + 1) END
 											,GETDATE()) 
-										WHEN AR.Frequency = ''MONTHLY'' THEN
-											CASE WHEN DATEDIFF(DAY,DATEPART(DAY,GETDATE()),AR.DateOfMonth) < 0 THEN
-												DATEADD(MONTH,1,DATEADD(DAY,DATEDIFF(DAY,DATEPART(DAY,GETDATE()),AR.DateOfMonth),GETDATE()))
+										WHEN Frequency = ''MONTHLY'' THEN
+											CASE WHEN DATEDIFF(DAY,DATEPART(DAY,GETDATE()),DateOfMonth) < 0 THEN
+												DATEADD(MONTH,1,DATEADD(DAY,DATEDIFF(DAY,DATEPART(DAY,GETDATE()),DateOfMonth),GETDATE()))
 											ELSE 
-												DATEADD(DAY,DATEDIFF(DAY,DATEPART(DAY,GETDATE()),AR.DateOfMonth),GETDATE())  END
+												DATEADD(DAY,DATEDIFF(DAY,DATEPART(DAY,GETDATE()),DateOfMonth),GETDATE())  END
 										ELSE GETDATE() END ) AS DisplayDate										
-										FROM @TempEntityTable FinalTable
-										INNER JOIN Alert_Rules AR ON FinalTable.RuleId = AR.RuleId '
+										FROM @TempEntityTable '
 
 		-- For less than rule
-		DECLARE @LessThanWhere		NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal < AR.IndicatorGoal AND AR.IndicatorComparision = ''LT'' '
+		DECLARE @LessThanWhere		NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal < IndicatorGoal AND IndicatorComparision = ''LT'' AND 
+															ISNULL(ProjectedStageValue,0) != 0 AND ISNULL(ActualStageValue,0) != 0 '
 		-- For greater than rule
-		DECLARE @GreaterThanWhere	NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal > AR.IndicatorGoal AND AR.IndicatorComparision = ''GT'' '
+		DECLARE @GreaterThanWhere	NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal > IndicatorGoal AND IndicatorComparision = ''GT'' AND 
+															ISNULL(ProjectedStageValue,0) != 0 AND ISNULL(ActualStageValue,0) != 0 '
 		-- For equal to rule
-		DECLARE @EqualToWhere		NVARCHAR(MAX) = ' WHERE FinalTable.CalculatedPercentGoal = AR.IndicatorGoal AND AR.IndicatorComparision = ''EQ'' '
+		DECLARE @EqualToWhere		NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal = IndicatorGoal AND IndicatorComparision = ''EQ'' AND 
+															ISNULL(ProjectedStageValue,0) != 0 AND ISNULL(ActualStageValue,0) != 0 '
 
-		SET @InsertQueryForLT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' FinalTable.EntityTitle +''''''s ''+ FinalTable.IndicatorTitle +'' is ' + @txtLessThan +' '' + CAST(AR.IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @LessThanWhere
-		SET @InsertQueryForGT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' FinalTable.EntityTitle +''''''s ''+ FinalTable.IndicatorTitle +'' is ' + @txtGreaterThan +' '' + CAST(AR.IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @GreaterThanWhere
-		SET @InsertQueryForEQ = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' FinalTable.EntityTitle +''''''s ''+ FinalTable.IndicatorTitle +'' is ' + @txtEqualTo +' '' + CAST(AR.IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @EqualToWhere
+		SET @InsertQueryForLT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtLessThan +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @LessThanWhere
+		SET @InsertQueryForGT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtGreaterThan +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @GreaterThanWhere
+		SET @InsertQueryForEQ = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtEqualTo +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @EqualToWhere
 		
 		SET @CommonQueryToIgnoreDuplicate = '	MERGE INTO [dbo].Alerts AS T1
 												USING
@@ -142,9 +121,9 @@ BEGIN
 		SET @InsertQueryForGT = REPLACE(@CommonQueryToIgnoreDuplicate, '##INSERTQUERY##', @InsertQueryForGT)
 		SET @InsertQueryForEQ = REPLACE(@CommonQueryToIgnoreDuplicate, '##INSERTQUERY##', @InsertQueryForEQ)
 		
-		EXEC (@TacticsDataForRules + @UpdatePlanQuery + @UpdateCampaignQuery + @UpdateProgramQuery + @UpdateTacticQuery + @UpdateLineItemQuery + @UpdateIndicatorTitle + @UpdateProjectedValuesForPlan + 
-				@CalculatePercentGoalQuery + @InsertQueryForLT + @InsertQueryForGT +@InsertQueryForEQ )
-	
+		EXEC (@TacticsDataForRules + @UPDATEQUERYCOMMON + @UpdateIndicatorTitle + @UpdateProjectedValuesForPlan + 
+				@CalculatePercentGoalQuery + @InsertQueryForLT + @InsertQueryForGT +@InsertQueryForEQ)
+		
 	END TRY
 	BEGIN CATCH
 		--Get the details of the error
