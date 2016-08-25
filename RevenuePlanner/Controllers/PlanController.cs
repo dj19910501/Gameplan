@@ -244,15 +244,8 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.Title = objplan.Title;
                     objPlanModel.Year = objplan.Year;
                     objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Value).FirstOrDefault();
-                    //objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
-                    if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
-                    {
-                        objPlanModel.GoalValue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.GoalValue)), PlanExchangeRate).ToString();
-                    }
-                    else
-                    {
-                        objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
-                    }
+                    //objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);                  
+                        objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);                   
                     objPlanModel.AllocatedBy = objplan.AllocatedBy;
                     //objPlanModel.Budget = objplan.Budget;
                     objPlanModel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objplan.Budget)), PlanExchangeRate);
@@ -384,11 +377,7 @@ namespace RevenuePlanner.Controllers
                         plan.GoalType = objPlanModel.GoalType;
                         if (objPlanModel.GoalValue != null)
                         {
-                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
-                            if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
-                            {
-                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
-                            }
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));                          
                         }
                         else
                         {
@@ -429,10 +418,10 @@ namespace RevenuePlanner.Controllers
                         if (objPlanModel.GoalValue != null)
                         {
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
-                            if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
-                            {
-                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
-                            }
+                            //if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
+                            //{
+                            //    plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
+                            //}
 
                         }
                         else
@@ -673,10 +662,10 @@ namespace RevenuePlanner.Controllers
                         if (objPlanModel.GoalValue != null)
                         {
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
-                            if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
-                            {
-                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
-                            }
+                            //if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
+                            //{
+                            //    plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
+                            //}
                         }
                         else
                         {
@@ -723,10 +712,6 @@ namespace RevenuePlanner.Controllers
                         if (objPlanModel.GoalValue != null)
                         {
                             plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
-                            if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
-                            {
-                                plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
-                            }
                         }
                         else
                         {

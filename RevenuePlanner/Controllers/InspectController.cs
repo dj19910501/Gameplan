@@ -12026,16 +12026,8 @@ namespace RevenuePlanner.Controllers
                     imodel.Title = objPlan.Title;
                     imodel.ModelId = objPlan.ModelId;
                     imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Model.Version;
-                    imodel.GoalType = objPlan.GoalType;
-                    //Modified by Rahul Shah for PL #2511 to apply multi currency
-                    if (objPlan.GoalType == Enums.PlanGoalType.Revenue.ToString())
-                    {
-                        imodel.GoalValue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlan.GoalValue)), PlanExchangeRate).ToString();
-                    }
-                    else
-                    {
-                        imodel.GoalValue = Convert.ToString(objPlan.GoalValue);
-                    }
+                    imodel.GoalType = objPlan.GoalType;                    
+                        imodel.GoalValue = Convert.ToString(objPlan.GoalValue);                   
                     imodel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlan.Budget)), PlanExchangeRate);
                     //imodel.GoalValue = objPlan.GoalValue.ToString();
                     //imodel.Budget = objPlan.Budget;

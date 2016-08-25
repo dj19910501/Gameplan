@@ -512,25 +512,13 @@
             if ($("#GoalType").val().toLowerCase() == 'revenue') {
                 if (!$("#revenueSign").is(':visible')) {
                     $('#revenueSign').show();
-                    $('#conjuntionWord').html('and ');
-                    var convertedGoalValue = GetValueByExchangeRate($("#GoalValue").val());
-                    $("#GoalValue").attr('value', convertedGoalValue);
-                    $("#GoalValue").attr('placeholder', convertedGoalValue);
-                    $("#GoalValue").prev().find('a').html(convertedGoalValue)
-                    $("#GoalValue").prev().find('input[type="text"]').attr('value', convertedGoalValue);
-                    $("#GoalValue").prev().find('input[type="text"]').attr('placeholder', convertedGoalValue);
+                    $('#conjuntionWord').html('and ');                   
                 }
             }
             else {
                 if ($("#revenueSign").is(':visible')) {
                     $('#revenueSign').hide();
-                    $('#conjuntionWord').html('to deliver ');
-                    var convertedGoalValue = SetValueByExchangeRate($("#GoalValue").val());
-                    $("#GoalValue").attr('value', convertedGoalValue);
-                    $("#GoalValue").attr('placeholder', convertedGoalValue);
-                    $("#GoalValue").prev().find('a').html(convertedGoalValue)
-                    $("#GoalValue").prev().find('input[type="text"]').attr('value', convertedGoalValue);
-                    $("#GoalValue").prev().find('input[type="text"]').attr('placeholder', convertedGoalValue);
+                    $('#conjuntionWord').html('to deliver ');                   
                 }
             }
 
@@ -551,14 +539,7 @@
                 $('#ModelTitle').html($('#ModelId').prev().find('.nl-field-toggle').html());
                 $('#ModelTitle').hide();
             }
-
-            //if (goalType != '' && goalType.toLowerCase() == 'revenue') {
-            //    goalValue = SetValueByExchangeRate(goalValue);
-            //    calculateBudget(modelId, goalType, goalValue);
-            //}
-            //else {
-                calculateBudget(modelId, goalType, goalValue);
-            //}
+            calculateBudget(modelId, goalType, goalValue);
         }
     });
 
