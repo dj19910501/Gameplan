@@ -1546,8 +1546,8 @@ namespace RevenuePlanner.Controllers
             List<NotificationSummary> RequestList = new List<NotificationSummary>();
             try
             {
-                if (Sessions.IsAlertPermission)
-                {
+                //if (Sessions.IsAlertPermission)
+                //{
                     var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
                     if (AllAlert != null && AllAlert.Count > 0)
                     {
@@ -1559,7 +1559,7 @@ namespace RevenuePlanner.Controllers
                                 AlertId = a.AlertId
                             }).Take(5).ToList();
                     }
-                }
+                //}
                 #region code for get notification listing
                 var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.UserId);
 
@@ -1669,8 +1669,8 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                if (Sessions.IsAlertPermission)
-                {
+                //if (Sessions.IsAlertPermission)
+                //{
                     var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
                     if (AllAlert != null && AllAlert.Count > 0)
                     {
@@ -1681,7 +1681,7 @@ namespace RevenuePlanner.Controllers
                             AlertId = a.AlertId
                         }).ToList();
                     }
-                }
+               // }
                 return PartialView("_AllAlertListing", DataList.AsEnumerable());
             }
 

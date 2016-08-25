@@ -392,7 +392,7 @@ namespace RevenuePlanner.Controllers
                     }
                     #endregion
                     //end
-                    Sessions.IsAlertPermission = IsClientAlertsPermission();
+                  //  Sessions.IsAlertPermission = IsClientAlertsPermission();
                     //Redirect users logging in for the first time to the change password module
                     TempData.Clear();
                     if (obj.LastLoginDate == null)

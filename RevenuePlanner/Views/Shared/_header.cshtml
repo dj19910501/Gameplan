@@ -132,8 +132,8 @@
                 </div>
             }
             @*Added by Bhumika for #2468 - alert & Notification dropdown*@
-            @if (Sessions.IsAlertPermission) //added by devanshi #2476 : client permission for Alert
-            {
+            @*@if (Sessions.IsAlertPermission) //added by devanshi #2476 : client permission for Alert
+            {*@
                 <div class="aler-list dropdown pull-right" id="divAlertSummary">
                     <span class="count" id="spnAlertCnt" style="display:none"></span>
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Alerts"><i class="fa fa-bell-o" aria-hidden="true"></i></a>
@@ -142,7 +142,7 @@
 
                     </ul>
                 </div>
-            }
+            @*}*@
 
             <div class="notify-list dropdown pull-right">
                 <span class="count" id="spnNotificationCnt" style="display:none"></span>
@@ -258,6 +258,10 @@
                             var url = '@Url.Action("ViewAlertNotification", "User")';
                             url = url + "?type=" + '@Enums.AlertNotification.Alert.ToString()'
                             $(cList).append('<li title="All"><a href="' + url + '">See All</a></li>');
+                            $(cList).find("li").each(function () {
+                                tooltip = $($(this).find("span")[0]).html();
+                                $(this).attr('title', htmlDecode(tooltip));
+                            });
                         }
 
                         else {
