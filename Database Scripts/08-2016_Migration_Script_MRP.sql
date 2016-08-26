@@ -1597,12 +1597,12 @@ BEGIN
 	 u.notificationid= n.notificationid where  n.notificationtype = 'AM'  and n.isdeleted = 0 and
 	 userid in (SELECT Item From dbo.SplitString(@RecipientIDs,','))) as result
 
-	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @TacticEdited and @action='updated' and (@description ='tactic' or @description ='tactic results'))) 
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @TacticEdited and @action='updated' and UserId = @EntityOwnerID and (@description ='tactic' or @description ='tactic results'))) 
 	Begin
 		SET @NotificationMessage = 'Tactic '+ @componentTitle +' has been changed by ' + @UserName
 	End
 
-	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @CampaignIsEdited and @action='updated' and  @description ='campaign' )) 
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @CampaignIsEdited and @action='updated' and  @description ='campaign' and UserId = @EntityOwnerID )) 
 	Begin
 		
 	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
@@ -1610,7 +1610,7 @@ BEGIN
 		
 	End
 
-	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @ProgramIsEdited  and @action='updated' and @description ='program')) 
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE  NotificationInternalUseOnly = @ProgramIsEdited  and @action='updated' and @description ='program' and UserId = @EntityOwnerID )) 
 	Begin
 		
 	    SET @description = UPPER(LEFT(@description,1))+LOWER(SUBSTRING(@description,2,LEN(@description)))
@@ -1698,7 +1698,7 @@ BEGIN
 		WHERE NotificationInternalUseOnly = @TacticIsSubmitted and UserId <> @Userid
 	End
 
-	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @OwnerChange  and @action='ownerchanged' )) 
+	IF (EXISTS(SELECT * FROM #tempNotificationdata WHERE NotificationInternalUseOnly = @OwnerChange  and @action='ownerchanged' and UserId = @EntityOwnerID )) 
 	Begin
 		select @NotificationMessage = @UserName + ' has made you the owner of ' + @description + ' ' + @componentTitle
 		if(@Userid <> @EntityOwnerID)

@@ -740,7 +740,7 @@ namespace RevenuePlanner.Helpers
                 lst_CollaboratorId = GetCollaboratorForImprovementTactic(planTacticId);
             }
 
-            if (Sessions.User != null && lst_CollaboratorId.Contains(Convert.ToString(Sessions.User.UserId)))
+            if (Sessions.User != null && lst_CollaboratorId.Contains(Convert.ToString(Sessions.User.UserId)) && !status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
             {
                 lst_CollaboratorId.Remove(Convert.ToString(Sessions.User.UserId));
             }
@@ -748,12 +748,6 @@ namespace RevenuePlanner.Helpers
             if (lst_CollaboratorId.Count > 0)
             {
 
-                var csv = string.Join(", ", lst_CollaboratorId);
-                var NotificationName = status;
-
-                var UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
-                lst_CollaboratorEmail = UsersDetails.Select(u => u.Email).ToList();
-                lst_CollaboratorUserName = UsersDetails.Select(u => u.FirstName).ToList();
                 //var PlanName = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId).Select(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Title).SingleOrDefault();
                 var PlanName = "";
                 int PlanId = 0;
@@ -778,6 +772,26 @@ namespace RevenuePlanner.Helpers
                     PlanName = db.Plan_Improvement_Campaign_Program_Tactic.Where(pc => pc.ImprovementPlanTacticId == planTacticId).Select(pc => pc.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Title).SingleOrDefault();
                     createdBy = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(pcpt => pcpt.ImprovementPlanTacticId == planTacticId).CreatedBy;
                 }
+
+
+                List<RevenuePlanner.BDSService.UserHierarchy> lstUserHierarchy = new List<RevenuePlanner.BDSService.UserHierarchy>();
+                RevenuePlanner.BDSService.UserHierarchy objOwnerUser = new RevenuePlanner.BDSService.UserHierarchy();
+
+                if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
+                {
+                    lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                    objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
+                    lst_CollaboratorId.Add(objOwnerUser.ManagerId.ToString());
+                }
+
+
+                var csv = string.Join(", ", lst_CollaboratorId);
+                var NotificationName = status;
+
+                var UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                lst_CollaboratorEmail = UsersDetails.Select(u => u.Email).ToList();
+                lst_CollaboratorUserName = UsersDetails.Select(u => u.FirstName).ToList();
+
                 if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                 {
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
@@ -844,17 +858,17 @@ namespace RevenuePlanner.Helpers
                     EmailId.Add(UsersDetails.FirstOrDefault(u => u.UserId == createdBy).Email);
                     UserId.Add(createdBy.ToString());
                     // To add manager's email address, By dharmraj, Ticket #537
-                    var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-                    var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
+                    //var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                    //var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
                     if (objOwnerUser.ManagerId != null)
                     {
                         EmailId.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).Email);
                         UserName.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).FirstName);
                         UserId.Add(objOwnerUser.ManagerId.ToString());
+                    }
 
                         lst_CollaboratorEmail = EmailId;
                         lst_CollaboratorUserName = UserName;
-                    }
 
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
