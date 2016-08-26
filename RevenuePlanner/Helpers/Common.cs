@@ -8218,18 +8218,20 @@ namespace RevenuePlanner.Helpers
                                     Period = tac.Period,
                                     NumPeriod = (tac.Period / 13),
                                     TacticId = tac.TacticId,
-                                    Value = objCurrency.GetReportValueByExchangeRate(tac.StartDate, tac.Value, int.Parse(Convert.ToString(tac.Period).Replace("Y", ""))), // Modified By Nishant Sheth #2507
-                                    StartYear = tac.StartDate.Year
+                                    Value = tac.Value,
+                                    StartYear = tac.StartDate.Year,
+                                    StartDate = tac.StartDate
                                 }).ToList().Select(tact => new
                                 {
                                     Period = "Y" + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
                                     Year = tact.StartYear + tact.NumPeriod,
                                     TacticId = tact.TacticId,
-                                    Value = tact.Value
+                                    Value = tact.Value,
+                                    StartDate = tact.StartDate
                                 }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                             if (lstLineItemActuals.Any())
                             {
-                                lstActulalValue = lstLineItemActuals.Select(actual => new BudgetedValue { Period = actual.Period, Value = actual.Value, Year = actual.Year }).ToList();
+                                lstActulalValue = lstLineItemActuals.Select(actual => new BudgetedValue { Period = actual.Period, Value = actual.Value, Year = actual.Year, StartDate = actual.StartDate }).ToList();
                             }
 
                         }

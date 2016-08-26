@@ -89,6 +89,7 @@ namespace RevenuePlanner.Models
         public string Period { get; set; }
         public double Value { get; set; }
         public int Year { get; set; }
+        public DateTime StartDate { get; set; }
     }
 
     public class BudgetReportTab

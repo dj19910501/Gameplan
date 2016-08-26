@@ -5960,7 +5960,10 @@ namespace RevenuePlanner.Controllers
 
                     // Modified By Nishant Sheth // Reg::#2432 Show a plan allocated budget instead of tactic allocated budget
                     //_TacticTotalBudget = _tacBudgetList != null && _tacBudgetList.Count > 0 ? _tacBudgetList.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
-                    _PlanBudget = db.Plans.Where(plan => lstPlanIds.Contains(plan.PlanId)).Sum(plan => plan.Budget);
+                    // Modified By Nishant Sheth
+                    // #2507 : Summary report chanages to apply multicurrency 
+                    _PlanBudget = db.Plans.Where(plan => lstPlanIds.Contains(plan.PlanId)).AsEnumerable()
+                        .Sum(plan => objCurrency.GetValueByExchangeRate(plan.Budget, PlanExchangeRate));
                     //objFinanceModel.TotalBudgetAllocated = _TacticTotalBudget;
                     //objFinanceModel.TotalBudgetUnAllocated = _PlanBudget - _TacticTotalBudget;
                     _PlanTotalBudget = _planBudgetList != null && _planBudgetList.Count > 0 ? _planBudgetList.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
@@ -5979,12 +5982,19 @@ namespace RevenuePlanner.Controllers
                     // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
                     List<int> lineitemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(ln => _tacticCostIdList.Contains(ln.PlanTacticId)).Select(ln => ln.PlanLineItemId).ToList();
                     var tacCostListData = Common.CalculatePlannedCostTacticslist(_tacticCostIdList);
-
-                    objFinanceModel.PlannedCostvsBudget = tacCostListData.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(tacCost => tacCost.Value);
+                    // Modified By Nishant Sheth
+                    // #2507 : Summary report chanages to apply multicurrency
+                    objFinanceModel.PlannedCostvsBudget = tacCostListData.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).
+                        Sum(tacCost => objCurrency.GetValueByExchangeRate(tacCost.Value, PlanExchangeRate));
 
                     List<TacticActualCostModel> TacticActualCostList = new List<TacticActualCostModel>();
                     TacticActualCostList = Common.CalculateActualCostTacticslist(_TacticIds, Tacticdata, timeframeOption);
-
+                    // Modified By Nishant Sheth
+                    // #2507 : Summary report chanages to apply multicurrency
+                    TacticActualCostList.ForEach(a => a.ActualList.ForEach(actual =>
+                    {
+                        actual.Value = objCurrency.GetReportValueByExchangeRate(actual.StartDate, actual.Value, int.Parse(Convert.ToString(actual.Period).Replace("Y", "")));
+                    }));
                     //ListYear.Contains(Convert.ToString(tac.ActualList.Select(act => Convert.ToString(act.Year)).ToList()))).ToList();
 
                     double _ActualCostvsBudget = 0;
@@ -6160,14 +6170,21 @@ namespace RevenuePlanner.Controllers
                                     PlannedCostList = new List<double>();
                                     BudgetCostList = new List<double>();
                                     _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
-
+                                    // Modified By Nishant Sheth
+                                    // #2507 : Summary report chanages to apply multicurrency
                                     PlannedCostList = tacCostListData.Where(plancost => Quarters.Contains(plancost.Period)
-                                        && plancost.Year == year).Select(plancost => plancost.Value).ToList();
+                                        && plancost.Year == year)
+                                        .Select(plancost => 
+                                            objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate)).ToList();
                                     TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Quarters.Contains(actual.Period) && actual.Year == year).Sum(actual => actual.Value));
                                     // Modified By Nishant Sheth
                                     // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                                    // Modified By Nishant Sheth
+                                    // #2507 : Summary report chanages to apply multicurrency
                                     BudgetCostList = _planBudgetList.Where(budgtcost => Quarters.Contains(budgtcost.Period)
-                                        && budgtcost.Year == year).Select(budgtcost => budgtcost.Value).ToList();
+                                        && budgtcost.Year == year)
+                                        .Select(budgtcost => 
+                                            objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate)).ToList();
 
                                     _PlannedCostValue = PlannedCostList.Sum(val => val);
                                     serPlannedData.Add(_PlannedCostValue);
@@ -6205,15 +6222,22 @@ namespace RevenuePlanner.Controllers
 
                                 // Modified By Nishant Sheth
                                 // Desc :: #2052 finance calulation wrong with quarters and monthly
+                                // Modified By Nishant Sheth
+                                // #2507 : Summary report chanages to apply multicurrency
                                 _PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
                                     && plancost.Year == Convert.ToInt32(Year))
-                                    .Sum(plancost => plancost.Value);
+                                    .Sum(plancost => 
+                                        objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));
 
                                 TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
                                 // Modified By Nishant Sheth
                                 // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
+                                // Modified By Nishant Sheth
+                                // #2507 : Summary report chanages to apply multicurrency
                                 _BudgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
-                                    && budgtcost.Year == Convert.ToInt32(Year)).Sum(budgtcost => budgtcost.Value);
+                                    && budgtcost.Year == Convert.ToInt32(Year))
+                                    .Sum(budgtcost => 
+                                        objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
 
                                 serPlannedData.Add(_PlannedCostValue);
                                 serBudgetData.Add(_BudgetCostValue);
@@ -6262,12 +6286,19 @@ namespace RevenuePlanner.Controllers
                                     _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0; // Add By Nishant Sheth // #2052 observation for diffrent value with quarter and month
 
                                     curntPeriod = PeriodPrefix + k;
-
-                                    _PlannedCostValue = tacCostListData.Where(plancost => plancost.Period.Equals(curntPeriod) && plancost.Year == year).Sum(plancost => plancost.Value);// Modified by nishant sheth #2052
+                                    // Modified By Nishant Sheth
+                                    // #2507 : Summary report chanages to apply multicurrency
+                                    _PlannedCostValue = tacCostListData.Where(plancost => plancost.Period.Equals(curntPeriod) && plancost.Year == year)
+                                        .Sum(plancost => 
+                                            objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));// Modified by nishant sheth #2052
                                     TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod) && actual.Year == year).Sum(actual => actual.Value));
                                     // Modified By Nishant Sheth
                                     // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
-                                    _BudgetCostValue = _planBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year).Sum(budgtcost => budgtcost.Value);// Modified by nishant sheth #2052
+                                    // Modified By Nishant Sheth
+                                    // #2507 : Summary report chanages to apply multicurrency
+                                    _BudgetCostValue = _planBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year)
+                                        .Sum(budgtcost => 
+                                            objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));// Modified by nishant sheth #2052
 
                                     serPlannedData.Add(_PlannedCostValue);
                                     serBudgetData.Add(_BudgetCostValue);
@@ -6306,12 +6337,13 @@ namespace RevenuePlanner.Controllers
                                 // Desc :: #2052 finance calulation wrong with quarters and monthly
                                 _PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
                                     && plancost.Year == Convert.ToInt32(Year))
-                                    .Sum(plancost => plancost.Value);
+                                    .Sum(plancost => objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));
                                 TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
                                 // Modified By Nishant Sheth
                                 // Desc :: #1541 Numbers do not match for Overview - financial and financial report.
                                 _BudgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
-                                    && budgtcost.Year == Convert.ToInt32(Year)).Sum(budgtcost => budgtcost.Value);
+                                    && budgtcost.Year == Convert.ToInt32(Year))
+                                    .Sum(budgtcost => objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
 
                                 serPlannedData.Add(_PlannedCostValue);
                                 serBudgetData.Add(_BudgetCostValue);
@@ -8895,17 +8927,17 @@ namespace RevenuePlanner.Controllers
 
                                     if (ROIAnchorTactic != null)
                                     {
-                                    objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
+                                        objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
 
-                                    var ListROITactic = ROITacticData.Select(a => a.TacticObj).ToList();
-                                    ListOfROITacticList = new List<ROI_PackageDetail>();
-                                    ListROITactic.ForEach(tac => ListOfROITacticList.AddRange(tac.ROI_PackageDetail));
+                                        var ListROITactic = ROITacticData.Select(a => a.TacticObj).ToList();
+                                        ListOfROITacticList = new List<ROI_PackageDetail>();
+                                        ListROITactic.ForEach(tac => ListOfROITacticList.AddRange(tac.ROI_PackageDetail));
 
-                                    // Get the Tactic ids which are included in package
-                                    ListROICardTactic = (from ROITactic in ROIAnchorTactic
-                                                         join Tactic in ListOfROITacticList
-                                                             on ROITactic.Key equals Tactic.AnchorTacticID
-                                                         select Tactic.PlanTacticId).ToList();
+                                        // Get the Tactic ids which are included in package
+                                        ListROICardTactic = (from ROITactic in ROIAnchorTactic
+                                                             join Tactic in ListOfROITacticList
+                                                                 on ROITactic.Key equals Tactic.AnchorTacticID
+                                                             select Tactic.PlanTacticId).ToList();
                                     }
                                 }
 
@@ -8953,37 +8985,37 @@ namespace RevenuePlanner.Controllers
                                 }).FirstOrDefault();
                             if (GetAnchorTactic != null)
                             {
-                            var AnchorTacticDetails = ListOfROITacticList.Where(roi => roi.AnchorTacticID == GetAnchorTactic.AnchorTacticID
-                                && roi.AnchorTacticID == roi.PlanTacticId).Select(tac =>
-                                new
-                                {
-                                    AnchorTacticID = tac.AnchorTacticID,
-                                    PackageTitle = tac.Plan_Campaign_Program_Tactic.Title
-                                }).FirstOrDefault();
+                                var AnchorTacticDetails = ListOfROITacticList.Where(roi => roi.AnchorTacticID == GetAnchorTactic.AnchorTacticID
+                                    && roi.AnchorTacticID == roi.PlanTacticId).Select(tac =>
+                                    new
+                                    {
+                                        AnchorTacticID = tac.AnchorTacticID,
+                                        PackageTitle = tac.Plan_Campaign_Program_Tactic.Title
+                                    }).FirstOrDefault();
 
-                            if (AnchorTacticDetails != null && AnchorTacticDetails.AnchorTacticID > 0)
-                            {
-                                ROIAnchorTactic.Add(AnchorTacticDetails.AnchorTacticID, AnchorTacticDetails.PackageTitle);
-                                objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
-                                var isWithRoiPackage = ListOfROITacticList.Where(a => a.PlanTacticId == tacticid).FirstOrDefault();
-                                if (isWithRoiPackage != null)
+                                if (AnchorTacticDetails != null && AnchorTacticDetails.AnchorTacticID > 0)
                                 {
-                                    ListROICardTactic = ListOfROITacticList.Where(roi => roi.AnchorTacticID == AnchorTacticDetails.AnchorTacticID)
-                                                        .Select(tac => tac.PlanTacticId).ToList();
+                                    ROIAnchorTactic.Add(AnchorTacticDetails.AnchorTacticID, AnchorTacticDetails.PackageTitle);
+                                    objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
+                                    var isWithRoiPackage = ListOfROITacticList.Where(a => a.PlanTacticId == tacticid).FirstOrDefault();
+                                    if (isWithRoiPackage != null)
+                                    {
+                                        ListROICardTactic = ListOfROITacticList.Where(roi => roi.AnchorTacticID == AnchorTacticDetails.AnchorTacticID)
+                                                            .Select(tac => tac.PlanTacticId).ToList();
+                                    }
+                                }
+
+                                if (ListROICardTactic.Count > 0)
+                                {
+                                    ROIPackageTacticData = ROITacticData.Where(pcpt => ListROICardTactic.Contains(pcpt.TacticObj.PlanTacticId)).Select(t => t).ToList();
+                                    ROIPackageTacticData.ForEach(a =>
+                                    {
+                                        a.RoiPackageTitle = AnchorTacticDetails.PackageTitle;
+                                        a.ROIAnchorTacticId = AnchorTacticDetails.AnchorTacticID;
+                                    });
+                                    objROIPackageCard.TacticData = ROIPackageTacticData;
                                 }
                             }
-
-                            if (ListROICardTactic.Count > 0)
-                            {
-                                ROIPackageTacticData = ROITacticData.Where(pcpt => ListROICardTactic.Contains(pcpt.TacticObj.PlanTacticId)).Select(t => t).ToList();
-                                ROIPackageTacticData.ForEach(a =>
-                                {
-                                    a.RoiPackageTitle = AnchorTacticDetails.PackageTitle;
-                                    a.ROIAnchorTacticId = AnchorTacticDetails.AnchorTacticID;
-                                });
-                                objROIPackageCard.TacticData = ROIPackageTacticData;
-                            }
-                        }
                         }
 
                         if (isDetails && objROIPackageCard.TacticData != null)
@@ -11962,7 +11994,7 @@ namespace RevenuePlanner.Controllers
 
                     }
                     // End By Nishant Sheth 
-                    #endregion
+                #endregion
                 }
                 else
                 {
@@ -11998,7 +12030,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-                #endregion
+        #endregion
 
                 #region "Add all list to Master Model"
                 objSubDataTableModel.PerformanceList = PerformanceList;
@@ -12425,7 +12457,7 @@ namespace RevenuePlanner.Controllers
                 tacticlist = GetTacticForReporting();
 
                 // End By Nishant Sheth
-                #endregion
+            #endregion
                 /// Declarion For Card Section 
                 /// Nishant Sheth
                 /// 

@@ -125,8 +125,8 @@
             setBootstrapTooltip(_lblPlannedTotalBudget, _toalPlanBudgetAllocated, 3, true);// Add By Nishant Sheth //  #1541
             setBootstrapTooltip(_lblActualTotalBudget, _toalPlanBudgetAllocated, 3, true);// Add By Nishant Sheth //  #1541
             _formtTotalBudgetAllocated = $(_lblTotalBudgetAllocated).text();
-            _frmtPlannedTotalBudget = $(_lblPlannedTotalBudget).text();
-            _frmtActualTotalBudget = $(_lblActualTotalBudget).text();
+            _frmtPlannedTotalBudget = $(_lblPlannedTotalBudget).text().replace(/\s+/g, '');
+            _frmtActualTotalBudget = $(_lblActualTotalBudget).text().replace(/\s+/g, '');
         }
         $(_lblTotalBudgetAllocated).html(_formtTotalBudgetAllocated);
         $(_lblPlannedTotalBudget).html(_frmtPlannedTotalBudget);
@@ -148,7 +148,7 @@
             _plannedCostBudget = "0";
         else {
             setBootstrapTooltip(_lblPlannedCostBudget, _plannedCostBudget, 4, true);
-            _formtPlannedCostBudget = $(_lblPlannedCostBudget).text();
+            _formtPlannedCostBudget = $(_lblPlannedCostBudget).text().replace(/ /g,'');
         }
         $(_lblPlannedCostBudget).html(_formtPlannedCostBudget);
         // End: Set Tooltip and Number formatting for PlannedCost vs Budget
@@ -158,7 +158,7 @@
             _actualCostBudget = "0";
         else {
             setBootstrapTooltip(_lblActualCostBudget, _actualCostBudget, 4, true);
-            _formtActualCostBudget = $(_lblActualCostBudget).text();
+            _formtActualCostBudget = $(_lblActualCostBudget).text().replace(/\s+/g, '');
         }
         $(_lblActualCostBudget).html(_formtActualCostBudget);
         // End: Set Tooltip and Number formatting for ActualCost vs Budget
