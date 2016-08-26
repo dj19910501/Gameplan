@@ -875,7 +875,7 @@ namespace RevenuePlanner.Helpers
                         List_NotificationUserIds = GetAllNotificationUserIds(UserId, Enums.Custom_Notification.TacticIsSubmitted.ToString().ToLower());
                         if (List_NotificationUserIds.Count > 0)
                         {
-                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).Distinct().ToList();
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
 
                         }
