@@ -61,10 +61,10 @@
                         {
                             if (item.ClientId != clientId)
                             {
-                                <li id="licurrency_@item.ISOCurrencyCode">
-                                    <a href="#">
+                                <li id="licurrency_@item.ISOCurrencyCode" class="liPointer">
+                                    @*<a href="#">*@
                                         <strong>@item.CurrencySymbol @item.ISOCurrencyCode</strong> <span class="currency-txt">(@item.CurrencyDetail)</span>
-                                    </a>
+                                    @*</a>*@
                                 </li>
                             }
                         }
@@ -86,10 +86,10 @@
                         {
                             if (item.ClientId == clientId)
                             {
-                                <li id="limycurrency_@item.ISOCurrencyCode" isdefault='@item.IsDefault'>
-                                    <a href="#">
+                                <li id="limycurrency_@item.ISOCurrencyCode" isdefault='@item.IsDefault' class="liPointer">
+                                    @*<a href="#">*@
                                         <strong>@item.CurrencySymbol @item.ISOCurrencyCode</strong> <span class="currency-txt">(@item.CurrencyDetail)</span>
-                                    </a>
+                                    @*</a>*@
                                 </li>
 
                                 if (@item.IsDefault == true)
@@ -129,7 +129,12 @@
         </div>
     </div>
 </div>
-
+<style>
+    .liPointer
+    {
+        cursor:pointer;
+    }
+</style>
 <script>
     //insertation start 09/08/2016 kausha #2492.
     $('#aConversionrate').click(function () {
