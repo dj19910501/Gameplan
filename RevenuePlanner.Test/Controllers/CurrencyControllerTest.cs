@@ -66,5 +66,132 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
         }
+
+        #region currency methodsB
+        /// <summary>
+        /// To Get Currency and Client Currency
+        /// <author>Kausha Somaiya</author>
+        /// <createddate>26-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetCurrency()
+        {
+
+            MRPEntities db = new MRPEntities();
+            var routes = new RouteCollection();
+            Console.WriteLine("To get currency and client currency.\n");
+           
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            CurrencyController objCurrencyController = new CurrencyController();
+            objCurrencyController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCurrencyController);
+            objCurrencyController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+
+            var result = objCurrencyController.Index() as ViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.IsNotNull(result.Model);
+            Assert.AreEqual("Index", result.ViewName);
+
+        }
+        /// <summary>
+        /// To Get exchange rate data.
+        /// <author>Kausha Somaiya</author>
+        /// <createddate>26-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetExchangeRate()
+        {
+
+            MRPEntities db = new MRPEntities();
+            var routes = new RouteCollection();
+            Console.WriteLine("To get currency exchange rates.\n");
+
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            CurrencyController objCurrencyController = new CurrencyController();
+            objCurrencyController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCurrencyController);
+            objCurrencyController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+
+            var result = objCurrencyController.ExchangeRate() as ViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            //Assert.IsNotNull(result.Model);
+            Assert.AreEqual("ExchangeRate", result.ViewName);
+
+        }
+        /// <summary>
+        /// To Get plan grid data.
+        /// <author>Kausha Somaiya</author>
+        /// <createddate>26-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetPlanGridData()
+        {
+
+            MRPEntities db = new MRPEntities();
+            var routes = new RouteCollection();
+            Console.WriteLine("To get plan currency gridview data.\n");
+
+
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            CurrencyController objCurrencyController = new CurrencyController();
+            objCurrencyController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCurrencyController);
+            objCurrencyController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+
+            var result = objCurrencyController.PlanGrid("2016") as ViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.IsNotNull(result.Model);
+            Assert.AreEqual("_PlanCurrencyGrid", result.ViewName);
+
+        }
+        /// <summary>
+        /// To Get report grid data.
+        /// <author>Kausha Somaiya</author>
+        /// <createddate>26-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void GetReportGridData()
+        {
+
+            MRPEntities db = new MRPEntities();
+            var routes = new RouteCollection();
+            Console.WriteLine("To get report currency gridview data.\n");
+
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            CurrencyController objCurrencyController = new CurrencyController();
+            objCurrencyController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCurrencyController);
+            objCurrencyController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+
+            var result = objCurrencyController.ReportGrid("2016") as ViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.IsNotNull(result.Model);
+            Assert.AreEqual("_ReportCurrencyGrid", result.ViewName);
+
+        }
+        /// <summary>
+        /// To save client curruncy detail.
+        /// <author>Kausha Somaiya</author>
+        /// <createddate>26-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void SaveClientCurrency()
+        {
+
+            var routes = new RouteCollection();
+            Console.WriteLine("To save client currency detail.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            CurrencyController objCurrencyController = new CurrencyController();
+            objCurrencyController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCurrencyController);
+            objCurrencyController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            List<string> clientCurrncies = new List<string>();
+            var result = objCurrencyController.SaveClientCurrency(clientCurrncies) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+
+        }
+     
+        #endregion
     }
 }
