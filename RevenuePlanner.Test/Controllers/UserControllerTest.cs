@@ -661,9 +661,23 @@ namespace RevenuePlanner.Test.Controllers
             UserController objUserController = new UserController();
             objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            int ruleId = DataHelper.GetAlertruleId(Sessions.User.UserId);
-            var result = objUserController.DeleteAlertRule(ruleId) as JsonResult;
+            AlertRuleDetail objRule = new AlertRuleDetail();
+            int ruleId = 0;
+            int entityid = (DataHelper.GetPlanId());
+            objRule.RuleId = 0;
+            objRule.EntityID = Convert.ToString(entityid);
+            objRule.RuleSummary = "test alert rule";
+            objRule.EntityType = "Plan";
+            objRule.Indicator = "MQL";
+            objRule.IndicatorComparision = "LT";
+            objRule.IndicatorGoal = "25";
+            objRule.CompletionGoal = "25";
+            objRule.Frequency = "Daily";
+            var result = objUserController.SaveAlertRule(objRule, 0) as JsonResult;
+            var rules = db.Alert_Rules.Where(a => a.RuleSummary == "test alert rule" && a.EntityId == entityid).Select(a => a).FirstOrDefault();
+            if (rules != null)
+                ruleId = rules.RuleId;
+            result = objUserController.DeleteAlertRule(ruleId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
 
@@ -715,6 +729,39 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(result.Data);
          
         }
+        #endregion
+        #region method to save alert rule
+        #region method to delete alert rule
+        /// <summary>
+        /// To Save the Alert rule
+        /// <author>Devanshi gandhi</author>
+        /// <createddate>17-8-2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void SaveAlertrule()
+        {
+
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            UserController objUserController = new UserController();
+            objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
+            objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            AlertRuleDetail objRule = new AlertRuleDetail();
+            objRule.RuleId = 0;
+            objRule.EntityID = Convert.ToString(DataHelper.GetPlanId());
+            objRule.RuleSummary = "<h4>  Responses are less than 75% of Goal</h4><br/><span>Start at 50% completion</span><span>Repeat Daily</span>";
+            objRule.EntityType = "Plan";
+            objRule.Indicator = "MQL";
+            objRule.IndicatorComparision = "LT";
+            objRule.IndicatorGoal = "25";
+            objRule.CompletionGoal = "25";
+            objRule.Frequency = "Daily";
+            var result = objUserController.SaveAlertRule(objRule, 0) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+            Assert.IsNotNull(result.Data);
+
+        }
+        #endregion
         #endregion
         #endregion
     }

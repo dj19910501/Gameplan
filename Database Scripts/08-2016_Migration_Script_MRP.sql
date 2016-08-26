@@ -2282,6 +2282,7 @@ IF EXISTS (SELECT * FROM sys.types WHERE is_table_type = 1 AND name = 'TacticFor
 	DROP TYPE [dbo].[TacticForRuleEntities]
 GO
 
+
 -- Create User Defined Table Type
 /****** Object:  UserDefinedTableType [dbo].[TacticForRuleEntities]    Script Date: 08/19/2016 06:37:10 PM ******/
 IF NOT EXISTS (SELECT * FROM sys.types WHERE is_table_type = 1 AND name = 'TacticForRuleEntities')
@@ -2303,10 +2304,11 @@ CREATE TYPE [dbo].[TacticForRuleEntities] AS TABLE(
 	[StartDate] [datetime] NULL,
 	[EndDate] [datetime] NULL,
 	[PercentComplete] [int] NULL,
-	[ProjectedStageValue] [int] NULL,
-	[ActualStageValue] [int] NULL,
+	[ProjectedStageValue] [float] NULL,
+	[ActualStageValue] [float] NULL,
 	[CalculatedPercentGoal] [int] NULL
 )
+
 GO
 
 -- ======================================================
