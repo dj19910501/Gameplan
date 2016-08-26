@@ -8046,7 +8046,7 @@ namespace RevenuePlanner.Controllers
             pcptlm.Description = HttpUtility.HtmlDecode(pcptl.Description);
             pcptlm.StartDate = Convert.ToDateTime(pcptl.StartDate);
             pcptlm.EndDate = Convert.ToDateTime(pcptl.EndDate);
-            pcptlm.Cost = pcptl.Cost;
+            pcptlm.Cost = objCurrency.GetValueByExchangeRate(pcptl.Cost,PlanExchangeRate);
             pcptlm.TStartDate = pcptl.Plan_Campaign_Program_Tactic.StartDate;
             pcptlm.TEndDate = pcptl.Plan_Campaign_Program_Tactic.EndDate;
             pcptlm.PStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.StartDate;
@@ -11876,7 +11876,7 @@ namespace RevenuePlanner.Controllers
                     }
                     imodel.MQLs = Math.Round((double)imodel.MQLs, 0, MidpointRounding.AwayFromZero);
                     // Set Revenue
-                    imodel.Revenues = objCurrency.GetValueByExchangeRate(Math.Round(varTacticStageValue.RevenueValue, 2), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
+                    imodel.Revenues = Math.Round(varTacticStageValue.RevenueValue, 2);
                     imodel.Cost = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(imodel.Cost)), PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
                     imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(pcpt.TacticType.Model);
                 }
