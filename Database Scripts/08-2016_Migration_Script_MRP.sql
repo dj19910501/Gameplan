@@ -32,16 +32,6 @@ END
 GO
 
 -- Create table Alerts
-IF EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Alerts_Alert_Rules]') AND parent_object_id = OBJECT_ID(N'[dbo].[Alerts]'))
-BEGIN
-	ALTER TABLE [dbo].[Alerts] DROP CONSTRAINT [FK_Alerts_Alert_Rules]
-END
-GO
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Alerts]') AND type in (N'U'))
-BEGIN
-	DROP TABLE [dbo].[Alerts]
-END
-GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Alerts]') AND type in (N'U'))
 BEGIN
 	CREATE TABLE [dbo].[Alerts](
