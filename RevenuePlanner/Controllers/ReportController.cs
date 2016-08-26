@@ -2236,20 +2236,41 @@ namespace RevenuePlanner.Controllers
                 if (InnerLineItemList.Count() > 0)
                 {
                     //// Get sum of LineItemCost based on LineItemID.
-                    lineTotalValue = tblLineItemCost.Where(lineCost => InnerLineItemList.Contains(lineCost.PlanLineItemId)).Select(lineCost => lineCost.Value).Sum(r => r);
+                    // Modified By Nishant Sheth #2508 Observation 5
+                    lineTotalValue = tblLineItemCost.Where(lineCost => InnerLineItemList.Contains(lineCost.PlanLineItemId)).Select(lineCost =>
+                        lineCost.Value = objCurrency.GetValueByExchangeRate(lineCost.Value, PlanExchangeRate))
+                        .Sum(r => r);
                     //// Get sum of TacticCost based on PlanTacticId.
-                    TacticTotalValue = TacticCostList.Select(lineCost => lineCost.Value).Sum(r => r);
+                    // Modified By Nishant Sheth #2508 Observation 5
+                    TacticTotalValue = TacticCostList.Select(lineCost =>
+                       lineCost.Value = objCurrency.GetValueByExchangeRate(lineCost.Value, PlanExchangeRate))
+                        .Sum(r => r);
 
                     //// if sum of LineItemCost greater than TacticCost then retrieve TacticMonth value from LineItemCost o/w TacticCost.
                     if (lineTotalValue > TacticTotalValue)
-                        tblLineItemCost.ForEach(lineCost => listmonthwise.Add(new TacticMonthValue { Id = PlanTacticId, Month = tactic.TacticYear + lineCost.Period, Value = (lineCost.Value * weightage.Value) / 100, StartDate = tactic.TacticObj.StartDate, EndDate = tactic.TacticObj.EndDate })); // Modified By Nishant Sheth #1839
+                        tblLineItemCost.ForEach(lineCost => listmonthwise.Add(new TacticMonthValue
+                        {
+                            Id = PlanTacticId,
+                            Month = tactic.TacticYear + lineCost.Period,
+                            Value = (lineCost.Value * weightage.Value) / 100,
+                            StartDate = tactic.TacticObj.StartDate,
+                            EndDate = tactic.TacticObj.EndDate
+                        })); // Modified By Nishant Sheth #1839
                     else
-                        TacticCostList.ForEach(tacCost => listmonthwise.Add(new TacticMonthValue { Id = PlanTacticId, Month = tactic.TacticYear + tacCost.Period, Value = (tacCost.Value * weightage.Value) / 100, StartDate = tactic.TacticObj.StartDate, EndDate = tactic.TacticObj.EndDate })); // Modified By Nishant Sheth #1839
+                        TacticCostList.ForEach(tacCost => listmonthwise.Add(new TacticMonthValue
+                        {
+                            Id = PlanTacticId,
+                            Month = tactic.TacticYear + tacCost.Period,
+                            Value = (tacCost.Value * weightage.Value) / 100,
+                            StartDate = tactic.TacticObj.StartDate,
+                            EndDate = tactic.TacticObj.EndDate
+                        })); // Modified By Nishant Sheth #1839
                 }
                 else
                 {
                     //// LineItem does not exist then retrieve TacticMonth value from TacticCost table.
-                    TacticCostList.ForEach(tacCost => listmonthwise.Add(new TacticMonthValue { Id = PlanTacticId, Month = tactic.TacticYear + tacCost.Period, Value = (tacCost.Value * weightage.Value) / 100, StartDate = tactic.TacticObj.StartDate, EndDate = tactic.TacticObj.EndDate })); // Modified By Nishant Sheth #1839
+                    // Modified By Nishant Sheth #2508 Observation 5
+                    TacticCostList.ForEach(tacCost => listmonthwise.Add(new TacticMonthValue { Id = PlanTacticId, Month = tactic.TacticYear + tacCost.Period, Value = (objCurrency.GetValueByExchangeRate(tacCost.Value, PlanExchangeRate) * weightage.Value) / 100, StartDate = tactic.TacticObj.StartDate, EndDate = tactic.TacticObj.EndDate })); // Modified By Nishant Sheth #1839
                 }
             }
             return listmonthwise;
@@ -8219,7 +8240,8 @@ namespace RevenuePlanner.Controllers
                             // Modified By Nishant Sheth for set >= condtion for Endmonth >= currentmonth #2471
                             if (_trendMonth >= tactic.StartMonth && ((_currentYear < tactic.Year) || (tactic.EndMonth >= currentMonth && _trendMonth >= currentMonth && _currentYear == tactic.Year)))
                             {
-                                if (tactic.StartDate.Month > currentMonth)
+                                // Modified By Nishant Sheth #2508 Observation 5
+                                if (tactic.StartDate.Month >= currentMonth)
                                 {
                                     objProjectedTrendModel.TrendValue = tactic.Value;
                                 }
@@ -8871,6 +8893,8 @@ namespace RevenuePlanner.Controllers
                                             ROIAnchorTactic.Add(a.AnchorTacticId, a.Title);
                                         });
 
+                                    if (ROIAnchorTactic != null)
+                                    {
                                     objROIPackageCard.ROIAnchorTactic = ROIAnchorTactic;
 
                                     var ListROITactic = ROITacticData.Select(a => a.TacticObj).ToList();
@@ -8882,6 +8906,7 @@ namespace RevenuePlanner.Controllers
                                                          join Tactic in ListOfROITacticList
                                                              on ROITactic.Key equals Tactic.AnchorTacticID
                                                          select Tactic.PlanTacticId).ToList();
+                                    }
                                 }
 
                                 if (ListROICardTactic.Count > 0)
@@ -8926,7 +8951,8 @@ namespace RevenuePlanner.Controllers
                                 {
                                     AnchorTacticID = tac.AnchorTacticID
                                 }).FirstOrDefault();
-
+                            if (GetAnchorTactic != null)
+                            {
                             var AnchorTacticDetails = ListOfROITacticList.Where(roi => roi.AnchorTacticID == GetAnchorTactic.AnchorTacticID
                                 && roi.AnchorTacticID == roi.PlanTacticId).Select(tac =>
                                 new
@@ -8957,6 +8983,7 @@ namespace RevenuePlanner.Controllers
                                 });
                                 objROIPackageCard.TacticData = ROIPackageTacticData;
                             }
+                        }
                         }
 
                         if (isDetails && objROIPackageCard.TacticData != null)
@@ -14161,7 +14188,7 @@ namespace RevenuePlanner.Controllers
             ParentIdsList = TacticMappingList.Select(card => card.ParentId).Distinct().ToList();
             try
             {
-
+                PlanExchangeRate = Sessions.PlanExchangeRate;
                 #region "Get Year list"
                 List<string> yearlist = new List<string>();
                 // Add By Nishant Sheth #1839
@@ -14195,6 +14222,10 @@ namespace RevenuePlanner.Controllers
                 if (!IsTacticCustomField)
                 {
                     TacticCostData = GetActualCostData(_TacticData, lstTacticLineItem, tblLineItemActualList);
+                    //TacticCostData.ForEach(a =>
+                    //{
+                    //    a.Value = objCurrency.GetReportValueByExchangeRate(a.StartDate, a.Value, int.Parse(Convert.ToString(a.Month).Replace(Convert.ToString(a.Year),"").Replace("Y", "")));
+                    //});
                     CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
 
                     int currentEndMonth = 12;
@@ -14321,7 +14352,7 @@ namespace RevenuePlanner.Controllers
                                               {
                                                   PlanTacticId = tac.Key.PlanTacticId,
                                                   Month = tac.Key.Month,
-                                                  Value = tac.Key.Value,
+                                                  Value = objCurrency.GetValueByExchangeRate(tac.Key.Value, PlanExchangeRate),// Modified By Nishant Sheth #2508 Observation 3
                                                   TrendValue = tac.Key.TrendValue,
                                                   StartDate = tac.Key.StartDate,
                                                   EndDate = tac.Key.EndDate
@@ -14332,6 +14363,10 @@ namespace RevenuePlanner.Controllers
                         revenueGoal = ProjectedTrendList.Sum(data => data.Value);
 
                         TacticCostData = GetActualCostDataByWeightage(customFieldId, innercustomfieldOptionid, CustomFieldType, fltrTacticData, lstTacticLineItem, tblLineItemActualList, IsTacticCustomField);
+                        //TacticCostData.ForEach(a =>
+                        //{
+                        //    a.Value = objCurrency.GetReportValueByExchangeRate(a.StartDate, a.Value, int.Parse(Convert.ToString(a.Month).Replace(Convert.ToString(a.Year),"").Replace("Y", "")));
+                        //});
                         innerCurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
                         List<TacticMonthValue> ProjectedDatatable = new List<TacticMonthValue>();
                         ProjectedDatatable = GetProjectedCostData(customFieldId, innercustomfieldOptionid, CustomFieldType, fltrTacticData, IsTacticCustomField, lstTacticLineItem, tblLineItemCost, tblTacticCostList);
