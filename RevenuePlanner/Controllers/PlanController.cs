@@ -808,7 +808,7 @@ namespace RevenuePlanner.Controllers
                     // Start - Modified by Sohel Pathan on 09/12/2014 for PL ticket #975
                     bool isGoalValueExists = false;
                     goalValue = goalValue.Replace(",", "");
-                    if (goalValue != "" && Convert.ToInt64(goalValue) != 0)
+                    if (goalValue != "" && Convert.ToDouble(goalValue) != 0)
                     {
                         isGoalValueExists = true;
                         objBudgetAllocationModel = Common.CalculateBudgetInputs(modelId, goalType, goalValue, ADS);
