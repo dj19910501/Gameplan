@@ -62,23 +62,23 @@ ALTER TABLE [dbo].[Alerts] CHECK CONSTRAINT [FK_Alerts_Alert_Rules]
 GO
 
 -- Add column [DisplayDate] into [Alerts] table
-IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = '[DisplayDate]' AND [object_id] = OBJECT_ID(N'[Alerts]'))
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = 'DisplayDate' AND [object_id] = OBJECT_ID(N'Alerts'))
 BEGIN
 	ALTER TABLE dbo.[Alerts] ADD [DisplayDate] DATETIME NULL
 END
 GO
 
 -- Add column [DisplayDate] into [Alerts] table
-IF EXISTS(SELECT * FROM sys.columns WHERE [name] = '[DisplayDate]' AND [object_id] = OBJECT_ID(N'[Alerts]'))
+IF EXISTS(SELECT * FROM sys.columns WHERE [name] = 'DisplayDate' AND [object_id] = OBJECT_ID(N'Alerts'))
 BEGIN
 	UPDATE dbo.[Alerts] SET [DisplayDate]=GETDATE() WHERE DisplayDate IS NULL
 END
 GO
 
 -- Add column [DisplayDate] into [Alerts] table
-IF EXISTS(SELECT * FROM sys.columns WHERE [name] = '[DisplayDate]' AND [object_id] = OBJECT_ID(N'[Alerts]'))
+IF EXISTS(SELECT * FROM sys.columns WHERE [name] = 'DisplayDate' AND [object_id] = OBJECT_ID(N'Alerts'))
 BEGIN
-	ALTER TABLE dbo.[Alerts] ALTER [DisplayDate] DATETIME NOT NULL
+	ALTER TABLE dbo.[Alerts] ALTER COLUMN [DisplayDate] DATETIME NOT NULL
 END
 GO
 
