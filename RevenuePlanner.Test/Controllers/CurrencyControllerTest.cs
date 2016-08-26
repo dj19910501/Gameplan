@@ -174,23 +174,23 @@ namespace RevenuePlanner.Test.Controllers
         /// <author>Kausha Somaiya</author>
         /// <createddate>26-8-2016</createddate>
         /// </summary>
-        [TestMethod]
-        public void SaveClientCurrency()
-        {
+        //[TestMethod]
+        //public void SaveClientCurrency()
+        //{
 
-            var routes = new RouteCollection();
-            Console.WriteLine("To save client currency detail.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            CurrencyController objCurrencyController = new CurrencyController();
-            objCurrencyController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCurrencyController);
-            objCurrencyController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            List<string> clientCurrncies = new List<string>();
-            var result = objCurrencyController.SaveClientCurrency(clientCurrncies) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNotNull(result.Data);
+        //    var routes = new RouteCollection();
+        //    Console.WriteLine("To save client currency detail.\n");
+        //    MRPEntities db = new MRPEntities();
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    CurrencyController objCurrencyController = new CurrencyController();
+        //    objCurrencyController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCurrencyController);
+        //    objCurrencyController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+        //    List<string> clientCurrncies = new List<string>();
+        //    var result = objCurrencyController.SaveClientCurrency(clientCurrncies) as JsonResult;
+        //    Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
+        //    Assert.IsNotNull(result.Data);
 
-        }
+        //}
      
         #endregion
     }
