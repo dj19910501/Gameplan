@@ -1344,9 +1344,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', end
 }
 
 .message-position {
-    margin: -37px 3px 18px !important;/* Changed by bhumika 22-7-2016*/
+    /*margin: -37px 3px 18px !important;*//* Changed by bhumika 22-7-2016*/
     float:left;
     width:100%;
+    margin: 0 3px 18px !important;
 }
 
 .all-width {
