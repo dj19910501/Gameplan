@@ -336,7 +336,7 @@ namespace RevenuePlanner.Services
                         CurrencyModel.ClientCurrency cc = new CurrencyModel.ClientCurrency();
                         cc.StartDate = dt;
                         cc.EndDate = dt.AddMonths(1).AddDays(-1);
-                        cc.CurrencySymbol = "";
+                        cc.CurrencySymbol = Sessions.PlanCurrencySymbol;
                         cc.ExchangeRate = 1.0;
                         MonthWiseUserReportCurrency.Add(cc);
                     }
