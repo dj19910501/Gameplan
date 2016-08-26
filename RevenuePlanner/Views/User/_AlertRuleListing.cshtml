@@ -311,7 +311,7 @@
         var result = true;
         var ruleid = $(e).attr("ruleid");
         if (!e.checked) {
-            result = confirm("Are you sure you want to opt-out from receiving alerts for this rule?");
+            result = confirm("Are you sure you want to turn off this alert rule?");
         }
         if (result) {
             $.ajax({

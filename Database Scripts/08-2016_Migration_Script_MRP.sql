@@ -61,6 +61,27 @@ IF EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[F
 ALTER TABLE [dbo].[Alerts] CHECK CONSTRAINT [FK_Alerts_Alert_Rules]
 GO
 
+-- Add column [DisplayDate] into [Alerts] table
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = '[DisplayDate]' AND [object_id] = OBJECT_ID(N'[Alerts]'))
+BEGIN
+	ALTER TABLE dbo.[Alerts] ADD [DisplayDate] DATETIME NULL
+END
+GO
+
+-- Add column [DisplayDate] into [Alerts] table
+IF EXISTS(SELECT * FROM sys.columns WHERE [name] = '[DisplayDate]' AND [object_id] = OBJECT_ID(N'[Alerts]'))
+BEGIN
+	UPDATE dbo.[Alerts] SET [DisplayDate]=GETDATE() WHERE DisplayDate IS NULL
+END
+GO
+
+-- Add column [DisplayDate] into [Alerts] table
+IF EXISTS(SELECT * FROM sys.columns WHERE [name] = '[DisplayDate]' AND [object_id] = OBJECT_ID(N'[Alerts]'))
+BEGIN
+	ALTER TABLE dbo.[Alerts] ALTER [DisplayDate] DATETIME NOT NULL
+END
+GO
+
 -- Create table User_Notification_Messages
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[User_Notification_Messages]') AND type in (N'U'))
 BEGIN
