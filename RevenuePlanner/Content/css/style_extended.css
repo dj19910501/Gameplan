@@ -966,7 +966,7 @@ a {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    width: 83%;
+    width: 98%; /*Changed to solve bug of click */
     padding-right: 14px;
     font-size: 11.9px;
 }
