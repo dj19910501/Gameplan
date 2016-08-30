@@ -110,6 +110,12 @@
                  key: 'IsRequest',
                  Value: "true"
              });
+
+            queryStringArr.push(
+                      {
+                          key: 'activeMenu',
+                          Value: '@Enums.ActiveMenu.Plan'
+                      });
          
             formSubmitEvent('@Url.Content("~/Home/Index")', queryStringArr);
         }
