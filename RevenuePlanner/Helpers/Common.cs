@@ -578,7 +578,7 @@ namespace RevenuePlanner.Helpers
                 email = EmailIds.ElementAt(i);
                 Username = CollaboratorUserName.ElementAt(i);
                 //Common.SendMailToMultipleUser(EmailIds, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High));
-                ThreadStart threadStart = delegate () { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
+                ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
                 Thread thread = new Thread(threadStart);
                 thread.Start();
             }
@@ -645,7 +645,7 @@ namespace RevenuePlanner.Helpers
                     emailBody = emailBody.Replace("[lineitemname]", LineItemName);
                 }
                 email = EmailIds.ElementAt(i);
-                ThreadStart threadStart = delegate () { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
+                ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
                 Thread thread = new Thread(threadStart);
                 thread.Start();
             }
@@ -783,8 +783,11 @@ namespace RevenuePlanner.Helpers
                     objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
                     lst_CollaboratorId.Add(objOwnerUser.ManagerId.ToString());
                 }
-
-
+                //Added by Mitesh Vaishnav for PL ticket 2551 - remove empty strings from collaborator ids list
+                if (lst_CollaboratorId.Count > 0)
+                {
+                    lst_CollaboratorId.RemoveAll(id => string.IsNullOrEmpty(id));
+                }
                 var csv = string.Join(", ", lst_CollaboratorId);
                 var NotificationName = status;
 
@@ -867,8 +870,8 @@ namespace RevenuePlanner.Helpers
                         UserId.Add(objOwnerUser.ManagerId.ToString());
                     }
 
-                        lst_CollaboratorEmail = EmailId;
-                        lst_CollaboratorUserName = UserName;
+                    lst_CollaboratorEmail = EmailId;
+                    lst_CollaboratorUserName = UserName;
 
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
@@ -7524,7 +7527,7 @@ namespace RevenuePlanner.Helpers
                         string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
 
                         lstEntityIds = objDB.CustomField_Entity.Where(customFieldEntity => lstCustomFieldIds.Contains(customFieldEntity.CustomFieldId) &&
-                                                                    //customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) && 
+                            //customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) && 
                                                                     customFieldEntity.CustomField.EntityType == EntityTypeTactic && customFieldEntity.CustomField.CustomFieldType.Name == DropDownList &&
                                                                         lstCustomFieldOptionIds.Contains(customFieldEntity.Value))
                                                                 .Select(customFieldEntity => customFieldEntity.EntityId).ToList();
@@ -7578,7 +7581,7 @@ namespace RevenuePlanner.Helpers
                         string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
 
                         lstEntityIds = objDB.CustomField_Entity.Where(customFieldEntity => lstCustomFieldIds.Contains(customFieldEntity.CustomFieldId) &&
-                                                                    //customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) &&
+                            //customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) &&
                                                                     customFieldEntity.CustomField.EntityType == EntityTypeTactic && customFieldEntity.CustomField.CustomFieldType.Name == DropDownList &&
                                                                     lstCustomFieldOptionIds.Contains(customFieldEntity.Value) && lstTacticId.Contains(customFieldEntity.EntityId))
                                                                 .Select(customFieldEntity => customFieldEntity.EntityId).ToList();
@@ -9642,11 +9645,11 @@ namespace RevenuePlanner.Helpers
                 {
                     lst_RecipientId = Common.GetCollaboratorForCampaign(Convert.ToInt32(componentId));
                 }
-                else if((description == Convert.ToString(Enums.ChangeLog_ComponentType.plan).ToLower() || description == Convert.ToString(Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]).ToLower()) && componentId != null && !string.IsNullOrEmpty(EntityOwnerID))
+                else if ((description == Convert.ToString(Enums.ChangeLog_ComponentType.plan).ToLower() || description == Convert.ToString(Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]).ToLower()) && componentId != null && !string.IsNullOrEmpty(EntityOwnerID))
                 {
                     lst_RecipientId.Add(EntityOwnerID);
                 }
-             
+
                 string RecipientIds = null;
 
                 if (lst_RecipientId.Count > 0)
