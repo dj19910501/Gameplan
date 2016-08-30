@@ -1720,10 +1720,10 @@ GO
 
 -- Add By Nishant Sheth
 -- #2502 : Changes on export to csv
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ExportToCSV]') AND type in (N'P', N'PC'))
-BEGIN
-EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[ExportToCSV] AS' 
-END
+/****** Object:  StoredProcedure [dbo].[ExportToCSV]    Script Date: 08/30/2016 7:25:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ExportToCSV]') AND type in (N'P', N'PC'))
 BEGIN
@@ -1797,6 +1797,7 @@ NULL AS 'Value','Plan' AS'EntityType',[CustomField].Name AS 'ColName',0 As 'Pare
 ,[Plan].ModelId AS 'ModelId'
 ,null As 'ExternalName'
 , 'TextBox' As CustomFieldType
+,'--' as TacticCategory
 FROM [Plan] AS [Plan] WITH (NOLOCK) 
 OUTER APPLY (SELECT PlanCampaignId,PlanId,StartDate,EndDate FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0) Campaign 
 OUTER APPLY (SELECT * FROM CustomField WHERE CustomField.ClientId=@ClientId AND CustomField.EntityType!='Budget' AND IsDeleted=0) [CustomField]
@@ -1817,6 +1818,7 @@ CONVERT(NVARCHAR(800),CASE CustomFieldType.Name WHEN 'DropDownList' THEN (SELECT
 ,[Plan].ModelId AS 'ModelId'
 ,null As 'ExternalName'
 ,IsNull(CustomFieldType.Name,'TextBox') as CustomFieldType
+,'--' as TacticCategory
 FROM [Plan] WITH (NOLOCK)
 CROSS APPLY (SELECT PlanCampaignId,PlanId,Title,StartDate,EndDate,IntegrationInstanceCampaignId,CreatedBy FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0) Campaign 
 OUTER APPLY (SELECT * FROM CustomField_Entity AS CustomField_Entity WITH (NOLOCK) WHERE [Campaign].PlanCampaignId=CustomField_Entity.EntityId) CustomField_Entity
@@ -1839,6 +1841,7 @@ CONVERT(NVARCHAR(800),CASE [CustomFieldType].Name WHEN 'DropDownList' THEN (SELE
 ,[Plan].ModelId AS 'ModelId'
 ,null As 'ExternalName'
 ,IsNull([CustomFieldType].Name,'TextBox') as CustomFieldType
+,'--' as TacticCategory
 FROM [Plan] WITH (NOLOCK)
 CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0 ) Campaign 
 CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title,StartDate,EndDate,IntegrationInstanceProgramId,CreatedBy FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE [Campaign].PlanCampaignId= Program.PlanCampaignId 
@@ -1864,6 +1867,7 @@ CONVERT(NVARCHAR(800),CASE [CustomFieldType].Name WHEN 'DropDownList' THEN (SELE
 ,[Plan].ModelId AS 'ModelId'
 ,[Tactic].TacticCustomName As 'ExternalName'
 ,IsNull([CustomFieldType].Name,'TextBox') as CustomFieldType
+,TacticType.AssetType as TacticCategory
 FROM [Plan] WITH (NOLOCK)
 CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0 ) Campaign 
 CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE [Campaign].PlanCampaignId= Program.PlanCampaignId AND Program.IsDeleted=0 ) Program
@@ -1875,7 +1879,7 @@ OUTER APPLY (SELECT * FROM CustomField_Entity AS CustomField_Entity WITH (NOLOCK
 OUTER APPLY (SELECT * FROM CustomField WHERE  CustomField.ClientId=@ClientId AND CustomField.EntityType='Tactic' AND CustomField.CustomFieldId = CustomField_Entity.CustomFieldId AND IsDeleted=0) [CustomField]
 OUTER APPLY (SELECT * FROM CustomFieldType WHERE CustomFieldType.CustomFieldTypeId=CustomField.CustomFieldTypeId) [CustomFieldType]
 OUTER APPLY (SELECT * FROM CustomFieldOption WHERE CustomField.CustomFieldId=CustomFieldOption.CustomFieldId AND CustomFieldOption.IsDeleted=0 ) [CustomFieldOption]
-OUTER APPLY (SELECT TacticTypeId,Title FROM TacticType AS TacticType WITH (NOLOCK) WHERE [Tactic].TacticTypeId=TacticType.TacticTypeId AND TacticType.IsDeleted=0) TacticType
+OUTER APPLY (SELECT TacticTypeId,Title,AssetType FROM TacticType AS TacticType WITH (NOLOCK) WHERE [Tactic].TacticTypeId=TacticType.TacticTypeId AND TacticType.IsDeleted=0) TacticType
 WHERE 
 (CASE WHEN @HoneyCombids IS NULL THEN [Plan].PlanId END) IN (@PlanId)
 OR (CASE WHEN @HoneyCombids IS NOT NULL THEN Tactic.PlanTacticId END)IN(SELECT item From #tblTacticHoneyComb) 
@@ -1892,6 +1896,7 @@ CONVERT(NVARCHAR(800),CASE [CustomFieldType].Name WHEN 'DropDownList' THEN (SELE
 ,[Plan].ModelId AS 'ModelId'
 ,null As 'ExternalName'
 ,IsNull([CustomFieldType].Name,'TextBox') as CustomFieldType
+,'--' as TacticCategory
 FROM [Plan] WITH (NOLOCK)
 CROSS APPLY (SELECT PlanCampaignId,PlanId,Title FROM Plan_Campaign AS Campaign WITH (NOLOCK) WHERE [Plan].PlanId=[Campaign].PlanId AND Campaign.IsDeleted=0 ) Campaign 
 CROSS APPLY (SELECT PlanProgramId,PlanCampaignId,Title FROM Plan_Campaign_Program AS Program WITH (NOLOCK) WHERE [Campaign].PlanCampaignId= Program.PlanCampaignId AND Program.IsDeleted=0 ) Program
@@ -1927,6 +1932,7 @@ Lineitem NVARCHAR(MAX),
 StartDate NVARCHAR(MAX),
 EndDate NVARCHAR(MAX),
 PlannedCost FLOAT,
+TacticCategory NVARCHAR(MAX),
 [Type] NVARCHAR(MAX),
 SFDCId NVARCHAR(MAX),
 EloquaId NVARCHAR(MAX),
@@ -1983,6 +1989,7 @@ DECLARE @query nvarchar(max)
 		StartDate,
 		EndDate,
 		PlannedCost,
+		TacticCategory,
 		Type,
 		SFDCId,
 		EloquaId,
@@ -2180,7 +2187,9 @@ ORDER BY (CASE EntityType WHEN 'Campaign' THEN 1
 END
 
 
+
 GO
+
 -- End By Nishant Sheth
 
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = N'INT')
