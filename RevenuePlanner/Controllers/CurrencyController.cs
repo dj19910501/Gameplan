@@ -114,7 +114,7 @@ namespace RevenuePlanner.Controllers
             //lstYearViewBag.yearList = new List<SelectListItem> { };
             List<SelectListItem> lstYear = new List<SelectListItem>();
             SelectListItem obj;
-            for (int i = 2000; i <= DateTime.Now.Year+5; i++)
+            for (int i = 2012; i <= DateTime.Now.Year+5; i++)
             {
                 obj = new SelectListItem();
                 obj.Text = Convert.ToString(i);
