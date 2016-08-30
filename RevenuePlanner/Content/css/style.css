@@ -15482,7 +15482,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 150px;
+    width: 145px;
 }
 .dd-right{
     float: right;
@@ -18007,3 +18007,6 @@ tbody.column2 {
 .ui-multiselect-filter input[type="search"] {
     height:auto;
 }
+/* Added for #2547 bhumika 30/08/2016 */
+.instruction{
+    color:#aaa; font-size:12px;margin-bottom: 10px; display: block;} 

@@ -17591,6 +17591,9 @@ namespace RevenuePlanner.Controllers
             Response.ContentType = "Application/x-excel";
             Response.ContentEncoding = System.Text.Encoding.Default; // Add By Nishant Sheth // #2502 For handle multicurrency symbol in exported file
             Response.Charset = "UTF-8";
+            //added by devanshi to replace invalid character for filename
+            FileName = string.Join("_", FileName.Split(Path.GetInvalidFileNameChars()));
+
             // Modified By Nishant Sheth
             // Export csv does not work in Firefox #2430
             if (!string.IsNullOrEmpty(FileName))

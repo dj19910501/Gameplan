@@ -1316,7 +1316,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 CacheObject objCache = new CacheObject();
-                var lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId);
+                var lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId).OrderBy(a=>a.EntityTitle).ToList();
                 objCache.AddCache(Enums.CacheObject.ClientEntityList.ToString(), lstentity);
             }
             catch (Exception ex)
@@ -1344,13 +1344,13 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId);
+                    lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId).OrderBy(a => a.EntityTitle).ToList();
                     objCache.AddCache(Enums.CacheObject.ClientEntityList.ToString(), lstentity);
                 }
                 var lstentityType = Enum.GetValues(typeof(Enums.EntityType)).Cast<Enums.EntityType>().Select(a => a.ToString()).ToList();
                 foreach (string EntityType in lstentityType)
                 {
-                    var entity = lstentity.Where(a =>  HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).Contains(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
+                    var entity = lstentity.Where(a =>  HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).StartsWith(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
                 {
                     category = a.Entity,
                     value = a.EntityId,
