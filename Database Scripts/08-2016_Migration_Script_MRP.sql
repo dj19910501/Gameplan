@@ -3893,7 +3893,12 @@ END
 GO
 /*Add By Nishant Sheth Create indexes for custom field entity*/
 /****** Object:  Index [_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4]    Script Date: 08/30/2016 12:29:09 ******/
-DROP INDEX [_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4] ON [dbo].[CustomField_Entity]
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4' AND object_id = OBJECT_ID('CustomField_Entity'))
+BEGIN
+	DROP INDEX [_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4] ON [dbo].[CustomField_Entity]
+END
 GO
 
 /****** Object:  Index [_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4]    Script Date: 08/30/2016 12:29:09 ******/
@@ -3906,8 +3911,14 @@ CREATE NONCLUSTERED INDEX [_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4]
 GO
 
 /****** Object:  Index [IX_CustomField_ClientId]    Script Date: 08/30/2016 12:39:49 ******/
-DROP INDEX [IX_CustomField_ClientId] ON [dbo].[CustomField]
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_CustomField_ClientId' AND object_id = OBJECT_ID('CustomField'))
+BEGIN
+	DROP INDEX [IX_CustomField_ClientId] ON [dbo].[CustomField]
+END
 GO
+
 
 /****** Object:  Index [IX_CustomField_ClientId]    Script Date: 08/30/2016 12:39:49 ******/
 CREATE NONCLUSTERED INDEX [IX_CustomField_ClientId] ON [dbo].[CustomField]
