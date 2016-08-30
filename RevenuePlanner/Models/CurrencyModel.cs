@@ -26,7 +26,8 @@ namespace RevenuePlanner.Models
         public Guid ClientId { get; set; }
         public Guid UserId { get; set; }
         public bool IsDefault { get; set; }
-	    // Add By Nishant Sheth
+        public bool IsPreferred { get; set; }
+        // Add By Nishant Sheth
         public class ClientCurrency
         {
             public string CurrencyCode { get; set; }

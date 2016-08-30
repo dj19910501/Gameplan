@@ -63,7 +63,7 @@
                             {
                                 <li id="licurrency_@item.ISOCurrencyCode" class="liPointer">
                                     @*<a href="#">*@
-                                        <strong>@item.CurrencySymbol @item.ISOCurrencyCode</strong> <span class="currency-txt">(@item.CurrencyDetail)</span>
+                                    <strong>@item.CurrencySymbol @item.ISOCurrencyCode</strong> <span class="currency-txt">(@item.CurrencyDetail)</span>
                                     @*</a>*@
                                 </li>
                             }
@@ -88,7 +88,7 @@
                             {
                                 <li id="limycurrency_@item.ISOCurrencyCode" isdefault='@item.IsDefault' class="liPointer">
                                     @*<a href="#">*@
-                                        <strong>@item.CurrencySymbol @item.ISOCurrencyCode</strong> <span class="currency-txt">(@item.CurrencyDetail)</span>
+                                    <strong>@item.CurrencySymbol @item.ISOCurrencyCode</strong> <span class="currency-txt">(@item.CurrencyDetail)</span>
                                     @*</a>*@
                                 </li>
 
@@ -104,6 +104,21 @@
                                         $('#limycurrency_' + '@item.ISOCurrencyCode').attr('isdefault', '0');
                                     </script>
                                 }
+                                if (@item.IsPreferred == true)
+                                {
+                                    <script>
+                                        $('#limycurrency_' + '@item.ISOCurrencyCode').attr('ispreferred', '1');
+                                    </script>
+                                }
+                                else
+                                {
+                                    <script>
+                                        $('#limycurrency_' + '@item.ISOCurrencyCode').attr('ispreferred', '0');
+                                    </script>
+                                }
+                                <script>
+                                    $('#limycurrency_' + '@item.ISOCurrencyCode').attr('code', '@item.ISOCurrencyCode');
+                                </script>
                             }
                         }
                     </ul>
@@ -130,9 +145,8 @@
     </div>
 </div>
 <style>
-    .liPointer
-    {
-        cursor:pointer;
+    .liPointer {
+        cursor: pointer;
     }
 </style>
 <script>
@@ -247,15 +261,27 @@
         var cnt = 0;
         var defaultcurrency = '';
         var isDefaultCurrencyExist = false;
+        var preferredcurrency = '';
+        var ispreferredCurrencyExist = false;
         $(ulId + " li").each(function () {
             if ($(this).hasClass('searchactive')) {
                 cnt = cnt + 1;
                 if ($(this).attr("isdefault") == 1) {
                     isDefaultCurrencyExist = true;
-                    defaultcurrency = $(this).find("span").text();
+                    defaultcurrency = $(this).attr("code");
+                }
+                if ($(this).attr("ispreferred") == 1) {
+                    ispreferredCurrencyExist = true;
+                    if (preferredcurrency != '')
+                    {
+                        preferredcurrency += ' , ';
+
+                    }
+                    preferredcurrency += $(this).attr("code");
                 }
             }
         });
+
         if (isDefaultCurrencyExist == true) {
             $("#diverrormsg").html("You can't delete default currency , [" + defaultcurrency + "] is default currency.");
             ShowMessages();
@@ -263,15 +289,25 @@
         }
         if (cnt > 0) {
 
-            var r = confirm("Are you sure you want to remove currency?");
+            //if (ispreferredCurrencyExists == true) {
+            //    $("#diverrormsg").html("You can't delete default currency , [" + defaultcurrency + "] is default currency.");
+            //    ShowMessages();
+            //    return;
+            //}
+            //msg = "Are you sure you want to remove currency?";
+            var msg = "Are you sure you want to remove currency?";
+            if (ispreferredCurrencyExist)
+                msg = "Are you sure? There are current users who are using " + preferredcurrency + " as their preferred currency. Deleting this will default their view to $USD. Do you wish to continue?";
+
+            var r = confirm(msg);
             if (r == true) {
-              
+
                 //$(ulId + " li").each(function () {
                 //    if ($(this).hasClass('searchactive')) {
-                       
+
                 //    }
                 //});
-                
+
                 $(ulId + " li").each(function () {
                     if ($(this).hasClass('searchactive')) {
                         // cnt = cnt + 1;
@@ -298,7 +334,7 @@
             }
         }
         ShowMessages();
-        
+
     });
     //Click of Save button which will save all records which is in my list
     $('#btnSave').click(function () {

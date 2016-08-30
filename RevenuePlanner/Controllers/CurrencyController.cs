@@ -49,6 +49,8 @@ namespace RevenuePlanner.Controllers
             List<CurrencyModel> lstCurrency = new List<CurrencyModel>();
             IEnumerable<BDSService.Currency> lstCurrencydata = objBDSServiceClient.GetAllCurrency();
             IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrency(Sessions.User.ClientId);
+            // var users = objBDSServiceClient.GetUserListComplete();
+            var users = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
 
             if (lstCurrencydata != null)
             {
@@ -68,6 +70,16 @@ namespace RevenuePlanner.Controllers
                     if (lstClientCurrency.Where(w => w.ISOCurrencyCode == item.ISOCurrencyCode).Any())
                         objCurrency.ClientId = Sessions.User.ClientId;
                     objCurrency.ISOCurrencyCode = item.ISOCurrencyCode;
+                    var predata = users.Where(w => w.PreferredCurrencyCode==objCurrency.ISOCurrencyCode).FirstOrDefault();
+                    if (predata != null)
+                    {
+                        objCurrency.IsPreferred = true;
+
+                    }
+                    else
+                    {
+                        objCurrency.IsPreferred = false;
+                    }
                     lstCurrency.Add(objCurrency);
                 }
 
@@ -102,7 +114,7 @@ namespace RevenuePlanner.Controllers
             //lstYearViewBag.yearList = new List<SelectListItem> { };
             List<SelectListItem> lstYear = new List<SelectListItem>();
             SelectListItem obj;
-            for (int i = 2000; i <= DateTime.Now.Year; i++)
+            for (int i = 2000; i <= DateTime.Now.Year+5; i++)
             {
                 obj = new SelectListItem();
                 obj.Text = Convert.ToString(i);
@@ -184,7 +196,7 @@ namespace RevenuePlanner.Controllers
                         lineitemrowsobj.id = RowID;
                         Plandataobj lineitemdataobj = new Plandataobj();
                         lineitemdataobj = new Plandataobj();
-                        lineitemdataobj.value = "<span><b>" + lstClientCurrency.ElementAt(i).CurrencySymbol + "</b></span>" + " " + lstClientCurrency.ElementAt(i).ISOCurrencyCode + " (" + lstClientCurrency.ElementAt(i).CurrencyDetail + ")";
+                        lineitemdataobj.value = "<span><strong>$ USD -> " + lstClientCurrency.ElementAt(i).CurrencySymbol + "</strong></span>" + " <strong>" + lstClientCurrency.ElementAt(i).ISOCurrencyCode + " </strong>(" + lstClientCurrency.ElementAt(i).CurrencyDetail + ")";
                         lineitemdataobjlist.Add(lineitemdataobj);
 
 
@@ -387,7 +399,7 @@ namespace RevenuePlanner.Controllers
                 headobjother.type = "ro";
                 headobjother.id = "Currency";
                 headobjother.sort = "str";
-                headobjother.width = 140;
+                headobjother.width = 150;
                 headobjother.value = "CURRENCY";
                 headobjlist.Add(headobjother);
 
