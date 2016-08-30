@@ -857,9 +857,12 @@ namespace RevenuePlanner.Helpers
                     List<string> UserName = new List<string>();
                     List<string> EmailId = new List<string>();
                     List<string> UserId = new List<string>();
-                    UserName.Add(UsersDetails.FirstOrDefault(u => u.UserId == createdBy).FirstName);
-                    EmailId.Add(UsersDetails.FirstOrDefault(u => u.UserId == createdBy).Email);
-                    UserId.Add(createdBy.ToString());
+                    if (createdBy != Sessions.User.UserId)
+                    {
+                        UserName.Add(UsersDetails.FirstOrDefault(u => u.UserId == createdBy).FirstName);
+                        EmailId.Add(UsersDetails.FirstOrDefault(u => u.UserId == createdBy).Email);
+                        UserId.Add(createdBy.ToString());
+                    }
                     // To add manager's email address, By dharmraj, Ticket #537
                     //var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
                     //var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
