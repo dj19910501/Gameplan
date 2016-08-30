@@ -3118,7 +3118,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            model = SetTacticWeightage(model, IsCustomFieldViewBy);
+            model = SetTacticWeightagePerfromance(model, IsCustomFieldViewBy);
             model = ManageLineItems(model, IsViewByLineItem, IsViewByTactic);
 
             //Set actual for quarters
@@ -4600,10 +4600,116 @@ namespace RevenuePlanner.Controllers
         /// <param name="lstModel">BudgetModelReport List</param>
         /// <param name="IsCustomFieldViewBy">ViewBy is Customfield or not</param>
         /// <returns>Return BudgetModelReport list.</returns>
-        private List<BudgetModelReport> SetTacticWeightage(List<BudgetModelReport> lstModel, bool IsCustomFieldViewBy)
+        //private List<BudgetModelReport> SetTacticWeightage(List<BudgetModelReport> lstModel, bool IsCustomFieldViewBy)
+        //{
+        //    List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
+        //    lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.ClientId).ToList();
+        //    int PlanTacticId = 0;
+        //    int ActivityId = 0;
+        //    int weightage = 100;
+        //    string CustomFieldOptionID = string.Empty;
+        //    foreach (BudgetModelReport obj in lstModel)
+        //    {
+        //        if (obj.ActivityType.Equals(ActivityType.ActivityTactic))
+        //        {
+        //            //// if ViewBy is CustomFieldType(like Campaign/Program/Tactic CustomFields) then set Weightage from respective tables O/W take default 100% for Textbox type.
+        //            //// if CustomFieldType is Dropdownlist then retrieve weightage from CustomFieldEntity or StageWeight table O/W take default 100% for Textbox type.
+        //            if (IsCustomFieldViewBy && obj.CustomFieldType.Equals(Enums.CustomFieldType.DropDownList.ToString()))
+        //            {
+        //                PlanTacticId = !string.IsNullOrEmpty(obj.Id) ? Convert.ToInt32(obj.Id.ToString()) : 0; // Get PlanTacticId from Tactic ActivityId.
+        //                CustomFieldOptionID = obj.TabActivityId.ToString(); // Get CustomfieldOptionId from Tactic ActivityId.
+
+        //                if (lstCustomFieldEntities != null && lstCustomFieldEntities.Count > 0)
+        //                {
+        //                    //// Get CustomFieldEntity based on EntityId and CustomFieldOptionId from CustomFieldEntities.
+        //                    var _custment = lstCustomFieldEntities.Where(_ent => _ent.EntityId.Equals(PlanTacticId) && _ent.Value.Equals(CustomFieldOptionID)).FirstOrDefault();
+        //                    if (_custment == null)
+        //                        weightage = 100;
+        //                    else if (_custment.CostWeightage != null && Convert.ToInt32(_custment.CostWeightage.Value) > 0) // Get CostWeightage from table CustomFieldEntity.
+        //                        weightage = Convert.ToInt32(_custment.CostWeightage.Value);
+
+        //                }
+        //                obj.Weightage = weightage;
+        //            }
+        //            else
+        //            {
+
+        //                obj.Weightage = 100;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            ActivityId = !string.IsNullOrEmpty(obj.Id) ? Convert.ToInt32(obj.Id.ToString()) : 0;
+
+        //            var LastItemsId = lstModel.Where(_ent => _ent.Id.Equals(obj.Id.ToString())).Select(list => list.TabActivityId).LastOrDefault();
+        //            var SelectedOptionsCount = lstCustomFieldEntities.Where(_ent => _ent.EntityId.Equals(ActivityId) && _ent.CustomFieldId.Equals(obj.CustomFieldID)).ToList().Count();
+        //            if (SelectedOptionsCount > 0)
+        //            {
+        //                var wt = weightage / SelectedOptionsCount;
+        //                var residual = weightage % SelectedOptionsCount;
+        //                if (obj.TabActivityId == LastItemsId && residual > 0)
+        //                {
+        //                    weightage = wt + 1;
+        //                }
+        //                else
+        //                {
+        //                    weightage = wt;
+
+        //                }
+
+        //            }
+        //            else
+        //            {
+        //                weightage = 100;
+        //            }
+        //            obj.Weightage = weightage;
+
+        //        }
+        //    }
+        //    return lstModel;
+        //}
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Due to performance issues
+        /// </summary>
+        /// <param name="lstModel"></param>
+        /// <param name="IsCustomFieldViewBy"></param>
+        /// <returns></returns>
+        private List<BudgetModelReport> SetTacticWeightagePerfromance(List<BudgetModelReport> lstModel, bool IsCustomFieldViewBy)
         {
             List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
-            lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.ClientId).ToList();
+            List<CustomField_Entity> lstCustomFieldEntities1 = new List<CustomField_Entity>();
+            //lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.ClientId).ToList();
+
+            var ListofEntityId = lstModel.Where(a => a.Id != null)
+                                        .Select(a => int.Parse(a.Id)).ToList();
+
+            var ListOfCustomFieldID = lstModel.Where(a => a.CustomFieldID > 0)
+                                        .Select(a => a.CustomFieldID).ToList();
+
+            if (ListOfCustomFieldID.Count > 0)
+            {
+
+                lstCustomFieldEntities = (from objCustomField in db.CustomFields
+                                           where ListOfCustomFieldID.Contains(objCustomField.CustomFieldId)
+                                           && objCustomField.ClientId == Sessions.User.ClientId
+                                            && objCustomField.IsDeleted == false
+                                           join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
+                                           where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
+                                           select objCustomfieldEntity).ToList();
+
+            }
+            else
+            {
+                lstCustomFieldEntities = (from objCustomField in db.CustomFields
+                                           where objCustomField.ClientId == Sessions.User.ClientId
+                                            && objCustomField.IsDeleted == false
+                                           join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
+                                           where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
+                                           select objCustomfieldEntity).ToList();
+            }
+
             int PlanTacticId = 0;
             int ActivityId = 0;
             int weightage = 100;
@@ -4668,7 +4774,6 @@ namespace RevenuePlanner.Controllers
             }
             return lstModel;
         }
-
         /// <summary>
         /// Calculate the LineItem cost value based on it's parent Tactic weightage.
         /// </summary>
@@ -6174,7 +6279,7 @@ namespace RevenuePlanner.Controllers
                                     // #2507 : Summary report chanages to apply multicurrency
                                     PlannedCostList = tacCostListData.Where(plancost => Quarters.Contains(plancost.Period)
                                         && plancost.Year == year)
-                                        .Select(plancost => 
+                                        .Select(plancost =>
                                             objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate)).ToList();
                                     TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Quarters.Contains(actual.Period) && actual.Year == year).Sum(actual => actual.Value));
                                     // Modified By Nishant Sheth
@@ -6183,7 +6288,7 @@ namespace RevenuePlanner.Controllers
                                     // #2507 : Summary report chanages to apply multicurrency
                                     BudgetCostList = _planBudgetList.Where(budgtcost => Quarters.Contains(budgtcost.Period)
                                         && budgtcost.Year == year)
-                                        .Select(budgtcost => 
+                                        .Select(budgtcost =>
                                             objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate)).ToList();
 
                                     _PlannedCostValue = PlannedCostList.Sum(val => val);
@@ -6226,7 +6331,7 @@ namespace RevenuePlanner.Controllers
                                 // #2507 : Summary report chanages to apply multicurrency
                                 _PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
                                     && plancost.Year == Convert.ToInt32(Year))
-                                    .Sum(plancost => 
+                                    .Sum(plancost =>
                                         objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));
 
                                 TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
@@ -6236,7 +6341,7 @@ namespace RevenuePlanner.Controllers
                                 // #2507 : Summary report chanages to apply multicurrency
                                 _BudgetCostValue = _planBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
                                     && budgtcost.Year == Convert.ToInt32(Year))
-                                    .Sum(budgtcost => 
+                                    .Sum(budgtcost =>
                                         objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));
 
                                 serPlannedData.Add(_PlannedCostValue);
@@ -6289,7 +6394,7 @@ namespace RevenuePlanner.Controllers
                                     // Modified By Nishant Sheth
                                     // #2507 : Summary report chanages to apply multicurrency
                                     _PlannedCostValue = tacCostListData.Where(plancost => plancost.Period.Equals(curntPeriod) && plancost.Year == year)
-                                        .Sum(plancost => 
+                                        .Sum(plancost =>
                                             objCurrency.GetValueByExchangeRate(plancost.Value, PlanExchangeRate));// Modified by nishant sheth #2052
                                     TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod) && actual.Year == year).Sum(actual => actual.Value));
                                     // Modified By Nishant Sheth
@@ -6297,7 +6402,7 @@ namespace RevenuePlanner.Controllers
                                     // Modified By Nishant Sheth
                                     // #2507 : Summary report chanages to apply multicurrency
                                     _BudgetCostValue = _planBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year)
-                                        .Sum(budgtcost => 
+                                        .Sum(budgtcost =>
                                             objCurrency.GetValueByExchangeRate(budgtcost.Value, PlanExchangeRate));// Modified by nishant sheth #2052
 
                                     serPlannedData.Add(_PlannedCostValue);

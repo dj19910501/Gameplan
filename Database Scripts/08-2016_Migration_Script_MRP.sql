@@ -3891,6 +3891,34 @@ END
 
 
 GO
+/*Add By Nishant Sheth Create indexes for custom field entity*/
+/****** Object:  Index [_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4]    Script Date: 08/30/2016 12:29:09 ******/
+DROP INDEX [_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4] ON [dbo].[CustomField_Entity]
+GO
+
+/****** Object:  Index [_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4]    Script Date: 08/30/2016 12:29:09 ******/
+CREATE NONCLUSTERED INDEX [_dta_index_CustomField_Entity_7_1966630049__K3_K2_K4] ON [dbo].[CustomField_Entity]
+(
+	[CustomFieldId] ASC,
+	[EntityId] ASC,
+	[Value] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+GO
+
+/****** Object:  Index [IX_CustomField_ClientId]    Script Date: 08/30/2016 12:39:49 ******/
+DROP INDEX [IX_CustomField_ClientId] ON [dbo].[CustomField]
+GO
+
+/****** Object:  Index [IX_CustomField_ClientId]    Script Date: 08/30/2016 12:39:49 ******/
+CREATE NONCLUSTERED INDEX [IX_CustomField_ClientId] ON [dbo].[CustomField]
+(
+	[ClientId] ASC
+)
+INCLUDE ( 	[CustomFieldId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+GO
+
+
+/*End By Nishant Sheth*/
 
 
 
