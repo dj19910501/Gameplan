@@ -12,14 +12,15 @@ GO
 CREATE FUNCTION [dbo].[GetIndicatorTitle]
 (
 	@IndicatorCode NVARCHAR(50),
-	@ClientId UNIQUEIDENTIFIER
+	@ClientId UNIQUEIDENTIFIER,
+	@EntityType NVARCHAR(50)
 )
 RETURNS NVARCHAR(MAX)
 AS
 BEGIN
 	DECLARE @IndicatorTitle NVARCHAR(MAX)
 
-	IF(@IndicatorCode = 'PLANNEDCOST')
+	IF(@IndicatorCode = 'PLANNEDCOST' OR @EntityType = 'Line Item' OR @EntityType = 'LineItem')
 	BEGIN
 		SET @IndicatorTitle = 'Planned Cost'
 	END
@@ -34,4 +35,5 @@ BEGIN
 
 	RETURN @IndicatorTitle
 END
+
 GO

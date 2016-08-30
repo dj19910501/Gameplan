@@ -58,9 +58,9 @@ BEGIN
 										'
 		-- Update IndicatorTitle based on Indicator Code
 		DECLARE @UpdateIndicatorTitle NVARCHAR(MAX) = ' 
-														UPDATE A SET A.IndicatorTitle = dbo.GetIndicatorTitle(A.Indicator,B.ClientId)
+														UPDATE A SET A.IndicatorTitle = dbo.GetIndicatorTitle(A.Indicator,B.ClientId,A.EntityType)
 														FROM @TempEntityTable A 
-														INNER JOIN vClientWise_EntityList B ON A.EntityId = B.EntityId AND A.EntityType = REPLACE(B.Entity,'' '','''')
+														INNER JOIN vClientWise_EntityList B ON A.EntityId = B.EntityId AND A.EntityType = B.Entity
 														'
 
 		-- For plan update projected value using different calculation rest of PLANNEDCOST

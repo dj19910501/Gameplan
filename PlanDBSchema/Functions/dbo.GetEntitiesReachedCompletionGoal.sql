@@ -67,9 +67,9 @@ BEGIN
 					SELECT PCPT.StartDate,PCPT.EndDate FROM [Plan_Campaign_Program_Tactic] PCPT 
 					WHERE PCPTLineItem.PlanTacticId = PCPT.PlanTacticId AND PCPT.IsDeleted = 0 AND PCPT.[Status] IN ('In-Progress','Complete','Approved') 
 				) PCPTLT
-				WHERE PCPTLineItem.PlanLineItemId = AR.EntityId AND AR.EntityType = 'LineItem' AND AR.Indicator = 'PLANNEDCOST' AND PCPTLineItem.IsDeleted = 0 AND AR.IsDisabled = 0 
+				WHERE PCPTLineItem.PlanLineItemId = AR.EntityId AND AR.EntityType = 'Line Item' AND AR.Indicator = 'PLANNEDCOST' AND PCPTLineItem.IsDeleted = 0 AND AR.IsDisabled = 0 
 			) PCPTL
-			WHERE AR.EntityType IN ('Plan','Campaign','Program','Tactic','LineItem')
+			WHERE AR.EntityType IN ('Plan','Campaign','Program','Tactic','Line Item')
 					
 	RETURN
 END

@@ -2406,12 +2406,13 @@ BEGIN
 					SELECT PCPT.StartDate,PCPT.EndDate FROM [Plan_Campaign_Program_Tactic] PCPT 
 					WHERE PCPTLineItem.PlanTacticId = PCPT.PlanTacticId AND PCPT.IsDeleted = 0 AND PCPT.[Status] IN ('In-Progress','Complete','Approved') 
 				) PCPTLT
-				WHERE PCPTLineItem.PlanLineItemId = AR.EntityId AND AR.EntityType = 'LineItem' AND AR.Indicator = 'PLANNEDCOST' AND PCPTLineItem.IsDeleted = 0 AND AR.IsDisabled = 0 
+				WHERE PCPTLineItem.PlanLineItemId = AR.EntityId AND AR.EntityType = 'Line Item' AND AR.Indicator = 'PLANNEDCOST' AND PCPTLineItem.IsDeleted = 0 AND AR.IsDisabled = 0 
 			) PCPTL
-			WHERE AR.EntityType IN ('Plan','Campaign','Program','Tactic','LineItem')
+			WHERE AR.EntityType IN ('Plan','Campaign','Program','Tactic','Line Item')
 					
 	RETURN
 END
+
 GO
 
 -- =============================================
@@ -2652,14 +2653,15 @@ GO
 CREATE FUNCTION [dbo].[GetIndicatorTitle]
 (
 	@IndicatorCode NVARCHAR(50),
-	@ClientId UNIQUEIDENTIFIER
+	@ClientId UNIQUEIDENTIFIER,
+	@EntityType NVARCHAR(50)
 )
 RETURNS NVARCHAR(MAX)
 AS
 BEGIN
 	DECLARE @IndicatorTitle NVARCHAR(MAX)
 
-	IF(@IndicatorCode = 'PLANNEDCOST')
+	IF(@IndicatorCode = 'PLANNEDCOST' OR @EntityType = 'Line Item' OR @EntityType = 'LineItem')
 	BEGIN
 		SET @IndicatorTitle = 'Planned Cost'
 	END
@@ -2674,6 +2676,7 @@ BEGIN
 
 	RETURN @IndicatorTitle
 END
+
 GO
 
 -- ======================================================================================================
@@ -2855,7 +2858,7 @@ BEGIN
 		) FinalData GROUP BY PlanTacticId,Indicator
 		
 		UNION 
-		SELECT PlanLineItemId,'LINEITEM',Indicator,SUM(ProjectedStageValue),SUM(ActualStageValue)
+		SELECT PlanLineItemId,'LINE ITEM',Indicator,SUM(ProjectedStageValue),SUM(ActualStageValue)
 		FROM (
 		SELECT PlanLineItemId, Indicator, ProjectedStageValue, 
 		SUM(LineItemActuals) AS ActualStageValue FROM
@@ -2867,7 +2870,7 @@ BEGIN
 			OUTER APPLY (SELECT Value AS ActualValue FROM Plan_Campaign_Program_Tactic_LineItem_Actual Actual 
 				WHERE LineItem.PlanLineItemId = Actual.PlanLineItemId
 			) Actual
-			WHERE RuleEntityTable.EntityType = 'LineItem' AND RuleEntityTable.Indicator = 'PLANNEDCOST'
+			WHERE RuleEntityTable.EntityType = 'Line Item' AND RuleEntityTable.Indicator = 'PLANNEDCOST'
 			GROUP BY PlanLineItemId, RuleEntityTable.Indicator, Cost
 		) PCPTL
 		GROUP BY PlanLineItemId, Indicator, ProjectedStageValue
@@ -2875,6 +2878,7 @@ BEGIN
 
 	RETURN
 END
+
 GO
 
 
@@ -2980,9 +2984,9 @@ BEGIN
 										'
 		-- Update IndicatorTitle based on Indicator Code
 		DECLARE @UpdateIndicatorTitle NVARCHAR(MAX) = ' 
-														UPDATE A SET A.IndicatorTitle = dbo.GetIndicatorTitle(A.Indicator,B.ClientId)
+														UPDATE A SET A.IndicatorTitle = dbo.GetIndicatorTitle(A.Indicator,B.ClientId,A.EntityType)
 														FROM @TempEntityTable A 
-														INNER JOIN vClientWise_EntityList B ON A.EntityId = B.EntityId AND A.EntityType = REPLACE(B.Entity,'' '','''')
+														INNER JOIN vClientWise_EntityList B ON A.EntityId = B.EntityId AND A.EntityType = B.Entity
 														'
 
 		-- For plan update projected value using different calculation rest of PLANNEDCOST
@@ -3057,6 +3061,7 @@ BEGIN
 		 RAISERROR (@ErMessage, @ErSeverity, @ErState)
 	END CATCH 
 END
+
 GO
 /*===================================================================================
 Completed By : Arpita Soni

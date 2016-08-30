@@ -178,7 +178,7 @@ BEGIN
 		) FinalData GROUP BY PlanTacticId,Indicator
 		
 		UNION 
-		SELECT PlanLineItemId,'LINEITEM',Indicator,SUM(ProjectedStageValue),SUM(ActualStageValue)
+		SELECT PlanLineItemId,'LINE ITEM',Indicator,SUM(ProjectedStageValue),SUM(ActualStageValue)
 		FROM (
 		SELECT PlanLineItemId, Indicator, ProjectedStageValue, 
 		SUM(LineItemActuals) AS ActualStageValue FROM
@@ -190,7 +190,7 @@ BEGIN
 			OUTER APPLY (SELECT Value AS ActualValue FROM Plan_Campaign_Program_Tactic_LineItem_Actual Actual 
 				WHERE LineItem.PlanLineItemId = Actual.PlanLineItemId
 			) Actual
-			WHERE RuleEntityTable.EntityType = 'LineItem' AND RuleEntityTable.Indicator = 'PLANNEDCOST'
+			WHERE RuleEntityTable.EntityType = 'Line Item' AND RuleEntityTable.Indicator = 'PLANNEDCOST'
 			GROUP BY PlanLineItemId, RuleEntityTable.Indicator, Cost
 		) PCPTL
 		GROUP BY PlanLineItemId, Indicator, ProjectedStageValue
