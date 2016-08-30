@@ -1,4 +1,3 @@
-
 -- ===================================================
 -- Author:		Arpita Soni
 -- Create date: 08/08/2016
@@ -74,7 +73,7 @@ BEGIN
 		-- Convert percent of goal from Projected and Actual values
 		SET @CalculatePercentGoalQuery = ' UPDATE @TempEntityTable SET CalculatedPercentGoal = 
 											CASE WHEN ProjectedStageValue = 0 AND ISNULL(ActualStageValue,0) = 0 THEN 0 
-												 WHEN (ProjectedStageValue = 0 AND ISNULL(ActualStageValue,0) != 0) OR (ActualStageValue * 100 / ProjectedStageValue) > 100 THEN 100 
+												 WHEN (ProjectedStageValue = 0 AND ISNULL(ActualStageValue,0) != 0) THEN 100 
 												 ELSE ISNULL(ActualStageValue,0) * 100 / ProjectedStageValue END ;
 										   SELECT * FROM @TempEntityTable 
 										   '
@@ -97,13 +96,13 @@ BEGIN
 
 		-- For less than rule
 		DECLARE @LessThanWhere		NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal < IndicatorGoal AND IndicatorComparision = ''LT'' AND 
-															ISNULL(ProjectedStageValue,0) != 0 AND ISNULL(ActualStageValue,0) != 0 '
+															(ISNULL(ProjectedStageValue,0) != 0 OR ISNULL(ActualStageValue,0) != 0) '
 		-- For greater than rule
 		DECLARE @GreaterThanWhere	NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal > IndicatorGoal AND IndicatorComparision = ''GT'' AND 
-															ISNULL(ProjectedStageValue,0) != 0 AND ISNULL(ActualStageValue,0) != 0 '
+															(ISNULL(ProjectedStageValue,0) != 0 OR ISNULL(ActualStageValue,0) != 0) '
 		-- For equal to rule
 		DECLARE @EqualToWhere		NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal = IndicatorGoal AND IndicatorComparision = ''EQ'' AND 
-															ISNULL(ProjectedStageValue,0) != 0 AND ISNULL(ActualStageValue,0) != 0 '
+															(ISNULL(ProjectedStageValue,0) != 0 OR ISNULL(ActualStageValue,0) != 0) '
 
 		SET @InsertQueryForLT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtLessThan +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @LessThanWhere
 		SET @InsertQueryForGT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtGreaterThan +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @GreaterThanWhere
@@ -136,5 +135,4 @@ BEGIN
 		 RAISERROR (@ErMessage, @ErSeverity, @ErState)
 	END CATCH 
 END
-
 GO

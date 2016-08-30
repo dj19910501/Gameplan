@@ -2306,9 +2306,8 @@ CREATE TYPE [dbo].[TacticForRuleEntities] AS TABLE(
 	[PercentComplete] [int] NULL,
 	[ProjectedStageValue] [float] NULL,
 	[ActualStageValue] [float] NULL,
-	[CalculatedPercentGoal] [int] NULL
+	[CalculatedPercentGoal] [float] NULL
 )
-
 GO
 
 -- ======================================================
@@ -2996,7 +2995,7 @@ BEGIN
 		-- Convert percent of goal from Projected and Actual values
 		SET @CalculatePercentGoalQuery = ' UPDATE @TempEntityTable SET CalculatedPercentGoal = 
 											CASE WHEN ProjectedStageValue = 0 AND ISNULL(ActualStageValue,0) = 0 THEN 0 
-												 WHEN (ProjectedStageValue = 0 AND ISNULL(ActualStageValue,0) != 0) OR (ActualStageValue * 100 / ProjectedStageValue) > 100 THEN 100 
+												 WHEN (ProjectedStageValue = 0 AND ISNULL(ActualStageValue,0) != 0) THEN 100 
 												 ELSE ISNULL(ActualStageValue,0) * 100 / ProjectedStageValue END ;
 										   SELECT * FROM @TempEntityTable 
 										   '
@@ -3058,7 +3057,6 @@ BEGIN
 		 RAISERROR (@ErMessage, @ErSeverity, @ErState)
 	END CATCH 
 END
-
 GO
 /*===================================================================================
 Completed By : Arpita Soni

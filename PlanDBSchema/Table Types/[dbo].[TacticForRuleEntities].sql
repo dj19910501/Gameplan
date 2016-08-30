@@ -20,8 +20,8 @@ CREATE TYPE [dbo].[TacticForRuleEntities] AS TABLE(
 	[StartDate] [datetime] NULL,
 	[EndDate] [datetime] NULL,
 	[PercentComplete] [int] NULL,
-	[ProjectedStageValue] [int] NULL,
-	[ActualStageValue] [int] NULL,
-	[CalculatedPercentGoal] [int] NULL
+	[ProjectedStageValue] [float] NULL,
+	[ActualStageValue] [float] NULL,
+	[CalculatedPercentGoal] [float] NULL
 )
 GO
