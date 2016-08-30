@@ -1461,6 +1461,7 @@ namespace RevenuePlanner.Helpers
             Type,
             Owner,
             PlannedCost,
+            TacticCategory,
             TargetStageGoal,
             MQL,
             Revenue,

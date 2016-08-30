@@ -17947,7 +17947,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (columns[j].ToString() == Enums.DownloadCSV.EndDate.ToString())
                         {
-                            string EndDate = Convert.ToString(dr[i][columns[j].ToString()]).Split(';').LastOrDefault();
+                            string EndDate = Convert.ToString(dr[i][columns[j].ToString()]).Split(';').Max();
                             row[columns[j].ToString()] = EndDate;
                         }
                         else
