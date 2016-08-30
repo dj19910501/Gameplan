@@ -9248,23 +9248,27 @@ namespace RevenuePlanner.Controllers
                                             db.SaveChanges();
                                         }
                                         //// Insert New record to table.
-                                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                        objNewLineitem.PlanTacticId = form.PlanTacticId;
-                                        objNewLineitem.Title = Common.LineItemTitleDefault + objTactic.Title;
-                                        if (objTactic.Cost > totalLineitemCost)
+                                        //// Modified By Nishant Sheth for Ticket #2538
+                                        if (totalLineitemCost != objTactic.Cost)
                                         {
-                                            objNewLineitem.Cost = objTactic.Cost - totalLineitemCost;
+                                            Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                            objNewLineitem.PlanTacticId = form.PlanTacticId;
+                                            objNewLineitem.Title = Common.LineItemTitleDefault + objTactic.Title;
+                                            if (objTactic.Cost > totalLineitemCost)
+                                            {
+                                                objNewLineitem.Cost = objTactic.Cost - totalLineitemCost;
+                                            }
+                                            else
+                                            {
+                                                objNewLineitem.Cost = 0;
+                                            }
+                                            objNewLineitem.Description = string.Empty;
+                                            objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                            objNewLineitem.CreatedDate = DateTime.Now;
+                                            objNewLineitem.LinkedLineItemId = objLinkedNewLineitem.PlanLineItemId;
+                                            db.Entry(objNewLineitem).State = EntityState.Added;
+                                            db.SaveChanges();
                                         }
-                                        else
-                                        {
-                                            objNewLineitem.Cost = 0;
-                                        }
-                                        objNewLineitem.Description = string.Empty;
-                                        objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                        objNewLineitem.CreatedDate = DateTime.Now;
-                                        objNewLineitem.LinkedLineItemId = objLinkedNewLineitem.PlanLineItemId;
-                                        db.Entry(objNewLineitem).State = EntityState.Added;
-                                        db.SaveChanges();
                                     }
                                     else
                                     {
@@ -13508,22 +13512,26 @@ namespace RevenuePlanner.Controllers
                                         db.Entry(objLinkedNewLineitem).State = EntityState.Added;
 
                                     }
-                                    Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                    objNewLineitem.PlanTacticId = pcptl.Plan_Campaign_Program_Tactic.PlanTacticId;
-                                    objNewLineitem.Title = Common.LineItemTitleDefault + pcptl.Plan_Campaign_Program_Tactic.Title;
+                                    //// Modified By Nishant Sheth for Ticket #2538
                                     if (pcptl.Plan_Campaign_Program_Tactic.Cost > totalLoneitemCost)
                                     {
-                                        objNewLineitem.Cost = pcptl.Plan_Campaign_Program_Tactic.Cost - totalLoneitemCost;
+                                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                        objNewLineitem.PlanTacticId = pcptl.Plan_Campaign_Program_Tactic.PlanTacticId;
+                                        objNewLineitem.Title = Common.LineItemTitleDefault + pcptl.Plan_Campaign_Program_Tactic.Title;
+                                        if (pcptl.Plan_Campaign_Program_Tactic.Cost > totalLoneitemCost)
+                                        {
+                                            objNewLineitem.Cost = pcptl.Plan_Campaign_Program_Tactic.Cost - totalLoneitemCost;
+                                        }
+                                        else
+                                        {
+                                            objNewLineitem.Cost = 0;
+                                        }
+                                        objNewLineitem.Description = string.Empty;
+                                        objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                        objNewLineitem.CreatedDate = DateTime.Now;
+                                        db.Entry(objNewLineitem).State = EntityState.Added;
+                                        db.SaveChanges();
                                     }
-                                    else
-                                    {
-                                        objNewLineitem.Cost = 0;
-                                    }
-                                    objNewLineitem.Description = string.Empty;
-                                    objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                    objNewLineitem.CreatedDate = DateTime.Now;
-                                    db.Entry(objNewLineitem).State = EntityState.Added;
-                                    db.SaveChanges();
                                 }
                                 else
                                 {

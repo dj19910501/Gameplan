@@ -6564,6 +6564,27 @@ namespace RevenuePlanner.Helpers
                             else if (section == Enums.Section.LineItem.ToString() && id != 0)
                             {
                                 var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanLineItemId == id).ToList();
+                                //// Modified By Nishant Sheth for Ticket #2538
+                                var TotalLineItemCost = plan_campaign_Program_Tactic_LineItemList.Sum(a => a.Cost);
+                                var LineItemTactic = plan_campaign_Program_Tactic_LineItemList.Select(a => a.Plan_Campaign_Program_Tactic).FirstOrDefault();
+                                if (LineItemTactic != null)
+                                {
+                                    var TacticCost = LineItemTactic.Cost;
+                                    if (TacticCost >= TotalLineItemCost)
+                                    {
+                                        var TacticStartMonth = LineItemTactic.StartDate.Month;
+                                        LineItemTactic.Cost = TacticCost - TotalLineItemCost;
+                                        var Listabc = LineItemTactic.Plan_Campaign_Program_Tactic_Cost.Where(a => a.Period == "Y" + TacticStartMonth).ToList();
+
+                                        Listabc.ForEach(a =>
+                                        {
+                                            a.Value = (a.Value >= TotalLineItemCost ? a.Value - TotalLineItemCost : 0);
+                                            db.Entry(a).State = EntityState.Modified;
+                                        });
+
+                                        db.Entry(LineItemTactic).State = EntityState.Modified;
+                                    }
+                                }
                                 plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                                 ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
