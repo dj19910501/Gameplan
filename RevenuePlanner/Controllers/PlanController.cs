@@ -2880,6 +2880,7 @@ namespace RevenuePlanner.Controllers
             int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
             List<Plan> objPlan = new List<Plan>();
             List<Plan_Selector> lstPlanSelector = new List<Plan_Selector>();
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 Guid clientId = Sessions.User.ClientId;
@@ -2951,7 +2952,7 @@ namespace RevenuePlanner.Controllers
                             objPlanSelector.MQLS = Common.CalculateMQLOnly(item.ModelId, item.GoalType, item.GoalValue.ToString(), ADSValue, stageList, modelFunnelStageList).ToString("#,##0"); ;
                         }
                         // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
-                        objPlanSelector.Budget = (item.Budget).ToString("#,##0");
+                        objPlanSelector.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(item.Budget)), PlanExchangeRate).ToString(); //modified by Rahul Shah for PL #2565 to aplly multicurrency on Plan selector screen.
                         objPlanSelector.Status = item.Status;
 
                         // Start - Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
