@@ -995,6 +995,15 @@
                 }
             }
         });
+        $('.dropdown_new_btn').each(function () {
+            if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                $(this).addClass("error");
+                iserror = true;
+            }
+            else {
+                $(this).removeClass("error");
+            }
+        })
 
         //$('form').find('.sbSelector').each(function () {
         //    if ($(this).parent().prev().attr('require') == 'true') {
