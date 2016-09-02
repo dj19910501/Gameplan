@@ -1350,13 +1350,30 @@ namespace RevenuePlanner.Controllers
                 var lstentityType = Enum.GetValues(typeof(Enums.EntityType)).Cast<Enums.EntityType>().Select(a => a.ToString()).ToList();
                 foreach (string EntityType in lstentityType)
                 {
-                    var entity = lstentity.Where(a =>  HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).StartsWith(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
-                {
-                    category = a.Entity,
-                    value = a.EntityId,
-                    label = HttpUtility.HtmlDecode(a.EntityTitle)
-                }).Take(100).ToList();
+                    //Modified by Rahul shah for PL #2553. search result display order by and also display start with search text result on top.
+                    var entity = lstentity.Where(a => HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).StartsWith(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
+                    {
+                        category = a.Entity,
+                        value = a.EntityId,
+                        label = HttpUtility.HtmlDecode(a.EntityTitle)
+                    }).Take(100).ToList();
                     EntityList.AddRange(entity);
+                    entity = lstentity.Where(a => HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).Contains(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()
+                    && !(HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).StartsWith(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower())).Select(a => new SearchEntity
+                    {
+                        category = a.Entity,
+                        value = a.EntityId,
+                        label = HttpUtility.HtmlDecode(a.EntityTitle)
+                    }).Take(100).ToList();
+
+                    EntityList.AddRange(entity);
+                    //    var entity = lstentity.Where(a =>  HttpUtility.HtmlDecode(a.EntityTitle.ToLower()).StartsWith(term.ToLower()) && a.Entity.Replace(" ", string.Empty).ToLower() == EntityType.ToLower()).Select(a => new SearchEntity
+                    //{
+                    //    category = a.Entity,
+                    //    value = a.EntityId,
+                    //    label = HttpUtility.HtmlDecode(a.EntityTitle)
+                    //}).Take(100).ToList();
+                    //    EntityList.AddRange(entity);
                 }
             }
             catch (Exception ex)
