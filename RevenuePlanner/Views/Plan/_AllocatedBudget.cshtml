@@ -402,11 +402,7 @@
     function BindBudgetGrid() {
         
         var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
-        
-        
-
-        @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2197. Need to remove this code after testing.*@
-        @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(TestModel.Grid))';*@
+       
         HomeGrid = new dhtmlXGridObject('gridbox');
        
         var imgpath = '@Url.Content("~/codebase/imgs/")';
@@ -416,13 +412,6 @@
         HomeGrid.setColTypes('@Model.ColType');
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
-
-        
-        @*TODO :- Commented code by Rushil on 26/05/2016 after conversion of HTML grid to DHTMLX grid for #2197. Need to remove this code after testing.*@
-        @*HomeGrid.setHeader('@TestModel.SetHeader');
-        HomeGrid.setColTypes('@TestModel.ColType');
-        HomeGrid.setInitWidths('@TestModel.Width');
-        HomeGrid.setColSorting('@TestModel.ColSorting');*@
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setEditable(false);
@@ -434,23 +423,15 @@
             HomeGrid.setSizes();
         }, 200);
 
-
         var mainGridData = JsonModel;
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
 
         HomeGrid.parse(GridDataHomeGrid, "json");
-        //  HomeGrid.splitAt(3);
         HomeGrid.setColumnHidden(0, true);
          
         @*Added by Rushil Bhuptani on 06/03/2016 for #2214*@
         HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
-        //Commented by Rahul Shah for PL #2231 on 06/06/2016
-        //var parsedJSON = $.parseJSON(JsonModel);
-        //if (parsedJSON.rows[0].rows.length <= 1) {
-        //    $('.treegrid_cell').find('img').css('display', 'none');
-
-        //}
         //added by devanshi for pl ticke #2213
         var selectedid = $("#hdnSelectedTacticLineItemId").val();
         if (selectedid != "0") {
@@ -748,12 +729,6 @@
         });
     }
 
-    @*    $("[linktype=campaign],[linktype=program],[linktype=tactic]").click(function (e) {
-        var section = $(this).attr('linktype');
-        var id = $(this).attr('id');
-        ShowModel('@Enums.InspectPopupMode.ReadOnly.ToString()', section, id, "0", '@Enums.InspectPopupRequestedModules.Budgeting.ToString()');
-    });*@
-
     //Added By Maitri Gandhi on 19/5/2016 for #2197
     function OpenOtherInspectPopup(id, section) {
         // Modified by Arpita Soni for Ticket #2237 on 06/15/2016
@@ -934,22 +909,36 @@
             }
         });
 
-      
+        $('.clickmeprogram').each(function () {
+            var selfClickMeAnchorLineItem = $(this);
+            if (!selfClickMeAnchorLineItem.data('cluetip-initd')) {
+                selfClickMeAnchorLineItem.cluetip({
+                    activation: 'click',
+                    arrows: true,
+                    dropShadow: false,
+                    sticky: true,
+                    mouseOutClose: false,
+                    local: true,
+                    isQuarter: isquarter,
+                    positionBy: "mouse"
+                }).data('cluetip-initd', true);
+            }
+        });
 
-        var selfProgram = $('.clickmeprogram');
+        //var selfProgram = $('.clickmeprogram');
 
-        if (!selfProgram.data('cluetip-initd')) {
-            selfProgram.cluetip({
-                activation: 'click',
-                arrows: true,
-                dropShadow: false,
-                sticky: true,
-                mouseOutClose: false,
-                local: true,
-                isQuarter: isquarter,
-                positionBy: "mouse"
-            }).data('cluetip-initd', true);
-        }
+        //if (!selfProgram.data('cluetip-initd')) {
+        //    selfProgram.cluetip({
+        //        activation: 'click',
+        //        arrows: true,
+        //        dropShadow: false,
+        //        sticky: true,
+        //        mouseOutClose: false,
+        //        local: true,
+        //        isQuarter: isquarter,
+        //        positionBy: "mouse"
+        //    }).data('cluetip-initd', true);
+        //}
 
         var selfTactic = $('.clickmetactic');
 
