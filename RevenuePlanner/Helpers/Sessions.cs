@@ -197,7 +197,8 @@ namespace RevenuePlanner.Helpers
             Sessions.ReportPlanId = 0;
             Sessions.PlanUserSavedViews = null;
             Sessions.StartDate = null;
-            Sessions.EndDate = null;
+            Sessions.EndDate = null;            
+            Sessions.ViewByValue = string.Empty;
         }
 
         /// <summary>
@@ -630,6 +631,27 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["IsAlertPermission"] = value;
             }
 
+        }
+        /// <summary>
+        /// Add By Kausha Somaiya
+        /// Set VIew by in Session
+        /// </summary>
+        /// <returns></returns>
+        public static string ViewByValue
+        {
+            get
+            {
+                string viewBy = string.Empty;
+                if (HttpContext.Current.Session["ViewByValue"] != null)
+                {
+                    viewBy = Convert.ToString(HttpContext.Current.Session["ViewByValue"]);
+                }
+                return viewBy;
+            }
+            set
+            {
+                HttpContext.Current.Session["ViewByValue"] = value;
+            }
         }
     }
 }

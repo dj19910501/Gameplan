@@ -292,13 +292,19 @@
         BindLineChartRevenue(chartdata.categories, chartdata.todayValue, chartdata.isDisplay, chartdata.series, linechartDivId, 220, false);*@
             // End:- Revenue_LineChart script
         }
+       
+        var selection = $('#ddlRevenueTimeFrame option:selected').text();
+        $('.sbSelector').text(selection);
     });
 
     $("#ddlTimeFrameSelectBox select").selectbox();
     $("#ddlRevenueTimeFrame").change(function () {
+       //called function to upate session
+        UpdateViewBy();
         $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan,#ddlSortby,#Itemsperpage").multiselect("close");
         AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
-        Qurt_Month = AllocatedBy;
+
+        Qurt_Month = AllocatedBy;       
         var _BackHeadValues, parentlabel, Type, id;
 
         _BackHeadValues = TimeFrameRevenueList[TimeFrameRevenueList.length - 1];
@@ -800,4 +806,28 @@
             //$('#divBudgeting').css('display', 'none');
         }
     }
+    //insertation start for ticket no #246 05/09/2016
+    function UpdateViewBy() {       
+        var ViewBy = $("#ddlRevenueTimeFrame").val();
+        var obj = JSON.stringify({ 'viewBy': ViewBy });
+        var url = '@Url.Content("~/MeasureDashboard/UpdateViewBy")';
+        var value = '';
+        $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: url,
+            async: false,
+            data: obj,
+            success: function (data) {               
+                value = data.viewbyValue;
+            },
+            failure: function (response) {
+                $('#result').html(response);
+            }
+        });
+        return value;
+      
+    }
+    //insertation end for ticket no #246 05/09/2016
 </script>

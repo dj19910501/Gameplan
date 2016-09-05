@@ -79,12 +79,26 @@ namespace RevenuePlanner.Controllers
                     }
 
                     List<SelectListItem> li = new List<SelectListItem>();
+
+                                 
                     li.Add(new SelectListItem { Text = "Years", Value = "Y" });
                     li.Add(new SelectListItem { Text = "Quarters", Value = "Q" });
                     li.Add(new SelectListItem { Text = "Months", Value = "M" });
                     li.Add(new SelectListItem { Text = "Weeks", Value = "W" });
+                    //Insertation start #2416 mark Selected=true if Sessions.ViewByValue is not null
+                    if (!string.IsNullOrEmpty(Sessions.ViewByValue))
+                    {
+                        var selectedViewBy = li.Where(x => x.Value == Sessions.ViewByValue).First();
+                        selectedViewBy.Selected = true;
+                    }
+                    else
+                    {
+                        var selectedViewBy = li.Where(x => x.Value == Convert.ToString(Enums.viewByOption.Q)).First();
+                        selectedViewBy.Selected = true;
+                    }
+                    //Insertation end #2416 mark Selected=true if Sessions.ViewByValue is not null
                     ViewData["ViewBy"] = li;
-
+                    ViewBag.ViewBy = li;
                     ViewBag.DashboardID = DashId;
                     ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                     ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
@@ -182,7 +196,16 @@ namespace RevenuePlanner.Controllers
             Sessions.EndDate = EndDate;
             return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
         }
-
+        public JsonResult UpdateViewBy(string viewBy)
+        {
+            if (Convert.ToString(Enums.PlanAllocatedBy.quarters) == viewBy)
+                viewBy = Convert.ToString(Enums.viewByOption.Q);
+            if (Convert.ToString(Enums.PlanAllocatedBy.months) == viewBy)
+                viewBy = Convert.ToString(Enums.viewByOption.M);
+            Sessions.ViewByValue = viewBy;
+            TempData["viewbyValue"] = viewBy;
+            return Json(new { viewbyValue = viewBy }, JsonRequestBehavior.AllowGet);
+        }
         /// <summary>
         /// Add By Nandish Shah
         /// Get Chart Data
@@ -197,7 +220,7 @@ namespace RevenuePlanner.Controllers
             string AuthorizedReportAPIPassword = string.Empty;
             string ApiUrl = string.Empty;
             string ConnectionString = string.Empty;
-
+            Sessions.ViewByValue = ViewBy;
             if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
             {
                 ConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();

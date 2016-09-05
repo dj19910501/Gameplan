@@ -82,6 +82,7 @@
                     @*<h5>Time frame:</h5>*@
                     <div class="revenue-summary-custom">
                         <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
+                           
                             @Html.DropDownList("ddlConversionTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
                         </span>
                     </div>
@@ -223,11 +224,11 @@
 
     // Load header data
     //LoadHeaderData();
- 
+
     var _campaignLabel = '@Common.RevenueCampaign';
 
     $('#ddlParentConversionSummery').bind('change', function () {
-        
+
         var _parentValue = $(this).val();
         marsterCustomField = _parentValue;
         if (_parentValue == _campaignLabel) {
@@ -715,6 +716,8 @@
     $("#ddlTimeFrameSelectBox select").selectbox();
 
     $("#ddlConversionTimeFrame").change(function () {
+        //called update viewby function to maintain session
+        UpdateViewBy();
         //$('#ddlINQToPlan').close();
         $("#ddlParentConversionSummery,#ddlTopChildConversionToPlan,#ddlINQToPlan,#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan,#ddlSortby,#Itemsperpage").multiselect("close");
         //myApp.showPleaseWait();
@@ -1146,7 +1149,7 @@
         var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
         //<p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
         //    <span id="mqlProjectedPercentages"></span>
-        
+
         var _formtPercentage = "0";
         $("#mqlActuals").popover('destroy');
         $("#mqlProjecteds").popover('destroy');
@@ -1202,4 +1205,28 @@
             //$('#divBudgeting').css('display', 'none');
         }
     }
+    //insertation start for ticket no #246 05/09/2016
+    function UpdateViewBy() {
+        var ViewBy = $("#ddlConversionTimeFrame").val();
+        var obj = JSON.stringify({ 'viewBy': ViewBy });
+        var url = '@Url.Content("~/MeasureDashboard/UpdateViewBy")';
+        var value = '';
+        $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: url,
+            async: false,
+            data: obj,
+            success: function (data) {              
+                value = data.viewbyValue;
+            },
+            failure: function (response) {
+                $('#result').html(response);
+            }
+        });
+        return value;
+       
+    }
+    //insertation end for ticket no #246 05/09/2016
 </script>

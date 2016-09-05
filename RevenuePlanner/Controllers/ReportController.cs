@@ -342,10 +342,42 @@ namespace RevenuePlanner.Controllers
             ViewBag.ViewByTab = lstViewByTab;//@N : fill view by dropdown
 
             //// List of Allocated Value
-            List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
-            lstViewByAllocated.Add(new ViewByModel { Text = Enums.ViewByAllocated.Monthly.ToString(), Value = Enums.PlanAllocatedBy.months.ToString() });
-            lstViewByAllocated.Add(new ViewByModel { Text = Enums.ViewByAllocated.Quarterly.ToString(), Value = Enums.PlanAllocatedBy.quarters.ToString() });
+            //insertation start #2416 05/09/2016 assign data in to dropdown using select list
+            //and mark as selected as per session value
+            List<SelectListItem> lstViewByAllocated = new List<SelectListItem>();
+            SelectListItem obj;
+            obj = new SelectListItem();
+            obj.Text = Enums.ViewByAllocated.Monthly.ToString();
+            obj.Value = Enums.PlanAllocatedBy.months.ToString();
+            lstViewByAllocated.Add(obj);
+            obj = new SelectListItem();
+            obj.Text = Enums.ViewByAllocated.Quarterly.ToString();
+            obj.Value = Enums.PlanAllocatedBy.quarters.ToString();
+            lstViewByAllocated.Add(obj);
+            //lstViewByAllocated.Add(new SelectListItem { Text = Enums.ViewByAllocated.Monthly.ToString(), Value = Enums.PlanAllocatedBy.months.ToString() });
+            //lstViewByAllocated.Add(new SelectListItem { Text = Enums.ViewByAllocated.Quarterly.ToString(), Value = Enums.PlanAllocatedBy.quarters.ToString() });
             lstViewByAllocated = lstViewByAllocated.Where(sort => !string.IsNullOrEmpty(sort.Text)).ToList();
+            String viewby = string.Empty;
+            if (!string.IsNullOrEmpty(Sessions.ViewByValue))
+            {
+                if (Sessions.ViewByValue == Convert.ToString(Enums.viewByOption.Q))
+                    viewby = Convert.ToString(Enums.PlanAllocatedBy.quarters);
+                if (Sessions.ViewByValue == Convert.ToString(Enums.viewByOption.M))
+                    viewby = Convert.ToString(Enums.PlanAllocatedBy.months);
+            }
+            else
+            {
+                viewby = Convert.ToString(Enums.PlanAllocatedBy.quarters);
+            }
+            if (!string.IsNullOrEmpty(viewby))
+            {
+                var selectedViewBy = lstViewByAllocated.Where(x => x.Value == viewby).First();
+                selectedViewBy.Selected = true;
+                //  ViewBag.SelectedTimeFrame = viewby;
+
+            }
+            //insertation end
+
             ViewBag.ViewByAllocated = lstViewByAllocated;//@N : fill Allocated (quarter/month) dropdown
 
             //// Start - Added by Arpita Soni for Ticket #1148 on 01/23/2015
@@ -1674,13 +1706,28 @@ namespace RevenuePlanner.Controllers
                 lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
                 lstViewByAllocated = lstViewByAllocated.Where(modal => !string.IsNullOrEmpty(modal.Text)).ToList();
                 ViewBag.ViewByAllocated = lstViewByAllocated;
+                //Updation start #2416 09/05/2016
 
-                if (IsQuarterly)
-                    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
+                //if (IsQuarterly)
+                //    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
+                //else
+                //    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
+                if (!string.IsNullOrEmpty(Sessions.ViewByValue))
+                {
+                    if (Sessions.ViewByValue.ToUpper() == Convert.ToString(Enums.viewByOption.Q))
+                        ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
+                    else
+                        ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
+                }
                 else
-                    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
+                {
+                    if (IsQuarterly)
+                        ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
+                    else
+                        ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
+                }
 
-
+                //Updation end #2416 09/05/2016
                 tacticlist = GetTacticForReporting();
                 // Fetch the respectives Campaign Ids and Program Ids from the tactic list
                 //campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
@@ -4692,22 +4739,22 @@ namespace RevenuePlanner.Controllers
             {
 
                 lstCustomFieldEntities = (from objCustomField in db.CustomFields
-                                           where ListOfCustomFieldID.Contains(objCustomField.CustomFieldId)
-                                           && objCustomField.ClientId == Sessions.User.ClientId
-                                            && objCustomField.IsDeleted == false
-                                           join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
-                                           where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
-                                           select objCustomfieldEntity).ToList();
+                                          where ListOfCustomFieldID.Contains(objCustomField.CustomFieldId)
+                                          && objCustomField.ClientId == Sessions.User.ClientId
+                                           && objCustomField.IsDeleted == false
+                                          join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
+                                          where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
+                                          select objCustomfieldEntity).ToList();
 
             }
             else
             {
                 lstCustomFieldEntities = (from objCustomField in db.CustomFields
-                                           where objCustomField.ClientId == Sessions.User.ClientId
-                                            && objCustomField.IsDeleted == false
-                                           join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
-                                           where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
-                                           select objCustomfieldEntity).ToList();
+                                          where objCustomField.ClientId == Sessions.User.ClientId
+                                           && objCustomField.IsDeleted == false
+                                          join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
+                                          where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
+                                          select objCustomfieldEntity).ToList();
             }
 
             int PlanTacticId = 0;
@@ -11664,10 +11711,27 @@ namespace RevenuePlanner.Controllers
                 {
                     IsQuarterly = true;
                 }
-                if (IsQuarterly)
-                    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
+                //if (IsQuarterly)
+                //    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
+                //else
+                //    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
+                //Updation start #2416 09/05/2016
+                if (!string.IsNullOrEmpty(Sessions.ViewByValue))
+                {
+                    if (Sessions.ViewByValue.ToUpper() == Convert.ToString(Enums.viewByOption.Q))
+                        ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
+                    else
+                        ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
+                }
                 else
-                    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
+                {
+                    if (IsQuarterly)
+                        ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
+                    else
+                        ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
+                }
+
+                //Updation end #2416 09/05/2016
                 //up to here
 
                 //for using card
@@ -12099,7 +12163,7 @@ namespace RevenuePlanner.Controllers
 
                     }
                     // End By Nishant Sheth 
-                #endregion
+                    #endregion
                 }
                 else
                 {
@@ -12135,7 +12199,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-        #endregion
+                #endregion
 
                 #region "Add all list to Master Model"
                 objSubDataTableModel.PerformanceList = PerformanceList;
@@ -12562,7 +12626,7 @@ namespace RevenuePlanner.Controllers
                 tacticlist = GetTacticForReporting();
 
                 // End By Nishant Sheth
-            #endregion
+                #endregion
                 /// Declarion For Card Section 
                 /// Nishant Sheth
                 /// 

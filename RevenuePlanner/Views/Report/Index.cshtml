@@ -533,7 +533,7 @@
 <div style="height:40px" id="ddlsection">
      <div style="float: right;margin-top:20px; margin-right:15px;">
       <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
-                    @Html.DropDownList("ddlAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport hide" })
+                    @Html.DropDownList("ddlAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text","Selected"), new { @class = "ddlStyleReport hide" })
                </span>
      </div>
 </div>
@@ -548,7 +548,7 @@
     
     <div style="float: right;margin-right:15px;">
         <span class="selectBox" id="ddlCustomAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
-            @Html.DropDownList("ddlCustomAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport hide" })
+            @Html.DropDownList("ddlCustomAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text","Selected"), new { @class = "ddlStyleReport hide" })
         </span>
     </div>
     <div class="timecolbox">
@@ -631,15 +631,18 @@
     // Desc :: Display chart with quartely/monthly
     $("#ddlCustomAllocatedBySelectBox select").selectbox();
     $("#ddlCustomAllocate").change(function () {
+        //called following function to update session of viewby. 
+        UpdateViewBy("ddlCustomAllocate");
         LoadAllReports();
     });
     $("#ddlAllocate").change(function () {
 
         AllocatedBy = $('#ddlAllocate option:selected').text();
-
+        //called following function to update session of viewby. 
+        var data = UpdateViewBy("ddlAllocate");
         Qurt_Month = AllocatedBy;
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
-            LoadSummary();
+            LoadSummary(data);
         }
         else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
             LoadRevenueData();
@@ -1872,7 +1875,7 @@
     }
 
     //// Load Summary view using ajax - partial view
-    function LoadSummary() {
+    function LoadSummary(viewbyValue) {
         $('#budgetHeader').css('display', 'none');
         $('#UlPlanHeader').css('display', 'block');
         $('#formSideFilter').css('display', 'block');
@@ -1883,7 +1886,32 @@
         $('#accordion-quart').css('display', 'block');
         @* var url = '@Url.Content("~/Report/GetSummaryData/")';
         $('#divMainReportPart').load(url , function () {*@
+        //insertation start for ticket no #246 05/09/2016
+        if (viewbyValue != undefined)
+        {
+            if (viewbyValue == "M") {
+                Qurt_Month = "Monthly";
+               
+            }
+            else {
+                Qurt_Month = "Quarterly";
+               
+            }
+    
+        }
+        else
+        {
+            if ('@Sessions.ViewByValue' == "M") {
+                Qurt_Month = "Monthly";
 
+            }
+            else {
+                Qurt_Month = "Quarterly";
+
+            }
+    
+        }
+        //insertation end for ticket no #246 05/09/2016
         if (Qurt_Month == "Monthly") {
             $("#ddlAllocate option[value='months']").attr("selected", "selected");
             $("#ddlAllocate option[value='quarters']").attr("selected", false);
@@ -1952,13 +1980,23 @@
 
     //// Load Revenue Data
     function LoadRevenueData() {
+        debugger;
         $('#budgetHeader').css('display', 'none');
         $('#UlPlanHeader').css('display', 'block');
         $('#formSideFilter').css('display', 'block');
         $("#BtnShareReport").show();
         $('#divMainReportPart').empty();
         $('#accordion-quart').css('display', 'none');
+        //insertation start for ticket no #246 05/09/2016
+        if ('@Sessions.ViewByValue' == "M") {
+            Qurt_Month = "Monthly";
 
+        }
+        else {
+            Qurt_Month = "Quarterly";
+
+        }
+        //insertation end for ticket no #246 05/09/2016
         @*var url = '@Url.Content("~/Report/GetRevenueData/")';
         $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain , function () {
             isAllowClick = true;
@@ -1992,7 +2030,16 @@
         //    isAllowClick = true;
         //    myApp.hidePleaseWait();
         //});
+        //insertation start for ticket no #246 05/09/2016
+        if ('@Sessions.ViewByValue' == "M") {
+            Qurt_Month = "Monthly";
 
+        }
+        else {
+            Qurt_Month = "Quarterly";
+
+        }
+        //insertation end for ticket no #246 05/09/2016
         var url = '@Url.Content("~/Report/GetWaterFallData/")';
         $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
@@ -3615,5 +3662,30 @@ function () {
             });
         }
     });
+    //insertation start for ticket no #246 05/09/2016
+    function UpdateViewBy(drpName) {
+        
+        var ViewBy = $("#" + drpName).val();
+        var obj = JSON.stringify({ 'viewBy': ViewBy });
+        var url = '@Url.Content("~/MeasureDashboard/UpdateViewBy")';
+        var value = '';
+        $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: url,
+            async: false,
+            data: obj,
+            success: function (data) {
+               
+                value = data.viewbyValue;
 
+            },
+            failure: function (response) {
+                $('#result').html(response);
+            }
+        });
+        return value;        
+    }
+    //insertation end for ticket no #246 05/09/2016
 </script>

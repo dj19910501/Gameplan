@@ -1181,6 +1181,16 @@ namespace RevenuePlanner.Helpers
         {
             Campaign = 0
         }
+        //Insertation Start Enum for view by #2416 05/09/2016
+        public enum viewByOption
+        {
+
+            Q,
+            M,
+            Y,
+            W
+        }
+        //Insertation end Enum for view by #2416 05/09/2016
         /// <summary>
         /// ViewBy Frequencies
         /// </summary>
@@ -1645,6 +1655,6 @@ namespace RevenuePlanner.Helpers
         public const string Plan = "Plan";
     }
 
-
+    
 
 }
