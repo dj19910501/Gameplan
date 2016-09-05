@@ -698,19 +698,17 @@ namespace RevenuePlanner.Controllers
                     }
 
                     #endregion
-                    if (Sessions.User.PreferredCurrencyCode != null)
+                    if (objUser.PreferredCurrencyCode != null)
                     {
-                        objUserModel.PreferredCurrencyCode = Sessions.User.PreferredCurrencyCode;
+                        objUserModel.PreferredCurrencyCode = objUser.PreferredCurrencyCode;
                         //Insertation Start Assign Default Currency if user's preferd currency is removed.
                         if(lstClientCurrency!=null)
                         {
-                            var data = lstClientCurrency.Where(w => w.ISOCurrencyCode == Sessions.User.PreferredCurrencyCode).FirstOrDefault();
+                            var data = lstClientCurrency.Where(w => w.ISOCurrencyCode == objUser.PreferredCurrencyCode).FirstOrDefault();
                             if (data == null)
-                                objUserModel.PreferredCurrencyCode = lstClientCurrency.Where(w => w.IsDefault == true).Select(w => w.ISOCurrencyCode).FirstOrDefault();                           
-                                
+                                objUserModel.PreferredCurrencyCode = lstClientCurrency.Where(w => w.IsDefault == true).Select(w => w.ISOCurrencyCode).FirstOrDefault();
                         }
                         //Insertation end Assign Default Currency if user's preferd currency is removed.
-
                     }
                     else
                     {
