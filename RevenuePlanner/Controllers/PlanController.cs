@@ -384,7 +384,7 @@ namespace RevenuePlanner.Controllers
                         plan.GoalType = objPlanModel.GoalType;
                         if (objPlanModel.GoalValue != null)
                         {
-                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));                          
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                             {
                                 plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
@@ -6116,8 +6116,13 @@ namespace RevenuePlanner.Controllers
                                 {
                                     var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value;
                                     double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == period).Sum(lineitem => lineitem.Value); //modified by komal Rawal
+                                    // Change By Nishant Sheth #2538 issue month values are not stored properly
                                     if (tacticlineitemcostmonth > tacticmonthcost)
                                     {
+                                        if (tacticmonthcost > tacticlineitemcostmonth)
+                                        {
+                                            tacticlineitemcostmonth = tacticmonthcost - tacticlineitemcostmonth;
+                                        }
                                         tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = tacticlineitemcostmonth;
                                         objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
                                     }
@@ -6126,9 +6131,18 @@ namespace RevenuePlanner.Controllers
                                 {
                                     double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == period).Sum(lineitem => lineitem.Value); //modified by komal Rawal
                                     Plan_Campaign_Program_Tactic_Cost objtacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                    // Add By Nishant Sheth #2538 issue month values are not stored properly
+                                    if (monthlycost > tacticlineitemcostmonth)
+                                    {
+                                        tacticlineitemcostmonth = monthlycost - tacticlineitemcostmonth;
+                                    }
+                                    else
+                                    {
+                                        tacticlineitemcostmonth = tacticlineitemcostmonth - monthlycost;
+                                    }
                                     objtacticCost.PlanTacticId = plantacticid;
                                     objtacticCost.Period = period;
-                                    objtacticCost.Value = tacticlineitemcostmonth;
+                                    objtacticCost.Value = monthlycost; // Change By Nishant Sheth #2538
                                     objtacticCost.CreatedBy = Sessions.User.UserId;
                                     objtacticCost.CreatedDate = DateTime.Now;
                                     db.Entry(objtacticCost).State = EntityState.Added;
@@ -6787,7 +6801,7 @@ namespace RevenuePlanner.Controllers
                             YearlyCost = totalLineitemCost;
                             string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
                             return Json(new { isSuccess = false, errormsg = strReduceTacticPlannedCostMessage });
-                        
+
                         }
 
                         if (!pcpobj.Plan_Campaign_Program_Tactic_Cost.Any())
@@ -14771,7 +14785,7 @@ namespace RevenuePlanner.Controllers
                                 objlineitemCost.CreatedDate = DateTime.Now;
                                 db.Entry(objlineitemCost).State = EntityState.Added;
                             }
-                            
+
                             if (ObjLinkedTactic != null)
                             {
                                 var LinekedPLanTacticId = ObjLinkedTactic.PlanTacticId;
@@ -14780,7 +14794,7 @@ namespace RevenuePlanner.Controllers
                             }
                             List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItemsrc = tblTacticLineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId
                                 ).ToList();
-                            
+
 
                             List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCostsrc = tblTacticLineItemsrc.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
                             var lineitemidlistsrc = objtotalLineitemCostsrc.Select(lineitem => lineitem.PlanLineItemId).ToList();
@@ -15157,7 +15171,7 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                            SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateVal, objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString(),UpdateColumn);
+                            SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, Convert.ToString(oldOwnerId), UpdateVal, objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString(), UpdateColumn);
                     }
                     //// Calculate TotalLineItemCost.
                     double totalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
@@ -15173,7 +15187,7 @@ namespace RevenuePlanner.Controllers
                         LinkedtotalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                     }
 
-                    if ((objOtherLineItem == null) && (objTactic.Cost > totalLineitemCost) )
+                    if ((objOtherLineItem == null) && (objTactic.Cost > totalLineitemCost))
                     {
                         Plan_Campaign_Program_Tactic_LineItem objLinkedNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
                         if (LinkedTacticId != null && linkedLineItemId > 0)
@@ -15739,8 +15753,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 //Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL); ////Added by Rahul Shah on 03/09/2015 fo PL Ticket #1521
                                 //Changes made regarding #2484 save notifications by komal rawal on 16-08-2016
-                                    Common.InsertChangeLog(PlanID, null, ChangeID, Title, ComponentType, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", NewOwnerID.ToString());
-                                }
+                                Common.InsertChangeLog(PlanID, null, ChangeID, Title, ComponentType, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", NewOwnerID.ToString());
+                            }
                         }
 
 
