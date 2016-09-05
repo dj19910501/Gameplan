@@ -6116,8 +6116,13 @@ namespace RevenuePlanner.Controllers
                                 {
                                     var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value;
                                     double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == period).Sum(lineitem => lineitem.Value); //modified by komal Rawal
+                                    // Change By Nishant Sheth #2538 issue month values are not stored properly
                                     if (tacticlineitemcostmonth > tacticmonthcost)
                                     {
+                                        if (tacticmonthcost > tacticlineitemcostmonth)
+                                        {
+                                            tacticlineitemcostmonth = tacticmonthcost - tacticlineitemcostmonth;
+                                        }
                                         tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = tacticlineitemcostmonth;
                                         objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
                                     }
@@ -6126,9 +6131,18 @@ namespace RevenuePlanner.Controllers
                                 {
                                     double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == period).Sum(lineitem => lineitem.Value); //modified by komal Rawal
                                     Plan_Campaign_Program_Tactic_Cost objtacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                    // Add By Nishant Sheth #2538 issue month values are not stored properly
+                                    if (monthlycost > tacticlineitemcostmonth)
+                                    {
+                                        tacticlineitemcostmonth = monthlycost - tacticlineitemcostmonth;
+                                    }
+                                    else
+                                    {
+                                        tacticlineitemcostmonth = tacticlineitemcostmonth - monthlycost;
+                                    }
                                     objtacticCost.PlanTacticId = plantacticid;
                                     objtacticCost.Period = period;
-                                    objtacticCost.Value = tacticlineitemcostmonth;
+                                    objtacticCost.Value = monthlycost; // Change By Nishant Sheth #2538
                                     objtacticCost.CreatedBy = Sessions.User.UserId;
                                     objtacticCost.CreatedDate = DateTime.Now;
                                     db.Entry(objtacticCost).State = EntityState.Added;
