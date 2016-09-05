@@ -12009,7 +12009,9 @@ div.clue-bottom-default .cluetip-arrows {
     vertical-align: super;
     padding-left: 10px;
 }
-
+.label-toooltip { /* Changed by Bhumika 5-9-2016*/
+    width: 190px;
+} 
 .tooltip-field {
     /*border-bottom: 1px solid #b3b3b3;
     border-top: 1px solid #b3b3b3;*/ /* changed for #2197, #2191 */
