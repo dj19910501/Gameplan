@@ -46,10 +46,10 @@ namespace RevenuePlanner.Test.Controllers
             BestInClassModel objModel = objModelList.FirstOrDefault();
             var serializedData = new RouteValueDictionary(objModel);
             var resultvalue = serializedData["StageName"];
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value: result.Model  " + result.Model);
             Assert.IsNotNull(result.Model);
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value: resultvalue " + resultvalue.ToString());            
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value: result.Model  " + result.Model);
             Assert.IsNotNull(resultvalue.ToString());
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value: resultvalue " + resultvalue.ToString());
         }
         #endregion
 
