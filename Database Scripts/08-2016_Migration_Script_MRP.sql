@@ -3335,6 +3335,10 @@ BEGIN
 	Begin --Update existing rule
 		If not exists (Select RuleId from Alert_Rules where ClientId=@ClientId and  RuleId!=@RuleId and UniqueRuleCode=@UniqueRule)
 		Begin
+		   If exists(Select RuleId from Alert_Rules where RuleId = @RuleId and (Frequency != @Frequency or Isnull(DayOfWeek,'') != Isnull(@DayOfWeek,'') or Isnull(DateOfMonth,'') != Isnull(@DateOfMonth,'')))
+			Begin
+			  Delete from Alerts where RuleId = @RuleId
+			End
 			Update Alert_Rules set EntityId=@EntityId,EntityType=@EntityType,Indicator=@Indicator,IndicatorComparision=@IndicatorComparision,IndicatorGoal=@IndicatorGoal,
 			CompletionGoal=@CompletionGoal,Frequency=@Frequency,DateOfMonth=@DateOfMonth,DayOfWeek=@DayOfWeek,ModifiedBy=@ModifiedBy,ModifiedDate=GETDATE(),
 			RuleSummary=@RuleSummary,LastProcessingDate=GETDATE(),UniqueRuleCode=@UniqueRule
@@ -4002,6 +4006,10 @@ BEGIN
 	Begin --Update existing rule
 		If not exists (Select RuleId from Alert_Rules where ClientId=@ClientId and  RuleId!=@RuleId and UniqueRuleCode=@UniqueRule and UserId = @UserId)
 		Begin
+		    If exists(Select RuleId from Alert_Rules where RuleId = @RuleId and (Frequency != @Frequency or Isnull(DayOfWeek,'') != Isnull(@DayOfWeek,'') or Isnull(DateOfMonth,'') != Isnull(@DateOfMonth,'')))
+			Begin
+			  Delete from Alerts where RuleId = @RuleId
+			End
 			Update Alert_Rules set EntityId=@EntityId,EntityType=@EntityType,Indicator=@Indicator,IndicatorComparision=@IndicatorComparision,IndicatorGoal=@IndicatorGoal,
 			CompletionGoal=@CompletionGoal,Frequency=@Frequency,DateOfMonth=@DateOfMonth,DayOfWeek=@DayOfWeek,ModifiedBy=@ModifiedBy,ModifiedDate=GETDATE(),
 			RuleSummary=@RuleSummary,LastProcessingDate=GETDATE(),UniqueRuleCode=@UniqueRule
