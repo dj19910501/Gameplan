@@ -801,7 +801,10 @@ namespace RevenuePlanner.Helpers
                     int startmonth = objTactic.StartDate.Month;
 
                     List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                    tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId).ToList();
+                    // Modified By Nishant Sheth
+                    // #2538 Not get deleted line items from table
+                    tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId
+                        && lineItem.IsDeleted == false).ToList();
                     List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItemsrc = tblTacticLineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId
                                 ).ToList();
 
@@ -821,6 +824,12 @@ namespace RevenuePlanner.Helpers
                         if (lineItemtotalCost > tacticost)
                         {
                             tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = lineItemtotalCost;
+                            // Add By Nishant sheth
+                            // #2538 : Modfied tactic cost entity values
+                            tacticostslist.ForEach(a =>
+                            {
+                                db.Entry(a).State = EntityState.Modified;
+                            });
                             if (objTactic.Cost < lineItemtotalCost)
                             {
                                 objTactic.Cost = objTactic.Cost + (lineItemtotalCost - tacticmonthcost);
