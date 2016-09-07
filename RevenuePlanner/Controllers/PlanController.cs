@@ -6301,7 +6301,7 @@ namespace RevenuePlanner.Controllers
                                 tacticost = objTactic.Plan_Campaign_Program_Tactic_Cost.Select(tactic => tactic.Value).Sum();
 
 
-
+                                double LineItemSelfDiffVal = 0;
                                 //// Start - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
                                 isExists = false;
                                 if (PrevTacticBudgetAllocationList != null && PrevTacticBudgetAllocationList.Count > 0)
@@ -6325,6 +6325,7 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 //// Get budget difference.
                                                 BudgetDiff = newValue - thisQuarterTotalBudget;
+                                                LineItemSelfDiffVal = BudgetDiff;
                                                 if (BudgetDiff > 0)
                                                 {
                                                     //// Set quarter first month budget value.
@@ -6449,7 +6450,14 @@ namespace RevenuePlanner.Controllers
                                         yearlycost = lineitemtotalcost;
                                     }
                                 }
-                                objLineitem.Cost = yearlycost;
+                                if (!isExists)
+                                {
+                                    objLineitem.Cost = yearlycost+Convert.ToDouble(monthlycost);
+                                }
+                                else
+                                {
+                                    objLineitem.Cost = yearlycost;
+                                }
 
                                 List<string> QuarterList;
                                 double monthlyTotalLineItemCost = 0, monthlyTotalTacticCost = 0, diffCost = 0, tacticinnerCost = 0;
@@ -6467,7 +6475,13 @@ namespace RevenuePlanner.Controllers
                                         QuarterList.Add(PeriodChar + (quarterno + J).ToString());
                                     }
                                     //string period = PeriodChar + QuarterCnt.ToString();
-                                    monthlyTotalLineItemCost = PrevTacticBudgetAllocationList.Where(lineCost => QuarterList.Contains(lineCost.Period)).ToList().Sum(lineCost => lineCost.Value);
+                                    //monthlyTotalLineItemCost = PrevTacticBudgetAllocationList.Where(lineCost => QuarterList.Contains(lineCost.Period)).ToList().Sum(lineCost => lineCost.Value);
+                                    monthlyTotalLineItemCost = lineitemcostlist.Where(lineCost => QuarterList.Contains(lineCost.Period)).ToList().Sum(lineCost => lineCost.Value);
+                                    
+                                    if (!isExists && QuarterList.Where(q=>q==period).Any())
+                                    {
+                                        monthlyTotalLineItemCost = monthlyTotalLineItemCost + Convert.ToDouble(monthlycost);
+                                    }
                                     monthlyTotalTacticCost = tacticostslist.Where(_tacCost => QuarterList.Contains(_tacCost.Period)).ToList().Sum(_tacCost => _tacCost.Value);
                                     if (monthlyTotalLineItemCost > monthlyTotalTacticCost)
                                     {
@@ -6493,25 +6507,71 @@ namespace RevenuePlanner.Controllers
 
                                             }
                                         }
-                                        int periodCount = 0;
-                                        ////If cost diffrence is lower than 0 than reduce it from quarter in series of 1st month of quarter,2nd month of quarter...
-                                        while (diffCost < 0)
+                                        //period = QuarterList[0].ToString();
+                                        //diffCost = monthlyTotalLineItemCost - monthlyTotalTacticCost;
+                                        //int periodCount = 0;
+                                        //////If cost diffrence is lower than 0 than reduce it from quarter in series of 1st month of quarter,2nd month of quarter...
+                                        //while (diffCost < 0)
+                                        //{
+                                        //    period = QuarterList[periodCount].ToString();
+                                        //    tacticinnerCost = tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().Sum(_tacCost => _tacCost.Value);
+                                        //    if ((diffCost + tacticinnerCost) >= 0)
+                                        //    {
+                                        //        tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = _tacCost.Value + diffCost; db.Entry(_tacCost).State = EntityState.Modified; });
+                                        //    }
+                                        //    else
+                                        //    {
+                                        //        tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = 0; db.Entry(_tacCost).State = EntityState.Modified; });
+                                        //    }
+                                        //    diffCost = diffCost + tacticinnerCost;
+                                        //    periodCount = periodCount + 1;
+                                        //}
+                                        objTactic.Cost = objTactic.Cost + diffCost;
+                                    }
+                                    else if (monthlyTotalLineItemCost < monthlyTotalTacticCost)
+                                    {
+                                       // Plan_Campaign_Program_Tactic_LineItem OtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
+                                        if (QuarterList.Where(q => q == period).Any())
                                         {
-                                            period = QuarterList[periodCount].ToString();
-                                            tacticinnerCost = tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().Sum(_tacCost => _tacCost.Value);
-                                            if ((diffCost + tacticinnerCost) >= 0)
+                                            period = QuarterList[0].ToString();
+                                            diffCost = LineItemSelfDiffVal; //monthlyTotalLineItemCost - monthlyTotalTacticCost;
+                                            //if (OtherLineItem != null)
+                                            //{
+                                            //    diffCost += OtherLineItem.Cost;
+                                            //}
+                                            if (diffCost < 0)
                                             {
-                                                tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = _tacCost.Value + diffCost; db.Entry(_tacCost).State = EntityState.Modified; });
+                                                objTactic.Cost = objTactic.Cost + diffCost;
+                                                int periodCount = 0;
+                                                ////If cost diffrence is lower than 0 than reduce it from quarter in series of 1st month of quarter,2nd month of quarter...
+                                                while (diffCost < 0)
+                                                {
+                                                    period = QuarterList[periodCount].ToString();
+                                                    tacticinnerCost = tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().Sum(_tacCost => _tacCost.Value);
+                                                    if ((diffCost + tacticinnerCost) >= 0)
+                                                    {
+                                                        tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = _tacCost.Value + diffCost; db.Entry(_tacCost).State = EntityState.Modified; });
+                                                    }
+                                                    else
+                                                    {
+                                                        tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = 0; db.Entry(_tacCost).State = EntityState.Modified; });
+                                                    }
+                                                    diffCost = diffCost + tacticinnerCost;
+                                                    periodCount = periodCount + 1;
+                                                }
                                             }
-                                            else
+                                            else if (diffCost>0)
                                             {
-                                                tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = 0; db.Entry(_tacCost).State = EntityState.Modified; });
+                                                Plan_Campaign_Program_Tactic_LineItem OtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
+                                                double otherCost = OtherLineItem.Cost;
+                                                if (OtherLineItem != null && diffCost>otherCost)
+                                                {
+                                                    objTactic.Cost += diffCost - otherCost;
+                                                }
                                             }
-                                            diffCost = diffCost + tacticinnerCost;
-                                            periodCount = periodCount + 1;
                                         }
 
-                                        objTactic.Cost = objTactic.Cost + diffCost;
+
                                     }
                                 }
                                 objTactic.ModifiedBy = Sessions.User.UserId;
@@ -6521,6 +6581,10 @@ namespace RevenuePlanner.Controllers
                                 //// Calculate Total LineItem Cost.
                                 Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
                                 double totallineitemcost = objtotalLineitemCost.Where(lineitem => lineitem.PlanLineItemId != EntityId).Sum(lineitem => lineitem.Cost) + yearlycost;
+                                if (!isExists)
+                                {
+                                    totallineitemcost += Convert.ToDouble(monthlycost);
+                                }
                                 if (objOtherLineItem == null)
                                 {
                                     Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
@@ -6529,10 +6593,12 @@ namespace RevenuePlanner.Controllers
                                     if (objTactic.Cost > totallineitemcost)
                                     {
                                         objNewLineitem.Cost = objTactic.Cost - totallineitemcost;
+                                        objNewLineitem.IsDeleted = false;
                                     }
                                     else
                                     {
                                         objNewLineitem.Cost = 0;
+                                        objNewLineitem.IsDeleted = true;
                                     }
                                     objNewLineitem.Description = string.Empty;
                                     objNewLineitem.CreatedBy = Sessions.User.UserId;
