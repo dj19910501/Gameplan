@@ -9001,7 +9001,7 @@ namespace RevenuePlanner.Controllers
                                             if (!isQuarter)
                                             {
                                             var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
-                                            double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != form.PlanLineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + form.Cost;
+                                                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != form.PlanLineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + diffcost;
                                             if (tacticlineitemcostmonth > tacticmonthcost)
                                             {
                                                 tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
@@ -9020,7 +9020,7 @@ namespace RevenuePlanner.Controllers
                                                     if (QuarterList.Contains(PeriodChar + startmonth))
                                                     {
                                                         var tacticmonthcost = tacticostslist.Where(pcptc => QuarterList.Contains(pcptc.Period)).Sum(p => p.Value);
-                                                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => QuarterList.Contains(lineitem.Period)).Sum(lineitem => lineitem.Value) + diffcost;
+                                                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => QuarterList.Contains(lineitem.Period)).Sum(lineitem => lineitem.Value) ;
                                                         if (tacticlineitemcostmonth > tacticmonthcost)
                                                         {
                                                             tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
