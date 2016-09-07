@@ -8988,18 +8988,46 @@ namespace RevenuePlanner.Controllers
                                             db.Entry(objlineitemCost).State = EntityState.Added;
                                         }
 
-
+                                        bool isQuarter = false;
+                                        if (objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy==Enums.PlanAllocatedBy.quarters.ToString())
+                                        {
+                                            isQuarter = true;
+                                        }
                                         List<Plan_Campaign_Program_Tactic_Cost> tacticostslist = objTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                                         double tacticost = objTactic.Plan_Campaign_Program_Tactic_Cost.Select(tactic => tactic.Value).Sum();
 
                                         if (tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
                                         {
-                                            var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
-                                            double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != form.PlanLineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + form.Cost;
-                                            if (tacticlineitemcostmonth > tacticmonthcost)
+                                            if (!isQuarter)
                                             {
-                                                tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
-                                                objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                                var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
+                                                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != form.PlanLineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + form.Cost;
+                                                if (tacticlineitemcostmonth > tacticmonthcost)
+                                                {
+                                                    tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
+                                                    objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                for (int quarterno = 1; quarterno <= 12; quarterno += 3)
+                                                {
+                                                    List<string> QuarterList = new List<string>();
+                                                    for (int J = 0; J < 3; J++)
+                                                    {
+                                                        QuarterList.Add(PeriodChar + (quarterno + J).ToString());   
+                                                    }
+                                                    if (QuarterList.Contains(PeriodChar + startmonth))
+                                                    {
+                                                        var tacticmonthcost = tacticostslist.Where(pcptc => QuarterList.Contains(pcptc.Period)).Sum(p => p.Value);
+                                                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => QuarterList.Contains(lineitem.Period)).Sum(lineitem => lineitem.Value) + diffcost;
+                                                        if (tacticlineitemcostmonth > tacticmonthcost)
+                                                        {
+                                                            tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
+                                                            objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                         else
