@@ -6091,7 +6091,7 @@ namespace RevenuePlanner.Controllers
                                 var objTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == plantacticid && pcpt.IsDeleted.Equals(false)).FirstOrDefault();
                                 List<Plan_Campaign_Program_Tactic_Cost> tacticostslist = objTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                                 tacticost = objTactic.Plan_Campaign_Program_Tactic_Cost.Select(tactic => tactic.Value).Sum();
-
+                                bool isAdded = false;
                                 lineitemtotalcost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(tactic => tactic.Value).Sum();
                                 if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == period).Any())
                                 {
@@ -6109,6 +6109,7 @@ namespace RevenuePlanner.Controllers
                                     objlineitemCost.CreatedDate = DateTime.Now;
                                     db.Entry(objlineitemCost).State = EntityState.Added;
                                     lineitemtotalcost += monthlycost;
+                                    isAdded = true;
                                 }
 
 
@@ -6116,16 +6117,22 @@ namespace RevenuePlanner.Controllers
                                 {
                                     var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value;
                                     double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == period).Sum(lineitem => lineitem.Value); //modified by komal Rawal
-                                    // Change By Nishant Sheth #2538 issue month values are not stored properly
-                                    if (tacticlineitemcostmonth > tacticmonthcost)
+                                    if (isAdded)
                                     {
-                                        if (tacticmonthcost > tacticlineitemcostmonth)
-                                        {
-                                            tacticlineitemcostmonth = tacticmonthcost - tacticlineitemcostmonth;
-                                        }
+                                        tacticlineitemcostmonth = tacticlineitemcostmonth + monthlycost;
+                                    }
+                                    // Change By Nishant Sheth #2538 issue month values are not stored properly
+                                    //double diff = 0;
+                                    //if (tacticlineitemcostmonth > tacticmonthcost)
+                                    //{
                                         tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = tacticlineitemcostmonth;
                                         objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
-                                    }
+                                    //}
+                                    //if (tacticmonthcost > tacticlineitemcostmonth)
+                                    //{
+                                    //    tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = tacticlineitemcostmonth;
+                                    //    objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                    //}
                                 }
                                 else
                                 {
@@ -6853,7 +6860,7 @@ namespace RevenuePlanner.Controllers
 
                         List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
                         double totalLineitemCost = 0;
-                        tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId).ToList();
+                        tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId && lineItem.IsDeleted==false).ToList();
                         List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
                         //Modified By komal rawal
                         var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
