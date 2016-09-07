@@ -6978,6 +6978,9 @@ namespace RevenuePlanner.Controllers
                         Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(EntityId));
                         var YearlyCost = Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).FirstOrDefault().Value);
                         var objTactic = objLineitem.Plan_Campaign_Program_Tactic;
+
+                        
+
                         if (YearlyCost > objLineitem.Cost)
                         {
                             var diffcost = YearlyCost - objLineitem.Cost;
@@ -6997,7 +7000,7 @@ namespace RevenuePlanner.Controllers
                                 objlineitemCost.CreatedDate = DateTime.Now;
                                 db.Entry(objlineitemCost).State = EntityState.Added;
                             }
-
+                            db.SaveChanges();
                             List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId).ToList();
                             List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
                             var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
@@ -7077,6 +7080,7 @@ namespace RevenuePlanner.Controllers
                         }
 
                         objLineitem.Cost = YearlyCost;
+
                         //// Calculate TotalLineItemCost.
                         double totalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
 
