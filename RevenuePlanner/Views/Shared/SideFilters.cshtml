@@ -1,0 +1,138 @@
+﻿<!-- =============== SAVE FILTER ================ -->
+
+<div class="save-filter">
+    <!--error message-->
+    <div id="errorMessageMainSidebar" class="alert hide alert-error">
+        <a class="close">×</a>
+        <strong></strong><span id="spanErrorMessageRole"></span>
+    </div>
+
+    <!--Success message-->
+    <div id="successMessageLoadPreset" class="alert hide alert-success">
+        <a class="close">×</a>
+        <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
+    </div>
+    <div id="content_SaveFilters" class="sidebar-preset scroll-section" style="display:none">
+
+        <h2>Save As Preset</h2>
+        <label for="Preset">Please enter a name for preset</label>
+        <input type="text" id="txtPresetName" />
+        <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular" title="Proceed" value="Proceed" id="btnSaveProceed" onclick="javascript: SavePreset()" />
+        <input type="button" class="btn btn-link" title="Cancel" value="Cancel" id="btnSaveCancel" onclick="javascript: CancelSavePreset()" />
+    </div>
+    <div id="DefaultFilters" style="display:none"></div>
+</div>
+<!-- =============== Toggel Icon Here =============== -->
+<div class="sidebar-toogle">
+    <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true"></i></a>
+</div>
+
+<!-- =============== PLAN BUttons Start Here =============== -->
+<div id="PlanModulesSection" class="plan-mod-section sidebar-main">
+    
+
+    <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsPlanSummary">
+        <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
+        <div class="wraper-btns cf">
+            @*<div> =========== Hide for now ===========
+                    @if (IsPlanEditable && !IsPlanPublished)
+                    {
+                        <button id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular publish-plan-btn" type="button" style="min-width: 90%">
+                            Publish Plan
+                        </button>
+                    }
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="AddActuals()" style="min-width:90%">
+                        Add Actuals
+                    </button>
+                    @if (IsPlanEditable)
+                    {
+                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()" style="min-width: 90%">
+                            Edit Plan Definition
+                        </button>
+                    }
+
+                </div>*@
+        </div>
+    </div>
+</div>
+
+<!-- =============== Filter Section Start Here =============== -->
+<div id="Filtersidebar" class="span2 sidebar">
+    <div class="error-msg-filter">
+        <div id="successMessageSidebar" class="alert hide alert-success">
+            <a class="close">×</a>
+            <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
+        </div>
+        <!--error message-->
+
+    </div>
+    <!--error message-->
+    <div class="sidebar-section scroll-section">
+        <div class="float-left filter-preset">
+            <div class="width50 float-left filter-title ">
+                <span class="filter-header">Filters @*@Enums.FilterLabel.Filters.ToString()*@</span> @*Edited By Maitri Gandhi on 23/2/2016 For #2014*@
+            </div>
+            <div class="dropdown" style="float:right;">
+                <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
+                    <i class="fa fa-bars"></i>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
+                    <li onclick="SaveAsPreset()" role="presentation">
+                        <a id="saveaslink" tabindex="-1" role="menuitem">Save Current Filters</a>
+                    </li>
+                    @*Modified by Maitri Gandhi on 1/3/2016 to resolve the scenario of more than one plan in saved preset*@
+                    @*@if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+                        {*@
+                    <li onclick="LoadPreset()" role="presentation">
+                        <a tabindex="-1" role="menuitem">Load Saved Filters</a>
+                    </li>
+                    @*}*@
+                    <li onclick="ClearAllPreset()" role="presentation">
+                        <a tabindex="-1" role="menuitem">Clear All</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div style="clear: both;"></div>
+
+    </div>
+</div>
+    <!--End sidebar-->
+
+
+<script>
+    //To show hide sidebar
+    $('.sidebar-toogle a').toggle(
+        function () {
+            $('#sidebar').css({
+                'position': 'relative',
+                'left': 'auto',
+                'width': '1px',
+                'background': 'transparent',
+            });
+
+            $(".sidebar-section").css("display", "none");
+            $("#improvements > .accordion-group").css('display', 'none'); // added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters
+            $(".wraper-btns").css("display", "none");
+            $("#content_wraper").css('width', 'calc(100% - 2px)'); // #2331 issue
+            $('#sidebar.sidebar').css({ 'width': '1px', 'background': 'transparent', });
+       
+        },
+        function () {
+            $('#sidebar').css({
+                'position': 'static',
+                'left': 'auto',               
+                'width': '280px',
+            });
+
+            $(".sidebar-section").css("display", "block");
+            $(".wraper-btns").css("display", "block");
+            $("#content_wraper").css('width', 'calc(100% - 282px)'); //Edited for #2219 + #2331 - Bhumika
+            $('#sidebar.sidebar').css({ 'width': '280px' }); //  removed bgcolor for #2219 - Bhumika
+        
+        }
+  )
+</script>

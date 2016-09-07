@@ -369,7 +369,7 @@
     <Content Include="Content\css\NaturalLanguageForm\component.css" />
     <Content Include="Content\css\NaturalLanguageForm\default.css" />
     <Content Include="Content\css\Select2\select2.css" />
-    <Content Include="Content\css\style_min_Aug_30.css" />
+    <Content Include="Content\css\style_min_sept_7.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Aug_2.css" />
@@ -995,6 +995,8 @@
     <Content Include="Views\Currency\_PlanCurrencyGrid.cshtml" />
     <Content Include="Views\Currency\_ReportCurrencyGrid.cshtml" />
     <Content Include="Views\Currency\_currencyMenu.cshtml" />
+    <Content Include="Views\Home\IndexNewDesign.cshtml" />
+    <Content Include="Views\Shared\SideFilters.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

@@ -310,37 +310,44 @@ ul.drop-down-menu {
         margin: 0 auto;
 }*/ /* Commented for #2219 - Bhumika */
 /* Edited for #2219 - Bhumika */
-#planHeader.light-blue-chart { 
+#planHeader.full-width-header { /* #2621*/
     padding: 15px 0 0;
 }
-#planHeader .planheader-title { /* #2312 */
+.planheader-left { /* #2312 */
     float: left;
-    width:32%;
-    padding-top: 30px;
+    width:46%;
+    padding: 38px 0 0 20px;
     display: inline-block;  
 } 
+.planheader-right{float:right; width:52%; max-width: 655px; padding-right: 15px;}
+#planHeader .planheader-title { /* #2312 */
+    float: left;
+    width:100%; 
+    padding: 0 0 3px 0;   
+} 
+
 .plancart-box {/* #2312 */
     /*border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;*/
     display: inline-block;
     float: right; 
 }
-.light-blue-chart .white-chart { 
+.full-width-header .white-chart { 
     border: 1px solid #ccc;
     float: right;
     height: 92px;
-    margin-right: 8px;
+    margin-left: -1px;
     padding: 5px 10px 10px;
     text-align: center;
-    width: 125px;
+    width: 127px;
     box-sizing: content-box !important;/* #2312 */
 }
 .white-chart.activity-distribute{
-    width:150px;
-    margin-right:18px;
+    width:153px;
+    /*margin-right:18px;*/ /*#2621 */
 }
 .white-chart p {
-    color: inherit;
+    color: #95989A;
     font-size: 14px;
     margin-bottom: 0 !important;
 }
@@ -361,8 +368,24 @@ ul.drop-down-menu {
     width: 146px;
     max-height: 70px;
     margin: 0 auto;
-    }
-
+}
+.planheader-title {} /* Edited for #2219 - Bhumika - Homepage - #2312 // #2621  */
+.planheader-title h5 {
+    font-size: 34px;
+    font-weight: normal;
+    line-height: 40px;
+    margin: 6px 0 7px;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    float:left;
+}
+.plan-selected{  
+    color: #95989a;
+    padding: 22px 0 0 10px;
+    float:left;
+}
 h3.source-sans-prolight,
 h3.source-sans-prolight a {
     color: #fff;
@@ -378,10 +401,10 @@ h3.source-sans-prolight a {
     width: calc(100% - 680px) !important;
 }
 
-    .wraper-title h3 {
-        line-height: 32px !important;
-        min-width: 344px;
-    }
+.wraper-title h3 {
+    line-height: 32px !important;
+    min-width: 344px;
+}
 
 .btn-white,
 .line-height40,
@@ -6516,6 +6539,7 @@ h2.title-header {
 .white-chart .small-value {
     display: block;
     font-size: 16px;
+    color:#5f91b3;
 }
 
 .bullhorn-bg {
@@ -9462,7 +9486,7 @@ footer {
 }
 
 .sidebar-section {
-    padding: 18px 15px 22px 20px;/* Edited for #2219 - Bhumika */
+    padding: 0 15px 22px 20px;/* Edited for #2219, #2621  - Bhumika */
 }
 
     .sidebar-section span {
@@ -9953,21 +9977,37 @@ li.close-list {
 #modal-container-186470 {
     padding-bottom: 153px !important;
 }
-
-#lblUpcoming_Activies {
+.viewby-wrap{
     float: left;
+}
+#lblUpcoming_Activies {
+    /*float: left;
     font-size: 13px;
     font-weight: 700;
     line-height: 28px;
     margin-bottom: 0;
     padding-right: 7px;
-    text-align: center;
+    text-align: center;*/
 }
-
+.viewby-wrap label{
+    font-size: 12px;
+    display:block;
+    margin-bottom: 0;
+}
 #ddlUpComingActivitesSelectBox {
     float: left;
 }
-
+.viewby-wrap .sbHolder,
+.viewby-wrap .ui-multiselect{
+     background-color: #fff;
+    background-image: none;
+    border:1px solid #ccc;
+    box-shadow:none;
+    min-height:29px;
+}
+.viewby-wrap .sbHolder .sbSelector {
+    line-height: 29px;
+}
 .clear {
     clear: both !important;
 }
@@ -10089,12 +10129,11 @@ color: #666867 !important;opacity:1;
     float: left;
 }
 
-.request-icon-block {
+/*.request-icon-block {
     float: left;
     margin-left: 0;
     position: relative;
-    /*top: -5px;*/
-}
+}*/
 
     .request-icon-block .request {
         background: left center no-repeat #fff;
@@ -11825,13 +11864,15 @@ font-size: 20px;
      height: 30px;line-height: 30px;
     padding: 6px 25px 4px 26px;
 }
-
-    .new-btn-plan.request-btn-active,
-    .request.request-btn-active {
-        background-color: #89cede !important; /* Edited for #2219 - #2312 - Bhumika */
-        /*border: 1px solid #F8710E;*/
-        color: #fff !important;
-    }
+.new-btn-plan-left{
+    border-radius: 0 5px 5px 0;
+}
+.new-btn-plan.request-btn-active,
+.request.request-btn-active {
+    background-color: #89cede !important; /* Edited for #2219 - #2312 - Bhumika */
+    /*border: 1px solid #F8710E;*/
+    color: #fff !important;
+}
 .nav-tabs li .new-btn-plan:hover{color:#000 !important}
 #loadmetrue > h3 {
     margin: 0;
@@ -12008,6 +12049,9 @@ div.clue-bottom-default .cluetip-arrows {
     white-space: nowrap;
     vertical-align: super;
     padding-left: 10px;
+}
+.label-toooltip { /* Changed by Bhumika 5-9-2016*/
+    width: 190px;
 }
 
 .tooltip-field {
@@ -13907,38 +13951,21 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
     cursor: default;
 }
 
-.sidebar-toogle {
-    border-bottom: 1px solid #ccc; /*#b3b3b3;*//* Commented for #2219 - Bhumika */
-    /*color: #005580;*/
-    font-weight: 700;
-    padding: 8px 20px; /* 27-10-2015 for ticket 1713 by bheru */
-    text-align: right;
+.sidebar-toogle {/* Changed for #2621 UI changes */
+    padding: 5px 0; /* 27-10-2015 for ticket 1713 by bheru */
+    position: relative;
 }
 
-    .sidebar-toogle a {
-        color: #f8710e;/*#005580;*//* Commented for #2219 - Bhumika */
-    }
-
-.sidebar-toogle-wrapper {
-    padding: 0;
+.sidebar-toogle a.sidebar-filter-icon{
+    background: #89cede none repeat scroll 0 0;
+    border-radius: 0 4px 4px 0;
+    color: #fff;
+    font-size: 25px;
+    padding: 4px 8px;
+    position: absolute;
+    right: -37px;
+    top: 8px;
 }
-
-    .sidebar-toogle-wrapper h4 {
-        margin: 20px 0;
-        padding: 0 20px;
-    }
-
-    .sidebar-toogle-wrapper .wraper-btns {
-        margin: 0 17px;
-        width: auto;
-    }
-#Filtersidebar .sidebar-toogle-wrapper .wraper-btns {
-    margin: 0;
-} 
-/*#content_wraper {
-    -webkit-box-shadow: -2px 0 3px 0 #999;
-    box-shadow: -2px 0 3px 0 #999;
-}*/ /* Commented for #2219 - Bhumika */
 
 .plan-defination {
     color: #3e3f37;/* Edited for #2219 - Bhumika */
@@ -14114,7 +14141,7 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
 }
 
 .task-tbl {
-    margin: 0 20px;
+    margin: 0 15px 0 20px;
 }
 
 .login-header {
@@ -14131,22 +14158,29 @@ margin-top: 5px; /*#2055 added again by Bhumika 21-3-2016 */
 .goals-wrapper {
     background: #e6e6e6;
     font-family: source_sans_prosemibold;
-    font-size: 20px;
-    margin: 20px 0;
+    font-size: 14px;
+    margin: 5px 0;
+    display: inline-block;
+    float:right;
+    width:100%;
+}
+.goal-content {
+    display: inline-block;
+    padding: 0 0 0 12px;
+}
+.goals-wrapper span {
+    font-size: 13px;
+    line-height: 30px;
+    padding: 2px;
 }
 
-    .goals-wrapper span {
-        line-height: 43px;
-        padding: 10px 0 10px 30px;
-    }
-
-    .goals-wrapper .goal-text {
-        background: #ccc;
-        color: #3e3f37; /* Edited for #2219 - Bhumika */
-        padding: 0 12px;
-        display: inline-block;
-        font-family: source_sans_probold;
-    }
+.goals-wrapper .goal-text {
+    background: #ccc;
+    color: #3e3f37; /* Edited for #2219 - Bhumika */
+    padding: 0 12px;
+    display: inline-block;
+    font-family: source_sans_probold;
+}
 
 .login-header a {
     color: #50b5ea;
@@ -14565,13 +14599,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 
 
 .brandlogo { float:left;}
-.planheader-title { width:auto; padding: 0 0 3px 20px;} /* Edited for #2219 - Bhumika - Homepage - #2312 */
-.planheader-title h5 {
-    margin:6px 0 7px;  
-    font-size: 28px;
-    font-weight: normal;
-    line-height: 30px;
-}
+
 /*.plancart-box { display:inline;}*//* Commented for #2219 - Bhumika - Homepage */
 
 /* Changes Added By Bhumika #618*/
@@ -14939,19 +14967,36 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 #BtnTabIcons{margin-left:0}
 #BtnTabIcons .request-icon-block a {padding:8px 18px}
 
-.request-icon-block .request-icon-link {
+/*.request-icon-block .request-icon-link*/ /*#2621 */
+.new-btn-plan-left, .new-btn-plan-right {
     background: #fff none no-repeat scroll left center;
     border: 1px solid #c6c6c6;
     border-radius: 0 5px 5px 0;
     font-family: source_sans_proregular;
     font-size: 14px;
-    /*height: 32px;
-    line-height: 33px;*/ /*#2312*/
     height: 30px;
     line-height: 30px; 
-    padding:8px 18px;
+    padding:0 15px;
+    display: inline-block;
+    float: left;
     color: #3e3f37 !important; /* Edited for #2219 - Bhumika */
 }
+.new-btn-plan-left{border-radius: 5px 0 0 5px; border-right:0}
+.request-icon-block, .ix-icon-block {
+    float: left;
+    margin: 20px 0 0;
+    position: relative;
+}
+.request-icon-block .fa, .ix-icon-block .fa{font-size:16px}
+.ix-icon-block span{font-size:12px; padding-left:3px}
+.export-dd.dropdown-menu{
+    border-radius: 3px;
+    left: auto;
+    min-width: 82px;
+    right: 0;
+}
+.export-dd.dropdown-menu a{font-size:12px}
+.export-dd.dropdown-menu a:hover, .export-dd.dropdown-menu a:focus{background:#F4F4F4; color:inherit}
 
 .nav-tabs li .request .badge, .nav-tabs li .request-icon-block a,.nav-tabs li .request-icon-block a:hover, .nav-tabs li .request-icon-block a:focus{color: #3e3f37; /* Edited for #2219 - Bhumika */}
 #BtnTabIcons .new-btn-plan{ border-radius: 5px 0 0 5px;}
@@ -14977,8 +15022,9 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .nav-tabs .request-icons.bdrRadius #divPlanEditButtonHome .request-icon-link {
     border-radius: 0 ;border-left:0; border-right:0
 }
-.nav-tabs li .request-icon-block a.request-btn-active {
-    background-color: #f0f0f0 !important;  /* Edited for #2312 - Bhumika */
+/*.nav-tabs li .request-icon-block a.request-btn-active*/
+.P-icon-active, .new-btn-plan-left:hover , .new-btn-plan-right:hover {
+    background-color: #f0f0f0 !important;  /* Edited for #2312 - Bhumika // #2621 */
     color:inherit !important;
 }
 .nav-tabs {
@@ -16393,6 +16439,85 @@ background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
 
 .report-handing .sbHolder{z-index:2}
 
+/* ============ New style Sept- 2016 ============ */
+.margin-left10 {
+    margin-left: 10px;
+}
+.addview-popup.modal{width: 800px;top: 15%;border-radius: 4px;}
+.addview-popup {
+    padding-bottom: 20px;
+    z-index: 2501;
+}
+.addview-popup .modal-body {
+    max-height: 500px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px 5px 10px 20px;
+}
+.addview-popup .modal-header {
+    border-bottom: 0;
+    padding: 0px 15px;
+}
+.category{margin-bottom:20px}
+.category input[type="checkbox"] {margin: 0 5px 0 0;}
+.category .category-title input[type="checkbox"] {margin: -2px 5px 0 0;}
+.addview-title input{width:280px}
+.category-title .entity-type{font-weight:normal; font-size: 16px;}
+.category-title-right {
+    color: #f8710e;
+    cursor: pointer;
+    float: right;
+    font-size: 12px;
+    padding-right: 15px;
+}
+.category-block{ 
+    background: #fff none repeat scroll 0 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin: 5px 5px 10px 20px;
+    padding: 4px 3px 15px;
+}
+.category-title .all-check {
+    float: left;
+    font-size: 11px;
+    line-height: 9px;
+}
+.entity-check {
+    display: inline;
+    float: left;
+    width: 20px;
+}
+.category-title .entity-type {
+    font-size: 16px;
+    font-weight: normal;
+}
+.chkAttributes-block {
+    display: inline-block;
+    min-width: 24.5%;
+    padding: 2px 5px;
+}
+.addview-bottom {text-align: center;  padding: 0 5px;}
+.btm-link {padding-top: 10px;}
+.addview-bottom .btm-link a{ font-size: 12px; color:#95989a;}
+.addview-bottom button, .addview-bottom .btm-link{display: inline-block;}
+.addNewViewLink{
+    background: #f2f2f2 none repeat scroll 0 0;
+    color: inherit;
+    display: inline-block;
+    font-size: 12px;
+    margin: 5px 0;
+    padding: 3px;
+    text-align: center;
+    width: 100%;
+}
+.addNewViewLink:hover {background: #E5E5E5 }
+.category-title-right:after{
+    content: "\f107";
+    font: normal normal normal 12px/1 FontAwesome;
+    display:inline-block;
+}
+.category-title-right.show-fa:after {
+    content: "\f104";
+}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
@@ -16429,8 +16554,22 @@ background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
 
  @media (max-width: 1550px){
     .span10.currency-content { width: 75%; }
-
+    .new-btn-plan-left, .new-btn-plan-right {
+        padding: 4px 8px;
+    }
+    /* Added for #2621 New Homepage HTML */
+    .full-width-header .white-chart{width: 125px;}
+    .white-chart.activity-distribute {width: 145px;}
+    .white-chart.margin-right20{margin-right:10px !important}
+    .goals-wrapper span {font-size: 12px;}
+    .goal-content {padding: 0 0 0 10px;}
  }
+ @media (max-width: 1499px) {
+    /* #2621 */
+     .full-width-header .white-chart{width: 108px;}
+    .white-chart.activity-distribute {width: 145px;}
+    
+}
  @media (max-width: 1440px) {
     /*.row-fluid .hierarchy_wrapper {
      overflow: auto;
@@ -16532,7 +16671,12 @@ background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
 }
  .accordion.alert-accordian{width:100%}/* #2457 */
 }
+
+
+
 @media screen and (max-width: 1400px) {
+ 
+
 .report-btn-group {
  padding: 1% 0 0 2%;
 }
@@ -16564,12 +16708,16 @@ background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
     .region-data-reveune.region-data .dataR .cardsub.sub-value,
     .region-data-reveune.region-data .dataR .title,
     .region-data-reveune.region-data .dataR .percentageval{font-size:12px}
+
+    
 }
  @media screen and (max-width: 1366px) {
-#planHeader .planheader-title {
+/*#planHeader .planheader-title {
     width: 24%;
+}*/
+.planheader-title h5{
+    font-size: 20px;
 }
-.planheader-title h5,
 #planHeader #nl-form2 a.nl-field-toggle {
     font-size: 25px;
 }

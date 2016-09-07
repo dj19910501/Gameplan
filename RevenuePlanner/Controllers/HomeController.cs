@@ -57,7 +57,11 @@ namespace RevenuePlanner.Controllers
 
         //    }
         //}
-
+        public ActionResult IndexNewDesign() // Added by Bhumika for new HTML #2621 Remove when task finished 
+        {
+            return View();
+        }
+        
         #region "Index"
 
         /// <summary>
