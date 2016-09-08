@@ -217,7 +217,7 @@ BEGIN
 	--ORDER BY Value DESC 
 	union
 	select ViewName AS [Text],'ColumnCustom'+Cast(ViewId as nvarchar(50)) as Value,'id2' OrderKey
-	from User_CoulmnView where CreatedBy=@UserId
+	from User_CoulmnView where CreatedBy=@UserId and ViewName is not null
 	ORDER BY OrderKey,Value DESC 
 
  END

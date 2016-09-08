@@ -51,13 +51,33 @@ namespace RevenuePlanner.Services
             int result = 0;
             try
             {
+                User_CoulmnView columnview = new User_CoulmnView();
                 if (!string.IsNullOrEmpty(ViewName))
                 {
-                    var columnview = objDbMrpEntities.User_CoulmnView.Where(a => a.ViewName.ToLower() == ViewName.ToLower() && a.CreatedBy==UserId).FirstOrDefault();
-                    if (columnview != null)
+                    columnview = objDbMrpEntities.User_CoulmnView.Where(a => a.ViewName.ToLower() == ViewName.ToLower() && a.CreatedBy == UserId).FirstOrDefault();
+                }
+                else
+                {
+                    columnview = objDbMrpEntities.User_CoulmnView.Where(a => a.ViewName == null && a.CreatedBy == UserId).FirstOrDefault();
+                }
+
+
+                if (columnview != null)
+                {
+                    if (!string.IsNullOrEmpty(ViewName))
+                    {
                         result = -1;
+
+                    }
                     else
                     {
+                        result = columnview.ViewId;
+                    }
+                     
+
+                }
+                else
+                {
                         User_CoulmnView objcolumnview = new User_CoulmnView();
                         objcolumnview.ViewName = ViewName;
                         objcolumnview.CreatedBy = UserId;
@@ -66,8 +86,8 @@ namespace RevenuePlanner.Services
                         objDbMrpEntities.Entry(objcolumnview).State = EntityState.Added;
                         objDbMrpEntities.SaveChanges();
                         result = objcolumnview.ViewId;
-                    }
                 }
+               // }
 
             }
             catch (Exception ex)
@@ -83,16 +103,23 @@ namespace RevenuePlanner.Services
         {
             int result = 0;
             User_CoulmnView_attribute objColumnattribute;
+            List<User_CoulmnView_attribute> ListobjColumnattribute;
             try
             {
                 if (lstAttributeDetail != null)
                 {
+                    ListobjColumnattribute = objDbMrpEntities.User_CoulmnView_attribute.Where(view => view.ViewId == ViewId).ToList();
+                    if(ListobjColumnattribute != null && ListobjColumnattribute.Count > 0)
+                    {
+                        ListobjColumnattribute.ForEach(x => objDbMrpEntities.Entry(x).State = EntityState.Deleted);
+                    }
                     foreach(AttributeDetail objattribute in lstAttributeDetail)
                     {
                         objColumnattribute = new User_CoulmnView_attribute();
                         objColumnattribute.ViewId = ViewId;
                         objColumnattribute.AttributeId = objattribute.AttributeId;
                         objColumnattribute.AttributeType = objattribute.AttributeType;
+                        objColumnattribute.ColumnOrder = objattribute.ColumnOrder;
                         objDbMrpEntities.Entry(objColumnattribute).State = EntityState.Added;
                     }
                     result=objDbMrpEntities.SaveChanges();

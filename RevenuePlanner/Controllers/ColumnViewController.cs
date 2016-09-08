@@ -32,14 +32,13 @@ namespace RevenuePlanner.Controllers
                 DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.ClientId);
                 if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
                 {
-                   
 
                     var columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new
                     {
                         EntityType = Convert.ToString(row["EntityType"]),
                         CustomFieldId = Convert.ToString(row["CustomFieldId"]),
                         CutomfieldName = Convert.ToString(row["Name"]),
-                        ParentId=Convert.ToInt32(row["ParentId"])
+                        ParentId = Convert.ToInt32(row["ParentId"])
 
                     }).Where(row => row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Campaign).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Program).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Lineitem).ToLower()).ToList();
 
@@ -48,7 +47,7 @@ namespace RevenuePlanner.Controllers
                         EntityType = "Basic",
                         CustomFieldId = Convert.ToString(row.Key),
                         CutomfieldName = Convert.ToString(row.Value),
-                        ParentId=0
+                        ParentId = 0
                     }).ToList();
                     BasicFields.AddRange(columnattribute);
                     allattributeList = BasicFields.GroupBy(a => new { EntityType = a.EntityType }).Select(a => new ColumnViewEntity
@@ -59,7 +58,7 @@ namespace RevenuePlanner.Controllers
                         {
                             CustomFieldId = atr.CustomFieldId,
                             CutomfieldName = atr.CutomfieldName,
-                            ParentID=atr.ParentId
+                            ParentID = atr.ParentId
                         }).ToList()
                     }).ToList();
                 }
@@ -74,15 +73,14 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region method to  save column view
-  
+
         [HttpPost]
-        public JsonResult SaveColumnView(List<AttributeDetail> AttributeDetail, string ViewName)
+        public JsonResult SaveColumnView(List<AttributeDetail> AttributeDetail, string ViewName = null)
         {
             try
             {
-                if (ViewName != null && !string.IsNullOrEmpty(ViewName) && AttributeDetail!=null)
+                if (AttributeDetail != null)
                 {
-
                     int viewId = objcolumnView.SaveColumnView(Sessions.User.UserId, ViewName);
 
                     if (viewId != null && viewId != -1)
@@ -90,10 +88,17 @@ namespace RevenuePlanner.Controllers
                         int result = objcolumnView.SaveColumnViewAttribute(viewId, AttributeDetail);
                         if (result > 0)
                         {
-                            List<ViewByModel> viewByListResult = objSp.spViewByDropDownList(Convert.ToString(Sessions.PlanId));
-                            return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessColumnView, ViewById = viewByListResult }, JsonRequestBehavior.AllowGet);
+                            if (ViewName != null)
+                            {
+                                List<ViewByModel> viewByListResult = objSp.spViewByDropDownList(Convert.ToString(Sessions.PlanId));
+                                return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessColumnView, ViewById = viewByListResult }, JsonRequestBehavior.AllowGet);
+                            }
+                            else
+                            {
+                                return Json(new { Success = true}, JsonRequestBehavior.AllowGet);
+                            }
                         }
-                       
+
                         else
                             return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
 
@@ -116,6 +121,8 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
         #endregion
+
+
 
 
     }

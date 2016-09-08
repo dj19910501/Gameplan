@@ -24,5 +24,6 @@ namespace RevenuePlanner.Models
     {
         public string AttributeType { get; set; }
         public string AttributeId { get; set; }
+        public int? ColumnOrder { get; set; }
     }
 }
