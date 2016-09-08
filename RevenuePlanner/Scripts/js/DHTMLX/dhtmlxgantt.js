@@ -616,11 +616,11 @@ gantt._render_grid_item = function (item) {
                     // #1780
                     if (item.Permission == true)
                     {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title='Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
                     }
                   
                     // #1780
@@ -630,11 +630,11 @@ gantt._render_grid_item = function (item) {
                     // #1780
                     if (item.Permission == true)
                     {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
                     }
                   
                     // #1780
@@ -645,11 +645,11 @@ gantt._render_grid_item = function (item) {
                     // #1780
                     if (item.Permission == true)
                     {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title='Add to Honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
                     }
                 
                     // #1780
@@ -658,17 +658,17 @@ gantt._render_grid_item = function (item) {
                 else if (item.type == "Tactic" ) {
                     // #1780
                     if (item.Permission == true) {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'>" + "</div>  ";
+                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'></div>"
+                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title='Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'></div>"
                     }
                         // #1780
                 }
 
                 else if (item.type == "Imp Tactic" && item.Permission == true) {
-                    value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div>  ";
+                    value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + item.text + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div>  ";
                 }
                 else {
                     value = "";
@@ -678,7 +678,7 @@ gantt._render_grid_item = function (item) {
                 //(value = col.template ? col.template(columns) : columns[col.name],
                 //value instanceof Date && (value = this.templates.date_grid(value)), value = "<div class='gantt_tree_content'>" + value + "</div>");
                 if (col.name == "add") {
-                    value = "<div class='gantt_add'></div>";
+                    value = "<div class='gantt_add' data-toggle='tooltip' title='Add'></div>";
                 } else {
                     if (col.template)
                         value = col.template(item);

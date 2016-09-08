@@ -119,13 +119,13 @@
                             if (item.IsSelected)
                             {
                                 <div class="wraper-checkbox">
-                                    <span>@item.NotificationTitle</span><input id="@checkBoxIdAMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                    <span>@item.NotificationTitle</span><input id="@checkBoxIdAMSel" value="@item.NotificationId" checked="checked" class="btn-blue" type="checkbox" onchange="CheckboxChange(this);" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
                                 </div>
                             }
                             else
                             {
                                 <div class="wraper-checkbox">
-                                    <span> @item.NotificationTitle </span>  <input id="@checkBoxIdAM" value="@item.NotificationId" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
+                                    <span> @item.NotificationTitle </span>  <input id="@checkBoxIdAM" value="@item.NotificationId" class="btn-blue" type="checkbox" onchange="CheckboxChange(this);" data-toggle="toggle" data-onstyle="success" data-style="NotificationToggle">
                                 </div>
                             }
 
@@ -172,7 +172,27 @@
             $("html, body").animate({ scrollTop: 0 }, 1000);
         }
 
+
+        $('input[type=checkbox]').each(function () {
+            if (this.checked) {
+                $('#' + this.id).parent().attr('title', 'On');
+            }
+            else {
+                $('#' + this.id).parent().attr('title', 'Off');
+            }
+        });
+
     });
+
+    function CheckboxChange(Chk) {
+        var chkId = $(Chk).attr('id');
+        if ($('#' + chkId).prop('checked')) {
+            $('#' + chkId).parent().attr('title', 'On');
+        }
+        else {
+            $('#' + chkId).parent().attr('title', 'Off');
+        }
+    };
 
     $('#saveNotifications').click(function () {
         var checkedList = '';

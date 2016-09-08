@@ -145,9 +145,23 @@
 
         //To enable single click and disable double click to trigger edit session - zz
         HomeGrid.enableEditEvents(true,false,true);
+        SetTooltip();
     });
 
-
+    function SetTooltip() {
+        $(".grid_Search").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+        $(".grid_add").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+        $(".honeycombbox-icon-gantt").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+    }
     //added by Ashish for #1780
     function BindEntityState() {
         if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "") {
@@ -969,8 +983,8 @@
         if (editidonOpenEnd != 0) {
             HomeGrid.detachEvent(editidonOpenEnd);
         }
-        editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
-
+        editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {          
+            SetTooltip();
             setTimeout(function () {
                 HomeGrid.saveOpenStates();
             } , 1000);  //Added by Maitri Gandhi for #2040 on 31/3/2016

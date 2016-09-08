@@ -293,7 +293,7 @@
     function addRowIntegration(_index, _integrationInstanceId, _integrationTypeId, _instance, _provider, _lastSyncStatus, _lastSyncData, _AutoLastSyncDate, _ForceSyncUser) {
         var $baselineTable = $('#table_baseline > tbody'); //tr:first
         var $html = "";
-        $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + htmlEncode(_instance) + '</span><span class="search-icon"></span></td>' +
+        $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + htmlEncode(_instance) + '</span><span class="search-icon" title="View"></span></td>' +
             '<td>' + _provider + '</td>'
 
         if (_lastSyncStatus.toString().toLowerCase() == "error") {

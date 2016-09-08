@@ -636,12 +636,14 @@
           $("#t_integration_status").click(function () {
               if ($(this).hasClass("icon-check-blue")) {
                   $(this).val("Don't sync to integration");
+                  $(this).attr('title', "Inactive");
                   $(this).addClass("icon-check-gray");
                   $(this).removeClass("icon-check-blue");
                   $("#hdnIsDeployedToIntegration").val(false);
               }
               else {
                   $(this).val("Sync to integration");
+                  $(this).attr('title', "Active");
                   $(this).addClass("icon-check-blue");
                   $(this).removeClass("icon-check-gray");
                   $("#hdnIsDeployedToIntegration").val(true);
@@ -1493,12 +1495,14 @@
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         if (data.IsDeployedToIntegration) {
                             $("#t_integration_status").val("Sync to integration");
+                            $("#t_integration_status").attr('title', "Active");
                             $("#t_integration_status").addClass("icon-check-blue");
                             $("#t_integration_status").removeClass("icon-check-gray");
                             $("#hdnIsDeployedToIntegration").val(true);
                         }
                         else {
                             $("#t_integration_status").val("Don't sync to integration");
+                            $("#t_integration_status").attr('title', "Inactive");
                             $("#t_integration_status").addClass("icon-check-gray");
                             $("#t_integration_status").removeClass("icon-check-blue");
                             $("#hdnIsDeployedToIntegration").val(false);

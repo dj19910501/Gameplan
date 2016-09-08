@@ -99,7 +99,7 @@
             }
         });
     }
-
+   
     //added by uday for internal point 2-7-2014
     function AssignDefaultValue() {
         $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
@@ -315,17 +315,17 @@
         $html += '</td>';
         $html += ' <td class="border-r tipsyclass FormaterBoostCost">$' + FormatCommas(_Cost.toString(), false) + '</td>';
         if (_IsDeployed != true) {
-            $html += '<td class="border-r"><span class="circle-check-icon-gray" id="spnStatus_' + _id + '"></span></td>';
+            $html += '<td class="border-r"><span class="circle-check-icon-gray" title= "Inactive" id="spnStatus_' + _id + '"></span></td>';
         }
         else {
-            $html += '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue" id="spnStatus_' + _id + '"></span></td>';
+            $html += '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue" title= "Active" id="spnStatus_' + _id + '"></span></td>';
         }
 
         if (_IsDeployedToIntegration != true) {
-            $html += '<td><span class="circle-check-icon-gray-integration" id="spn_' + _id + '"></span></td>';
+            $html += '<td><span class="circle-check-icon-gray-integration" title= "Inactive" id="spn_' + _id + '"></span></td>';
         }
         else {
-            $html += '<td><span class="circle-check-icon-gray-integration circle-check-icon-integration-blue" id="spn_' + _id + '"></span></td>';
+            $html += '<td><span class="circle-check-icon-gray-integration circle-check-icon-integration-blue" title= "Active" id="spn_' + _id + '"></span></td>';
         }
 
         $html += '</tr>';

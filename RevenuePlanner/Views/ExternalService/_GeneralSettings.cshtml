@@ -72,11 +72,11 @@
                 @Html.Label("Integration Status")
                 @if (Model.IsActive == true)
                 { 
-                    <input type="text" readonly="" maxlength="18" placeholder="Active" class="icon-check-blue" value="Active" name="t_status" id="integrationStatus" tabindex="5">  // Modified by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                    <input type="text" readonly="" maxlength="18" placeholder="Active" class="icon-check-blue" title="Active" value="Active" name="t_status" id="integrationStatus" tabindex="5">  // Modified by Sohel Pathan on 22/08/2014 for PL ticket #716.
                 }
                 else
                 { 
-                    <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" value="Inactive" name="t_status" id="integrationStatus" tabindex="5">  // Modified by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                    <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" title="Inactive" value="Inactive" name="t_status" id="integrationStatus" tabindex="5">  // Modified by Sohel Pathan on 22/08/2014 for PL ticket #716.
                 }
                 @Html.HiddenFor(model => model.IsActive)
                 @Html.HiddenFor(model => model.IsActive, new { id = "hdnIsActiveIntact" })

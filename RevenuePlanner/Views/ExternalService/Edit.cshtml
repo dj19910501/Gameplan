@@ -344,11 +344,13 @@
                 $('#IsActive').val(false);
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
+                $(this).attr('title', 'Inactive');
             } else {
                 $(this).val("Active");
                 $('#IsActive').val(true);
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
+                $(this).attr('title', 'Active');
             }
         });
 

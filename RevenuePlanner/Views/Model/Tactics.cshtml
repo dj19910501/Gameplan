@@ -423,10 +423,10 @@
                            //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
                           '<td   class="sm border-r" id="' + _id + '">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                           '<td  class="border-r sm projectedcost" id="' + _id + '">' + CurrencySybmol + FormatCommas(_revenue.toString(), false) + '</td>' +  //Modified by Rahul Shah for PL #2498
-                          '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>';
+                          '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue"  title ="Active"  id = "' + "rej" + _id + '"></span></td>';
 
                 if ($("#IsModelIntegrated").val() == 'True') {
-                    $html += '<td><span class="circle-check-icon-gray-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
+                    $html += '<td><span class="circle-check-icon-gray-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '" title = "' + (_IsDeployedToIntegration == true ? "Active" : "Inactive") + '" ></span></td>';
                 }
 
 
@@ -441,10 +441,10 @@
                              //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
                             '<td  id="' + _id + '" class="sm border-r">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                             '<td id="' + _id + '" class="border-r sm projectedcost">' + CurrencySybmol + FormatCommas(_revenue.toString(), false) + '</td>' +  //Modified by Rahul Shah for PL #2498 
-                            '<td class="border-r"><span class="circle-check-icon-gray"  id = "' + "rej" + _id + '"></span></td>';
+                            '<td class="border-r"><span class="circle-check-icon-gray" title ="Inactive"   id = "' + "rej" + _id + '"></span></td>';
 
                 if ($("#IsModelIntegrated").val() == 'True') {
-                    $html += '<td><span class="circle-check-icon-gray-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
+                    $html += '<td><span class="circle-check-icon-gray-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '" title = "' + (_IsDeployedToIntegration == true ? "Active" : "Inactive") + '"></span></td>';
                 }
 
                 $html += '</tr>';
@@ -495,10 +495,15 @@
 
                     if ($(this).parent().next().find("span").hasClass("circle-check-icon-integration-blue")) {
                         $(this).parent().next().find("span").removeClass("circle-check-icon-integration-blue")
+                        $(this).attr('title', 'Inactive');
+                    }
+                    else {
+                        $(this).attr('title', 'Inactive');
                     }                    
                 }
                 else {
                     $(this).addClass('circle-check-icon-blue');
+                    $(this).attr('title', 'Active');
                 }
             }
         });
@@ -515,9 +520,11 @@
 
                     if ($(this).hasClass('circle-check-icon-integration-blue')) {
                         $(this).removeClass('circle-check-icon-integration-blue');
+                        $(this).attr('title', 'Inactive');
                     }
                     else {
                         $(this).addClass('circle-check-icon-integration-blue');
+                        $(this).attr('title', 'Active');
                     }
                 }
                 else {

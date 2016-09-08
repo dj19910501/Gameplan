@@ -212,7 +212,7 @@
         $html += '<div class="accordion-header campaign-default">' +
                        '<a class="accordion-toggle noborderbottom" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId + '" id="divimpTactic" index="0">' +
                            '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">Add Improvement Tactic</span></span>' +
-                           '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel"></div></span>' +
+                           '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel" title="Add" data-toggle="tooltip" ></div></span>' +
                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                            '<span class="pull-right width150px text-right font-black tipsyclass cost-data">' + CurrencySybmol + '' + 0 + '</span>' +
                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
@@ -261,10 +261,10 @@
         $html += '<div class="accordion-header campaign-default">' +
                         '<a class="accordion-toggle" id="divimpTactic" index="' + _id + '" data-id-program="' + _programId + '">';
         if (_isOwner == 0) {
-            $html += '<span class="delete-Improvement-old width5" id="delimpTactic"></span>';
+            $html += '<span class="delete-Improvement-old width5" id="delimpTactic" title="Delete" data-toggle="tooltip"></span>';
         }
         $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline" title="' + _title + '">' + GrapSubstring(_title, 40) + '</span></span>' +
-                            '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel"></div></span>' +
+                            '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel" title="Add" data-toggle="tooltip"></div></span>' +
                             '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
                             '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities add-tatic-td">' + FormatNumber(_cost.toString(), false) + '</span>' +
                             '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +

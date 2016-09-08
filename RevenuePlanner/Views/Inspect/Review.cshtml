@@ -222,14 +222,14 @@
         <!--Begin PL#1872 Brad Gray, 09 Jan 2016-->
         <div class="cf margin-top40 width96 textalign-mozcenter" style="padding-bottom: 5px;">
             <div class="span6 review_no_padding">
-                <p class="margin-top-10 text_align_left">Deployed to Integration</p>
+                <p class="margin-top-10 text_align_left" >Deployed to Integration</p>
                    @{ if (tacticReview.IsDeployedToIntegration)
                     {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" title="Active" placeholder="Sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
                     }
                       else
                       {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" title="Inactive" placeholder="Don't sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
                       }
 }
             </div>
@@ -263,7 +263,7 @@
         {
             <div class="padding-top10" id="commentsection">
                 @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-blue-background" })
-                <img id="btnComment" src="~/Content/images/chat-button.png" alt="" style="float: right;" />
+                <img id="btnComment" title="Add Comment" src="~/Content/images/chat-button.png" alt="" style="float: right;" />
             </div>
         }
         else
@@ -347,7 +347,7 @@
                             </div>
                             <div class="span1 margin-top16">
                                 @*<input id="eloquaIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">*@
-                                <input id="eloquaIntegrationToggle" type="checkbox">
+                                <input id="eloquaIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);" >
                             </div>
                           </div>
                     }
@@ -363,7 +363,7 @@
                                 </a>
                             </div>
                             <div class="span1 margin-top16">
-                                <input id="salesforceIntegrationToggle" type="checkbox">
+                                <input id="salesforceIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);">
                             </div>
                         </div>
                     }
@@ -442,8 +442,8 @@
                                     
                                 </a>
                             </div>
-                            <div class="span1 margin-top16">
-                                <input id="marketoIntegrationToggle" type="checkbox" >
+                            <div class="span1 margin-top16"> 
+                                <input id="marketoIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);">
                             </div>
                         </div>
                      
@@ -798,6 +798,7 @@
             }
             showHide('integrationInfo');
             if ($(this).hasClass("icon-check-blue")) {
+                $(this).attr('title',"Inactive");
                 $(this).val("Don't sync to integration");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
@@ -816,6 +817,7 @@
                 });
             }
             else {
+                $(this).attr('title','Active');
                 $(this).val("Sync to integration");
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
@@ -1302,10 +1304,12 @@
         {
 
             wfSettings.style.display = "block";
+            CheckboxChange(wfToggle);
         }
         else
         {
             wfSettings.style.display = "none";
+            CheckboxChange(wfToggle);
         }
     }
 
@@ -1522,6 +1526,17 @@
         }
         else return true;
     }
+
+    function CheckboxChange(Chk){
+        var chkId = $(Chk).attr('id');
+        if($('#'+chkId).prop('checked'))
+        {
+            $('#'+chkId).parent().attr('title', 'On');
+        }
+        else{
+            $('#'+chkId).parent().attr('title', 'Off');
+        }
+    };
 
 </script>
 

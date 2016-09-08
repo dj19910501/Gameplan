@@ -2086,7 +2086,7 @@
             </div>
             <div class="hc-controls" id="hc-controlsdiv">
                 <div class="dropup pull-left">
-                    <button class="btn btn-lg dropdown-toggle" type="button" id="exportMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-external-link"></i></button>
+                <button class="btn btn-lg dropdown-toggle" type="button" id="exportMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Export"><i class="fa fa-external-link"></i></button>
                     <ul class="dropdown-menu" aria-labelledby="exportMenu1">
                         <li><a href="#" id="ExportPDFVHoneyComb" onclick='CallPdfHoneyComb()'>Export .pdf</a></li>
                         <li><a href="#" id="ExportCSVHoneyComb" style="display:none" onclick="ExportCSVHoneyCombSp()">Export .csv</a></li>
@@ -2094,13 +2094,13 @@
                 </div>
                 <!-- Added by Arpita Soni for Ticket #2354 on 07/12/2016 -->
                 <div class="dropup pull-left">
-                    <button class="btn btn-lg dropdown-toggle" type="button" id="packageMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-object-group"></i></button>
+                <button class="btn btn-lg dropdown-toggle" type="button" id="packageMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Package"><i class="fa fa-object-group"></i></button>
                     <ul class="dropdown-menu" aria-labelledby="packageMenu">
                         <li><a href="#" id="PackageHoneyComb" onclick='CallPackageHoneyComb()'>Package</a></li>
                         <li><a href="#" id="UnpackageHoneyComb" onclick="CallUnPackageHoneyComb()">Unpackage</a></li>
                     </ul>
                 </div>
-                <button class="btn btn-lg pull-right" onclick='RemoveAllHoneyCombData();'><i class="fa fa-close"></i></button>
+            <button class="btn btn-lg pull-right" onclick='RemoveAllHoneyCombData();' data-toggle="tooltip" title="Close"><i class="fa fa-close"></i></button>
             </div>
 
         </div>
@@ -5453,7 +5453,7 @@
                                     ' <p class="metadata"> ' +
                                     ' <span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span> ' +
                                     ' </p></div> ' +
-                                    ' <div class="span1 text-right pull-right"> ' +
+                                    ' <div class="span1 text-right pull-right" title="Delete" > ' +
                                     ' <i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i> ' +
                                     ' </div></div></div>';
                                 }
@@ -5465,7 +5465,7 @@
                                         ' <p class="metadata"> ' +
                                         ' <span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span> ' +
                                         ' </p></div> ' +
-                                        ' <div class="span1 text-right pull-right"> ' +
+                                        ' <div class="span1 text-right pull-right" title="Delete"> ' +
                                         ' <i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i> ' +
                                         ' </div></div></div>';
                                 }
@@ -5479,11 +5479,11 @@
                             //Add asset to the top in the honeycomb list
                             if(ExportSelectedIds.ROITacticType[i] == '@Enums.AssetType.Asset.ToString()')
                             {
-                                htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' +  htmlEncode(ExportSelectedIds.Title[i]) + '">' +  htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                                htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' +  htmlEncode(ExportSelectedIds.Title[i]) + '">' +  htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                             }
                             else
                             {
-                                htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' +  htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode( ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                                htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' +  htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode( ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                             }
 
                         }
@@ -8572,6 +8572,16 @@
 
         });
 
+        function SetTooltip() {            
+            $(".honeycombbox-icon-gantt").tooltip({
+                'container': 'body',
+                'placement': 'bottom'
+            });
+            $(".grid_Search").tooltip({
+                'container': 'body',
+                'placement': 'bottom'
+            });            
+        }
         var PreviousListFilter = {
             OwnerIds: [],
             TacticTypeIds: []

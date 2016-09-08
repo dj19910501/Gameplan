@@ -7880,7 +7880,7 @@ namespace RevenuePlanner.Controllers
                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                 lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Line1 onclick=javascript:OpenLineItemGridPopup(this,event) alt=" + tacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
+                                lineitemdataobj.value = "<div class=grid_Search id=LP title='View'></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Line1 title='Add'onclick=javascript:OpenLineItemGridPopup(this,event) alt=" + tacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                 lineitemdataobj = new Plandataobj();

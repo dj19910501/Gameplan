@@ -102,11 +102,11 @@
                                                                                             <p class="clear-section" style="line-height: 11px; padding-bottom: 5px;">@Html.Raw("Deployed to Integration")</p>
                                                                                             if (Model.IsDeployedToIntegration)
                                                                                             {
-                                                                                                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                                                                                                <input id="t_integration_status" name="t_status"  title="Active" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
                                                                                             }
                                                                                             else
                                                                                             {
-                                                                                                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Don't sync to integration" maxlength="18" readonly />
+                                                                                                <input id="t_integration_status" name="t_status"  title="Inactive" type="text" class="icon-check-gray" placeholder="Don't sync to integration" maxlength="18" readonly />
                                                                                             }
                                                                                         }
                                                                                         <div style="clear: both; width: 250%;">
@@ -692,12 +692,14 @@
 
         if ($(this).hasClass("icon-check-blue")) {
             $(this).val("Don't sync to integration");
+            $(this).attr('title', "Inactive");
             $(this).addClass("icon-check-gray");
             $(this).removeClass("icon-check-blue");
             $("#hdnIsDeployedToIntegration").val(false);
         }
         else {
             $(this).val("Sync to integration");
+            $(this).attr('title', "Active");
             $(this).addClass("icon-check-blue");
             $(this).removeClass("icon-check-gray");
             $("#hdnIsDeployedToIntegration").val(true);

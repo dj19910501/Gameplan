@@ -103,7 +103,7 @@
             
             <div class="cf inputs-aligned-horizontal content dark inline-ellipsis">
                 @Html.Label("Integration Status")
-                <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" name="t_status" id="integrationStatus" tabindex="5">
+                <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" name="t_status" title="Inactive" id="integrationStatus" tabindex="5">
                 @Html.HiddenFor(model => model.IsActive)
             </div>
             
@@ -396,11 +396,13 @@
             $('#IsActive').val(false);
             $(this).addClass("icon-check-gray");
             $(this).removeClass("icon-check-blue");
+            $(this).attr('title', 'Inactive');
         } else {
             $(this).val("Active");
             $('#IsActive').val(true);
             $(this).addClass("icon-check-blue");
             $(this).removeClass("icon-check-gray");
+            $(this).attr('title', 'Active');
         }
     });
 

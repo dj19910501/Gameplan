@@ -37,7 +37,8 @@ margin-left: 10px;
     margin-top: 0 !important;
     width:100% !important;
 }
-#lineItemGrid .rowselected td{background:#f2f2f2}
+#lineItemGrid .rowselected td{background:#f2f2f2} 
+.tooltip{ z-index:9999 !important}   
 </style>
 <!-- Added by Arpita Soni for Ticket #2237 on 06/13/2016 -->
 @if(countrows > 0) {
@@ -97,9 +98,24 @@ else {
             gridSearchFlag = 1;
             DisplayEditablePopup(id, type);
         });
+        SetTooltip();
         
     });
 
+    function SetTooltip() {
+        $(".grid_Search").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+        $(".grid_add").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+        $(".honeycombbox-icon-gantt").tooltip({
+            'container': 'body',
+            'placement': 'bottom'
+        });
+    }
     var $doc = $(document);
     $doc.click(function () {
         $('#popupLineitemIP').css('display', 'none');

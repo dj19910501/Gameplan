@@ -28,7 +28,7 @@
         @if ((bool)ViewBag.IsCreated == false && (bool)ViewBag.CanDelete == true)
         {
             <div class="btn-group pull-right gear-dropdown">
-                <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
+                <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown" title="Delete Tactic"></span>
                 <ul class="dropdown-menu">
                     <li><a id="deleteTactic">Delete Tactic</a></li>
                 </ul>
@@ -75,11 +75,11 @@
                 //Start Manoj Limbachiya PL # 486
                 if (IsDeplyed)
                 {
-                    <input id="t_model_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Model" maxlength="18" readonly />
+                    <input id="t_model_status" name="t_status" type="text" class="icon-check-blue margin-top10" title="Active" placeholder="Deployed to Model" maxlength="18" readonly />
                 }
                 else
                 {
-                    <input id="t_model_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Model" maxlength="18" readonly />
+                    <input id="t_model_status" name="t_status" type="text" class="icon-check-gray margin-top10"  title="Inctive" placeholder="Not Deployed to Model" maxlength="18" readonly />
                 }
                 //End Manoj Limbachiya PL # 486
 
@@ -87,11 +87,11 @@
                 {
                     if (Model.IsDeployedToIntegration)
                     {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" title="Active" placeholder="Deployed to Integration" maxlength="18" readonly />
                     }
                     else
                     {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" title="Inctive" placeholder="Not Deployed to Integration" maxlength="18" readonly />
                     }
 
                     //Start Brad Gray PL # 1374
@@ -275,19 +275,21 @@
                 $(this).val("Not Deployed to Model");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
+                $(this).attr('title', 'Inactive');
 
                 /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
                 t_integration_status = $("#frm_tactics #t_integration_status");
                 if (t_integration_status.hasClass("icon-check-blue")) {
                     t_integration_status.val("Not Deployed to Integration");
                     t_integration_status.addClass("icon-check-gray");
-                    t_integration_status.removeClass("icon-check-blue");
+                    t_integration_status.removeClass("icon-check-blue");                  
                 }              
             }
             else {
                 $(this).val("Deployed to Model");
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
+                $(this).attr('title','Active');
             }
         });
 
@@ -297,6 +299,7 @@
                 $(this).val("Not Deployed to Integration");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
+                $(this).attr('title', 'Inactive');
             }
             else if ($("#frm_tactics #t_model_status").hasClass("icon-check-gray")) {
                 /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
@@ -306,6 +309,7 @@
                 $(this).val("Deployed to Integration");
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
+                $(this).attr('title', 'Active');
             }
         });
 
