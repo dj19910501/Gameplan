@@ -49,11 +49,13 @@ var selectbox_keys = '';
             CustomLineItemName: "",
             CustomProgramName: "",
             CustomTacticName: "",
+            CustomColumnGroupName:"",
             CustomName: "",
             IsTacticSection: ""
         },
 
         _create: function () {
+        
             var el = this.element.hide();
             var o = this.options;
             var id = this.element.attr('id');////Added by Mitesh Vaishnav for PL ticket #727
@@ -139,6 +141,7 @@ var selectbox_keys = '';
         },
 
         refresh: function (init) {
+          
             var el = this.element;
             var o = this.options;
             var menu = this.menu;
@@ -153,6 +156,8 @@ var selectbox_keys = '';
             var isTacticCustomField = false;
             var isCustomField = false;
             var istacticSectionDisplay = false;
+            var isColumnview = false;
+            var isGridView = false;
             //End: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
             // build items
             el.find('option').each(function (i) {
@@ -169,6 +174,7 @@ var selectbox_keys = '';
                 var optLabel;
                 ////start Added by Mitesh for creating border between custom fields and other 
                 var borderTopClass = "";
+             
                 if (o.CustomName != '') {
                     if (!isCustomField) {
                         if (value.substring(0, o.CustomName.length) == o.CustomName) {
@@ -229,8 +235,20 @@ var selectbox_keys = '';
                         html += '<div class="report-seperator" id="' + tempId + '_LineitemCustomHeader"><span>Line Item Fields</span></div>'
                     }
                 }
-
-              
+                if (o.CustomColumnGroupName == '')
+                {
+                    isColumnview = true;
+                    
+                }
+                else if (!isColumnview && o.CustomColumnGroupName != '')  {
+                    if (value.substring(0, o.CustomColumnGroupName.length) == o.CustomColumnGroupName)  {
+                        isColumnview = true;
+                        isGridView = true;
+                        var tempId = $this.parent().attr('id');
+                        html += '<div class="report-seperator" id="' + tempId + '_ColumnViewCustomHeader"><span>Column View</span></div>'
+                    }
+                }
+            
 
                 //End: Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
                 html += '<li class="' + liClasses + ' ' + borderTopClass + '">';
@@ -252,9 +270,21 @@ var selectbox_keys = '';
                 }
 
                 // add the title and close everything off
-                html += ' /><span class="tipsyTitle" title="'+ description + '">' + description + '</span></label></li>';
+                html += ' /><span class="tipsyTitle" title="' + description + '">' + description + '</span></label></li>';
+
             });
-            
+
+            if (!isColumnview) {
+                isColumnview = true;
+                var tempId = el.attr('id');
+                html += '<div class="report-seperator" id="' + tempId + '_ColumnViewCustomHeader"><span>Column View</span></div>'
+                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add new view</a>'
+            }
+            else if (isGridView)
+            {
+                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add new view</a>'
+            }
+
             // insert into the DOM
             checkboxContainer.html(html);
 
