@@ -1,0 +1,175 @@
+﻿@model IEnumerable<RevenuePlanner.Models.ColumnViewEntity>
+
+@if (Model != null && Model.Count() > 0)
+{
+    <div class="addview-wrap">
+        <div class="addview-title margin-bottom-20">
+            <label>1. Name of View.</label>
+            <input type="text" id="txtViewName" class="margin-left10" />
+        </div>
+        <div class="addview-title margin-bottom-20">
+            <label>2. Select columns to appear in View.</label>
+        </div>
+        @foreach (var entity in Model)
+        {
+            string title = string.Empty;
+            if (entity.EntityType.ToString().ToLower() == "basic")
+            {
+                title = entity.EntityType.ToString() + " Info";
+            }
+            else
+            {
+                title = entity.EntityType.ToString() + "Attributes";
+            }
+            <div class="category" entitytpe="@entity.EntityType.ToString()">
+                <div class="category-title clearfix">
+                    <span class="entity-check"><input type="checkbox" id="" name="" value="" class="checkAlldiv" /> <span class="all-check">All</span></span>
+                    <span class="entity-type">@title</span>
+                    <div class="category-title-right">
+                        <span class="showdv">Show</span> / <span class="hidedv">hide</span>
+                    </div>
+                </div>
+
+
+                @if (entity.AttributeList != null && entity.AttributeList.Count() > 0)
+                {
+                    <div class="chkAttributes category-block clearfix">
+                        @foreach (var attr in entity.AttributeList)
+                        {
+
+                            <span class="chkAttributes-block">
+                                @*@if (attr.ParentID == 0)
+                                {*@
+                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox"  />
+                                @*}
+                                else
+                                {
+                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox" disabled="disabled" parentid="@attr.ParentID.ToString()"/>
+
+                                }*@
+                                <span for="chk-@attr.CustomFieldId" class="attr-fildname">@attr.CutomfieldName</span>
+                            </span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+    <div class="addview-bottom clearfix">
+        <div class="btm-link"><a href="javascript:void(0)" class="selectAllAttribute"> Select All </a>| <a href="javascript:void(0)" class="deselectAllAttribute">Deselect All</a></div>
+        <button id="btnSaveColumnView" type="button" class="btn btn-blue pull-right width100px" data-dismiss="modal">Save</button>
+    </div>
+}
+
+<script type="text/javascript">
+
+    $(".category-title-right").click(function () {
+        $(this).toggleClass("show-fa");
+        $(this).closest(".category").find(".category-block").slideToggle("slow");
+    });
+
+    $(".checkAlldiv").click(function () {
+        if ($(this).is(':checked')) {
+            $(this).closest(".category").find(".chkAttributes").find('input:checkbox').attr('checked', 'checked');
+        }
+        else {
+            $(this).closest(".category").find(".chkAttributes").find('input:checkbox').removeAttr('checked');
+
+        }
+    });
+    // if all checkbox are selected, check the selectall checkbox
+    // and viceversa
+    $(".attr-checkbox").click(function () {
+        var currentdivcheckbox = $(this).closest(".chkAttributes").find("input:checkbox");
+        var attributeid = $(this).val();
+        if ($(currentdivcheckbox).length == $(this).closest(".chkAttributes").find(".attr-checkbox:checked").length) {
+            $(this).closest(".category").find(".checkAlldiv").attr("checked", "checked");
+        } else {
+            $(this).closest(".category").find(".checkAlldiv").removeAttr("checked");
+        }
+        //if ($(this).is(':checked')) {
+        //    $("input:checkbox[parentid=" + attributeid + "]").attr("checked", "checked");
+        //}
+        //else {
+        //    $("input:checkbox[parentid=" + attributeid + "]").removeAttr("checked");
+
+        //}
+
+    });
+    $(".selectAllAttribute").click(function () {
+        $(".addview-wrap").find("input:checkbox").attr("checked", "checked");
+    });
+    $(".deselectAllAttribute").click(function () {
+        $(".addview-wrap").find("input:checkbox").removeAttr("checked");
+    });
+    $("#btnSaveColumnView").click(function () {
+        var viewname = $("#txtViewName").val();
+        _ColumnView = [];
+        if (viewname != "") {
+            if (CheckHtmlTag(viewname) == false) {
+                $("#errorMessage1").css("display", "block");
+                $("#spanMessageError1").empty();
+                $("#spanMessageError1").text("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                $("#successMessage1").css("display", "none");
+                return false;
+            }
+            $('#txtViewName').removeClass("error");
+            $.each($(".category"), function () {
+                var entitytype = $(this).attr("entitytpe");
+                $(this).find(".chkAttributes").find("input:checkbox").each(function () {
+
+                    if ($(this).is(':checked')) {
+                        _ColumnView.push({
+                            AttributeType: entitytype.toString(),
+                            AttributeId: $(this).val().toString()
+                        });
+                    }
+                });
+            });
+
+            if (_ColumnView != null && _ColumnView.length > 0 && _ColumnView != undefined) {
+                _ColumnView = JSON.stringify(_ColumnView);
+                $.ajax({
+
+                    url: '@Url.Action("SaveColumnView", "ColumnView")', // we are calling json method
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: "{'AttributeDetail':" + (_ColumnView) + ",'ViewName':'" + viewname + "'}",
+                    success: function (data) {
+                        if (data.Success != null && data.Success == true && data.SuccessMessage != null) {
+                            $('#CreateNewView').hide();
+                            if (data.ViewById != null) {
+                                BindViewSelections(data.ViewById, '');
+                            }
+                        }
+                        if (data.Success != null && data.Success == false && data.ErrorMessage != null) {
+                            $("#errorMessage1").css("display", "block");
+                            $("#spanMessageError1").empty();
+                            $("#spanMessageError1").text(data.ErrorMessage);
+                            $("#successMessage1").css("display", "none");
+                        }
+                    }
+                });
+            }
+            else {
+                $("#errorMessage1").css("display", "block");
+                $("#spanMessageError1").empty();
+                $("#spanMessageError1").text("Please select atleast basic attributes");
+                $("#successMessage1").css("display", "none");
+            }
+        }
+        else { $('#txtViewName').addClass("error"); return false; }
+    });
+    $(".closemessage").click(function () {
+        $(this).parent().closest('div').css("display", "none");
+
+    });
+    $(document).ready(function () {
+        $("#errorMessage1").css("display", "none");
+        $("#spanMessageError1").empty();
+        $("#successMessage1").css("display", "none");
+        $("#spanMessageSuccess1").empty();
+    });
+</script>

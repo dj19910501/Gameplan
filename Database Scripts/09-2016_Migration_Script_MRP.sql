@@ -86,6 +86,85 @@ END
 
 GO
 
+/****** Object:  Table [dbo].[User_CoulmnView]    Script Date: 09/08/2016 12:46:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[User_CoulmnView]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[User_CoulmnView](
+	[ViewId] [int] IDENTITY(1,1) NOT NULL,
+	[ViewName] [nvarchar](500) NULL,
+	[CreatedBy] [uniqueidentifier] NULL,
+	[CreatedDate] [datetime] NULL,
+	[ModifyBy] [uniqueidentifier] NULL,
+	[ModifyDate] [datetime] NULL,
+	[IsDefault] [bit] NULL,
+ CONSTRAINT [PK_User_CoulmnView] PRIMARY KEY CLUSTERED 
+(
+	[ViewId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Object:  Table [dbo].[User_CoulmnView_attribute]    Script Date: 09/08/2016 12:46:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[User_CoulmnView_attribute]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[User_CoulmnView_attribute](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ViewId] [int] NOT NULL,
+	[AttributeType] [nvarchar](50) NULL,
+	[AttributeId] [nvarchar](50) NULL,
+	[ColumnOrder] [int] NULL,
+ CONSTRAINT [PK_User_CoulmnView_attribute] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_User_CoulmnView_attribute_User_CoulmnView]') AND parent_object_id = OBJECT_ID(N'[dbo].[User_CoulmnView_attribute]'))
+ALTER TABLE [dbo].[User_CoulmnView_attribute]  WITH CHECK ADD  CONSTRAINT [FK_User_CoulmnView_attribute_User_CoulmnView] FOREIGN KEY([ViewId])
+REFERENCES [dbo].[User_CoulmnView] ([ViewId])
+GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_User_CoulmnView_attribute_User_CoulmnView]') AND parent_object_id = OBJECT_ID(N'[dbo].[User_CoulmnView_attribute]'))
+ALTER TABLE [dbo].[User_CoulmnView_attribute] CHECK CONSTRAINT [FK_User_CoulmnView_attribute_User_CoulmnView]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_GetCustomFieldList]    Script Date: 09/08/2016 12:46:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[sp_GetCustomFieldList]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[sp_GetCustomFieldList] AS' 
+END
+GO
+
+ALTER PROCEDURE [dbo].[sp_GetCustomFieldList]
+@ClientId nvarchar(250)=null
+AS
+BEGIN
+SET NOCOUNT ON;
+
+SELECT distinct CustomField.*,ISnull(CustomFieldDependency.ParentCustomFieldId,0) as ParentId 
+FROM CustomField (NOLOCK) 
+LEFT join CustomFieldDependency on
+CustomField.CustomFieldId= CustomFieldDependency.ChildCustomFieldId WHERE 
+CustomField.IsDeleted=0
+AND ClientId= CASE WHEN @ClientId IS NULL THEN ClientId ELSE @ClientId END
+order by CustomField.Name
+
+END
+
+
+
+GO
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version

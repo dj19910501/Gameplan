@@ -141,7 +141,7 @@ namespace RevenuePlanner.Helpers
         public const string ProgramCustomTitle = "ProgramCustom";
         public const string TacticCustomTitle = "TacticCustom";
         public const string LineitemCustomTitle = "LineitemCustom";
-
+        public const string ColumnCustomTitle = "ColumnCustom";
         //Added By Sohel Pathan
         public static string ColorCodeForCustomField = "";
 
@@ -9375,7 +9375,7 @@ namespace RevenuePlanner.Helpers
             // Added by Arpita Soni for Ticket #2357 on 07/12/2016
             viewByListResult.Add(new ViewByModel { Text = Enums.DictPlanGanttTypes[PlanGanttTypes.ROIPackage.ToString()].ToString(), Value = Enums.DictPlanGanttTypes[PlanGanttTypes.ROIPackage.ToString()].ToString() });
 
-            SqlParameter[] para = new SqlParameter[2];
+            SqlParameter[] para = new SqlParameter[3];
 
             para[0] = new SqlParameter()
             {
@@ -9387,7 +9387,12 @@ namespace RevenuePlanner.Helpers
                 ParameterName = "ClientId",
                 Value = Sessions.User.ClientId
             };
-            var customViewBy = db.Database.SqlQuery<ViewByModel>("spViewByDropDownList @PlanId,@ClientId", para).ToList();
+            para[2] = new SqlParameter()
+            {
+                ParameterName = "UserId",
+                Value = Sessions.User.UserId
+            };
+            var customViewBy = db.Database.SqlQuery<ViewByModel>("spViewByDropDownList @PlanId,@ClientId,@UserId", para).ToList();
             return viewByListResult = viewByListResult.Concat(customViewBy).ToList();
         }
 

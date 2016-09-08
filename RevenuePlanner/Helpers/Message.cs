@@ -2999,6 +2999,32 @@ namespace RevenuePlanner.Helpers
             }
         }
         //end
+        //added by devanshi for column view
+        private string _DuplicateColumnView;
+        public string DuplicateColumnView
+        {
+            get
+            {
+                return _DuplicateColumnView;
+            }
+            set
+            {
+                _DuplicateColumnView = value;
+            }
+        }
+        private string _SuccessColumnView;
+        public string SuccessColumnView
+        {
+            get
+            {
+                return _SuccessColumnView;
+            }
+            set
+            {
+                _SuccessColumnView = value;
+            }
+        }
+        //end
         #endregion
 
         #region  Functions
@@ -3956,6 +3982,12 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "DeleteAlertRule":
                                             _DeleteAlertRule = strMsgValue;
+                                            break;
+                                        case "DuplicateColumnView":
+                                            _DuplicateColumnView=strMsgValue;
+                                            break;
+                                        case "SuccessColumnView":
+                                            _SuccessColumnView = strMsgValue;
                                             break;
 
                                     }

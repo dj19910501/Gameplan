@@ -6529,13 +6529,16 @@
             $dropdown.html('');
             var $html = '';
             if (data.length > 0) {
+               
                 $.each(data, function (index, time) {
-                    if (type == time.Value) {
-                        $html += '<option value="' + time.Value + '" selected="selected">' + time.Text + '</option>';
-                    }
-                    else {
-                        $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
-                    }
+                   
+                        if (type == time.Value) {
+                            $html += '<option value="' + time.Value + '" selected="selected">' + time.Text + '</option>';
+                        }
+                        else {
+                            $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                        }
+                   
                 });
             }
             $dropdown.append($html);

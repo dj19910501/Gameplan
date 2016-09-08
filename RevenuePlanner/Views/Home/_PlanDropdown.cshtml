@@ -86,22 +86,29 @@
 </ul>
 @*<script src="~/Scripts/js/scripts.js"></script>*@
 <script type="text/javascript">
-    $(document).ready(function () {       
+    $(document).ready(function () {
+        var CustomColumnGroupName = "";
+       // if ($('#IsGridView').val() == "True") {
+            CustomColumnGroupName = "@Common.ColumnCustomTitle";
+      //  }
         $(".selectBox select").selectbox();
-        $("#ddlTabViewBy").multiselect({
-            multiple: false,
-            noneSelectedText: "Please Select",
-            selectedList: 1,
-            CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle",
-            classes: 'custom-right-pos', // Added by Sohel Pathan on 11/11/2014 for PL ticket #934, NOTE : Please don't change class name, it is used in js.
-            IsTacticSection: "TACTIC SECTION"
-        }).multiselectfilter({
-            CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle",
-        });
+            $("#ddlTabViewBy").multiselect({
+                multiple: false,
+                noneSelectedText: "Please Select",
+                selectedList: 1,
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle",
+                CustomColumnGroupName: CustomColumnGroupName,
+                classes: 'custom-right-pos', // Added by Sohel Pathan on 11/11/2014 for PL ticket #934, NOTE : Please don't change class name, it is used in js.
+                IsTacticSection: "TACTIC SECTION"
+            }).multiselectfilter({
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle",
+                CustomColumnGroupName: CustomColumnGroupName
+            });
+        
         filters.SelectedPlans = [];
         $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
@@ -118,14 +125,14 @@
 
         }
         var SelectedPlans = filters.SelectedPlans.toString();
-       
+
         //Modified by komal rawal for #1750
         // Commented by Nishant Sheth
         // Desc : To Avoid double server trip and select default range of year
         @*if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             //BindUpcomingActivites(SelectedPlans);
         }*@
-        
+
         Currenttime = $('#ddlUpComingActivites').val();
         isQuater = Currenttime;
         //End
@@ -150,19 +157,18 @@
             if ($('#IsGridView').val() != "True") {
                 GetCollaborators(CurrentPlanId);
             }
-            else
-            {
+            else {
                 $("#RequestTab").hide();
             }
-          //  $("#lblMarkringActivitiestitle").show();
-           // $("#nl-form2").show();
+            //  $("#lblMarkringActivitiestitle").show();
+            // $("#nl-form2").show();
             $("#BudgetIcon").show();
             $("#BtnTabIcons").addClass("bdrRadius");
         }
         else {
-          //  $("#nl-form2").hide();
+            //  $("#nl-form2").hide();
             $("#BudgetIcon").hide();
-          
+
         }
         $('.request-icons').show();
         //Added for the case of "Select All" custom field By Maitri Gandhi on 26/2/2016
@@ -204,10 +210,10 @@
         //GetHealderData(SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds, Tabid);// Modified By Nishant Sheth Desc header value wrong with plan tab
         //GetNumberOfActivityPerMonByPlanIdPer(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
 
-     
+
     });
     var IsViewBy = false;
-    var isOpen = false;   
+    var isOpen = false;
     $("#ddlTabViewBy").change(function () {
         var ViewBy = $(this).val();
         ExportSelectedIds = {
@@ -239,10 +245,10 @@
         requestPlanActiveTab(false);
         RefreshCurrentTab();
     });
-    $('.new-btn-plan').click(function () {     
+    $('.new-btn-plan').click(function () {
         //Modified by Komal Rawal for 2013 Home/Plan Layout changes
         $("#RequestTab").show();
-        if ($('#IsGridView').val() == "True") {            
+        if ($('#IsGridView').val() == "True") {
             $('#txtGlobalSearch').val("");
             $('#searchCriteria').val('@activityName');
             $('#searchCriteria').text('@activityName.First()');
@@ -251,21 +257,21 @@
             $('#ExpClose').css('display', 'none');
             $('#ExpSearch').css('display', 'block');
             isOpen = false;
-            
+
             ChangeTabView(CalendarId);
             requestPlanActiveTab(false);
         }
         else {
-        isRequest = false;
-        $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");
-        $("#ddlTabViewBy").multiselect('refresh');
-        $("#ddlTabViewBy").trigger('change');
-        requestPlanActiveTab(false);
-        //Modified by komal rawal for #1283
-        $(".sidebar-section #ulTacticType").find(' li .TacticNumber').each(function () {
-            var oldvalue = $(this).attr("Previousvalue");
-            var setvalue = $(this).html(oldvalue);
-    });
+            isRequest = false;
+            $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");
+            $("#ddlTabViewBy").multiselect('refresh');
+            $("#ddlTabViewBy").trigger('change');
+            requestPlanActiveTab(false);
+            //Modified by komal rawal for #1283
+            $(".sidebar-section #ulTacticType").find(' li .TacticNumber').each(function () {
+                var oldvalue = $(this).attr("Previousvalue");
+                var setvalue = $(this).html(oldvalue);
+            });
         }
     });
     $('.request').click(function () {
@@ -319,19 +325,19 @@
         else {
             TempPlanIds = filters.SelectedPlans.toString();
         }
-        
+
         Currenttime = $('#ddlUpComingActivites').val();
         logMixpanelTrack("Time Frame:" + Currenttime); // log Time Frame event to mixpanel.
-            isQuater = Currenttime;
-            RefreshCurrentTab();
+        isQuater = Currenttime;
+        RefreshCurrentTab();
         // Commented By Nishant Sheth
         // Desc :: For performance issue
-            //GetHealderData(TempPlanIds,filters.customFieldIds,filters.OwnerIds,filters.TacticTypeids, filters.StatusIds);
-      //  GetNumberOfActivityPerMonByPlanIdPer(TempPlanIds, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
+        //GetHealderData(TempPlanIds,filters.customFieldIds,filters.OwnerIds,filters.TacticTypeids, filters.StatusIds);
+        //  GetNumberOfActivityPerMonByPlanIdPer(TempPlanIds, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
     });
 
     $('.sbHolder').click(function () {
-        $("#ddlTabViewBy").multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu 
+        $("#ddlTabViewBy").multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu
     });
 
     // Start - Added by Sohel Pathan on 06/11/2014 for PL ticket #934
@@ -339,7 +345,7 @@
         $('#ddlTabViewBy').multiselect("close");
     });
     // End - Added by Sohel Pathan on 06/11/2014 for PL ticket #934
-    function requestPlanActiveTab(isRequestTab) {       
+    function requestPlanActiveTab(isRequestTab) {
         if (isRequestTab) {
             $('.new-btn-plan').removeClass('request-btn-active');
             $('.request').addClass('request-btn-active');
@@ -347,8 +353,7 @@
         }
         else {
             //Modified by Maitri Gandhi to maintain tab focus on 4/3/2016
-            if ($('#IsGridView').val() == "True")
-            {
+            if ($('#IsGridView').val() == "True") {
                 $('#btngrid').addClass('request-btn-active');
                 $('.new-btn-plan').removeClass('request-btn-active');
             }
@@ -357,12 +362,12 @@
                 $('#btngrid').removeClass('request-btn-active');
             }
             $('.request').removeClass('request-btn-active');
-                     
+
         }
     }
     //Added by Komal Rawal for 2013 Home/Plan Layout changes
     $('#divPlanEditButtonHome').click(function () {
-       
+
         $("#divupcomingact").hide();
         $("#RequestTab").hide();
         $("#BudgetIcon").show();
@@ -373,11 +378,10 @@
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             EditPlanHome();
         }
-        else
-        {
+        else {
             ChangeTabView(GridId);
         }
-      
+
         $('#txtGlobalSearch').val("");
         $('#searchCriteria').val('@activityName');
         $('#searchCriteria').text('@activityName.First()');
@@ -394,7 +398,7 @@
         $("#searchCriteria").val($(this).text());
         $("#txtGlobalSearch").attr('Placeholder', $(this).text())
     });
-    //Searchbox JS Start - Bhumika  
+    //Searchbox JS Start - Bhumika
     $('#ExpSearch').click(function () {
 
         if (isOpen == false) {
@@ -407,7 +411,7 @@
                 $('#ExpSearch').css('display', 'none');
                 GlobalSearch();
                 $('#ExpClose').css('display', 'block');
-                
+
             }
             else {
                 $('.Exp-serach').removeClass('Exp-serach-open');
@@ -416,27 +420,27 @@
         }
     });
     $('#ExpClose').click(function () {
-        
-        $('#txtGlobalSearch').val("");        
+
+        $('#txtGlobalSearch').val("");
         $('#ExpClose').css('display', 'none');
         GlobalSearch();
         $('#ExpSearch').css('display', 'block');
-        
-    });   
+
+    });
     $('#txtGlobalSearch').on('keypress', function (event) {
         if (event.which === 13) {
-            $('#ExpSearch').click();            
+            $('#ExpSearch').click();
         }
     });
 
     $('#txtGlobalSearch').keyup(function (event) {
-        if ($("#txtGlobalSearch").val().length <= 0) {            
-            $('#ExpClose').click();            
+        if ($("#txtGlobalSearch").val().length <= 0) {
+            $('#ExpClose').click();
         }
         if (event.which != 13) {
             $('#ExpClose').css('display', 'none');
             $('#ExpSearch').css('display', 'block');
-        }        
+        }
     });
 
     $('#ExportData').click(function () {
@@ -448,5 +452,60 @@
             CallPDF();
         }
     });
-</script>
 
+</script>
+<script type="text/javascript">
+    function OpenCreateNew() {
+        
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/ColumnView/GetAttributeList_ColumnView/")',
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    $("#dvAttributeSelection").html(data);
+                  
+                }
+                $('#ddlTabViewBy').multiselect("close");
+                $('#CreateNewView').show();
+            }
+        });
+       
+    }
+    $(".closeCreateNewView").click(function () {
+        $('#CreateNewView').hide();
+    });
+</script>
+<div class="modal addview-popup hide" id="CreateNewView" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close closeCreateNewView" data-dismiss="modal" aria-label="Close" id="btnClose"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title  source-sans-proregular" id="myModalLabel">Create New View <span class=" source-sans-probold tipsyTitle" id="hdrTitle"></span></h5>
+            </div>
+            <div class="modal-body">
+               
+                <div id="successMessage1" class="alert alert-success hide">
+                    <a class="close closemessage">×</a>
+                    <strong>Success.</strong> <span id="spanMessageSuccess1"></span>
+                </div>
+                <div id="errorMessage1" class="alert alert-error hide">
+                    <a class="close closemessage">×</a>
+                    <strong>Error!</strong> <span id="spanMessageError1"></span>
+                </div>
+                <div id="warningMessage1" class="alert msgWarning hide">
+                    <a class="close closemessage">×</a>
+                    <strong>Warning!</strong> <span id="spanMessageWarning1"></span>
+                </div>
+                <div class="modal-content-grid">
+                    <div id="dvAttributeSelection"></div>
+                </div>
+              
+                @*<button type="button" class="btn btn-grey without-text-shadow source-sans-proregular btnEdit pull-left">Cancel</button>*@
+                <button id="btnCloseLinkTactic" class="close-x-big-icon hide" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+        </div>
+    </div>
+</div>

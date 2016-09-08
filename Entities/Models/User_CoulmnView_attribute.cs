@@ -12,13 +12,14 @@ namespace RevenuePlanner.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class vClientWise_EntityList
+    public partial class User_CoulmnView_attribute
     {
-        public int EntityId { get; set; }
-        public string EntityTitle { get; set; }
-        public System.Guid ClientId { get; set; }
-        public string Entity { get; set; }
-        public int EntityOrder { get; set; }
-        public System.DateTime CreatedDate { get; set; }
+        public int Id { get; set; }
+        public int ViewId { get; set; }
+        public string AttributeType { get; set; }
+        public string AttributeId { get; set; }
+        public Nullable<int> ColumnOrder { get; set; }
+    
+        public virtual User_CoulmnView User_CoulmnView { get; set; }
     }
 }

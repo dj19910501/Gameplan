@@ -21,6 +21,7 @@ namespace RevenuePlanner.Models
         public System.Guid UserId { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.DateTime DisplayDate { get; set; }
+        public Nullable<System.DateTime> ReadDate { get; set; }
     
         public virtual Alert_Rules Alert_Rules { get; set; }
     }
