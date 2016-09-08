@@ -16443,7 +16443,24 @@ background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
 .margin-left10 {
     margin-left: 10px;
 }
-.addview-popup.modal{width: 800px;top: 15%;border-radius: 4px;}
+.addview-popup.modal{
+    background: rgba(255, 255, 255, 0.5) none repeat scroll 0 0;
+    border-radius: 0;
+    height: 100%;
+    opacity: 1;
+    top: 0;
+    width: 100%;
+    left:0;
+    right:0;
+    margin-left:0;
+}
+.modal-dialog {
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 8% auto 0;
+    width: 50%;
+}
 .addview-popup {
     padding-bottom: 20px;
     z-index: 2501;
@@ -16508,6 +16525,7 @@ background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
     padding: 3px;
     text-align: center;
     width: 100%;
+    border-radius: 3px;
 }
 .addNewViewLink:hover {background: #E5E5E5 }
 .category-title-right:after{
@@ -16670,9 +16688,11 @@ background-image: none;/*linear-gradient(to bottom, #fff, #e6e6e6);*/
  float: right;
 }
  .accordion.alert-accordian{width:100%}/* #2457 */
+
+.addview-popup .modal-body { max-height: 450px}
+.modal-dialog { margin-top: 5%}
+
 }
-
-
 
 @media screen and (max-width: 1400px) {
  
