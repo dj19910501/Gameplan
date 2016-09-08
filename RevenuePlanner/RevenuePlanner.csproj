@@ -681,6 +681,7 @@
     <Content Include="Scripts\daterangepicker.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.min.js.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxgrid_excell_sub_row.js" />
     <Content Include="Scripts\js\fileinput.js" />
     <Content Include="Scripts\js\heatmap.js" />
     <Content Include="Scripts\js\highcharts-3d.js" />

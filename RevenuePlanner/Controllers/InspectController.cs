@@ -7867,6 +7867,12 @@ namespace RevenuePlanner.Controllers
                                 lineitemdataobj.value = "LineItem";
                                 lineitemdataobjlist.Add(lineitemdataobj);
 
+                                // Added by Arpita Soni for Ticket #2612 on 09/08/2016
+                                // To implement sub grid of cost allocation in inspect popup
+                                lineitemdataobj = new Plandataobj();
+                                lineitemdataobj.type = "sub_row_grid";
+                                lineitemdataobjlist.Add(lineitemdataobj);
+
                                 lineitemdataobj = new Plandataobj();
                                 lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.title);
                                 lineitemdataobj.locked = lineitem.IstactEditable;

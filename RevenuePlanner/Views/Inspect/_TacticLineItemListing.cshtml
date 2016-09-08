@@ -7,40 +7,41 @@
 
 }
 <style>
-    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
-        text-align: center;
-        padding-left: 0px !important;
-    }
-
-    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
-        width: 100% !important;
-    }
-
-    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
-        width: 100% !important;
-    }
-    /*Added by viral for PL #2112*/
-    .goals-wrapper .valuenumber
-    {
-        padding-left:0px;
-    }
-    /*Added by Rahul Shah on 29/09/2015 for PL #1618*/
-    /*div.gridbox {
-        height: 100% !important;
-    }*/
-    #lineItemGrid .grid_add {
-        margin-top:0;
-    }
-   #lineItemGrid .grid_Search {
-    margin-left: 10px;
+.gridViewGrid.gridbox.gridbox_dhx_skyblue{ width:98% !important; background:#fff}
+div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
+.dhx_sub_row table.obj tr td {
+    text-align: center;
+    padding-left: 0px !important;
 }
-    #lineItemGrid .objbox {
-        overflow-x:hidden !important; 
-    }
+div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
+div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+    width: 100% !important;
+}
+div.gridbox_dhx_skyblue.gridbox table.hdr td {
+    -moz-user-select: none;
+}
+#lineItemGrid .grid_add {
+    margin-top:0;
+}
+#lineItemGrid .grid_Search {
+margin-left: 10px;
+}
+#lineItemGrid .objbox {
+    overflow-x:hidden !important; 
+}
+#lineItemGrid .dhx_sub_row{
+    background: #fff none repeat scroll 0 0;
+    border-top: 1px solid #d4d4d4;
+    left: 0 !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    width:100% !important;
+}
+#lineItemGrid .rowselected td{background:#f2f2f2}
 </style>
 <!-- Added by Arpita Soni for Ticket #2237 on 06/13/2016 -->
 @if(countrows > 0) {
-    <div id="lineItemGrid" style="background-color: white; width: 99.5%;" class="gridViewGrid"></div>
+    <div id="lineItemGrid" class="gridViewGrid"></div>
 }
 else {
     <div>No records available.</div>
@@ -51,9 +52,9 @@ else {
        
     </div>
 </div>
-
+<script src="~/Scripts/js/DHTMLX/dhtmlxgrid_excell_sub_row.js"></script>
 <script type="text/javascript">
-    var HomeGrid;
+    var LineItemGrid;
     var tacticId = 0;
     var lineItemId = 0;
     $(document).ready(function () {
@@ -67,7 +68,7 @@ else {
 
             //Added by Rahul shah on 23/10/2015 for PL #1693 : set grid size after performing any operation
             $(document).ajaxComplete(function () {
-                HomeGrid.setSizes();
+                LineItemGrid.setSizes();
             });
         }
         $("input[name='useless']").click(doIt);
@@ -120,15 +121,15 @@ else {
 
     // Add By Nishant Sheth
     var countid = 0;
-    function UpdateHomeGridData(id) {
-        var ColumnCount = HomeGrid.getColumnCount();
+    function UpdateLineItemGridData(id) {
+        var ColumnCount = LineItemGrid.getColumnCount();
         var dataid;
         if (id == null) {
             dataid = ListOfSelectedIds.Id[countid];
         } else {
             dataid = id;
         }
-        var datahome=JSON.parse(GridDataHomeGrid);
+        var datahome=JSON.parse(GridDataLineItemGrid);
         $.each(datahome.rows, function () {
 
             // Update data for planrecords
@@ -137,10 +138,10 @@ else {
             if (planid == dataid) {
                 for (var i = 0; i < ColumnCount; i++)
                 {
-                    plandata.data[i].value = HomeGrid.cells(planid, i).getValue();
+                    plandata.data[i].value = LineItemGrid.cells(planid, i).getValue();
                 }
                 countid++;
-                return UpdateHomeGridData(countid);
+                return UpdateLineItemGridData(countid);
             } else {
 
                 // Update data for campaign records
@@ -152,10 +153,10 @@ else {
                         var campdata = this;
                         if (campid == dataid) {
                             for ( var i = 0; i < ColumnCount; i++) {
-                                campdata.data[i].value = HomeGrid.cells(campid, i).getValue();
+                                campdata.data[i].value = LineItemGrid.cells(campid, i).getValue();
                             }
                             countid++;
-                            return UpdateHomeGridData(countid);
+                            return UpdateLineItemGridData(countid);
                         }
                         else {
                             if(campdata.rows != null && campdata.rows != "")
@@ -167,10 +168,10 @@ else {
                                     var progdata = this;
                                     if (progid == dataid) {
                                         for ( var i = 0; i < ColumnCount; i++) {
-                                            progdata.data[i].value = HomeGrid.cells(progid, i).getValue();
+                                            progdata.data[i].value = LineItemGrid.cells(progid, i).getValue();
                                         }
                                         countid++;
-                                        return UpdateHomeGridData(countid);
+                                        return UpdateLineItemGridData(countid);
                                     } else {
                                         // Update data for tactic records
                                         if(progdata.rows != null && progdata.rows != "")
@@ -180,10 +181,10 @@ else {
                                                 var tacdata = this;
                                                 if (tacid == dataid) {
                                                     for ( var i = 0; i < ColumnCount; i++) {
-                                                        tacdata.data[i].value = HomeGrid.cells(tacid, i).getValue();
+                                                        tacdata.data[i].value = LineItemGrid.cells(tacid, i).getValue();
                                                     }
                                                     countid++;
-                                                    return UpdateHomeGridData(countid);
+                                                    return UpdateLineItemGridData(countid);
                                                 } else {
                                                     countid++;
                                                 }
@@ -198,7 +199,7 @@ else {
             }
         })
 
-        GridDataHomeGrid =JSON.stringify(datahome);
+        GridDataLineItemGrid =JSON.stringify(datahome);
     }
 
     // End By Nishant Sheth
@@ -251,34 +252,65 @@ else {
         $('#errorMessageInspectPopup').css("display", "none");
     });
     
-    var GridDataHomeGrid;
+    var GridDataLineItemGrid;
     function BindLineItemGrid() {
         
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
         var mainGridData = JsonModel;
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-
-        HomeGrid = new dhtmlXGridObject('lineItemGrid');
+        GridDataLineItemGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+        
+        LineItemGrid = new dhtmlXGridObject('lineItemGrid');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
-        HomeGrid.setImagePath(imgpath);
-        HomeGrid.enableAutoHeight(true);
-        //HomeGrid.enableAutoWidth(true);
-        HomeGrid.setImageSize(1, 1);
-        HomeGrid.setCustomSorting(sort_Owner, 6);
-        HomeGrid.setCustomSorting(sort_TacticType, 5);
-        HomeGrid.attachEvent("onEditCell", doOnEditCell);
-        // Added by Arpita Soni for Ticket #2237 on 06/23/2016 
-        HomeGrid.setColumnHidden(0,true); // hide column activity type
-        HomeGrid.setColumnHidden(3,true); // hide column id
-        HomeGrid.init();
-        HomeGrid.parse(GridDataHomeGrid, "json");
+        LineItemGrid.setImagePath(imgpath);
+        
+        LineItemGrid.setImageSize(1, 1);
+        LineItemGrid.setCustomSorting(sort_Owner, 6);
+        LineItemGrid.setCustomSorting(sort_TacticType, 5);
+        LineItemGrid.attachEvent("onEditCell", doOnEditCell);
+        LineItemGrid.enableAutoHeight(true);
+        LineItemGrid.setColumnHidden(1,true); // hide column activity type
+        LineItemGrid.setColumnHidden(4,true); // hide column id
+        
+        var subgrid_data ;
+        LineItemGrid.attachEvent("onSubGridCreated",function(subgrid,id,index,value) {
+            // this code will be called each time when subgrid opened , any code to init subgrid can be placed here
+            var ActivityIdColIndex = LineItemGrid.getColIndexById("id");
+            var LineItemId= LineItemGrid.cells(id, ActivityIdColIndex).getValue();
+            
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/GetCostAllocationLineItemInspectPopup/")',
+                dataType: "json",
+                data: { LineItemId: LineItemId },
+                success: function (data) {
+                    subgrid_data = data.LICostAllocation;
+                    subgrid.setImageSize(1, 1);
+                    subgrid.setHeader(subgrid_data.SetHeader);
+                    //notice chekbox column #1
+                    subgrid.setColTypes(subgrid_data.ColType);
+                    subgrid.setInitWidths(subgrid_data.Width);
+                    //subgrid.setColumnMinWidth(80,1);
+                    subgrid.init();
+                    subgrid.parse(subgrid_data.Grid,"json");
+                    subgrid.setColumnHidden(0,true);
+                    subgrid.callEvent("onGridReconstructed",[]);
+                }
+            });
+            return false; // block defaults
+        });
+        LineItemGrid.init();
+
+        LineItemGrid.parse(GridDataLineItemGrid, "json");
+        LineItemGrid.forEachRow(function (id) {
+            LineItemGrid.cells(id, 0).open();
+        });
     }
 
     function sort_Owner(a, b, ord, a_id, b_id) {
 
-        a = HomeGrid.cells(a_id, 6).getText();
-        b = HomeGrid.cells(b_id, 6).getText();
+        a = LineItemGrid.cells(a_id, 6).getText();
+        b = LineItemGrid.cells(b_id, 6).getText();
         return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
     };
     function sort_TacticType(a, b, ord, a_id, b_id) {
@@ -286,8 +318,8 @@ else {
         var atype = a_id.split(".")[0].toString();
         var btype = b_id.split(".")[0].toString();
         if (atype == "tact" && btype == "tact") {
-            a = HomeGrid.cells(a_id, 5).getText();
-            b = HomeGrid.cells(b_id, 5).getText();
+            a = LineItemGrid.cells(a_id, 5).getText();
+            b = LineItemGrid.cells(b_id, 5).getText();
             return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
         } else return 0;
     };
@@ -295,7 +327,6 @@ else {
     $(document).ready(function () {
         $('#cancel-button_Movetactic').on("click", function () {
             $('#divMovetacticPopup').modal("hide");
-
         });
 
         //// Proceed to save data.
@@ -428,7 +459,7 @@ else {
 
         if(stage == 0)
         {
-            var  newvalue = HomeGrid.cells(rowId, cellInd).getValue();
+            var  newvalue = LineItemGrid.cells(rowId, cellInd).getValue();
             if(newvalue.indexOf("</div>") > -1)
             {
 
@@ -443,16 +474,16 @@ else {
                 TacticName = nValue;
             }
         }
-        UpdateColumn = HomeGrid.getColLabel(Colind, 0);
+        UpdateColumn = LineItemGrid.getColLabel(Colind, 0);
         if (stage == 0) {
             // Only check for type column
             if (Colind == 5) {
                 if (updatetype == "line") {
-                    var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+                    var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
                     if (actval == "") {
                         return false;
                     }
-                    var combo = HomeGrid.getCombo(cellInd);
+                    var combo = LineItemGrid.getCombo(cellInd);
                     var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(TempData["lineItemTypes"]))');
                     //  d = optionlist.filter(filterbyname);
                     combo.clear();
@@ -461,15 +492,15 @@ else {
                     });
                 }
             }
-            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+            var locked = LineItemGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
                 return false;
         }
         if (stage == 1) {
             $('.dhx_combo_select').css('z-index', '9999');
             if (updatetype == "line") {
-                var oldval = HomeGrid.cells(rowId, cellInd).getValue();
-                var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+                var oldval = LineItemGrid.cells(rowId, cellInd).getValue();
+                var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
                 if (cellInd != 1) {
                     if (oldval == "")
                         $('.dhx_combo_select option[value="' + oldval + '"]').remove();
@@ -491,7 +522,7 @@ else {
             if (UpdateColumn == "Planned Cost") {
 
                 $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
-                HomeGrid.editor.obj.onkeypress = function (e) {
+                LineItemGrid.editor.obj.onkeypress = function (e) {
                     e = e || window.event;
                     if ((e.keyCode >= 47) || (e.keyCode == 0)) {
                         var text = this.value;
@@ -511,10 +542,10 @@ else {
                 //Added By Komal Rawal to Change the value in array if grid updated              
                 var NewValue = htmlDecode(nValue);
                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
-                var TaskID = HomeGrid.cells(rowId,3).getValue();
+                var TaskID = LineItemGrid.cells(rowId,3).getValue();
                 //Modified by Rahul Shah on 09/03/2016 for PL #1939
                 if (UpdateColumn == "" || UpdateColumn == null)
-                    UpdateColumn = HomeGrid.getColLabel(Colind, 0);
+                    UpdateColumn = LineItemGrid.getColLabel(Colind, 0);
                 if(UpdateColumn == "Task Name"){  
 //added by devanshi for PL ticket #2276
                     if (CheckHtmlTag(nValue) == false) {
@@ -537,24 +568,24 @@ else {
                         ExportSelectedIds.Title[TasknameIndex] = NewValue;
                     }
                 }
-                var idindex = HomeGrid.getColIndexById('id');
-                var costindex = HomeGrid.getColIndexById('plannedcost');
-                var stageindex = HomeGrid.getColIndexById('inq');
+                var idindex = LineItemGrid.getColIndexById('id');
+                var costindex = LineItemGrid.getColIndexById('plannedcost');
+                var stageindex = LineItemGrid.getColIndexById('inq');
 
-                Id = HomeGrid.cells(rowId, idindex).getValue();
+                Id = LineItemGrid.cells(rowId, idindex).getValue();
                 if (updatetype == "line") {
-                    var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+                    var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
                     if (actval == null || actval == "")
                         actval = oValue;
                     if (nValue != oValue && nValue != actval) {
 
                         UpdateVal = nValue;
                         //Added By Rahul Shah on 16/10/2015 for PL 1559
-                        tactid = HomeGrid.getParentId(rowId);
-                        progid = HomeGrid.getParentId(tactid);
-                        campid = HomeGrid.getParentId(progid);
-                        planid = HomeGrid.getParentId(campid);
-                        var TotalRowIds = HomeGrid.getAllSubItems(tactid);
+                        tactid = LineItemGrid.getParentId(rowId);
+                        progid = LineItemGrid.getParentId(tactid);
+                        campid = LineItemGrid.getParentId(progid);
+                        planid = LineItemGrid.getParentId(campid);
+                        var TotalRowIds = LineItemGrid.getAllSubItems(tactid);
                         $.ajax({
                             type: 'POST',
                             url: '@Url.Action("SaveGridDetail","Plan")', // we are calling json method
@@ -563,7 +594,7 @@ else {
                             success: function (states) {
                                 if (states.errormsg != null && states.errormsg.trim() != "") {
                                     alert(states.errormsg.trim());
-                                    HomeGrid.cells(rowId, cellInd).setValue(oValue);
+                                    LineItemGrid.cells(rowId, cellInd).setValue(oValue);
                                     return false;
                                 }
                                 else if (UpdateColumn == "Planned Cost") {
@@ -573,48 +604,48 @@ else {
                                     if (states.lineItemCost > states.tacticCost) {
 
                                         SetColumUpdatedValue(4, diffLineAndTactic);
-                                        HomeGrid.cells(progid, 4).setValue((newProgVal));
-                                        HomeGrid.cells(campid, 4).setValue((newCampVal));
-                                        HomeGrid.cells(planid, 4).setValue((newPlanVal));
-                                        HomeGrid.cells(tactid, 4).setValue((newTactVal));
+                                        LineItemGrid.cells(progid, 4).setValue((newProgVal));
+                                        LineItemGrid.cells(campid, 4).setValue((newCampVal));
+                                        LineItemGrid.cells(planid, 4).setValue((newPlanVal));
+                                        LineItemGrid.cells(tactid, 4).setValue((newTactVal));
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") { //Modiied by Rahul Shah
+                                            //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") { //Modiied by Rahul Shah
 
-                                                HomeGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
-                                                HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
+                                                LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
+                                                LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
                                             }
                                         }
                                     }
                                         //Added by Rahul Shah for PL #1744
                                     else if(states.lineItemCost == states.tacticCost){
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
+                                            //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
 
-                                                HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
+                                                LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
                                             }
                                         }
                                     }
                                     else {
 
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
+                                            //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
 
-                                                HomeGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
+                                                LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
 
                                             }
                                         }
                                     }
                                     // Added by Arpita Soni for Ticket #2237 on 06/22/2016
                                     $("#liLine_Items").trigger("click");
-                                    ItemIndex=HomeGrid.getRowIndex(tactid);
+                                    ItemIndex=LineItemGrid.getRowIndex(tactid);
                                     state0=ItemIndex;
-                                    HomeGrid.cells(rowId, 4).setValue((nValue));
+                                    LineItemGrid.cells(rowId, 4).setValue((nValue));
                                 }
                                 else if(UpdateColumn == "Type")
-                                    HomeGrid.cells(rowId, cellInd).setAttribute("actval",nValue);
+                                    LineItemGrid.cells(rowId, cellInd).setAttribute("actval",nValue);
                             }
                         });
                     }
@@ -624,7 +655,7 @@ else {
                     if (UpdateColumn != "Type" && UpdateColumn.toString().trim() != "Target Stage Goal") {
                        
                         //Added By Rahul Shah on 16/10/2015 for PL 1559
-                        var TotalRowIds = HomeGrid.getAllSubItems(rowId);
+                        var TotalRowIds = LineItemGrid.getAllSubItems(rowId);
                         //
                         UpdateVal = nValue;
                         $.ajax({
@@ -634,7 +665,7 @@ else {
                             dataType: 'json',
                             success: function (states) {
                                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
-                                var TaskID = HomeGrid.cells(rowId,3).getValue();
+                                var TaskID = LineItemGrid.cells(rowId,3).getValue();
                                 var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
 
                                 if(ExportSelectedIds.TaskID.length > 0)
@@ -657,13 +688,13 @@ else {
                                 if((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" &&  states.OwnerName != null)
                                 {
                                     if (planid != 0 && planid != null && planid != undefined) {
-                                        var PlanID = HomeGrid.cells(planid,3).getValue();
+                                        var PlanID = LineItemGrid.cells(planid,3).getValue();
                                     }
                                     else if(campid != 0 && campid != null && campid != undefined) {
-                                        var PlanID = HomeGrid.cells(campid,3).getValue();
+                                        var PlanID = LineItemGrid.cells(campid,3).getValue();
                                     }
                                     else{
-                                        var PlanID = HomeGrid.cells(progid,3).getValue();
+                                        var PlanID = LineItemGrid.cells(progid,3).getValue();
                                     }
                                     //var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
                                     $("#ulSelectedOwner li input[type=checkbox]").each(function () {
@@ -682,7 +713,7 @@ else {
                                 //End
                                 if (states.errormsg != null && states.errormsg.trim() != "") {
                                     alert(states.errormsg.trim());
-                                    HomeGrid.cells(rowId, cellInd).setValue(oValue);
+                                    LineItemGrid.cells(rowId, cellInd).setValue(oValue);
                                     return false;
                                 }
                                 
@@ -690,14 +721,14 @@ else {
                                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                                     if (nValue < states.lineItemCost) {
 
-                                        HomeGrid.cells(rowId, 4).setValue((oValue));
+                                        LineItemGrid.cells(rowId, 4).setValue((oValue));
                                     }
                                         //Added by Rahul Shah for PL #1744.
                                     else if (nValue == states.lineItemCost) {
                                         if (TotalRowIds != "") {
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                                if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                                    HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
+                                                if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
+                                                    LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
                                                 }
                                             }
                                         }
@@ -706,15 +737,15 @@ else {
 
                                         diff = parseInt(nValue) - parseInt(oValue);
                                         SetColumUpdatedValue(4, diff);
-                                        HomeGrid.cells(progid, 4).setValue((newProgVal));
-                                        HomeGrid.cells(campid, 4).setValue((newCampVal));
-                                        HomeGrid.cells(planid, 4).setValue((newPlanVal));
-                                        HomeGrid.cells(rowId, 4).setValue((nValue));
+                                        LineItemGrid.cells(progid, 4).setValue((newProgVal));
+                                        LineItemGrid.cells(campid, 4).setValue((newCampVal));
+                                        LineItemGrid.cells(planid, 4).setValue((newPlanVal));
+                                        LineItemGrid.cells(rowId, 4).setValue((nValue));
                                         if (TotalRowIds != "") {
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                                //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                                if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                                    HomeGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.OtherLineItemCost));
+                                                //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                                if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
+                                                    LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.OtherLineItemCost));
                                                 }
                                             }
                                         }
@@ -722,7 +753,7 @@ else {
                                     }
                                     // Added by Arpita Soni for Ticket #2237 on 06/22/2016
                                     $("#liLine_Items").trigger("click");
-                                    ItemIndex=HomeGrid.getRowIndex(rowId);
+                                    ItemIndex=LineItemGrid.getRowIndex(rowId);
                                     state0=ItemIndex;
                                 }
                                 if (UpdateColumn == "Owner") {
@@ -738,11 +769,11 @@ else {
                     {
                         if(value != undefined && value != "undefined" && value != null)
                         {
-                            HomeGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
+                            LineItemGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
                         }
                         else
                         {
-                            HomeGrid.cells(rowId, cellInd).setValue(TacticName);
+                            LineItemGrid.cells(rowId, cellInd).setValue(TacticName);
                         }
                     }
                     value = "";
@@ -757,11 +788,11 @@ else {
                 {
                     if(value != undefined && value != "undefined" && value != null)
                     {
-                        HomeGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
+                        LineItemGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
                     }
                     else
                     {
-                        HomeGrid.cells(rowId, cellInd).setValue(TacticName);
+                        LineItemGrid.cells(rowId, cellInd).setValue(TacticName);
                     }
                 }
                 value = "";
@@ -772,6 +803,7 @@ else {
                 return true;
             }
         }
+        
     }
 
     //Added by Rahul Shah for PL #2296 

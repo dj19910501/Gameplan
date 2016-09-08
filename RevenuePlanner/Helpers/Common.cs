@@ -7942,47 +7942,26 @@ namespace RevenuePlanner.Helpers
             List<int> lstEntityIds = new List<int>();
             try
             {
-
-                //using (MRPEntities objDbMrpEntities = new MRPEntities())
-                //{
                 if (lstTactic.Count() > 0 && IsCustomFeildExist) //todo : able to move up
                 {
                     //// Get list customFieldEntity List for given tactic list
                     string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
                     string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
 
-                    //Added by Komal Rawal
-                    //var CustomFieldexists = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic) &&
-                    //                                                            (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
-                    //                                                             ).Any(); //todo : able to move up
                     if (!CustomFieldexists)
                     {
                         return lstTactic;
                     }
 
                     //For #774
-                    //bool Entityid = Entities.Where(entityid => lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).Any();
                     bool Entityid = (from e in Entities
                                      join t in lstTactic on e.EntityId equals t
                                      select 1).Any();
-                    //todo : able to move up
 
                     if (!Entityid)
                     {
                         return lstTactic;
                     }
-
-
-
-                    //End
-                    //var lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == clientId &&
-                    //                                                                                customFieldEntity.CustomField.IsDeleted.Equals(false) &&
-                    //                                                                                customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
-                    //                                                                                customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
-                    //                                                                                (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
-                    //                                                                                lstTactic.Contains(customFieldEntity.EntityId))
-                    //                                                                        .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
-                    //lstAllTacticCustomFieldEntities = lstAllTacticCustomFieldEntities.Where(customFieldEntity => lstTactic.Contains(customFieldEntity.EntityId)).ToList();
                     lstAllTacticCustomFieldEntities = (from c in lstAllTacticCustomFieldEntities
                                                        join t in lstTactic on c.EntityId equals t
                                                        select c).ToList();
@@ -7990,26 +7969,16 @@ namespace RevenuePlanner.Helpers
                     List<int> othertacticIds = lstTactic.Where(tac => !entityids.Contains(tac)).Select(tac => tac).ToList();
                     if (lstAllTacticCustomFieldEntities.Count > 0)
                     {
-                        //// Get Custom Restrictions
-                        //var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(userId, true);//todo : able to move up
-
                         //// Check default custom restriction is editable or not
                         bool isDefaultRestrictionsEditable = IsDefaultCustomRestrictionsEditable();
                         if (userCustomRestrictionList.Count() > 0)
                         {
-
-                            //var df = from lst in lstAllTacticCustomFieldEntities
-                            //         join uc in userCustomRestrictionList on int.Parse(lst.Value) equals uc.CustomFieldOptionId
-                            //         where 
-                            // int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                             int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
                             int NonePermission = (int)Enums.CustomRestrictionPermission.None;
                             var viewnoneoptionid = userCustomRestrictionList.Where(restriction => restriction.Permission == ViewOnlyPermission || restriction.Permission == NonePermission).Select(res => res.CustomFieldOptionId).ToList();
-                            //var onlyviewnonetacticids = lstAllTacticCustomFieldEntities.Where(tac => viewnoneoptionid.Contains(int.Parse(tac.Value))).Select(tac => tac.EntityId).ToList();
                             var onlyviewnonetacticids = (from c in lstAllTacticCustomFieldEntities
                                                          join v in viewnoneoptionid on int.Parse(c.Value) equals v
                                                          select c.EntityId).ToList();
-                            //var onlyedittactic = lstAllTacticCustomFieldEntities.Where(tac => !onlyviewnonetacticids.Contains(tac.EntityId)).Select(tac => tac.EntityId).Distinct().ToList();
                             //Added By Manoj & John 
                             var onlyedittactic = (from c in lstAllTacticCustomFieldEntities
                                                   join v in onlyviewnonetacticids on c.EntityId equals v into cv
@@ -8026,51 +7995,6 @@ namespace RevenuePlanner.Helpers
                                 onlyedittactic = onlyedittactic.Where(tac => !getemptyentityids.Contains(tac)).ToList();
                                 lstEditableEntityIds = onlyedittactic;
                             }
-                            // Get list of tactic Ids
-                            //   List<int> lstTacticIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
-
-                            //   bool isEditableEntity = true, IsEditable;
-                            //   List<CustomField_Entity> currentTacticEntities;
-                            //   List<Models.CustomRestriction> _CustomRestriction;
-
-                            //   foreach (int tacticId in lstTactic)
-                            //   {
-                            //       isEditableEntity = true;
-                            //       currentTacticEntities = new List<CustomField_Entity>();
-                            //       //// Get list of CustomFieldEntities for current selected tactic
-                            //       currentTacticEntities = lstAllTacticCustomFieldEntities.Where(entity => entity.EntityId == tacticId).ToList();
-
-                            //       foreach (CustomField_Entity entity in currentTacticEntities)
-                            //       {
-                            //           _CustomRestriction = new List<Models.CustomRestriction>();
-                            //           _CustomRestriction = userCustomRestrictionList.Where(option => option.CustomFieldOptionId == int.Parse(entity.Value)).ToList();
-                            //           if (_CustomRestriction != null && _CustomRestriction.Any())
-                            //           {
-                            //               IsEditable = _CustomRestriction.Where(restriction => restriction.Permission == ViewEditPermission).Any();
-                            //               if (IsEditable == false)
-                            //               {
-                            //                   isEditableEntity = false;
-                            //                   break;
-                            //               }
-                            //           }
-                            //           else if (!isDefaultRestrictionsEditable)
-                            //           {
-                            //               isEditableEntity = false;
-                            //               break;
-                            //           }
-                            //       }
-
-                            //       //// If tactic is viewable then add it into final Entity list
-                            //       if (isEditableEntity)
-                            //       {
-                            //           lstEditableEntityIds.Add(tacticId);
-                            //       }
-
-
-                            //   }
-
-
-
                         }
                         else if (isDefaultRestrictionsEditable)
                         {
@@ -9320,6 +9244,41 @@ namespace RevenuePlanner.Helpers
                 command.Parameters.AddWithValue("@PlanId", PlanId);
                 command.Parameters.AddWithValue("@UserId", Sessions.User.UserId.ToString());
                 command.Parameters.AddWithValue("@SelectedTab", budgetTab);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dtPlanHirarchy);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+
+            return dtPlanHirarchy;
+        }
+
+        /// <summary>
+        /// 
+        /// This function returns datatable which contains details reg. plan, campaign, program, tactic and line item's planned cost and actual 
+        /// </summary>
+        /// <param name="PlanId">int unique planid of plan which data will be return</param>
+        /// <param name="budgetTab">string which contains value like Planned or Actual</param>
+        /// <returns></returns>
+        public DataTable GetLineItemCostAllocation(int LineItemId)
+        {
+            DataTable dtPlanHirarchy = new DataTable();
+
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("LineItem_Cost_Allocation", Connection);
+
+            using (command)
+            {
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@LineItemId", LineItemId);
+                command.Parameters.AddWithValue("@UserId", Sessions.User.UserId.ToString());
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
                 adp.Fill(dtPlanHirarchy);
