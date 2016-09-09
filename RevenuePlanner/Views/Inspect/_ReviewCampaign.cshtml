@@ -14,13 +14,13 @@
     if (campaignReview.IsIntegrationInstanceExist == "Yes" && !campaignReview.IsDeployedToIntegration)
     {
         IntegrationStatus = "No";
-    }           
+    }
 }
 @*Added BY Bhumika for #2043 reduce white space in comment section.*@
 <style>
-   #divInnerComment.all-height {
-    height: 94% !important;
-}
+    #divInnerComment.all-height {
+        height: 94% !important;
+    }
 </style>
 
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
@@ -72,62 +72,53 @@
         {
             <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Campaign last synced on @CampaignLastSync.ToString("MMM dd, yyyy ") at  @CampaignLastSync.ToString("hh:mm tt").ToLower()</span>
         }
-</div>
+    </div>
 </div>
 
 <div class="span2 right-col-tab no_margin_top" id="inspect-modal-left-column2">
-        <div class="inspect-bolder-label">Notes</div>
-        <div id="divComment" class="chat-div" style="overflow: auto;height: 290px !important;">
-            <div id="divInnerComment" class="comment-scroll-section all-height">
-                @foreach (var item in ViewBag.ReviewModel)
-                {
-                    <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
-                        <div style="float: left; width: 10%;">
-                            <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { id = item.CreatedBy })" alt="User avatar" />
-                        </div>
-                        <div style="float: left; width: 90%;">
-                            <span class="commentedby-color">@item.CommentedBy</span>
-                            <span class="comment-color">@Html.Raw(item.Comment)</span><br />
-                            <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd yyyy") at @item.CommentDate.ToString("hh:mmtt")</span>
-                        </div>
-                        <div style="clear: both;"></div>
+    <div class="inspect-bolder-label">Notes</div>
+    <div id="divComment" class="chat-div" style="overflow: auto;height: 290px !important;">
+        <div id="divInnerComment" class="comment-scroll-section all-height">
+            @foreach (var item in ViewBag.ReviewModel)
+            {
+                <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
+                    <div style="float: left; width: 10%;">
+                        <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { id = item.CreatedBy })" alt="User avatar" />
                     </div>
+                    <div style="float: left; width: 90%;">
+                        <span class="commentedby-color">@item.CommentedBy</span>
+                        <span class="comment-color">@Html.Raw(item.Comment)</span><br />
+                        <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd yyyy") at @item.CommentDate.ToString("hh:mmtt")</span>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
 
-                }
-            </div>
-            <div></div>
+            }
         </div>
-      @if ((bool)ViewBag.IsCommentsViewEditAuthorized)    //Modified By komal Rawal for #1158
+        <div></div>
+    </div>
+    @if ((bool)ViewBag.IsCommentsViewEditAuthorized)    //Modified By komal Rawal for #1158
     {
         <div class="padding-top10" id="commentsection">
             @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-blue-background" })
-            <img id="btnComment" title="Add Comment" src="~/Content/images/chat-button.png"  alt="" style="float: right;" />
-        </div>
-      }
-      else
-    {
-    <div class="padding-top10" >
-            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-gray-background" })
-            <img  src="~/Content/images/chat-button-gray.png"  alt="" style="float: right;" />
+            <img id="btnComment" title="Add Comment" src="~/Content/images/chat-button.png" alt="" style="float: right;" />
         </div>
     }
-
-
+    else
+    {
+        <div class="padding-top10">
+            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-gray-background" })
+            <img src="~/Content/images/chat-button-gray.png" alt="" style="float: right;" />
+        </div>
+    }
 </div>
-
-
-
 <div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
-
-
     @{
-        
         string Submit = "Submit for Approval";
         string Approve = "Approve";
         string Reject = "Decline";
         List<string> aryStatus = new List<string>();
         bool isVisibleStatus = true;
-
         var countNotCreatedTactic = 0;
         var countNotCreatedProgram = 0;
         var countNotApprovedTactic = 0;
@@ -164,10 +155,8 @@
         bool isVisibleSyncButton = false;   // Display sync button only when Tactic status from "Approved, In-Progress or Completed".
         if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
         {
-
             if ((bool)ViewBag.IsValidOwner)
             {
-
                 if (countNotSubmittedTactic == 0 && countNotSubmittedProgram == 0)
                 {
                     aryStatus.Add(Submit);
@@ -265,48 +254,14 @@
             // Show Sync button when Integration InstanceType is "Salesforce". Implement this by "isInstanceSalesfore" flag from controller.
             if ((bool)ViewBag.IsModelDeploy && (bool)campaignReview.IsDeployedToIntegration && isVisibleSyncButton && isInstanceSalesforce)
             {
-        <div class="margin-top23 margin-right10" style="float: left;">
-            <div id="btn_sync_status" class="btn-group dropup">
-                <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px; border-radius: 4px;">
-                                  <span class="flag-icon sync-icon-dropdown"></span>
-                                  <span id="spanSyncStatus">Sync</span>
-                              </button>
-                    @*<button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
-                    <span class="flag-icon sync-icon-dropdown"></span>
-                    <span id="spanSyncStatus">
-                        @if (campaignReview.IsDeployedToIntegration)
-                        {
-                            @Html.Raw("Sync")
-                        }
-                        else
-                        {
-                            @Html.Raw("Don't Sync") 
-                        }
-
-                    </span>
-                </button>
-                @if (campaignReview.IsDeployedToIntegration)
-                {
-                    @Html.Hidden("hdnSyncStatusValue", "Sync", new { id = "hdnSyncStatusValue" });
-                }
-                else
-                {
-                    @Html.Hidden("hdnSyncStatusValue", "Don't Sync", new { id = "hdnSyncStatusValue" });
-                }
-                <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
-                    <span class="caret "></span>
-                </button>
-                <ul class="dropdown-menu " id="uldivSync">
-                    <li>
-                        <a id="aSync">Sync</a>
-                    </li>
-                    <li>
-                        <a id="aNotSync">Don't Sync</a>
-                    </li>
-                    </ul>*@
-
-            </div>
-        </div> 
+                <div class="margin-top23 margin-right10" style="float: left;">
+                    <div id="btn_sync_status" class="btn-group dropup">
+                        <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px; border-radius: 4px;">
+                            <span class="flag-icon sync-icon-dropdown"></span>
+                            <span id="spanSyncStatus">Sync</span>
+                        </button>
+                    </div>
+                </div>
             }
         }
 
@@ -316,44 +271,44 @@
             if (len > 0)
             {
                 string firstStatus = aryStatus[0];
-               
-        <div class="margin-top23" style="float: left;">
-            <div id="btn_change_status" class="btn-group dropup">
-                <button id="btnApproved" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 125px;">
-                    <span class="flag-icon approve-icon-dropdown"></span>
-                    <span id="spanTactic">@firstStatus</span>
-                </button>
-                @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
-                    @if (len >= 2)
-                    {   
-                        <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
-                            <span class="caret "></span>
+
+                <div class="margin-top23" style="float: left;">
+                    <div id="btn_change_status" class="btn-group dropup">
+                        <button id="btnApproved" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 125px;">
+                            <span class="flag-icon approve-icon-dropdown"></span>
+                            <span id="spanTactic">@firstStatus</span>
                         </button>
-                                              
-                        <ul class="dropdown-menu " id="uldiv">
-                            @foreach (string s in aryStatus)
-                            {
-                                <li>
-                                    <a>@s</a>
-                                </li>
-                            }
-                        </ul>
-                        
-                        <script type="text/javascript">
-                            $("#btnApproved").css("width", "90px");
-                        </script>
-                        
-                    }
-                    else
-                    {
-                        <script type="text/javascript">
-                            $("#btnApproved").css("border-radius", "4px");
-                        </script>
-                    }
+                        @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
+                        @if (len >= 2)
+                        {
+                            <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
+                                <span class="caret "></span>
+                            </button>
 
-            </div>
+                            <ul class="dropdown-menu " id="uldiv">
+                                @foreach (string s in aryStatus)
+                                {
+                                    <li>
+                                        <a>@s</a>
+                                    </li>
+                                }
+                            </ul>
 
-        </div> 
+                            <script type="text/javascript">
+                                $("#btnApproved").css("width", "90px");
+                            </script>
+
+                        }
+                        else
+                        {
+                            <script type="text/javascript">
+                                $("#btnApproved").css("border-radius", "4px");
+                            </script>
+                        }
+
+                    </div>
+
+                </div>
             }
         }
     }
@@ -376,16 +331,10 @@
           $('.addFormatterActualNumber').each(function () {
               SetPriceValue($(this));
           });
-
           //Added by Komal Rawal for ticket #1158
-         
-          if ($('#txtAreaComment').hasClass('light-gray-background'))
-          {
+          if ($('#txtAreaComment').hasClass('light-gray-background')) {
               $('#txtAreaComment').attr("disabled", "disabled");
           }
-          //End
-
-
           $("#BtnShareTactic").click(function () {
               $("#DivPartialShareTactic").empty();
               var url = '@Url.Content("~/Inspect/ShowShareTactic/")';
@@ -400,10 +349,6 @@
           $("#btnSync").click(function () {
               var IsDeployedToIntegration = false;
               IsDeployedToIntegration = '@campaignReview.IsDeployedToIntegration';
-              //var spanSyncStatus = $("#hdnSyncStatusValue").val();
-              //if (spanSyncStatus == 'Sync') {
-              //    IsDeployedToIntegration = true;
-              //}
               var PlanCampaignId = $('#hdnPlanCampaignId').val();
 
               $.ajax({
@@ -411,12 +356,11 @@
                   url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
                   data: {
                       id: PlanCampaignId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()" //section parameter added to save tactic comment
-                      //IsDeployedToIntegration: IsDeployedToIntegration
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()" //section parameter added to save tactic comment                    
                   },
                   success: function (data) {
                       if (data.result) {
-                          /*Added by Mitesh Vaishnav for PL ticket #690 
+                          /*Added by Mitesh Vaishnav for PL ticket #690
                         Change of sync to don’t sync or vice versa integration section update to 'Yes' and 'No'  */
                           if ('@campaignReview.IsIntegrationInstanceExist' == 'Yes') {
                               if (IsDeployedToIntegration) {
@@ -451,18 +395,10 @@
               });
           });
 
-          //$("#uldivSync li a").click(function () {
-          //    $("#spanSyncStatus").html($(this).text());
-          //    $("#hdnSyncStatusValue").val($(this).text());
-
-          //});
-
-
           var divheight = $("#divInnerComment").height();
           $("#divComment").scrollTop(divheight);
 
           // On Comment Button Save Commnet
-         
           $("#btnComment").click(function () {
               $("#successMessage").css("display", "none");
               $("#errorMessage").css("display", "none");
@@ -494,42 +430,37 @@
                           if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                               window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                           } else {
-                          if (data.id != 0) {
-                              $("#successMessage").css("display", "block");
-                              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                              /*end*/
-                              $("#spanMessageSuccess").empty();
-                              $("#spanMessageSuccess").text(data.msg);
-                              var inspectMode = '';
-                              var IsEditable = $("#hdnCampaignOpt").val();
-                              if (IsEditable == strViewMode.toString())
-                                  inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                            else
-                                inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                              var requestedModule = $("#hdnRedirectType").val();
-                              //loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
-                              loadReview(data.id, TabReview);
-                          }
-                          else {
-                              $("#errorMessage").css("display", "block");
-
-                              $("#spanMessageError").empty();
-                              $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                              if (data.id != 0) {
+                                  $("#successMessage").css("display", "block");
+                                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                                  /*end*/
+                                  $("#spanMessageSuccess").empty();
+                                  $("#spanMessageSuccess").text(data.msg);
+                                  var inspectMode = '';
+                                  var IsEditable = $("#hdnCampaignOpt").val();
+                                  if (IsEditable == strViewMode.toString())
+                                      inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                                  else
+                                      inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                                  var requestedModule = $("#hdnRedirectType").val();
+                                  loadReview(data.id, TabReview);
+                              }
+                              else {
+                                  $("#errorMessage").css("display", "block");
+                                  $("#spanMessageError").empty();
+                                  $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                               }
                           }
                       }
                   },
                   error: function () {
                       $("#errorMessage").css("display", "block");
-                      /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                      /*end*/
                       $("#spanMessageError").empty();
                       GoToLogin();
                       return false;
                   }
               });
           });
-          
 
           // Click on Approved Button Save Comment & Change Status
           $("#btnApproved").click(function () {
@@ -565,69 +496,63 @@
                               window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                           }
                           else {
-                          if (data.id != 0) {
-                              $("#successMessage").css("display", "block");
-                              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                              if (data.id != 0) {
+                                  $("#successMessage").css("display", "block");
+                                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
 
-                              $("#spanMessageSuccess").empty();
-                              $("#spanMessageSuccess").text(data.msg);
-                              var inspectMode = '';
-                              var IsEditable = $("#hdnCampaignOpt").val();
-                              if (IsEditable == strViewMode.toString())
-                                  inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                              else
-                                  inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                              var requestedModule = $("#hdnRedirectType").val();
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
+                                  $("#spanMessageSuccess").empty();
+                                  $("#spanMessageSuccess").text(data.msg);
+                                  var inspectMode = '';
+                                  var IsEditable = $("#hdnCampaignOpt").val();
+                                  if (IsEditable == strViewMode.toString())
+                                      inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                                  else
+                                      inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                                  var requestedModule = $("#hdnRedirectType").val();
+                                  loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
 
-                              //Added By : Kalpesh Sharma Internal review points 18/11/2014
-                              if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
-                                RefershPlanHeaderCalc();
+                                  //Added By : Kalpesh Sharma Internal review points 18/11/2014
+                                  if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
+                                      RefershPlanHeaderCalc();
+                                  }
+                                  else if (RedirectType == "@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()") {
+                                      var _planId = $('#PlanId').val();  //// Get PlanId value from ApplyToCalendar page.
+                                      GetNumberOfActivityPerMonByPlanId(_planId, ''); //// Called HeaderData function exist in ApplyToCalendar Page.
+                                  }
+
                               }
-                              else if (RedirectType == "@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()") {
-                                  var _planId = $('#PlanId').val();  //// Get PlanId value from ApplyToCalendar page.
-                                  // Commented By Nishant Sheth
-                                  // Desc :: For performance issue
-                                  //GetHealderData(_planId);    //// Called HeaderData function exist in ApplyToCalendar Page.
-                                  GetNumberOfActivityPerMonByPlanId(_planId, ''); //// Called HeaderData function exist in ApplyToCalendar Page.
-                            }
-
-                          }
-                          else {
-                              $("#errorMessage").css("display", "block");
-                              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-
-                              $("#spanMessageError").empty();
-                              $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                          }
+                              else {
+                                  $("#errorMessage").css("display", "block");
+                                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                                  $("#spanMessageError").empty();
+                                  $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                              }
                           }
                       }
                   },
                   error: function () {
                       $("#errorMessage").css("display", "block");
                       /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-
                       $("#spanMessageError").empty();
                       GoToLogin();
                       return false;
                   }
               });
           });
-
-        //// Slim Scroll bar for comment div.
-        var r = $('#content_wraper').height() - 170;
-        $('.comment-scroll-section').css('height', r);
-        $(function () {
-            $('.comment-scroll-section').slimScroll();
-        });
-        function toggleChevron(e) {
-            $(e.target)
-            .prev('.accordion-heading')
-            .find("i.indicator")
-            .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
-        }
-        $('.accordion').on('hidden.bs.collapse', toggleChevron);
-        $('.accordion').on('shown.bs.collapse', toggleChevron);
+          //// Slim Scroll bar for comment div.
+          var r = $('#content_wraper').height() - 170;
+          $('.comment-scroll-section').css('height', r);
+          $(function () {
+              $('.comment-scroll-section').slimScroll();
+          });
+          function toggleChevron(e) {
+              $(e.target)
+              .prev('.accordion-heading')
+              .find("i.indicator")
+              .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+          }
+          $('.accordion').on('hidden.bs.collapse', toggleChevron);
+          $('.accordion').on('shown.bs.collapse', toggleChevron);
 
       });
 </script>

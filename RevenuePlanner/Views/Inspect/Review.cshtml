@@ -12,7 +12,6 @@
     {
         IntegrationStatus = "No";
     }
-  
     var INQLastSync = ViewBag.INQLastSync;
     var CWLastSync = ViewBag.CWLastSync;
     var MQLLastSync = ViewBag.MQLLastSync;
@@ -26,7 +25,7 @@
     bool IsSyncEloqua = (bool)ViewBag.IsSyncEloqua;     // Get IsSyncEloqua flag
     bool IsSyncMarketo = (bool)ViewBag.isSyncMarketo;     // Get IsSyncMarketo flag
     bool IsSyncWorkFront = (bool)ViewBag.IsSyncWorkFront; //Get IsSyncWorkFront flag - true if the tactic is integrated
-    // start: Added by Viral for PL ticket #2108 scenario-1
+                                                          // start: Added by Viral for PL ticket #2108 scenario-1
     int SFDCId = 0, eloquaId = 0, workfrontId = 0;
     int MarketoID = 0;
     SFDCId = ViewBag.SFDCId;
@@ -40,47 +39,76 @@
     #divInnerComment.all-height {
         height: 94% !important;
     }
-    .dd-Wraper{
-        width:180px;float:left;
-    }
-     .dd-Wraper .ui-multiselect{
-        width:150px;
-    }
-  .toggle.integrationToggle, .toggle-on.integrationToggle, .toggle-off.integrationToggle { border-radius: 20px;-webkit-border-radius: 20px;-ms-border-radius: 20px;}
-  .toggle.integrationToggle .toggle-handle { border-radius: 20px;-webkit-border-radius: 20px;-ms-border-radius: 20px; }
-  .integrationToggle .toggle-group { transition: left 0.1s; -webkit-transition: left 0.1s; }
-  .toggle.integrationToggle {min-height: 20px;}
 
-  /* Add to solve Chrome Browser issue of on/off button radius #2296 - Bhumika*/
-  .btn.btn-success, .btn.toggle-off, .btn.toggle-handle, .btn.off{
-      backface-visibility: visible;
-       box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
-       border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-       text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);   
-  }
-  .btn.integrationToggle{ border-style: solid;
+    .dd-Wraper {
+        width: 180px;
+        float: left;
+    }
+
+        .dd-Wraper .ui-multiselect {
+            width: 150px;
+        }
+
+    .toggle.integrationToggle, .toggle-on.integrationToggle, .toggle-off.integrationToggle {
+        border-radius: 20px;
+        -webkit-border-radius: 20px;
+        -ms-border-radius: 20px;
+    }
+
+        .toggle.integrationToggle .toggle-handle {
+            border-radius: 20px;
+            -webkit-border-radius: 20px;
+            -ms-border-radius: 20px;
+        }
+
+    .integrationToggle .toggle-group {
+        transition: left 0.1s;
+        -webkit-transition: left 0.1s;
+    }
+
+    .toggle.integrationToggle {
+        min-height: 20px;
+    }
+    /* Add to solve Chrome Browser issue of on/off button radius #2296 - Bhumika*/
+    .btn.btn-success, .btn.toggle-off, .btn.toggle-handle, .btn.off {
+        backface-visibility: visible;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+        border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .btn.integrationToggle {
+        border-style: solid;
         border-width: 1px;
-        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);}
-  .btn.btn-success {
-    background-image: linear-gradient(to bottom, #62c462, #51a351);   
-    background-color: #5bb75b; 
-}
-  .btn.toggle-off{
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
-    background-color: #e6e6e6;
-    background-image: none;
-  }
-  .btn.toggle-off:hover{color:#333}
-  .btn.toggle-handle{
-    background-color: #f5f5f5;
-    background-image: linear-gradient(to bottom, #fff, #e6e6e6);    
-  }
-  .btn.toggle-handle:hover, .btn.toggle-handle:focus {
-    background-position: 0 -15px;
-    color: #333;
-    text-decoration: none;
-    transition: background-position 0.1s linear 0s;
-}
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn.btn-success {
+        background-image: linear-gradient(to bottom, #62c462, #51a351);
+        background-color: #5bb75b;
+    }
+
+    .btn.toggle-off {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+        background-color: #e6e6e6;
+        background-image: none;
+    }
+
+        .btn.toggle-off:hover {
+            color: #333;
+        }
+
+    .btn.toggle-handle {
+        background-color: #f5f5f5;
+        background-image: linear-gradient(to bottom, #fff, #e6e6e6);
+    }
+
+        .btn.toggle-handle:hover, .btn.toggle-handle:focus {
+            background-position: 0 -15px;
+            color: #333;
+            text-decoration: none;
+            transition: background-position 0.1s linear 0s;
+        }
 </style>
 
 <style type="text/css">
@@ -129,12 +157,7 @@
 }
 
 </style>
-
-@*<!-- Added by Arpita Soni to resolve issue in clicking of Review tab inside plan menu -->
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
-<link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">*@
-
- <div class="row border-bottom-div">
+<div class="row border-bottom-div">
     <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
         <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
             <div style="float: left; width: 48%; border-right: 1px solid #b2afaf">
@@ -193,7 +216,6 @@
             }
         </div>
         <div class="cf margin-top40 width96 textalign-mozcenter review_wrapper" style="padding-bottom: 5px;">
-
             <div class="pull-left size65x38">
                 <div class="owner"></div>
                 <div>Owner</div>
@@ -220,21 +242,21 @@
         @if (tacticReview.IsIntegrationInstanceExist == "Yes")
         {
         <!--Begin PL#1872 Brad Gray, 09 Jan 2016-->
-        <div class="cf margin-top40 width96 textalign-mozcenter" style="padding-bottom: 5px;">
-            <div class="span6 review_no_padding">
-                <p class="margin-top-10 text_align_left" >Deployed to Integration</p>
-                   @{ if (tacticReview.IsDeployedToIntegration)
-                    {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" title="Active" placeholder="Sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
+            <div class="cf margin-top40 width96 textalign-mozcenter" style="padding-bottom: 5px;">
+                <div class="span6 review_no_padding">
+                    <p class="margin-top-10 text_align_left">Deployed to Integration</p>
+                    @{ if (tacticReview.IsDeployedToIntegration)
+                        {
+                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" title="Active" placeholder="Sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
+                        }
+                        else
+                        {
+                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" title="Inactive" placeholder="Don't sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
+                        }
                     }
-                      else
-                      {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" title="Inactive" placeholder="Don't sync to integration" style="margin-top: 0px ! important; width:100%" readonly="true" />
-                      }
-}
+                </div>
             </div>
-        </div>
-        }
+                        }
     </div>
 
     <div class="span2 right-col-tab no_margin_top" id="inspect-modal-left-column2">
@@ -276,374 +298,329 @@
 
     </div>
 </div>
-  
-    <!--Begin PL#1462 07 Brad Gray, Aug 2015, moved & modified 09 Jan 2016 by Brad Gray PL#1872-->
-    <div id="integrationInfo" class="row width100 border-bottom-div margin-top10" style="display:table">
-           
-        <div class="width10 textalign-mozcenter vertical-aligntop" style="display:table-cell;float:left"><!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
-            <div class="size65x38 margin-top20">
-                <div class="integration-review"></div>
-                <div>
-                    <label class="integrration_label_align" id="integration">Integration</label>
-                </div>
-                <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
-            </div>
 
-            @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration - Moved and updated Jan 2016 by Brad Gray PL#1872*@
-            <div class="span6 blue-text bold" style="margin-bottom: 0px; width: 93%;margin-top:10px;">
-                @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance != null || tacticEloquaInstance != null || tacticMarketoInstance != null)
-                {
-                    if (INQLastSync != null)
-                    {
-                        <span class="pull-left" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 11px;">@Html.LabelForINQ("INQ") synced on @INQLastSync.ToString("MM/dd/yyyy ") at @INQLastSync.ToString("hh:mm tt").ToLower() </span>
-                        <br />
-                    }
-                    if (MQLLastSync != null)
-                    {
-                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced on @MQLLastSync.ToString("MM/dd/yyyy ") at @MQLLastSync.ToString("hh:mm tt").ToLower()</span>
-                        <br />
-                    }
-                    if (CWLastSync != null)
-                    {
-                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced on @CWLastSync.ToString("MM/dd/yyyy ") at  @CWLastSync.ToString("hh:mm tt").ToLower()</span>
-                        <br />
-                    }
-                    if (TacticLastSync != null)
-                    {
-                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Last synced on @TacticLastSync.ToString("MM/dd/yyyy ") at  @TacticLastSync.ToString("hh:mm tt").ToLower()</span>
-                    }
-                }
-                else
-                {
-                    <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic not synced</span>
-                }
-                @*End -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
-            </div>
+<!--Begin PL#1462 07 Brad Gray, Aug 2015, moved & modified 09 Jan 2016 by Brad Gray PL#1872-->
+<div id="integrationInfo" class="row width100 border-bottom-div margin-top10" style="display:table">
 
+    <div class="width10 textalign-mozcenter vertical-aligntop" style="display:table-cell;float:left">
+        <!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
+        <div class="size65x38 margin-top20">
+            <div class="integration-review"></div>
+            <div>
+                <label class="integrration_label_align" id="integration">Integration</label>
+            </div>
+            <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
         </div>
 
-        <div id="integrationSettings" class="border-cf-left" style="float:left;width:89%"><!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
-            <!--Modified 09 Jan 2016 by Brad Gray PL#1872 to allow changes per integration-->
-            @{
-                int intgrtnCnt = 0,cntr=0;
-                string clsBottomBorderDiv = "border-bottom-div";
-                intgrtnCnt = ((Dictionary<string, string>)ViewBag.IntegrationTypeLinks).Count;
-                foreach (var item in ViewBag.IntegrationTypeLinks)
+        @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration - Moved and updated Jan 2016 by Brad Gray PL#1872*@
+        <div class="span6 blue-text bold" style="margin-bottom: 0px; width: 93%;margin-top:10px;">
+            @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance != null || tacticEloquaInstance != null || tacticMarketoInstance != null)
+            {
+                if (INQLastSync != null)
                 {
-                    cntr += 1;
-                    if (cntr == intgrtnCnt)
-                    {
-                        clsBottomBorderDiv = string.Empty;
-                    }
-                    if (item.Key == Enums.IntegrationType.Eloqua.ToString())
-                    {
-                          <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationType="@item.Key" toggle-id="eloquaIntegrationToggle" style="width:98%"> <!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
-                            <div class="span2 pull-left integration-review-imglink margin-right20">
-                                <a href=@item.Value onclick="window.open(this.href); return false;">
-                                    <div class="link_popup pull-right margin-bottom10"></div>
-                                    <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
-                                    <div class="inte-id-txt" title=@tacticEloquaInstance>@tacticEloquaInstance</div>
-                                </a>
-                            </div>
-                            <div class="span1 margin-top16">
-                                @*<input id="eloquaIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">*@
-                                <input id="eloquaIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);" >
-                            </div>
-                          </div>
-                    }
-                    else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
-                    {
-                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="salesforceIntegrationToggle" style="width:98%">
+                    <span class="pull-left" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 11px;">@Html.LabelForINQ("INQ") synced on @INQLastSync.ToString("MM/dd/yyyy ") at @INQLastSync.ToString("hh:mm tt").ToLower() </span>
+                        <br />
+                }
+                if (MQLLastSync != null)
+                {
+                    <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced on @MQLLastSync.ToString("MM/dd/yyyy ") at @MQLLastSync.ToString("hh:mm tt").ToLower()</span>
+                        <br />
+                }
+                if (CWLastSync != null)
+                {
+                    <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced on @CWLastSync.ToString("MM/dd/yyyy ") at  @CWLastSync.ToString("hh:mm tt").ToLower()</span>
+                        <br />
+                }
+                if (TacticLastSync != null)
+                {
+                    <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Last synced on @TacticLastSync.ToString("MM/dd/yyyy ") at  @TacticLastSync.ToString("hh:mm tt").ToLower()</span>
+                }
+            }
+            else
+            {
+                <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic not synced</span>
+            }
+            @*End -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
+        </div>
 
-                            <div class="span2 pull-left integration-review-imglink margin-right20">
-                                <a href=@item.Value onclick="window.open(this.href); return false;">
-                                    <div class="link_popup pull-right margin-bottom10"></div>
-                                    <div class="salesforce-img margin-top10"></div>
-                                    <div class="inte-id-txt" title=@tacticIntegrationInstance>@tacticIntegrationInstance</div>
-                                </a>
-                            </div>
-                            <div class="span1 margin-top16">
-                                <input id="salesforceIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);">
-                            </div>
+    </div>
+
+    <div id="integrationSettings" class="border-cf-left" style="float:left;width:89%">
+        <!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
+        <!--Modified 09 Jan 2016 by Brad Gray PL#1872 to allow changes per integration-->
+        @{
+            int intgrtnCnt = 0, cntr = 0;
+            string clsBottomBorderDiv = "border-bottom-div";
+            intgrtnCnt = ((Dictionary<string, string>)ViewBag.IntegrationTypeLinks).Count;
+            foreach (var item in ViewBag.IntegrationTypeLinks)
+            {
+                cntr += 1;
+                if (cntr == intgrtnCnt)
+                {
+                    clsBottomBorderDiv = string.Empty;
+                }
+                if (item.Key == Enums.IntegrationType.Eloqua.ToString())
+                {
+                    <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationType="@item.Key" toggle-id="eloquaIntegrationToggle" style="width:98%">
+                        <!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
+                        <div class="span2 pull-left integration-review-imglink margin-right20">
+                            <a href=@item.Value onclick="window.open(this.href); return false;">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
+                                <div class="inte-id-txt" title=@tacticEloquaInstance>@tacticEloquaInstance</div>
+                            </a>
                         </div>
-                    }
-                    else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
-                    {
-                        <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF margin-top20" integrationtype="@item.Key" toggle-id="workfrontIntegrationToggle" style="width:98%">
-                            <div class="span2 pull-left integration-review-imglink margin-right20">
-                                <a href=@item.Value onclick="window.open(this.href); return false;">
-                                    <div class="link_popup pull-right margin-bottom10"></div>
-                                    <div class="workfront-img margin-top23"></div>
-                                    <div class="inte-id-txt" title=@tacticIntegrationProjMgmtInstance>@tacticIntegrationProjMgmtInstance</div>
-                                </a>
-                            </div>
+                        <div class="span1 margin-top16">
+                            @*<input id="eloquaIntegrationToggle" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle">*@
+                            <input id="eloquaIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);">
+                        </div>
+                    </div>
+                }
+                else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
+                {
+                    <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="salesforceIntegrationToggle" style="width:98%">
 
-                            <div class="span1 margin-top16">
-                                @*<input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" onchange=toggleWorkFrontSettings()>*@
-                                <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="integrationToggle"onchange=toggleWorkFrontSettings()> @*Modified by Viral Kadiya on 28th Jan 2016 related to Pl ticket #1936*@
-                            </div>
+                        <div class="span2 pull-left integration-review-imglink margin-right20">
+                            <a href=@item.Value onclick="window.open(this.href); return false;">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="salesforce-img margin-top10"></div>
+                                <div class="inte-id-txt" title=@tacticIntegrationInstance>@tacticIntegrationInstance</div>
+                            </a>
+                        </div>
+                        <div class="span1 margin-top16">
+                            <input id="salesforceIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);">
+                        </div>
+                    </div>
+                }
+                else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
+                {
+                    <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF margin-top20" integrationtype="@item.Key" toggle-id="workfrontIntegrationToggle" style="width:98%">
+                        <div class="span2 pull-left integration-review-imglink margin-right20">
+                            <a href=@item.Value onclick="window.open(this.href); return false;">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="workfront-img margin-top23"></div>
+                                <div class="inte-id-txt" title=@tacticIntegrationProjMgmtInstance>@tacticIntegrationProjMgmtInstance</div>
+                            </a>
+                        </div>
 
-                            <div id="workFrontSettings">
-                                <!--Begin PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
-                                <div class="span2 float-left margin-left20" style="padding-bottom: 8px; margin-bottom: 8px">
-                                    <label id="workfrontTacticType">Tactic Type</label>
-                                    <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
-                                    <label id="workfrontTemplate" class="margin-top20">WorkFront Template</label>
-                                    <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.WorkFrontTemplate) ">@Html.Raw(tacticReview.WorkFrontTemplate)</label>
+                        <div class="span1 margin-top16">
+                            <input id="workfrontIntegrationToggle" class="btn-blue" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="integrationToggle" onchange=toggleWorkFrontSettings()> @*Modified by Viral Kadiya on 28th Jan 2016 related to Pl ticket #1936*@
+                        </div>
+
+                        <div id="workFrontSettings">
+                            <!--Begin PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
+                            <div class="span2 float-left margin-left20" style="padding-bottom: 8px; margin-bottom: 8px">
+                                <label id="workfrontTacticType">Tactic Type</label>
+                                <label id="tacticTypeTitle" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.TacticTypeTitle)">@Html.Raw(tacticReview.TacticTypeTitle)</label>
+                                <label id="workfrontTemplate" class="margin-top20">WorkFront Template</label>
+                                <label id="workfront_template" class="blue-text bold font-size12" title="@Html.Raw(tacticReview.WorkFrontTemplate) ">@Html.Raw(tacticReview.WorkFrontTemplate)</label>
+                            </div>
+                            <div class="span2" style="width:24%">
+                                <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
+                                <div class="radio " style="width:100%; float:left;margin-left:20px">
+                                    <label class="font-size12">
+                                        <input type="radio" name="optionsRadios" id="workFrontProjectOnApproval" value="Create a Project(Program to Portfolio)" checked="" onclick="toggleRequestOptions()">Create a Project (Program to Portfolio)
+                                    </label>
                                 </div>
-                                <div class="span2" style="width:24%">
-                                    <label id="workfrontApprovalBehavior">Tactic Approval Behavior</label>
-                                    <div class="radio " style="width:100%; float:left;margin-left:20px">
-                                        <label class="font-size12">
-                                            <input type="radio" name="optionsRadios" id="workFrontProjectOnApproval" value="Create a Project(Program to Portfolio)" checked="" onclick="toggleRequestOptions()">Create a Project (Program to Portfolio)
-                                        </label>
-                                    </div>
-                                    <div class="radio" style="width:100%; float:left; margin-left:20px">
-                                        <label class="font-size12">
-                                            <input id="workFrontRequestOnApproval" type="radio" name="optionsRadios" value="Create a Request" onclick="toggleRequestOptions()">Create a Request
-                                            <span class="fa fa-angle-double-right" style="margin-left:5px"></span>
-                                        </label>
-                                    </div>
-                                    <div class="radio" style="width:100%; float:left; margin-left:20px">
-                                        <label class="font-size12">
-                                            <input id="workFrontProject2OnApproval" type="radio" name="optionsRadios" value="Create a Project(Plan to Portfolio)" onclick="toggleRequestOptions()">Create a Project (Plan to Portfolio)
-                                        </label>
-                                    </div>
+                                <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                    <label class="font-size12">
+                                        <input id="workFrontRequestOnApproval" type="radio" name="optionsRadios" value="Create a Request" onclick="toggleRequestOptions()">Create a Request
+                                        <span class="fa fa-angle-double-right" style="margin-left:5px"></span>
+                                    </label>
                                 </div>
-                                <div id="workFrontRequestOptions" class="span3 margin-bottom20" style="padding-left: 20px;float:right">
-                                    <div class="cf form-group">
-                                        @Html.Label("Request Queue")
-                                        <span style="min-width: 100%; position: relative; display: block;">
-                                            @Html.DropDownListFor(m => m.WorkFrontRequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
-                                        </span>
-                                    </div>
-                                    <div class="cf form-group">
-                                        @Html.Label("Assigned To")
-                                        <span style="min-width: 100%; position: relative; display: block;">
-                                            @Html.DropDownListFor(m => m.WorkFrontRequestAssignee, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontUserList, "Id", "WorkFrontUserName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
-                                        </span>
-                                    </div>
-                                </div><!--end workFrontRequestOptions div-->
-                            </div><!--end workFrontSettings div-->
-                        </div><!--end workFrontDispaly div-->
+                                <div class="radio" style="width:100%; float:left; margin-left:20px">
+                                    <label class="font-size12">
+                                        <input id="workFrontProject2OnApproval" type="radio" name="optionsRadios" value="Create a Project(Plan to Portfolio)" onclick="toggleRequestOptions()">Create a Project (Plan to Portfolio)
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="workFrontRequestOptions" class="span3 margin-bottom20" style="padding-left: 20px;float:right">
+                                <div class="cf form-group">
+                                    @Html.Label("Request Queue")
+                                    <span style="min-width: 100%; position: relative; display: block;">
+                                        @Html.DropDownListFor(m => m.WorkFrontRequestQueueId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontRequestQueueList, "Id", "RequestQueueName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestQueue", require = "true" })
+                                    </span>
+                                </div>
+                                <div class="cf form-group">
+                                    @Html.Label("Assigned To")
+                                    <span style="min-width: 100%; position: relative; display: block;">
+                                        @Html.DropDownListFor(m => m.WorkFrontRequestAssignee, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontUserList, "Id", "WorkFrontUserName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown light-blue-background ui-multiselect", @id = "WorkFrontRequestAssignee", require = "true" })
+                                    </span>
+                                </div>
+                            </div><!--end workFrontRequestOptions div-->
+                        </div><!--end workFrontSettings div-->
+                    </div><!--end workFrontDispaly div-->
                             <!--End PL#1872 09 Jan 2016, Brad Gray - UI changes to add WorkFront tactic settings-->
-                    }
-                    else if (item.Key == Enums.IntegrationType.Marketo.ToString())
-                    {
-                        <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="marketoIntegrationToggle" style="width:98%">
+                }
+                else if (item.Key == Enums.IntegrationType.Marketo.ToString())
+                {
+                    <div class="span12 margin-left20 margin-top20 integration-SF-Eloqua-WF @clsBottomBorderDiv" integrationtype="@item.Key" toggle-id="marketoIntegrationToggle" style="width:98%">
 
-                            <div class="span2 pull-left integration-review-imglink margin-right20">
-                                <a href=@item.Value onclick="window.open(this.href); return false;">
-                                    <div class="link_popup pull-right margin-bottom10"></div>
-                                    <div class="marketo-img margin-top10"></div>
-                                   
-                                    <div class="inte-id-txt" title=@tacticMarketoInstance>@tacticMarketoInstance</div>
-                                   
-                                    
-                                </a>
-                            </div>
-                            <div class="span1 margin-top16"> 
-                                <input id="marketoIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);">
-                            </div>
+                        <div class="span2 pull-left integration-review-imglink margin-right20">
+                            <a href=@item.Value onclick="window.open(this.href); return false;">
+                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="marketo-img margin-top10"></div>
+
+                                <div class="inte-id-txt" title=@tacticMarketoInstance>@tacticMarketoInstance</div>
+
+
+                            </a>
                         </div>
-                     
-                    }
-                 }
-              }
-        </div> <!--end integrationSettings div-->
+                        <div class="span1 margin-top16">
+                            <input id="marketoIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);">
+                        </div>
+                    </div>
 
-    </div> <!--end integrationInfo div-->
-    <!--End PL#1462 07 Brad Gray, Aug 2015-->
+                }
+            }
+        }
+    </div> <!--end integrationSettings div-->
+
+</div> <!--end integrationInfo div-->
+<!--End PL#1462 07 Brad Gray, Aug 2015-->
 
 <div class="cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
-
-
-
-            @{
-                //Modified By Komal Rawal for #1375
-                string Submit = "Submit for Approval";
-                string Approve = "Approve";
-                string Reject = "Decline";
-                List<string> aryStatus = new List<string>();
-                bool isVisibleStatus = true;
-                bool isVisibleSyncButton = false;   // Display sync button only when Tactic status from "Approved, In-Progress or Completed".
-                if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
+    @{
+        //Modified By Komal Rawal for #1375
+        string Submit = "Submit for Approval";
+        string Approve = "Approve";
+        string Reject = "Decline";
+        List<string> aryStatus = new List<string>();
+        bool isVisibleStatus = true;
+        bool isVisibleSyncButton = false;   // Display sync button only when Tactic status from "Approved, In-Progress or Completed".
+        if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
+        {
+            if ((bool)ViewBag.IsEditable)
+            {
+                aryStatus.Add(Submit);
+            }
+            else
+            {
+                isVisibleStatus = false;
+            }
+        }
+        else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
+        {
+            if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
+            {
+                aryStatus.Add(Approve);
+                aryStatus.Add(Reject);
+            }
+            else
+            {
+                isVisibleStatus = false;
+            }
+        }
+        else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
+        {
+            if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
+            {
+                aryStatus.Add(Reject);
+            }
+            else
+            {
+                isVisibleStatus = false;
+            }
+            isVisibleSyncButton = true;
+        }
+        else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
+        {
+            if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
+            {
+                if ((bool)ViewBag.IsValidOwner)
                 {
-                    if ((bool)ViewBag.IsEditable)
-                    {
-                        aryStatus.Add(Submit);
-                    }
-                    else
-                    {
-                        isVisibleStatus = false;
-                    }
-                }
-                else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
-                {
-                    if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
-                    {
-                        aryStatus.Add(Approve);
-                        aryStatus.Add(Reject);
-                    }
-                    else
-                    {
-                        isVisibleStatus = false;
-                    }
-                }
-                else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
-                {
-                    if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
-                    {
-                        aryStatus.Add(Reject);
-                    }
-                    else
-                    {
-                        isVisibleStatus = false;
-                    }
-                    isVisibleSyncButton = true;
-                }
-                else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
-                {
-                    if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
-                    {
-                        if ((bool)ViewBag.IsValidOwner)
-                        {
 
-                            aryStatus.Add(Submit);
-                        }
-                        else
-                        {
-                            aryStatus.Add(Approve);
-                        }
-                    }
-                    else
-                    {
-                        if ((bool)ViewBag.IsValidOwner && ViewBag.IsEditable)
-                        {
-                            aryStatus.Add(Submit);
-                        }
-                        else
-                        {
-                            isVisibleStatus = false;
-                        }
-                    }
+                    aryStatus.Add(Submit);
                 }
                 else
                 {
-                    if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
-                    {
-                        aryStatus.Add(Reject);
-                    }
-                    else
-                    {
-                        isVisibleStatus = false;
-                    }
-                    isVisibleSyncButton = true;
+                    aryStatus.Add(Approve);
                 }
-
-                /*
-                  Begin PL#1462 07 Brad Gray, Aug 2015 * */
-
-             
-
-
-                /* --Remove Sync Button Brad Gray 07 Aug 2015 PL#1462
-                * Left commented to be added back in after completion of PL#1468 */
-                if (IsDeployToIntegrationVisible && isVisibleSyncButton && tacticReview.IsDeployedToIntegration)
+            }
+            else
+            {
+                if ((bool)ViewBag.IsValidOwner && ViewBag.IsEditable)
                 {
-                    if ((bool)ViewBag.IsModelDeploy)
-                    {
+                    aryStatus.Add(Submit);
+                }
+                else
+                {
+                    isVisibleStatus = false;
+                }
+            }
+        }
+        else
+        {
+            if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
+            {
+                aryStatus.Add(Reject);
+            }
+            else
+            {
+                isVisibleStatus = false;
+            }
+            isVisibleSyncButton = true;
+        }
+        if (IsDeployToIntegrationVisible && isVisibleSyncButton && tacticReview.IsDeployedToIntegration)
+        {
+            if ((bool)ViewBag.IsModelDeploy)
+            {
                 <div id="divDeployToIntegration" class="margin-top23 margin-right10" style="float: left; display:none;">
-                <div id="btn_sync_status" class="btn-group dropup">
-                               <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px; border-radius: 4px;">
-                                  <span class="flag-icon sync-icon-dropdown"></span>
-                                  <span id="spanSyncStatus">Sync</span>
-                              </button>
-
-                               @*Below code commented by Viral kadiya to implement PL ticket #1468.*@
-                              @* <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
-                        <span class="flag-icon sync-icon-dropdown"></span>
-                        <span id="spanSyncStatus">
-                            @if (tacticReview.IsDeployedToIntegration)
-                            {
-                                @Html.Raw("Sync")
-                            }
-                            else
-                            {
-                                @Html.Raw("Don't Sync") 
-                            }
-
-                        </span>
-                    </button>
-                               if (tacticReview.IsDeployedToIntegration)
-                    {
-                        @Html.Hidden("hdnSyncStatusValue", "Sync", new { id = "hdnSyncStatusValue" });
-                    }
-                    else
-                    {
-                        @Html.Hidden("hdnSyncStatusValue", "Don't Sync", new { id = "hdnSyncStatusValue" });
-                    }
-                    <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
-                        <span class="caret "></span>
-                    </button>
-                    <ul class="dropdown-menu " id="uldivSync">
-                        <li>
-                            <a id="aSync">Sync</a>
-                        </li>
-                        <li>
-                            <a id="aNotSync">Don't Sync</a>
-                        </li>
-                               </ul>*@
-                </div>
-            </div> 
-                    }
-                }
-
-                if (isVisibleStatus)
-                {
-                    int len = aryStatus.Count;
-                    if (len > 0)
-                    {
-                        string firstStatus = aryStatus[0];
-                
-        <div class="margin-top23" style="float: left;">
-            <div id="btn_change_status" class="btn-group dropup">
-                <button id="btnApproved" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 125px;">
-                    <span class="flag-icon approve-icon-dropdown"></span>
-                    <span id="spanTactic">@firstStatus</span>
-                </button>
-                @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
-                    @if (len >= 2)
-                    {
-                        <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
-                            <span class="caret "></span>
+                    <div id="btn_sync_status" class="btn-group dropup">
+                        <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px; border-radius: 4px;">
+                            <span class="flag-icon sync-icon-dropdown"></span>
+                            <span id="spanSyncStatus">Sync</span>
                         </button>
-                                              
-                        <ul class="dropdown-menu " id="uldiv">
-                            @foreach (string s in aryStatus)
-                            {
-                                <li>
-                                    <a>@s</a>
-                                </li>
-                            }
-                        </ul>
-                        
-                        <script type="text/javascript">
-                            $("#btnApproved").css("width", "90px");
-                        </script>
-                    }
-                    else
+                    </div>
+                </div>
+            }
+        }
+
+        if (isVisibleStatus)
+        {
+            int len = aryStatus.Count;
+            if (len > 0)
+            {
+                string firstStatus = aryStatus[0];
+
+                <div class="margin-top23" style="float: left;">
+                    <div id="btn_change_status" class="btn-group dropup">
+                        <button id="btnApproved" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 125px;">
+                            <span class="flag-icon approve-icon-dropdown"></span>
+                            <span id="spanTactic">@firstStatus</span>
+                        </button>
+                        @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
+                        @if (len >= 2)
                     {
-                        <script type="text/javascript">
-                            $("#btnApproved").css("border-radius", "4px");
-                        </script>
-                    }
+                            <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
+                                <span class="caret "></span>
+                            </button>
+
+                            <ul class="dropdown-menu " id="uldiv">
+                                @foreach (string s in aryStatus)
+                                {
+                                    <li>
+                                        <a>@s</a>
+                                    </li>
+                                }
+                            </ul>
+
+                            <script type="text/javascript">
+                                $("#btnApproved").css("width", "90px");
+                            </script>
+                        }
+                        else
+                        {
+                            <script type="text/javascript">
+                                $("#btnApproved").css("border-radius", "4px");
+                            </script>
+                        }
+
+                    </div>
 
                 </div>
-
-            </div> 
-                    }
-                }
+            }
+        }
     }
 
     <div style="float: left; margin-left: 10px;" class="margin-top23">
@@ -652,11 +629,6 @@
 </div>
 <div id="DivPartialShareTactic">
 </div>
-
-
-
-
-
 <script type="text/javascript">
     var strViewMode = 'View';
     $(document).ready(function () {
@@ -668,9 +640,6 @@
         else {
             el.style.display = 'none';
         }
-
-
-
         /* Add By Bhumika For dropdown menu*/
         $('#WorkFrontRequestQueue').multiselect({
             multiple: false,
@@ -688,7 +657,6 @@
             selectedList: 1,
             CustomName: '@Common.CustomTitle'
         }).multiselectfilter();
-
 
         var spanWorkFrontRequestAssignee = $('#multipleselect_WorkFrontRequestAssignee');
         $('#btnMultiselect_WorkFrontRequestAssignee').after(spanWorkFrontRequestAssignee); // to create dropdown menu under selectbox
@@ -762,8 +730,6 @@
             });
         }
         //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919.
-
-
         if('@ViewBag.IsModelIntegratedWorkFront'=='True' && isSyncWorkFront.toLowerCase()=='true')
         {
 
@@ -827,7 +793,6 @@
                 if(isVisibleSyncbtn){       // Sync button exist when Tactic status from 'In-Progress, Complete or Approved'
                     $("#divDeployToIntegration").css('display','block');
                 }
-
                 // Added by Viral for PL ticket #2108:Scenario1
                 $('.integration-SF-Eloqua-WF').each(function (key, val) {
                     var _divToggle = $(this).find("div.integrationToggle");
@@ -835,7 +800,7 @@
                     var toggleId = $(this).attr('toggle-id');
                     var eleToggle = $("#"+toggleId);
                     if (_intgrtnType == '@Enums.IntegrationType.Eloqua.ToString()' && '@eloquaId' >0) {
-                            eleToggle.bootstrapToggle('on');            // Set Eloqua toggle button to ON.
+                        eleToggle.bootstrapToggle('on');            // Set Eloqua toggle button to ON.
                     }
                     else if (_intgrtnType == '@Enums.IntegrationType.Salesforce.ToString()' && '@SFDCId' >0) {
                         eleToggle.bootstrapToggle('on');            // Set Eloqua toggle button to ON.
@@ -872,9 +837,6 @@
                 $('#workFrontRequestOptions').addClass("hidden");
             }
         }
-
-
-
         /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
         ImageTipsy('#diffrentStageIcon');
         /*NumberFormatterTipsyTitle(".tipsyclassTitle", 55);*/ //Commented by Arpita Soni on 02/01/15 for ticket #1082
@@ -885,10 +847,7 @@
 
         //Added by Komal Rawal for ticket #1158
         if ($('#hdnIsPlanEditable').val().toString().toLowerCase() == 'true') {
-
-
             $('#divDeployToIntegration').css('display', 'block');
-
         }
 
         if ($('#txtAreaComment').hasClass('light-gray-background')) {
@@ -914,20 +873,12 @@
                 $('#InspectTab').removeClass('SpanDisable');
                 return false;
             }
-
-            @*var IsDeployedToIntegration = false;
-            IsDeployedToIntegration = '@tacticReview.IsDeployedToIntegration';*@
-            //var spanSyncStatus = $("#hdnSyncStatusValue").val();
-            //if (spanSyncStatus == 'Sync') {
-            //    IsDeployedToIntegration = true;
-            //}
             var PlanTacticId = $('#hdnPlanTacticId').val();
             // Start - Added by Viral Kaidya for #2002 - Save Sync settings for Eloqua & SFDC on Sync button click
             var isDeployToIntegration = false;
             if ($("#t_integration_status").hasClass("icon-check-blue")) { // if Deployed To Integration True.
                 isDeployToIntegration = true;
             }
-
             var isSyncSF = false;
             var isSyncEloqua = false;
             var isSyncWorkFront = false;
@@ -1024,10 +975,7 @@
                         else
                             inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
                         var requestedModule = $("#hdnRequestedModule").val();
-                        //alert("TacticID:" + $('#hdnPlanTacticId').val() + ", data.TabValue:" + TabReview + ", inspectMode:" + inspectMode + ", requestedModule:" + requestedModule);
                         loadInspectPopup($('#hdnPlanTacticId').val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", TabReview, inspectMode, 0, requestedModule);
-                        //loadReview($("#hdnPlanTacticId").val(), TabReview);
-
                         $("#successMessage").css("display", "block");
                         $("#spanMessageSuccess").empty();
                         $("#spanMessageSuccess").text(data.msg);
@@ -1041,17 +989,9 @@
                 }
             });
         });
-
-        //$("#uldivSync li a").click(function () {
-        //    $("#spanSyncStatus").html($(this).text());
-        //    $("#hdnSyncStatusValue").val($(this).text());
-        //});
-
         var divheight = $("#divInnerComment").height();
         $("#divComment").scrollTop(divheight);
-
         // On Comment Button Save Commnet
-
         $("#btnComment").click(function () {
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
@@ -1095,8 +1035,6 @@
                                 else {
                                     inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
                                 }
-
-                                // loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);//section parameter passed to open tactic popup
                                 loadReview($("#hdnPlanTacticId").val(), TabReview);
                             }
                             else {
@@ -1115,11 +1053,8 @@
                 }
             });
         });
-
-
         // Click on Approved Button Save Comment & Change Status
         $("#btnApproved").click(function () {
-
             if(ValidateFields()==false)
             {
                 $('#InspectTab').removeClass('SpanDisable');
@@ -1201,7 +1136,6 @@
                     wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project2.ToString()';
                 }
             }
-
             //End - Added by Viral Kadiya on 22nd Jan 2016 for Pl ticket #1919 & #1921.
             $.ajax({
                 type: 'POST',
@@ -1218,7 +1152,7 @@
                     approvalBehaviorWorkFront: wfTacticApproval,
                     requestQueueWF: requestQueue,
                     assigneeWF: assignee
-                  
+
                 },
                 success: function (data) {
                     if (data != 'undefined') {
@@ -1237,18 +1171,13 @@
                                     inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
                                 var requestedModule = $("#hdnRequestedModule").val();
                                 loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
-
                                 //Added By : Kalpesh Sharma Internal review points 18/11/2014
-
                                 if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
                                     RefershPlanHeaderCalc();
                                     RefreshCurrentTab();//Added by Mitesh Vaishnav for PL ticket #1132
                                 }
                                 else if (RedirectType == "@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()") {
                                     var _planId = $('#PlanId').val();  //// Get PlanId value from ApplyToCalendar page.
-                                    // Commented By Nishant Sheth
-                                    // Desc :: For performance issue
-                                    //GetHealderData(_planId);    //// Called HeaderData function exist in ApplyToCalendar Page.
                                     GetNumberOfActivityPerMonByPlanId(_planId, ''); //// Called HeaderData function exist in ApplyToCalendar Page.
                                 }
                             }
@@ -1286,7 +1215,7 @@
         $('.accordion').on('shown.bs.collapse', toggleChevron);
 
     });
- 
+
 
     function showHide(id) {
         var el = document.getElementById(id);
@@ -1313,24 +1242,6 @@
         }
     }
 
-    //function toggleMarketoSettings(){
-    //    var wfToggle = document.getElementById('marketoIntegrationToggle');
-    //    var wfChecked = wfToggle.checked;
-    //    if(wfChecked)
-    //    {
-    //        $("#MarketoCampaignFolder").css('display','block');
-    //        $("#MarketoProgramType").css('display','block');
-    //        $("#MarketoChannel").css('display','block');
-    //    }
-    //    else
-    //    {
-    //        $("#MarketoCampaignFolder").css('display','none');
-    //        $("#MarketoProgramType").css('display','none');
-    //        $("#MarketoChannel").css('display','none');
-    //    }
-
-    //}
-
     function toggleRequestOptions() {
         var request = document.getElementById('workFrontRequestOnApproval');
         var requestChecked = request.checked;
@@ -1355,15 +1266,12 @@
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-
         var returnparameter = false;
         // Start - Get & Validate Tactic Title
         var title = htmlEncode($('#txtTacticTitle').val());
         var planTacticId = $("#hdnPlanTacticId").val();
         var txtTacticValue = $("#txtTacticTitle").val();
         var iserror = false;
-
-
         if (title == '') {
             $('#txtTacticTitle').addClass("error");
             iserror = true;
@@ -1440,17 +1348,6 @@
                 wfTacticApproval = '@Integration.Helper.Enums.WorkFrontTacticApprovalObject.Project2.ToString()';
             }
         }
-
-        //if ($(this).hasClass("icon-check-blue")) { // if Deployed To Integration 'No'.
-        //    isDeployToIntegration = false;
-        //}
-
-
-        //if ($(this).hasClass("icon-check-blue")) { // if Deployed To Integration 'No'.
-        //    isDeployToIntegration = false;
-        //}
-    
-
         $.ajax({
             async: false,
             type: 'POST',
@@ -1497,7 +1394,6 @@
         else{
             isDeployed = 'false';
         }
-
         if( isDeployed == 'true' ) //don't validate these at all if the tactic isn't deployed
         {
             if( '@ViewBag.IsModelIntegratedWorkFront'=='True' && '@IsSyncWorkFront'=='True' || (wfToggle!=null && wfToggle.checked == true) ) //Update for PL#1935 Brad Gray 28 Jan 2016
@@ -1515,8 +1411,6 @@
                     }
                 }
             }
-
-
         }
 
         if(errorCount > 0)

@@ -16,34 +16,17 @@
 }
 
 @*<script src="~/Scripts/js/bootstrap-datepicker.js"></script>*@
-    <script src="~/Scripts/moment.min.js"></script>
-    <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
-    <link href="~/Content/css/bootstrap-datetimepicker.css" rel="stylesheet" />  
+<script src="~/Scripts/moment.min.js"></script>
+<script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+<link href="~/Content/css/bootstrap-datetimepicker.css" rel="stylesheet" />
 <style type="text/css">
     #dp_start,#dp_end    {
         padding-left:0px;
     }
-    @*start Added by Mitesh Vaishnav for PL ticket #972
-    Set design of calender popup in google chrome*@
-   @* @@media screen and (-webkit-min-device-pixel-ratio:0) {
-    #dp_start .datepicker{
-        top: 32px !important;
-        left:auto !important;
-    min-width:220px;
-    }
-    #dp_end .datepicker{
-        top: 32px !important;
-        left:auto !important;
-     min-width:220px;
-    }
-   } Hide By bhumika its creating issue in chrome *@
-   @*End Added by Mitesh Vaishnav for PL ticket #972
-    Set design of calender popup in google chrome*@
     #btnCancel {
     color: gray;
     margin-top: 6px;
 }
-
     #divPartial .simpleSelectBox .sbHolder {
             background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
             box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
@@ -71,7 +54,6 @@
         padding:0px !important;
         margin-bottom:10px !important;
     }
-
      @* Added by bhavesh #711 *@
      #multipleselect_ddlOwner {
         left: -3px !important;
@@ -91,131 +73,104 @@
     @Html.HiddenFor(model => model.CampaignBudget, new { id = "hdnOldCampaignBudget" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })  // Added by Viral Kadiya on 11/15/2014 for PL ticket #794
 
-                                                                                <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
 
-                                                                                    <div class="span6" id="inspect-modal-left-column1">
-                                                                                        <p>@Html.Raw("Description")</p>
-                                                                                        @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+        <div class="span6" id="inspect-modal-left-column1">
+            <p>@Html.Raw("Description")</p>
+            @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size input-setup", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
 
-                                                                                        @if (ExtIntService)
-                                                                                        {
-                                                                                            <p class="clear-section" style="line-height: 11px; padding-bottom: 5px;">@Html.Raw("Deployed to Integration")</p>
-                                                                                            if (Model.IsDeployedToIntegration)
-                                                                                            {
-                                                                                                <input id="t_integration_status" name="t_status"  title="Active" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <input id="t_integration_status" name="t_status"  title="Inactive" type="text" class="icon-check-gray" placeholder="Don't sync to integration" maxlength="18" readonly />
-                                                                                            }
-                                                                                        }
-                                                                                        <div style="clear: both; width: 250%;">
-                                                                                            <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="span3 calendar_div" id="inspect-modal-left-column2" style="padding-left:1.9%;">
-                                                                                        <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>                                                                                        
-                                                                                        @if (IsCampaignEdit)
-                                                                                        {
-                                                                                            <span style="min-width: 100%; position: relative;display:block;">
-                                                                                                @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
-                                                                                            </span>
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
-                                                                                        }
-                                                                                        <p>Start Date</p>
-                                                                                        <span style="position: relative;">
-                                                                                            @*<div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                                                                                                @Html.TextBoxFor(model => model.StartDate, new { @class = "span12 input-small truncate input-setup", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_startdate" })
-                                                                                                <span id="startAddOn" class="add-on">
-                                                                                                    <img src="~/Content/images/gray-calendar-icon.png">
-                                                                                                </span>
-                                                                                            </div>*@
-                                                                                            <div class="form-group">
-                                                                                                <div class='input-group date' id='divStartDate'>
-                                                                                                    @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control without-margin ", id = "t_startdate"})
-                                                                                                    <span class="input-group-addon">
-                                                                                                        <span class="fa fa-calendar"></span>
-                                                                                                    </span>
-                                                                                            </div>
-                                                                                            </div>
-                                                                                        </span>
-                                                                                        <p class="clear-section" style="padding-top: 10px;">End Date</p>
-                                                                                        <span style="position: relative;">
-                                                                                            @*<div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                                                                                                @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate input-setup", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_enddate" })
-                                                                                                <span class="add-on">
-                                                                                                    <img src="~/Content/images/gray-calendar-icon.png">
-                                                                                                </span>
-                                                                                            </div>*@
-                                                                                            <div class='input-group date' id='divEndDate'>
-                                                                                                @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control without-margin ", id = "t_enddate"})                    
-                                                                                                <span class="input-group-addon">
-                                                                                                    <span class="fa fa-calendar"></span>
-                                                                                                </span>
-                                                                                            </div>
-                                                                                        </span>
-                                                                                    </div>
-                                                                                    <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width:24%">
-                                                                                        <p>@Html.Raw("Campaign Budget")</p>
-                                                                                        @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate input-setup", id = "txtCampaignBudget", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-                                                                                        <p>Remaining Plan Budget</p>
-                                                                                        @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { id = "txtRemainingBudget", @readonly = "true" })
-                                                                                        <div class="content dark inline-ellipsis">
-                                                                                            @if (!(bool)ViewBag.IsCreated)
-                                                                                            {
-                                                                                                <div class="cf width100">
-                                                                                                    <div class="width65px margin-right10 pull-left" style="width: 48%;">
-                                                                                                        <p>@Html.LabelForMQL("MQL")</p>
-                                                                                                        @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
-                                                                                                    </div>
+            @if (ExtIntService)
+            {
+                <p class="clear-section" style="line-height: 11px; padding-bottom: 5px;">@Html.Raw("Deployed to Integration")</p>
+                if (Model.IsDeployedToIntegration)
+                {
+                    <input id="t_integration_status" name="t_status" title="Active" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                }
+                else
+                {
+                    <input id="t_integration_status" name="t_status" title="Inactive" type="text" class="icon-check-gray" placeholder="Don't sync to integration" maxlength="18" readonly />
+                }
+            }
+            <div style="clear: both; width: 250%;">
+                <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
+            </div>
+        </div>
+        <div class="span3 calendar_div" id="inspect-modal-left-column2" style="padding-left:1.9%;">
+            <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
+            @if (IsCampaignEdit)
+            {
+                <span style="min-width: 100%; position: relative;display:block;">
+                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                </span>
+            }
+            else
+            {
+                @Html.TextBox("txtOwner", OwnerName, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
+            }
+            <p>Start Date</p>
+            <span style="position: relative;">
+                <div class="form-group">
+                    <div class='input-group date' id='divStartDate'>
+                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control without-margin ", id = "t_startdate" })
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </span>
+            <p class="clear-section" style="padding-top: 10px;">End Date</p>
+            <span style="position: relative;">
+                <div class='input-group date' id='divEndDate'>
+                    @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control without-margin ", id = "t_enddate" })
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </span>
+        </div>
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width:24%">
+            <p>@Html.Raw("Campaign Budget")</p>
+            @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate input-setup", id = "txtCampaignBudget", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+            <p>Remaining Plan Budget</p>
+            @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { id = "txtRemainingBudget", @readonly = "true" })
+            <div class="content dark inline-ellipsis">
+                @if (!(bool)ViewBag.IsCreated)
+                {
+                    <div class="cf width100">
+                        <div class="width65px margin-right10 pull-left" style="width: 48%;">
+                            <p>@Html.LabelForMQL("MQL")</p>
+                            @Html.TextBoxFor(model => model.MQLs, new { @class = "span12 input-small priceValue", @Value = Model.MQLs, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, placeholder = "0" })
+                        </div>
 
-                                                                                                    <div class="width65px pull-left" style="width: 48%;">
-                                                                                                        <p>Cost</p>
+                        <div class="width65px pull-left" style="width: 48%;">
+                            <p>Cost</p>
                             @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar", @Value = Model.Cost, @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = CurrencySymbol + "0" })
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <div class="cf width100">
-                                                                                                    <div class="width65px pull-left" style="width: 48%;">
-                                                                                                        <p>Revenue</p>
+                        </div>
+                    </div>
+                    <div class="cf width100">
+                        <div class="width65px pull-left" style="width: 48%;">
+                            <p>Revenue</p>
                             @Html.TextBoxFor(model => model.Revenue, new { @class = "span12 input-small currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, placeholder = CurrencySymbol + "0" })
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            }
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
-                                                                                    <li class="pull-left">
-                                                                                        <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
-                                                                                    </li>
-                                                                                </ul>
-                                                                                <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left" id="attributesControlsArea">
-                                                                                    @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString().ToLower(), Model.Status, 0, Enums.InspectPopupMode.Edit.ToString())
-                                                                                </div>
-
-                                                                                @*     if ((bool)ViewBag.IsOwner || (Convert.ToString(ViewBag.IsAuthorized) == "True"))
-                                                                                                {
-                                                                                    <div style="width: 100%; clear: both" class="wraper-btns cf border-top-div " id="divCampaignSaveCancel">
-                                                                                        <div class="span2 btn-save" style="width: 80px;">
-                                                                                            <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save </button>
-                                                                                        </div>
-                                                                                        <div class="span2">
-                                                                                            <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                                }*@
-
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
+        <li class="pull-left">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
+        </li>
+    </ul>
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left" id="attributesControlsArea">
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanCampaignId, Enums.EntityType.Campaign.ToString().ToLower(), Model.Status, 0, Enums.InspectPopupMode.Edit.ToString())
+    </div>
 }
 <script type="text/javascript">
-
     var selectbox_keys = '';
     var $prevtext = '';
     var $nextdata = -1;
     var $_prevdata = -1;
-
     $('.dropdown_new_btn').click(function () {
         $('.trdropdownhover').removeClass('setfocusTr');
         $('.dropdown_new_btn').focus();
@@ -234,22 +189,10 @@
 
     var DropdownTop = 0;
     $(".pop-body-wraper").scroll(function () {
-
-        //var DropdownToPos = $(this).scrollTop();
-        //if (DropdownToPos > DropdownTop) {
-        //    $('.dropdown-wrapper').removeClass('dropup');
-        //} else {
-        //    $('.dropdown-wrapper').addClass('dropup')
-        //}
-        //DropdownTop = DropdownToPos;
         var scrollTop = $(this).scrollTop();
         $('.dropdown_new_btn').click(function () {
-            //$(this).each(function () {
-            // alert('hi3');
             // get the top offset of the dropdown (distance from top of the page)
             var dropdown_div = $(this).next('.dropdown-wrapper');
-            //dropdown_div.css('cssText', 'display: block !important');
-            //var dropdown_height = dropdown_div.height();
             var topOffset = dropdown_div.offset().top;
             // calculate the dropdown offset relative to window position
             var relativeOffset = topOffset - scrollTop;
@@ -258,11 +201,9 @@
             // if the relative offset is greater than half the window height,
             // reverse the dropdown.
             if (relativeOffset > windowHeight / 2 || (relativeOffset + 100) > windowHeight / 2) {
-                //alert('5');
                 dropdown_div.addClass("dropup");
             }
             else {
-                //alert('6');
                 dropdown_div.removeClass("dropup");
             }
         });
@@ -273,7 +214,6 @@
 
     function KeyPressOnDropdown() {
         $(document).keypress(function (e) {
-            //  alert('0');
             var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
             var $this = $('#dropdown_Table').find('.tbodycampaignprogram');
 
@@ -281,10 +221,8 @@
                 var theChar = String.fromCharCode(key);
                 var cur_check = '';
                 cur_check = selectbox_keys + theChar.toLowerCase();
-
                 var $select = $('#dropdown_Table');
                 var lastElement = $select.find('tbody');
-
                 $this.find(".trdropdownhover").each(function () {
                     var p = $(this).find('p');
                     var text = jQuery(p).text().toLowerCase();
@@ -303,21 +241,14 @@
                             $nextdata.addClass('setfocusTr');
                             selectbox_keys = cur_check;
                             $(p).closest('tr').focus();
-
                             $select.find('input:checkbox').removeAttr('checked');
                             var checkbx = $(this).find('input:checkbox');
                             $(checkbx).attr('checked', 'checked');
-
-                            //var x = $(this).position().top;
-                            //lastElement.animate({ scrollTop: x }, 200);
-
                             var scrollTo = $(this);
                             lastElement.animate({
                                 scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
                             });
-
-                            return false;
-                        }
+                            return false;                        }
                     }
                     else {
                         /// find search_text from current li to downward direction in dropdown list.
@@ -327,7 +258,6 @@
                         $.each(_nextdatas, function (key, value) {
                             var _anchor = $(value).find('p');
                             var _atext = $(_anchor).text().toLowerCase();
-
                             //// Compare current "li" anchor text is with previous selected anchor text.
                             if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
                                 $prevtext = _atext; // set previous text variable with selected text.
@@ -338,14 +268,9 @@
                                 selectbox_keys = cur_check;
                                 $(this).closest('tr').focus();
                                 cntr = cntr + 1;
-
                                 $select.find('input:checkbox').removeAttr('checked');
                                 var checkbx = $(this).find('input:checkbox');
                                 $(checkbx).attr('checked', 'checked');
-
-                                //var x = $(this).position().top;
-                                //lastElement.animate({ scrollTop: x }, 200);
-
                                 var scrollTo = $(this);
                                 lastElement.animate({
                                     scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
@@ -359,7 +284,6 @@
                             $.each(_nextdatas, function (key, value) {
                                 var _anchor = $(value).find('p');
                                 var _atext = $(_anchor).text().toLowerCase();
-
                                 //// Compare current "li" anchor text is with previous selected anchor text.
                                 if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
                                     $prevtext = _atext;
@@ -369,13 +293,9 @@
                                     $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object.
                                     selectbox_keys = cur_check;
                                     $(this).closest('tr').focus();
-
                                     $select.find('input:checkbox').removeAttr('checked');
                                     var checkbx = $(this).find('input:checkbox');
                                     $(checkbx).attr('checked', 'checked');
-
-                                    //var x = $(this).position().top;
-                                    //lastElement.animate({ scrollTop: x }, 200);
                                     var scrollTo = $(this);
                                     lastElement.animate({
                                         scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
@@ -422,7 +342,6 @@
             $("#txtRemainingBudget").removeClass('error-text');
         }
     }
-
     //// Function to redirect to login page on unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
@@ -447,14 +366,6 @@
               format: 'MM/DD/YYYY',
               useCurrent: false
           });
-          //commented By Maitri Gandhi for #2099 on 21/4/2016
-          //$("#divStartDate").on("dp.change", function (e) {
-          //    $('#divEndDate').data("DateTimePicker").minDate(e.date);
-          //});
-          //$("#divEndDate").on("dp.change", function (e) {
-          //    $('#divStartDate').data("DateTimePicker").maxDate(e.date);
-          //});
-          //Datetime Picker End Bhumika
 
           $('#ddlOwner').multiselect({
               multiple: false,
@@ -462,7 +373,6 @@
               selectedList: 1,
               CustomName: '@Common.CustomTitle'
           }).multiselectfilter();
-          // $(".simpleSelectBox select").selectbox();
           $('#ddlOwner').next().css('width', '95%');
           $('#ddlOwner').next().css('min-height', '30px');
           var spanOwner = $('#multipleselect_ddlOwner');
@@ -475,12 +385,10 @@
           });
           /*End Added by Mitesh Vaishnav for PL ticket #1136*/
           $('#hdnOwner').val($('#ddlOwner').val());
-
           //// Call function to redirect on service unavailibility.
           //// Added By: Maninder Singh Wadhva on 11/24/2014.
           //// Ticket: 942 Exception handeling in Gameplan.
           redirectOnServiceUnavailibility();
-
           $(".datepicker.dropdown-menu").each(function () {
               $(this).remove();
           });
@@ -494,10 +402,6 @@
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
           $(".selectBox select").selectbox();
-          //Internal Issue Maitri
-          //$("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
-          //$("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
-
           if ($("#t_integration_status").val() == '') {
               if ($("#t_integration_status").hasClass("icon-check-blue")) {
                   $("#hdnIsDeployedToIntegration").val(true);
@@ -521,9 +425,7 @@
               $('#t_startdate').addClass('light-blue-background');  //Added By Maitri Gandhi foe #2109
               $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
           }
-
           //End - Added by Viral Kadiya on 18/11/2014 to resolve PL ticket #947.
-
       });
     //<---  End Document.ready Event --->
 
@@ -539,7 +441,6 @@
         }
     });
 
-
     function CancelEvent() {
         $("#hdnCampaignOpt").val("View");
         loadReview('@Model.PlanCampaignId', "Setup");
@@ -550,138 +451,6 @@
         $("#lblCampaignTitle").removeAttr("style");
         $('#divDeleteCampaign').css('display', 'block');
     }
-    //Commented By Maitri Gandhi for #2109
-    //$('#t_startdate').click(function () {
-    //    $('#dp_end').datepicker('hide');
-    //});
-
-    //$('#t_enddate').click(function () {
-    //    $('#dp_start').datepicker('hide');
-    //});
-
-    @*$('.dp').datepicker({
-        format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
-        autoclose: true,
-    }).on('changeDate', function (ev) {
-        $(this).datepicker('hide');
-    });*@
-
-    //$('#dp_start .add-on').click(function (e) {
-    //    //$('#dp_start').datepicker('hide'); /* Bhumika */
-    //    $('#dp_end').datepicker('hide');
-    //    $(".dropdown-menu").css("z-index", "25001");
-    //    var pos = $("#t_startdate").position();
-    //    var height = $("#t_startdate").height();
-    //    var scrollTop = $("#modal-container-186470").scrollTop();
-    //    var pos_top = pos.top + height + scrollTop + 10;
-    //    setTimeout(function () {
-    //        if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-    //            $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
-
-    //            $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
-    //               // top: pos_top.toString() + 'px', /* Bhumika */
-    //               display: 'block'
-    //            });
-    //        }
-    //        else {
-    //            $('#dp_start').find('.datepicker.dropdown-menu').css({
-    //               // top: pos_top.toString() + 'px',  /* Bhumika */
-    //                display: 'block'
-    //            });
-    //        }
-    //        set_start_date_Position(); /* Bhumika */
-    //    }, 1);
-
-    //    //// To resolve issue of Ticket #1025, Pratik
-    //    $(".datepicker.dropdown-menu").last().css("display", "none");
-    //})
-    //function  set_start_date_Position(){
-    //    var scrollTop = $('.pop-body-wraper').scrollTop();
-    //    // alert(scrollTop);
-    //    var calender_div = $('#dp_start').find('.datepicker.dropdown-menu');
-    //    //alert(calender_div.html());
-    //    var topOffset = $('#dp_start').offset().top;
-    //    //alert(topOffset);
-    //    var windowHeight = $('.pop-body-wraper').height();
-    //    // calculate the dropdown offset relative to window position
-    //    var relativeOffset = topOffset - scrollTop;
-    //    if (relativeOffset > windowHeight / 2 ) {
-    //        // alert('5');
-    //        //calender_div.css('top', 'auto');
-    //        //calender_div.css('bottom', '100%');
-    //        calender_div.removeClass('calender-dropdown');
-    //        calender_div.addClass('calender-dropup');
-    //        //$('#dp_start').datepicker('show');
-    //    }
-    //    else {
-    //        // alert('6');
-    //        //calender_div.css('top', '32px');
-    //        //calender_div.css('bottom', 'auto');
-    //        calender_div.removeClass('calender-dropup');
-    //        calender_div.addClass('calender-dropdown');
-    //        //$('#dp_start').datepicker('show');
-    //    }
-    //    scrollTop = 0;
-    //}
-    //function set_end_date_Position() {
-    //    var scrollTop = $('.pop-body-wraper').scrollTop();
-    //    // alert(scrollTop);
-    //    var calender_div = $('#dp_end').find('.datepicker.dropdown-menu');
-    //    //alert(calender_div.html());
-    //    var topOffset = $('#dp_end').offset().top;
-    //    //alert(topOffset);
-    //    var windowHeight = $('.pop-body-wraper').height();
-    //    // calculate the dropdown offset relative to window position
-    //    var relativeOffset = topOffset - scrollTop;
-    //    if (relativeOffset > windowHeight / 2) {
-    //        // alert('5');
-    //        //calender_div.css('top', 'auto');
-    //        //calender_div.css('bottom', '100%');
-    //        calender_div.removeClass('calender-dropdown');
-    //        calender_div.addClass('calender-dropup');
-    //        //$('#dp_end').datepicker('show');
-    //    }
-    //    else {
-    //        // alert('6');
-    //        //calender_div.css('top', '32px');
-    //        //calender_div.css('bottom', 'auto');
-    //        calender_div.removeClass('calender-dropup');
-    //        calender_div.addClass('calender-dropdown');
-    //        //$('#dp_end').datepicker('show');
-    //    }
-    //    scrollTop = 0;
-    //}
-    ///* Bhumika End */
-    //$('#dp_end .add-on').click(function () {
-    //    $('#dp_start').datepicker('hide');
-    //    //$('#dp_end').datepicker('hide');	/* Bhumika */
-    //    $(".dropdown-menu").css("z-index", "25001");
-    //    var pos = $("#t_enddate").position();
-    //    var height = $("#t_enddate").height();
-    //    var scrollTop = $("#modal-container-186470").scrollTop();
-    //    var pos_top = pos.top + height + scrollTop + 10;
-    //    setTimeout(function () {
-    //        if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-    //            $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
-    //            $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
-    //                //top: pos_top.toString() + 'px', /* Bhumika */
-    //                display: 'block'
-
-    //            });
-    //        }
-    //        else {
-    //            $('#dp_end').find('.datepicker.dropdown-menu').css({
-    //               // top: pos_top.toString() + 'px',		  /* Bhumika */
-    //                display: 'block'
-
-    //            });
-    //        }
-    //        set_end_date_Position();   /* Bhumika */
-    //    }, 1);
-
-    //    //// To resolve issue of Ticket #1025, Pratik
-    //    $(".datepicker.dropdown-menu").first().css("display", "none");
-    //})
     $(".alert").find(".close").on("click", function (e) {
         e.stopPropagation();
         e.preventDefault();
@@ -715,7 +484,6 @@
         $("#spanMessageEditCampaign").html(value);
     }
 
-
     $("#txtCampaignBudget").keyup(function () {
         var ProgramBudgetValue = ReplaceCC($("#txtCampaignBudget").val());
         if (ProgramBudgetValue == '' || typeof ProgramBudgetValue == 'undefined') {
@@ -725,10 +493,8 @@
         var OldProgramBudgetValue = ReplaceCC($("#hdnOldCampaignBudget").val());
         var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
         var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
-
         $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
         $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
-
         $("#hdnOldCampaignBudget").val(ProgramBudgetValue);
         if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
             $("#txtRemainingBudget").addClass('error-text');
@@ -741,8 +507,6 @@
     //Modified By Komal rawal for #1324
     function SetupCampaignSave() {
         var returnparameter = false;
-
-        // $("#save_campaign").click(function () {
         var iserror = false;
         var campaignTitle = htmlEncode($('#txtTitle').val());
         var hdnYear = @ViewBag.Year
@@ -802,12 +566,6 @@
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-
-        @* if ($("#txtRemainingBudget").hasClass('error-text')) {
-            ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
-            return false;
-        }*@
-
         var regex = /(>|<)/m;
 
         var descriptionvalue = $("#txtDescription").val();
@@ -817,13 +575,12 @@
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-//added by devanshi for PL ticket #2276
+        //added by devanshi for PL ticket #2276
         if (CheckHtmlTag($("#txtTitle").val()) == false) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
             $("#txtTitle").addClass("error");
             iserror = true;
             return false;
-
         }
         sdate = $('#t_startdate').val();
         edate = $('#t_enddate').val();
@@ -871,7 +628,6 @@
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-
         var _customFieldValues = [];
         $('form').find('input[type=text],input:checked, select').each(function () {
             if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
@@ -887,7 +643,6 @@
         $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
         $("#lblCampaignTitle").html(htmlEncode($('#txtTitle').val())); //Modified for #1324
         document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
-
         var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         var uId = $(window).attr('name');
         var isUpdate = $("#PlanCampaignId").val();
@@ -905,102 +660,50 @@
                     if (data.isSaved) {
                         isDataModified = true;
                         var activeTab = $("#InspectTab li.active a").text();
-			// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
-                        //var TabBudget = "Budget";
                         var planCampaignId = $("#PlanCampaignId").val();
                         var requestedModule = $("#hdnRedirectType").val();
                         if (planCampaignId == '0') {
                             planCampaignId = data.CampaignID;
                         }
                         $("#hdnPlanCampaignId").val(planCampaignId);
-                        // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                        @* if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
-                            var ChangedTab = "Setup";
-                            if (tabtext != "") {
-                                ChangedTab = tabtext;
-                            }
-                            var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                            if (ChangedTab == "Setup") {
-                                inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                            }
-                            loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                            //RefreshCurrentTab(requestedModule, 0, 0, 0);
-
-                        }
-                        if ($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()') {
-                            var ChangedTab = "Setup";
-                            if (tabtext != "") {
-                                ChangedTab = tabtext;
-                            }
-                            var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                            if (ChangedTab == "Setup") {
-                                inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                            }
-                            loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                            //RefreshCurrentTab(requestedModule, 0, 0, 0);
-                        }*@
-                        // else {
                         $("#successMessage").css("display", "block");
                         $("#spanMessageSuccess").empty();
                         $("#spanMessageSuccess").text(data.msg);
                         $("#errorMessageEditCampaign").css("display", "none");
-			// Commented by Arpita Soni for Ticket #2236 on 06/14/2016
-                        //$("#liReview,#liBudget,#liSetup").bind('click');
                         $("#liReview,#liSetup").bind('click');
-
-                        //   loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", TabBudget, "@Enums.InspectPopupMode.Edit.ToString()", 0, requestedModule);
-
                         //// if new record save then set Refresh flag to true.
                         var _planCampaignId = $("#PlanCampaignId").val();
                         if (_planCampaignId == '' || _planCampaignId == null || _planCampaignId == '0' || _planCampaignId == 'undefined')
                             $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
-
                         if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
-                                $("#hdnBudgetingExpandId").val("campaign" + planCampaignId);
-                                $("#hdnBudgetingIsSave").val("true");
-                            }
-                            else {
-                                //RefreshCurrentTab(requestedModule, planCampaignId, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
-                            }
-
-                            returnparameter = true;
-                     //   }
+                            $("#hdnBudgetingExpandId").val("campaign" + planCampaignId);
+                            $("#hdnBudgetingIsSave").val("true");
+                        }
+                        returnparameter = true;                       
                         // Add By Nishant Sheth
                         // Desc :: #1812 refresh dropdown with change of date diffrence
-                            if (!(data.EndDatediff == 0)) {
-                                BindUpcomingActivites('@Model.PlanId');// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId
-                            @* $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid, function (response, status, xhr) {
-                                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                                    //// Call function to redirect on service unavailibility.
-                                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                                }
-                            });*@
+                        if (!(data.EndDatediff == 0)) {
+                            BindUpcomingActivites('@Model.PlanId');// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId                          
                         }
                         // End By Nishant Sheth
-
                         // Added by Viral regarding PL ticket #2434.
                         if (isUpdate == null || isUpdate == 'undefined' || isUpdate.toString() == "0") {
                             logMixpanelTrack("New Campaign:" + escape(campaignTitle)); // log New Campaign created event to mixpanel.
                         }
-                        
                     }
                     else {
                         ShowError(data.msg);
                         returnparameter = false;
                     }
                 }
-
             }
         });
         return returnparameter;
     }
-
-
     // Modified by Komal Rawal for ticket #1196
     function isEmpty(el) {
         return !$.trim(el.html())
     }
-
     if (isEmpty($('#CustomHtmlHelperfield'))) {
         $('#CustomHtmlHelperfield').hide();
         $('#CustomAttributeheading').hide();
@@ -1009,7 +712,6 @@
     else {
         $('#CustomHtmlHelperfield').show();
         $('#CustomAttributeheading').show();
-
     }
     $(".table_drpdwn").each(function () {
         var chekcedCount = $(this).find('input:checked').length;

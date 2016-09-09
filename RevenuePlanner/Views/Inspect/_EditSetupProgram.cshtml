@@ -8,7 +8,6 @@
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     string CampaignTitle = ViewBag.CampaignTitle;
     string OwnerName = ViewBag.OwnerName;
-
     //// Flag to indicate unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
@@ -18,24 +17,12 @@
 
 @*<script src="~/Scripts/js/bootstrap-datepicker.js"></script>*@
 <script src="~/Scripts/moment.min.js"></script>
-    <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
-    <link href="~/Content/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+<link href="~/Content/css/bootstrap-datetimepicker.css" rel="stylesheet" />
 <style type="text/css">
     #dp_start,#dp_end    {
         padding-left:0px;
     }
-   /* @@media screen and (-webkit-min-device-pixel-ratio:0) {
-    #dp_start .datepicker{
-        top: 32px !important;
-        left:auto !important;
-     min-width:220px;
-    }
-    #dp_end .datepicker{
-        top: 32px !important;
-        left:auto !important;
-     min-width:220px;
-    }
-   }*/
     #divPartial .simpleSelectBox .sbHolder {
             background: url(@Url.Content("~/Content/images/button-arrow.png")) no-repeat scroll right 8px center #dff0f8 !important;
             box-shadow: 1px -8px 13px #dff0f8 inset, 0 1px 2px #ededed;
@@ -83,7 +70,6 @@
                 $(".selectBox select").selectbox();
             });
         </script>
-        
         @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
         @Html.HiddenFor(model => model.PlanCampaignId, new { id = "hdnPlanCampaignId" })
         @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
@@ -94,8 +80,7 @@
         @Html.HiddenFor(model => model.ProgramBudget, new { id = "hdnOldProgramBudget" })
         @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
         @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })       @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
-
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
+        <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
             <div class="span6" id="inspect-modal-left-column1">
                 <p>@Html.Raw("Parent Campaign")</p>
                 @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(CampaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = CampaignTitle })
@@ -103,8 +88,9 @@
                 <p>Description</p>
                 @Html.TextArea("Description", Model.Description, new { id = "Description", @class = "span12 text-area-size input-setup", placeholder = "Optional", rows = "3" })  @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
             </div>
-        <div class="span3 no_margin_top calendar_div" id="inspect-modal-left-column2" style="padding-left: 1.9%;"> @*Added By Maitri Gandhi foe #2109*@
-                <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>         
+            <div class="span3 no_margin_top calendar_div" id="inspect-modal-left-column2" style="padding-left: 1.9%;">
+                @*Added By Maitri Gandhi foe #2109*@
+                <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
 
                 @if (IsProgramEdit)
                 {
@@ -118,32 +104,22 @@
                 }
                 <p>Start Date</p>
                 <span style="position: relative;">
-                    @*<div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                        @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small input-setup", id = "t_startdate" })
-                        <span class="add-on">
-                            <img src="~/Content/images/gray-calendar-icon.png"></span>
-                    </div>*@
                     <div class="form-group">
                         <div class='input-group date' id='divStartDate'>
                             @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control without-margin ", id = "t_startdate" })
                             <span class="input-group-addon">
                                 <span class="fa fa-calendar"></span>
                             </span>
-                    </div>
+                        </div>
                     </div>
                 </span>
                 <p class="clear-section">End Date</p>
                 <span style="position: relative;">
-                    @*<div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                        @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small input-setup", id = "t_enddate" })
-                        <span class="add-on">
-                            <img src="~/Content/images/gray-calendar-icon.png"></span>
-                    </div>*@
                     <div class='input-group date' id='divEndDate'>
-                    @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control without-margin ", id = "t_enddate"})                    
-                    <span class="input-group-addon">
-                        <span class="fa fa-calendar"></span>
-                    </span>
+                        @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control without-margin ", id = "t_enddate" })
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
                     </div>
                 </span>
                 @if (ExtIntService)
@@ -151,19 +127,16 @@
                     <p class="clear-section">Deployed to Integration</p>
                     if (Model.IsDeployedToIntegration)
                     {
-                    <input id="t_integration_status" name="t_status" title="Active" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                        <input id="t_integration_status" name="t_status" title="Active" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
                     }
                     else
-                    {    
-                    <input id="t_integration_status" name="t_status" title="Inactive" type="text" class="icon-check-gray" placeholder="Don't sync to integration" maxlength="18" readonly />
+                    {
+                        <input id="t_integration_status" name="t_status" title="Inactive" type="text" class="icon-check-gray" placeholder="Don't sync to integration" maxlength="18" readonly />
                     }
                 }
 
             </div>
-
-
-
-        <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width:24%">
+            <div class="span3 review_no_padding" id="inspect-modal-left-column3" style="width:24%">
                 <p>Program Budget</p>
                 @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar input-setup", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 <p>Remaining Campaign Budget</p>
@@ -192,38 +165,23 @@
                 </div>
             </div>
         </div>
-         
+
         <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
             <li class="pull-left">
                 <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
             </li>
         </ul>
-    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left">
+        <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left">
             @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanProgramId, Enums.EntityType.Program.ToString().ToLower(), Model.Status, 0, Enums.InspectPopupMode.Edit.ToString())
         </div>
-                 
-@* if ((bool)ViewBag.IsOwner || (Convert.ToString(ViewBag.IsAuthorized) == "True"))
-        {
-<div style="width: 100%; clear: both" class="wraper-btns cf border-top-div " id="divProgramSaveCancel">
-        <div class="span2 btn-save" style="width:80px;">
-            <button id="save_campaign_program" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button" >Save</button>
-        </div>
-        <div class="span2">
-            <button id="cancelProgramEditSection" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
-        </div>
-    </div>
-        }*@
-             
     }
 </div>
 
 <script type="text/javascript">
-
     var selectbox_keys = '';
     var $prevtext = '';
     var $nextdata = -1;
     var $_prevdata = -1;
-
     $('.dropdown_new_btn').click(function () {
         $('.trdropdownhover').removeClass('setfocusTr');
         $('.dropdown_new_btn').focus();
@@ -239,25 +197,12 @@
         var windownheight = $(window).height();
         if (dropdowntop >= (windownheight - 300)) { $('.dropdown-wrapper').addClass('dropup') }
     });
-
     var DropdownTop = 0;
     $(".pop-body-wraper").scroll(function () {
-
-        //var DropdownToPos = $(this).scrollTop();
-        //if (DropdownToPos > DropdownTop) {
-        //    $('.dropdown-wrapper').removeClass('dropup');
-        //} else {
-        //    $('.dropdown-wrapper').addClass('dropup')
-        //}
-        //DropdownTop = DropdownToPos;
         var scrollTop = $(this).scrollTop();
         $('.dropdown_new_btn').click(function () {
-            //$(this).each(function () {
-            // alert('hi3');
             // get the top offset of the dropdown (distance from top of the page)
             var dropdown_div = $(this).next('.dropdown-wrapper');
-            //dropdown_div.css('cssText', 'display: block !important');
-            //var dropdown_height = dropdown_div.height();
             var topOffset = dropdown_div.offset().top;
             // calculate the dropdown offset relative to window position
             var relativeOffset = topOffset - scrollTop;
@@ -266,11 +211,9 @@
             // if the relative offset is greater than half the window height,
             // reverse the dropdown.
             if (relativeOffset > windowHeight / 2 || (relativeOffset + 100) > windowHeight / 2) {
-                //alert('5');
                 dropdown_div.addClass("dropup");
             }
             else {
-                //alert('6');
                 dropdown_div.removeClass("dropup");
             }
         });
@@ -281,15 +224,12 @@
 
     function KeyPressOnDropdown() {
         $(document).keypress(function (e) {
-            //alert('1');
             var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
             var $this = $('#dropdown_Table').find('.tbodycampaignprogram');
-
             if ($('#dropdown_Table').find('.advance_a').attr('mode').toString() != "Multi") {
                 var theChar = String.fromCharCode(key);
                 var cur_check = '';
                 cur_check = selectbox_keys + theChar.toLowerCase();
-
                 var $select = $('#dropdown_Table');
                 var lastElement = $select.find('tbody');
 
@@ -311,14 +251,9 @@
                             $nextdata.addClass('setfocusTr');
                             selectbox_keys = cur_check;
                             $(p).closest('tr').focus();
-
                             $select.find('input:checkbox').removeAttr('checked');
                             var checkbx = $(this).find('input:checkbox');
                             $(checkbx).attr('checked', 'checked');
-
-                           // var x = $(this).position().top;
-                           // lastElement.animate({ scrollTop: x }, 200);
-
                             var scrollTo = $(this);
                             lastElement.animate({
                                 scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
@@ -334,24 +269,19 @@
                         $.each(_nextdatas, function (key, value) {
                             var _anchor = $(value).find('p');
                             var _atext = $(_anchor).text().toLowerCase();
-
                             //// Compare current "li" anchor text is with previous selected anchor text.
                             if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
                                 $prevtext = _atext; // set previous text variable with selected text.
-                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
+                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
                                 $_prevdata = jQuery(this);
                                 $nextdata = jQuery(this);
-                                $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                                $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object.
                                 selectbox_keys = cur_check;
                                 $(this).closest('tr').focus();
                                 cntr = cntr + 1;
-
                                 $select.find('input:checkbox').removeAttr('checked');
                                 var checkbx = $(this).find('input:checkbox');
                                 $(checkbx).attr('checked', 'checked');
-
-                                //var x = $(this).position().top;
-                                //lastElement.animate({ scrollTop: x }, 200);
                                 var scrollTo = $(this);
                                 lastElement.animate({
                                     scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
@@ -365,23 +295,19 @@
                             $.each(_nextdatas, function (key, value) {
                                 var _anchor = $(value).find('p');
                                 var _atext = $(_anchor).text().toLowerCase();
-
                                 //// Compare current "li" anchor text is with previous selected anchor text.
                                 if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
                                     $prevtext = _atext;
                                     $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
                                     $_prevdata = jQuery(this);
                                     $nextdata = jQuery(this);
-                                    $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                                    $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object.
                                     selectbox_keys = cur_check;
                                     $(this).closest('tr').focus();
 
                                     $select.find('input:checkbox').removeAttr('checked');
                                     var checkbx = $(this).find('input:checkbox');
                                     $(checkbx).attr('checked', 'checked');
-
-                                    //var x = $(this).position().top;
-                                    //lastElement.animate({ scrollTop: x }, 200);
                                     var scrollTo = $(this);
                                     lastElement.animate({
                                         scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
@@ -428,7 +354,6 @@
             $("#txtRemainingBudget").removeClass('error-text');
         }
     }
-
     //// Function to redirect to login page on unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
@@ -437,12 +362,9 @@
             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
         }
     }
-
     $(document).ready(function () {
         $('#EditProgram').removeClass('SpanDisable');
         $('#InspectTab').removeClass('SpanDisable');
-        
-        
         //Datetime Picker Bhumika
         $('#divStartDate').datetimepicker({
             format: 'MM/DD/YYYY',
@@ -453,22 +375,12 @@
             format: 'MM/DD/YYYY',
             useCurrent: false
         });
-        //commented By Maitri Gandhi for #2099 on 21/4/2016
-        //$("#divStartDate").on("dp.change", function (e) {
-        //    $('#divEndDate').data("DateTimePicker").minDate(e.date);
-        //});
-        //$("#divEndDate").on("dp.change", function (e) {
-        //    $('#divStartDate').data("DateTimePicker").maxDate(e.date);
-        //});
-        //Datetime Picker End Bhumika
-
         $('#ddlOwner').multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
             selectedList: 1,
             CustomName: '@Common.CustomTitle'
         }).multiselectfilter();
-        //$(".simpleSelectBox select").selectbox();
         $('#ddlOwner').next().css('width', '95%');
         $('#ddlOwner').next().css('min-height', '30px');
         var spanOwner = $('#multipleselect_ddlOwner');
@@ -493,30 +405,21 @@
         $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
         FormatRemainingBudget();
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
-
         $("#successMessageViewProgram").slideUp(50);
         $("#errorMessageEditProgram").slideUp(50);
-
         var SaveCampaignFlag = true;
         var isredirect = "@ViewBag.RedirectType";
         var hdnYear = @ViewBag.Year
         $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
-
-        //Commented By Maitri Gandhi foe #2109
-        //$("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
-        //$("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
-
         //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
         $('.input-setup').addClass('light-blue-background');
         //Added By Maitri Gandhi foe #2109
         $('#t_enddate').addClass('light-blue-background');
         $('#t_startdate').addClass('light-blue-background');
-
         $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
         //End - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
-
         $("#txtTitle").keypress(function (e) {
             if (e.keyCode == 13) {
                 e.preventDefault();
@@ -542,7 +445,6 @@
         });
 
         $("span.tool-tip").tooltip();
-
         $(".alert").find(".close").on("click", function (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -587,10 +489,8 @@
         $("#spanMessageEditProgram").html(value);
     }
 
-
     function SetupSaveProgram() {
         var returnparameter = false;
-        //$("#save_campaign_program").click(function () {
         $('#MultiSelectProcced').css("display", "none");
         var iserror = false;
         var title = htmlEncode($('#txtProgramTitle').val());
@@ -606,7 +506,6 @@
                 }
             }
         });
-
         $('form').find('.sbSelector').each(function () {
 
             if ($(this).parent().prev().attr('require') == 'true') {
@@ -631,18 +530,6 @@
         if (title == '') {
             iserror = true;
         }
-
-        /* Start - Added by bhavesh on 10/03/2015 for PL ticket #711 */
-        //// RequireField validation for Owner Dropdown
-        @*if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-                var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
-                if (OwnerValue == "") {
-                    $('#btnMultiselect_ddlOwner').addClass("error");
-                }
-                else {
-                    $('#btnMultiselect_ddlOwner').removeClass("error");
-                }
-            }*@
         var OwnerValue = $('#ddlOwner').val();
         if (OwnerValue == "") {
             $('#btnMultiselect_ddlOwner').addClass("error");
@@ -657,30 +544,22 @@
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-
-           @* if ($("#txtRemainingBudget").hasClass('error-text')) {
-                ShowError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
-                return false;
-            }*@
-
         var regex = /(>|<)/m;
-
         var descriptionvalue = $("#Description").val();
-            if (descriptionvalue.search(regex) >= 0) {
-                ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
-                $("#Description").addClass("error");
-                $('#InspectTab').removeClass('SpanDisable');
-                return false;
-            }	
-//added by devanshi for PL ticket #2276
+        if (descriptionvalue.search(regex) >= 0) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
+            $("#Description").addClass("error");
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        //added by devanshi for PL ticket #2276
         if (CheckHtmlTag($("#txtProgramTitle").val()) == false) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
             $("#txtProgramTitle").addClass("error");
             iserror = true;
             return false;
+        }
 
-            }
-        
         sdate = $('#t_startdate').val();
         edate = $('#t_enddate').val();
         var tsdate = $('#hdnTStartDate').val();
@@ -754,72 +633,29 @@
                     var campaignId = data.campaignID;
                     var requestedModule = $("#hdnRedirectType").val();
                     $('#lblProgramTitle').text(title);
-                    // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                    @*if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
-                        var ChangedTab = "Setup";
-                        if (tabtext != "") {
-                            ChangedTab = tabtext;
-                        }
-                        var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                        if (ChangedTab == "Setup") {
-                            inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                        }
-                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                        //RefreshCurrentTab(requestedModule, campaignId, 0, 0);
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.Msg);
+                    $("#errorMessageEditProgram").css("display", "none");
 
+                    $("#liReview,#liBudget,#liSetup").bind('click');                   
+                    //// if new record save then set Refresh flag to true.
+                    if (_planProgramId == '' || _planProgramId == null || _planProgramId == '0' || _planProgramId == 'undefined') {
+                        logMixpanelTrack("New Program:" + escape(title)); // log New Program created event to mixpanel. Added by Viral regarding PL ticket #2434.
+                        $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                        if (requestedModule == '@Enums.InspectPopupRequestedModules.Index.ToString()' || requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
+                            RefershPlanHeaderCalc();
+                        }
                     }
-                    if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-                        var ChangedTab = "Setup";
-                        if (tabtext != "") {
-                            ChangedTab = tabtext;
-                        }
-                        var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                        if (ChangedTab == "Setup") {
-                            inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                        }
-                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                        //RefreshCurrentTab(requestedModule, campaignId, 0, 0);
-
-                    }
-                    else {*@
-
-                        $("#successMessage").css("display", "block");
-                        $("#spanMessageSuccess").empty();
-                        $("#spanMessageSuccess").text(data.Msg);
-                        $("#errorMessageEditProgram").css("display", "none");
-
-                        $("#liReview,#liBudget,#liSetup").bind('click');
-                        //   loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", activeTab,"@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
-
-                        //// if new record save then set Refresh flag to true.
-                        
-                        if (_planProgramId == '' || _planProgramId == null || _planProgramId == '0' || _planProgramId == 'undefined') {
-                            logMixpanelTrack("New Program:" + escape(title)); // log New Program created event to mixpanel. Added by Viral regarding PL ticket #2434.
-                            $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
-                            if (requestedModule == '@Enums.InspectPopupRequestedModules.Index.ToString()' || requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()') {
-                                RefershPlanHeaderCalc();
-                            }
-                        }
-                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
-                            $("#hdnBudgetingExpandId").val("program" + planProgramId);
-                            $("#hdnBudgetingIsSave").val("true");
-                        }
-                        else {
-                            //RefreshCurrentTab(requestedModule, campaignId, planProgramId, 0);  //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
-                        }
-
-                        returnparameter = true;
-                  //  }
+                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                        $("#hdnBudgetingExpandId").val("program" + planProgramId);
+                        $("#hdnBudgetingIsSave").val("true");
+                    } 
+                    returnparameter = true;                    
                     // Add By Nishant Sheth
                     // Desc :: #1812 refresh dropdown with change of date diffrence
-                        if (!(data.EndDatediff == 0)) {
-                            BindUpcomingActivites(data.PlanId);// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId
-                        @*$('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid, function (response, status, xhr) {
-                            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                                //// Call function to redirect on service unavailibility.
-                                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                            }
-                        });*@
+                    if (!(data.EndDatediff == 0)) {
+                        BindUpcomingActivites(data.PlanId);// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId                        
                     }
                     // End By Nishant Sheth
                 }
@@ -829,9 +665,7 @@
                 }
             }
         });
-
         return returnparameter;
-
     }
 
     $("#cancelProgramEditSection").click(function () {
@@ -845,7 +679,6 @@
             $('.close-x-big-icon').trigger('click');
         }
     });
-
 
     function CancelEvent() {
         $("#hdnProgramOpt").val("View");
@@ -879,171 +712,39 @@
         else {
             $("#txtRemainingBudget").removeClass('error-text');
         }
-    });
+    }); 
+    // Modified by Komal Rawal for ticket #1196
+    function isEmpty(el) {
+        return !$.trim(el.html())
+    }
 
-    //Commented By Maitri Gandhi foe #2109
-    @*$('.dp').datepicker({
-        format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
-        autoclose: false,
-    }).on('changeDate', function (ev) {
-        $(this).datepicker('hide');
-    });;*@
-    
-//        $('#dp_start .add-on').click(function () {
-//            //$('#dp_start').datepicker('hide');		  /* Bhumika */
-//            $('#dp_end').datepicker('hide');
-//            $(".dropdown-menu").css("z-index", "25001");
-//            var pos = $("#t_startdate").position();
-//            var height = $("#t_startdate").height();
-//            var scrollTop = $("#modal-container-186470").scrollTop();
-//            var pos_top = pos.top + height + scrollTop + 10;
-//            setTimeout(function () {
-//                if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-//                    $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
-//                    $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
-//                        //top: pos_top.toString() + 'px',	/* Bhumika */
-//                        display: 'block'
-//                    });
-//                }
-//                else {
-//                    $('#dp_start').find('.datepicker.dropdown-menu').css({
-//                        top: pos_top.toString() + 'px',
-//                        display: 'block'
-//                    });
-//                }
-//                set_start_date_Position();
-//            }, 1);
+    if (isEmpty($('#CustomHtmlHelperfield'))) {
+        $('#CustomHtmlHelperfield').hide();
+        $('#CustomAttributeheading').hide();
+        $('#divProgramSaveCancel').removeClass('border-top-div');//Added by Mitesh Vaishnav for PL ticket 1196
+    }
+    else {
+        $('#CustomHtmlHelperfield').show();
+        $('#CustomAttributeheading').show();
 
-//            //// To resolve issue of Ticket #1025, Pratik 
-//            $(".datepicker.dropdown-menu").last().css("display", "none");
-//        })
-//        function set_start_date_Position(){
-//            var scrollTop = $('.pop-body-wraper').scrollTop();
-//            // alert(scrollTop);
-//            var calender_div = $('#dp_start').find('.datepicker.dropdown-menu');
-//            //alert(calender_div.html());
-//            var topOffset = $('#dp_start').offset().top;
-//            //alert(topOffset);
-//            var windowHeight = $('.pop-body-wraper').height();
-//            // calculate the dropdown offset relative to window position
-//            var relativeOffset = topOffset - scrollTop;
-//            if (relativeOffset > windowHeight / 2) {
-//                // alert('5');
-//                //calender_div.css('top', 'auto');
-//                //calender_div.css('bottom', '100%');
-//                calender_div.removeClass('calender-dropdown');
-//                calender_div.addClass('calender-dropup');
-//                //$('#dp_start').datepicker('show');
-//            }
-//            else {
-//                // alert('6');
-//                //calender_div.css('top', '32px');
-//                //calender_div.css('bottom', 'auto');
-//                calender_div.removeClass('calender-dropup');
-//                calender_div.addClass('calender-dropdown');
-//                //$('#dp_start').datepicker('show');
-//            }
-//            scrollTop = 0;
-//        }
-//        function set_end_date_Position() {
-//            var scrollTop = $('.pop-body-wraper').scrollTop();
-//            // alert(scrollTop);
-//            var calender_div = $('#dp_end').find('.datepicker.dropdown-menu');
-//            //alert(calender_div.html());
-//            var topOffset = $('#dp_end').offset().top;
-//            //alert(topOffset);
-//            var windowHeight = $('.pop-body-wraper').height();
-//            // calculate the dropdown offset relative to window position
-//            var relativeOffset = topOffset - scrollTop;
-//            if (relativeOffset > windowHeight / 2 ) {
-//                // alert('5');
-//                //calender_div.css('top', 'auto');
-//                //calender_div.css('bottom', '100%');
-//                calender_div.removeClass('calender-dropdown');
-//                calender_div.addClass('calender-dropup');
-//                //$('#dp_end').datepicker('show');
-//            }
-//            else {
-//                // alert('6');
-//                //calender_div.css('top', '32px');
-//                //calender_div.css('bottom', 'auto');
-//                calender_div.removeClass('calender-dropup');
-//                calender_div.addClass('calender-dropdown');
-//                //$('#dp_end').datepicker('show');
-//            }
-//            scrollTop = 0;
-//        }	   
-///* Bhumika End*/
-//        $('#dp_end .add-on').click(function () {
-//            $('#dp_start').datepicker('hide');
-//            //$('#dp_end').datepicker('hide');	  /* Bhumika */
-//            $(".dropdown-menu").css("z-index", "25001");
-//            var pos = $("#t_enddate").position();
-//            var height = $("#t_enddate").height();
-//            var scrollTop = $("#modal-container-186470").scrollTop();
-//            var pos_top = pos.top + height + scrollTop + 10;
-//            setTimeout(function () {
-//                if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-//                    $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
-//                    $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
-//                       // top: pos_top.toString() + 'px',  /* Bhumika */
-//                        display: 'block'
-//                    });
-//                }
-//                else {
-//                    $('#dp_end').find('.datepicker.dropdown-menu').css({
-//                        //top: pos_top.toString() + 'px',		  /* Bhumika */
-//                        display: 'block'
-//                    });
-//                }
-//                set_end_date_Position();
-//            }, 1);
+    }
 
-//            //// To resolve issue of Ticket #1025, Pratik 
-//            $(".datepicker.dropdown-menu").first().css("display", "none");
-//        })
-
-//        $('#t_startdate').click(function () {
-//            $('#dp_end').datepicker('hide');
-//        })
-
-//        $('#t_enddate').click(function () {
-//            $('#dp_start').datepicker('hide');
-//        })
-      
-    //End
-        // Modified by Komal Rawal for ticket #1196
-        function isEmpty(el) {
-            return !$.trim(el.html())
-        }
-
-        if (isEmpty($('#CustomHtmlHelperfield'))) {
-            $('#CustomHtmlHelperfield').hide();
-            $('#CustomAttributeheading').hide();
-            $('#divProgramSaveCancel').removeClass('border-top-div');//Added by Mitesh Vaishnav for PL ticket 1196
-        }
-        else {
-            $('#CustomHtmlHelperfield').show();
-            $('#CustomAttributeheading').show();
-
-        }
-
-        $(".table_drpdwn").each(function () {
-            var chekcedCount = $(this).find('input:checked').length;
-            if (chekcedCount > 1) {
-                var menu = $(this).parents('.dropdown-wrapper');
-                menu.toggleClass('dropdown-block minimum-width215');
-                menu.find('.text_ellipsis').toggleClass('minmax-width200');
-                menu.find(".first_hide,.revenue_header,.cost_header,.top_head_attribute,.value_header").toggle();
-                menu.find('.advance_a').text("< Single-selection");
-                menu.find('.advance_a').attr('mode', 'Multi');
-                menu.find('input[type=checkbox]').toggle();
-                menu.find('p').removeClass('single-p');
-                //added by Rahul Shah on 05/11/2015 - by default multi mode of Custom dropdown then hide the "Please Select"
-                if ($(this).find('tbody').children(':first-child').find('p').text() == "Please Select") {
-                    $(this).find('tbody').children(':first-child').hide();
-                    $(this).find('tbody').children(':first-child').find('input[type=checkbox]').removeAttr('checked');
-                }
+    $(".table_drpdwn").each(function () {
+        var chekcedCount = $(this).find('input:checked').length;
+        if (chekcedCount > 1) {
+            var menu = $(this).parents('.dropdown-wrapper');
+            menu.toggleClass('dropdown-block minimum-width215');
+            menu.find('.text_ellipsis').toggleClass('minmax-width200');
+            menu.find(".first_hide,.revenue_header,.cost_header,.top_head_attribute,.value_header").toggle();
+            menu.find('.advance_a').text("< Single-selection");
+            menu.find('.advance_a').attr('mode', 'Multi');
+            menu.find('input[type=checkbox]').toggle();
+            menu.find('p').removeClass('single-p');
+            //added by Rahul Shah on 05/11/2015 - by default multi mode of Custom dropdown then hide the "Please Select"
+            if ($(this).find('tbody').children(':first-child').find('p').text() == "Please Select") {
+                $(this).find('tbody').children(':first-child').hide();
+                $(this).find('tbody').children(':first-child').find('input[type=checkbox]').removeAttr('checked');
             }
-        });
+        }
+    });
 </script>

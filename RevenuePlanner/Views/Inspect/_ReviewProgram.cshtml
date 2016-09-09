@@ -4,10 +4,10 @@
     var db = new RevenuePlanner.Models.MRPEntities();
     bool IsProgramEditable = (bool)ViewBag.IsProgramEditable;
     ////Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
-    string IntegrationStatus = programReview.IsIntegrationInstanceExist;    
+    string IntegrationStatus = programReview.IsIntegrationInstanceExist;
     bool isInstanceSalesforce = (bool)ViewBag.IsInstanceSalesfore;
     var ProgramLastSync = (dynamic)null;
-    if(isInstanceSalesforce)
+    if (isInstanceSalesforce)
     {
         ProgramLastSync = ViewBag.ProgramLastSync != null ? (DateTime)ViewBag.ProgramLastSync : (DateTime?)null;
     }
@@ -24,13 +24,14 @@
 </style>
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
     <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
-        <div style="float: left; width: 95%;">  @*Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #970*@
+        <div style="float: left; width: 95%;">
+            @*Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #970*@
             <div class="source-sans-prosemibold">Parent Campaign</div>
             <div>
                 <div id="campaign-title" class="tipsyclassTitle sub-head">@Html.Raw(programReview.CampaignTitle)</div>
             </div>
         </div>
-            </div>
+    </div>
     <div class="cf source-sans-proregular padding-top32" style="padding-top: 26px !important;">
         <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow review-box">
             <div class="padding-top16"><span id="startDay-id" class="font_size30" style="line-height:24px;">@programReview.StartDate.ToString("dd")</span></div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
@@ -42,7 +43,7 @@
             <div class="padding-top16"><span id="endDay-id" class="font_size30" style="line-height:24px;">@programReview.EndDate.ToString("dd")</span></div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span id="endMonth-id" class="font_size16">@programReview.EndDate.ToString("MMM")</span>
             <span id="endYear-id" class="font_size16">@programReview.EndDate.ToString("yyyy")</span> @*added by Rahul Shah on 24/11/2015 for PL #1764 to display year in review tab*@
-            <div >End</div>@*Modified by Rahul Shah on 30/11/2015 for PL #1764 for observation 1*@
+            <div>End</div>@*Modified by Rahul Shah on 30/11/2015 for PL #1764 for observation 1*@
         </div>
         <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow review-box">
             <div class="padding-top16"><span id="mqls-id" class="font_size30 addFormatterActualNumber" style="line-height:24px;">@programReview.MQLs</span></div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
@@ -59,7 +60,8 @@
         <div class="pull-left size65x38 margin-left20">
             <div class="integration-review"></div>
             <div>
-                <label id="integration">Integration</label></div>
+                <label id="integration">Integration</label>
+            </div>
             <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
         </div>
     </div>
@@ -68,13 +70,11 @@
         {
             <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Program last synced on @ProgramLastSync.ToString("MMM dd, yyyy ") at  @ProgramLastSync.ToString("hh:mm tt").ToLower()</span>
         }
+    </div>
 </div>
-</div>
-
-
 
 <div class="span2 right-col-tab no_margin_top" id="inspect-modal-left-column2">
-   
+
     <div class="inspect-bolder-label">Notes</div>
 
     <div id="divComment" class="chat-div" style="overflow: auto;height: 290px !important;">
@@ -97,264 +97,221 @@
         </div>
         <div></div>
     </div>
-       
-      @if ((bool)ViewBag.IsCommentsViewEditAuthorized)    //Modified By komal Rawal for #1158
-      {
-     <div class="padding-top10" id="commentsection">
+
+    @if ((bool)ViewBag.IsCommentsViewEditAuthorized)    //Modified By komal Rawal for #1158
+    {
+        <div class="padding-top10" id="commentsection">
             @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-blue-background" })
-            <img id="btnComment" title="Add Comment" src="~/Content/images/chat-button.png"  alt="" style="float: right;" />
+            <img id="btnComment" title="Add Comment" src="~/Content/images/chat-button.png" alt="" style="float: right;" />
         </div>
-      }
-      else
-      {
-    <div class="padding-top10" >
+    }
+    else
+    {
+        <div class="padding-top10">
             @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-gray-background" })
-            <img  src="~/Content/images/chat-button-gray.png"  alt="" style="float: right;" />
-    </div>
-      }
-   
-    
+            <img src="~/Content/images/chat-button-gray.png" alt="" style="float: right;" />
+        </div>
+    }
 </div>
-
-
-
 <div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
-          
-            @{
-       
-            string Submit = "Submit for Approval";
-            string Approve = "Approve";
-            string Reject = "Decline";
-            List<string> aryStatus = new List<string>();
-            bool isVisibleStatus = true;
-            string statuscreate = "";
-            string statussubmit = "";
-            string statusapproved = "";
-            string statusinprogress = "";
-            string statuscomplete = "";
-            string statusdecline = "";
+    @{
+        string Submit = "Submit for Approval";
+        string Approve = "Approve";
+        string Reject = "Decline";
+        List<string> aryStatus = new List<string>();
+        bool isVisibleStatus = true;
+        string statuscreate = "";
+        string statussubmit = "";
+        string statusapproved = "";
+        string statusinprogress = "";
+        string statuscomplete = "";
+        string statusdecline = "";
 
-            var countNotCreatedTactic = 0;
-            var countNotApprovedTactic = 0;
-            var countNotSubmittedTactic = 0;
-            var countNotDeclineTactic = 0;
+        var countNotCreatedTactic = 0;
+        var countNotApprovedTactic = 0;
+        var countNotSubmittedTactic = 0;
+        var countNotDeclineTactic = 0;
 
-            statuscreate = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString();
-            statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
-            statusapproved = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString();
-            statusinprogress = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString();
-            statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
-            statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
+        statuscreate = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString();
+        statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
+        statusapproved = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString();
+        statusinprogress = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString();
+        statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
+        statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
 
-            var tacticList = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanProgramId == programReview.PlanProgramId && p.IsDeleted == false).ToList();
-            countNotCreatedTactic = tacticList.Where(p => !p.Status.Equals(statuscreate)).Count();
-            countNotApprovedTactic = tacticList.Where(p => !p.Status.Equals(statusapproved) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete)).Count();
-            countNotSubmittedTactic = tacticList.Where(p => !p.Status.Equals(statussubmit)).Count();
-            countNotDeclineTactic = tacticList.Where(p => !p.Status.Equals(statusdecline)).Count();
+        var tacticList = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanProgramId == programReview.PlanProgramId && p.IsDeleted == false).ToList();
+        countNotCreatedTactic = tacticList.Where(p => !p.Status.Equals(statuscreate)).Count();
+        countNotApprovedTactic = tacticList.Where(p => !p.Status.Equals(statusapproved) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete)).Count();
+        countNotSubmittedTactic = tacticList.Where(p => !p.Status.Equals(statussubmit)).Count();
+        countNotDeclineTactic = tacticList.Where(p => !p.Status.Equals(statusdecline)).Count();
 
-            bool isVisibleSyncButton = false;   // Display sync button only when Tactic status from "Approved, In-Progress or Completed".
-            
-            if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
+        bool isVisibleSyncButton = false;   // Display sync button only when Tactic status from "Approved, In-Progress or Completed".
+
+        if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
+        {
+            if ((bool)ViewBag.IsValidOwner)
             {
-                if ((bool)ViewBag.IsValidOwner)
+                if (countNotSubmittedTactic == 0)
                 {
-                    if (countNotSubmittedTactic == 0)
-                    {
-                        aryStatus.Add(Submit);
-                    }
-                    else if (countNotCreatedTactic == 0)
-                    {
-                        aryStatus.Add(Submit);
-                    }
+                    aryStatus.Add(Submit);
                 }
-                else
+                else if (countNotCreatedTactic == 0)
                 {
-                    isVisibleStatus = false;
-                }
-                
-            }
-            else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
-            {
-                if ((bool)ViewBag.IsValidManagerUser)
-                {
-                    if (countNotApprovedTactic != 0)
-                    {
-                        aryStatus.Add(Approve);
-                        aryStatus.Add(Reject);
-                    }
-                    else
-                    {
-                        isVisibleStatus = false;
-                    }
-                }
-                else
-                {
-                    isVisibleStatus = false;
+                    aryStatus.Add(Submit);
                 }
             }
-            else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
+            else
             {
-                if ((bool)ViewBag.IsValidManagerUser)
+                isVisibleStatus = false;
+            }
+        }
+        else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
+        {
+            if ((bool)ViewBag.IsValidManagerUser)
+            {
+                if (countNotApprovedTactic != 0)
                 {
+                    aryStatus.Add(Approve);
                     aryStatus.Add(Reject);
                 }
                 else
                 {
                     isVisibleStatus = false;
                 }
-                isVisibleSyncButton = true;
             }
-            else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
+            else
             {
-                if ((bool)ViewBag.IsValidManagerUser)
+                isVisibleStatus = false;
+            }
+        }
+        else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
+        {
+            if ((bool)ViewBag.IsValidManagerUser)
+            {
+                aryStatus.Add(Reject);
+            }
+            else
+            {
+                isVisibleStatus = false;
+            }
+            isVisibleSyncButton = true;
+        }
+        else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
+        {
+            if ((bool)ViewBag.IsValidManagerUser)
+            {
+                if ((bool)ViewBag.IsValidOwner)
                 {
-                    if ((bool)ViewBag.IsValidOwner)
+                    if (countNotDeclineTactic == 0)
                     {
-                        if (countNotDeclineTactic == 0)
-                        {
-                            aryStatus.Add(Submit);
-                        }
-                    }
-                    else
-                    {
-                        if (countNotDeclineTactic == 0)
-                        {
-                            aryStatus.Add(Approve);
-                        }
+                        aryStatus.Add(Submit);
                     }
                 }
                 else
                 {
-                    if ((bool)ViewBag.IsValidOwner)
+                    if (countNotDeclineTactic == 0)
                     {
-                        if (countNotDeclineTactic == 0)
-                        {
-                            aryStatus.Add(Submit);
-                        }
-                    }
-                    else
-                    {
-                        isVisibleStatus = false;
+                        aryStatus.Add(Approve);
                     }
                 }
             }
             else
             {
-                if ((bool)ViewBag.IsValidManagerUser)
+                if ((bool)ViewBag.IsValidOwner)
                 {
-                    aryStatus.Add(Reject);
+                    if (countNotDeclineTactic == 0)
+                    {
+                        aryStatus.Add(Submit);
+                    }
                 }
                 else
                 {
                     isVisibleStatus = false;
                 }
-                isVisibleSyncButton = true;
             }
-
-
-                if (IsProgramEditable)
-                {
-                    // Show Sync button when Integration InstanceType is "Salesforce". Implement this by "isInstanceSalesfore" flag from controller.
-                    if ((bool)ViewBag.IsModelDeploy && (bool)programReview.IsDeployedToIntegration && isVisibleSyncButton && isInstanceSalesforce)
-                    {
-                <div class="margin-top23 margin-right10" style="float: left;">
-                <div id="btn_sync_status" class="btn-group dropup">
-                                <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px; border-radius: 4px;">
-                                  <span class="flag-icon sync-icon-dropdown"></span>
-                                  <span id="spanSyncStatus">Sync</span>
-                                </button>
-
-                                @*Below code commented by Viral kadiya to implement PL ticket #1468.*@
-                                @*<button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width:65px;">
-                        <span class="flag-icon sync-icon-dropdown"></span>
-                        <span id="spanSyncStatus">
-                            @if (programReview.IsDeployedToIntegration)
-                            {
-                                @Html.Raw("Sync")
-                            }
-                            else
-                            {
-                                @Html.Raw("Don't Sync") 
-                            }
-
-                        </span>
-                    </button>
-                     @if (programReview.IsDeployedToIntegration)
-                     {
-                        @Html.Hidden("hdnSyncStatusValue", "Sync", new { id = "hdnSyncStatusValue" });
-                     }
-                     else
-                     {
-                        @Html.Hidden("hdnSyncStatusValue", "Don't Sync", new { id = "hdnSyncStatusValue" });
-                     }
-                        <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
-                            <span class="caret "></span>
-                        </button>                
-                        <ul class="dropdown-menu " id="uldivSync">
-                            <li>
-                                <a id="aSync">Sync</a>
-                            </li>
-                            <li>
-                                <a id="aNotSync">Don't Sync</a>
-                            </li>
-                                    </ul>*@
-                </div>
-            </div> 
-                    }
-                }
-
-                if (isVisibleStatus)
-                {
-                    int len = aryStatus.Count;
-                    if (len > 0)
-                    {
-                        string firstStatus = aryStatus[0];
-               
-                    <div class="margin-top23" style="float: left;">
-                    <div id="btn_change_status" class="btn-group dropup">
-                    <button id="btnApproved" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width:125px;">
-                        <span class="flag-icon approve-icon-dropdown"></span>
-                        <span id="spanTactic">@firstStatus</span>
-                    </button>
-                     @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
-                    @if (len >= 2)
-                    {
-                        <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
-                            <span class="caret "></span>
-                        </button>
-                                              
-                        <ul class="dropdown-menu " id="uldiv">
-                            @foreach (string s in aryStatus)
-                            {
-                                <li>
-                                    <a>@s</a>
-                                </li>
-                            }
-                        </ul>
-                        
-                        <script type="text/javascript">
-                            $("#btnApproved").css("width", "90px");
-                        </script>
-                    }
-                    else
-                    {
-                        <script type="text/javascript">
-                            $("#btnApproved").css("border-radius", "4px");
-                        </script>
-                    }
-
-                </div>
-
-            </div> 
-                    }
-                }
         }
-    
-     <div style="float: left; margin-left: 10px;" class="margin-top23">
-            <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width:80px;"><span class="flag-icon"></span>Share </button>
-        </div>
-    
+        else
+        {
+            if ((bool)ViewBag.IsValidManagerUser)
+            {
+                aryStatus.Add(Reject);
+            }
+            else
+            {
+                isVisibleStatus = false;
+            }
+            isVisibleSyncButton = true;
+        }
+
+
+        if (IsProgramEditable)
+        {
+            // Show Sync button when Integration InstanceType is "Salesforce". Implement this by "isInstanceSalesfore" flag from controller.
+            if ((bool)ViewBag.IsModelDeploy && (bool)programReview.IsDeployedToIntegration && isVisibleSyncButton && isInstanceSalesforce)
+            {
+                <div class="margin-top23 margin-right10" style="float: left;">
+                    <div id="btn_sync_status" class="btn-group dropup">
+                        <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px; border-radius: 4px;">
+                            <span class="flag-icon sync-icon-dropdown"></span>
+                            <span id="spanSyncStatus">Sync</span>
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+
+        if (isVisibleStatus)
+        {
+            int len = aryStatus.Count;
+            if (len > 0)
+            {
+                string firstStatus = aryStatus[0];
+
+                <div class="margin-top23" style="float: left;">
+                    <div id="btn_change_status" class="btn-group dropup">
+                        <button id="btnApproved" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width:125px;">
+                            <span class="flag-icon approve-icon-dropdown"></span>
+                            <span id="spanTactic">@firstStatus</span>
+                        </button>
+                        @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
+                        @if (len >= 2)
+                    {
+                            <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
+                                <span class="caret "></span>
+                            </button>
+
+                            <ul class="dropdown-menu " id="uldiv">
+                                @foreach (string s in aryStatus)
+                                {
+                                    <li>
+                                        <a>@s</a>
+                                    </li>
+                                }
+                            </ul>
+
+                            <script type="text/javascript">
+                                $("#btnApproved").css("width", "90px");
+                            </script>
+                        }
+                        else
+                        {
+                            <script type="text/javascript">
+                                $("#btnApproved").css("border-radius", "4px");
+                            </script>
+                        }
+
+                    </div>
+
+                </div>
+            }
+        }
+    }
+
+    <div style="float: left; margin-left: 10px;" class="margin-top23">
+        <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width:80px;"><span class="flag-icon"></span>Share </button>
     </div>
+
+</div>
 
 <div id="DivPartialShareTactic">
 </div>
@@ -368,9 +325,7 @@
           $('.addFormatterActualNumber').each(function () {
               SetPriceValue($(this));
           });
-
           //Added by Komal Rawal for ticket #1158
-
           if ($('#txtAreaComment').hasClass('light-gray-background')) {
               $('#txtAreaComment').attr("disabled", "disabled");
           }
@@ -393,10 +348,6 @@
 
               var IsDeployedToIntegration = false;
               IsDeployedToIntegration = '@programReview.IsDeployedToIntegration';
-              //var spanSyncStatus = $("#hdnSyncStatusValue").val();
-              //if (spanSyncStatus == 'Sync') {
-              //    IsDeployedToIntegration = true;
-              //}
               var PlanProgramId = $('#hdnPlanProgramId').val();
 
               $.ajax({
@@ -405,11 +356,10 @@
                   data: {
                       id: PlanProgramId,
                       section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()" //section parameter added to save tactic comment
-                      //IsDeployedToIntegration: IsDeployedToIntegration
                   },
                   success: function (data) {
                       if (data.result) {
-                          /*Added by Mitesh Vaishnav for PL ticket #690 
+                          /*Added by Mitesh Vaishnav for PL ticket #690
                       Change of sync to don’t sync or vice versa integration section update to 'Yes' and 'No'  */
                           if ('@programReview.IsIntegrationInstanceExist' == 'Yes') {
                               if (IsDeployedToIntegration) {
@@ -420,16 +370,14 @@
                               }
                           }
                           /*End : Added by Mitesh Vaishnav for PL ticket #690 */
-
                           var inspectMode = '';
                           var IsEditable = $("#hdnProgramOpt").val();
                           if (IsEditable == strViewMode.toString())
                               inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                              else
-                                  inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                              var requestedModule = $("#hdnRedirectType").val();
+                          else
+                              inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                          var requestedModule = $("#hdnRedirectType").val();
                           loadReview($("#hdnPlanProgramId").val(), TabReview);
-                          //loadInspectPopup($("#hdnPlanProgramId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", TabReview, inspectMode, 0, requestedModule);
                           $("#successMessage").css("display", "block");
                           $("#spanMessageSuccess").empty();
                           $("#spanMessageSuccess").text(data.msg);
@@ -443,17 +391,10 @@
                   }
               });
           });
-
-          //$("#uldivSync li a").click(function () {
-          //    $("#spanSyncStatus").html($(this).text());
-          //    $("#hdnSyncStatusValue").val($(this).text());
-          //});
-
           var divheight = $("#divInnerComment").height();
           $("#divComment").scrollTop(divheight);
 
           // On Comment Button Save Commnet
-          
           $("#btnComment").click(function () {
               $("#successMessage").css("display", "none");
               $("#errorMessage").css("display", "none");
@@ -462,7 +403,6 @@
               if (commentText == '') {
                   var msgspan = "@Common.objCached.ValidateForEmptyFieldAndValid";
                   $("#errorMessage").css("display", "block");
-
                   $("#txtAreaComment").addClass("error");
                   $("#spanMessageError").text(msgspan);
                   return false;
@@ -485,27 +425,26 @@
                           if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                               window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                           } else {
-                          if (data.id != 0) {
-                              $("#successMessage").css("display", "block");
+                              if (data.id != 0) {
+                                  $("#successMessage").css("display", "block");
 
-                              $("#spanMessageSuccess").empty();
-                              $("#spanMessageSuccess").text(data.msg);
+                                  $("#spanMessageSuccess").empty();
+                                  $("#spanMessageSuccess").text(data.msg);
+                                  //Refresh Review page
+                                  var inspectMode = '';
+                                  var IsEditable = $("#hdnProgramOpt").val();
+                                  if (IsEditable == strViewMode.toString())
+                                      inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                                  else
+                                      inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                                  var requestedModule = $("#hdnRedirectType").val();
+                                  loadReview($("#hdnPlanProgramId").val(), TabReview);
+                              }
+                              else {
+                                  $("#errorMessage").css("display", "block");
 
-                              //Refresh Review page
-                              var inspectMode = '';
-                              var IsEditable = $("#hdnProgramOpt").val();
-                              if (IsEditable == strViewMode.toString())
-                                  inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                            else
-                                inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                              var requestedModule = $("#hdnRedirectType").val();
-                              loadReview($("#hdnPlanProgramId").val(), TabReview);
-                          }
-                          else {
-                              $("#errorMessage").css("display", "block");
-
-                              $("#spanMessageError").empty();
-                              $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                                  $("#spanMessageError").empty();
+                                  $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                               }
                           }
                       }
@@ -519,7 +458,6 @@
                   }
               });
           });
-         
 
           // Click on Approved Button Save Comment & Change Status
           $("#btnApproved").click(function () {
@@ -553,39 +491,35 @@
                           if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                               window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                           } else {
-                          if (data.id != 0) {
-                              $("#successMessage").css("display", "block");
+                              if (data.id != 0) {
+                                  $("#successMessage").css("display", "block");
+                                  $("#spanMessageSuccess").empty();
+                                  $("#spanMessageSuccess").text(data.msg);
+                                  var inspectMode = '';
+                                  var IsEditable = $("#hdnProgramOpt").val();
+                                  if (IsEditable == 'View')
+                                      inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                                  else
+                                      inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                                  var requestedModule = $("#hdnRedirectType").val();
+                                  loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
+                                  // loadReview($("#hdnPlanProgramId").val(), TabReview);
 
-                              $("#spanMessageSuccess").empty();
-                              $("#spanMessageSuccess").text(data.msg);
-                              var inspectMode = '';
-                              var IsEditable = $("#hdnProgramOpt").val();
-                              if (IsEditable == 'View')
-                                  inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                              else
-                                  inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                              var requestedModule = $("#hdnRedirectType").val();
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
-                             // loadReview($("#hdnPlanProgramId").val(), TabReview);
+                                  //Added By : Kalpesh Sharma Internal review points 18/11/2014
+                                  if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
+                                      RefershPlanHeaderCalc();
+                                  }
+                                  else if (RedirectType == "@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()") {
+                                      var _planId = $('#PlanId').val();  //// Get PlanId value from ApplyToCalendar page.
+                                      GetNumberOfActivityPerMonByPlanId(_planId, ''); //// Called HeaderData function exist in ApplyToCalendar Page.
+                                  }
 
-                              //Added By : Kalpesh Sharma Internal review points 18/11/2014
-                              if (RedirectType == "@Enums.InspectPopupRequestedModules.Index.ToString()") {
-                                RefershPlanHeaderCalc();
                               }
-                              else if (RedirectType == "@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()") {
-                                  var _planId = $('#PlanId').val();  //// Get PlanId value from ApplyToCalendar page.
-                                  // Commented By Nishant Sheth
-                                  // Desc :: For performance issue
-                                  //GetHealderData(_planId);    //// Called HeaderData function exist in ApplyToCalendar Page.
-                                  GetNumberOfActivityPerMonByPlanId(_planId, ''); //// Called HeaderData function exist in ApplyToCalendar Page.
-                            }
-
-                          }
-                          else {
-                              $("#errorMessage").css("display", "block");
-                              $("#spanMessageError").empty();
-                              $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                          }
+                              else {
+                                  $("#errorMessage").css("display", "block");
+                                  $("#spanMessageError").empty();
+                                  $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                              }
                           }
                       }
                   },

@@ -12,7 +12,6 @@
     var Allowresubmission = Model.IsOwner;//Modified By komal Rawal for #1235
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
     string customFieldWeightage = Model.customFieldWeightage;
-
     var lstTacticTypes = Model.Tactics.Select(tt=> new TacticTypeModel { TacticTypeId = tt.TacticTypeId, Title = tt.Title, AssetType = tt.AssetType });
     //Modified By komal Rawal for #1235
     var resubmission = "";
@@ -20,23 +19,9 @@
     {
         resubmission = " resubmission ";
     }
-
     string CurrencySymbol = Sessions.PlanCurrencySymbol; // Add By Rahul Shah #2511
-
 }
-<style type="text/css">
-     /* @@media screen and (-webkit-min-device-pixel-ratio:0) {
-    #dp_start .datepicker{
-        top: 32px !important;
-        left:auto !important;
-        min-width:220px;
-    }
-    #dp_end .datepicker{
-        top: 32px !important;
-        left:auto !important;
-        min-width:220px;
-    }
-   }*/
+<style type="text/css">    
     #btnCancel
     {
         color: gray;
@@ -114,9 +99,7 @@
     <script src="~/Scripts/moment.min.js"></script>
     <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
     <link href="~/Content/css/bootstrap-datetimepicker.css" rel="stylesheet" />   
-
     bool ExtIntService = Model.ExtIntService;
-    // @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
     @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
     @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
     @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
@@ -129,16 +112,12 @@
 
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="margin-bottom: 0px;">
         <div class="span6" id="inspect-modal-left-column1">
-
             <div class="cf width100">
                 <div style="width: 47%; position: relative;" class="margin-right10 pull-left">
-                    @*<label class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</label>*@  @* #2324 - Bhumika *@
                     <p class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</p>
                     @if (IsTackticAddEdit && !isCreated)
                     {
-
                         @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)Model.PlanCampaignList, "Id", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlcampaign", label = "Parent Campaign" })
-
                     }
                     else
                     {
@@ -147,7 +126,6 @@
                 </div>
 
                 <div style="width: 47%; position: relative" class="pull-right-assortment reports-button-group pull-left">
-                    @*<label class="inspect-bolder-label" title="Qualified Leads">Parent Program</label>*@ @* #2324 - Bhumika *@
                     <p class="inspect-bolder-label" title="Qualified Leads">Parent Program</p>
                     @if (IsTackticAddEdit && !isCreated)
                     {
@@ -162,7 +140,6 @@
                     }
                 </div>
             </div>
-            @*<p class="margin-top-10">Description</p>*@ @* #2324 - Bhumika *@
             <p>Description</p>
             @Html.TextArea("Description", Model.Description, new { placeholder = "Optional", @class = "span12 text-area-size input-setup", id = "Description" })   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         </div>
@@ -180,12 +157,6 @@
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Start Date</p>
             <span style="position: relative;">
-                @*<div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                    @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_startdate", label = "Start_Date" })
-                    <span class="add-on">
-                        <img src="~/Content/images/gray-calendar-icon.png">
-                    </span>
-                </div>*@
                 <div class="form-group">
                     <div class='input-group date' id='divStartDate'>
                         @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control without-margin " + resubmission, id = "t_startdate", label = "Start_Date" })
@@ -197,12 +168,6 @@
             </span>
             <p class="clear-section" style="margin-top: 2px;">End Date</p>
             <span style="position: relative;">
-                @*<div class="dp  input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
-                    @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_enddate", label = "End_Date" })
-                    <span class="add-on">
-                        <img src="~/Content/images/gray-calendar-icon.png">
-                    </span>
-                </div>*@
                  <div class='input-group date' id='divEndDate'>
                     @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control without-margin "+ resubmission, id = "t_enddate", label = "End_Date" })                    
                     <span class="input-group-addon">
@@ -223,21 +188,6 @@
             {
                 @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = Model.Owner })
             }
-
-            @*@if (ExtIntService)
-            {
-
-                <p style="width: 110%;" class="margin-top-10">Deployed to Integration</p>
-                if (Model.IsDeployedToIntegration)
-                {
-                    <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
-                }
-                else
-                {
-                    <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
-                }
-            }*@
-
             <div class="cf width100">
                 <div class="margin-right10 pull-left" style="width: 47.5%">
                     <p id="lblStageTitle" title="@Model.StageTitle" class="stage-title inspect-bolder-label">@Model.StageTitle &nbsp;</p> @* <label> coverted into <p> = for #2324*@ 
@@ -274,15 +224,6 @@
     <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left">
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString().ToLower(),Model.Status, 0, Enums.InspectPopupMode.Edit.ToString())
     </div>
-
-    @*<div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
-            <div class="span2 btn-save" style="width: 80px;">
-                <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save</button>
-            </div>
-            <div class="span2">
-                <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
-            </div>
-        </div>*@
     <!-- Added by Arpita Soni for Ticket #2212 on 05/24/2016 -->
     <a href="@Url.Action("Budgeting", "Plan", new { PlanId = Model.PlanId })" class="gotoLink" onclick="onGoToPlanBudgetClick(); return true;">Go to Plan Budget <i class=" fa fa-long-arrow-right" aria-hidden="true"></i> </a>
     if (Sessions.AppMenus.Where(x => x.Code.ToLower() == Enums.ActiveMenu.MarketingBudget.ToString().ToLower()).Any())
@@ -297,8 +238,6 @@
     var $nextdata = -1;
     var $_prevdata = -1;
     var IsLinkedTactic = "@IsLinkedTactic";
-   
-    ///tactic
     $('.dropdown_new_btn').click(function () {
         $('.trdropdownhover').removeClass('setfocusTr');
         $('.dropdown_new_btn').focus();
@@ -315,26 +254,12 @@
         if (dropdowntop >= (windownheight - 300)) { $('.dropdown-wrapper').addClass('dropup') }
     });
 
-
-
     var DropdownTop = 0;
     $(".pop-body-wraper").scroll(function () {
-
-        //var DropdownToPos = $(this).scrollTop();
-        //if (DropdownToPos > DropdownTop) {
-        //    $('.dropdown-wrapper').removeClass('dropup');
-        //} else {
-        //    $('.dropdown-wrapper').addClass('dropup')
-        //}
-        //DropdownTop = DropdownToPos;
         var scrollTop = $(this).scrollTop();
         $('.dropdown_new_btn').click(function () {
-            //$(this).each(function () {
-            // alert('hi3');
             // get the top offset of the dropdown (distance from top of the page)
             var dropdown_div = $(this).next('.dropdown-wrapper');
-            //dropdown_div.css('cssText', 'display: block !important');
-            //var dropdown_height = dropdown_div.height();
             var topOffset = dropdown_div.offset().top;
             // calculate the dropdown offset relative to window position
             var relativeOffset = topOffset - scrollTop;
@@ -343,11 +268,9 @@
             // if the relative offset is greater than half the window height,
             // reverse the dropdown.
             if (relativeOffset > windowHeight / 2 || (relativeOffset + 100) > windowHeight  / 2) {
-                //alert('5');
                 dropdown_div.addClass("dropup");
             }
             else {
-                //alert('6');
                 dropdown_div.removeClass("dropup");
             }
         });
@@ -359,31 +282,23 @@
 
     function KeyPressOnDropdown() {
         $(document).keypress(function (e) {
-
-            // alert('2');
             var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
             var $this = $('#dropdown_Table').find('.top_spacing_geography');
-
             if ($('#dropdown_Table').find('.advance_a').attr('mode').toString() != "Multi") {
                 var theChar = String.fromCharCode(key);
                 var cur_check = '';
                 cur_check = selectbox_keys + theChar.toLowerCase();
-
                 var $select = $('#dropdown_Table');
                 var lastElement = $select.find('tbody');
-
                 $this.find(".trdropdownhover").each(function () {
-
                     var p = $(this).find('p');
                     var text = jQuery(p).text().toLowerCase();
                     var _checkdiv = $(this).css('display');
-
                     if ($prevtext == '' || cur_check.length > 1) {
                         if (text.indexOf(cur_check) == 0) {
                             if (_checkdiv == "none") {
                                 return false;
                             }
-
                             $prevtext = text;
                             if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
                                 $($_prevdata).removeClass('setfocusTr');
@@ -393,16 +308,10 @@
                             $nextdata.addClass('setfocusTr');
                             selectbox_keys = cur_check;
                             $(p).closest('tr').focus();
-
                             $select.find('input:checkbox').removeAttr('checked');
                             var checkbx = $(this).find('input:checkbox');
                             $(checkbx).attr('checked', 'checked');
-
-                            // var x = $(this).position().top;
-                            //lastElement.animate({ scrollTop: x }, 200);
-
                             var scrollTo = $(this);
-                            //lastElement.animate({ scrollTop: x }, 450);
                             lastElement.animate({
                                 scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
                             });
@@ -410,19 +319,15 @@
                         }
                     }
                     else {
-
                         /// find search_text from current li to downward direction in dropdown list.
                         var _nextdatas = '';
                         _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
                         var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
-                        // $.each(_nextdatas, function (key, value) {
                         _nextdatas.each(function (key, value) {
                             var _anchor = $(value).find('p');
                             var _atext = $(_anchor).text().toLowerCase();
-
                             //// Compare current "li" anchor text is with previous selected anchor text.
                             if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-
                                 $prevtext = _atext; // set previous text variable with selected text.
                                 $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
                                 $_prevdata = jQuery(this);
@@ -431,35 +336,24 @@
                                 selectbox_keys = cur_check;
                                 $(this).closest('tr').focus();
                                 cntr = cntr + 1;
-
                                 $select.find('input:checkbox').removeAttr('checked');
                                 var checkbx = $(this).find('input:checkbox');
                                 $(checkbx).attr('checked', 'checked');
-
-                                //var x = $(this).position().top;
-                                //alert(x + "second");
-                                //var x = $(this);
                                 var scrollTo = $(this);
-                                //lastElement.animate({ scrollTop: x }, 450);
                                 lastElement.animate({
                                     scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
                                 });
-
                                 return false;
                             }
                         });
                         /// find search_text from start of the dropdown list.
                         if (cntr == 0) {
-
                             _nextdatas = $('#dropdown_Table').find('.top_spacing_geography').find('tr');
                             $.each(_nextdatas, function (key, value) {
-
                                 var _anchor = $(value).find('p');
                                 var _atext = $(_anchor).text().toLowerCase();
-
                                 //// Compare current "li" anchor text is with previous selected anchor text.
                                 if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-
                                     $prevtext = _atext;
                                     $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
                                     $_prevdata = jQuery(this);
@@ -471,15 +365,10 @@
                                     $select.find('input:checkbox').removeAttr('checked');
                                     var checkbx = $(this).find('input:checkbox');
                                     $(checkbx).attr('checked', 'checked');
-
-                                    //var x = $(this).position().top;
-                                    //var x = $(this);
-                                    var scrollTo = $(this);;
-                                    //lastElement.animate({ scrollTop: x }, 450);
+                                    var scrollTo = $(this);
                                     lastElement.animate({
                                         scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
                                     });
-                                    //lastElement.animate({ scrollTop: x }, 200);
                                     return false;
                                 }
                             });
@@ -490,7 +379,6 @@
                     }
                 });
                 if ($nextdata != -1) {
-
                     $nextdata.removeClass('trdropdownhover');
                     $nextdata.addClass('trdropdownhover').focus();
                     $("#dropdown_btn p:first").text($nextdata.text());
@@ -507,10 +395,6 @@
             if (!menu.hasClass('dropdown-block')) {
                 $(this).addClass('trdropdownhover');
             }
-            //var $select = $('#dropdown_Table');
-            //var lastElement = $select.find('tbody');
-            //var x = $(this).position().top;
-            //lastElement.animate({ scrollTop: x }, 200);
         }).delegate("p.text_ellipsis", "mouseout", function (e) {
             var menu = $(this).parents('.dropdown-wrapper');
             if (!menu.hasClass('dropdown-block')) {
@@ -518,10 +402,7 @@
             }
         });
     }
-
-    var hdnYear;
-    
-
+    var hdnYear;  
     //// Function to redirect to login page on unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
@@ -551,21 +432,6 @@
               format: 'MM/DD/YYYY',
               useCurrent: false
           });
-          //commented By Maitri Gandhi for #2099 on 21/4/2016
-          //$("#divStartDate").on("dp.change", function (e) {
-          //    $('#divEndDate').data("DateTimePicker").minDate(e.date);
-          //});
-          //$("#divEndDate").on("dp.change", function (e) {
-          //    $('#divStartDate').data("DateTimePicker").maxDate(e.date);
-          //});
-          //Datetime Picker End Bhumika
-
-//Commented By Maitri Gandhi for #2099           
-//Added By Maitri Gandhi for #2073 on 23/3/2016
-          //if ($('#ddlTacticType').val() != 0) {
-          //    var tacticTypeId = $('#ddlTacticType').val();
-          //    loadtacticdata(tacticTypeId);
-          //}
           /*Added by Mitesh Vaishnav for PL ticket #1073
           Register events of new multiselect dropdown customfields*/
           $('.dropdown_new_btn').each(function () {
@@ -586,43 +452,20 @@
           });
           ImageTipsy('#diffrentStageIcon'); // Added by Vira Kadiya on 11/18/2014 to resolve PL ticket #964.
           $(this).scrollTop(0);
-          //$(".simpleSelectBox select").selectbox();
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
           $('#divTacticSaveCancel').css('display', 'block');
-          // $('#EditForm').css('display', 'none');
           $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
           $('#EditForm').addClass('Save-icon-white');
           $('#txtCost').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('#txtCost').attr("title", $('#txtCost').val());
-          //$(".selectBox select").selectbox();
-
-          //Commented By Maitri Gandhi for #2109
-          //$("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
-          //$("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
-
           //// Assign default values to controls having classname = .resubmission
           assignDefaultValue(".resubmission");
-
           $("#txtRevenue").val(CurrencySybmol + number_format($("#txtRevenue").val().toString(), 0, 0, ','));
           $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
           $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
           $("#liSetup,#liReview,#liBudget,#liActuals").removeClass('setdefultcursor');
-
-          @*if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-             // $("#liSetup,#liReview,#liBudget,#liActuals").unbind("click");
-             // $("#liSetup,#liReview,#liBudget,#liActuals").addClass('setdefultcursor');
-          }*@
-
-          //Commented By Maitri Gandhi for #2109
-         @* $('.dp').datepicker({
-              format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
-              autoclose: true,
-          }).on('changeDate', function (ev) {
-              $(this).datepicker('hide');
-          });;*@
-
           //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
           $('.input-setup').addClass('light-blue-background');
           //Added By Maitri Gandhi for #2109
@@ -660,144 +503,11 @@
               $("#txtmql").val(mqlValue);
               $("#txtmql").attr('title', mqlValue);
           }
-
-          //Commented By Maitri Gandhi for #2109
-          //$('#t_startdate').click(function () {
-          //    $('#dp_end').datepicker('hide');
-          //})
-
-          //$('#t_enddate').click(function () {
-          //    $('#dp_start').datepicker('hide');
-          //})
-
-          //hide the other datepicker in add-on onclick
-          //$('#dp_start .add-on').click(function () {
-          //    //$('#dp_start').datepicker('hide');/* Bhumika */
-          //    $('#dp_end').datepicker('hide');
-          //    $(".dropdown-menu").css("z-index", "25001");
-          //    var pos = $("#t_startdate").position();
-          //    var height = $("#t_startdate").height();
-          //    var scrollTop = $("#modal-container-186470").scrollTop();
-          //    var pos_top = pos.top + height + scrollTop + 10;
-
-          //    setTimeout(function () {
-          //        if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-          //            $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
-          //            $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
-          //                //top: pos_top.toString() + 'px',	 /* Bhumika */
-          //                display: 'block'
-          //            });
-          //        }
-          //        else {
-          //            $('#dp_start').find('.datepicker.dropdown-menu').css({
-          //                //top: pos_top.toString() + 'px',
-          //                display: 'block'
-          //            });
-          //        }
-          //        set_start_date_Position();	  /* Bhumika */
-          //    }, 1);
-
-          //    //// To resolve issue of Ticket #1025, Pratik
-          //    $(".datepicker.dropdown-menu").last().css("display", "none");
-          //})
-
-          //Internal Issue Maitri
-          //function set_start_date_Position() {
-          //    var scrollTop = $('.pop-body-wraper').scrollTop();
-          //    // alert(scrollTop);
-          //    var calender_div = $('#dp_start').find('.datepicker.dropdown-menu');
-          //    //alert(calender_div.html());
-          //    var topOffset = $('#dp_start').offset().top;
-          //    //alert(topOffset);
-
-          //    var windowHeight = $('.pop-body-wraper').height();
-          //    // calculate the dropdown offset relative to window position
-          //    var relativeOffset = topOffset - scrollTop;
-          //    if (relativeOffset > windowHeight / 2) {
-          //        //alert('5');
-          //        //calender_div.css('top', 'auto');
-          //        //calender_div.css('bottom', '100%');
-          //        calender_div.removeClass('calender-dropdown');
-          //        calender_div.addClass('calender-dropup');
-          //        //$('#dp_start').datepicker('show');
-          //    }
-          //    else {
-          //        // alert('6');
-          //        //calender_div.css('top', '32px');
-          //        //calender_div.css('bottom', 'auto');
-          //        calender_div.removeClass('calender-dropup');
-          //        calender_div.addClass('calender-dropdown');
-          //        //$('#dp_start').datepicker('show');
-          //    }
-          //    scrollTop = 0;
-          //}
-          //function set_end_date_Position() {
-          //    var scrollTop = $('.pop-body-wraper').scrollTop();
-          //    // alert(scrollTop);
-          //    var calender_div = $('#dp_end').find('.datepicker.dropdown-menu');
-          //    //alert(calender_div.html());
-          //    var topOffset = $('#dp_end').offset().top;
-          //    //alert(topOffset);
-          //    var windowHeight = $('.pop-body-wraper').height();
-          //    // calculate the dropdown offset relative to window position
-          //    var relativeOffset = topOffset - scrollTop;
-          //    if (relativeOffset > windowHeight / 2) {
-          //        // alert('5');
-          //        //calender_div.css('top', 'auto');
-          //        //calender_div.css('bottom', '100%');
-          //        calender_div.removeClass('calender-dropdown');
-          //        calender_div.addClass('calender-dropup');
-          //        //$('#dp_end').datepicker('show');
-          //    }
-          //    else {
-          //        // alert('6');
-          //        //calender_div.css('top', '32px');
-          //        //calender_div.css('bottom', 'auto');
-          //        calender_div.removeClass('calender-dropup');
-          //        calender_div.addClass('calender-dropdown');
-          //        //$('#dp_end').datepicker('show');
-          //    }
-          //    scrollTop = 0;
-          //}
-/* Bhumika  End*/
-          //Internal Issue Maitri
-          //$('#dp_end .add-on').click(function () {
-          //    $('#dp_start').datepicker('hide');
-          //    //$('#dp_end').datepicker('hide');		/* Bhumika */
-          //    $(".dropdown-menu").css("z-index", "25001");
-          //    var pos = $("#t_enddate").position();
-          //    var height = $("#t_enddate").height();
-          //    var scrollTop = $("#modal-container-186470").scrollTop();
-          //    var pos_top = pos.top + height + scrollTop + 10;
-          //    setTimeout(function () {
-          //        if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-          //            $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
-          //            $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
-          //                //top: pos_top.toString() + 'px', /* Bhumika */
-          //                display: 'block'
-          //            });
-          //        }
-          //        else {
-          //            $('#dp_end').find('.datepicker.dropdown-menu').css({
-          //                //top: pos_top.toString() + 'px',			  /* Bhumika */
-          //                display: 'block'
-          //            });
-          //        }
-          //        set_end_date_Position(); /* Bhumika */
-          //    }, 1);
-
-          //    //// To resolve issue of Ticket #1025, Pratik
-          //    $(".datepicker.dropdown-menu").first().css("display", "none");
-          //})
-          //End
+          
           var arLineitem = [];
           var arrClosedTaskString = null;
           var _customFieldValues = [];
-          //var _resubmissionLabelValues = [];
-          hdnYear = @Model.Year
-         
-       
-
+          hdnYear = @Model.Year   
           $("#btnCancel").on("click", function (e) {
               // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
               var activeTab = $("#InspectTab li.active a").text().replace(" ", "_");
@@ -846,9 +556,7 @@
           $('#btnMultiselect_ddlOwner').after(spanOwner);
           $('#btnMultiselect_ddlTacticType').after(spanTacticType);
           $('#hdnOwner').val($('#ddlOwner').val());
-
           /*Modified by Mitesh Vaishnav for PL ticket #1165*/
-
           if ('@isCreated' != '@true') {
               $('#ddlcampaign,#ddlProgram').multiselect({
                   multiple: false,
@@ -902,10 +610,8 @@
               var selectedOption = $(this).val();
               loadChildProgramList(selectedOption, "ddlProgram");
           });
-
           $("#ddlcampaign").val(htmlDecode($("#ddlcampaign").val())); // added by dashrath prajapati for pl#1916 Ampersand
           $("#ddlProgram").val(htmlDecode($("#ddlProgram").val()));  // added by dashrath prajapati for pl#1916 Ampersand
-
           //added by devanshi reg pl #2213
           $(".allocatecost").on("click", function (e) {
               var result = SetupSavetactic();
@@ -939,15 +645,7 @@
                         $html += '<option value="' + objprogramList.PlanProgramId + '">' + objprogramList.Title + '</option>';
 
                     });
-                    //$('#btnMultiselect_' + id).attr('style', 'display:block;');
-                    //if ($('#btnMultiselect_' + id).parent().parent().hasClass('margin-rigthminus20px')) {
-                    //    $('#btnMultiselect_' + id).parent().parent().removeClass('margin-rigthminus20px');
-                    //}
                 }
-                //else {
-                //    $('#btnMultiselect_' + id).attr('style', 'display:none;');
-                //    $('#btnMultiselect_' + id).parent().parent().addClass('margin-rigthminus20px');
-                //}
                 $dropdown.append($html);
                 $("#multipleselect_" + id).find("input[type='search']").val('');
                 $('#' + id).multiselect("refresh");
@@ -962,20 +660,16 @@
 
     var returnparameter = false;
     //Modified for #1213 by Komal Rawal - Function to save the data on Tab change called from inspect popup
-    function SetupSavetactic() {
-      
-
+    function SetupSavetactic() {    
         $('#MultiSelectProcced').css("display", "none");
         document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
         document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
         document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
         document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
-
         var isLowBudgeted = false;
         var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
         var lowBudgetedMonths = "";
         var removeLength = 0;
-
         var iserror = false;
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
@@ -996,19 +690,7 @@
             else {
                 $(this).removeClass("error");
             }
-        })
-        //sbSelector
-        //$('form').find('.sbSelector').each(function () {
-        //    if ($(this).parent().prev().attr('require') == 'true') {
-        //        if ($(this).text() == 'Please Select') {
-        //            $(this).addClass("error");
-        //            iserror = true;
-        //        }
-        //        else {
-        //            $(this).removeClass("error");
-        //        }
-        //    }
-        //});
+        });
 
         /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
         //// RequireField validation for Owner Dropdown
@@ -1051,9 +733,7 @@
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-
         var regex = /(>|<)/m;
-
         var descriptionvalue = $("#Description").val();
         if (descriptionvalue.search(regex) >= 0) {
             var test = "@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription";
@@ -1082,14 +762,11 @@
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
-               //if(IsLinkedTactic.toLowerCase() == true)
-        //{
         if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear"))
         {
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         };
-      //  }
         if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) {
             $('#InspectTab').removeClass('SpanDisable');
             return false;
@@ -1168,9 +845,7 @@
                 }
                 else {
                     saveTactic();
-                }
-              
-           
+                }     
         }
         else {            
             if (isInspectWin) { 
@@ -1184,7 +859,6 @@
             }
         }
         return returnparameter;
-
     }
 
     function saveTactic(resubmission) {
@@ -1233,41 +907,10 @@
                             var planCampaignId = data.planCampaignId;
                             var planProgramId = data.planProgramId;
                             var requestedModule = $("#hdnRequestedModule").val();
-
                             // Added by Viral regarding PL ticket #2434.
                             if (isUpdate == null || isUpdate == 'undefined' || isUpdate == '' || isUpdate.toString() == "0") {
                                 logMixpanelTrack("New Tactic:" + escape($("#hdnPlanTacticTitle").val())); // log New Tactic created event to mixpanel.
                             }
-
-                            // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                            @* if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
-                                var ChangedTab = "Setup";
-                                if (tabtext != "") {
-                                    ChangedTab = tabtext;
-                                }
-                                var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                                if (ChangedTab == "Setup") {
-                                    inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                                }
-                                loadInspectPopup(data.planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                                // RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
-
-                            }*@
-
-                            @*if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-                                var ChangedTab = "Setup";
-                                if (tabtext != "") {
-                                    ChangedTab = tabtext;
-                                }
-                                var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                                if (ChangedTab == "Setup") {
-                                    inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                                }
-                                loadInspectPopup(data.planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                                //RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
-                            }
-                            else {*@
-
                             $('#txtTacticTitle').css('display', 'none');
                             $('#lblTacticTitle').css('display', 'block');
                             $("#lblTacticTitle").removeAttr("style");
@@ -1283,11 +926,7 @@
                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                 $("#hdnBudgetingExpandId").val("tactic" + planTacticId);
                                 $("#hdnBudgetingIsSave").val("true");
-                            }
-                            else {
-                                //RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
-                            }
-
+                            }                          
                             if ("@Enums.InspectPopupRequestedModules.Index.ToString()" == requestedModule) {
                                 RemoveAllHoneyCombData();
                             }
@@ -1298,21 +937,15 @@
                             $('#lblTacticTitle').text(txtTacticValue);
                             $("#Description").val(txtDescriptionValue);                            
                             //// if new record save then set Refresh flag to true.
-                            var _planTacticId = $("#hdnPlanTacticId").val(data.planTacticId);
-                           
-                            //Modified BY Komal for #2058 tactic not displayed
-                          
+                            var _planTacticId = $("#hdnPlanTacticId").val(data.planTacticId);                           
+                            //Modified BY Komal for #2058 tactic not displayed                          
                             var PlanId = data.PlanId;
-                            //var PreviousTacticListlength = $("#ulTacticType li").length;
-                            //var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
                             $("#ulTacticType li input[type=checkbox]").each(function () {
                                 var chkid = $(this).attr("id");
 
                                 if ($(this).attr('checked') != 'checked') {
                                     filters.tempTacticTypeIds.push(chkid.replace("CbTT", ""));
                                 }
-
-
                             });
                             var setupplanids = [];
                             $('#ulSelectedPlans').find("input[type=checkbox]:checked").each(function () {
@@ -1324,26 +957,14 @@
                             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                                 setupplanids.push(PlanId);
                             }
-                            //GetTacticTypelist(PlanId, false);
                             GetTacticTypelist(setupplanids, false);
-
-                            //if ($("#hdnInspectMode").val() != '@Enums.InspectPopupMode.Add.ToString()') {
                                 $("#ulSelectedOwner li input[type=checkbox]").each(function () {
                                     if ($(this).attr('checked') != 'checked') {
                                         filters.tempOwnerIds.push($(this).attr("id"));
                                     }
                                 });
-
-                            //GetOwnerListForFilter(PlanId, false);
-                                GetOwnerListForFilter(setupplanids, false);
-                            //}
-
-                            //var TacticListLength = $("#ulTacticType li").length;
-                            //var OwnerListLength = $("#ulSelectedOwner li").length;
-
-                            //if (((PreviousTacticListlength != TacticListLength) && PreviousTacticListlength != 0) || ((PreviousOwnerListlength != OwnerListLength) && PreviousOwnerListlength != 0)) {
+                                GetOwnerListForFilter(setupplanids, false);                          
                                 SaveLastSetofViews();
-                            //}
                             // Add by Komal RAwal
                             // Desc ::  to resolve the owner filter issue
                                 if (typeof filters != 'undefined') {
@@ -1351,7 +972,6 @@
                                     $("#ulSelectedOwner li input:checkbox:checked").map(function () {
                                         filters.OwnerIds.push($(this).attr("id"));
                                     });
-
                                     // Add by Komal RAwal
                                     // Desc :: To resolve the 2058 filter issues
                                     filters.TacticTypeids = [];
@@ -1364,27 +984,16 @@
                             if (_planTacticId == '' || _planTacticId == null || _planTacticId == '0' || _planTacticId == 'undefined' || ($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
                                 $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
                                 if (requestedModule == '@Enums.InspectPopupRequestedModules.Index.ToString()' || requestedModule == '@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()' || requestedModule == '@Enums.InspectPopupRequestedModules.Budgeting.ToString()') {
-
                                     RefershPlanHeaderCalc();
-
                                 }
-                            }
-                          
+                            }                          
                             returnparameter = true;
-                            
-                            //}
                         }
                         returnparameter = true;
                         // Add By Nishant Sheth
                         // Desc :: #1812 refresh dropdown with change of date diffrence
                         if (!(data.EndDatediff == 0)) {
                             BindUpcomingActivites(data.PlanId);// Uncomment by bhavesh Ticket #1812,date 09-jan-2015
-                           @* $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid, function (response, status, xhr) {
-                                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                                    //// Call function to redirect on service unavailibility.
-                                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                                }
-                            });*@
                         }
                         // End By Nishant Sheth
                     }
@@ -1392,15 +1001,10 @@
                         ShowError(data.errormsg);
                         $("#divBudgetError").slideUp(30);
                         returnparameter = false;
-
                     }
-
                 }
-
             }
-
         });
-
     }
 
     function ShowError(value) {
@@ -1416,43 +1020,6 @@
             $(this).attr("oldValue", $(this).val());
         });
     }
-
-    //Commented By Komal for #2182
-    //function checkChangeValue(classname, withResubmissionLabel) {
-    //    _resubmissionLabelValues = [];
-    //    var resubmit = false;
-    //    if (withResubmissionLabel) {
-    //        $('form').find(classname).each(function () {
-    //            var oldValue = $(this).attr("oldValue");
-    //            var value = "";
-    //            if ($(this).prop('tagName') != 'A') {
-    //                value = $(this).val();
-    //            }
-    //            else {
-    //                value = $(this).text();
-    //            }
-    //            if (oldValue != value) {
-    //                _resubmissionLabelValues.push({
-    //                    Key: htmlEncode($(this).attr("label").replace(/ /g, "_").toString()),
-    //                    Value: htmlEncode($(this).attr("label").replace(/ /g, "_").toString())
-    //                });
-
-    //                resubmit = true;
-    //            }
-    //        });
-    //        _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
-    //        return resubmit;
-    //    }
-    //    else {
-    //        $('form').find(classname).each(function () {
-    //            var oldValue = $(this).attr("oldValue");
-    //            var value = $(this).val();
-    //            if (oldValue != value) {
-    //                return resubmit = true;
-    //            }
-    //        });
-    //    }
-    //}
 
     $("#TacticCost").focusout(function () {
         var tacticBudgetValue = ReplaceCC($("#TacticCost").val());
@@ -1474,7 +1041,6 @@
         document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
         document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
         document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
-
         if (tacticTypeId != '') {
             if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {
                 $.ajax({
@@ -1560,8 +1126,6 @@
 
         $('#ddlTacticType').next().find('.sbSelector').focus();
     }
-
-
     $('#ddlTacticType').change(function (e) {
     	// Modified by Arpita Soni for Ticket #2354 on 07/19/2016
         var newTacticTypeId = $(this).val();
@@ -1615,9 +1179,6 @@ if ('@Model.IsPackagedTactic' != null && '@Convert.ToString(Model.IsPackagedTact
             $("#txtRemainingBudget").removeClass('error-text');
         }
     }
-
-
-
     $("#txtProjectedStageValue").focusout(function () {
         ddlcampaignValue = $("#ddlcampaign").val();
         ddlProgramValue = $("#ddlProgram").val();
@@ -1669,10 +1230,6 @@ if ('@Model.IsPackagedTactic' != null && '@Convert.ToString(Model.IsPackagedTact
 
     /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
     var tacticId = $('#hdnPlanTacticId').val();
-
-    //$('.sbHolder').click(function () {
-    //    $('#multipleselect_ddlOwner').css('display', 'none');
-    //});
     /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
     function autoGeneratedmultiselectWaightage() {
         var isError = [];
@@ -1727,8 +1284,6 @@ if ('@Model.IsPackagedTactic' != null && '@Convert.ToString(Model.IsPackagedTact
         });
         return isError;
     };
-
-
     // Modified by Komal Rawal for ticket #1196
     function isEmpty(el) {
         return !$.trim(el.html())
