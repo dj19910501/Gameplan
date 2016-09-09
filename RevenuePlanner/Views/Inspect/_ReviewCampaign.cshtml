@@ -356,7 +356,7 @@
                   url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
                   data: {
                       id: PlanCampaignId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()" //section parameter added to save tactic comment                    
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()" //section parameter added to save tactic comment
                   },
                   success: function (data) {
                       if (data.result) {
@@ -471,6 +471,10 @@
               var PlanTacticId = $('#hdnPlanCampaignId').val();
               var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
               if (statusValue == "Submit for Approval") {
+                  if (isRequiredCampaignfield) {
+                      ShowError("Status of this campaign is " + '@campaignReview.Status.ToString()' + " " + '@RevenuePlanner.Helpers.Common.objCached.ValidateForPartialField');
+                      return false;
+                  }
                   stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";
               }
               else if (statusValue == "Approve") {

@@ -421,6 +421,20 @@ namespace RevenuePlanner.Helpers
                 _ValidateForEmptyField = value;
             }
         }
+
+        private string _ValidateForPartialField;
+        public string ValidateForPartialField
+        {
+            get
+            {
+                return _ValidateForPartialField;
+            }
+            set
+            {
+                _ValidateForPartialField = value;
+            }
+        }
+        
         private string _ValidateForValidField;
         public string ValidateForValidField
         {
@@ -3162,6 +3176,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "ValidateForEmptyField":
                                             _ValidateForEmptyField = strMsgValue;
+                                            break;
+                                        case "ValidateForPartialField":
+                                            _ValidateForPartialField = strMsgValue;
                                             break;
                                         case "ValidateForValidField":
                                             _ValidateForValidField = strMsgValue;

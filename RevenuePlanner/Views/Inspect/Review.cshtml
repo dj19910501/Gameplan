@@ -1066,6 +1066,11 @@
             var PlanTacticId = $('#hdnPlanTacticId').val();
             var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
             if (statusValue == "Submit for Approval") {
+                if(isRequiredTacticfield)
+                {
+                    ShowError("Status of this tactic is " + '@tacticReview.Status.ToString()' + " " +'@RevenuePlanner.Helpers.Common.objCached.ValidateForPartialField');
+                    return false;
+                }
                 stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";
             }
             else if (statusValue == "Approve") {

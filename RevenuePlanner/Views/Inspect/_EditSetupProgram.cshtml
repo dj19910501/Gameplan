@@ -80,7 +80,8 @@
         @Html.HiddenFor(model => model.ProgramBudget, new { id = "hdnOldProgramBudget" })
         @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
         @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })       @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
-        <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
+
+        <div id="ProgramMainDiv" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
             <div class="span6" id="inspect-modal-left-column1">
                 <p>@Html.Raw("Parent Campaign")</p>
                 @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(CampaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = CampaignTitle })
@@ -182,6 +183,7 @@
     var $prevtext = '';
     var $nextdata = -1;
     var $_prevdata = -1;
+        var isRequiredProgramfield = false;
     $('.dropdown_new_btn').click(function () {
         $('.trdropdownhover').removeClass('setfocusTr');
         $('.dropdown_new_btn').focus();
@@ -493,13 +495,39 @@
         var returnparameter = false;
         $('#MultiSelectProcced').css("display", "none");
         var iserror = false;
+        var isEmptyFieldError = false;
         var title = htmlEncode($('#txtProgramTitle').val());
-
-        $('form').find('input[type=text], select, textarea').each(function () {
+            if ($('#status').text().toString() == "" || $('#status').text().toString().trim() == '@Enums.TacticStatus.Created.ToString()' || $('#status').text().toString().trim() == '@Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value.ToString().Trim()') {
+                $('#ProgramMainDiv').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
                 if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
                     $(this).addClass("error");
                     iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+                $('#CustomHtmlHelperfield').find('input[type=text], select, textarea').each(function () {
+                    if ($(this).attr('require') == 'true') {
+                        if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                            isRequiredProgramfield = true;
+                        }
+                    }
+                });
+                $('.dropdown_new_btn').each(function () {
+                    if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                        isRequiredProgramfield = true;
+                    }
+                });
+            }
+            else {
+        $('form').find('input[type=text], select, textarea').each(function () {
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                    $(this).addClass("error");
+                    isEmptyFieldError = true;
                 }
                 else {
                     $(this).removeClass("error");
@@ -511,7 +539,7 @@
             if ($(this).parent().prev().attr('require') == 'true') {
                 if ($(this).text() == 'Please Select') {
                     $(this).addClass("error");
-                    iserror = true;
+                    isEmptyFieldError = true;
                 }
                 else {
                     $(this).removeClass("error");
@@ -521,15 +549,20 @@
         $('.dropdown_new_btn').each(function () {
             if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
                 $(this).addClass("error");
-                iserror = true;
+                isEmptyFieldError = true;
             }
             else {
                 $(this).removeClass("error");
             }
         });
+            }            
         if (title == '') {
+                $('#txtProgramTitle').addClass("error");
             iserror = true;
         }
+            else {
+                $('#txtProgramTitle').removeClass("error");
+            }
         var OwnerValue = $('#ddlOwner').val();
         if (OwnerValue == "") {
             $('#btnMultiselect_ddlOwner').addClass("error");
@@ -541,6 +574,11 @@
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        if (isEmptyFieldError) {
+            ShowError("Status of this program is " + $('#status').text().toString() + " " + '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField');
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
@@ -558,8 +596,7 @@
             $("#txtProgramTitle").addClass("error");
             iserror = true;
             return false;
-        }
-
+            }
         sdate = $('#t_startdate').val();
         edate = $('#t_enddate').val();
         var tsdate = $('#hdnTStartDate').val();

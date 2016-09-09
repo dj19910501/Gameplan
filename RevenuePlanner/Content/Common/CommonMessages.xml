@@ -41,10 +41,10 @@
 		<Name>UserEdited</Name>
 		<value>User edited successfully.</value>
 	</Field>
-  <Field>
-    <Name>UserEditedWithCurrency</Name>
-    <value>User edited successfully. The updated preferred currency would apply from next login.</value>
-  </Field>
+	<Field>
+		<Name>UserEditedWithCurrency</Name>
+		<value>User edited successfully. The updated preferred currency would apply from next login.</value>
+	</Field>
 	<Field>
 		<Name>UserDeleted</Name>
 		<value>User deleted successfully.</value>
@@ -125,7 +125,7 @@
 		<Name>ValidateForEmptyField</Name>
 		<!--Modiefied by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.-->
 		<value>Please fill all required fields.</value>
-	</Field>
+	</Field>	
 	<Field>
 		<Name>ValidateForValidField</Name>
 		<value>Make sure all fields are filled with valid values and try again.</value>
@@ -1176,10 +1176,10 @@
 		<Name>CurrencySaved</Name>
 		<value>Currency have been saved successfully.</value>
 	</Field>
-  <Field>
-    <Name>ExchangeRateSaved</Name>
-    <value>Changes saved. The updated exchange rate would apply from next login.</value>
-  </Field>
+	<Field>
+		<Name>ExchangeRateSaved</Name>
+		<value>Changes saved. The updated exchange rate would apply from next login.</value>
+	</Field>
 	<!--//insertation End 09/08/2016 kausha #2492 -->
 	<!--//added by devanshi for #2469 alert message.-->
 	<Field>
@@ -1198,13 +1198,17 @@
 		<Name>DeleteAlertRule</Name>
 		<value>Alert rule deleted successfully.</value>
 	</Field>
+	<Field>
+		<Name>DuplicateColumnView</Name>
+		<value>Column view name already exists.</value>
+	</Field>
+	<Field>
+		<Name>SuccessColumnView</Name>
+		<value>Column view created successfully.</value>
+	</Field>
   <Field>
-    <Name>DuplicateColumnView</Name>
-    <value>Column view name already exists.</value>
-  </Field>
-  <Field>
-    <Name>SuccessColumnView</Name>
-    <value>Column view created successfully.</value>
-  </Field>
+		<Name>ValidateForPartialField</Name>
+		<value>Please fill all required fields on Setup tab.</value>
+	</Field>
 	<!--//end for #2469 alert message.-->
 </Messages>

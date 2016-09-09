@@ -467,6 +467,10 @@
               var PlanTacticId = $('#hdnPlanProgramId').val();
               var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
               if (statusValue == "Submit for Approval") {
+                  if (isRequiredProgramfield) {
+                      ShowError("Status of this program is " + '@programReview.Status.ToString()' + " " + '@RevenuePlanner.Helpers.Common.objCached.ValidateForPartialField');
+                      return false;
+                  }
                   stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";
               }
               else if (statusValue == "Approve") {

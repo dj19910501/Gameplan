@@ -110,7 +110,7 @@
     @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
 
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="margin-bottom: 0px;">
+<div id="TacticMainDiv" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="margin-bottom: 0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <div class="cf width100">
                 <div style="width: 47%; position: relative;" class="margin-right10 pull-left">
@@ -238,6 +238,7 @@
     var $nextdata = -1;
     var $_prevdata = -1;
     var IsLinkedTactic = "@IsLinkedTactic";
+    var isRequiredTacticfield = false;
     $('.dropdown_new_btn').click(function () {
         $('.trdropdownhover').removeClass('setfocusTr');
         $('.dropdown_new_btn').focus();
@@ -671,11 +672,58 @@
         var lowBudgetedMonths = "";
         var removeLength = 0;
         var iserror = false;
+        var isEmptyFieldError = false;
+        if($('#status').text().toString() == "" || $('#status').text().toString().trim() == '@Enums.TacticStatus.Created.ToString()' || $('#status').text().toString().trim() == '@Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value.ToString().Trim()'){
+            $('#TacticMainDiv').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            $('#TacticMainDiv').find('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            });
+
+            if($("#txtTacticTitle").val().toString().trim() == '') {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                $("#txtTacticTitle").addClass("error");
+                iserror = true;
+                return false;
+            }
+            else{
+                $("#txtTacticTitle").removeClass("error");
+            }
+            //var isrequired = false;
+            $('#CustomHtmlHelperfield').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        isRequiredTacticfield = true;
+                    }
+                }
+            });
+            $('#CustomHtmlHelperfield').find('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                    isRequiredTacticfield = true;
+                }
+            });
+        }
+        else {
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
                 if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
                     $(this).addClass("error");
-                    iserror = true;
+                    isEmptyFieldError = true;
                 }
                 else {
                     $(this).removeClass("error");
@@ -685,12 +733,13 @@
         $('.dropdown_new_btn').each(function () {
             if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
                 $(this).addClass("error");
-                iserror = true;
+                isEmptyFieldError = true;
             }
             else {
                 $(this).removeClass("error");
             }
         });
+        }
 
         /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
         //// RequireField validation for Owner Dropdown
@@ -730,6 +779,11 @@
         /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        if (isEmptyFieldError) {
+            ShowError("Status of this tactic is "+ $('#status').text().toString() + " " +'@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField');
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }

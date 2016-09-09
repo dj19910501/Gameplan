@@ -73,7 +73,7 @@
     @Html.HiddenFor(model => model.CampaignBudget, new { id = "hdnOldCampaignBudget" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })  // Added by Viral Kadiya on 11/15/2014 for PL ticket #794
 
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
+    <div id="CampaignMainDiv" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
 
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
@@ -171,6 +171,7 @@
     var $prevtext = '';
     var $nextdata = -1;
     var $_prevdata = -1;
+    var isRequiredCampaignfield = false;
     $('.dropdown_new_btn').click(function () {
         $('.trdropdownhover').removeClass('setfocusTr');
         $('.dropdown_new_btn').focus();
@@ -508,61 +509,91 @@
     function SetupCampaignSave() {
         var returnparameter = false;
         var iserror = false;
+        var isEmptyFieldError = false;
         var campaignTitle = htmlEncode($('#txtTitle').val());
         var hdnYear = @ViewBag.Year
      $('#MultiSelectProcced').css("display", "none");
+        if ($('#status').text().toString() == "" || $('#status').text().toString().trim() == '@Enums.TacticStatus.Created.ToString()' || $('#status').text().toString().trim() == '@Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value.ToString().Trim()')
+        {
+            $('#CampaignMainDiv').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        debugger;
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+
+            $('#CustomHtmlHelperfield').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
+                        isRequiredCampaignfield = true;
+                    }
+                }
+            });
+
+            $('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
+                    isRequiredCampaignfield = true;
+                }
+            });
+        }
+        else {
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
                 if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
                     $(this).addClass("error");
-                    iserror = true;
+                        isEmptyFieldError = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
                 }
-                else {
-                    $(this).removeClass("error");
-                }
-            }
-        });
-
-        $('form').find('.sbSelector').each(function () {
-            if ($(this).parent().prev().attr('require') == 'true') {
-                if ($(this).text() == 'Please Select') {
+            });
+            $('.dropdown_new_btn').each(function () {
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {                    
                     $(this).addClass("error");
-                    iserror = true;
+                    isEmptyFieldError = true;
                 }
                 else {
                     $(this).removeClass("error");
                 }
-            }
-        });
-        $('.dropdown_new_btn').each(function () {
-            if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
-                $(this).addClass("error");
-                iserror = true;
-            }
-            else {
-                $(this).removeClass("error");
-            }
-        });
+            });
+        }
+        if (campaignTitle == "") {
+            $('#txtTitle').addClass("error");
+                    iserror = true;
+                }
+                else {
+            $('#txtTitle').removeClass("error");
+        }       
         if (campaignTitle == "") {
             $('#txtTitle').addClass("error");
             iserror = true;
         }
 
         /* Start - Added by bhavesh on 10/03/2015 for PL ticket #711 */
-        //// RequireField validation for Owner Dropdown
-        if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-            var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
-            if (OwnerValue == "") {
+        //// RequireField validation for Owner Dropdown        
+        var OwnerValue = $('#ddlOwner').val();
+        if (OwnerValue == "") {
                 $('#btnMultiselect_ddlOwner').addClass("error");
             }
             else {
                 $('#btnMultiselect_ddlOwner').removeClass("error");
-            }
-        }
+            }     
         /* End - Added by bhavesh on 10/03/2015 for PL ticket #711 */
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        if (isEmptyFieldError) {
+            ShowError("Status of this campaign is " + $('#status').text().toString() + " " + '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField');
             $('#InspectTab').removeClass('SpanDisable');
             return false;
         }
