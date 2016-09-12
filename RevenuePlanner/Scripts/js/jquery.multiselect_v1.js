@@ -278,11 +278,11 @@ var selectbox_keys = '';
                 isColumnview = true;
                 var tempId = el.attr('id');
                 html += '<div class="report-seperator" id="' + tempId + '_ColumnViewCustomHeader"><span>Column View</span></div>'
-                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add new view</a>'
+                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add New View</a>'
             }
             else if (isGridView)
             {
-                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add new view</a>'
+                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add New View</a>'
             }
 
             // insert into the DOM

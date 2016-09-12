@@ -19,14 +19,14 @@
             }
             else
             {
-                title = entity.EntityType.ToString() + "Attributes";
+                title = entity.EntityType.ToString() + " Attributes";
             }
             <div class="category" entitytpe="@entity.EntityType.ToString()">
                 <div class="category-title clearfix">
                     <span class="entity-check"><input type="checkbox" id="" name="" value="" class="checkAlldiv" /> <span class="all-check">All</span></span>
                     <span class="entity-type">@title</span>
                     <div class="category-title-right">
-                        <span class="showdv">Show</span> / <span class="hidedv">hide</span>
+                        <span class="showdv">show</span> / <span class="hidedv">hide</span>
                     </div>
                 </div>
 
@@ -47,7 +47,7 @@
                                     <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox" disabled="disabled" parentid="@attr.ParentID.ToString()"/>
 
                                 }*@
-                                <span for="chk-@attr.CustomFieldId" class="attr-fildname">@attr.CutomfieldName</span>
+                                <span for="chk-@attr.CustomFieldId" class="attr-fildname" title="@attr.CutomfieldName">@attr.CutomfieldName</span>
                             </span>
                         }
                     </div>
@@ -158,9 +158,10 @@
                 $("#spanMessageError1").empty();
                 $("#spanMessageError1").text("Please select atleast basic attributes");
                 $("#successMessage1").css("display", "none");
+                $(".modal-body").scrollTop(0);
             }
         }
-        else { $('#txtViewName').addClass("error"); return false; }
+        else { $('#txtViewName').addClass("error"); $(".modal-body").scrollTop(0); return false; }
     });
     $(".closemessage").click(function () {
         $(this).parent().closest('div').css("display", "none");

@@ -40,7 +40,7 @@ namespace RevenuePlanner.Controllers
                         CutomfieldName = Convert.ToString(row["Name"]),
                         ParentId = Convert.ToInt32(row["ParentId"])
 
-                    }).Where(row => row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Campaign).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Program).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Lineitem).ToLower()).ToList();
+                    }).ToList();
 
                     var BasicFields = Enums.PlanGrid_Column.Select(row => new
                     {
