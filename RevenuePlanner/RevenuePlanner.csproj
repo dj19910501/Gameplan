@@ -209,6 +209,7 @@
     <Compile Include="Controllers\CurrencyController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\ExternalServiceController.cs" />
+    <Compile Include="Controllers\FilterController.cs" />
     <Compile Include="Controllers\FinanceController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InspectController.cs" />
@@ -270,10 +271,12 @@
     <Compile Include="Services\Alerts.cs" />
     <Compile Include="Services\ColumnView.cs" />
     <Compile Include="Services\Currency.cs" />
+    <Compile Include="Services\Filter.cs" />
     <Compile Include="Services\Finance.cs" />
     <Compile Include="Services\IAlerts.cs" />
     <Compile Include="Services\IColumnView.cs" />
     <Compile Include="Services\ICurrency.cs" />
+    <Compile Include="Services\IFilter.cs" />
     <Compile Include="Services\IFinance.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -679,6 +682,7 @@
     <Content Include="RevenuePlanner.wpp.targets" />
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\daterangepicker.js" />
+    <Content Include="Scripts\Filter.js" />
     <Content Include="Scripts\js\bootstrap2-toggle.min.js.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgrid_excell_sub_row.js" />
@@ -1003,6 +1007,8 @@
     <Content Include="Views\Home\IndexNewDesign.cshtml" />
     <Content Include="Views\Shared\SideFilters.cshtml" />
     <Content Include="Views\ColumnView\_AddColumnView.cshtml" />
+    <Content Include="Views\Home\Index - Copy.cshtml" />
+    <Content Include="Views\Filter\Filters.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

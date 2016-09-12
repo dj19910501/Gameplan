@@ -1,0 +1,493 @@
+﻿@model RevenuePlanner.Models.HomePlanModel
+@using RevenuePlanner.Helpers
+
+@{
+    string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
+    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+    bool IsPlanPublished = (bool)ViewBag.IsPublished;
+    var ViewYearList = (List<SelectListItem>)ViewBag.ViewYear;
+    var CreatedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()];
+    var SubmittedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()];
+    var ApprovedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()];
+    var InProgressStatus = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()];
+    var CompleteStatus = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()];
+    var DeclineStatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()];
+    List<RevenuePlanner.Models.PlanListModel> planList = Model.lstPlan != null ? Model.lstPlan : new List<RevenuePlanner.Models.PlanListModel>();
+    List<RevenuePlanner.Models.CustomFieldsForFilter> customfiledList = Model.lstCustomFields != null ? Model.lstCustomFields : new List<RevenuePlanner.Models.CustomFieldsForFilter>();
+    List<RevenuePlanner.Models.CustomFieldsForFilter> customfiledOptionList = Model.lstCustomFieldOptions != null ? Model.lstCustomFieldOptions : new List<RevenuePlanner.Models.CustomFieldsForFilter>();
+    List<RevenuePlanner.Models.OwnerModel> ownerList = Model.lstOwner != null ? Model.lstOwner : new List<RevenuePlanner.Models.OwnerModel>();
+    List<RevenuePlanner.Models.TacticTypeModel> tacticTypeList = Model.lstTacticType != null ? Model.lstTacticType : new List<RevenuePlanner.Models.TacticTypeModel>();
+
+    string ddlYearId, YearText, liPlanid, acordionId, acordionParentId, acordionElementId, acordionElementHref, liCustom, ulCustom, allCustom, noCustom, cutomoptioninputid, liid,
+        litacticid, titielwithbracket, lastbracket, cbttid;
+    int custFieldCount = 0;
+    acordionId = acordionParentId = acordionElementId = acordionElementHref = liCustom = ulCustom = allCustom = noCustom = string.Empty;
+    ddlYearId = YearText = string.Empty;
+    List<string> SelectedYearText = new List<string>();
+    List<string> SelectedPlanTitle = new List<string>();
+    List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
+
+    //Need parameter for Filter.js file
+    var TacticTypeURL = @Url.Action("GetTacticTypeListForFilter", "Filter");
+    var LastSetOfViewsURL = @Url.Action("LastSetOfViews", "Filter");
+    var OwnerListURL = @Url.Action("GetOwnerListForFilter", "Filter");
+    var ServerUnavailableURL = @Url.Content(Common.RedirectOnServiceUnavailibilityPage);
+    var PlanBudgetYearwise = @Url.Content("~/Report/GetBudgetPlanBasedOnYear/");
+    var PlanId = Sessions.PlanId;
+    var FilterPresetName = Sessions.FilterPresetName;
+    var ActiveMenuHome = Enums.ActiveMenu.Home.ToString().ToLower();
+    var HomeIndexURL = @Url.Content("~/Login/Index");
+    var PlanGantType = PlanGanttTypes.Tactic.ToString();
+}
+
+@Html.Hidden("TacticTypeURL", TacticTypeURL)
+@Html.Hidden("LastSetOfViewsURL", LastSetOfViewsURL)
+@Html.Hidden("OwnerListURL", OwnerListURL)
+@Html.Hidden("ServerUnavailableURL", ServerUnavailableURL)
+@Html.Hidden("PlanBudgetYearwise", PlanBudgetYearwise)
+@Html.Hidden("PlanId", PlanId)
+@Html.Hidden("FilterPresetName", FilterPresetName)
+@Html.Hidden("ActiveMenuHome", ActiveMenuHome)
+@Html.Hidden("HomeIndexURL", HomeIndexURL)
+@Html.Hidden("PlanGantType", PlanGantType)
+
+<script src="~/Scripts/Filter.js"></script>
+
+<div class="save-filter">
+    <div id="errorMessageMainSidebar" class="alert hide alert-error">
+        <a class="close">×</a>
+        <strong></strong><span id="spanErrorMessageRole"></span>
+    </div>
+    <div id="successMessageLoadPreset" class="alert hide alert-success">
+        <a class="close">×</a>
+        <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
+    </div>
+    <div id="content_SaveFilters" class="sidebar-preset scroll-section" style="display:none">
+        <h2>Save As Preset</h2>
+        <label for="Preset">Please enter a name for preset</label>
+        <input type="text" id="txtPresetName" />
+        <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular" title="Proceed" value="Proceed" id="btnSaveProceed" onclick="javascript: SavePreset()" />
+        <input type="button" class="btn btn-link" title="Cancel" value="Cancel" id="btnSaveCancel" onclick="javascript: CancelSavePreset()" />
+    </div>
+    <div id="DefaultFilters" style="display:none"></div>
+</div>
+@*<div id="PlanModulesSection" class="plan-mod-section sidebar-main">
+        <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsPlanSummary">
+            <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
+            <div class="wraper-btns cf">
+                <div>
+                    @if (IsPlanEditable && !IsPlanPublished)
+                    {
+                        <button id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular publish-plan-btn" type="button" style="min-width: 90%">
+                            Publish Plan
+                        </button>
+                    }
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="AddActuals()" style="min-width:90%">
+                            Add Actuals
+                        </button>
+                    @if (IsPlanEditable)
+                    {
+                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()" style="min-width: 90%">
+                            Edit Plan Definition
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>*@
+<div id="Filtersidebar" class="span2 sidebar">
+    <div class="error-msg-filter">
+        <div id="successMessageSidebar" class="alert hide alert-success">
+            <a class="close">×</a>
+            <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
+        </div>
+    </div>
+    <div class="sidebar-section scroll-section">
+        <div class="float-left filter-preset">
+            <div class="width50 float-left filter-title ">
+                <span class="filter-header">@Enums.FilterLabel.Filters.ToString()</span>
+            </div>
+            <div class="dropdown" style="float:right;">
+                <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
+                    <i class="fa fa-bars"></i>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
+                    <li onclick="SaveAsPreset()" role="presentation">
+                        <a id="saveaslink" tabindex="-1" role="menuitem">Save Current Filters</a>
+                    </li>
+                    <li onclick="LoadPreset()" role="presentation">
+                        <a tabindex="-1" role="menuitem">Load Saved Filters</a>
+                    </li>
+                    <li onclick="ClearAllPreset()" role="presentation">
+                        <a tabindex="-1" role="menuitem">Clear All</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div style="clear: both;"></div>
+        <div id="accordion-SelectedPlanFilter" class="dropdown-section accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h2 id="PlanFilterHeader" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedPlanFilter" href="#accordion-element-SelectedPlanFilter">@Enums.FilterLabel.Active_Plans.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i></h2>
+                </div>
+                <div id="accordion-element-SelectedPlanFilter" class="accordion-body in collapse">
+                    <ul class="scroll-list singleselect" id="ulSelectedPlanFilter">
+                        @*@if (activeMenu.ToLower() != Enums.ActiveMenu.Plan.ToString().ToLower())
+                            {*@
+                        <li class="accordion-inner" title="Year">
+                            <span class="sidebarliwidthSelected-left">Year - </span>
+                            @foreach (SelectListItem item in ViewYearList)
+                            {
+                                if (item.Selected == true)
+                                {
+                                    SelectedYearText.Add(item.Text);
+                                }
+                            }
+                            @if (ViewYearList.Count == SelectedYearText.Count())
+                            {
+                                SelectedYearText.Clear();
+                                SelectedYearText.Add("All");
+                            }
+                            <span id="lstYearActive" class="sidebarliwidthSelected-right">@string.Join(", ", SelectedYearText).ToString()</span>
+                        </li>
+                        <li class="accordion-inner" title="Plan">
+                            <span class="sidebarliwidthSelected-left">Plan -  </span>
+                            @foreach (var objplan in planList)
+                            {
+                                if (objplan.Checked == "checked")
+                                {
+                                    SelectedPlanTitle.Add(objplan.Title);
+                                }
+                            }
+                            @if (planList.Count == SelectedPlanTitle.Count())
+                            {
+                                SelectedPlanTitle.Clear();
+                                SelectedPlanTitle.Add("All");
+                            }
+                            <span id="lstPlanActive" class="sidebarliwidthSelected-right">@string.Join(", ", SelectedPlanTitle).ToString()</span>
+                        </li>
+                        @*}*@
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
+            <div class="wraper-btns cf">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdatePlan" onclick="UpdatePlan()">
+                    @Enums.FilterLabel.Update_Plans.ToString().Replace("_", " ")
+                </button>
+            </div>
+        </div>
+        <div id="accordion-Year" class="dropdown-section accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Year" href="#accordion-element-Year">Year<i class="indicator fa fa-angle-down pull-right"></i><span id="tYearcount" class="filter-count">/@ViewYearList.Count</span><span id="cYearcount" class="filter-count"></span></h2>
+                </div>
+                <div id="accordion-element-Year" class="accordion-body collapse">
+                    <ul class="scroll-list singleselect" id="ulSelectedYear">
+                        @foreach (SelectListItem item in ViewYearList)
+                        {
+                            ddlYearId = "liYear" + item.Value;
+                            YearText = item.Text;
+                            if (item.Selected == true)
+                            {
+                                <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
+                                    <span class="sidebarliwidth">@YearText</span>
+                                    <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value" autocomplete="off" />
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="accordion-inner" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
+                                    <span class="sidebarliwidth">@YearText</span>
+                                    <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value" autocomplete="off" />
+                                </li>
+                            }
+                        }
+                    </ul>
+                    @if (ViewYearList == null)
+                    {
+                        <div class="list-tab">
+                            <div id="NoYearFound" class="NoDataFoundFilter">No Year Found</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div id="accordion-2" class="dropdown-section accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">
+                        Plan
+                        <i class="indicator fa fa-angle-down pull-right"></i>
+                        <span id="tPlancount" class="filter-count"></span><span id="cPlancount" class="filter-count">/@planList.Count()</span>
+                    </h2>
+                </div>
+                <div id="accordion-element-Plan" class="accordion-body collapse">
+                    <ul class="scroll-list" id="ulSelectedPlans">
+                        @foreach (var objplan in planList)
+                        {
+                            liPlanid = "liPlan" + objplan.PlanId;
+                            if (objplan.Checked == "checked")
+                            {
+                                <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid">
+                                    <span class="sidebarliwidth">@objplan.Title</span>
+                                    <input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked" autocomplete="off" />
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="accordion-inner" title="@objplan.Title" id="@liPlanid">
+                                    <span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" autocomplete="off" />
+                                </li>
+                            }
+                        }
+                    </ul>
+                    <div class="list-tab">
+                        @if (planList != null && planList.Count > 0)
+                        {
+                            <ul id="PlanAllModule">
+                                <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkPlanOperation(false)">clear</a></li>
+                            </ul>
+                            <div id="NoPlanFound" class="NoDataFoundFilter" style="display: none;">No Plan Found</div>
+                        }
+                        else
+                        {
+                            <ul id="PlanAllModule" style="display: none;">
+                                <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkPlanOperation(false)">clear</a></li>
+                            </ul>
+                            <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="accordion-SelectedFilter" class="dropdown-section accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@Enums.FilterLabel.Active_Attributes.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i></h2>
+                </div>
+                <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
+                    <ul class="scroll-list singleselect" id="ulSelectedFilter">
+                        @foreach (var custField in customfiledList)
+                        {
+                            <li class="accordion-inner" title='@custField.Title'>
+                                <div id="CustomFields">
+                                    <span class="sidebarliwidthSelected-left">@custField.Title - </span>
+                                    <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
+                                </div>
+                            </li>
+                        }
+                        <li class="accordion-inner" title="Owner">
+                            <span class="sidebarliwidthSelected-left">Owner - </span>
+                            <span id="lstOwner" class="sidebarliwidthSelected-right"></span>
+
+                        </li>
+                        <li class="accordion-inner" title="TacticType">
+                            <span class="sidebarliwidthSelected-left">Tactic Type - </span>
+                            <span id="lstTType" class="sidebarliwidthSelected-right"></span>
+                        </li>
+                        <li class="accordion-inner" title="Status">
+                            <span class="sidebarliwidthSelected-left">Status - </span>
+                            <span id="lstStatus" class="sidebarliwidthSelected-right"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
+            <div class="wraper-btns cf">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="ApplyFilters" onclick="ApplyFilters()">
+                    @Enums.FilterLabel.Update_Attributes.ToString().Replace("_", " ")
+                </button>
+            </div>
+        </div>
+        <div id="divCustomFieldsFilter">
+            @foreach (var custField in customfiledList)
+            {
+                lstCutomFieldOptions = customfiledOptionList.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Title).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Title, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
+                acordionId = "accordion-" + custField.CustomFieldId;
+                acordionParentId = "#" + acordionId;
+                acordionElementId = "accordion-element-" + custField.CustomFieldId;
+                acordionElementHref = "#" + acordionElementId;
+                ulCustom = "ulSelected" + custField.CustomFieldId;
+                allCustom = custField.CustomFieldId + "AllModule";
+                noCustom = "No" + custField.CustomFieldId + "Found";
+                <div id="@acordionId" class="dropdown-section accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator fa fa-angle-down pull-right"></i><span class="filter-count"><span id="SelectedCustomFilter_@custField.CustomFieldId">@lstCutomFieldOptions.Count()</span>/@lstCutomFieldOptions.Count()</span></h2>
+                        </div>
+                        <div id="@acordionElementId" class="accordion-body collapse">
+                            <ul class="scroll-list" id="@ulCustom">
+                                @foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
+                                {
+
+                                    liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
+                                    cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
+
+                                    <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid" /></li>
+                                }
+                            </ul>
+                            <div class="list-tab">
+                                @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
+                                {
+                                    <ul id="@allCustom">
+                                        <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">select all</a></li>
+                                        <li>|</li>
+                                        <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">clear</a></li>
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                custFieldCount++;
+            }
+        </div>
+        <div id="accordion-Owner" class="dropdown-section accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator fa fa-angle-down pull-right"></i><span id="tOwnercount" class="filter-count"></span><span id="cOwnercount" class="filter-count"></span></h2>
+                </div>
+                <div id="accordion-element-Owner" class="accordion-body collapse">
+                    <ul class="scroll-list" id="ulSelectedOwner">
+                        @foreach (var owner in ownerList)
+                        {
+                            liid = "liOwner" + owner.OwnerId;
+                            <li class="accordion-inner" title="@owner.Title + '" id="@liid">
+                                <span class="sidebarliwidth">@owner.Title</span>
+                                <input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId" />
+                            </li>
+                        }
+                    </ul>
+                    <div class="list-tab">
+                        @if (ownerList != null && ownerList.Count > 0)
+                        {
+                            <ul id="ulOwnerAllModule">
+                                <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkOwnerOperation(false)">clear</a></li>
+                            </ul>
+                            <div id="NoOwnerFound" class="NoDataFoundFilter" style="display: none;">No Owner Found</div>
+                        }
+                        else
+                        {
+                            <ul id="ulOwnerAllModule" style="display: none;">
+                                <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkOwnerOperation(false)">clear</a></li>
+                            </ul>
+                            <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="accordion-TacticType" class="dropdown-section accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator fa fa-angle-down pull-right"></i><span id="tTTcount" class="filter-count"></span><span id="cTTcount" class="filter-count"></span></h2>
+                </div>
+                <div id="accordion-element-TacticType" class="accordion-body collapse">
+                    <ul class="scroll-list" id="ulTacticType">
+                        @foreach (var tactictype in tacticTypeList)
+                        {
+                            litacticid = "liTT" + tactictype.TacticTypeId;
+                            titielwithbracket = tactictype.Title + " (";
+                            lastbracket = ")";
+                            cbttid = "CbTT" + tactictype.TacticTypeId;
+                            <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
+                                <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
+                                <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid" />
+                            </li>
+                        }
+                    </ul>
+                    <div class="list-tab">
+                        @if (tacticTypeList != null && tacticTypeList.Count > 0)
+                        {
+                            <ul id="TacticTypeAllModule">
+                                <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkTTOperation(false)">clear</a></li>
+                            </ul>
+                            <div id="NoTTFound" class="NoDataFoundFilter" style="display: none;">No Tactic Type Found</div>
+                        }
+                        else
+                        {
+                            <ul id="TacticTypeAllModule" style="display: none;">
+                                <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkTTOperation(false)">clear</a></li>
+                            </ul>
+                            <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower() || activeMenu.ToLower() == Enums.ActiveMenu.Plan.ToString().ToLower())
+        {
+            <div id="accordion-Status" class="dropdown-section accordion">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Status" href="#accordion-element-Status">Status<i class="indicator fa fa-angle-down pull-right"></i><span id="tStatuscount" class="filter-count"></span><span id="cStatuscount" class="filter-count"></span></h2>
+                    </div>
+                    <div id="accordion-element-Status" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulStatus">
+                            <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /> </li>
+                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></li>
+                            <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></li>
+                            <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></li>
+                            <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></li>
+                            <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></span></li>
+                        </ul>
+                        <div class="list-tab">
+                            <ul id="StatusAllModule">
+                                <li><a onclick="BulkStatusOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkStatusOperation(false)">clear</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+    {
+        <div class="accordion colors left-nav margin-bottom10" id="marketing-activities" style="display: none;">
+            <div class="accordion-group source-sans-proregular">
+                <div class="accordion-heading">
+                    <a href="#DivAccordionMarketingActivities" data-parent="marketing-activities" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
+                        <div class="cf source-sans-prosemibold ">Marketing Activities</div>
+                    </a>
+                </div>
+                <div class="scrolled_div" style="position: relative; overflow: hidden; max-height: 230px;">
+                    <div class="accordion-body in collapse" id="DivAccordionMarketingActivities">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion colors left-nav improvements margin-bottom10" id="improvements" style="display:none">
+            <div class="accordion-group source-sans-proregular">
+                <div class="accordion-heading">
+                    <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
+                        <div class="cf source-sans-prosemibold">Improvements</div>
+                    </a>
+                </div>
+                <div class="accordion-body collapse" id="DivAccordionImprovementActivities">
+                </div>
+            </div>
+        </div>
+    }
+</div>

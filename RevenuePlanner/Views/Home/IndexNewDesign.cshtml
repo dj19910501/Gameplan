@@ -1,4 +1,5 @@
-﻿@{
+﻿@using RevenuePlanner.Helpers
+@{
     ViewBag.Title = "IndexNew1";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -7,6 +8,7 @@
 
 @section Sidebar{
     @*@Html.Partial("~/Views/Shared/SideFilters.cshtml")*@
+<div id="divFilter"></div>
 }
 
 
@@ -129,9 +131,56 @@
     </div>
 </div>   
     <script type="text/javascript">
+        $('.sidebar-toogle a').toggle(
+        function () {
+            $('#sidebar').css({
+                'position': 'relative',
+                'left': 'auto',
+                'width': '1px',
+                'background': 'transparent',
+            });
+
+            $(".sidebar-section").css("display", "none");
+            $("#improvements > .accordion-group").css('display', 'none');
+            $(".wraper-btns").css("display", "none");
+            $("#content_wraper").css('width', 'calc(100% - 2px)');
+            $('#sidebar.sidebar').css({ 'width': '1px', 'background': 'transparent', });
+
+        },
+        function () {
+            $('#sidebar').css({
+                'position': 'static',
+                'left': 'auto',
+                'width': '280px',
+            });
+
+            $(".sidebar-section").css("display", "block");
+            $(".wraper-btns").css("display", "block");
+            $("#content_wraper").css('width', 'calc(100% - 282px)');
+            $('#sidebar.sidebar').css({ 'width': '280px' });
+
+        }
+  )
         $(document).ready(function () {
             $(".selectBox select").selectbox();
             $("#ddlTabViewBy").multiselect();
+
+            var strURL = '@Url.Content("~/Filter/Index/")';
+            $.ajax({
+                url: strURL,
+                type: 'post',
+                dataType: 'html',
+                async: false,
+                data: {
+                    activeMenu: '@Enums.ActiveMenu.Home',
+                    CurrPlanIds: '@Sessions.PlanId'
+                },
+                success: function (data) {
+                    if (data != 'undefined' && data != null) {
+                        $('#divFilter').html(data);
+                    }
+                }
+            });
         })
     </script>
 
