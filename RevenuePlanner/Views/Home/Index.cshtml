@@ -1107,9 +1107,9 @@
                                 Publish Plan
                             </button>
                         }
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="AddActuals()" style="min-width:90%">
+                        @*<button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="AddActuals()" style="min-width:90%">
                             Add Actuals
-                        </button>
+                        </button>*@
                         @if (IsPlanEditable)
                         {
                             <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()" style="min-width: 90%">
@@ -5170,11 +5170,11 @@
         }
 
 
-        function AddActuals() {
+        @*function AddActuals() {
             var pid = $("#CurrentPlanId").val();
             var url = '@Url.Content("~/Plan/AddActual?PlanId=")' + pid + '&isGridView=' + $('#IsGridView').val().toLowerCase(); //Modified by Komal Rawal for 2013 Home/Plan Layout changes
             window.location.href = url;
-        }
+        }*@
 
         function CallBudget() {
             var pid = $("#CurrentPlanId").val();

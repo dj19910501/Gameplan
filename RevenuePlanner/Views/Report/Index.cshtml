@@ -118,12 +118,12 @@
         <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
         <div class="wraper-btns cf">
             
-                @if ((bool)ViewBag.TacticActualsAddEdit) // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
+                @*@if ((bool)ViewBag.TacticActualsAddEdit) // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
                 {  // Modified by Arpita Soni on 01/01/2015 for ticket #1085 to move Share Report button left side
                     <div class="span6" id="divAddActual">
                         <button id="BtnAddActual" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Add Actuals</button>
                     </div>
-                }
+                }*@
             
             <div class="span6" id="divShareRep">
                 <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" id="BtnShareReport">Share Report</button>
@@ -1570,14 +1570,14 @@
         var arrPlanIds = new Array();
         arrPlanIds = PlanIds.split(',');
         var GetSelectedPlanNo = arrPlanIds.length;
-        if (GetSelectedPlanNo > 1) {
-            $("#divAddActual").hide();
+        //if (GetSelectedPlanNo > 1) {
+            //$("#divAddActual").hide();
 
-        }
-        else {
-            $("#divAddActual").show();
+        //}
+        //else {
+            //$("#divAddActual").show();
 
-        }
+        //}
         //End
         SortingId = '';
         $.ajax({
@@ -1654,15 +1654,16 @@
         checkedPlancount = $("#ulSelectedPlans li input:checkbox:checked").length;
         $('#cPlancount').text(checkedPlancount);
 
-        if (checkedPlancount > 1) {
-            $("#divAddActual").hide();
-        }
-        else if (checkedPlancount == 0) {
-            $("#divAddActual").hide();
+        //if (checkedPlancount > 1) {
+        //    $("#divAddActual").hide();
+        //}
+    //else 
+        if (checkedPlancount == 0) {
+            //$("#divAddActual").hide();
             $("#divShareRep").hide();
         }
         else {
-            $("#divAddActual").show();
+            //$("#divAddActual").show();
             $("#divShareRep").show();
 
         }
@@ -1945,25 +1946,25 @@
         $('#conversionHeader').css('display', 'block');
         $('#revenueHeader').css('display', 'none');
     }
-    $("#BtnAddActual").click(function () {
+    @*$("#BtnAddActual").click(function () {
         //Button of add actual only display when single plan selected
         var planIdForAddActual = GetFilterIdForPlan(multiselectPlanId);
         if (planIdForAddActual != "" && planIdForAddActual != null) {
             var url = '@Url.Action("AddActual", "Plan")' + '?PlanId=' + planIdForAddActual;
             window.location.href = url;
         }
-    });
+    });*@
     //// Call function based on option
     function loadBasedOnPlan() {
 
         var isActualVisible = "@ViewBag.TacticActualsAddEdit"
         if (isActualVisible.toString().toLowerCase() == 'true') {
-            if (SelectedPlanId == 0) {
-                $("#BtnAddActual").attr("disabled", "disabled");
-            }
-            else {
-                $("#BtnAddActual").removeAttr("disabled");
-            }
+            //if (SelectedPlanId == 0) {
+                //$("#BtnAddActual").attr("disabled", "disabled");
+            //}
+            //else {
+                //$("#BtnAddActual").removeAttr("disabled");
+            //}
         }
 
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
@@ -2315,15 +2316,16 @@
         }
 
         var GetSelectedPlanNo = arrPlanIds.length;
-        if (GetSelectedPlanNo > 1) {
-            $("#divAddActual").hide();
-        }
-        else if (GetSelectedPlanNo == 0) {
-            $("#divAddActual").hide();
+        //if (GetSelectedPlanNo > 1) {
+        //    $("#divAddActual").hide();
+        //}
+    //else 
+        if (GetSelectedPlanNo == 0) {
+            //$("#divAddActual").hide();
             $("#divShareRep").hide();
         }
         else {
-            $("#divAddActual").show();
+            //$("#divAddActual").show();
             $("#divShareRep").show();
 
         }
@@ -2560,7 +2562,7 @@
         //added by devanshi for PL ticket #2175
         if (checkedYearcount == 0)
         {
-            $("#divAddActual").hide();
+            //$("#divAddActual").hide();
             $("#divShareRep").hide();
         }
 
