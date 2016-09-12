@@ -1310,7 +1310,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectModel form = new InspectModel();
             form.ImprovementPlanTacticId = db.Plan_Improvement_Campaign_Program_Tactic.Where(id => id.ImprovementPlanProgramId == ImprovementPlanProgramId).Select(tactic => tactic.ImprovementPlanTacticId).FirstOrDefault();
             form.ImprovementPlanProgramId = ImprovementPlanProgramId;
-            form.ImprovementTacticTypeId = ImprovementTactictypeid;
+            form.ImprovementTacticTypeId = ImprovementTactictypeid > 0 ? ImprovementTactictypeid : 1 ;
             form.Title = Title;
             form.EffectiveDate = DateTime.Now;
             form.Cost = 10;
