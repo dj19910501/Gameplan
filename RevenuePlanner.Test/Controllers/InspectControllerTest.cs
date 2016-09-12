@@ -94,7 +94,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             InspectController objInspectController = new InspectController();
             string UserID = (Sessions.User.UserId).ToString();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             List<int> PlanIds = new List<int>();
             PlanIds.Add(PlanID);
@@ -129,7 +129,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             InspectController objInspectController = new InspectController();
             string UserID = (Sessions.User.UserId).ToString();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             string Title = db.Plan_Campaign.Where(id => id.PlanId == PlanID).Select(campaign => campaign.Title).FirstOrDefault();
             Plan_CampaignModel Form = new Plan_CampaignModel();
@@ -734,7 +734,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             InspectController objInspectController = new InspectController();
             string UserID = (Sessions.User.UserId).ToString();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             string Title = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.Title).FirstOrDefault();
@@ -776,7 +776,7 @@ namespace RevenuePlanner.Test.Controllers
 
             string UserID = (Sessions.User.UserId).ToString();
             int ModelId = DataHelper.GetModelId();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             int TacticTypeId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.TacticTypeId).FirstOrDefault();
@@ -868,7 +868,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
@@ -896,7 +896,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectController objInspectController = new InspectController();
             string UserID = (Sessions.User.UserId).ToString();
             int ModelId = DataHelper.GetModelId();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
@@ -984,7 +984,7 @@ namespace RevenuePlanner.Test.Controllers
             int PlanTacticId = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.PlanLineItemId == CostLineItemId).Select(a => a.PlanTacticId).FirstOrDefault();
                 //db.Plan_Campaign_Program_Tactic.Where(id => id.IsDeleted == false && id.LinkedTacticId != null).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
             int LineitemTypeId = db.LineItemTypes.Where(id => id.ModelId == ModelId).Select(Lineitem => Lineitem.LineItemTypeId).FirstOrDefault();
-
+            double Cost = db.Plan_Campaign_Program_Tactic_LineItem.Where(line => line.PlanLineItemId == CostLineItemId).Select(line => line.Cost).FirstOrDefault();
             List<int> PlanIds = new List<int>();
             //PlanIds.Add(PlanID);
             //Sessions.PlanPlanIds = PlanIds;
@@ -996,7 +996,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.Title = "Test Lineitem" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
-            Form.Cost = 20;
+            Form.Cost = Cost + 100;
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -1022,7 +1022,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
             string UserID = (Sessions.User.UserId).ToString();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
@@ -1062,7 +1062,7 @@ namespace RevenuePlanner.Test.Controllers
             objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
             int ModelId = DataHelper.GetModelId();
             string UserID = (Sessions.User.UserId).ToString();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
@@ -1079,7 +1079,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.Title = Title;
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
-
+            Form.Cost = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanTacticId == PlanTacticId).Select(tactic => tactic.Cost).FirstOrDefault();
 
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
@@ -1149,7 +1149,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController objPlanController = new PlanController();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
             int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
@@ -1223,7 +1223,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             InspectController objInspectController = new InspectController();
             objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             int ImprovementPlanCampaignId = db.Plan_Improvement_Campaign.Where(id => id.ImprovePlanId == PlanID).Select(id => id.ImprovementPlanCampaignId).FirstOrDefault();
             int ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(id => id.ImprovementPlanCampaignId == ImprovementPlanCampaignId).Select(id => id.ImprovementPlanProgramId).FirstOrDefault();
             int ImprovementTactictypeid = db.ImprovementTacticTypes.Where(id => id.ClientId == Sessions.User.ClientId && id.IsDeleted == false).Select(id => id.ImprovementTacticTypeId).FirstOrDefault();
@@ -1232,7 +1232,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectModel form = new InspectModel();
             form.ImprovementPlanTacticId = 0;
             form.ImprovementPlanProgramId = ImprovementPlanProgramId;
-            form.ImprovementTacticTypeId = ImprovementTactictypeid;
+            form.ImprovementTacticTypeId = ImprovementTactictypeid > 0 ? ImprovementTactictypeid : 1; 
             form.Title = "Test ImprovementTactic" + "_ " + DateTime.Now;
             form.EffectiveDate = DateTime.Now;
             form.Cost = 10;
@@ -1262,7 +1262,7 @@ namespace RevenuePlanner.Test.Controllers
 
 
             InspectController objInspectController = new InspectController();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             int ImprovementPlanCampaignId = db.Plan_Improvement_Campaign.Where(id => id.ImprovePlanId == PlanID).Select(id => id.ImprovementPlanCampaignId).FirstOrDefault();
             int ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(id => id.ImprovementPlanCampaignId == ImprovementPlanCampaignId).Select(id => id.ImprovementPlanProgramId).FirstOrDefault();
@@ -1272,7 +1272,7 @@ namespace RevenuePlanner.Test.Controllers
             InspectModel form = new InspectModel();
             form.ImprovementPlanTacticId = 0;
             form.ImprovementPlanProgramId = ImprovementPlanProgramId;
-            form.ImprovementTacticTypeId = ImprovementTactictypeid;
+            form.ImprovementTacticTypeId = ImprovementTactictypeid > 0 ? ImprovementTactictypeid : 1; 
             form.Title = Title;
             form.EffectiveDate = DateTime.Now;
 
@@ -1300,7 +1300,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
             InspectController objInspectController = new InspectController();
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             int ImprovementPlanCampaignId = db.Plan_Improvement_Campaign.Where(id => id.ImprovePlanId == PlanID).Select(id => id.ImprovementPlanCampaignId).FirstOrDefault();
             int ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(id => id.ImprovementPlanCampaignId == ImprovementPlanCampaignId).Select(id => id.ImprovementPlanProgramId).FirstOrDefault();
@@ -1337,13 +1337,16 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Call index method
-            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanID = DataHelper.GetPlanId();
             int ImprovementPlanCampaignId = db.Plan_Improvement_Campaign.Where(id => id.ImprovePlanId == PlanID).Select(id => id.ImprovementPlanCampaignId).FirstOrDefault();
             int ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(id => id.ImprovementPlanCampaignId == ImprovementPlanCampaignId).Select(id => id.ImprovementPlanProgramId).FirstOrDefault();
-            int PlanTacticId = db.Plan_Improvement_Campaign_Program_Tactic.Where(id => id.ImprovementPlanProgramId == ImprovementPlanProgramId).Select(tactic => tactic.ImprovementPlanTacticId).FirstOrDefault(); ;
-            var result = Save_Comment(PlanTacticId, Enums.Section.ImprovementTactic.ToString().ToLower());
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
-            Assert.IsNotNull(result.Data);
+            int PlanTacticId = db.Plan_Improvement_Campaign_Program_Tactic.Where(id => id.ImprovementPlanProgramId == ImprovementPlanProgramId).Select(tactic => tactic.ImprovementPlanTacticId).FirstOrDefault();
+            if (PlanTacticId > 0)
+            {
+                var result = Save_Comment(PlanTacticId, Enums.Section.ImprovementTactic.ToString().ToLower());
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
+                Assert.IsNotNull(result.Data);
+            }
         }
         #endregion
 

@@ -561,42 +561,43 @@ namespace RevenuePlanner.Test.Controllers
             var recordAttribute = db.IntegrationInstance_Attribute
                          .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
                          .Select(attr => attr).ToList();
-
-            //// Add IntegrationType Attributes data to List.
-            List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
-            foreach (var item in recordAttribute)
+            if (record != null)
             {
+                //// Add IntegrationType Attributes data to List.
+                List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
+                foreach (var item in recordAttribute)
+                {
 
-                IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
-                objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
-                objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
-                objIntegrationTypeAttributeModel.IntegrationTypeAttributeId = item.IntegrationTypeAttribute.IntegrationTypeAttributeId;
-                objIntegrationTypeAttributeModel.IntegrationTypeId = item.IntegrationTypeAttribute.IntegrationTypeId;
-                objIntegrationTypeAttributeModel.Value = item.Value;
-                lstObjIntegrationTypeAttributeModel.Add(objIntegrationTypeAttributeModel);
+                    IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
+                    objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
+                    objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
+                    objIntegrationTypeAttributeModel.IntegrationTypeAttributeId = item.IntegrationTypeAttribute.IntegrationTypeAttributeId;
+                    objIntegrationTypeAttributeModel.IntegrationTypeId = item.IntegrationTypeAttribute.IntegrationTypeId;
+                    objIntegrationTypeAttributeModel.Value = item.Value;
+                    lstObjIntegrationTypeAttributeModel.Add(objIntegrationTypeAttributeModel);
+                }
+
+                if (lstObjIntegrationTypeAttributeModel.Count == 0)
+                {
+                    lstObjIntegrationTypeAttributeModel = null;
+                }
+                //Valid credentials of an instance
+                form.Instance = record.Instance;
+                form.Username = record.Username;
+                form.Password = Common.Decrypt(record.Password);
+                form.IntegrationInstanceId = record.IntegrationInstanceId;
+                form.IntegrationTypeId = record.IntegrationTypeId;
+                form.IsActive = record.IsActive;
+                form.ClientId = Sessions.User.ClientId;
+                form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
+                IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
+                objIntegrationTypeModel.Title = ObjMarketoInstanceTypeId.Title;
+                objIntegrationTypeModel.Code = ObjMarketoInstanceTypeId.Code;
+                form.IntegrationType = objIntegrationTypeModel;
+                var result = controller.TestIntegration(form) as JsonResult;
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
+                Assert.IsNotNull(result.Data);
             }
-
-            if (lstObjIntegrationTypeAttributeModel.Count == 0)
-            {
-                lstObjIntegrationTypeAttributeModel = null;
-            }
-            //Valid credentials of an instance
-            form.Instance = record.Instance;
-            form.Username = record.Username;
-            form.Password = Common.Decrypt(record.Password);
-            form.IntegrationInstanceId = record.IntegrationInstanceId;
-            form.IntegrationTypeId = record.IntegrationTypeId;
-            form.IsActive = record.IsActive;
-            form.ClientId = Sessions.User.ClientId;
-            form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
-            IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            objIntegrationTypeModel.Title = ObjMarketoInstanceTypeId.Title;
-            objIntegrationTypeModel.Code = ObjMarketoInstanceTypeId.Code;
-            form.IntegrationType = objIntegrationTypeModel;
-            var result = controller.TestIntegration(form) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNotNull(result.Data);
-
 
         }
 
@@ -675,68 +676,70 @@ namespace RevenuePlanner.Test.Controllers
             var recordAttribute = db.IntegrationInstance_Attribute
                          .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
                          .Select(attr => attr).ToList();
-
-            //// Add IntegrationType Attributes data to List.
-            List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
-            foreach (var item in recordAttribute)
+            if (record != null)
             {
-
-                IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
-                objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
-                objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
-                objIntegrationTypeAttributeModel.IntegrationTypeAttributeId = item.IntegrationTypeAttribute.IntegrationTypeAttributeId;
-                objIntegrationTypeAttributeModel.IntegrationTypeId = item.IntegrationTypeAttribute.IntegrationTypeId;
-                objIntegrationTypeAttributeModel.Value = item.Value;
-                lstObjIntegrationTypeAttributeModel.Add(objIntegrationTypeAttributeModel);
-            }
-
-            if (lstObjIntegrationTypeAttributeModel.Count == 0)
-            {
-                lstObjIntegrationTypeAttributeModel = null;
-            }
-
-            //Credentials of an instance
-            form.Instance = record.Instance;
-            form.Username = record.Username;
-            form.Password = Common.Decrypt(record.Password);
-            form.IntegrationInstanceId = record.IntegrationInstanceId;
-            form.IntegrationTypeId = record.IntegrationTypeId;
-            form.IsActive = record.IsActive;
-            form.ClientId = Sessions.User.ClientId;
-            form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
-
-            IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
-            objIntegrationTypeModel.Title = ObjMarketoInstanceTypeId.Title;
-            objIntegrationTypeModel.Code = ObjMarketoInstanceTypeId.Code;
-
-            form.IntegrationType = objIntegrationTypeModel;
-
-            var recordSync = db.SyncFrequencies
-                                      .Where(freq => freq.IntegrationInstanceId == IntegrationInstanceId && freq.IntegrationInstance.ClientId == Sessions.User.ClientId)
-                                      .Select(freq => freq).FirstOrDefault();
-
-            SyncFrequencyModel objSync = new SyncFrequencyModel();
-            if (recordSync != null)
-            {
-                objSync.Day = !string.IsNullOrEmpty(recordSync.Day) ? recordSync.Day : string.Empty;
-                objSync.DayofWeek = !string.IsNullOrEmpty(recordSync.DayofWeek) ? recordSync.DayofWeek : string.Empty;
-                objSync.Frequency = recordSync.Frequency;
-
-                // Set Time data to SyncFrequencyModel Object.
-                if (recordSync.Time.HasValue)
+                //// Add IntegrationType Attributes data to List.
+                List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
+                foreach (var item in recordAttribute)
                 {
-                    if (recordSync.Time.Value.Hours > 12)
-                        objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "PM";
-                    else
-                        objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
-                }
-                objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;
-            }
-            form.SyncFrequency = objSync;
 
-            var result = controller.SaveGeneralSetting(form) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNotNull(result.Data);
+                    IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
+                    objIntegrationTypeAttributeModel.Attribute = item.IntegrationTypeAttribute.Attribute;
+                    objIntegrationTypeAttributeModel.AttributeType = item.IntegrationTypeAttribute.AttributeType;
+                    objIntegrationTypeAttributeModel.IntegrationTypeAttributeId = item.IntegrationTypeAttribute.IntegrationTypeAttributeId;
+                    objIntegrationTypeAttributeModel.IntegrationTypeId = item.IntegrationTypeAttribute.IntegrationTypeId;
+                    objIntegrationTypeAttributeModel.Value = item.Value;
+                    lstObjIntegrationTypeAttributeModel.Add(objIntegrationTypeAttributeModel);
+                }
+
+                if (lstObjIntegrationTypeAttributeModel.Count == 0)
+                {
+                    lstObjIntegrationTypeAttributeModel = null;
+                }
+
+                //Credentials of an instance
+                form.Instance = record.Instance;
+                form.Username = record.Username;
+                form.Password = Common.Decrypt(record.Password);
+                form.IntegrationInstanceId = record.IntegrationInstanceId;
+                form.IntegrationTypeId = record.IntegrationTypeId;
+                form.IsActive = record.IsActive;
+                form.ClientId = Sessions.User.ClientId;
+                form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
+
+                IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
+                objIntegrationTypeModel.Title = ObjMarketoInstanceTypeId.Title;
+                objIntegrationTypeModel.Code = ObjMarketoInstanceTypeId.Code;
+
+                form.IntegrationType = objIntegrationTypeModel;
+
+                var recordSync = db.SyncFrequencies
+                                          .Where(freq => freq.IntegrationInstanceId == IntegrationInstanceId && freq.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                          .Select(freq => freq).FirstOrDefault();
+
+                SyncFrequencyModel objSync = new SyncFrequencyModel();
+                if (recordSync != null)
+                {
+                    objSync.Day = !string.IsNullOrEmpty(recordSync.Day) ? recordSync.Day : string.Empty;
+                    objSync.DayofWeek = !string.IsNullOrEmpty(recordSync.DayofWeek) ? recordSync.DayofWeek : string.Empty;
+                    objSync.Frequency = recordSync.Frequency;
+
+                    // Set Time data to SyncFrequencyModel Object.
+                    if (recordSync.Time.HasValue)
+                    {
+                        if (recordSync.Time.Value.Hours > 12)
+                            objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "PM";
+                        else
+                            objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
+                    }
+                    objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;
+                }
+                form.SyncFrequency = objSync;
+
+                var result = controller.SaveGeneralSetting(form) as JsonResult;
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
+                Assert.IsNotNull(result.Data);
+            }
         }
 
         #endregion
