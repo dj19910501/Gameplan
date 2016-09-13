@@ -7807,6 +7807,8 @@ namespace RevenuePlanner.Controllers
             PlanController objPlanController = new PlanController();
             Plangrid objplangrid = new Plangrid();
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            Dictionary<int,BudgetDHTMLXGridModel> lstChildPlanMainDHTMLXGrid = new Dictionary<int,BudgetDHTMLXGridModel>();
+            BudgetDHTMLXGridModel childPlanMainDHTMLXGrid = new BudgetDHTMLXGridModel();
             PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
@@ -7827,6 +7829,7 @@ namespace RevenuePlanner.Controllers
 
                     string lockedstateone = "1";
                     string bgcolorLineItem = "#ffffff";
+                    string formatThousand = "#,#0.##";
 
                     string stylecolorblack = "color:#000";
                     string stylecolorgray = "color:#999"; // Add By Nishant Sheth #1987
@@ -7856,6 +7859,10 @@ namespace RevenuePlanner.Controllers
                             #region LineItems
                             foreach (var lineitem in lstLineItemTaskData)
                             {
+                                childPlanMainDHTMLXGrid = new BudgetDHTMLXGridModel();
+                                childPlanMainDHTMLXGrid = objPlanController.GetCostAllocationLineItemInspectPopup(lineitem.PlanLineItemId);
+                                lstChildPlanMainDHTMLXGrid.Add(lineitem.PlanLineItemId, childPlanMainDHTMLXGrid);
+
                                 cellTextColor = lineitem.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
 
                                 lineitemrowsobj = new PlanDHTMLXGridDataModel();
@@ -7888,7 +7895,7 @@ namespace RevenuePlanner.Controllers
                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                 lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = lineitem.Cost.ToString();
+                                lineitemdataobj.value = lineitem.Cost.ToString(formatThousand);
                                 lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
                                 lineitemdataobj.type = "edn";
                                 lineitemdataobj.style = cellTextColor;
@@ -7925,6 +7932,8 @@ namespace RevenuePlanner.Controllers
                                             && litemtype.IsDeleted == false).
                                             Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
                     TempData["lineItemTypes"] = lstLineItemType;
+
+                    objplangrid.lstChildPlanDHTMLXGrid = lstChildPlanMainDHTMLXGrid;
                 }
             }
             catch (Exception objException)

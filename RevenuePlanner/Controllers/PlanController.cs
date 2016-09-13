@@ -384,7 +384,7 @@ namespace RevenuePlanner.Controllers
                         plan.GoalType = objPlanModel.GoalType;
                         if (objPlanModel.GoalValue != null)
                         {
-                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));                          
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                             {
                                 plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
@@ -6147,8 +6147,8 @@ namespace RevenuePlanner.Controllers
                                     //double diff = 0;
                                     //if (tacticlineitemcostmonth > tacticmonthcost)
                                     //{
-                                        tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = tacticlineitemcostmonth;
-                                        objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                    tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = tacticlineitemcostmonth;
+                                    objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
                                     //}
                                     //if (tacticmonthcost > tacticlineitemcostmonth)
                                     //{
@@ -6481,11 +6481,11 @@ namespace RevenuePlanner.Controllers
                                 }
                                 if (!isExists)
                                 {
-                                    objLineitem.Cost = yearlycost+Convert.ToDouble(monthlycost);
+                                    objLineitem.Cost = yearlycost + Convert.ToDouble(monthlycost);
                                 }
                                 else
                                 {
-                                objLineitem.Cost = yearlycost;
+                                    objLineitem.Cost = yearlycost;
                                 }
 
                                 List<string> QuarterList;
@@ -6506,8 +6506,8 @@ namespace RevenuePlanner.Controllers
                                     //string period = PeriodChar + QuarterCnt.ToString();
                                     //monthlyTotalLineItemCost = PrevTacticBudgetAllocationList.Where(lineCost => QuarterList.Contains(lineCost.Period)).ToList().Sum(lineCost => lineCost.Value);
                                     monthlyTotalLineItemCost = lineitemcostlist.Where(lineCost => QuarterList.Contains(lineCost.Period)).ToList().Sum(lineCost => lineCost.Value);
-                                    
-                                    if (!isExists && QuarterList.Where(q=>q==period).Any())
+
+                                    if (!isExists && QuarterList.Where(q => q == period).Any())
                                     {
                                         monthlyTotalLineItemCost = monthlyTotalLineItemCost + Convert.ToDouble(monthlycost);
                                     }
@@ -6559,7 +6559,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else if (monthlyTotalLineItemCost < monthlyTotalTacticCost)
                                     {
-                                       // Plan_Campaign_Program_Tactic_LineItem OtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
+                                        // Plan_Campaign_Program_Tactic_LineItem OtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
                                         if (QuarterList.Where(q => q == period).Any())
                                         {
                                             period = QuarterList[0].ToString();
@@ -6571,29 +6571,29 @@ namespace RevenuePlanner.Controllers
                                             if (diffCost < 0)
                                             {
                                                 objTactic.Cost = objTactic.Cost + diffCost;
-                                        int periodCount = 0;
-                                        ////If cost diffrence is lower than 0 than reduce it from quarter in series of 1st month of quarter,2nd month of quarter...
-                                        while (diffCost < 0)
-                                        {
-                                            period = QuarterList[periodCount].ToString();
-                                            tacticinnerCost = tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().Sum(_tacCost => _tacCost.Value);
-                                            if ((diffCost + tacticinnerCost) >= 0)
-                                            {
-                                                tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = _tacCost.Value + diffCost; db.Entry(_tacCost).State = EntityState.Modified; });
+                                                int periodCount = 0;
+                                                ////If cost diffrence is lower than 0 than reduce it from quarter in series of 1st month of quarter,2nd month of quarter...
+                                                while (diffCost < 0)
+                                                {
+                                                    period = QuarterList[periodCount].ToString();
+                                                    tacticinnerCost = tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().Sum(_tacCost => _tacCost.Value);
+                                                    if ((diffCost + tacticinnerCost) >= 0)
+                                                    {
+                                                        tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = _tacCost.Value + diffCost; db.Entry(_tacCost).State = EntityState.Modified; });
+                                                    }
+                                                    else
+                                                    {
+                                                        tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = 0; db.Entry(_tacCost).State = EntityState.Modified; });
+                                                    }
+                                                    diffCost = diffCost + tacticinnerCost;
+                                                    periodCount = periodCount + 1;
+                                                }
                                             }
-                                            else
-                                            {
-                                                tacticostslist.Where(_tacCost => _tacCost.Period == period).ToList().ForEach(_tacCost => { _tacCost.Value = 0; db.Entry(_tacCost).State = EntityState.Modified; });
-                                            }
-                                            diffCost = diffCost + tacticinnerCost;
-                                            periodCount = periodCount + 1;
-                                        }
-                                            }
-                                            else if (diffCost>0)
+                                            else if (diffCost > 0)
                                             {
                                                 Plan_Campaign_Program_Tactic_LineItem OtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
                                                 double otherCost = OtherLineItem.Cost;
-                                                if (OtherLineItem != null && diffCost>otherCost)
+                                                if (OtherLineItem != null && diffCost > otherCost)
                                                 {
                                                     objTactic.Cost += diffCost - otherCost;
                                                 }
@@ -6882,7 +6882,7 @@ namespace RevenuePlanner.Controllers
 
                         List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
                         double totalLineitemCost = 0;
-                        tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId && lineItem.IsDeleted==false).ToList();
+                        tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId && lineItem.IsDeleted == false).ToList();
                         List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
                         //Modified By komal rawal
                         var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
@@ -6896,7 +6896,7 @@ namespace RevenuePlanner.Controllers
                             YearlyCost = totalLineitemCost;
                             string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
                             return Json(new { isSuccess = false, errormsg = strReduceTacticPlannedCostMessage });
-                        
+
                         }
 
                         if (!pcpobj.Plan_Campaign_Program_Tactic_Cost.Any())
@@ -7008,7 +7008,7 @@ namespace RevenuePlanner.Controllers
                         var YearlyCost = Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.YearlyBudgetForEntity).FirstOrDefault().Value);
                         var objTactic = objLineitem.Plan_Campaign_Program_Tactic;
 
-                        
+
 
                         if (YearlyCost > objLineitem.Cost)
                         {
@@ -9809,10 +9809,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="LineItemId"></param>
         /// <returns></returns>
-        public JsonResult GetCostAllocationLineItemInspectPopup(int LineItemId)
+        public BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int LineItemId)
         {
             Enums.BudgetTab budgetTab = Enums.BudgetTab.Planned;
-            Enums.ViewBy viewBy = Enums.ViewBy.Campaign; 
+            Enums.ViewBy viewBy = Enums.ViewBy.Campaign;
             PlanExchangeRate = Sessions.PlanExchangeRate;
             string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
 
@@ -9951,6 +9951,7 @@ namespace RevenuePlanner.Controllers
 
             List<BudgetDHTMLXGridDataModel> LineRowsObjList = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel LineRowsObj = new BudgetDHTMLXGridDataModel();
+
             foreach (BudgetModel bml in
                         model.Where(p =>
                                         p.ActivityType == ActivityType.ActivityLineItem).OrderBy(p => p.ActivityName))
@@ -9972,13 +9973,18 @@ namespace RevenuePlanner.Controllers
 
                 LineRowsObj.data = LineDataObjList;
                 LineRowsObjList.Add(LineRowsObj);
+
+                LineDataObjList = CampaignBudgetSummaryForInspectPopup(model, ActivityType.ActivityLineItem,
+                                    bml.ParentActivityId, LineDataObjList, AllocatedBy, Convert.ToString(budgetTab),
+                                    bml.ActivityId);
+
                 LineDataObjList = CampaignMonthForInspectPopup(model, ActivityType.ActivityLineItem,
                                     bml.ParentActivityId, LineDataObjList, AllocatedBy, Convert.ToString(budgetTab),
                                     bml.ActivityId);
             }
             objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
             objBudgetDHTMLXGrid.Grid.rows = LineRowsObjList;
-            return Json(new { LICostAllocation = objBudgetDHTMLXGrid }, JsonRequestBehavior.AllowGet);
+            return objBudgetDHTMLXGrid;
         }
 
         /// <summary>
@@ -10966,10 +10972,10 @@ namespace RevenuePlanner.Controllers
         public BudgetDHTMLXGridModel GenerateHeaderStringForInspectPopup(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid)
         {
             string setHeader = "", colType = "", width = "", colSorting = "";
-            setHeader = "ActivityId,Allocate Cost";
-            colType = "ro,ro";
-            width = "0,70";
-            colSorting = "na,na";
+            setHeader = "ActivityId,Allocate Cost,Planned Cost";
+            colType = "ro,ro,ro";
+            width = "0,70,0";
+            colSorting = "na,na,na";
 
             if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
@@ -10978,7 +10984,7 @@ namespace RevenuePlanner.Controllers
                 {
                     DateTime dt = new DateTime(2012, i, 1);
                     setHeader = setHeader + ",Q" + quarterCounter.ToString();
-                    colType = colType + ",ro";
+                    colType = colType + ",ed";
                     width = width + ",50";
                     colSorting = colSorting + ",str";
                     quarterCounter++;
@@ -10990,7 +10996,7 @@ namespace RevenuePlanner.Controllers
                 {
                     DateTime dt = new DateTime(2012, i, 1);
                     setHeader = setHeader + "," + dt.ToString("MMM").ToUpper();
-                    colType = colType + ",ro";
+                    colType = colType + ",ed";
                     width = width + ",40";
                     colSorting = colSorting + ",str";
                 }
@@ -11002,6 +11008,31 @@ namespace RevenuePlanner.Controllers
             objBudgetDHTMLXGrid.Width = width;
             objBudgetDHTMLXGrid.ColSorting = colSorting;
             return objBudgetDHTMLXGrid;
+        }
+
+        /// <summary>
+        /// Added By: Rushil Bhuptani.
+        /// Date : 18/5/2016
+        /// Action to Generate Summary of Allocated Month Data for Plan, Campaign, Program, Tactic, Lineitem
+        /// </summary>
+        public List<Budgetdataobj> CampaignBudgetSummaryForInspectPopup(List<BudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string tab, string activityId)
+        {
+            string formatThousand = "#,#0.##";
+            BudgetModel plan = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
+            if (plan != null)
+            {
+                Budgetdataobj BudgetDataObj = new Budgetdataobj();
+                string divValue = "0";
+                if (plan != null)
+                {
+                    bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && plan.LineItemTypeId == null;
+                    divValue = plan.isEditable && !isOtherLineItem ? plan.Allocated.ToString(formatThousand) : plan.Allocated.ToString(formatThousand);
+                }
+                BudgetDataObj.value = divValue;
+                BudgetDataObjList.Add(BudgetDataObj);
+            }
+
+            return BudgetDataObjList;
         }
 
         /// <summary>
@@ -11019,6 +11050,8 @@ namespace RevenuePlanner.Controllers
             bool isTactic = activityType == Helpers.ActivityType.ActivityTactic ? true : false;
             bool isLineItem = activityType == Helpers.ActivityType.ActivityLineItem ? true : false;
             BudgetModel c = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
+
+            bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && c.LineItemTypeId == null;
 
             if (allocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
@@ -11061,12 +11094,20 @@ namespace RevenuePlanner.Controllers
                     }
 
                     BudgetDataObj = new Budgetdataobj();
+                    if (!isOtherLineItem && c.isEditable && isLineItem && c.LineItemTypeId != null)
+                    {
+                        BudgetDataObj.locked = "0";
+                    }
+                    else
+                    {
+                        BudgetDataObj.locked = "1";
+                    }
                     BudgetDataObj.value = divInnerHtml;
                     BudgetDataObjList.Add(BudgetDataObj);
                     quartercount += 1;
                 }
             }
-            else 
+            else
             {
                 double monthlyCampaignValue = 0;
                 for (int i = 1; i <= 12; i++)
@@ -11121,29 +11162,27 @@ namespace RevenuePlanner.Controllers
                     }
                     if (monthlyCampaignValue <= 0)
                     {
-                        //divInnerHtml = c.isEditable &&
-                        //               ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
-                        //                (!isPlannedTab && isLineItem && c.isAfterApproved))
-                        //    ? "---"
-                        //    : "---";
                         divInnerHtml = "---";
                     }
                     else
                     {
-                        //divInnerHtml = c.isEditable &&
-                        //               ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
-                        //                (!isPlannedTab && isLineItem && c.isAfterApproved))
-                        //    ? monthlyCampaignValue.ToString(formatThousand)
-                        //    : monthlyCampaignValue.ToString(formatThousand);
                         divInnerHtml = monthlyCampaignValue.ToString(formatThousand);
                     }
                     BudgetDataObj = new Budgetdataobj();
+                    if (!isOtherLineItem && c.isEditable && isLineItem && c.LineItemTypeId != null)
+                    {
+                        BudgetDataObj.locked = "0";
+                    }
+                    else
+                    {
+                        BudgetDataObj.locked = "1";
+                    }
                     BudgetDataObj.value = divInnerHtml;
                     BudgetDataObjList.Add(BudgetDataObj);
 
                 }
             }
-            
+
             return BudgetDataObjList;
         }
 
@@ -14219,7 +14258,6 @@ namespace RevenuePlanner.Controllers
                 // Modified by Arpita Soni to resolve issue in Ticket #2237 due to #2270/#2271
                 if (IsNotLineItemListing)
                 {
-                   
                     // Third Column : Empty
                     headobj = new PlanHead();
                     headobj.type = "ro";
@@ -15506,7 +15544,7 @@ namespace RevenuePlanner.Controllers
                             }
                             if (linkedLineItemId > 0)
                             {
-                                
+
                                 List<Plan_Campaign_Program_Tactic_LineItem_Cost> lstLineCost = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
                                 lstLineCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(line => line.PlanLineItemId == linkedLineItemId).ToList();
                                 if (lstLineCost != null && lstLineCost.Count > 0)

@@ -2,49 +2,72 @@
 @model RevenuePlanner.Models.Plangrid
 @{
     var countrows = Model.PlanDHTMLXGrid.rows.Count;
-    //string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
-    //var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
-
 }
 <style>
-.gridViewGrid.gridbox.gridbox_dhx_skyblue{ width:98% !important; background:#fff}
-div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
-.dhx_sub_row table.obj tr td {
-    text-align: center;
-    padding-left: 0px !important;
-}
-div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
-div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
-    width: 100% !important;
-}
-div.gridbox_dhx_skyblue.gridbox table.hdr td {
-    -moz-user-select: none;
-}
-#lineItemGrid .grid_add {
-    margin-top:0;
-}
-#lineItemGrid .grid_Search {
-margin-left: 10px;
-}
-#lineItemGrid .objbox {
-    overflow-x:hidden !important; 
-}
-#lineItemGrid .dhx_sub_row{
-    background: #fff none repeat scroll 0 0;
-    border-top: 1px solid #d4d4d4;
-    left: 0 !important;
-    margin-left: 0 !important;
-    margin-top: 0 !important;
-    width:100% !important;
-}
-#lineItemGrid .rowselected td{background:#f2f2f2} 
-.tooltip{ z-index:9999 !important}   
+    .gridViewGrid.gridbox.gridbox_dhx_skyblue {
+        width: 98% !important;
+        background: #fff;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
+    .dhx_sub_row table.obj tr td {
+        text-align: center;
+        padding-left: 0px !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+        width: 100% !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox table.hdr td {
+        -moz-user-select: none;
+    }
+
+    #lineItemGrid .grid_add {
+        margin-top: 0;
+    }
+
+    #lineItemGrid .grid_Search {
+        margin-left: 10px;
+    }
+
+    #lineItemGrid .objbox {
+        overflow-x: hidden !important;
+    }
+
+    #lineItemGrid .dhx_sub_row {
+        background: #fff none repeat scroll 0 0;
+        border-top: 1px solid #d4d4d4;
+        left: 0 !important;
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        width: 100% !important;
+    }
+
+    #lineItemGrid .rowselected td {
+        background: #f2f2f2;
+    }
+
+    .tooltip {
+        z-index: 9999 !important;
+    }
+    .dhx_sub_row {
+          height: 52px !important;
+    }
+    .dhx_sub_row div.xhdr {
+    height: 27px !important;
+    }
+   
 </style>
+
 <!-- Added by Arpita Soni for Ticket #2237 on 06/13/2016 -->
-@if(countrows > 0) {
+@if (countrows > 0)
+{
     <div id="lineItemGrid" class="gridViewGrid"></div>
 }
-else {
+else
+{
     <div>No records available.</div>
 }
 
@@ -53,6 +76,7 @@ else {
        
     </div>
 </div>
+<script src="~/Scripts/js/DHTMLX/dhtmlxgrid_excell_grid.js"></script>
 <script src="~/Scripts/js/DHTMLX/dhtmlxgrid_excell_sub_row.js"></script>
 <script type="text/javascript">
     var LineItemGrid;
@@ -80,15 +104,15 @@ else {
         window.focus();
 
         pageIsScroll = false;
-        $('.task-tbl div.gridbox').css('height', $(window).height() - 450); //PL #1758 H9_QA - Grid View Scrolling - Added by Dashrath Prajapati
+        //$('.task-tbl div.gridbox').css('height', $(window).height() - 450); //PL #1758 H9_QA - Grid View Scrolling - Added by Dashrath Prajapati
        
-        if ($('.honeycombbox-icon-gantt-Active').length == 0) {
-            $(".honeycombbox").hide();
-        }
-        else {
-            $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
-            $(".honeycombbox").show();
-        }
+        //if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+        //    $(".honeycombbox").hide();
+        //}
+        //else {
+        //    $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+        //    $(".honeycombbox").show();
+        //}
 
         $(".grid_Search").off("click");
         $(".grid_Search").click(function (e) {
@@ -215,62 +239,33 @@ else {
             }
         })
 
-        GridDataLineItemGrid =JSON.stringify(datahome);
+        GridDataLineItemGrid = JSON.stringify(datahome);
     }
 
     // End By Nishant Sheth
 
-    function callsearch() {
-        $("#divgridview").find(".grid_Search").each(function () {
-            $(this).click(function (e) {
-                inspectCloseFocus = $(this).position().top;
-                var id = $(this).parent().next().html();
-                var type = $(this).attr('id');
-                gridSearchFlag = 1;
-                DisplayEditablePopup(id, type);
-            });
-            return false;
-        });
-       
-        $('#lineItemGrid').find('tbody tr').each(function () {
-            var spnerror = $(this).find("#tacticIsRequired");
-            if (typeof spnerror != 'undefined' && spnerror != null) {
-                var div = $(spnerror).parent().parent();
-
-                if (typeof div != 'undefined') {
-                    $(spnerror).remove();
-                    $('<span class="orange-corner-grid" id="spnError"></span>').insertAfter(div);
-                }
-            }
-        });
-        $("#divgridview").find(".orange-corner-grid").each(function () {
-            $(this).hover(function () {
-                $("#divTacticReqMsg").css('display', 'block');
-                var position = $(this).offset();
-                var targetOffset = $(this).offset().top;
-                var targetHeight = $(this).height();
-                var contentHeight = $('#divTacticReqMsg').outerHeight();
-                var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-
-                $('#divTacticReqMsg').css({
-                    'top': targetBottomOffset,
-                    'left': position.left,
-                });
-                $('#popupLineitemIP').css('display', 'none');
-                $('#dhx_combo_select').css('display', 'none');
-                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-            }, function () {
-                $("#divTacticReqMsg").css('display', 'none');
-            });
-        });
-    }
     $('#errorMessageInspectPopup .close').click(function () {
         $('#errorMessageInspectPopup').css("display", "none");
     });
     
     var GridDataLineItemGrid;
+    var ActivityIdColIndex;
+    var PlannedCostColIndex;
+    var arrDetailedGrids = [];
+    var arrFullMonthNames = { 'JAN': 'January' ,
+        'FEB': 'February' ,
+        'MAR': 'March' ,
+        'APR': 'April' ,
+        'MAY': 'May' ,
+        'JUN': 'June' ,
+        'JUL': 'July' ,
+        'AUG': 'August' ,
+        'SEP': 'September' ,
+        'OCT': 'October' ,
+        'NOV': 'November' ,
+        'DEC': 'December' }
+
     function BindLineItemGrid() {
-        
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
         var mainGridData = JsonModel;
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
@@ -284,45 +279,57 @@ else {
         LineItemGrid.setCustomSorting(sort_Owner, 6);
         LineItemGrid.setCustomSorting(sort_TacticType, 5);
         LineItemGrid.attachEvent("onEditCell", doOnEditCell);
-        LineItemGrid.enableAutoHeight(true);
+        
         LineItemGrid.setColumnHidden(1,true); // hide column activity type
         LineItemGrid.setColumnHidden(4,true); // hide column id
         
-        var subgrid_data ;
+        var subgrid_data;
+        var lstChildGrids = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.lstChildPlanDHTMLXGrid)';
+        lstChildGrids = $('<div/>').html(lstChildGrids.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        lstChildGrids = (lstChildGrids.toString().replace(/&amp;/g, '&'));
+
+        lstChildGrids = JSON.parse(lstChildGrids);
+        
         LineItemGrid.attachEvent("onSubGridCreated",function(subgrid,id,index,value) {
             // this code will be called each time when subgrid opened , any code to init subgrid can be placed here
-            var ActivityIdColIndex = LineItemGrid.getColIndexById("id");
             var LineItemId= LineItemGrid.cells(id, ActivityIdColIndex).getValue();
+           
+            subgrid_data = lstChildGrids[LineItemId];
+            subgrid.setImageSize(1, 1);
+            subgrid.setHeader(subgrid_data.SetHeader);
+                    
+            subgrid.setColTypes(subgrid_data.ColType);
+            subgrid.setInitWidths(subgrid_data.Width);
             
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/GetCostAllocationLineItemInspectPopup/")',
-                dataType: "json",
-                data: { LineItemId: LineItemId },
-                success: function (data) {
-                    subgrid_data = data.LICostAllocation;
-                    subgrid.setImageSize(1, 1);
-                    subgrid.setHeader(subgrid_data.SetHeader);
-                    //notice chekbox column #1
-                    subgrid.setColTypes(subgrid_data.ColType);
-                    subgrid.setInitWidths(subgrid_data.Width);
-                    //subgrid.setColumnMinWidth(80,1);
-                    subgrid.init();
-                    subgrid.parse(subgrid_data.Grid,"json");
-                    subgrid.setColumnHidden(0,true);
-                    subgrid.callEvent("onGridReconstructed",[]);
-                }
-            });
+                    
+            subgrid.attachEvent("onEditCell", doOnSubgridEditCell);
+            subgrid.init();
+            subgrid.enableAutoHeight(true);
+            subgrid.parse(subgrid_data.Grid,"json");
+
+            subgrid.setColumnHidden(0,true);
+            subgrid.setColumnHidden(2,true);
+            //subgrid.callEvent("onGridReconstructed",[]);
+            
             return false; // block defaults
         });
+        LineItemGrid.attachEvent("onSubGridLoaded",function(subgrid){
+            alert();
+        })
         LineItemGrid.init();
-
+        LineItemGrid.enableAutoHeight(true);
         LineItemGrid.parse(GridDataLineItemGrid, "json");
+        ActivityIdColIndex = LineItemGrid.getColIndexById("id");
+        PlannedCostColIndex = LineItemGrid.getColIndexById("plannedcost");
+        
         LineItemGrid.forEachRow(function (id) {
             LineItemGrid.cells(id, 0).open();
         });
+        //LineItemGrid.refresh();
+        //LineItemGrid.callEvent("onGridReconstructed",[]);
+        
     }
-
+    
     function sort_Owner(a, b, ord, a_id, b_id) {
 
         a = LineItemGrid.cells(a_id, 6).getText();
@@ -340,20 +347,6 @@ else {
         } else return 0;
     };
  
-    $(document).ready(function () {
-        $('#cancel-button_Movetactic').on("click", function () {
-            $('#divMovetacticPopup').modal("hide");
-        });
-
-        //// Proceed to save data.
-        $('#proceed-button_Movetactic').on("click", function () {
-
-            SaveMoveTactic();
-            $('#divMovetacticPopup').modal("hide");
-        });
-        
-    });
-    
     function OpenLineItemGridPopup(obj, e) {
         var arrTacticAndLineItemIds = $(obj).attr('alt').split('_');
         tacticId = arrTacticAndLineItemIds[0];
@@ -462,325 +455,382 @@ else {
                     }
                 }
             });
-        }
+    }
     });
 
+function doOnSubgridEditCell(stage, rowId, cellInd, nValue, oValue) {
+    var detailedGridData = $(this)[0];
 
-    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
-        var updatetype = rowId.split(".")[0];
-        var Id;
-        var UpdateColumn;
-        var UpdateVal;
-        var Colind = this.cell.cellIndex;
+    if (stage == 0){
+        var locked = detailedGridData.cells(rowId, cellInd).getAttribute("locked");
+        if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
+            return false;
+    }
+    if (stage == 1){
+    }
+    if (stage == 2){
+        
+        var entityId = detailedGridData.cells(rowId, 0).getValue();
+        var section = "LineItem";
+    
+        var month = arrFullMonthNames[detailedGridData.getColLabel(cellInd)];
+        
+        var yearlyplannedcost = detailedGridData.cells(rowId, 2).getValue();
+        var monthlyplannedcost = detailedGridData.cells(rowId, cellInd).getValue();
 
-        if(stage == 0)
-        {
-            var  newvalue = LineItemGrid.cells(rowId, cellInd).getValue();
-            if(newvalue.indexOf("</div>") > -1)
-            {
-
-                value = newvalue.split("</div>")[0];
-            }
-            TacticName = newvalue.split("</div>")[1];
+        //tab
+        var tab = 'Planned';
+        var isquarter = false;
+        if('@Sessions.ViewByValue' == 'Q') {
+            isquarter = true;
         }
-        else
-        {
-            if(nValue != undefined)
+        
+        var inputArr = [];
+        //Insertation Start 19/08/2016 Kausha #2503 Used SetValueByExchangeRate function to store value in dollar.
+        inputArr.push({
+            key: "CostMonth",
+            Value: SetValueByExchangeRate(monthlyplannedcost.replace(/,/g, ""))
+        },
             {
-                TacticName = nValue;
-            }
-        }
-        UpdateColumn = LineItemGrid.getColLabel(Colind, 0);
-        if (stage == 0) {
-            // Only check for type column
-            if (Colind == 5) {
-                if (updatetype == "line") {
-                    var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
-                    if (actval == "") {
-                        return false;
-                    }
-                    var combo = LineItemGrid.getCombo(cellInd);
-                    var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(TempData["lineItemTypes"]))');
-                    //  d = optionlist.filter(filterbyname);
-                    combo.clear();
-                    $.each(lineitemtype, function (i, item) {
-                        combo.put(item.LineItemTypeId, item.Title);
-                    });
+                key: "CostYear",
+                Value: SetValueByExchangeRate(yearlyplannedcost.replace(/,/g, ""))
+            });
+        var jsonInputs = JSON.stringify(inputArr);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/SavePlannedCell/")',
+            dataType: "json",
+            data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
+            success: function (data) {
+                if (data.isSuccess == true) {
+                    $("#liLine_Items").trigger("click");
+                }
+                else {
+                    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                    $('#errorMessageDuplicatePlan').slideDown(700);
                 }
             }
-            var locked = LineItemGrid.cells(rowId, cellInd).getAttribute("locked");
-            if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
-                return false;
+        });
+    }
+    return true;
+}
+
+function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+    var updatetype = rowId.split(".")[0];
+    var Id;
+    var UpdateColumn;
+    var UpdateVal;
+    var Colind = this.cell.cellIndex;
+
+    if(stage == 0)
+    {
+        var  newvalue = LineItemGrid.cells(rowId, cellInd).getValue();
+        if(newvalue.indexOf("</div>") > -1)
+        {
+
+            value = newvalue.split("</div>")[0];
         }
-        if (stage == 1) {
-            $('.dhx_combo_select').css('z-index', '9999');
+        TacticName = newvalue.split("</div>")[1];
+    }
+    else
+    {
+        if(nValue != undefined)
+        {
+            TacticName = nValue;
+        }
+    }
+    UpdateColumn = LineItemGrid.getColLabel(Colind, 0);
+    if (stage == 0) {
+        // Only check for type column
+        if (Colind == 5) {
             if (updatetype == "line") {
-                var oldval = LineItemGrid.cells(rowId, cellInd).getValue();
                 var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
-                if (cellInd != 1) {
-                    if (oldval == "")
-                        $('.dhx_combo_select option[value="' + oldval + '"]').remove();
-                    else {
-                        var v1 = parseInt(oldval);
-                        if (isNaN(v1)) {
-                            $('.dhx_combo_select option[value="' + oldval + '"]').remove();
-                            $('.dhx_combo_select').val(actval);
-                            //var v = $('.dhx_combo_select option:contains("' + oldval + '")').val();
-                            //if (v != "undefined")
-                            //    $('.dhx_combo_select').val(v);
-                        }
-                        else
-                            $('.dhx_combo_select').val(actval);
-                    }
+                if (actval == "") {
+                    return false;
                 }
+                var combo = LineItemGrid.getCombo(cellInd);
+                var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(TempData["lineItemTypes"]))');
+                //  d = optionlist.filter(filterbyname);
+                combo.clear();
+                $.each(lineitemtype, function (i, item) {
+                    combo.put(item.LineItemTypeId, item.Title);
+                });
             }
-            $(".dhx_combo_edit").off("keydown");
-            if (UpdateColumn == "Planned Cost") {
-
-                $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
-                LineItemGrid.editor.obj.onkeypress = function (e) {
-                    e = e || window.event;
-                    if ((e.keyCode >= 47) || (e.keyCode == 0)) {
-                        var text = this.value;
-                        if (text.length > 10) { //max length of the text
-                            return false;
-                        }
-                    }
-                }
-            }
-
         }
-        if (stage == 2) // start edit Shipping column
-        {
+        var locked = LineItemGrid.cells(rowId, cellInd).getAttribute("locked");
+        if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
+            return false;
+    }
+    if (stage == 1) {
+        $('.dhx_combo_select').css('z-index', '9999');
+        if (updatetype == "line") {
+            var oldval = LineItemGrid.cells(rowId, cellInd).getValue();
+            var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
+            if (cellInd != 1) {
+                if (oldval == "")
+                    $('.dhx_combo_select option[value="' + oldval + '"]').remove();
+                else {
+                    var v1 = parseInt(oldval);
+                    if (isNaN(v1)) {
+                        $('.dhx_combo_select option[value="' + oldval + '"]').remove();
+                        $('.dhx_combo_select').val(actval);
+                        //var v = $('.dhx_combo_select option:contains("' + oldval + '")').val();
+                        //if (v != "undefined")
+                        //    $('.dhx_combo_select').val(v);
+                    }
+                    else
+                        $('.dhx_combo_select').val(actval);
+                }
+            }
+        }
+        $(".dhx_combo_edit").off("keydown");
+        if (UpdateColumn == "Planned Cost") {
 
-            if (nValue != null && nValue != "") {
-
-                //Added By Komal Rawal to Change the value in array if grid updated              
-                var NewValue = htmlDecode(nValue);
-                //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
-                var TaskID = LineItemGrid.cells(rowId,3).getValue();
-                //Modified by Rahul Shah on 09/03/2016 for PL #1939
-                if (UpdateColumn == "" || UpdateColumn == null)
-                    UpdateColumn = LineItemGrid.getColLabel(Colind, 0);
-                if(UpdateColumn == "Task Name"){  
-//added by devanshi for PL ticket #2276
-                    if (CheckHtmlTag(nValue) == false) {
-                        alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
-                       
+            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+            LineItemGrid.editor.obj.onkeypress = function (e) {
+                e = e || window.event;
+                if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                    var text = this.value;
+                    if (text.length > 10) { //max length of the text
                         return false;
-
-                    }
-                    //updatePlanNameDrp(TaskID,NewValue);
-                }
-                if(cellInd == 1)
-                {
-                    $("div[taskId='" + TaskID + "']").attr('taskname',NewValue);
-                }
-                if(ExportSelectedIds.TaskID.length > 0)
-                {
-                    var TasknameIndex = ExportSelectedIds.Title.indexOf(oValue);
-                    if(TasknameIndex >= 0 )
-                    {
-                        ExportSelectedIds.Title[TasknameIndex] = NewValue;
                     }
                 }
-                var idindex = LineItemGrid.getColIndexById('id');
-                var costindex = LineItemGrid.getColIndexById('plannedcost');
-                var stageindex = LineItemGrid.getColIndexById('inq');
+            }
+        }
 
-                Id = LineItemGrid.cells(rowId, idindex).getValue();
-                if (updatetype == "line") {
-                    var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
-                    if (actval == null || actval == "")
-                        actval = oValue;
-                    if (nValue != oValue && nValue != actval) {
+    }
+    if (stage == 2) // start edit Shipping column
+    {
+        if (nValue != null && nValue != "") {
 
-                        UpdateVal = nValue;
-                        //Added By Rahul Shah on 16/10/2015 for PL 1559
-                        tactid = LineItemGrid.getParentId(rowId);
-                        progid = LineItemGrid.getParentId(tactid);
-                        campid = LineItemGrid.getParentId(progid);
-                        planid = LineItemGrid.getParentId(campid);
-                        var TotalRowIds = LineItemGrid.getAllSubItems(tactid);
-                        $.ajax({
-                            type: 'POST',
-                            url: '@Url.Action("SaveGridDetail","Plan")', // we are calling json method
-                            data: { UpdateType: 'LineItem', UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
-                            dataType: 'json',
-                            success: function (states) {
-                                if (states.errormsg != null && states.errormsg.trim() != "") {
-                                    alert(states.errormsg.trim());
-                                    LineItemGrid.cells(rowId, cellInd).setValue(oValue);
-                                    return false;
-                                }
-                                else if (UpdateColumn == "Planned Cost") {
-                                    //Added By Rahul Shah on 16/10/2015 for PL 1559
-                                    diff = parseInt(nValue) - parseInt(oValue);
-                                    diffLineAndTactic = states.lineItemCost - states.tacticCost
-                                    if (states.lineItemCost > states.tacticCost) {
-
-                                        SetColumUpdatedValue(4, diffLineAndTactic);
-                                        LineItemGrid.cells(progid, 4).setValue((newProgVal));
-                                        LineItemGrid.cells(campid, 4).setValue((newCampVal));
-                                        LineItemGrid.cells(planid, 4).setValue((newPlanVal));
-                                        LineItemGrid.cells(tactid, 4).setValue((newTactVal));
-                                        for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                            if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") { //Modiied by Rahul Shah
-
-                                                LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
-                                                LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
-                                            }
-                                        }
-                                    }
-                                        //Added by Rahul Shah for PL #1744
-                                    else if(states.lineItemCost == states.tacticCost){
-                                        for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                            if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-
-                                                LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
-                                            }
-                                        }
-                                    }
-                                    else {
-
-                                        for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
-                                            if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-
-                                                LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
-
-                                            }
-                                        }
-                                    }
-                                    // Added by Arpita Soni for Ticket #2237 on 06/22/2016
-                                    $("#liLine_Items").trigger("click");
-                                    ItemIndex=LineItemGrid.getRowIndex(tactid);
-                                    state0=ItemIndex;
-                                    LineItemGrid.cells(rowId, 4).setValue((nValue));
-                                }
-                                else if(UpdateColumn == "Type")
-                                    LineItemGrid.cells(rowId, cellInd).setAttribute("actval",nValue);
-                            }
-                        });
-                    }
-                    return true;
-                }
-                if (htmlDecode(nValue) != oValue) {//Modified by Rahul Shah on 30/11/2015 for PL #1778. here in special character nValue data carry with Extra character.
-                    if (UpdateColumn != "Type" && UpdateColumn.toString().trim() != "Target Stage Goal") {
+            //Added By Komal Rawal to Change the value in array if grid updated              
+            var NewValue = htmlDecode(nValue);
+            //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
+            var TaskID = LineItemGrid.cells(rowId,3).getValue();
+            //Modified by Rahul Shah on 09/03/2016 for PL #1939
+            if (UpdateColumn == "" || UpdateColumn == null)
+                UpdateColumn = LineItemGrid.getColLabel(Colind, 0);
+            if(UpdateColumn == "Task Name"){  
+                //added by devanshi for PL ticket #2276
+                if (CheckHtmlTag(nValue) == false) {
+                    alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
                        
-                        //Added By Rahul Shah on 16/10/2015 for PL 1559
-                        var TotalRowIds = LineItemGrid.getAllSubItems(rowId);
-                        //
-                        UpdateVal = nValue;
-                        $.ajax({
-                            type: 'POST',
-                            url: '@Url.Action("SaveGridDetail")', // we are calling json method
-                            data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
-                            dataType: 'json',
-                            success: function (states) {
-                                //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
-                                var TaskID = LineItemGrid.cells(rowId,3).getValue();
-                                var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
+                    return false;
 
-                                if(ExportSelectedIds.TaskID.length > 0)
-                                {
+                }
+                //updatePlanNameDrp(TaskID,NewValue);
+            }
+            if(cellInd == 1)
+            {
+                $("div[taskId='" + TaskID + "']").attr('taskname',NewValue);
+            }
+            if(ExportSelectedIds.TaskID.length > 0)
+            {
+                var TasknameIndex = ExportSelectedIds.Title.indexOf(oValue);
+                if(TasknameIndex >= 0 )
+                {
+                    ExportSelectedIds.Title[TasknameIndex] = NewValue;
+                }
+            }
+            var idindex = LineItemGrid.getColIndexById('id');
+            var costindex = LineItemGrid.getColIndexById('plannedcost');
+            var stageindex = LineItemGrid.getColIndexById('inq');
 
-                                    var OwnerNameIndex = ExportSelectedIds.OwnerName.indexOf(OldValue);
+            Id = LineItemGrid.cells(rowId, idindex).getValue();
+            if (updatetype == "line") {
+                var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
+                if (actval == null || actval == "")
+                    actval = oValue;
+                if (nValue != oValue && nValue != actval) {
 
-                                    if(OwnerNameIndex >= 0 && states.OwnerName != "" )
-                                    {
-                                        ExportSelectedIds.OwnerName[OwnerNameIndex] = states.OwnerName;
-
+                    UpdateVal = nValue;
+                    //Added By Rahul Shah on 16/10/2015 for PL 1559
+                    tactid = LineItemGrid.getParentId(rowId);
+                    //progid = LineItemGrid.getParentId(tactid);
+                    //campid = LineItemGrid.getParentId(progid);
+                    //planid = LineItemGrid.getParentId(campid);
+                    var TotalRowIds = LineItemGrid.getAllSubItems(tactid);
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("SaveGridDetail", "Plan")', // we are calling json method
+                                data: { UpdateType: 'LineItem', UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
+                                dataType: 'json',
+                                success: function (states) {
+                                    if (states.errormsg != null && states.errormsg.trim() != "") {
+                                        alert(states.errormsg.trim());
+                                        LineItemGrid.cells(rowId, cellInd).setValue(oValue);
+                                        return false;
                                     }
-                                }
-                                if(states.OwnerName != "" && states.OwnerName !=  null)
-                                {
-                                    $("div[taskId='" + TaskID + "']").attr('ownername',states.OwnerName);
-                                }
-
-                                //Added By Komal Rawal for 2058
-                                if((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" &&  states.OwnerName != null)
-                                {
-                                    if (planid != 0 && planid != null && planid != undefined) {
-                                        var PlanID = LineItemGrid.cells(planid,3).getValue();
-                                    }
-                                    else if(campid != 0 && campid != null && campid != undefined) {
-                                        var PlanID = LineItemGrid.cells(campid,3).getValue();
-                                    }
-                                    else{
-                                        var PlanID = LineItemGrid.cells(progid,3).getValue();
-                                    }
-                                    //var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
-                                    $("#ulSelectedOwner li input[type=checkbox]").each(function () {
-                                        if ($(this).attr('checked') != 'checked') {
-                                            filters.tempOwnerIds.push($(this).attr("id"));
+                                    else if (UpdateColumn == "Planned Cost") {
+                                        //Added By Rahul Shah on 16/10/2015 for PL 1559
+                                        diff = parseInt(nValue) - parseInt(oValue);
+                                        diffLineAndTactic = states.lineItemCost - states.tacticCost
+                                        if (states.lineItemCost > states.tacticCost) {
+                                            for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+                                                if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") { //Modiied by Rahul Shah
+                                                    LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
+                                                    LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
+                                                }
+                                            }
                                         }
-                                    });
-                                    GetTacticTypelist(PlanID, false); //Called to manage Data in cache
-                                    GetOwnerListForFilter(PlanID, false);
-                                    //var OwnerListLength = $("#ulSelectedOwner li").length;
-                                    //if (( PreviousOwnerListlength != OwnerListLength && PreviousOwnerListlength != 0)) {
-                                    SaveLastSetofViews();
-                                    //}
-
-                                }
-                                //End
-                                if (states.errormsg != null && states.errormsg.trim() != "") {
-                                    alert(states.errormsg.trim());
-                                    LineItemGrid.cells(rowId, cellInd).setValue(oValue);
-                                    return false;
-                                }
-                                
-                                if (UpdateColumn == "Planned Cost") {
-                                    //Added By Rahul Shah on 16/10/2015 for PL 1559
-                                    if (nValue < states.lineItemCost) {
-
-                                        LineItemGrid.cells(rowId, 4).setValue((oValue));
-                                    }
-                                        //Added by Rahul Shah for PL #1744.
-                                    else if (nValue == states.lineItemCost) {
-                                        if (TotalRowIds != "") {
+                                            //Added by Rahul Shah for PL #1744
+                                        else if(states.lineItemCost == states.tacticCost){
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                                 if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
                                                     LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
                                                 }
                                             }
                                         }
-                                    }
-                                    else {
+                                        else {
 
-                                        diff = parseInt(nValue) - parseInt(oValue);
-                                        SetColumUpdatedValue(4, diff);
-                                        LineItemGrid.cells(progid, 4).setValue((newProgVal));
-                                        LineItemGrid.cells(campid, 4).setValue((newCampVal));
-                                        LineItemGrid.cells(planid, 4).setValue((newPlanVal));
-                                        LineItemGrid.cells(rowId, 4).setValue((nValue));
-                                        if (TotalRowIds != "") {
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                                //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
                                                 if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                                    LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.OtherLineItemCost));
+                                                    LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
+
                                                 }
                                             }
                                         }
-                                    
+                                        // Added by Arpita Soni for Ticket #2237 on 06/22/2016
+                                        $("#liLine_Items").trigger("click");
+                                         ItemIndex=LineItemGrid.getRowIndex(tactid);
+                                        state0 = ItemIndex;
+                                        LineItemGrid.cells(rowId, 4).setValue((nValue));
                                     }
-                                    // Added by Arpita Soni for Ticket #2237 on 06/22/2016
-                                    $("#liLine_Items").trigger("click");
-                                    ItemIndex=LineItemGrid.getRowIndex(rowId);
-                                    state0=ItemIndex;
+                                    else if(UpdateColumn == "Type")
+                                        LineItemGrid.cells(rowId, cellInd).setAttribute("actval",nValue);
                                 }
-                                if (UpdateColumn == "Owner") {
-                                    CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
-                                }
-
-                            }
-                        });
+                            });
+                        }
+                        return true;
                     }
+                    if (htmlDecode(nValue) != oValue) {//Modified by Rahul Shah on 30/11/2015 for PL #1778. here in special character nValue data carry with Extra character.
+                        if (UpdateColumn != "Type" && UpdateColumn.toString().trim() != "Target Stage Goal") {
+                       
+                            //Added By Rahul Shah on 16/10/2015 for PL 1559
+                            var TotalRowIds = LineItemGrid.getAllSubItems(rowId);
+                            //
+                            UpdateVal = nValue;
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Action("SaveGridDetail")', // we are calling json method
+                                data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
+                                dataType: 'json',
+                                success: function (states) {
+                                    //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
+                                    var TaskID = LineItemGrid.cells(rowId,3).getValue();
+                                    var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
 
-                    //Modified By Komal Rawal for #1848 Link To tactic feature
+                                    if(ExportSelectedIds.TaskID.length > 0)
+                                    {
+
+                                        var OwnerNameIndex = ExportSelectedIds.OwnerName.indexOf(OldValue);
+
+                                        if(OwnerNameIndex >= 0 && states.OwnerName != "" )
+                                        {
+                                            ExportSelectedIds.OwnerName[OwnerNameIndex] = states.OwnerName;
+
+                                        }
+                                    }
+                                    if(states.OwnerName != "" && states.OwnerName !=  null)
+                                    {
+                                        $("div[taskId='" + TaskID + "']").attr('ownername',states.OwnerName);
+                                    }
+
+                                    //Added By Komal Rawal for 2058
+                                    if((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" &&  states.OwnerName != null)
+                                    {
+                                        if (planid != 0 && planid != null && planid != undefined) {
+                                            var PlanID = LineItemGrid.cells(planid,3).getValue();
+                                        }
+                                        else if(campid != 0 && campid != null && campid != undefined) {
+                                            var PlanID = LineItemGrid.cells(campid,3).getValue();
+                                        }
+                                        else{
+                                            var PlanID = LineItemGrid.cells(progid,3).getValue();
+                                        }
+                                        //var PreviousOwnerListlength = $("#ulSelectedOwner li").length;
+                                        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                                            if ($(this).attr('checked') != 'checked') {
+                                                filters.tempOwnerIds.push($(this).attr("id"));
+                                            }
+                                        });
+                                        GetTacticTypelist(PlanID, false); //Called to manage Data in cache
+                                        GetOwnerListForFilter(PlanID, false);
+                                        SaveLastSetofViews();
+                                    }
+                                    //End
+                                    if (states.errormsg != null && states.errormsg.trim() != "") {
+                                        alert(states.errormsg.trim());
+                                        LineItemGrid.cells(rowId, cellInd).setValue(oValue);
+                                        return false;
+                                    }
+                                
+                                    if (UpdateColumn == "Planned Cost") {
+                                        //Added By Rahul Shah on 16/10/2015 for PL 1559
+                                        if (nValue < states.lineItemCost) {
+
+                                            LineItemGrid.cells(rowId, 4).setValue((oValue));
+                                        }
+                                            //Added by Rahul Shah for PL #1744.
+                                        else if (nValue == states.lineItemCost) {
+                                            if (TotalRowIds != "") {
+                                                for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+                                                    if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
+                                                        LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            diff = parseInt(nValue) - parseInt(oValue);
+                                            //SetColumUpdatedValue(4, diff);
+                                            LineItemGrid.cells(progid, 4).setValue((newProgVal));
+                                            LineItemGrid.cells(campid, 4).setValue((newCampVal));
+                                            LineItemGrid.cells(planid, 4).setValue((newPlanVal));
+                                            LineItemGrid.cells(rowId, 4).setValue((nValue));
+                                            if (TotalRowIds != "") {
+                                                for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+                                                    //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                                    if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
+                                                        LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.OtherLineItemCost));
+                                                    }
+                                                }
+                                            }
+                                    
+                                        }
+                                        // Added by Arpita Soni for Ticket #2237 on 06/22/2016
+                                        $("#liLine_Items").trigger("click");
+                                        ItemIndex=LineItemGrid.getRowIndex(rowId);
+                                        state0=ItemIndex;
+                                    }
+                                    if (UpdateColumn == "Owner") {
+                                        CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
+                                    }
+
+                                }
+                            });
+                        }
+
+                        //Modified By Komal Rawal for #1848 Link To tactic feature
+                        if(cellInd == 1)
+                        {
+                            if(value != undefined && value != "undefined" && value != null)
+                            {
+                                LineItemGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
+                            }
+                            else
+                            {
+                                LineItemGrid.cells(rowId, cellInd).setValue(TacticName);
+                            }
+                        }
+                        value = "";
+                        $("div[id^='LinkIcon']").each(function () {
+                            bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+                        });
+                        //End
+                        return true;
+                    }
+            //Modified By Komal Rawal for #1848 Link To tactic feature
                     if(cellInd == 1)
                     {
                         if(value != undefined && value != "undefined" && value != null)
@@ -796,36 +846,17 @@ else {
                     $("div[id^='LinkIcon']").each(function () {
                         bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
                     });
-                    //End
+            //End
                     return true;
                 }
-                //Modified By Komal Rawal for #1848 Link To tactic feature
-                if(cellInd == 1)
-                {
-                    if(value != undefined && value != "undefined" && value != null)
-                    {
-                        LineItemGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
-                    }
-                    else
-                    {
-                        LineItemGrid.cells(rowId, cellInd).setValue(TacticName);
-                    }
-                }
-                value = "";
-                $("div[id^='LinkIcon']").each(function () {
-                    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
-                });
-                //End
-                return true;
             }
-        }
         
-    }
+        }
 
-    //Added by Rahul Shah for PL #2296 
-    $(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
-        var $checkbox = $(this).find('input[type=checkbox]')
-        $checkbox.bootstrapToggle('toggle')
-        e.preventDefault()
-    });    
+        //Added by Rahul Shah for PL #2296 
+        $(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
+            var $checkbox = $(this).find('input[type=checkbox]')
+            $checkbox.bootstrapToggle('toggle')
+            e.preventDefault()
+        });    
 </script>

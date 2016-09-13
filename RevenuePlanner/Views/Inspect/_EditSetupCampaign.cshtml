@@ -518,7 +518,6 @@
             $('#CampaignMainDiv').find('input[type=text], select, textarea').each(function () {
                 if ($(this).attr('require') == 'true') {
                     if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
-                        debugger;
                         $(this).addClass("error");
                         iserror = true;
                     }

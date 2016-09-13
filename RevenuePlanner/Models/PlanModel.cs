@@ -554,6 +554,7 @@ namespace RevenuePlanner.Models
         public string Revenue { get; set; }
         public string CWValue { get; set; }
         public PlanMainDHTMLXGrid PlanDHTMLXGrid { get; set; }
+        public Dictionary<int,BudgetDHTMLXGridModel> lstChildPlanDHTMLXGrid { get; set; }
     }
     public class PlanImprovement
     {
