@@ -496,7 +496,7 @@
         $('#MultiSelectProcced').css("display", "none");
         var iserror = false;
         var isEmptyFieldError = false;
-        var title = htmlEncode($('#txtProgramTitle').val());
+        var title = htmlEncode($('#txtProgramTitle').val().trim());
             if ($('#status').text().toString() == "" || $('#status').text().toString().trim() == '@Enums.TacticStatus.Created.ToString()' || $('#status').text().toString().trim() == '@Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value.ToString().Trim()') {
                 $('#ProgramMainDiv').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {

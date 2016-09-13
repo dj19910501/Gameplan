@@ -510,7 +510,7 @@
         var returnparameter = false;
         var iserror = false;
         var isEmptyFieldError = false;
-        var campaignTitle = htmlEncode($('#txtTitle').val());
+        var campaignTitle = htmlEncode($('#txtTitle').val().trim());
         var hdnYear = @ViewBag.Year
      $('#MultiSelectProcced').css("display", "none");
         if ($('#status').text().toString() == "" || $('#status').text().toString().trim() == '@Enums.TacticStatus.Created.ToString()' || $('#status').text().toString().trim() == '@Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value.ToString().Trim()')
