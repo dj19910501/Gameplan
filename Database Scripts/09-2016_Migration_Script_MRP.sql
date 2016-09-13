@@ -188,13 +188,6 @@ EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[spViewByDropDownLi
 END
 GO
 
--- =============================================
--- Author:		<Author,,JZhang>
--- Create date: <Create Date,05-July-2016,>
--- Description:	<This is a rewrite of the orginal proc for performance reason. Using in memory table reduces time from 900 ms to 40 ms on average>
--- =============================================
-USE [MRPDev]
-GO
 /****** Object:  StoredProcedure [dbo].[spViewByDropDownList]    Script Date: 09/13/2016 2:46:45 PM ******/
 SET ANSI_NULLS ON
 GO
