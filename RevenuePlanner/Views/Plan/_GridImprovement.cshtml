@@ -12,6 +12,30 @@
     var TotalMqls = Model.TotalMqls;
     var NoOfPrograms = Model.Progrmas;
 }
+
+<script>
+    var AddMarketingActivitiesBeforeAddImprovementActivities = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
+    var InspectPopupModeAdd = '@Enums.InspectPopupMode.Add.ToString()';
+    var ImprovementTactic = '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()';
+    var InspectPopupRequestedModulesIndex = '@Enums.InspectPopupRequestedModules.Index.ToString()';
+    var GetImprovementTacticURL = '@Url.Content("~/Plan/GetImprovementTactic/")';
+    var GetImprovementContainerValueURL = '@Url.Content("~/Plan/GetImprovementContainerValue/")';
+    var GetRecommendedImprovementTacticTypeURL = '@Url.Content("~/Plan/GetRecommendedImprovementTacticType/")';
+    var GetADSImprovementTacticTypeURL = '@Url.Content("~/Plan/GetADSImprovementTacticType/")';
+    var GetHeaderValueForSuggestedImprovementURL = '@Url.Content("~/Plan/GetHeaderValueForSuggestedImprovement/")';
+    var GetConversionImprovementTacticTypeURL = '@Url.Content("~/Plan/GetConversionImprovementTacticType/")';
+    var ShowDeleteImprovementTacticURL = '@Url.Content("~/Plan/ShowDeleteImprovementTactic/")';
+    var AddSuggestedImprovementTacticURL = '@Url.Content("~/Plan/AddSuggestedImprovementTactic")';
+    var ImprovementPlanProgramId = ImprovementPlanProgramId;
+    var isTacticExist = isTacticExist;
+    var TotalMqls = TotalMqls;
+    var NoOfPrograms = NoOfPrograms;
+    var MQLLable = '@Model.MQLLable';
+    var TacticId = '@ViewBag.TacticId';
+</script>
+
+<script src="~/Scripts/GridImprovement.js"></script>
+
 <div id="divimprovement" class="element-disable improvement-grid">
     <div class=" gray-title-steps source-sans-probold cf">
         <span class="pull-left width55 font-black source-sans-proregular font-dark" style="font-size:25px !important">Improvement Activities</span>
