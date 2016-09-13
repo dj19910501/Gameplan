@@ -16,7 +16,7 @@
     <!--font Awesome css-->
     <link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css" />
     <!--font Awesome css-->
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_sept_12.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_sept_13.css")" type="text/css" />
     @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />*@
     <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Aug_2.css")" type="text/css" />
     @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css")" type="text/css" />*@
@@ -73,10 +73,7 @@
             @RenderSection("PlanHeader", false)
         </div>
         <div class="row-fluid midl-wrap clearfix ">@* 'calc-height' removed for #2219 - Bhumika *@
-            <div id="sidebar" class="span2">
-                <div class="sidebar-toogle">
-                    <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true"></i></a>
-                </div>
+            <div id="sidebar" class="span2">                
                 @RenderSection("Sidebar", false)
             </div>
 

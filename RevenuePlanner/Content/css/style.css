@@ -255,19 +255,19 @@ ul.drop-down-menu {
 
 /* Edited for #2219 - Bhumika */
 #planHeader.full-width-header { /* #2621*/
-    padding: 15px 0 0;
+    padding: 15px 0 0 20px;
 }
 
 .planheader-left { /* #2312 */
     float: left;
     width: 46%;
-    padding: 38px 0 0 20px;
+    padding: 0;
     display: inline-block;
 }
 
 .planheader-right {
     float: right;
-    width: 52%;
+    width: 52.5%;
     max-width: 655px;
     padding-right: 15px;
 }
@@ -275,7 +275,7 @@ ul.drop-down-menu {
 #planHeader .planheader-title { /* #2312 */
     float: left;
     width: 100%;
-    padding: 0 0 3px 0;
+    padding: 38px 0 3px 0;
 }
 
 .plancart-box { /* #2312 */
@@ -9727,9 +9727,10 @@ li.close-list {
     font-weight: 400 !important;
 }
 
-#modal-container-186470 {
+/*#modal-container-186470 {
     padding-bottom: 153px !important;
-}
+}*/ /* Commented to solve errror message display problem When click on Single Selection 13-9-2016 */
+
 
 .viewby-wrap {
     float: left;
@@ -16981,12 +16982,14 @@ input.serach-input {
 }
 
 .btm-link {
-    padding-top: 10px;
+    padding-top: 10px;display:inline-block
 }
 
 .addview-bottom .btm-link a {
     font-size: 12px;
     color: #95989a;
+    display:inline-block;
+    padding-right:2px
 }
 
 .addview-bottom button, .addview-bottom .btm-link {
@@ -17071,7 +17074,7 @@ input.serach-input {
 @media (max-width: 1527px) {
     /* Added for #2621 New Homepage HTML */
     .full-width-header .white-chart {
-        width: 19.5%;
+        width: 19.4%;
     }
 
     .white-chart.activity-distribute {
@@ -17593,7 +17596,6 @@ input.serach-input {
     .planheader-right {
         width: 100%;
         float: left;
-        padding-left: 20px;
     }
 
     .plancart-box {
@@ -17601,6 +17603,8 @@ input.serach-input {
         max-width: 615px;
     }
 
+    .full-width-header .white-chart {width: 19.6%;}
+    .white-chart.activity-distribute {width: 156px;}
     #planHeader .planheader-title {
         padding: 0;
     }
