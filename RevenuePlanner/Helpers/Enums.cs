@@ -1247,9 +1247,11 @@ namespace RevenuePlanner.Helpers
            {"startdate","Start Date"},
            {"enddate","End Date"},
            {"tacticplancost","Planned Cost"},
+           {"roitactictype","Tactic Category"},
            {"tactictype","Type"},
            {"owner","Owner"},
-           {"targetstagegoal","Target Stage Goal"}
+           {"targetstagegoal","Target Stage Goal"},
+           {"revenue","Revenue"}
        };
 
         #endregion

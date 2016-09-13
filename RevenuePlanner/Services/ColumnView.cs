@@ -82,7 +82,7 @@ namespace RevenuePlanner.Services
                         objcolumnview.ViewName = ViewName;
                         objcolumnview.CreatedBy = UserId;
                         objcolumnview.CreatedDate = DateTime.Now;
-                        objcolumnview.IsDefault = false;
+                        objcolumnview.IsDefault = true;
                         objDbMrpEntities.Entry(objcolumnview).State = EntityState.Added;
                         objDbMrpEntities.SaveChanges();
                         result = objcolumnview.ViewId;

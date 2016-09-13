@@ -18,6 +18,7 @@ namespace RevenuePlanner.Models
     {
         public string CustomFieldId { get; set; }
         public string CutomfieldName { get; set; }
+        public bool IsChecked { get; set; }
         public int ParentID { get; set; }
     }
     public class AttributeDetail

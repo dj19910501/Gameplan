@@ -3,12 +3,12 @@
 @if (Model != null && Model.Count() > 0)
 {
     <div class="addview-wrap">
-        <div class="addview-title margin-bottom-20">
+        @*<div class="addview-title margin-bottom-20">
             <label>1. Name of View.</label>
             <input type="text" id="txtViewName" class="margin-left10" />
-        </div>
+        </div>*@
         <div class="addview-title margin-bottom-20">
-            <label>2. Select columns to appear in View.</label>
+            <label>1. Select columns to appear in View.</label>
         </div>
         @foreach (var entity in Model)
         {
@@ -38,15 +38,15 @@
                         {
 
                             <span class="chkAttributes-block">
-                                @*@if (attr.ParentID == 0)
-                                {*@
-                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox"  />
-                                @*}
+                                @if (attr.ParentID == 0)
+                                {
+                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox" checked="@attr.IsChecked" />
+                                }
                                 else
                                 {
-                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox" disabled="disabled" parentid="@attr.ParentID.ToString()"/>
+                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox" disabled="disabled" parentid="@attr.ParentID.ToString()" checked="@attr.IsChecked" />
 
-                                }*@
+                                }
                                 <span for="chk-@attr.CustomFieldId" class="attr-fildname" title="@attr.CutomfieldName">@attr.CutomfieldName</span>
                             </span>
                         }
@@ -88,13 +88,13 @@
         } else {
             $(this).closest(".category").find(".checkAlldiv").removeAttr("checked");
         }
-        //if ($(this).is(':checked')) {
-        //    $("input:checkbox[parentid=" + attributeid + "]").attr("checked", "checked");
-        //}
-        //else {
-        //    $("input:checkbox[parentid=" + attributeid + "]").removeAttr("checked");
+        if ($(this).is(':checked')) {
+            $("input:checkbox[parentid=" + attributeid + "]").attr("checked", "checked");
+        }
+        else {
+            $("input:checkbox[parentid=" + attributeid + "]").removeAttr("checked");
 
-        //}
+        }
 
     });
     $(".selectAllAttribute").click(function () {
@@ -104,17 +104,16 @@
         $(".addview-wrap").find("input:checkbox").removeAttr("checked");
     });
     $("#btnSaveColumnView").click(function () {
-        var viewname = $("#txtViewName").val();
+        //var viewname = $("#txtViewName").val();
         _ColumnView = [];
-        if (viewname != "") {
-            if (CheckHtmlTag(viewname) == false) {
+            @*if (CheckHtmlTag(viewname) == false) {
                 $("#errorMessage1").css("display", "block");
                 $("#spanMessageError1").empty();
                 $("#spanMessageError1").text("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
                 $("#successMessage1").css("display", "none");
                 return false;
             }
-            $('#txtViewName').removeClass("error");
+            $('#txtViewName').removeClass("error");*@
             $.each($(".category"), function () {
                 var entitytype = $(this).attr("entitytpe");
                 $(this).find(".chkAttributes").find("input:checkbox").each(function () {
@@ -136,13 +135,13 @@
                     type: 'post',
                     dataType: 'json',
                     contentType: 'application/json',
-                    data: "{'AttributeDetail':" + (_ColumnView) + ",'ViewName':'" + viewname + "'}",
+                    data: "{'AttributeDetail':" + (_ColumnView) + "}",
                     success: function (data) {
-                        if (data.Success != null && data.Success == true && data.SuccessMessage != null) {
+                        if (data.Success != null && data.Success == true ) {
                             $('#CreateNewView').hide();
-                            if (data.ViewById != null) {
-                                BindViewSelections(data.ViewById, '');
-                            }
+                            //if (data.ViewById != null) {
+                            //    BindViewSelections(data.ViewById, '');
+                            //}
                         }
                         if (data.Success != null && data.Success == false && data.ErrorMessage != null) {
                             $("#errorMessage1").css("display", "block");
@@ -160,14 +159,28 @@
                 $("#successMessage1").css("display", "none");
                 $(".modal-body").scrollTop(0);
             }
-        }
-        else { $('#txtViewName').addClass("error"); $(".modal-body").scrollTop(0); return false; }
+        
     });
     $(".closemessage").click(function () {
         $(this).parent().closest('div').css("display", "none");
 
     });
     $(document).ready(function () {
+        var Isselectall = '@ViewBag.IsSelectAll';
+        if (Isselectall.toLowerCase() == 'true')
+        {
+            $(".addview-wrap").find("input:checkbox").attr("checked", "checked");
+        }
+       $(".chkAttributes").each(function () {
+           var currentdivcheckbox = $(this).find("input:checkbox");
+           if ($(currentdivcheckbox).length == $(this).find(".attr-checkbox:checked").length) {
+               $(this).closest(".category").find(".checkAlldiv").attr("checked", "checked");
+           } else {
+               $(this).closest(".category").find(".checkAlldiv").removeAttr("checked");
+           }
+        });
+    
+      
         $("#errorMessage1").css("display", "none");
         $("#spanMessageError1").empty();
         $("#successMessage1").css("display", "none");

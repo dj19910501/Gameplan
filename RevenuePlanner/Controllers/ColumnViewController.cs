@@ -18,6 +18,7 @@ namespace RevenuePlanner.Controllers
         // GET: /ColumnView/
         StoredProcedure objSp = new StoredProcedure();
         IColumnView objcolumnView = new ColumnView();
+        private MRPEntities db = new MRPEntities();
         public ActionResult Index()
         {
             return View();
@@ -27,8 +28,18 @@ namespace RevenuePlanner.Controllers
         public ActionResult GetAttributeList_ColumnView()
         {
             List<ColumnViewEntity> allattributeList = new List<ColumnViewEntity>();
+            List<string> SelectedCustomfieldID = new List<string>();
+            bool IsSelectall=false;
             try
             {
+                var userview = db.User_CoulmnView.Where(a => a.CreatedBy == Sessions.User.UserId).FirstOrDefault();
+                if (userview == null)
+                    IsSelectall = true;
+                else
+                {
+                    SelectedCustomfieldID = userview.User_CoulmnView_attribute.Select(a => a.AttributeId).ToList();
+                }
+                ViewBag.IsSelectAll = IsSelectall;
                 DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.ClientId);
                 if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
                 {
@@ -49,6 +60,19 @@ namespace RevenuePlanner.Controllers
                         CutomfieldName = Convert.ToString(row.Value),
                         ParentId = 0
                     }).ToList();
+
+                    List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                    string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
+
+
+                    var mqlfield = new
+                    {
+                        EntityType = "Basic",
+                        CustomFieldId = "mql",
+                        CutomfieldName = MQLTitle,
+                        ParentId = 0
+                    };
+                    BasicFields.Add(mqlfield);
                     BasicFields.AddRange(columnattribute);
                     allattributeList = BasicFields.GroupBy(a => new { EntityType = a.EntityType }).Select(a => new ColumnViewEntity
                     {
@@ -58,7 +82,8 @@ namespace RevenuePlanner.Controllers
                         {
                             CustomFieldId = atr.CustomFieldId,
                             CutomfieldName = atr.CutomfieldName,
-                            ParentID = atr.ParentId
+                            ParentID = atr.ParentId,
+                            IsChecked = SelectedCustomfieldID.Contains(atr.CustomFieldId)?true:false
                         }).ToList()
                     }).ToList();
                 }
@@ -83,20 +108,20 @@ namespace RevenuePlanner.Controllers
                 {
                     int viewId = objcolumnView.SaveColumnView(Sessions.User.UserId, ViewName);
 
-                    if (viewId != null && viewId != -1)
+                    if ( viewId != -1)
                     {
                         int result = objcolumnView.SaveColumnViewAttribute(viewId, AttributeDetail);
                         if (result > 0)
                         {
-                            if (ViewName != null)
-                            {
-                                List<ViewByModel> viewByListResult = objSp.spViewByDropDownList(Convert.ToString(Sessions.PlanId));
-                                return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessColumnView, ViewById = viewByListResult }, JsonRequestBehavior.AllowGet);
-                            }
-                            else
-                            {
+                            //if (ViewName != null)
+                            //{
+                            //    List<ViewByModel> viewByListResult = objSp.spViewByDropDownList(Convert.ToString(Sessions.PlanId));
+                            //    return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessColumnView, ViewById = viewByListResult }, JsonRequestBehavior.AllowGet);
+                            //}
+                            //else
+                            //{
                                 return Json(new { Success = true}, JsonRequestBehavior.AllowGet);
-                            }
+                            //}
                         }
 
                         else
