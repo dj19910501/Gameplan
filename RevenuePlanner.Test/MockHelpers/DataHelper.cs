@@ -170,7 +170,10 @@ namespace RevenuePlanner.Test.MockHelpers
 
         public static Plan_Campaign_Program_Tactic_LineItem GetPlanLineItem(Guid clientId)
         {
-            var objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
+            //var objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            var objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.CreatedBy == UserId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+
             return objLineItem;
         }
 
