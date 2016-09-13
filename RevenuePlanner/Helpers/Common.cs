@@ -2941,6 +2941,246 @@ namespace RevenuePlanner.Helpers
             }
             return newHomePlanModelHeader;
         }
+
+
+        //Added by Komal Rawal on 12/09/2016
+        //Desc : to get header values as per new UI.
+        public static HomePlanModelHeader GetPlanHeaderValueForPlans(List<int> planIds, string activeMenu, string year, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds)
+        {
+            HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
+            CacheObject dataCache = new CacheObject();
+            StoredProcedure sp = new StoredProcedure();
+
+            MRPEntities db = new MRPEntities();
+            int Year;
+            DateTime StartDate;
+            DateTime EndDate;
+            string[] ListYear = year.Split('-');
+            string planYear = string.Empty;
+
+            bool isNumeric = int.TryParse(year, out Year);
+
+            if (isNumeric)
+            {
+                planYear = Convert.ToString(year);
+            }
+            else
+            {
+              
+                if (int.TryParse(ListYear[0], out Year))
+                {
+                    planYear = ListYear[0];
+                }
+                else
+                {
+                    planYear = DateTime.Now.Year.ToString();
+                }
+            }
+
+
+            StartDate = EndDate = DateTime.Now;
+            Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
+            double TotalMQLs = 0, TotalBudget = 0;
+            double? TotalPercentageMQLImproved = 0;
+            int TotalTacticCount = 0;
+            DataSet dsPlanCampProgTac = new DataSet();
+            dsPlanCampProgTac = (DataSet)dataCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
+            var planList = dataCache.Returncache(Enums.CacheObject.Plan.ToString()) as List<Plan>;
+            var planData = planList.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == year).Select(a => a.PlanId).ToList();
+            planIds = planList.Select(a => a.PlanId).ToList();
+
+          var campplist = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).Where(campaign => (!((campaign.EndDate < StartDate) || (campaign.StartDate > EndDate))) && planIds.Contains(campaign.PlanId)).ToList();
+          var campplanid = campplist.Select(a => a.PlanId).ToList();
+          List<Guid> filterOwner = new List<Guid>();
+          filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+
+            if (planList != null && planList.Count > 0)
+            {
+              
+                var innerplanids = planList.Where(a => campplanid.Count > 0 ? campplanid.Contains(a.PlanId) : planIds.Contains(a.PlanId)).Select(plan => plan.PlanId).ToList();
+            
+                List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                List<int> lstTacticIds = new List<int>();
+
+
+           
+                List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+
+              
+                List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
+
+               
+                List<string> filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldId) ? new List<string>() : CustomFieldId.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+                if (filteredCustomFields.Count > 0)
+                {
+                    filteredCustomFields.ForEach(customField =>
+                    {
+                        string[] splittedCustomField = customField.Split('_');
+                        lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                        lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                    });
+
+                }
+
+
+                List<Custom_Plan_Campaign_Program_Tactic> customtacticList = (List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.CustomTactic.ToString());
+                var planTacticsList = ((List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.CustomTactic.ToString())).Where(t => t.IsDeleted == false && innerplanids.Contains(t.PlanId) && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
+
+                lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+                {
+
+                    planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                             (filterTacticType.Contains(pcptobj.TacticTypeId)) &&
+                                             (filterStatus.Contains(pcptobj.Status))).ToList();
+
+
+                    //// Apply Custom restriction for None type
+                    if (planTacticsList.Count() > 0)
+                    {
+
+                        if (filteredCustomFields.Count > 0)
+                        {
+                            lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                            //// get Allowed Entity Ids
+                            planTacticsList = planTacticsList.Where(tacticlist => lstTacticIds.Contains(tacticlist.PlanTacticId)).ToList();
+                        }
+
+                    }
+                    lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Contains(pcptobj.CreatedBy))).ToList();// Modified By Nishant Sheth
+                }
+                else
+                {
+                    planTacticsList = planTacticsList.Where(tactic => (filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
+                }
+
+                //End
+
+                var impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
+                var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => impprogramlist.Contains(imp.ImprovementPlanProgramId) && imp.IsDeleted == false).ToList();
+               
+                var LineItemList = sp.GetLineItemList(string.Join(",", planIds));
+
+
+            
+
+                Double MQLs = 0;
+                List<Custom_Plan_Campaign_Program_Tactic> planTacticIds = new List<Custom_Plan_Campaign_Program_Tactic>();
+                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+
+                List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
+                List<StageList> stageListType = Common.GetStageList();
+                var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.ClientId).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
+
+                var improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
+                List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+                string size = Enums.StageType.Size.ToString();
+                List<ModelDateList> modelDateList = new List<ModelDateList>();
+                int? ModelId;
+                int MainModelId = 0;
+                List<ModelStageRelationList> modleStageRelationList = new List<ModelStageRelationList>();
+                List<Plan_Improvement_Campaign_Program_Tactic> impList = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                foreach (var plan in planList)
+                {
+                    planTacticIds = planTacticsList.Where(t => t.PlanId == plan.PlanId).Select(tactic => tactic).ToList();
+
+                    ModelId = plan.ModelId;
+                    modelDateList = new List<ModelDateList>();
+
+                    MainModelId = (int)ModelId;
+                    while (ModelId != null)
+                    {
+                        var model = ModelList.Where(m => m.ModelId == ModelId).Select(m => m).FirstOrDefault();
+                        modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                        ModelId = model.ParentModelId;
+                    }
+                    modleStageRelationList = new List<ModelStageRelationList>();
+                    modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(m => m.ModelId).ToList());
+                    impList = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                    impList = improvementTacticList.Where(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == plan.PlanId).ToList();
+
+                    MQLs = Common.GetTacticStageRelationForSinglePlanPerformance(planTacticIds, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, impList, modelDateList, MainModelId, stageList, false).Sum(t => t.MQLValue);
+
+                    if (planTacticIds.Count() > 0)
+                    {
+                        var tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
+                        TotalBudget += LineItemList.Where(l => tacticIds.Contains(l.PlanTacticId)).Sum(l => l.Cost);
+                    }
+
+
+                    if (impList.Count > 0)
+                    {
+                        //// Getting improved MQL.
+                        double? improvedMQL = Common.GetTacticStageRelationForSinglePlanPerformance(planTacticIds, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, impList, modelDateList, MainModelId, stageList, true).Sum(t => t.MQLValue);
+
+                        //// Calculating percentage increase.
+                        if (improvedMQL.HasValue && MQLs != 0)
+                        {
+                            TotalPercentageMQLImproved += ((improvedMQL - MQLs) / MQLs) * 100;
+                            MQLs = Convert.ToDouble(improvedMQL);
+                        }
+                    }
+
+                    if (planTacticIds != null)
+                    {
+                        TotalTacticCount += planTacticIds.Count();
+                    }
+
+                    TotalMQLs += MQLs;
+
+                    MQLs = 0;
+                }
+            }
+
+            newHomePlanModelHeader.MQLs = TotalMQLs;
+            newHomePlanModelHeader.Budget = objCurrency.GetValueByExchangeRate(TotalBudget, PlanExchangeRate);// Modified By Nishant Sheth #2497
+            newHomePlanModelHeader.TacticCount = TotalTacticCount;
+            newHomePlanModelHeader.PercentageMQLImproved = TotalPercentageMQLImproved;
+            if (activeMenu == Enums.ActiveMenu.Home.ToString().ToLower())
+            {
+                string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                if (string.IsNullOrEmpty(MQLStageLabel))
+                {
+                    newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.MQLLabel.ToString()].ToString();
+                }
+                else
+                {
+                    newHomePlanModelHeader.mqlLabel = MQLStageLabel;
+                }
+                newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
+            }
+            else if (activeMenu == Enums.ActiveMenu.Plan.ToString().ToLower())
+            {
+                string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                if (string.IsNullOrEmpty(MQLStageLabel))
+                {
+                    newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.ProjectedMQLLabel.ToString()].ToString();
+                }
+                else
+                {
+                    newHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
+                }
+                newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
+            }
+            return newHomePlanModelHeader;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         #endregion
 
 

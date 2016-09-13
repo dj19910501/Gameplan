@@ -1111,6 +1111,28 @@ namespace RevenuePlanner.Controllers
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
+        //Add by Komal Rawal on 12/09/2016
+        //Desc : To get header values.
+        public async Task<JsonResult> GetHeaderforPlanByMultiplePlanIDs(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        {
+            planid = System.Web.HttpUtility.UrlDecode(planid);
+            List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
+
+            try
+            {
+                await Task.Delay(1);
+                return Json(new
+                {
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForPlans(planIds, activeMenu, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
 
         #region "Apply To Calendar"

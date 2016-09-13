@@ -747,6 +747,7 @@
     </None>
     <Content Include="Scripts\MultiCurrency.js" />
     <None Include="Service References\BDSService\BDSService1.disco" />
+    <Content Include="Scripts\Planhud.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1010,6 +1011,7 @@
     <Content Include="Views\ColumnView\_AddColumnView.cshtml" />
     <Content Include="Views\Home\Index - Copy.cshtml" />
     <Content Include="Views\Filter\Filters.cshtml" />
+    <Content Include="Views\Shared\_Planhud.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

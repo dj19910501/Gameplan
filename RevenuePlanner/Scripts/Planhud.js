@@ -1,0 +1,266 @@
+﻿
+function GetHeadsUpData(HeaderUrl,ChartUrl,activemenu,timeframe)
+{
+    var _filters = {
+        selectedPlanIds: [],
+        OwnerIds: [],
+        TacticTypeids: [],
+        StatusIds: [],
+        customFieldIds: []
+
+    };
+
+    $('#ulSelectedPlans').find("input[type=checkbox]:checked").each(function () {
+        var chkid = $(this).attr("id");
+        if (chkid != undefined && chkid != 'undefined') {
+            _filters.selectedPlanIds.push(chkid);
+        }
+    });
+
+    $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+        _filters.OwnerIds.push($(this).attr("id"));
+    });
+
+    $("#ulTacticType li input:checkbox:checked").map(function () {
+        var Value = $(this).attr("id").replace("CbTT", "");
+        _filters.TacticTypeids.push(Value);
+    });
+
+    $("#ulStatus li input:checkbox:checked").map(function () {
+        var Value = $(this).attr("id");
+        _filters.StatusIds.push(Value);
+    });
+
+    $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+        if ($(this).attr('checked') == 'checked') {
+            var chkid = $(this).attr("id");
+            if (chkid != undefined && chkid != 'undefined') {
+                _filters.customFieldIds.push(chkid);
+            }
+        }
+    });
+
+    var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
+    $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+        if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+            AllCounter = $(this).find("input[type=checkbox]").length;
+            CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+            UncheckedCounter = AllCounter - CheckedCounter;
+            if (AllCounter == UncheckedCounter) {
+                var Id = $(this).attr("id");
+                if (Id.indexOf("-") >= 0) {
+                    Id = Id.split('-')[1];
+                    var CustomId = Id + "_null";
+                    _filters.customFieldIds.push(CustomId);
+
+                }
+            }
+            else if (AllCounter == CheckedCounter) {
+                id = this.id;
+                if (id != null && id != "" && id.indexOf("-") > -1) {
+                    id = this.id.split("-")[1];
+                }
+                var i = 0, customfieldid;
+                for (i = 0; i < _filters.customFieldIds.length; i++) {
+                    if (_filters.customFieldIds[i].indexOf("_") > -1) {
+                        customfieldid = _filters.customFieldIds[i].split("_")[0];
+                        if (id == customfieldid) {
+                            _filters.customFieldIds.splice(i, 1);
+                            i--;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    GetHeaderData(HeaderUrl,activemenu,timeframe,_filters.selectedPlanIds,_filters.customFieldIds,_filters.OwnerIds,_filters.TacticTypeids,_filters.StatusIds);
+    GetNumberOfActivityPerMonByPlanId(ChartUrl, activemenu, timeframe, _filters.selectedPlanIds, _filters.customFieldIds, _filters.OwnerIds, _filters.TacticTypeids, _filters.StatusIds);
+}
+
+
+function GetHeaderData(url, activemenu, timeframe, selectedPlanIds, Customid, OwnerId, Tacticids, StatusId) {
+    $.ajax(
+    {
+        type: "POST",
+        cache: false,
+        url: url,
+        data: {
+            planid: selectedPlanIds.toString(),
+            activeMenu: activemenu,
+            year: timeframe,
+            CustomFieldId: Customid.toString(),
+            OwnerIds: OwnerId.toString(),
+            TacticTypeids: Tacticids.toString(),
+            StatusIds: StatusId.toString(),
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data != null) {
+                $.each(data.lstHomePlanModelHeader, function (index, obj) {
+                    if (index == "MQLs") {
+                        $("#pMQLs").html(obj);
+                        SetPriceValue("#pMQLs");
+                    }
+                    else if (index == "Budget") {
+                        $("#pbudget").html(obj);
+                        SetBudget("#pbudget");
+                    }
+                    else if (index == "TacticCount") {
+                        $("#ptacticcount").html(obj);
+                    }
+                    else if (index == "mqlLabel") {
+                        $("#pmqlLabel").html(obj);
+                    }
+                    else if (index == "costLabel") {
+                        $("#pcostLabel").html(obj);
+                    }
+                    else if (index == "PercentageMQLImproved") {
+                        var pMQLImproved = $("#pMQLImproved");
+                        pMQLImproved.removeClass("greenfont");
+                        pMQLImproved.removeClass("redfont");
+
+                        if (obj != null) {
+                            if (obj < 0) {
+                                pMQLImproved.html(FormatNumber(obj, true))
+                                pMQLImproved.addClass("redfont");
+                            }
+                            else {
+                                pMQLImproved.html("+" + FormatNumber(obj, true))
+                                pMQLImproved.addClass("greenfont");
+                            }
+                        }
+                        else {
+                            pMQLImproved.html('---');
+                        }
+                    }
+
+                });
+
+            }
+        }
+    });
+}
+
+
+function GetNumberOfActivityPerMonByPlanId(url, activemenu, timeframe,selectedPlanIds, Customid, OwnerId, Tacticids, StatusId) {
+    var isMultiple = false;
+    if (activemenu == "home") {
+        isMultiple = true;
+    }
+    $.ajax(
+    {
+        type: "POST", 
+        cache: false,
+        url: url,
+        data: {
+            planid: selectedPlanIds.toString(),
+            strparam: timeframe,
+            isMultiplePlan: isMultiple,
+            CustomFieldId: Customid.toString(),
+            OwnerIds: OwnerId.toString(),
+            TacticTypeids: Tacticids.toString(),
+            StatusIds: StatusId.toString(),
+           
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data != null) {
+                $(".dhx_canvas_text").remove();
+                $("canvas").remove();
+                setgraphdata(data);
+
+            }
+        }
+    });
+}
+
+function setgraphdata(data) {
+    $(".dhx_chart_legend").html('');
+    var legendvalue = "";
+    var activityyear = data.strparam;
+    if (activityyear == "" || activityyear == undefined || activityyear == null) {
+        activityyear = $('select#ddlUpComingActivites option:selected').val();
+    }
+    if (activityyear != undefined) {
+        if (activityyear.toString().indexOf('-') != -1) {
+
+            if (activityyear.toString().split('-').length > 1) {
+                legendvalue = [{ text: activityyear.split('-')[0], color: "#c633c9" }, { text: activityyear.split('-')[1], color: "#407B22" }];
+            }
+        }
+        else {
+            legendvalue = [];
+        }
+    }
+    else {
+        legendvalue = [];
+    }
+    var barChart2 = new dhtmlXChart({
+        view: "bar",
+        container: "chart2",
+        value: "#NoOfActivity#",
+        label: "#NoOfActivity#",
+        color: "#Color#",
+        radius: 3,
+        padding: {
+            top: 25,
+            bottom: 16,
+            right: 00,
+            left: 00
+
+        },
+        xAxis: {
+            template: "#Month#"
+        },
+        legend: {
+            width: 3,
+            align: "right",
+            valign: "middle",
+            marker: {
+                type: "round",
+                width: 8
+            },
+            values: legendvalue
+        },
+    });
+    barChart2.parse(data.lstchart, "json");
+
+    $('.dhx_chart_legend').css({ 'left': '100px', 'top': '21px' });
+
+    var dhtml_length = $('.dhx_chart_legend').length;
+    if (activityyear != undefined) {
+        if (activityyear.split('-').length > 1) {
+            var i = 0;
+            var leftcss;
+            $(".dhx_canvas_text").each(function () {
+                i++;
+                if (i > 8) {
+                    leftcss = parseInt($(this).css('left'));
+                    $(this).css('left', (leftcss - 1));
+                }
+                else {
+                    leftcss = parseInt($(this).css('left'));
+                    $(this).css('left', (leftcss + 7));
+                }
+            });
+        }
+    }
+}
+
+
+function GetMultiplePlanNames()
+{
+    var PlanNames = "";
+    var PlanCount = 0;
+    $('#ulSelectedPlans').find("input[type=checkbox]:checked").each(function () {
+        var Planname = $(this).parent().attr('title');
+        PlanNames += Planname + ",";
+        PlanCount++;
+    });
+    PlanNames = PlanNames.slice(0, -1);
+    $("#PlanTitle").html(PlanNames);
+    $("#PlanTitle").attr('title',PlanNames);
+    $("#PlanCount").html(PlanCount + " Plans Selected")
+
+}

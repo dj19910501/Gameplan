@@ -7,22 +7,16 @@
 @* Sidebar Section Start *@
 
 @section Sidebar{
-    @*@Html.Partial("~/Views/Shared/SideFilters.cshtml")*@
-<div class="sidebar-toogle">
-    <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true"></i></a>
-</div>
 <div id="divFilter"></div>
 }
 
 
+<script type="text/javascript" src="~/Scripts/Planhud.js"></script>
+
 @* ================= Header section start ==================  *@
 <div class="cf full-width-header" id="planHeader">
-    @*@Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)*@
-
+    @Html.Partial("~/Views/Shared/_Planhud.cshtml")
     <div class="planheader-left">
-        <div class="planheader-title">
-            <h5 style="" id="lblMarkringActivitiesTitle">Marketing Calendar</h5><span class="plan-selected">2 Plans Selected</span>
-        </div>
         <div class="plan-header-grid">
             <div class="request-icon-block">
                 <a class="new-btn-plan-left P-icon-active" href="#">
@@ -65,62 +59,7 @@
             <!-- -->
         </div>
     </div>
-    <div class="planheader-right pull-right">
-        <div class="plancart-box clearfix">
-            <div class="white-chart activity-distribute">
-                <p class="white-chart-title">Activity Distribution</p>
-                <div style="" id="chart2" class=" dhx_chart dhx_chart">
-                    Chart HERE
                 </div>
-            </div>
-            <div class="white-chart">
-                <p title="" id="pcostLabel" class="white-chart-title">Cost</p>
-                <p id="pbudget" class="value source-sans-prolight" data-original-title="₹520,078" title="">₹520k</p>
-                <p style="display:none" id="honeybudget" class="value source-sans-prolight"></p>
-                @*<a id="DivBulldollerbg" style="cursor:pointer;" class="currency-value source-sans-prolight">₹</a>*@
-            </div>
-            <div class="white-chart">
-                <p title="Tactics" class="white-chart-title">Tactics</p>
-
-                <p id="ptacticcount" class="value source-sans-prolight">72</p>
-            </div>
-            <div class="white-chart margin-right20" id="DivBullhornbg">
-                <p title="" id="pmqlLabel" class="white-chart-title">Qualified Leads</p>
-                <p id="pMQLs" class="value source-sans-prolight" data-original-title="" title="">125</p>
-                <p style="display:none" id="HoneyMQLs" class="value source-sans-prolight"></p>
-                <!--Added By: Maninder Singh Wadhva-->
-                <!--Addressed PL Ticket: 37,38,47,49-->
-                <!-- Modified font class by kapil - 100614 - #508 -->
-                <p class="small-value" id="pMQLImproved">+0%</p>
-            </div>
-            <div style="visibility: hidden; width: 0; padding:0; border:0" id="pdfchart" class="white-chart">
-                <p class="white-chart-title">Activity Distribution</p>
-                <div style="" id="chartpdf"></div>
-
-            </div>
-        </div>
-        <div id="goalwrapper" class="goals-wrapper">
-            <span class="goal-text">Goals</span>
-            <div class="goal-content">
-                <span>Revenue : </span>
-                <span class="valuenumber" id="spnrevenue" data-original-title="" title="">₹1,000</span>
-            </div>
-            <div class="goal-content">
-                <span>Responses : </span>
-                <span class="valuenumber" id="spninq" data-original-title="" title="">1,000</span>
-            </div>
-            <div class="goal-content">
-                <span>Qualified Leads : </span>
-                <span class="valuenumber" id="spnmql" data-original-title="" title="">1,000</span>
-            </div>
-            <div class="goal-content">
-                <span>Closed Won : </span>
-                <span class="valuenumber" id="spncw" data-original-title="" title="">1,000</span>
-            </div>
-        </div>
-        
-    </div>
-</div>
 @* ================= Header section End ==================  *@
 @* ================= Grid box start here ================= *@
 <div class="task-tbl">
@@ -181,9 +120,16 @@
                 success: function (data) {
                     if (data != 'undefined' && data != null) {
                         $('#divFilter').html(data);
+						var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
+                        GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
+                        GetMultiplePlanNames();
                     }
                 }
             });
+
+            
+
+
         })
     </script>
 

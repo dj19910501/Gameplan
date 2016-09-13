@@ -1,0 +1,54 @@
+﻿<link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
+<div class="planheader-left">
+    <div class="planheader-title">
+        <h5 style="" id="PlanTitle" title =""></h5><span class="plan-selected" id="PlanCount"></span>
+    </div>
+</div>
+<div class="planheader-right pull-right">
+    <div class="plancart-box clearfix">
+        <div class="white-chart activity-distribute">
+            <p cclass="white-chart-title">Activity Distribution</p>
+            <div id="chart2" style="width: 140px; height: 85px; margin-left: 34px; margin-top:38px;"></div>
+        </div>
+        <div class="white-chart">
+            <p class="white-chart-title" id="pcostLabel"></p>
+            <p class="value source-sans-prolight" id="pbudget"> </p>
+            <p class="value source-sans-prolight" id="honeybudget" style="display:none"></p>
+        </div>
+        <div class="white-chart">
+            <p class="white-chart-title" title="Tactics">Tactics</p>
+            <p class="value source-sans-prolight" id="ptacticcount"> </p>
+        </div>
+
+
+        <div id="DivBullhornbg" class="white-chart">
+            <p class="white-chart-title" id="pmqlLabel"> </p>
+            <p class="value source-sans-prolight" id="pMQLs"</p>
+            <p class="value source-sans-prolight" id="HoneyMQLs" style="display:none"></p>
+            <p id="pMQLImproved" class="small-value"> </p>
+        </div>
+        <div style="visibility: hidden; width: 0; padding:0; border:0" id="pdfchart" class="white-chart">
+            <p class="white-chart-title">Activity Distribution</p>
+            <div style="" id="chartpdf"></div>
+        </div>
+    </div>
+    <div id="goalwrapper" class="goals-wrapper">
+        <span class="goal-text">Goals</span>
+        <div class="goal-content">
+            <span>Revenue : </span>
+            <span class="valuenumber" id="spnrevenue" data-original-title="" title="">₹1,000</span>
+        </div>
+        <div class="goal-content">
+            <span>Responses : </span>
+            <span class="valuenumber" id="spninq" data-original-title="" title="">1,000</span>
+        </div>
+        <div class="goal-content">
+            <span>Qualified Leads : </span>
+            <span class="valuenumber" id="spnmql" data-original-title="" title="">1,000</span>
+        </div>
+        <div class="goal-content">
+            <span>Closed Won : </span>
+            <span class="valuenumber" id="spncw" data-original-title="" title="">1,000</span>
+        </div>
+    </div>
+</div>
