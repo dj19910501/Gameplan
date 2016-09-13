@@ -1262,6 +1262,7 @@ namespace RevenuePlanner.Test.Controllers
 
 
             InspectController objInspectController = new InspectController();
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanID = DataHelper.GetPlanId();
             Sessions.PlanId = PlanID;
             int ImprovementPlanCampaignId = db.Plan_Improvement_Campaign.Where(id => id.ImprovePlanId == PlanID).Select(id => id.ImprovementPlanCampaignId).FirstOrDefault();
@@ -1275,8 +1276,8 @@ namespace RevenuePlanner.Test.Controllers
             form.ImprovementTacticTypeId = ImprovementTactictypeid > 0 ? ImprovementTactictypeid : 1; 
             form.Title = Title;
             form.EffectiveDate = DateTime.Now;
-
-            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            form.Cost = 1000;
+            
             var result = objInspectController.SaveImprovementTactic(form, false) as JsonResult;
 
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);

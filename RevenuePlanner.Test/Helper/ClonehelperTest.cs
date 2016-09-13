@@ -15,6 +15,11 @@ namespace RevenuePlanner.Test.Helper
     [TestClass]
     public class ClonehelperTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         /// <summary>
         ///  To check to identify the clone type with empty parameter
         /// </summary>
@@ -255,11 +260,12 @@ namespace RevenuePlanner.Test.Helper
             MRPEntities db = new MRPEntities();
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
             Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
-            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+            //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
 
             string clonetype = Enums.EntityType.Tactic.ToString();
 
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId).Select(pl => pl.PlanId).ToList();
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
             int _clone = Clonehelper.CloneToOtherPlan(null, clonetype, Convert.ToInt32(entityId.Split('_')[1]), Convert.ToInt32(entityId.Split('_')[0]), 0, false);
@@ -315,8 +321,9 @@ namespace RevenuePlanner.Test.Helper
             MRPEntities db = new MRPEntities();
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
             Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
-            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+            //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId).Select(pl => pl.PlanId).ToList();
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
 
@@ -423,8 +430,9 @@ namespace RevenuePlanner.Test.Helper
             MRPEntities db = new MRPEntities();
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
             Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
-            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+            //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId).Select(pl => pl.PlanId).ToList();
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
             int _clone = Clonehelper.LinkToOtherPlan(null, string.Empty, Convert.ToInt32(entityId.Split('_')[1]), Convert.ToInt32(entityId.Split('_')[0]), 0, false);
@@ -498,8 +506,9 @@ namespace RevenuePlanner.Test.Helper
             MRPEntities db = new MRPEntities();
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
             Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
-            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+            //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId).Select(pl => pl.PlanId).ToList();
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
 
