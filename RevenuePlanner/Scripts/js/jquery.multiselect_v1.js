@@ -235,19 +235,19 @@ var selectbox_keys = '';
                         html += '<div class="report-seperator" id="' + tempId + '_LineitemCustomHeader"><span>Line Item Fields</span></div>'
                     }
                 }
-                if (o.CustomColumnGroupName == '')
-                {
-                    isColumnview = true;
+                //if (o.CustomColumnGroupName == '')
+                //{
+                //    isColumnview = true;
                     
-                }
-                else if (!isColumnview && o.CustomColumnGroupName != '')  {
-                    if (value.substring(0, o.CustomColumnGroupName.length) == o.CustomColumnGroupName)  {
-                        isColumnview = true;
-                        isGridView = true;
-                        var tempId = $this.parent().attr('id');
-                        html += '<div class="report-seperator" id="' + tempId + '_ColumnViewCustomHeader"><span>Column View</span></div>'
-                    }
-                }
+                //}
+                //else if (!isColumnview && o.CustomColumnGroupName != '')  {
+                //    if (value.substring(0, o.CustomColumnGroupName.length) == o.CustomColumnGroupName)  {
+                //        isColumnview = true;
+                //        isGridView = true;
+                //        var tempId = $this.parent().attr('id');
+                //        html += '<div class="report-seperator" id="' + tempId + '_ColumnViewCustomHeader"><span>Column View</span></div>'
+                //    }
+                //}
             
 
                 //End: Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
@@ -274,16 +274,18 @@ var selectbox_keys = '';
 
             });
 
-            if (!isColumnview) {
-                isColumnview = true;
-                var tempId = el.attr('id');
-                html += '<div class="report-seperator" id="' + tempId + '_ColumnViewCustomHeader"><span>Column View</span></div>'
-                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add New View</a>'
-            }
-            else if (isGridView)
-            {
-                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add New View</a>'
-            }
+            html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Manage Column View</a>'
+
+            //if (!isColumnview) {
+            //    isColumnview = true;
+            //    var tempId = el.attr('id');
+            //    html += '<div class="report-seperator" id="' + tempId + '_ColumnViewCustomHeader"><span>Column View</span></div>'
+            //    html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add New View</a>'
+            //}
+            //else if (isGridView)
+            //{
+            //    html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add New View</a>'
+            //}
 
             // insert into the DOM
             checkboxContainer.html(html);
