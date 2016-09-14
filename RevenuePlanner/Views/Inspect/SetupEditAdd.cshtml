@@ -695,11 +695,9 @@
                 }
             });
 
-            if($("#txtTacticTitle").val().toString().trim() == '') {
-                ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            if($("#txtTacticTitle").val().toString().trim() == '') {                
                 $("#txtTacticTitle").addClass("error");
-                iserror = true;
-                return false;
+                iserror = true;                
             }
             else{
                 $("#txtTacticTitle").removeClass("error");

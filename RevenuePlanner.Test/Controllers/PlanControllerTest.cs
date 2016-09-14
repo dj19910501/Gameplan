@@ -949,7 +949,7 @@ namespace RevenuePlanner.Test.Controllers
             var TaskData = DataHelper.GetPlanLineItem(Sessions.User.ClientId);
             if (TaskData != null)
             {
-                string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
+                string UpdateValue = "Copy_Test_cases" + DateTime.Now.ToString();
                 int EntityId = TaskData.PlanLineItemId;
                 string updateColumnName = "Task Name";
 
