@@ -9,8 +9,7 @@ namespace RevenuePlanner.Services
 {
     public interface IColumnView
     {
-        int SaveColumnView(Guid UserId,string ViewName);
-        int SaveColumnViewAttribute(int ViewId, List<AttributeDetail> AttributeDetail);
+        int SaveColumnView(Guid UserId, string ViewName, string xmlElements);
         DataTable GetCustomFieldList(Guid ClientId);
     }
 }

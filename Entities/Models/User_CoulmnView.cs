@@ -14,11 +14,6 @@ namespace RevenuePlanner.Models
     
     public partial class User_CoulmnView
     {
-        public User_CoulmnView()
-        {
-            this.User_CoulmnView_attribute = new HashSet<User_CoulmnView_attribute>();
-        }
-    
         public int ViewId { get; set; }
         public string ViewName { get; set; }
         public Nullable<System.Guid> CreatedBy { get; set; }
@@ -26,7 +21,7 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> ModifyBy { get; set; }
         public Nullable<System.DateTime> ModifyDate { get; set; }
         public Nullable<bool> IsDefault { get; set; }
-    
-        public virtual ICollection<User_CoulmnView_attribute> User_CoulmnView_attribute { get; set; }
+        public string GridAttribute { get; set; }
+        public string BudgetAttribute { get; set; }
     }
 }

@@ -331,9 +331,6 @@
     <Compile Include="Models\User_CoulmnView.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\User_CoulmnView_attribute.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\User_Filter.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

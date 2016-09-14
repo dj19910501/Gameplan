@@ -1,5 +1,6 @@
 ﻿using Elmah;
 using Newtonsoft.Json;
+using RestSharp.Serializers;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using RevenuePlanner.Services;
@@ -9,6 +10,8 @@ using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace RevenuePlanner.Controllers
 {
@@ -29,7 +32,8 @@ namespace RevenuePlanner.Controllers
         {
             List<ColumnViewEntity> allattributeList = new List<ColumnViewEntity>();
             List<string> SelectedCustomfieldID = new List<string>();
-            bool IsSelectall=false;
+            bool IsSelectall = false;
+
             try
             {
                 var userview = db.User_CoulmnView.Where(a => a.CreatedBy == Sessions.User.UserId).FirstOrDefault();
@@ -37,7 +41,18 @@ namespace RevenuePlanner.Controllers
                     IsSelectall = true;
                 else
                 {
-                    SelectedCustomfieldID = userview.User_CoulmnView_attribute.Select(a => a.AttributeId).ToList();
+                    //SelectedCustomfieldID = userview.User_CoulmnView_attribute.Select(a => a.AttributeId).ToList();
+
+                    var gridattribute = userview.GridAttribute.ToString();
+                    var doc = XDocument.Parse(gridattribute);
+                    var items = (from r in doc.Root.Elements("attribute")
+                                 select new
+                                 {
+                                     AttributeType = (string)r.Attribute("AttributeType"),
+                                     AttributeId = (string)r.Attribute("AttributeId"),
+                                     ColumnOrder = (string)r.Attribute("ColumnOrder")
+                                 }).ToList();
+                    SelectedCustomfieldID = items.Select(a => a.AttributeId).ToList();
                 }
                 ViewBag.IsSelectAll = IsSelectall;
                 DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.ClientId);
@@ -83,7 +98,7 @@ namespace RevenuePlanner.Controllers
                             CustomFieldId = atr.CustomFieldId,
                             CutomfieldName = atr.CutomfieldName,
                             ParentID = atr.ParentId,
-                            IsChecked = SelectedCustomfieldID.Contains(atr.CustomFieldId)?true:false
+                            IsChecked = SelectedCustomfieldID.Contains(atr.CustomFieldId) ? true : false
                         }).ToList()
                     }).ToList();
                 }
@@ -102,30 +117,23 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveColumnView(List<AttributeDetail> AttributeDetail, string ViewName = null)
         {
+            XmlDocument doc = new XmlDocument();
+            XmlElement filter = doc.CreateElement("filters");
             try
             {
                 if (AttributeDetail != null)
                 {
-                    int viewId = objcolumnView.SaveColumnView(Sessions.User.UserId, ViewName);
+                    var AttributexmlElements = new XElement("ViewDetail", AttributeDetail.Select(i => new XElement("attribute", new XAttribute("AttributeType", i.AttributeType),
+                        new XAttribute("AttributId", i.AttributeId), new XAttribute("ColumnOrder", i.ColumnOrder.ToString())
+                        )).ToList());
 
-                    if ( viewId != -1)
+
+                    int viewId = objcolumnView.SaveColumnView(Sessions.User.UserId, ViewName, AttributexmlElements.ToString());
+
+                    if (viewId != -1)
                     {
-                        int result = objcolumnView.SaveColumnViewAttribute(viewId, AttributeDetail);
-                        if (result > 0)
-                        {
-                            //if (ViewName != null)
-                            //{
-                            //    List<ViewByModel> viewByListResult = objSp.spViewByDropDownList(Convert.ToString(Sessions.PlanId));
-                            //    return Json(new { Success = true, SuccessMessage = Common.objCached.SuccessColumnView, ViewById = viewByListResult }, JsonRequestBehavior.AllowGet);
-                            //}
-                            //else
-                            //{
-                                return Json(new { Success = true}, JsonRequestBehavior.AllowGet);
-                            //}
-                        }
 
-                        else
-                            return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+                        return Json(new { Success = true }, JsonRequestBehavior.AllowGet);
 
                     }
                     else

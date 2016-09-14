@@ -50,6 +50,7 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="DisplayDate" Type="datetime" Nullable="false" />
+          <Property Name="IsEmailSent" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="BestInClass">
           <Key>
@@ -1227,16 +1228,8 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="ModifyBy" Type="uniqueidentifier" />
           <Property Name="ModifyDate" Type="datetime" />
           <Property Name="IsDefault" Type="bit" />
-        </EntityType>
-        <EntityType Name="User_CoulmnView_attribute">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ViewId" Type="int" Nullable="false" />
-          <Property Name="AttributeType" Type="nvarchar" MaxLength="50" />
-          <Property Name="AttributeId" Type="nvarchar" MaxLength="50" />
-          <Property Name="ColumnOrder" Type="int" />
+          <Property Name="GridAttribute" Type="xml" />
+          <Property Name="BudgetAttribute" Type="xml" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -2517,18 +2510,6 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_User_CoulmnView_attribute_User_CoulmnView">
-          <End Role="User_CoulmnView" Type="Self.User_CoulmnView" Multiplicity="1" />
-          <End Role="User_CoulmnView_attribute" Type="Self.User_CoulmnView_attribute" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User_CoulmnView">
-              <PropertyRef Name="ViewId" />
-            </Principal>
-            <Dependent Role="User_CoulmnView_attribute">
-              <PropertyRef Name="ViewId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_User_Notification_Notification">
           <End Role="Notification" Type="Self.Notification" Multiplicity="1" />
           <End Role="User_Notification" Type="Self.User_Notification" Multiplicity="*" />
@@ -2672,7 +2653,6 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
           <EntitySet Name="Tactic_Share" EntityType="Self.Tactic_Share" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_CoulmnView" EntityType="Self.User_CoulmnView" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="User_CoulmnView_attribute" EntityType="Self.User_CoulmnView_attribute" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification_Messages" EntityType="Self.User_Notification_Messages" Schema="dbo" store:Type="Tables" />
@@ -3103,10 +3083,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <AssociationSet Name="FK_TacticType_TacticType_WorkFrontTemplateId" Association="Self.FK_TacticType_TacticType_WorkFrontTemplateId">
             <End Role="IntegrationWorkFrontTemplates" EntitySet="IntegrationWorkFrontTemplates" />
             <End Role="TacticType" EntitySet="TacticType" />
-          </AssociationSet>
-          <AssociationSet Name="FK_User_CoulmnView_attribute_User_CoulmnView" Association="Self.FK_User_CoulmnView_attribute_User_CoulmnView">
-            <End Role="User_CoulmnView" EntitySet="User_CoulmnView" />
-            <End Role="User_CoulmnView_attribute" EntitySet="User_CoulmnView_attribute" />
           </AssociationSet>
           <AssociationSet Name="FK_User_Notification_Notification" Association="Self.FK_User_Notification_Notification">
             <End Role="Notification" EntitySet="Notification" />
@@ -3680,11 +3656,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySet Name="User_Notification_Messages" EntityType="MRPModel.User_Notification_Messages" />
           <EntitySet Name="vClientWise_EntityList" EntityType="MRPModel.vClientWise_EntityList" />
           <EntitySet Name="User_CoulmnView" EntityType="MRPModel.User_CoulmnView" />
-          <EntitySet Name="User_CoulmnView_attribute" EntityType="MRPModel.User_CoulmnView_attribute" />
-          <AssociationSet Name="FK_User_CoulmnView_attribute_User_CoulmnView" Association="MRPModel.FK_User_CoulmnView_attribute_User_CoulmnView">
-            <End Role="User_CoulmnView" EntitySet="User_CoulmnView" />
-            <End Role="User_CoulmnView_attribute" EntitySet="User_CoulmnView_attribute" />
-          </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -6440,6 +6411,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="Alert_Rules" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert" ToRole="Alert_Rules" />
           <Property Name="DisplayDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ReadDate" Type="DateTime" Precision="3" />
+          <Property Name="IsEmailSent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Alerts_Alert_Rules">
           <End Type="MRPModel.Alert_Rules" Role="Alert_Rules" Multiplicity="1" />
@@ -6496,31 +6468,9 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="ModifyBy" Type="Guid" />
           <Property Name="ModifyDate" Type="DateTime" Precision="3" />
           <Property Name="IsDefault" Type="Boolean" />
-          <NavigationProperty Name="User_CoulmnView_attribute" Relationship="MRPModel.FK_User_CoulmnView_attribute_User_CoulmnView" FromRole="User_CoulmnView" ToRole="User_CoulmnView_attribute" />
+          <Property Name="GridAttribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="BudgetAttribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="User_CoulmnView_attribute">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ViewId" Type="Int32" Nullable="false" />
-          <Property Name="AttributeType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="AttributeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ColumnOrder" Type="Int32" />
-          <NavigationProperty Name="User_CoulmnView" Relationship="MRPModel.FK_User_CoulmnView_attribute_User_CoulmnView" FromRole="User_CoulmnView_attribute" ToRole="User_CoulmnView" />
-        </EntityType>
-        <Association Name="FK_User_CoulmnView_attribute_User_CoulmnView">
-          <End Type="MRPModel.User_CoulmnView" Role="User_CoulmnView" Multiplicity="1" />
-          <End Type="MRPModel.User_CoulmnView_attribute" Role="User_CoulmnView_attribute" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User_CoulmnView">
-              <PropertyRef Name="ViewId" />
-            </Principal>
-            <Dependent Role="User_CoulmnView_attribute">
-              <PropertyRef Name="ViewId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7879,6 +7829,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="Alerts">
             <EntityTypeMapping TypeName="MRPModel.Alert">
               <MappingFragment StoreEntitySet="Alerts">
+                <ScalarProperty Name="IsEmailSent" ColumnName="IsEmailSent" />
                 <ScalarProperty Name="ReadDate" ColumnName="ReadDate" />
                 <ScalarProperty Name="DisplayDate" ColumnName="DisplayDate" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
@@ -7923,6 +7874,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="User_CoulmnView">
             <EntityTypeMapping TypeName="MRPModel.User_CoulmnView">
               <MappingFragment StoreEntitySet="User_CoulmnView">
+                <ScalarProperty Name="BudgetAttribute" ColumnName="BudgetAttribute" />
+                <ScalarProperty Name="GridAttribute" ColumnName="GridAttribute" />
                 <ScalarProperty Name="IsDefault" ColumnName="IsDefault" />
                 <ScalarProperty Name="ModifyDate" ColumnName="ModifyDate" />
                 <ScalarProperty Name="ModifyBy" ColumnName="ModifyBy" />
@@ -7930,17 +7883,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="ViewName" ColumnName="ViewName" />
                 <ScalarProperty Name="ViewId" ColumnName="ViewId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="User_CoulmnView_attribute">
-            <EntityTypeMapping TypeName="MRPModel.User_CoulmnView_attribute">
-              <MappingFragment StoreEntitySet="User_CoulmnView_attribute">
-                <ScalarProperty Name="ColumnOrder" ColumnName="ColumnOrder" />
-                <ScalarProperty Name="AttributeId" ColumnName="AttributeId" />
-                <ScalarProperty Name="AttributeType" ColumnName="AttributeType" />
-                <ScalarProperty Name="ViewId" ColumnName="ViewId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

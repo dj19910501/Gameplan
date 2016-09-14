@@ -273,8 +273,9 @@ var selectbox_keys = '';
                 html += ' /><span class="tipsyTitle" title="' + description + '">' + description + '</span></label></li>';
 
             });
-
-            html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Manage Column View</a>'
+            if (id == "ddlTabViewBy") {
+                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Set Column View</a>'
+            }
 
             //if (!isColumnview) {
             //    isColumnview = true;

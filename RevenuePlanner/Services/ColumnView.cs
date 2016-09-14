@@ -46,7 +46,7 @@ namespace RevenuePlanner.Services
         }
         #endregion
         #region method to save ColumnView
-        public int SaveColumnView(Guid UserId, string ViewName)
+        public int SaveColumnView(Guid UserId, string ViewName, string xmlElements)
         {
             int result = 0;
             try
@@ -71,6 +71,14 @@ namespace RevenuePlanner.Services
                     }
                     else
                     {
+                       
+                        columnview.ModifyBy = UserId;
+                        columnview.ModifyDate = DateTime.Now;
+                        columnview.IsDefault = true;
+                        columnview.GridAttribute = xmlElements.ToString();
+                        objDbMrpEntities.Entry(columnview).State = EntityState.Modified;
+                        objDbMrpEntities.SaveChanges();
+                      
                         result = columnview.ViewId;
                     }
                      
@@ -83,6 +91,7 @@ namespace RevenuePlanner.Services
                         objcolumnview.CreatedBy = UserId;
                         objcolumnview.CreatedDate = DateTime.Now;
                         objcolumnview.IsDefault = true;
+                        objcolumnview.GridAttribute = xmlElements.ToString();
                         objDbMrpEntities.Entry(objcolumnview).State = EntityState.Added;
                         objDbMrpEntities.SaveChanges();
                         result = objcolumnview.ViewId;
@@ -98,41 +107,6 @@ namespace RevenuePlanner.Services
         }
 
         #endregion
-        #region method to save ColumnView attribute
-        public int SaveColumnViewAttribute(int ViewId, List<AttributeDetail> lstAttributeDetail)
-        {
-            int result = 0;
-            User_CoulmnView_attribute objColumnattribute;
-            List<User_CoulmnView_attribute> ListobjColumnattribute;
-            try
-            {
-                if (lstAttributeDetail != null)
-                {
-                    ListobjColumnattribute = objDbMrpEntities.User_CoulmnView_attribute.Where(view => view.ViewId == ViewId).ToList();
-                    if(ListobjColumnattribute != null && ListobjColumnattribute.Count > 0)
-                    {
-                        ListobjColumnattribute.ForEach(x => objDbMrpEntities.Entry(x).State = EntityState.Deleted);
-                    }
-                    foreach(AttributeDetail objattribute in lstAttributeDetail)
-                    {
-                        objColumnattribute = new User_CoulmnView_attribute();
-                        objColumnattribute.ViewId = ViewId;
-                        objColumnattribute.AttributeId = objattribute.AttributeId;
-                        objColumnattribute.AttributeType = objattribute.AttributeType;
-                        objColumnattribute.ColumnOrder = objattribute.ColumnOrder;
-                        objDbMrpEntities.Entry(objColumnattribute).State = EntityState.Added;
-                    }
-                    result=objDbMrpEntities.SaveChanges();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-            }
-            return result;
-        }
-
-        #endregion
+        
     }
 }
