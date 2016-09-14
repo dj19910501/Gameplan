@@ -50,7 +50,6 @@ warning 6002: The table/view 'MRPDev.dbo.AggregationStatus' does not have a prim
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="DisplayDate" Type="datetime" Nullable="false" />
-          <Property Name="IsEmailSent" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="BestInClass">
           <Key>
@@ -3648,14 +3647,14 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           </AssociationSet>
           <EntitySet Name="vClientWise_Tactic" EntityType="MRPModel.vClientWise_Tactic" />
           <EntitySet Name="Alert_Rules" EntityType="MRPModel.Alert_Rules" />
+          <EntitySet Name="User_Notification_Messages" EntityType="MRPModel.User_Notification_Messages" />
+          <EntitySet Name="vClientWise_EntityList" EntityType="MRPModel.vClientWise_EntityList" />
+          <EntitySet Name="User_CoulmnView" EntityType="MRPModel.User_CoulmnView" />
           <EntitySet Name="Alerts" EntityType="MRPModel.Alert" />
           <AssociationSet Name="FK_Alerts_Alert_Rules" Association="MRPModel.FK_Alerts_Alert_Rules">
             <End Role="Alert_Rules" EntitySet="Alert_Rules" />
             <End Role="Alert" EntitySet="Alerts" />
           </AssociationSet>
-          <EntitySet Name="User_Notification_Messages" EntityType="MRPModel.User_Notification_Messages" />
-          <EntitySet Name="vClientWise_EntityList" EntityType="MRPModel.vClientWise_EntityList" />
-          <EntitySet Name="User_CoulmnView" EntityType="MRPModel.User_CoulmnView" />
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -6395,36 +6394,9 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="CreatedBy" Type="Guid" Nullable="false" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <Property Name="ModifiedBy" Type="Guid" />
-          <NavigationProperty Name="Alerts" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert_Rules" ToRole="Alert" />
           <Property Name="UniqueRuleCode" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Alerts" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert_Rules" ToRole="Alert" />
         </EntityType>
-        <EntityType Name="Alert">
-          <Key>
-            <PropertyRef Name="AlertId" />
-          </Key>
-          <Property Name="AlertId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RuleId" Type="Int32" Nullable="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="IsRead" Type="Boolean" Nullable="false" />
-          <Property Name="UserId" Type="Guid" Nullable="false" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Alert_Rules" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert" ToRole="Alert_Rules" />
-          <Property Name="DisplayDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ReadDate" Type="DateTime" Precision="3" />
-          <Property Name="IsEmailSent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <Association Name="FK_Alerts_Alert_Rules">
-          <End Type="MRPModel.Alert_Rules" Role="Alert_Rules" Multiplicity="1" />
-          <End Type="MRPModel.Alert" Role="Alert" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Alert_Rules">
-              <PropertyRef Name="RuleId" />
-            </Principal>
-            <Dependent Role="Alert">
-              <PropertyRef Name="RuleId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="User_Notification_Messages">
           <Key>
             <PropertyRef Name="NotificationId" />
@@ -6471,6 +6443,32 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="GridAttribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="BudgetAttribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="Alert">
+          <Key>
+            <PropertyRef Name="AlertId" />
+          </Key>
+          <Property Name="AlertId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RuleId" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsRead" Type="Boolean" Nullable="false" />
+          <Property Name="ReadDate" Type="DateTime" Precision="3" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DisplayDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Alert_Rules" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert" ToRole="Alert_Rules" />
+        </EntityType>
+        <Association Name="FK_Alerts_Alert_Rules">
+          <End Type="MRPModel.Alert_Rules" Role="Alert_Rules" Multiplicity="1" />
+          <End Type="MRPModel.Alert" Role="Alert" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alert_Rules">
+              <PropertyRef Name="RuleId" />
+            </Principal>
+            <Dependent Role="Alert">
+              <PropertyRef Name="RuleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7826,21 +7824,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Alerts">
-            <EntityTypeMapping TypeName="MRPModel.Alert">
-              <MappingFragment StoreEntitySet="Alerts">
-                <ScalarProperty Name="IsEmailSent" ColumnName="IsEmailSent" />
-                <ScalarProperty Name="ReadDate" ColumnName="ReadDate" />
-                <ScalarProperty Name="DisplayDate" ColumnName="DisplayDate" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="IsRead" ColumnName="IsRead" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="RuleId" ColumnName="RuleId" />
-                <ScalarProperty Name="AlertId" ColumnName="AlertId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="User_Notification_Messages">
             <EntityTypeMapping TypeName="MRPModel.User_Notification_Messages">
               <MappingFragment StoreEntitySet="User_Notification_Messages">
@@ -7883,6 +7866,20 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="ViewName" ColumnName="ViewName" />
                 <ScalarProperty Name="ViewId" ColumnName="ViewId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Alerts">
+            <EntityTypeMapping TypeName="MRPModel.Alert">
+              <MappingFragment StoreEntitySet="Alerts">
+                <ScalarProperty Name="DisplayDate" ColumnName="DisplayDate" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ReadDate" ColumnName="ReadDate" />
+                <ScalarProperty Name="IsRead" ColumnName="IsRead" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="RuleId" ColumnName="RuleId" />
+                <ScalarProperty Name="AlertId" ColumnName="AlertId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

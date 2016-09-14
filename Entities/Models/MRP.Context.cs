@@ -119,10 +119,10 @@ namespace RevenuePlanner.Models
         public DbSet<Tactic_MediaCodes> Tactic_MediaCodes { get; set; }
         public DbSet<vClientWise_Tactic> vClientWise_Tactic { get; set; }
         public DbSet<Alert_Rules> Alert_Rules { get; set; }
-        public DbSet<Alert> Alerts { get; set; }
         public DbSet<User_Notification_Messages> User_Notification_Messages { get; set; }
         public DbSet<vClientWise_EntityList> vClientWise_EntityList { get; set; }
         public DbSet<User_CoulmnView> User_CoulmnView { get; set; }
+        public DbSet<Alert> Alerts { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {
