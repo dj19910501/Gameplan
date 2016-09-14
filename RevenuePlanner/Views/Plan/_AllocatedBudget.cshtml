@@ -214,7 +214,12 @@
     </div>
     <div class="modal-body">
         <ul>
-            <li><strong>Download file format <a href="~/Content/Common/grid sample.xls">here</a></strong></li>
+            @*
+        updation start 14/09/2016 #2543 kausha (current plan data will be downlded as per export and label is changed)
+            *@
+            @*<li><strong>Download file format  <a href="~/Content/Common/grid sample.xls" onclick="return ExportToExcel(); ">here</a></strong></li>*@
+            <li><strong>Download file  <a  onclick="return ExportToExcel();">here</a></strong></li>
+            
             <li><strong>Make any necessary changes</strong><br />
                 <span>Note: Any additional rows or columns added will not appear after imported</span></li>
             <li><strong>Import the file</strong><br />

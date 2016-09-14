@@ -97,9 +97,14 @@
                 </div>
                 <div class="modal-body">
                     <ul>
-                        <li><strong>Download file format <a href="@Url.Content("~/Content/Common/MarketingBudgetImportSample.xls")">here</a></strong>
-                        <br />
-                        <span>Note: Here is sample file in month format with some specific columns. You can import this file or can import from (Edit Foreacast/Edit Budget) screen export fromat.</span>
+                        @*
+                            updation start 14/09/2016 #2543 kausha (current plan data will be downlded as per export and label is changed) 
+                        *@
+                        @*<li><strong>Download file format <a href="@Url.Content("~/Content/Common/MarketingBudgetImportSample.xls")">here</a></strong>*@
+                        <li>
+                            <strong>Download file <a onclick="return ExportToExcel();">here</a></strong>
+                            <br />
+                            <span>Note: Here is sample file in month format with some specific columns. You can import this file or can import from (Edit Foreacast/Edit Budget) screen export fromat.</span>
                         </li>
                         <li>
                             <strong>Make any necessary changes</strong><br />
