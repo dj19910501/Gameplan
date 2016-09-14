@@ -117,14 +117,13 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveColumnView(List<AttributeDetail> AttributeDetail, string ViewName = null)
         {
-            XmlDocument doc = new XmlDocument();
-            XmlElement filter = doc.CreateElement("filters");
+           
             try
             {
                 if (AttributeDetail != null)
                 {
                     var AttributexmlElements = new XElement("ViewDetail", AttributeDetail.Select(i => new XElement("attribute", new XAttribute("AttributeType", i.AttributeType),
-                        new XAttribute("AttributId", i.AttributeId), new XAttribute("ColumnOrder", i.ColumnOrder.ToString())
+                        new XAttribute("AttributeId", i.AttributeId), new XAttribute("ColumnOrder", i.ColumnOrder.ToString())
                         )).ToList());
 
 
@@ -150,7 +149,6 @@ namespace RevenuePlanner.Controllers
                 return Json(new { Success = false, ErrorMessage = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
 
             }
-            return Json(new { Success = true }, JsonRequestBehavior.AllowGet);
         }
         #endregion
         #endregion
