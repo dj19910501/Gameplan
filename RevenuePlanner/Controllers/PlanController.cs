@@ -14208,7 +14208,7 @@ namespace RevenuePlanner.Controllers
             PlanHead headobj = new PlanHead();
             List<PlanOptions> lstOwner = new List<PlanOptions>();
             List<PlanOptions> lstTacticType = new List<PlanOptions>();
-            string manageviewicon = " <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+            string manageviewicon = " <a href='javascript:void(0)' onclick='OpenCreateNew(true)' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
             try
             {
 

@@ -4,24 +4,38 @@
 {
     <div class="addview-wrap">
         @*<div class="addview-title margin-bottom-20">
-        <label>1. Name of View.</label>
-        <input type="text" id="txtViewName" class="margin-left10" />
-    </div>
-    <div class="addview-title margin-bottom-20">
-        <label>1. Select columns to appear in View.</label>
-    </div>*@
+                <label>1. Name of View.</label>
+                <input type="text" id="txtViewName" class="margin-left10" />
+            </div>
+            <div class="addview-title margin-bottom-20">
+                <label>1. Select columns to appear in View.</label>
+            </div>*@
         @foreach (var entity in Model)
         {
-            string title = string.Empty;
-          
-            title = entity.EntityType.ToString() + " Attributes";
+
             <div class="category" entitytpe="@entity.EntityType.ToString()">
                 <div class="category-title clearfix">
-                    <span class="entity-check"><input type="checkbox" id="" name="" value="" class="checkAlldiv" /> <span class="all-check">All</span></span>
-                    <span class="entity-type">@title</span>
-                    <div class="category-title-right">
-                        <span class="showdv">show</span> / <span class="hidedv">hide</span>
-                    </div>
+                    @if (entity.AttributeList != null && entity.AttributeList.Count() > 0)
+                    {
+                        string title = string.Empty;
+
+                        title = entity.EntityType.ToString() + " Attributes";
+                        <span class="entity-check">
+                            <input type="checkbox" id="" name="" value="@entity.EntityType.ToString()" class="checkAlldiv" /><span class="all-check">All</span>
+                        </span>
+                        <span class="entity-type">@title</span>
+                        <div class="category-title-right">
+                            <span class="showdv">show</span> / <span class="hidedv">hide</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="entity-check">
+                            <input type="checkbox" id="" name="" value="@entity.EntityType.ToString()" class="checkAlldiv" checked="@entity.EntityIsChecked"/>
+                        </span>
+                        <span class="entity-type">@entity.EntityType.ToString()</span>
+
+                    }
                 </div>
 
 
@@ -57,7 +71,8 @@
 }
 
 <script type="text/javascript">
-
+    var Isgrid = '@ViewBag.IsGrid';
+   
     $(".category-title-right").click(function () {
         $(this).toggleClass("show-fa");
         $(this).closest(".category").find(".category-block").slideToggle("slow");
@@ -100,7 +115,7 @@
     $("#btnSaveColumnView").click(function () {
         //var viewname = $("#txtViewName").val();
         _ColumnView = [];
-            @*if (CheckHtmlTag(viewname) == false) {
+        @*if (CheckHtmlTag(viewname) == false) {
                 $("#errorMessage1").css("display", "block");
                 $("#spanMessageError1").empty();
                 $("#spanMessageError1").text("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
@@ -108,6 +123,8 @@
                 return false;
             }
             $('#txtViewName').removeClass("error");*@
+
+        if (Isgrid.toLowerCase() == "true") {
             $.each($(".category"), function () {
                 var entitytype = $(this).attr("entitytpe");
                 $(this).find(".chkAttributes").find("input:checkbox").each(function () {
@@ -120,41 +137,53 @@
                     }
                 });
             });
+        }
+        else {
+            $.each($(".category"), function () {
+                var entitytype = $(this).attr("entitytpe");
+                var checkbox = $(this).find(".checkAlldiv");
+                if ($(checkbox).is(':checked')) {
+                    _ColumnView.push({
+                        AttributeType: entitytype.toString(),
+                        AttributeId: $(checkbox).val().toString()
+                    });
+                }
+            });
+        }
+        if (_ColumnView != null && _ColumnView.length > 0 && _ColumnView != undefined) {
+            _ColumnView = JSON.stringify(_ColumnView);
 
-            if (_ColumnView != null && _ColumnView.length > 0 && _ColumnView != undefined) {
-                _ColumnView = JSON.stringify(_ColumnView);
-                var Isgrid = '@ViewBag.IsGrid';
-                $.ajax({
+            $.ajax({
 
-                    url: '@Url.Action("SaveColumnView", "ColumnView")', // we are calling json method
-                    type: 'post',
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    data: "{'AttributeDetail':" + (_ColumnView) + "}",
-                    success: function (data) {
-                        if (data.Success != null && data.Success == true ) {
-                            $('#CreateNewView').hide();
-                            //if (data.ViewById != null) {
-                            //    BindViewSelections(data.ViewById, '');
-                            //}
-                        }
-                        if (data.Success != null && data.Success == false && data.ErrorMessage != null) {
-                            $("#errorMessage1").css("display", "block");
-                            $("#spanMessageError1").empty();
-                            $("#spanMessageError1").text(data.ErrorMessage);
-                            $("#successMessage1").css("display", "none");
-                        }
+                url: '@Url.Action("SaveColumnView", "ColumnView")', // we are calling json method
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: "{'AttributeDetail':" + (_ColumnView) + ",'Isgrid':'" + Isgrid + "'}",
+                success: function (data) {
+                    if (data.Success != null && data.Success == true) {
+                        $('#CreateNewView').hide();
+                        //if (data.ViewById != null) {
+                        //    BindViewSelections(data.ViewById, '');
+                        //}
                     }
-                });
-            }
-            else {
-                $("#errorMessage1").css("display", "block");
-                $("#spanMessageError1").empty();
-                $("#spanMessageError1").text("Please select atleast basic attributes");
-                $("#successMessage1").css("display", "none");
-                $(".modal-body").scrollTop(0);
-            }
-        
+                    if (data.Success != null && data.Success == false && data.ErrorMessage != null) {
+                        $("#errorMessage1").css("display", "block");
+                        $("#spanMessageError1").empty();
+                        $("#spanMessageError1").text(data.ErrorMessage);
+                        $("#successMessage1").css("display", "none");
+                    }
+                }
+            });
+        }
+        else {
+            $("#errorMessage1").css("display", "block");
+            $("#spanMessageError1").empty();
+            $("#spanMessageError1").text("Please select atleast basic attributes");
+            $("#successMessage1").css("display", "none");
+            $(".modal-body").scrollTop(0);
+        }
+
     });
     $(".closemessage").click(function () {
         $(this).parent().closest('div').css("display", "none");
@@ -162,20 +191,20 @@
     });
     $(document).ready(function () {
         var Isselectall = '@ViewBag.IsSelectAll';
-        if (Isselectall.toLowerCase() == 'true')
-        {
+        if (Isselectall.toLowerCase() == 'true') {
             $(".addview-wrap").find("input:checkbox").attr("checked", "checked");
         }
-       $(".chkAttributes").each(function () {
-           var currentdivcheckbox = $(this).find("input:checkbox");
-           if ($(currentdivcheckbox).length == $(this).find(".attr-checkbox:checked").length) {
-               $(this).closest(".category").find(".checkAlldiv").attr("checked", "checked");
-           } else {
-               $(this).closest(".category").find(".checkAlldiv").removeAttr("checked");
-           }
-        });
-    
-      
+        if (Isgrid.toLocaleLowerCase() == "true") {
+            $(".chkAttributes").each(function () {
+                var currentdivcheckbox = $(this).find("input:checkbox");
+                if ($(currentdivcheckbox).length == $(this).find(".attr-checkbox:checked").length) {
+                    $(this).closest(".category").find(".checkAlldiv").attr("checked", "checked");
+                } else {
+                    $(this).closest(".category").find(".checkAlldiv").removeAttr("checked");
+                }
+            });
+        }
+
         $("#errorMessage1").css("display", "none");
         $("#spanMessageError1").empty();
         $("#successMessage1").css("display", "none");

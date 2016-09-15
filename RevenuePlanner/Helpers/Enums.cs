@@ -1581,6 +1581,12 @@ namespace RevenuePlanner.Helpers
             {PlanGanttTypes.Status.ToString(), "Status"},
             {PlanGanttTypes.ROIPackage.ToString(), "ROI Package"},
         };
+        //added by devanshi for column management 
+        public enum Budgetcolumn
+        {
+            Actual, Planned, Budget
+        }
+        //end
     }
 
     #region Authorization

@@ -38,16 +38,21 @@ namespace RevenuePlanner.Controllers
             try
             {
                 var userview = db.User_CoulmnView.Where(a => a.CreatedBy == Sessions.User.UserId).FirstOrDefault();
-                if (IsGrid)
-                    attributexml = Convert.ToString(userview.GridAttribute);
-
-                else
-                    attributexml = Convert.ToString(userview.BudgetAttribute);
-
-                if (userview == null && !string.IsNullOrEmpty(attributexml))
-                    IsSelectall = true;
+                if (userview == null)
+                {
+                        IsSelectall = true;
+                }
                 else
                 {
+
+                    if (IsGrid)
+                        attributexml = Convert.ToString(userview.GridAttribute);
+
+                    else
+                        attributexml = Convert.ToString(userview.BudgetAttribute);
+
+                    if (string.IsNullOrEmpty(attributexml))
+                        IsSelectall = true;
                     if (attributexml != null)
                     {
                         var doc = XDocument.Parse(attributexml);
@@ -99,21 +104,31 @@ namespace RevenuePlanner.Controllers
                         BasicFields.Add(mqlfield);
                         BasicFields.AddRange(columnattribute);
                     }
-                }
-               
-                allattributeList = BasicFields.GroupBy(a => new { EntityType = a.EntityType }).Select(a => new ColumnViewEntity
-                {
-                    EntityType = a.Key.EntityType,
 
-                    AttributeList = BasicFields.Where(atr => atr.EntityType == a.Key.EntityType).Select(atr => new ColumnViewAttribute
+
+
+                    allattributeList = BasicFields.GroupBy(a => new { EntityType = a.EntityType }).Select(a => new ColumnViewEntity
                     {
-                        CustomFieldId = atr.CustomFieldId,
-                        CutomfieldName = atr.CutomfieldName,
-                        ParentID = atr.ParentID,
-                        IsChecked = SelectedCustomfieldID.Contains(atr.CustomFieldId) ? true : false
-                    }).ToList()
-                }).ToList();
+                        EntityType = a.Key.EntityType,
 
+                        AttributeList = BasicFields.Where(atr => atr.EntityType == a.Key.EntityType).Select(atr => new ColumnViewAttribute
+                        {
+                            CustomFieldId = atr.CustomFieldId,
+                            CutomfieldName = atr.CutomfieldName,
+                            ParentID = atr.ParentID,
+                            IsChecked = SelectedCustomfieldID.Contains(atr.CustomFieldId) ? true : false
+                        }).ToList()
+                    }).ToList();
+
+                }
+                else
+                {
+                    allattributeList = Enum.GetNames(typeof(Enums.Budgetcolumn)).ToList().Select(row => new ColumnViewEntity
+                    {
+                        EntityType = row,
+                        EntityIsChecked = SelectedCustomfieldID.Contains(row) ? true : false
+                    }).ToList();
+                }
 
             }
             catch (Exception objException)
@@ -128,7 +143,7 @@ namespace RevenuePlanner.Controllers
         #region method to  save column view
 
         [HttpPost]
-        public JsonResult SaveColumnView(List<AttributeDetail> AttributeDetail, string ViewName = null, bool Isgrid=true)
+        public JsonResult SaveColumnView(List<AttributeDetail> AttributeDetail, string ViewName = null, bool Isgrid = true)
         {
 
             try
@@ -140,7 +155,7 @@ namespace RevenuePlanner.Controllers
                         )).ToList());
 
 
-                    int viewId = objcolumnView.SaveColumnView(Sessions.User.UserId, ViewName, AttributexmlElements.ToString());
+                    int viewId = objcolumnView.SaveColumnView(Sessions.User.UserId, ViewName, AttributexmlElements.ToString(),Isgrid);
 
                     if (viewId != -1)
                     {

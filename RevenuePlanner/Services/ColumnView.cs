@@ -95,9 +95,9 @@ namespace RevenuePlanner.Services
                         objcolumnview.CreatedDate = DateTime.Now;
                         objcolumnview.IsDefault = true;
                         if (Isgrid)
-                            columnview.GridAttribute = xmlElements.ToString();
+                            objcolumnview.GridAttribute = xmlElements.ToString();
                         else
-                            columnview.BudgetAttribute = xmlElements.ToString();
+                            objcolumnview.BudgetAttribute = xmlElements.ToString();
                         objDbMrpEntities.Entry(objcolumnview).State = EntityState.Added;
                         objDbMrpEntities.SaveChanges();
                         result = objcolumnview.ViewId;

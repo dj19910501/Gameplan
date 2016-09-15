@@ -12,6 +12,7 @@ namespace RevenuePlanner.Models
     public class ColumnViewEntity
     {
         public string EntityType { get; set; }
+        public bool EntityIsChecked { get; set; }
         public List<ColumnViewAttribute> AttributeList { get; set; }
     }
     public class ColumnViewAttribute

@@ -95,6 +95,7 @@
     <Compile Include="Controllers\OrganizationControllerTest.cs" />
     <Compile Include="Controllers\PlanControllerTest.cs" />
     <Compile Include="Controllers\ReportControllerTest.cs" />
+    <Compile Include="Controllers\ColumnViewControllerTest.cs" />
     <Compile Include="Controllers\UserControllerTest.cs" />
     <Compile Include="Helper\CommonTest.cs" />
     <Compile Include="Helper\ClonehelperTest.cs" />
