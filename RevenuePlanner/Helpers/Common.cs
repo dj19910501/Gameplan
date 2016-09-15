@@ -9517,7 +9517,7 @@ namespace RevenuePlanner.Helpers
             {
 
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@LineItemId", LineItemId);
+                command.Parameters.AddWithValue("@PlanTacticId", LineItemId);
                 command.Parameters.AddWithValue("@UserId", Sessions.User.UserId.ToString());
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
