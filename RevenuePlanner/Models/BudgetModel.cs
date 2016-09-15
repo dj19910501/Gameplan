@@ -128,6 +128,7 @@ namespace RevenuePlanner.Models
         public string Width { get; set; }
         public string ColSorting { get; set; }
         public List<string> AttachHeader { get; set; }
+        public int LineItemId { get; set; }
         
         public BudgetDHTMLXGrid Grid { get; set; }
     }

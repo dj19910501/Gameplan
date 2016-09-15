@@ -9804,188 +9804,7 @@ namespace RevenuePlanner.Controllers
             return PartialView("_Budget", objBudgetDHTMLXGrid);
         }
 
-        /// <summary>
-        /// Get cost allocation for line items in tactic inspect popup
-        /// </summary>
-        /// <param name="LineItemId"></param>
-        /// <returns></returns>
-        public BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int LineItemId)
-        {
-            Enums.BudgetTab budgetTab = Enums.BudgetTab.Planned;
-            Enums.ViewBy viewBy = Enums.ViewBy.Campaign;
-            PlanExchangeRate = Sessions.PlanExchangeRate;
-            string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
 
-            Plan_Campaign_Program_Tactic_LineItem objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lt => lt.PlanLineItemId == LineItemId).FirstOrDefault();
-
-            List<Guid> lstSubordinatesIds = new List<Guid>();
-            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-            if (IsTacticAllowForSubordinates)
-            {
-                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
-            }
-            TempData["ViewBy"] = (int)viewBy;
-            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
-            List<BudgetModel> model = new List<BudgetModel>();
-
-            //Added Sp part by mitesh
-            DataTable dt = objSp.GetLineItemCostAllocation(LineItemId);
-            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
-            //Insertation Start 19/08/2016 Kausha #2503 Used GetValuebyExchnagerate function to display values in users currency. 
-            model = dt.AsEnumerable().Select(row => new BudgetModel
-            {
-                Id = row["Id"].ToString(),
-                ActivityId = row["ActivityId"].ToString(),
-                ParentActivityId = row["ParentActivityId"].ToString(),
-                Allocated = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["TotalBudgetSum"].ToString()), PlanExchangeRate),
-                Month = new BudgetMonth()
-                {
-                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString()), PlanExchangeRate),
-                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString()), PlanExchangeRate),
-                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString()), PlanExchangeRate),
-                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString()), PlanExchangeRate),
-                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString()), PlanExchangeRate),
-                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString()), PlanExchangeRate),
-                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString()), PlanExchangeRate),
-                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString()), PlanExchangeRate),
-                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString()), PlanExchangeRate),
-                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString()), PlanExchangeRate),
-                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString()), PlanExchangeRate),
-                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()), PlanExchangeRate)
-                },
-                CreatedBy = new Guid(row["CreatedBy"].ToString()),
-                isEditable = Convert.ToBoolean(row["IsEditable"]),
-                ActivityType = row["ActivityType"].ToString(),
-                LineItemTypeId = ParseIntValue(Convert.ToString(row["LineItemTypeId"]))
-            }).ToList();
-            //Insertation End 19/08/2016 Kausha #2503 Used GetValuebyExchnagerate function to display values in users currency. 
-            //End Sp part by mitesh
-
-            List<int> intList = new List<int>();
-            intList.Add(objLineItem.PlanTacticId);
-            var CstFields = db.CustomField_Entity.Where(entity => intList.Contains(entity.EntityId) && entity.CustomField.EntityType.Equals(EntityTypeTactic)).ToList();
-            //Assign respective customfields to tactic
-            foreach (var Tactic in model.Where(m => m.ActivityType == ActivityType.ActivityTactic).ToList())
-            {
-                int tempTacticId = Convert.ToInt32(Tactic.Id);
-                Tactic.CustomFieldEntities = CstFields.Where(entity => entity.EntityId == tempTacticId).ToList();
-            }
-            Plan objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId.Equals(objLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId));
-            AllocatedBy = objPlan.AllocatedBy;
-
-            //Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
-            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
-            bool isDisplayForFilter = false;
-            bool IsCustomFeildExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), Sessions.User.ClientId);
-            var CustomFieldexists = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) &&
-                                                                        (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
-                                                                         ).Any();
-
-
-            var Entities = db.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).Select(entityid => entityid).ToList();
-
-            var lstAllTacticCustomFieldEntities = db.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == Sessions.User.ClientId &&
-                                                                                                        customFieldEntity.CustomField.IsDeleted.Equals(false) &&
-                                                                                                        customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
-                                                                                                        customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
-                                                                                                        (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
-                                                                                                        intList.Contains(customFieldEntity.EntityId))
-                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
-            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
-            foreach (var item in model)
-            {
-                if (item.ActivityType == ActivityType.ActivityLineItem)
-                {
-                    Guid tacticOwner = Guid.Empty;
-                    if (model.Where(m => m.ActivityId == item.ParentActivityId).Any())
-                    {
-                        tacticOwner = model.Where(m => m.ActivityId == item.ParentActivityId).FirstOrDefault().CreatedBy;
-                    }
-
-                    if (item.CreatedBy == Sessions.User.UserId || tacticOwner == Sessions.User.UserId || lstSubordinatesIds.Contains(tacticOwner))
-                    {
-                        List<int> planTacticIds = new List<int>();
-                        List<int> lstAllowedEntityIds = new List<int>();
-                        planTacticIds.Add(Convert.ToInt32(item.ParentActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
-                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
-                        {
-                            item.isEditable = true;
-                        }
-                        else
-                        {
-                            item.isEditable = false;
-                        }
-                    }
-                }
-            }
-            //End Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
-
-            //Set actual for quarters
-            if (AllocatedBy == "quarters")  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
-            {
-                foreach (BudgetModel bm in model)
-                {
-                    if (bm.ActivityType == ActivityType.ActivityLineItem)
-                    {
-                        bm.Month.Jan = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar;
-                        bm.Month.Apr = bm.Month.Apr + bm.Month.May + bm.Month.Jun;
-                        bm.Month.Jul = bm.Month.Jul + bm.Month.Aug + bm.Month.Sep;
-                        bm.Month.Oct = bm.Month.Oct + bm.Month.Nov + bm.Month.Dec;
-                        bm.Month.Feb = 0;
-                        bm.Month.Mar = 0;
-                        bm.Month.May = 0;
-                        bm.Month.Jun = 0;
-                        bm.Month.Aug = 0;
-                        bm.Month.Sep = 0;
-                        bm.Month.Nov = 0;
-                        bm.Month.Dec = 0;
-                    }
-                }
-            }
-            Sessions.PlanId = objPlan.PlanId;
-            //Added By Rushil Bhuptani #2191: Convert Budget --> Plan and Actual Grid to DHTMLX Tree Grid
-            BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-            //GenerateHeader            
-            objBudgetDHTMLXGrid = GenerateHeaderStringForInspectPopup(AllocatedBy, objBudgetDHTMLXGrid);
-
-            List<BudgetDHTMLXGridDataModel> LineRowsObjList = new List<BudgetDHTMLXGridDataModel>();
-            BudgetDHTMLXGridDataModel LineRowsObj = new BudgetDHTMLXGridDataModel();
-
-            foreach (BudgetModel bml in
-                        model.Where(p =>
-                                        p.ActivityType == ActivityType.ActivityLineItem).OrderBy(p => p.ActivityName))
-            {
-                LineRowsObj = new BudgetDHTMLXGridDataModel();
-                LineRowsObj.id = ActivityType.ActivityLineItem + HttpUtility.HtmlEncode(bml.ActivityId);
-                LineRowsObj.open = null;
-                LineRowsObj.bgColor = "#fff";
-                List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
-                Budgetdataobj LineDataObj = new Budgetdataobj();
-
-                // Modified by Rushil Bhuptani on 06/03/2016 for #2214
-                LineDataObj.value = bml.Id;
-                LineDataObjList.Add(LineDataObj);
-
-                LineDataObj = new Budgetdataobj();
-                LineDataObj.value = "";
-                LineDataObjList.Add(LineDataObj);
-
-                LineRowsObj.data = LineDataObjList;
-                LineRowsObjList.Add(LineRowsObj);
-
-                LineDataObjList = CampaignBudgetSummaryForInspectPopup(model, ActivityType.ActivityLineItem,
-                                    bml.ParentActivityId, LineDataObjList, AllocatedBy, Convert.ToString(budgetTab),
-                                    bml.ActivityId);
-
-                LineDataObjList = CampaignMonthForInspectPopup(model, ActivityType.ActivityLineItem,
-                                    bml.ParentActivityId, LineDataObjList, AllocatedBy, Convert.ToString(budgetTab),
-                                    bml.ActivityId);
-            }
-            objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
-            objBudgetDHTMLXGrid.Grid.rows = LineRowsObjList;
-            return objBudgetDHTMLXGrid;
-        }
 
         /// <summary>
         /// Added By: Rushil Bhuptani.
@@ -10963,9 +10782,211 @@ namespace RevenuePlanner.Controllers
             return BudgetDataObjList;
         }
 
+        #region Line Item Cost Allocation in Tactic Inspect Popup
+        /// <summary>
+        /// Get cost allocation for line items in tactic inspect popup
+        /// </summary>
+        /// <param name="LineItemId"></param>
+        /// <returns></returns>
+        public List<BudgetDHTMLXGridModel> GetCostAllocationLineItemInspectPopup(int curTacticId)
+        {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
+            string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+
+            //Plan_Campaign_Program_Tactic_LineItem objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lt => lt.PlanLineItemId == LineItemId).FirstOrDefault();
+
+            List<Guid> lstSubordinatesIds = new List<Guid>();
+            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            if (IsTacticAllowForSubordinates)
+            {
+                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+            }
+            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+            List<BudgetModel> model = new List<BudgetModel>();
+
+            DataTable dt = objSp.GetLineItemCostAllocation(curTacticId);
+            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+            //Insertation Start 19/08/2016 Kausha #2503 Used GetValuebyExchnagerate function to display values in users currency. 
+            model = dt.AsEnumerable().Select(row => new BudgetModel
+            {
+                Id = row["Id"].ToString(),
+                ActivityId = row["ActivityId"].ToString(),
+                ParentActivityId = row["ParentActivityId"].ToString(),
+                Allocated = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["TotalBudgetSum"].ToString()), PlanExchangeRate),
+                Month = new BudgetMonth()
+                {
+                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString()), PlanExchangeRate),
+                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString()), PlanExchangeRate),
+                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString()), PlanExchangeRate),
+                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString()), PlanExchangeRate),
+                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString()), PlanExchangeRate),
+                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString()), PlanExchangeRate),
+                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString()), PlanExchangeRate),
+                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString()), PlanExchangeRate),
+                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString()), PlanExchangeRate),
+                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString()), PlanExchangeRate),
+                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString()), PlanExchangeRate),
+                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()), PlanExchangeRate)
+                },
+                ParentMonth = row["ActivityType"].ToString() == ActivityType.ActivityLineItem.ToString() ? new BudgetMonth()
+                {
+                    Jan = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY1"].ToString()), PlanExchangeRate),
+                    Feb = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY2"].ToString()), PlanExchangeRate),
+                    Mar = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY3"].ToString()), PlanExchangeRate),
+                    Apr = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY4"].ToString()), PlanExchangeRate),
+                    May = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY5"].ToString()), PlanExchangeRate),
+                    Jun = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY6"].ToString()), PlanExchangeRate),
+                    Jul = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY7"].ToString()), PlanExchangeRate),
+                    Aug = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY8"].ToString()), PlanExchangeRate),
+                    Sep = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY9"].ToString()), PlanExchangeRate),
+                    Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString()), PlanExchangeRate),
+                    Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString()), PlanExchangeRate),
+                    Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()), PlanExchangeRate)
+                } : null ,
+                CreatedBy = new Guid(row["CreatedBy"].ToString()),
+                isEditable = Convert.ToBoolean(row["IsEditable"]),
+                ActivityType = row["ActivityType"].ToString(),
+                LineItemTypeId = ParseIntValue(Convert.ToString(row["LineItemTypeId"]))
+            }).ToList();
+            //Insertation End 19/08/2016 Kausha #2503 Used GetValuebyExchnagerate function to display values in users currency. 
+            //End Sp part by mitesh
+
+            List<int> intList = new List<int>();
+            intList.Add(curTacticId);
+            var CstFields = db.CustomField_Entity.Where(entity => intList.Contains(entity.EntityId) && entity.CustomField.EntityType.Equals(EntityTypeTactic)).ToList();
+            //Assign respective customfields to tactic
+            foreach (var Tactic in model.Where(m => m.ActivityType == ActivityType.ActivityTactic).ToList())
+            {
+                int tempTacticId = Convert.ToInt32(Tactic.Id);
+                Tactic.CustomFieldEntities = CstFields.Where(entity => entity.EntityId == tempTacticId).ToList();
+            }
+            int PlanId = db.Plan_Campaign_Program_Tactic.Where(x => x.PlanTacticId == curTacticId).FirstOrDefault().Plan_Campaign_Program.Plan_Campaign.PlanId;
+            Plan objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId.Equals(PlanId));
+            AllocatedBy = objPlan.AllocatedBy;
+
+            //Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
+            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+            bool isDisplayForFilter = false;
+            bool IsCustomFeildExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), Sessions.User.ClientId);
+            var CustomFieldexists = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) &&
+                                                                        (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
+                                                                         ).Any();
+
+
+            var Entities = db.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).Select(entityid => entityid).ToList();
+
+            var lstAllTacticCustomFieldEntities = db.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == Sessions.User.ClientId &&
+                                                                                                        customFieldEntity.CustomField.IsDeleted.Equals(false) &&
+                                                                                                        customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
+                                                                                                        customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
+                                                                                                        (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
+                                                                                                        intList.Contains(customFieldEntity.EntityId))
+                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
+            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
+            foreach (var item in model)
+            {
+                if (item.ActivityType == ActivityType.ActivityLineItem)
+                {
+                    Guid tacticOwner = Guid.Empty;
+                    if (model.Where(m => m.ActivityId == item.ParentActivityId).Any())
+                    {
+                        tacticOwner = model.Where(m => m.ActivityId == item.ParentActivityId).FirstOrDefault().CreatedBy;
+                    }
+
+                    if (item.CreatedBy == Sessions.User.UserId || tacticOwner == Sessions.User.UserId || lstSubordinatesIds.Contains(tacticOwner))
+                    {
+                        List<int> planTacticIds = new List<int>();
+                        List<int> lstAllowedEntityIds = new List<int>();
+                        planTacticIds.Add(Convert.ToInt32(item.ParentActivityId.Replace("cpt_", "")));
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
+                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                        {
+                            item.isEditable = true;
+                        }
+                        else
+                        {
+                            item.isEditable = false;
+                        }
+                    }
+                }
+            }
+            //End Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
+
+            //Set actual for quarters
+            if (AllocatedBy == "quarters")  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
+            {
+                foreach (BudgetModel bm in model)
+                {
+                    if (bm.ActivityType == ActivityType.ActivityLineItem)
+                    {
+                        bm.Month.Jan = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar;
+                        bm.Month.Apr = bm.Month.Apr + bm.Month.May + bm.Month.Jun;
+                        bm.Month.Jul = bm.Month.Jul + bm.Month.Aug + bm.Month.Sep;
+                        bm.Month.Oct = bm.Month.Oct + bm.Month.Nov + bm.Month.Dec;
+                        bm.Month.Feb = 0;
+                        bm.Month.Mar = 0;
+                        bm.Month.May = 0;
+                        bm.Month.Jun = 0;
+                        bm.Month.Aug = 0;
+                        bm.Month.Sep = 0;
+                        bm.Month.Nov = 0;
+                        bm.Month.Dec = 0;
+                    }
+                }
+            }
+            model = ManageLineItems(model);
+            Sessions.PlanId = objPlan.PlanId;
+            List<BudgetDHTMLXGridModel> lstBudgetDHTMLXGrid = new List<BudgetDHTMLXGridModel>();
+            BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
+            
+            foreach (BudgetModel bml in
+                        model.Where(p =>
+                                        //p.ActivityType == ActivityType.ActivityLineItem && p.ActivityId.Replace("cptl_","") == Convert.ToString(LineItemId)).OrderBy(p => p.ActivityName))
+                                        p.ActivityType == ActivityType.ActivityLineItem).OrderBy(p => p.ActivityName))
+            {
+                objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
+                //GenerateHeader            
+                objBudgetDHTMLXGrid = GenerateHeaderStringForInspectPopup(AllocatedBy, objBudgetDHTMLXGrid);
+
+                List<BudgetDHTMLXGridDataModel> LineRowsObjList = new List<BudgetDHTMLXGridDataModel>();
+                BudgetDHTMLXGridDataModel LineRowsObj = new BudgetDHTMLXGridDataModel();
+
+                LineRowsObj = new BudgetDHTMLXGridDataModel();
+                LineRowsObj.id = ActivityType.ActivityLineItem + HttpUtility.HtmlEncode(bml.ActivityId);
+                LineRowsObj.open = null;
+                LineRowsObj.bgColor = "#fff";
+                List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
+                Budgetdataobj LineDataObj = new Budgetdataobj();
+
+                // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+                LineDataObj.value = bml.Id;
+                LineDataObjList.Add(LineDataObj);
+
+                LineDataObj = new Budgetdataobj();
+                LineDataObj.value = "";
+                LineDataObjList.Add(LineDataObj);
+
+                LineRowsObj.data = LineDataObjList;
+                LineRowsObjList.Add(LineRowsObj);
+
+                LineDataObjList = LineItemTotalPlannedCostForInspectPopup(model, ActivityType.ActivityLineItem,
+                                    bml.ParentActivityId, LineDataObjList, bml.ActivityId);
+
+                LineDataObjList = LineItemMonthlyCostForInspectPopup(model, ActivityType.ActivityLineItem,
+                                    bml.ParentActivityId, LineDataObjList, AllocatedBy, bml.ActivityId);
+                objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
+                objBudgetDHTMLXGrid.Grid.rows = LineRowsObjList;
+
+                objBudgetDHTMLXGrid.LineItemId = Int32.Parse(bml.Id);
+                lstBudgetDHTMLXGrid.Add(objBudgetDHTMLXGrid);
+            }
+            
+            return lstBudgetDHTMLXGrid;
+        }
 
         /// <summary>
-        /// Added By: Arpita Soni
+        /// Added By: Arpita Soni 
+        /// Date : 09/08/2016
         /// Action to Generate Header String for line item listing
         /// </summary>
         /// <param name="AllocatedBy">AllocatedBy</param>
@@ -11011,23 +11032,19 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Added By: Rushil Bhuptani.
-        /// Date : 18/5/2016
-        /// Action to Generate Summary of Allocated Month Data for Plan, Campaign, Program, Tactic, Lineitem
+        /// Added By: Arpita Soni
+        /// Date : 09/08/2016
+        /// Action to Generate Planned Cost of Allocated Month Data for Lineitem
         /// </summary>
-        public List<Budgetdataobj> CampaignBudgetSummaryForInspectPopup(List<BudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string tab, string activityId)
+        public List<Budgetdataobj> LineItemTotalPlannedCostForInspectPopup(List<BudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string activityId)
         {
             string formatThousand = "#,#0.##";
-            BudgetModel plan = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
-            if (plan != null)
+            BudgetModel lineItem = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
+            if (lineItem != null)
             {
                 Budgetdataobj BudgetDataObj = new Budgetdataobj();
                 string divValue = "0";
-                if (plan != null)
-                {
-                    bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && plan.LineItemTypeId == null;
-                    divValue = plan.isEditable && !isOtherLineItem ? plan.Allocated.ToString(formatThousand) : plan.Allocated.ToString(formatThousand);
-                }
+                divValue = lineItem.Allocated.ToString(formatThousand);
                 BudgetDataObj.value = divValue;
                 BudgetDataObjList.Add(BudgetDataObj);
             }
@@ -11040,14 +11057,12 @@ namespace RevenuePlanner.Controllers
         /// Date : 09/08/2016
         /// Action to Generate Allocated Month Data for Lineitem listing in inspect popup
         /// </summary>
-        public List<Budgetdataobj> CampaignMonthForInspectPopup(List<BudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string strTab, string activityId)
+        public List<Budgetdataobj> LineItemMonthlyCostForInspectPopup(List<BudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string activityId)
         {
             string formatThousand = "#,#0.##";
             string divInnerHtml = "0";
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             BudgetDataObj = new Budgetdataobj();
-            bool isPlannedTab = ((int)Enums.BudgetTab.Planned).ToString() == strTab ? true : false;
-            bool isTactic = activityType == Helpers.ActivityType.ActivityTactic ? true : false;
             bool isLineItem = activityType == Helpers.ActivityType.ActivityLineItem ? true : false;
             BudgetModel c = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
 
@@ -11077,19 +11092,10 @@ namespace RevenuePlanner.Controllers
                     }
                     if (monthlyCampaignValue <= 0)
                     {
-                        //divInnerHtml = c.isEditable &&
-                        //                       ((isPlannedTab &&
-                        //                         (isTactic || (isLineItem && c.LineItemTypeId != null))) ||
-                        //                        (!isPlannedTab && isLineItem && c.isAfterApproved))
-                        //    ? "---"
-                        //    : "---";
                         divInnerHtml = "---";
                     }
                     else
                     {
-                        //divInnerHtml = c.isEditable && ((isPlannedTab && (isTactic || (isLineItem && c.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && c.isAfterApproved))
-                        //    ? monthlyCampaignValue.ToString(formatThousand)
-                        //    : monthlyCampaignValue.ToString(formatThousand);
                         divInnerHtml = monthlyCampaignValue.ToString(formatThousand);
                     }
 
@@ -11179,12 +11185,13 @@ namespace RevenuePlanner.Controllers
                     }
                     BudgetDataObj.value = divInnerHtml;
                     BudgetDataObjList.Add(BudgetDataObj);
-
                 }
             }
-
             return BudgetDataObjList;
         }
+
+        #endregion
+
 
         /// <summary>
         /// Added By: Rushil Bhuptani.
@@ -15586,7 +15593,10 @@ namespace RevenuePlanner.Controllers
                         linkedLineItem.ModifiedDate = DateTime.Now;
                         //Modified By Komal Rawal for #1974
                         //Desc: To Enable edit owner feature from Lineitem popup
+                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                        {
                         linkedLineItem.CreatedBy = new Guid(UpdateVal);
+                        }
                         //ENd
                         db.Entry(linkedLineItem).State = EntityState.Modified;
                     }

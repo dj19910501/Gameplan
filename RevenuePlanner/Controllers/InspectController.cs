@@ -7843,10 +7843,11 @@ namespace RevenuePlanner.Controllers
 
                         if (finalLineitem != null && finalLineitem.Count > 0)
                         {
+                            double TotalLineItemCost = finalLineitem.Where(lt=>lt.LineItemType != null).Sum(x=>x.Cost);
                             var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
                             {
                                 index = index,
-                                Cost = objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
+                                Cost = taskdata.LineItemType == null ? (objTactic.Cost - TotalLineItemCost) : objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
                                 lineitemtype = taskdata.LineItemTypeId,
                                 PlanLineItemId = taskdata.PlanLineItemId,
                                 title = taskdata.Title,
@@ -7857,12 +7858,15 @@ namespace RevenuePlanner.Controllers
                             });
 
                             #region LineItems
+                            var allocatedCost = objPlanController.GetCostAllocationLineItemInspectPopup(tacticId);
+                            if (allocatedCost != null && allocatedCost.Count > 0)
+                            {
+                                allocatedCost.ForEach(x => lstChildPlanMainDHTMLXGrid.Add(x.LineItemId, x));
+                            }
+                            
                             foreach (var lineitem in lstLineItemTaskData)
                             {
-                                childPlanMainDHTMLXGrid = new BudgetDHTMLXGridModel();
-                                childPlanMainDHTMLXGrid = objPlanController.GetCostAllocationLineItemInspectPopup(lineitem.PlanLineItemId);
-                                lstChildPlanMainDHTMLXGrid.Add(lineitem.PlanLineItemId, childPlanMainDHTMLXGrid);
-
+                                
                                 cellTextColor = lineitem.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
 
                                 lineitemrowsobj = new PlanDHTMLXGridDataModel();

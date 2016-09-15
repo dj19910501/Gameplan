@@ -169,7 +169,7 @@ else
         } else {
             dataid = id;
         }
-        var datahome=JSON.parse(GridDataLineItemGrid);
+        var datahome = JSON.parse(GridDataLineItemGrid);
         $.each(datahome.rows, function () {
 
             // Update data for planrecords
@@ -251,6 +251,7 @@ else
     var GridDataLineItemGrid;
     var ActivityIdColIndex;
     var PlannedCostColIndex;
+    var TypeColIndex;
     var arrDetailedGrids = [];
     var arrFullMonthNames = { 'JAN': 'January' ,
         'FEB': 'February' ,
@@ -321,6 +322,7 @@ else
         LineItemGrid.parse(GridDataLineItemGrid, "json");
         ActivityIdColIndex = LineItemGrid.getColIndexById("id");
         PlannedCostColIndex = LineItemGrid.getColIndexById("plannedcost");
+        TypeColIndex = LineItemGrid.getColIndexById("tactictype");
         
         LineItemGrid.forEachRow(function (id) {
             LineItemGrid.cells(id, 0).open();
@@ -542,7 +544,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     UpdateColumn = LineItemGrid.getColLabel(Colind, 0);
     if (stage == 0) {
         // Only check for type column
-        if (Colind == 5) {
+        if (Colind == TypeColIndex) {
             if (updatetype == "line") {
                 var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
                 if (actval == "") {
@@ -694,7 +696,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         $("#liLine_Items").trigger("click");
                                          ItemIndex=LineItemGrid.getRowIndex(tactid);
                                         state0 = ItemIndex;
-                                        LineItemGrid.cells(rowId, 4).setValue((nValue));
+                                        LineItemGrid.cells(rowId, PlannedCostColIndex).setValue((nValue));
                                     }
                                     else if(UpdateColumn == "Type")
                                         LineItemGrid.cells(rowId, cellInd).setAttribute("actval",nValue);
@@ -768,8 +770,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                     if (UpdateColumn == "Planned Cost") {
                                         //Added By Rahul Shah on 16/10/2015 for PL 1559
                                         if (nValue < states.lineItemCost) {
-
-                                            LineItemGrid.cells(rowId, 4).setValue((oValue));
+                                            LineItemGrid.cells(rowId, PlannedCostColIndex).setValue((oValue));
                                         }
                                             //Added by Rahul Shah for PL #1744.
                                         else if (nValue == states.lineItemCost) {
@@ -784,15 +785,15 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         else {
                                             diff = parseInt(nValue) - parseInt(oValue);
                                             //SetColumUpdatedValue(4, diff);
-                                            LineItemGrid.cells(progid, 4).setValue((newProgVal));
-                                            LineItemGrid.cells(campid, 4).setValue((newCampVal));
-                                            LineItemGrid.cells(planid, 4).setValue((newPlanVal));
+                                            //LineItemGrid.cells(progid, 4).setValue((newProgVal));
+                                            //LineItemGrid.cells(campid, 4).setValue((newCampVal));
+                                            //LineItemGrid.cells(planid, 4).setValue((newPlanVal));
                                             LineItemGrid.cells(rowId, 4).setValue((nValue));
                                             if (TotalRowIds != "") {
                                                 for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                                    //if (LineItemGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                                    
                                                     if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                                        LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.OtherLineItemCost));
+                                                        LineItemGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue((states.OtherLineItemCost));
                                                     }
                                                 }
                                             }
