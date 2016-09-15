@@ -14208,6 +14208,7 @@ namespace RevenuePlanner.Controllers
             PlanHead headobj = new PlanHead();
             List<PlanOptions> lstOwner = new List<PlanOptions>();
             List<PlanOptions> lstTacticType = new List<PlanOptions>();
+            string manageviewicon = " <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
             try
             {
 
@@ -14259,7 +14260,7 @@ namespace RevenuePlanner.Controllers
                 headobj.id = "taskname";
                 headobj.sort = "str";
                 headobj.width = 330;
-                headobj.value = "Task Name <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+                headobj.value = "Task Name" + manageviewicon;
                 headobjlist.Add(headobj);
 
                 // Modified by Arpita Soni to resolve issue in Ticket #2237 due to #2270/#2271
@@ -14306,7 +14307,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "startdate";
                     headobj.sort = "date";
                     headobj.width = 110;
-                    headobj.value = "Start Date <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+                    headobj.value = "Start Date" + manageviewicon;
                     headobjlist.Add(headobj);
 
                     // Sixth Column : End Date
@@ -14316,7 +14317,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "enddate";
                     headobj.sort = "date";
                     headobj.width = 100;
-                    headobj.value = "End Date <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+                    headobj.value = "End Date" + manageviewicon;
                     headobjlist.Add(headobj);
                 }
                 // Seventh Column: Planned Cost
@@ -14326,7 +14327,7 @@ namespace RevenuePlanner.Controllers
                 headobj.id = "plannedcost";
                 headobj.sort = "int";
                 headobj.width = 160;
-                headobj.value = "Planned Cost <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+                headobj.value = "Planned Cost";
                 headobjlist.Add(headobj);
 
                 // Added by Arpita Soni for Ticket #2354 on 07/12/2016
@@ -14338,7 +14339,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "roitactictype";
                     headobj.sort = "str";
                     headobj.width = 150;
-                    headobj.value = "Tactic Category <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>"; //Modified By Komal for #2448 on 01-08-2016
+                    headobj.value = "Tactic Category" + manageviewicon;
                     headobjlist.Add(headobj);
                 }
 
@@ -14349,7 +14350,7 @@ namespace RevenuePlanner.Controllers
                 headobj.id = "tactictype";
                 headobj.sort = "sort_TacticType";
                 headobj.width = 150;
-                headobj.value = "Type <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+                headobj.value = "Type" + manageviewicon;
                 headobj.options = lstTacticType;
                 headobjlist.Add(headobj);
 
@@ -14360,7 +14361,7 @@ namespace RevenuePlanner.Controllers
                 headobj.id = "owner";
                 headobj.sort = "sort_Owner";
                 headobj.width = 115;
-                headobj.value = "Owner <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+                headobj.value = "Owner" + manageviewicon;
                 headobj.options = lstOwner;
                 headobjlist.Add(headobj);
 
@@ -14373,7 +14374,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "inq";
                     headobj.sort = "int";
                     headobj.width = 150;
-                    headobj.value = "Target Stage Goal <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+                    headobj.value = "Target Stage Goal" + manageviewicon;
                     headobjlist.Add(headobj);
 
                     // Eleventh Column: MQl
@@ -14383,7 +14384,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "mql";
                     headobj.sort = "int";
                     headobj.width = 150;
-                    headobj.value = MQLTitle + " <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+                    headobj.value = MQLTitle + manageviewicon;
                     headobjlist.Add(headobj);
                     // Twelveth Column : Revenue
                     headobj = new PlanHead();
@@ -14392,7 +14393,7 @@ namespace RevenuePlanner.Controllers
                     headobj.id = "revenue";
                     headobj.sort = "int";
                     headobj.width = 150;
-                    headobj.value = "Revenue <a href='javascript:void(0)' onclick='OpenCreateNew()' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+                    headobj.value = "Revenue" + manageviewicon;
                     headobjlist.Add(headobj);
                     //Add External Name Column as a last column of gridview
                     //Thirteenth Column : Empty
