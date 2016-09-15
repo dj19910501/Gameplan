@@ -27,4 +27,11 @@ namespace RevenuePlanner.Models
         public string AttributeId { get; set; }
         public int? ColumnOrder { get; set; }
     }
+    public class CustomAttribute
+    {
+        public string CustomFieldId { get; set; }
+        public string CutomfieldName { get; set; }
+        public int ParentID { get; set; }
+        public string EntityType { get; set; }
+    }
 }

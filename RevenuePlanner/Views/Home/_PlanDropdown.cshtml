@@ -87,10 +87,7 @@
 @*<script src="~/Scripts/js/scripts.js"></script>*@
 <script type="text/javascript">
     $(document).ready(function () {
-        var CustomColumnGroupName = "";
-       // if ($('#IsGridView').val() == "True") {
-            CustomColumnGroupName = "@Common.ColumnCustomTitle";
-      //  }
+      
         $(".selectBox select").selectbox();
             $("#ddlTabViewBy").multiselect({
                 multiple: false,
@@ -99,14 +96,13 @@
                 CustomCampaignName: "@Common.CampaignCustomTitle",
                 CustomProgramName: "@Common.ProgramCustomTitle",
                 CustomTacticName: "@Common.TacticCustomTitle",
-                CustomColumnGroupName: CustomColumnGroupName,
+               
                 classes: 'custom-right-pos', // Added by Sohel Pathan on 11/11/2014 for PL ticket #934, NOTE : Please don't change class name, it is used in js.
                 IsTacticSection: "TACTIC SECTION"
             }).multiselectfilter({
                 CustomCampaignName: "@Common.CampaignCustomTitle",
                 CustomProgramName: "@Common.ProgramCustomTitle",
-                CustomTacticName: "@Common.TacticCustomTitle",
-                CustomColumnGroupName: CustomColumnGroupName
+                CustomTacticName: "@Common.TacticCustomTitle"
             });
         
         filters.SelectedPlans = [];
@@ -455,8 +451,9 @@
 
 </script>
 <script type="text/javascript">
+    var IsManageviewClick = false;
     function OpenCreateNew() {
-        
+      
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/ColumnView/GetAttributeList_ColumnView/")',
@@ -469,10 +466,13 @@
                   
                 }
                 $('#ddlTabViewBy').multiselect("close");
+              
                 $('#CreateNewView').show();
+                $('.modal-body').scrollTop(0);
             }
         });
-       
+        IsManageviewClick = true;
+        return true;
     }
     $(".closeCreateNewView").click(function () {
         $('#CreateNewView').hide();
@@ -483,7 +483,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close closeCreateNewView" data-dismiss="modal" aria-label="Close" id="btnClose"><span aria-hidden="true">&times;</span></button>
-                <h5 class="modal-title  source-sans-proregular" id="myModalLabel">Manage Column View <span class=" source-sans-probold tipsyTitle" id="hdrTitle"></span></h5>
+                <h5 class="modal-title  source-sans-proregular" id="myModalLabel">Manage Column View </h5>
             </div>
             <div class="modal-body">
                

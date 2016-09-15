@@ -273,10 +273,7 @@ var selectbox_keys = '';
                 html += ' /><span class="tipsyTitle" title="' + description + '">' + description + '</span></label></li>';
 
             });
-            if (id == "ddlTabViewBy") {
-                html += '<a href="javascript:void(0)" onclick="OpenCreateNew();" class="addNewViewLink"><i class="fa fa-plus-circle" aria-hidden="true"></i> Set Column View</a>'
-            }
-
+           
             //if (!isColumnview) {
             //    isColumnview = true;
             //    var tempId = el.attr('id');

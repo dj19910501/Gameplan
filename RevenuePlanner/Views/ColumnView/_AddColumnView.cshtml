@@ -13,14 +13,8 @@
         @foreach (var entity in Model)
         {
             string title = string.Empty;
-            if (entity.EntityType.ToString().ToLower() == "basic")
-            {
-                title = entity.EntityType.ToString() + " Info";
-            }
-            else
-            {
-                title = entity.EntityType.ToString() + " Attributes";
-            }
+          
+            title = entity.EntityType.ToString() + " Attributes";
             <div class="category" entitytpe="@entity.EntityType.ToString()">
                 <div class="category-title clearfix">
                     <span class="entity-check"><input type="checkbox" id="" name="" value="" class="checkAlldiv" /> <span class="all-check">All</span></span>
@@ -129,6 +123,7 @@
 
             if (_ColumnView != null && _ColumnView.length > 0 && _ColumnView != undefined) {
                 _ColumnView = JSON.stringify(_ColumnView);
+                var Isgrid = '@ViewBag.IsGrid';
                 $.ajax({
 
                     url: '@Url.Action("SaveColumnView", "ColumnView")', // we are calling json method

@@ -28,80 +28,93 @@ namespace RevenuePlanner.Controllers
         }
         #region column Management Add custom fields in plan grid
         #region method to bind attributes for user selection #2590
-        public ActionResult GetAttributeList_ColumnView()
+        public ActionResult GetAttributeList_ColumnView(bool IsGrid = true)
         {
             List<ColumnViewEntity> allattributeList = new List<ColumnViewEntity>();
             List<string> SelectedCustomfieldID = new List<string>();
             bool IsSelectall = false;
-
+            string attributexml = string.Empty;
+            List<CustomAttribute> BasicFields = new List<CustomAttribute>();
             try
             {
                 var userview = db.User_CoulmnView.Where(a => a.CreatedBy == Sessions.User.UserId).FirstOrDefault();
-                if (userview == null)
+                if (IsGrid)
+                    attributexml = Convert.ToString(userview.GridAttribute);
+
+                else
+                    attributexml = Convert.ToString(userview.BudgetAttribute);
+
+                if (userview == null && !string.IsNullOrEmpty(attributexml))
                     IsSelectall = true;
                 else
                 {
-                    //SelectedCustomfieldID = userview.User_CoulmnView_attribute.Select(a => a.AttributeId).ToList();
-
-                    var gridattribute = userview.GridAttribute.ToString();
-                    var doc = XDocument.Parse(gridattribute);
-                    var items = (from r in doc.Root.Elements("attribute")
-                                 select new
-                                 {
-                                     AttributeType = (string)r.Attribute("AttributeType"),
-                                     AttributeId = (string)r.Attribute("AttributeId"),
-                                     ColumnOrder = (string)r.Attribute("ColumnOrder")
-                                 }).ToList();
-                    SelectedCustomfieldID = items.Select(a => a.AttributeId).ToList();
+                    if (attributexml != null)
+                    {
+                        var doc = XDocument.Parse(attributexml);
+                        var items = (from r in doc.Root.Elements("attribute")
+                                     select new
+                                     {
+                                         AttributeType = (string)r.Attribute("AttributeType"),
+                                         AttributeId = (string)r.Attribute("AttributeId"),
+                                         ColumnOrder = (string)r.Attribute("ColumnOrder")
+                                     }).ToList();
+                        SelectedCustomfieldID = items.Select(a => a.AttributeId).ToList();
+                    }
                 }
                 ViewBag.IsSelectAll = IsSelectall;
-                DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.ClientId);
-                if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
+                ViewBag.IsGrid = IsGrid;
+                if (IsGrid)
                 {
-
-                    var columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new
+                    DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.ClientId);
+                    if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
                     {
-                        EntityType = Convert.ToString(row["EntityType"]),
-                        CustomFieldId = Convert.ToString(row["CustomFieldId"]),
-                        CutomfieldName = Convert.ToString(row["Name"]),
-                        ParentId = Convert.ToInt32(row["ParentId"])
 
-                    }).ToList();
-
-                    var BasicFields = Enums.PlanGrid_Column.Select(row => new
-                    {
-                        EntityType = "Basic",
-                        CustomFieldId = Convert.ToString(row.Key),
-                        CutomfieldName = Convert.ToString(row.Value),
-                        ParentId = 0
-                    }).ToList();
-
-                    List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
-                    string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
-
-
-                    var mqlfield = new
-                    {
-                        EntityType = "Basic",
-                        CustomFieldId = "mql",
-                        CutomfieldName = MQLTitle,
-                        ParentId = 0
-                    };
-                    BasicFields.Add(mqlfield);
-                    BasicFields.AddRange(columnattribute);
-                    allattributeList = BasicFields.GroupBy(a => new { EntityType = a.EntityType }).Select(a => new ColumnViewEntity
-                    {
-                        EntityType = a.Key.EntityType,
-
-                        AttributeList = BasicFields.Where(atr => atr.EntityType == a.Key.EntityType).Select(atr => new ColumnViewAttribute
+                        var columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new CustomAttribute
                         {
-                            CustomFieldId = atr.CustomFieldId,
-                            CutomfieldName = atr.CutomfieldName,
-                            ParentID = atr.ParentId,
-                            IsChecked = SelectedCustomfieldID.Contains(atr.CustomFieldId) ? true : false
-                        }).ToList()
-                    }).ToList();
+                            EntityType = Convert.ToString(row["EntityType"]),
+                            CustomFieldId = Convert.ToString(row["CustomFieldId"]),
+                            CutomfieldName = Convert.ToString(row["Name"]),
+                            ParentID = Convert.ToInt32(row["ParentId"])
+
+                        }).ToList();
+
+                        BasicFields = Enums.PlanGrid_Column.Select(row => new CustomAttribute
+                        {
+                            EntityType = "Common",
+                            CustomFieldId = Convert.ToString(row.Key),
+                            CutomfieldName = Convert.ToString(row.Value),
+                            ParentID = 0
+                        }).ToList();
+
+                        List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                        string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
+
+                        var mqlfield = new CustomAttribute
+                        {
+                            EntityType = "Common",
+                            CustomFieldId = "mql",
+                            CutomfieldName = MQLTitle,
+                            ParentID = 0
+                        };
+                        BasicFields.Add(mqlfield);
+                        BasicFields.AddRange(columnattribute);
+                    }
                 }
+               
+                allattributeList = BasicFields.GroupBy(a => new { EntityType = a.EntityType }).Select(a => new ColumnViewEntity
+                {
+                    EntityType = a.Key.EntityType,
+
+                    AttributeList = BasicFields.Where(atr => atr.EntityType == a.Key.EntityType).Select(atr => new ColumnViewAttribute
+                    {
+                        CustomFieldId = atr.CustomFieldId,
+                        CutomfieldName = atr.CutomfieldName,
+                        ParentID = atr.ParentID,
+                        IsChecked = SelectedCustomfieldID.Contains(atr.CustomFieldId) ? true : false
+                    }).ToList()
+                }).ToList();
+
+
             }
             catch (Exception objException)
             {
@@ -115,9 +128,9 @@ namespace RevenuePlanner.Controllers
         #region method to  save column view
 
         [HttpPost]
-        public JsonResult SaveColumnView(List<AttributeDetail> AttributeDetail, string ViewName = null)
+        public JsonResult SaveColumnView(List<AttributeDetail> AttributeDetail, string ViewName = null, bool Isgrid=true)
         {
-           
+
             try
             {
                 if (AttributeDetail != null)

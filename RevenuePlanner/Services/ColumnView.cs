@@ -46,7 +46,7 @@ namespace RevenuePlanner.Services
         }
         #endregion
         #region method to save ColumnView
-        public int SaveColumnView(Guid UserId, string ViewName, string xmlElements)
+        public int SaveColumnView(Guid UserId, string ViewName, string xmlElements, bool Isgrid = true)
         {
             int result = 0;
             try
@@ -75,7 +75,10 @@ namespace RevenuePlanner.Services
                         columnview.ModifyBy = UserId;
                         columnview.ModifyDate = DateTime.Now;
                         columnview.IsDefault = true;
+                        if (Isgrid)
                         columnview.GridAttribute = xmlElements.ToString();
+                        else
+                            columnview.BudgetAttribute = xmlElements.ToString();
                         objDbMrpEntities.Entry(columnview).State = EntityState.Modified;
                         objDbMrpEntities.SaveChanges();
                       
@@ -91,7 +94,10 @@ namespace RevenuePlanner.Services
                         objcolumnview.CreatedBy = UserId;
                         objcolumnview.CreatedDate = DateTime.Now;
                         objcolumnview.IsDefault = true;
-                        objcolumnview.GridAttribute = xmlElements.ToString();
+                        if (Isgrid)
+                            columnview.GridAttribute = xmlElements.ToString();
+                        else
+                            columnview.BudgetAttribute = xmlElements.ToString();
                         objDbMrpEntities.Entry(objcolumnview).State = EntityState.Added;
                         objDbMrpEntities.SaveChanges();
                         result = objcolumnview.ViewId;

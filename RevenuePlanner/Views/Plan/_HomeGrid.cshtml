@@ -14,7 +14,11 @@
         text-align: center;
         padding-left: 0px !important;
     }
-
+    /*div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell:hover{
+         content: "\f002";
+          font-family: fontawesome;
+          font-size: 12px;
+    }*/
     div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
         width: 100% !important;
     }
@@ -31,6 +35,8 @@
     /*div.gridbox {
         height: 100% !important;
     }*/
+   .manageviewicon .fa{color:#fff; margin-left:5px;}
+   div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa{color:#F8710E}
 </style>
 <div class="goals-wrapper" id="goalwrapper">
     <span class="goal-text">Goals</span>
@@ -611,9 +617,19 @@
         HomeGrid.enableDragAndDrop(true);
         HomeGrid.enableAutoHeight(false);
         HomeGrid.enableAutoWidth(false);
-
         HomeGrid.setNumberFormat(""+CurrencySybmol+"0,000", 6, ".", ","); // PlannedCost column index is 6
-        
+        HomeGrid.attachEvent("onBeforeSorting",function(ind,grid)
+        {   
+            //OpenCreateNew();
+            //return false;
+            if(IsManageviewClick)
+            {
+                IsManageviewClick=false;
+                return false;
+            }
+            else
+                return true;
+        });
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
 
@@ -1252,7 +1268,7 @@
                 TacticName = nValue;
             }
         }
-
+        debugger;
         UpdateColumn = HomeGrid.getColLabel(Colind, 0);
         if (stage == 0) {
 
