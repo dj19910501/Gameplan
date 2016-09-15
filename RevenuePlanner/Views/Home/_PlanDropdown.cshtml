@@ -453,7 +453,6 @@
 <script type="text/javascript">
     var IsManageviewClick = false;
     function OpenCreateNew(IsGridView) {
-        IsGridView = false;
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/ColumnView/GetAttributeList_ColumnView/")',
