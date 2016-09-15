@@ -105,7 +105,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.Owner = "sys Admin";
             Form.Title = "Test Campaign" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.PlanId = PlanID;
             var result = objInspectController.SaveCampaign(Form, Title, "[]", UserID, PlanID) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -137,7 +137,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.Owner = "sys Admin";
             Form.Title = Title;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.PlanId = PlanID;
 
             var result = objInspectController.SaveCampaign(Form, Title, "[]", UserID, PlanID) as JsonResult;
@@ -175,7 +175,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.Owner = "sys Admin";
             Form.Title = "Update Campaign";
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.PlanId = PlanID;
 
             var result = objInspectController.SaveCampaign(Form, Title, "[]", UserID, PlanID) as JsonResult;
@@ -291,7 +291,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.OwnerId = Sessions.User.UserId;
             Form.Title = "Test Program" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.PlanCampaignId = PlanCampaignId;
             List<int> PlanIds = new List<int>();
             PlanIds.Add(PlanID);
@@ -328,7 +328,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.OwnerId = Sessions.User.UserId;
             Form.Title = Title;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.PlanCampaignId = PlanCampaignId;
             var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
@@ -368,7 +368,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.OwnerId = Sessions.User.UserId;
             Form.Title = "Update Program";
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.PlanCampaignId = PlanCampaignId;
 
             var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
@@ -493,7 +493,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.StageId = Convert.ToInt32(StageId);
             Form.TacticTitle = "Test Tactic" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.Cost = 20;
 
             var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
@@ -536,7 +536,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.StageId = Convert.ToInt32(StageId);
             Form.TacticTitle = "Test Tactic" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.Cost = 20;
 
             var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
@@ -745,7 +745,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.OwnerId = Sessions.User.UserId;
             Form.TacticTitle = Title;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
 
 
             var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
@@ -794,7 +794,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.StageId = Convert.ToInt32(StageId);
             Form.TacticTitle = Title;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.Cost = 500;
 
             var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
@@ -954,7 +954,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.LineItemTypeId = LineitemTypeId;
             Form.Title = "Test Lineitem" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.Cost = 20;
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
@@ -995,7 +995,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.LineItemTypeId = LineitemTypeId;
             Form.Title = "Test Lineitem" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.Cost = Cost + 100;
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
@@ -1035,7 +1035,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.LineItemTypeId = LineitemTypeId;
             Form.Title = Title;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
 
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
@@ -1078,7 +1078,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.LineItemTypeId = LineitemTypeId;
             Form.Title = Title;
             Form.StartDate = DateTime.Now;
-            Form.EndDate = DateTime.MaxValue;
+            Form.EndDate = DateTime.Now;
             Form.Cost = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanTacticId == PlanTacticId).Select(tactic => tactic.Cost).FirstOrDefault();
 
             var result = objInspectController.SaveLineitem(Form, Title, "[{Id:13,Weightage:500}]", "[{\"Key\":\"1\",\"Value\":\"bar\"}]", UserID, PlanTacticId) as JsonResult;
