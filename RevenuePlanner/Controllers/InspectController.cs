@@ -7844,10 +7844,12 @@ namespace RevenuePlanner.Controllers
                         if (finalLineitem != null && finalLineitem.Count > 0)
                         {
                             double TotalLineItemCost = finalLineitem.Where(lt=>lt.LineItemType != null).Sum(x=>x.Cost);
+                            double otherLineItemCost = objCurrency.GetValueByExchangeRate(objTactic.Cost - TotalLineItemCost,PlanExchangeRate);
                             var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
                             {
                                 index = index,
-                                Cost = taskdata.LineItemType == null ? (objTactic.Cost - TotalLineItemCost) : objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
+                                //Cost = taskdata.LineItemType == null ? (objTactic.Cost - TotalLineItemCost) : objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
+                                Cost = taskdata.LineItemType == null ? otherLineItemCost : objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
                                 lineitemtype = taskdata.LineItemTypeId,
                                 PlanLineItemId = taskdata.PlanLineItemId,
                                 title = taskdata.Title,

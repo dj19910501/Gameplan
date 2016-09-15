@@ -370,10 +370,18 @@ else
         }
         var left = e.pageX - 10;
         var target = $(e.target);
-        var targetOffset = target.offset().top - 35;
+        
+        var targetOffset = 0;
+        if($('#IsGridView').val() == 'True'){
+            targetOffset = target.offset().top - 430;
+        }
+        else{
+            targetOffset = target.offset().top - 35;
+        }
         var scrollPosition = $(window).scrollTop();
 
         if ($('#popupLineitemIP').css('display') != 'none') {
+
             if (scrollPosition <= targetOffset) {
                 $('#popupLineitemIP').css({
                     //'display': 'block',
@@ -383,8 +391,15 @@ else
             }
             else {
                 var targetHeight = target.height();
-                var contentHeight = $('#popupLineitemIP').outerHeight();
-                var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+                var targetBottomOffset =0;
+                if($('#IsGridView').val() == 'True'){
+                    //var contentHeight = $('#popupLineitemIP').outerHeight();
+                    targetBottomOffset = targetOffset + targetHeight; // - contentHeight;
+                }
+                else{
+                    var contentHeight = $('#popupLineitemIP').outerHeight();
+                    targetBottomOffset = targetOffset + targetHeight - contentHeight;
+                }
                 $('#popupLineitemIP').css({
                     // 'display': 'block',
                     'top': targetBottomOffset,
