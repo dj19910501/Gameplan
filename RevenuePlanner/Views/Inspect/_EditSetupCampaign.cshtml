@@ -167,6 +167,27 @@
     </div>
 }
 <script type="text/javascript">
+    //insertation start #2369 Added year validation on blur event.
+    $("#t_startdate").blur(function () {
+        //alert("Handler for .blur() called.");
+        var hdnYear = @ViewBag.Year;
+        var sdateNew = $('#t_startdate').val();       
+        if (!CheckDateYear(sdateNew, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) {                   
+            return false;
+        }
+       
+       
+    });
+    $("#t_enddate").blur(function () {
+        //alert("Handler for .blur() called.");
+        var hdnYear = @ViewBag.Year;       
+        var edateNew = $('#t_enddate').val();       
+        if (!CheckDateYear(edateNew, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) {           
+            return false;
+        }
+      
+    });
+    //insertation end #2369 Added year validation on blur event.
     var selectbox_keys = '';
     var $prevtext = '';
     var $nextdata = -1;
@@ -554,7 +575,7 @@
                 }
             });
             $('.dropdown_new_btn').each(function () {
-                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {                    
+                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
                     $(this).addClass("error");
                     isEmptyFieldError = true;
                 }
@@ -569,21 +590,21 @@
                 }
                 else {
             $('#txtTitle').removeClass("error");
-        }       
+        }
         if (campaignTitle == "") {
             $('#txtTitle').addClass("error");
             iserror = true;
         }
 
         /* Start - Added by bhavesh on 10/03/2015 for PL ticket #711 */
-        //// RequireField validation for Owner Dropdown        
+        //// RequireField validation for Owner Dropdown
         var OwnerValue = $('#ddlOwner').val();
         if (OwnerValue == "") {
                 $('#btnMultiselect_ddlOwner').addClass("error");
             }
             else {
                 $('#btnMultiselect_ddlOwner').removeClass("error");
-            }     
+            }
         /* End - Added by bhavesh on 10/03/2015 for PL ticket #711 */
 
         if (iserror) {
@@ -709,11 +730,11 @@
                             $("#hdnBudgetingExpandId").val("campaign" + planCampaignId);
                             $("#hdnBudgetingIsSave").val("true");
                         }
-                        returnparameter = true;                       
+                        returnparameter = true;
                         // Add By Nishant Sheth
                         // Desc :: #1812 refresh dropdown with change of date diffrence
                         if (!(data.EndDatediff == 0)) {
-                            BindUpcomingActivites('@Model.PlanId');// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId                          
+                            BindUpcomingActivites('@Model.PlanId');// Uncomment by bhavesh Ticket #1812,date 09-jan-2015 //Modified By Komal Rawal for #2174 to get correct PlanId
                         }
                         // End By Nishant Sheth
                         // Added by Viral regarding PL ticket #2434.

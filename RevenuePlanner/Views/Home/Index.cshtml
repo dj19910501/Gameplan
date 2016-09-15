@@ -425,6 +425,9 @@
                 // Added By Ashish Mistry On 27-11-2015
 
                 $(document).on("click", ".honeycombbox-icon-gantt", function (e) {
+                    //insertation start #2369 Resolved design issue
+                    $("#CalenderView").find("div .gantt_task").scrollLeft(0);
+                    //insertation end
                     if ($('#IsGridView').val().toLowerCase() == "true") { //Added By Komal Rawal for #2355 on 14-07-16
                         return false;
                     }
