@@ -16,11 +16,13 @@
     <!--font Awesome css-->
     <link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css" />
     <!--font Awesome css-->
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_sept_13.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_sept_16.css")" type="text/css" />
+    
     @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />*@
     <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Aug_2.css")" type="text/css" />
     @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css")" type="text/css" />*@
-
+   
+    @RenderSection("FilterEx", false)
      @Scripts.Render("~/bundles/GetJS")
      <script type="text/javascript">
          // Add By Nishant Sheth
@@ -77,7 +79,7 @@
                 @RenderSection("Sidebar", false)
             </div>
 
-            <div id="content_wraper" class="span10 all-height">
+            <div id="content_wraper" class="span10">  @*all-height*@
                 <div id="MessageDisplay">
                     <div id="errorMsg" class="alert alert-error hide message-position-small">
                         <a class="close" id="aclose">×</a>

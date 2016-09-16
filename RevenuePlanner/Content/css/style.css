@@ -173,7 +173,7 @@ a:hover, a:focus {
     min-height: 300px;
     height: 100% !important;
     width: calc(100% - 282px); /*for #2331 - Bhumika*/
-    margin: 0 !important;
+    margin: 0;
     height: 100%; /* Added for #2219 - Bhumika */
     vertical-align: top;
     border-left: 1px solid #ccc;
@@ -281,7 +281,7 @@ ul.drop-down-menu {
 .plancart-box { /* #2312 */
     display: inline-block;
     float: right;
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .full-width-header .white-chart {
@@ -291,7 +291,7 @@ ul.drop-down-menu {
     margin-left: -1px;
     padding: 5px 10px 10px;
     text-align: center;
-    width: 20%; /*127px*/
+    width:127px ; /*20%*/
     box-sizing: content-box !important; /* #2312 */
 }
 
@@ -12829,14 +12829,14 @@ li.accordion-inner.close-list {
 
 /* #1951 - sidebar design  checkbox styling */
 #Filtersidebar ul.scroll-list li input[type="checkbox"] {
-    /*-moz-appearance: none;*/
+    /*-moz-appearance: none;
     border: 1px solid #c8c6c6;
     border-radius: 2px;
-    height: 15px;
-    margin: 1px 5px 0 0; /*Again Modified by Bhumika #2055 21-3-2016 */
     opacity: 1;
+    z-index: 2; Again Modified by Bhumika #2055 21-3-2016 */
     width: 15px;
-    z-index: 2;
+    height: 15px;
+    margin: 1px 5px 0 0;
 }
 
 /* #1951 - sidebar design  checkbox styling  End*/

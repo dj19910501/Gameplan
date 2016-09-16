@@ -105,34 +105,34 @@
 
 <script>
     //To show hide sidebar
-    $('.sidebar-toogle a').toggle(
-        function () {
-            $('#sidebar').css({
-                'position': 'relative',
-                'left': 'auto',
-                'width': '1px',
-                'background': 'transparent',
-            });
+  //  $('.sidebar-toogle a').toggle(
+  //      function () {
+  //          $('#sidebar').css({
+  //              'position': 'relative',
+  //              'left': 'auto',
+  //              'width': '1px',
+  //              'background': 'transparent',
+  //          });
 
-            $(".sidebar-section").css("display", "none");
-            $("#improvements > .accordion-group").css('display', 'none'); // added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters
-            $(".wraper-btns").css("display", "none");
-            $("#content_wraper").css('width', 'calc(100% - 2px)'); // #2331 issue
-            $('#sidebar.sidebar').css({ 'width': '1px', 'background': 'transparent', });
+  //          $(".sidebar-section").css("display", "none");
+  //          $("#improvements > .accordion-group").css('display', 'none'); // added by dashrath prajapati for pl #1955 H9_QA: Improvement tactics label visisble under filters
+  //          $(".wraper-btns").css("display", "none");
+  //          $("#content_wraper").css('width', 'calc(100% - 2px)'); // #2331 issue
+  //          $('#sidebar.sidebar').css({ 'width': '1px', 'background': 'transparent', });
        
-        },
-        function () {
-            $('#sidebar').css({
-                'position': 'static',
-                'left': 'auto',               
-                'width': '280px',
-            });
+  //      },
+  //      function () {
+  //          $('#sidebar').css({
+  //              'position': 'static',
+  //              'left': 'auto',               
+  //              'width': '280px',
+  //          });
 
-            $(".sidebar-section").css("display", "block");
-            $(".wraper-btns").css("display", "block");
-            $("#content_wraper").css('width', 'calc(100% - 282px)'); //Edited for #2219 + #2331 - Bhumika
-            $('#sidebar.sidebar').css({ 'width': '280px' }); //  removed bgcolor for #2219 - Bhumika
+  //          $(".sidebar-section").css("display", "block");
+  //          $(".wraper-btns").css("display", "block");
+  //          $("#content_wraper").css('width', 'calc(100% - 282px)'); //Edited for #2219 + #2331 - Bhumika
+  //          $('#sidebar.sidebar').css({ 'width': '280px' }); //  removed bgcolor for #2219 - Bhumika
         
-        }
-  )
+  //      }
+  //)
 </script>
