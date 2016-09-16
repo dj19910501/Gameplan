@@ -14211,7 +14211,7 @@ namespace RevenuePlanner.Controllers
             PlanHead headobj = new PlanHead();
             List<PlanOptions> lstOwner = new List<PlanOptions>();
             List<PlanOptions> lstTacticType = new List<PlanOptions>();
-            string manageviewicon = " <a href='javascript:void(0)' onclick='OpenCreateNew(true)' class='manageviewicon' title='Manage View'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+            string manageviewicon = " <a href='javascript:void(0)' onclick='OpenCreateNew(true)' class='manageviewicon' title='Open Column Management'><i class='fa fa-edit' aria-hidden='true'></i></a>";
             try
             {
 
@@ -14330,7 +14330,7 @@ namespace RevenuePlanner.Controllers
                 headobj.id = "plannedcost";
                 headobj.sort = "int";
                 headobj.width = 160;
-                headobj.value = "Planned Cost";
+                headobj.value = "Planned Cost" + manageviewicon;
                 headobjlist.Add(headobj);
 
                 // Added by Arpita Soni for Ticket #2354 on 07/12/2016
@@ -14408,7 +14408,50 @@ namespace RevenuePlanner.Controllers
                     headobj.width = 0;
                     headobj.value = "Machine Name";
                     headobjlist.Add(headobj);
-                  
+                    IColumnView objcolumnView = new ColumnView();
+
+                    DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.ClientId);
+
+                    if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
+                    {
+
+                        var columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new
+                        {
+                            EntityType = Convert.ToString(row["EntityType"]),
+                            CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
+                            CutomfieldName = Convert.ToString(row["Name"]),
+                            ParentId = Convert.ToInt32(row["ParentId"]),
+                            CustomfiledType = Convert.ToString(row["CustomFieldType"])
+
+                        }).Where(row => row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Campaign).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Program).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower()
+                            || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Lineitem).ToLower()).OrderBy(a => a.EntityType).ToList();
+                        List<int> customfieldid = columnattribute.Select(a => a.CustomFieldId).ToList();
+                        var customattributeoptionlist = db.CustomFieldOptions.Where(a => a.CustomField.ClientId == Sessions.User.ClientId && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new
+                        {
+                            CustomFieldId = a.CustomFieldId,
+                            CustomFieldOptionId = a.CustomFieldOptionId,
+                            OptionValue = a.Value
+                        }).ToList();
+                        ViewBag.CustomAttributOotion = customattributeoptionlist;
+
+
+                        foreach (var objcustom in columnattribute)
+                        {
+                            headobj = new PlanHead();
+                            headobj.type = "ed";
+                            headobj.id = "custom_" + objcustom.CustomFieldId.ToString();
+                            headobj.sort = "str";
+                            headobj.width = 150;
+                            headobj.value = objcustom.CutomfieldName;
+                            if (Convert.ToString(objcustom.CustomfiledType) == Convert.ToString(Enums.CustomFieldType.DropDownList))
+                            {
+
+                                headobj.type = "clist";
+                            }
+                           
+                            headobjlist.Add(headobj);
+                        }
+                    }
                 }
             }
             catch (Exception objException)
@@ -14440,14 +14483,14 @@ namespace RevenuePlanner.Controllers
                     ParentId = Convert.ToInt32(row["ParentId"]),
                     CustomfiledType = Convert.ToString(row["CustomFieldType"])
 
-                }).Where(row => row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Campaign).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Program).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower()
-                    || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Lineitem).ToLower()).OrderBy(a => a.EntityType).ToList();
+                }).ToList();
+                  
                 List<int> customfieldid = columnattribute.Select(a => a.CustomFieldId).ToList();
                 var customattributeoptionlist = db.CustomFieldOptions.Where(a => a.CustomField.ClientId == Sessions.User.ClientId && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new
                 {
                     CustomFieldId = a.CustomFieldId,
                     CustomFieldOptionId = a.CustomFieldOptionId,
-                    OptionValue = a.Value
+                    OptionValue = (a.Value)
                 }).ToList();
                 ViewBag.CustomAttributOotion = customattributeoptionlist;
                 
