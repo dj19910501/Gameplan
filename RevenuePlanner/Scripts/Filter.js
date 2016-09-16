@@ -36,7 +36,6 @@ $(document).ready(function () {
     $("#ulSelectedYear li input[type=checkbox]:checked").each(function () {
         selectedFilters.yearIds.push($(this).attr("yearvalue"));
     });
-
     $("#ulSelectedPlans li input[type=checkbox]:checked").each(function () {
         selectedFilters.planName.push($(this).parent().attr("title"));
     });
@@ -908,4 +907,158 @@ function SavePreset() {
         SaveLastSetofViews(ViewName.trim());
         UpdateResult();
     }
+}
+
+var isFiltered = false;
+var IsUpdate = false;
+var SavePresetValue = false;
+function UpdatePlan() {
+    IsUpdate = true;
+    isRequest = false;
+
+    var planids = [];
+    $('#ulSelectedPlans').find("input[type=checkbox]:checked").each(function () {
+        var chkid = $(this).attr("id");
+        if (chkid != undefined && chkid != 'undefined') {
+            planids.push(chkid);
+        }
+    });
+    if (planids.length > 0) {
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            $(this).attr('checked', 'checked');
+            $(this).parent().addClass("close-list");
+        });
+        $('#accordion-Status').find("input[type=checkbox]").each(function () {
+            $(this).attr('checked', 'checked');
+            $(this).parent().addClass("close-list");
+        });
+    } else {
+        $('#divCustomFieldsFilter').find("input[type=checkbox]:checked").each(function () {
+            $(this).removeAttr('checked');
+            $(this).parent().removeClass("close-list");
+        });
+        $('#accordion-Status').find("input[type=checkbox]:checked").each(function () {
+            $(this).removeAttr('checked');
+            $(this).parent().removeClass("close-list");
+        });
+    }
+    GetTacticTypelist(planids, false);
+    GetOwnerListForFilter(planids, false);
+    UpdateResult();
+}
+
+var isFiltered = false;
+var IsUpdate = false;
+var SavePresetValue = false;
+function UpdateResult() {
+    IsUpdate = true;
+    isRequest = false;
+    //if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+    if ($('#IsGridView').val().toLowerCase() == "true") {
+        filters.customFieldIds = [];
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.customFieldIds.push(chkid);
+                }
+            }
+        });
+        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                UncheckedCounter = AllCounter - CheckedCounter;
+                if (AllCounter == UncheckedCounter) {
+                    var Id = $(this).attr("id");
+                    if (Id.indexOf("-") >= 0) {
+                        Id = Id.split('-')[1];
+                        var CustomId = Id + "_null";
+                        filters.customFieldIds.push(CustomId);
+
+                    }
+                }
+                else if (AllCounter == CheckedCounter) {
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < filters.customFieldIds.length; i++) {
+                        if (filters.customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = filters.customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                filters.customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        var CustomFieldId = filters.customFieldIds;
+        var OwnerIds = filters.OwnerIds;
+        var TacticTypeids = filters.TacticTypeids;
+        var StatusIds = filters.StatusIds;
+
+        // Need to Code for Header & Main Section
+        //$("#CalenderView").hide();
+        //$("#divgridview").show();
+        //if (isBoostAuthorized) $("#ImprovementGrid").show();
+        //LoadPlanGrid();
+        ////Modified By Komal Rawal for #1447 - to Change the header data according to the filter selected.
+        //GetHealderDataPer(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId);// Modified By Nishant Sheth Desc header value wrong with plan tab
+        //GetNumberOfActivityPerMonByPlanIdPer(SelectedPlanIds, Currenttime, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId); //Modified BY Komal rawal for #1929 proper Hud chart and count
+        ////End
+
+        $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+
+    }
+    else {
+        //Need to Implement
+        //UpdateCalenderView();
+    }
+    //}
+    //else {
+    //    UpdateCalenderView();
+    //}
+    UpdateSelectedFilters();
+    if (SavePresetValue == false) {
+        SaveLastSetofViews();
+    }
+    SavePresetValue = false;
+}
+
+
+function GetFilterIds() {
+    filters.SelectedYears = [];
+    filters.PlanIDs = [];
+    filters.customFieldIds = [];
+    filters.OwnerIds = [];
+    filters.TacticTypeids = [];
+    filters.StatusIds = [];
+
+    $("#ulSelectedYear li input[type=checkbox]:checked").each(function () {
+        filters.SelectedYears.push($(this).attr("yearvalue"));
+    });
+    $("#ulSelectedPlans li input[type=checkbox]:checked").each(function () {
+        var chkid = $(this).attr("id");
+        filters.PlanIDs.push(chkid);
+    });
+    $('#divCustomFieldsFilter').find("input[type=checkbox]:checked").each(function () {
+        var chkid = $(this).attr("id");
+        filters.customFieldIds.push(chkid);
+    });
+    $("#ulSelectedOwner li input[type=checkbox]:checked").each(function () {
+        filters.OwnerIds.push($(this).attr('id').toString());
+    });
+    $("#ulTacticType li input[type=checkbox]:checked").each(function () {
+        filters.TacticTypeids.push($(this).attr('id').toString());
+    });
+    $("#ulStatus li input[type=checkbox]:checked").each(function () {
+        filters.StatusIds.push($(this).attr('id').toString());
+    });
+    return filters;
 }
