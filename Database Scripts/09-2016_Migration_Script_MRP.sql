@@ -840,7 +840,17 @@ END
 
 GO
 
-
+--Index Add to improve performance for Getbudget store proc.
+IF NOT EXISTS (  SELECT top 1 * 
+FROM sys.indexes 
+WHERE name='IX_Plan_Campaign_Program_Tactic_Budget_1' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic_Budget'))
+BEGIN
+CREATE NONCLUSTERED INDEX [IX_Plan_Campaign_Program_Tactic_Budget_1] ON [dbo].[Plan_Campaign_Program_Tactic_Budget]
+(
+	[PlanTacticId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+END
+GO
 
 
 -- ===========================Please put your script above this script=============================
