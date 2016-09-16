@@ -11176,7 +11176,7 @@ namespace RevenuePlanner.Controllers
                         divInnerHtml = monthlyCampaignValue.ToString(formatThousand);
                     }
                     BudgetDataObj = new Budgetdataobj();
-                    if (!isOtherLineItem && c.isEditable && isLineItem && c.LineItemTypeId != null)
+                    if (!isOtherLineItem && allocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToLower() && c.isEditable && isLineItem && c.LineItemTypeId != null)
                     {
                         BudgetDataObj.locked = "0";
                     }
