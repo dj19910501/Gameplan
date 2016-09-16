@@ -83,7 +83,7 @@ namespace RevenuePlanner.Controllers
 
                         }).ToList();
 
-                        BasicFields = Enums.PlanGrid_Column.Select(row => new CustomAttribute
+                        BasicFields = Enums.CommonGrid_Column.Select(row => new CustomAttribute
                         {
                             EntityType = "Common",
                             CustomFieldId = Convert.ToString(row.Key),

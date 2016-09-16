@@ -24,6 +24,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using System.Data.OleDb;
 using Excel;
 using System.Runtime.CompilerServices;
+using RevenuePlanner.Services;
 
 /*
  * Added By :
@@ -13176,7 +13177,9 @@ namespace RevenuePlanner.Controllers
                 objPlanMainDHTMLXGrid.head = GenerateJsonHeader(MQLTitle, modelId, TacticTypeList, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
                 GetGoalValue(lstplandetail, modelId, stageList, objplangrid); // for plan grid header to bind goal detail
 
-
+                //call method to get custom field option list added by devanshi
+                GetCustomfieldDropdownOption();
+                //end
                 var lstcampaigndetail = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && campaign.IsDeleted == false).ToList();
 
                 List<int> lstCampaignId = lstcampaigndetail.Select(campaign => campaign.PlanCampaignId).ToList();
@@ -14405,7 +14408,7 @@ namespace RevenuePlanner.Controllers
                     headobj.width = 0;
                     headobj.value = "Machine Name";
                     headobjlist.Add(headobj);
-
+                  
                 }
             }
             catch (Exception objException)
@@ -14419,7 +14422,41 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        #region method to bind customfield options
+        public void GetCustomfieldDropdownOption()
+        {
+            IColumnView objcolumnView = new ColumnView();
 
+            DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.ClientId);
+
+            if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
+            {
+
+                var columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new
+                {
+                    EntityType = Convert.ToString(row["EntityType"]),
+                    CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
+                    CutomfieldName = Convert.ToString(row["Name"]),
+                    ParentId = Convert.ToInt32(row["ParentId"]),
+                    CustomfiledType = Convert.ToString(row["CustomFieldType"])
+
+                }).Where(row => row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Campaign).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Program).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower()
+                    || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Lineitem).ToLower()).OrderBy(a => a.EntityType).ToList();
+                List<int> customfieldid = columnattribute.Select(a => a.CustomFieldId).ToList();
+                var customattributeoptionlist = db.CustomFieldOptions.Where(a => a.CustomField.ClientId == Sessions.User.ClientId && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new
+                {
+                    CustomFieldId = a.CustomFieldId,
+                    CustomFieldOptionId = a.CustomFieldOptionId,
+                    OptionValue = a.Value
+                }).ToList();
+                ViewBag.CustomAttributOotion = customattributeoptionlist;
+                
+            }
+
+
+            //end
+        }
+        #endregion
 
         #region Save gridview detail from home
         /// <summary>

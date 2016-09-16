@@ -1586,6 +1586,18 @@ namespace RevenuePlanner.Helpers
         {
             Actual, Planned, Budget
         }
+        public static Dictionary<string, string> CommonGrid_Column = new Dictionary<string, string>()
+       {
+           {"taskname","Task Name"},
+           {"startdate","Start Date"},
+           {"enddate","End Date"},
+           {"tacticplancost","Planned Cost"},
+           {"roitactictype","Tactic Category"},
+           {"tactictype","Type"},
+           {"owner","Owner"},
+           {"targetstagegoal","Target Stage Goal"},
+           {"revenue","Revenue"}
+       };
         //end
     }
 

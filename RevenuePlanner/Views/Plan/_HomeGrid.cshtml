@@ -81,6 +81,7 @@
 </div>
 <input type="button" id="useless" value="Click" name="useless" style="display:none;" />
 <p style="display:none;">Scrolled <span id="spanscroll">0</span> times.</p>
+)
 <script type="text/javascript">
     var HomeGrid;
 
@@ -195,11 +196,15 @@
     $doc.click(function () {
         $('#popupType').css('display', 'none');
         $('#dhx_combo_select').css('display', 'none');
+        $('#dhx_clist').css('display', 'none');
+        
     });
 
     $(document).mouseup(function (e) {
         $('#popupType').css("display", "none");
         $('#dhx_combo_select').css('display', 'none');
+        $('#dhx_clist').css('display', 'none');
+
     });
     $(".grid_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
@@ -596,6 +601,8 @@
                 $('#popupType').css('display', 'none');
                 $('#dhx_combo_select').css('display', 'none');
                 $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+                $('#dhx_clist').css('display', 'none');
+
             }, function () {
                 $("#divTacticReqMsg").css('display', 'none');
             });
@@ -974,6 +981,8 @@
             $(".dhx_combo_select").css("display", "none");
             $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
             $("#popupType").css("display", "none");
+            $('#dhx_clist').css('display', 'none');
+
         });
         if (eventidonbeforedrag != 0) {
             HomeGrid.detachEvent(eventidonbeforedrag);
@@ -1268,7 +1277,6 @@
                 TacticName = nValue;
             }
         }
-        debugger;
         UpdateColumn = HomeGrid.getColLabel(Colind, 0);
         if (stage == 0) {
 
@@ -1299,6 +1307,31 @@
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
+            //added by devanshi to bind custom field multi select
+            var customcolId= HomeGrid.getColumnId(cellInd);
+            if(customcolId.indexOf("custom_")>=0)
+            {
+                var id=customcolId.replace("custom_","");
+                var clistitem = [];
+                var type = HomeGrid.getColType(cellInd);
+                if(type=="clist")
+                {
+                    var combo = HomeGrid.getCombo(cellInd);
+                    var customoption=JSON.parse('@Html.Raw(Json.Encode(@ViewBag.CustomAttributOotion))');
+                    function filterbyname(obj) {
+                        if (obj.CustomFieldId == id)
+                            return true;
+                        else
+                            return false;
+                    }
+                    d = customoption.filter(filterbyname);
+                    combo.clear();
+                    $.each(d, function (i, item) {
+                        clistitem.push(item.OptionValue);
+                    });
+                    HomeGrid.registerCList(cellInd, clistitem);
+                }
+            }
         }
         if (stage == 1) {
 
