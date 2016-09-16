@@ -25,9 +25,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="activeMenu">activeMenu</param>
         /// <param name="currentPlanId">currentPlanId</param>
         /// <returns>returns partial view of Filter</returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, string CurrPlanIds = "")
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, List<int> currentPlanId = null)
         {
-            int[] currentPlanId = CurrPlanIds.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //int[] currentPlanId = CurrPlanIds.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
             bool IsPlanEditable = false;
             bool isPublished = false;
             bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
@@ -86,7 +86,7 @@ namespace RevenuePlanner.Controllers
                     if (currentPlan == null)
                     {
                         currentPlan[0] = latestPlan;
-                        currentPlanId = currentPlan.Select(s => s.PlanId).ToArray();
+                        currentPlanId = currentPlan.Select(s => s.PlanId).ToList();
                     }
                 }
                 else if (!Common.IsPlanPublished(Sessions.PlanId))
@@ -143,8 +143,11 @@ namespace RevenuePlanner.Controllers
                 //ViewBag.IsPublished = isPublished;
 
                 planmodel.PlanTitle = string.Join(",", currentPlan.Select(s => s.Title).ToArray());
-                //planmodel.PlanId = currentPlan.PlanId;
-                Sessions.PlanId = planmodel.PlanId;
+                planmodel.lstPlanId = currentPlan.Select(s => s.PlanId).ToList();
+                if (planmodel.lstPlanId.Count() > 0)
+                {
+                    Sessions.PlanPlanIds = planmodel.lstPlanId;
+                }                
                 List<CustomFieldsForFilter> lstCustomField = new List<CustomFieldsForFilter>();
                 List<CustomFieldsForFilter> lstCustomFieldOption = new List<CustomFieldsForFilter>();
 

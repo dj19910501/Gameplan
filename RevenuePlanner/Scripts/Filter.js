@@ -36,51 +36,15 @@ $(document).ready(function () {
     $("#ulSelectedYear li input[type=checkbox]:checked").each(function () {
         selectedFilters.yearIds.push($(this).attr("yearvalue"));
     });
-    if (selectedFilters.yearIds.length == 0) {
-        $('#lstYearActive').text(FiltersNone);
-    }
-    else if ($("#ulSelectedYear li").length == selectedFilters.yearIds.length) {
-        $('#lstYearActive').text(FiltersAll);
-    }
-
-    else {
-        $('#lstYearActive').text(selectedFilters.yearIds.join(", "));
-    }
 
     $("#ulSelectedPlans li input[type=checkbox]:checked").each(function () {
         selectedFilters.planName.push($(this).parent().attr("title"));
     });
-
-    if (selectedFilters.planName.length == 0) {
-        $('#lstPlanActive').text(FiltersNone);
-    }
-    else if ($("#ulSelectedPlans li").length == selectedFilters.planName.length) {
-        $('#lstPlanActive').text(FiltersAll);
-    }
-    else {
-        $('#lstPlanActive').text(selectedFilters.planName.join(", "));
-    }
     checkedYearcount = $('#ulSelectedYear li input:checked').length;
     checkedPlancount = selectedFilters.planName.length;
     $('#cYearcount').text(checkedYearcount);
-    $('#cPlancount').text(checkedPlancount);
     $('#tPlancount').text("/" + $("#ulSelectedPlans li").length.toString());
 
-    var planids = [];
-    $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
-
-        if ($(this).attr('checked') == 'checked') {
-            var chkid = $(this).attr("id");
-            var Value = $(this).attr("planTitle");
-            if (chkid != undefined && chkid != 'undefined') {
-                planids.push(chkid);
-            }
-        }
-    });
-
-    GetTacticTypelist(planids);
-    GetOwnerListForFilter(planids);
-    GetLastSetofViews($('#FilterPresetName').val());
     TotalStatus = $("#ulStatus li").length;
     $('#tStatuscount').text('/' + TotalStatus);
 });

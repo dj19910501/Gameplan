@@ -107,29 +107,58 @@
             $(".selectBox select").selectbox();
             $("#ddlTabViewBy").multiselect();
 
-            var strURL = '@Url.Content("~/Filter/Index/")';
-            $.ajax({
-                url: strURL,
-                type: 'post',
-                dataType: 'html',
-                async: false,
-                data: {
-                    activeMenu: '@Enums.ActiveMenu.Home',
-                    CurrPlanIds: '@Sessions.PlanId'
-                },
-                success: function (data) {
-                    if (data != 'undefined' && data != null) {
-                        $('#divFilter').html(data);
-						var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
-                        GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
-                        GetMultiplePlanNames();
-                    }
+        var strURL = '@Url.Content("~/Filter/Index/")';
+        $.ajax({
+            url: strURL,
+            type: 'post',
+            dataType: 'html',
+            async: false,
+            data: {
+                activeMenu: '@Enums.ActiveMenu.Home',
+                CurrPlanIds: '@Sessions.PlanPlanIds'
+            },
+            success: function (data) {
+                if (data != 'undefined' && data != null) {
+                    $('#divFilter').html(data);
+                    var planids = [];
+                    $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+
+                        if ($(this).attr('checked') == 'checked') {
+                            var chkid = $(this).attr("id");
+                            var Value = $(this).attr("planTitle");
+                            if (chkid != undefined && chkid != 'undefined') {
+                                planids.push(chkid);
+                            }
+                        }
+                    });
+
+                    GetTacticTypelist(planids);
+                    GetOwnerListForFilter(planids);
+                    GetLastSetofViews($('#FilterPresetName').val());
+                    var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
+                    GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
+                    GetMultiplePlanNames();
+
+                    LoadImprovementGrid('@Sessions.PlanPlanIds');
                 }
-            });
+            }
+        });
+    })
 
-            
-
-
-        })
-    </script>
+    function LoadImprovementGrid(PlanID) {
+        $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
+            url: '@Url.Content("~/Plan/LoadImprovementGrid/")',
+            data: {
+                id: PlanID
+            },
+            success: function (result) {
+                $("#ImprovementGrid").html('');
+                $("#ImprovementGrid").html(result);
+            }
+        });
+    }
+</script>
 

@@ -14,6 +14,7 @@ namespace RevenuePlanner.Models
 
         //Start Maninder Singh Wadhva : 11/26/2013 - planId.
         public int PlanId;
+        public List<int> lstPlanId;
         //End Maninder Singh Wadhva : 11/26/2013 - planId.
 
         //Start Maninder Singh Wadhva : 11/27/2013 - Director.
