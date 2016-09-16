@@ -624,19 +624,30 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.ModifiedDate = null;
                     objPlanCampaignProgramTactic.ModifiedBy = null;
                     //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
-                    objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
-                        pcptl =>
-                        {
+                    List<Plan_Campaign_Program_Tactic_LineItem> lstLineItems = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                    lstLineItems = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == true).ToList();
+                    if(lstLineItems.Count > 0)
+                    {
+                        lstLineItems.ForEach(x => objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Remove(x));
+                    }
+                  
+                      objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
+                      pcptl =>
+                      {
                             // Start - Added by Viral Kadiya for PL ticket #1967 - We will need to change the owner of the line items to the one that copied the tactic.
                             pcptl.CreatedBy = UserId;
-                            pcptl.CreatedDate = DateTime.Now;
+                          pcptl.CreatedDate = DateTime.Now;
                             // End - Added by Viral Kadiya for PL ticket #1967 - We will need to change the owner of the line items to the one that copied the tactic.
-                            pcptl.LineItemType = null;
-                            pcptl.LinkedLineItemId = null;
-                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
-                            pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();// Add  By Nishant Sheth
-                        });
 
+                            if (pcptl.LineItemTypeId == null)
+                          {
+                              pcptl.Title = Common.LineItemTitleDefault + objPlanCampaignProgramTactic.Title;
+                          }
+                          pcptl.LineItemType = null;
+                          pcptl.LinkedLineItemId = null;
+                          pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
+                          pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();// Add  By Nishant Sheth
+                        });
 
                 }
                 objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
@@ -666,8 +677,12 @@ namespace RevenuePlanner.Helpers
                 {
                     var LineItemCustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == Lineitem.PlanLineItemId && a.CustomField.EntityType == entityTypeLineItem).ToList();
                     //int clonedTacticId = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
-                    var clonedPlanLineItemId = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Title == Lineitem.Title).FirstOrDefault().PlanLineItemId;
-                    LineItemCustomFieldsList.ForEach(a => { a.EntityId = clonedPlanLineItemId; db.Entry(a).State = EntityState.Added; });
+                    var clonedPlanLineItemId = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.LineItemTypeId == null).FirstOrDefault().PlanLineItemId;
+                    if (Lineitem.LineItemTypeId != null)
+                    {
+                        clonedPlanLineItemId = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Title == Lineitem.Title).FirstOrDefault().PlanLineItemId;
+                    }
+                        LineItemCustomFieldsList.ForEach(a => { a.EntityId = clonedPlanLineItemId; db.Entry(a).State = EntityState.Added; });
                 }
                 // end by nishant Sheth
 
