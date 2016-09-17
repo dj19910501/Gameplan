@@ -2,6 +2,7 @@
 @model RevenuePlanner.Models.Plangrid
 @{
     var countrows = Model.PlanDHTMLXGrid.rows.Count;
+    var isQuarter = ViewBag.AllocatedBy;
 }
 <style>
     .gridViewGrid.gridbox.gridbox_dhx_skyblue {
@@ -252,6 +253,7 @@ else
     var ActivityIdColIndex;
     var PlannedCostColIndex;
     var TypeColIndex;
+    var OwnerColIndex;
     var arrDetailedGrids = [];
     var arrFullMonthNames = { 'JAN': 'January' ,
         'FEB': 'February' ,
@@ -264,7 +266,12 @@ else
         'SEP': 'September' ,
         'OCT': 'October' ,
         'NOV': 'November' ,
-        'DEC': 'December' }
+        'DEC': 'December',
+        'Q1': 'Quarter 1',
+        'Q2': 'Quarter 2',
+        'Q3': 'Quarter 3',
+        'Q4': 'Quarter 4'
+    }
 
     function BindLineItemGrid() {
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
@@ -323,6 +330,7 @@ else
         ActivityIdColIndex = LineItemGrid.getColIndexById("id");
         PlannedCostColIndex = LineItemGrid.getColIndexById("plannedcost");
         TypeColIndex = LineItemGrid.getColIndexById("tactictype");
+        OwnerColIndex = LineItemGrid.getColIndexById("owner");
         
         LineItemGrid.forEachRow(function (id) {
             LineItemGrid.cells(id, 0).open();
@@ -334,8 +342,8 @@ else
     
     function sort_Owner(a, b, ord, a_id, b_id) {
 
-        a = LineItemGrid.cells(a_id, 6).getText();
-        b = LineItemGrid.cells(b_id, 6).getText();
+        a = LineItemGrid.cells(a_id, OwnerColIndex).getText();
+        b = LineItemGrid.cells(b_id, OwnerColIndex).getText();
         return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
     };
     function sort_TacticType(a, b, ord, a_id, b_id) {
@@ -343,8 +351,8 @@ else
         var atype = a_id.split(".")[0].toString();
         var btype = b_id.split(".")[0].toString();
         if (atype == "tact" && btype == "tact") {
-            a = LineItemGrid.cells(a_id, 5).getText();
-            b = LineItemGrid.cells(b_id, 5).getText();
+            a = LineItemGrid.cells(a_id, TypeColIndex).getText();
+            b = LineItemGrid.cells(b_id, TypeColIndex).getText();
             return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
         } else return 0;
     };
@@ -477,57 +485,75 @@ else
 
 function doOnSubgridEditCell(stage, rowId, cellInd, nValue, oValue) {
     var detailedGridData = $(this)[0];
-
+    
     if (stage == 0){
+        
         var locked = detailedGridData.cells(rowId, cellInd).getAttribute("locked");
         if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
             return false;
+        if(isNaN(detailedGridData.cells(rowId, cellInd).getValue())){
+            detailedGridData.cells(rowId, cellInd).setValue("");
+        }
     }
     if (stage == 1){
-    }
-    if (stage == 2){
-        
-        var entityId = detailedGridData.cells(rowId, 0).getValue();
-        var section = "LineItem";
-    
-        var month = arrFullMonthNames[detailedGridData.getColLabel(cellInd)];
-        
-        var yearlyplannedcost = detailedGridData.cells(rowId, 2).getValue();
-        var monthlyplannedcost = detailedGridData.cells(rowId, cellInd).getValue();
-
-        //tab
-        var tab = 'Planned';
-        var isquarter = false;
-        if('@Sessions.ViewByValue' == 'Q') {
-            isquarter = true;
-        }
-        
-        var inputArr = [];
-        //Insertation Start 19/08/2016 Kausha #2503 Used SetValueByExchangeRate function to store value in dollar.
-        inputArr.push({
-            key: "CostMonth",
-            Value: SetValueByExchangeRate(monthlyplannedcost.replace(/,/g, ""))
-        },
-            {
-                key: "CostYear",
-                Value: SetValueByExchangeRate(yearlyplannedcost.replace(/,/g, ""))
-            });
-        var jsonInputs = JSON.stringify(inputArr);
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/SavePlannedCell/")',
-            dataType: "json",
-            data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
-            success: function (data) {
-                if (data.isSuccess == true) {
-                    $("#liLine_Items").trigger("click");
-                }
-                else {
-                    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
-                    $('#errorMessageDuplicatePlan').slideDown(700);
+        $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+        detailedGridData.editor.obj.onkeypress = function (e) {
+            e = e || window.event;
+            if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                var text = this.value;
+                if (text.length > 10) { //max length of the text
+                    return false;
                 }
             }
-        });
+        }
+    }
+    if (stage == 2) {
+        if (nValue != null && nValue != "") {
+            var entityId = detailedGridData.cells(rowId, 0).getValue();
+            var section = "LineItem";
+    
+            var month = arrFullMonthNames[detailedGridData.getColLabel(cellInd)];
+        
+            var yearlyplannedcost = detailedGridData.cells(rowId, 2).getValue();
+            var monthlyplannedcost = detailedGridData.cells(rowId, cellInd).getValue();
+
+            //tab
+            var tab = 'Planned';
+            var isquarter = false;
+            if('@isQuarter' == 'quarters') {
+                isquarter = true;
+            }
+        
+            var inputArr = [];
+            //Insertation Start 19/08/2016 Kausha #2503 Used SetValueByExchangeRate function to store value in dollar.
+            inputArr.push({
+                key: "CostMonth",
+                Value: SetValueByExchangeRate(monthlyplannedcost.replace(/,/g, ""))
+            },
+                {
+                    key: "CostYear",
+                    Value: SetValueByExchangeRate(yearlyplannedcost.replace(/,/g, ""))
+                });
+            var jsonInputs = JSON.stringify(inputArr);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/SavePlannedCell/")',
+                dataType: "json",
+                data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
+                success: function (data) {
+                    if (data.isSuccess == true) {
+                        $("#liLine_Items").trigger("click");
+                    }
+                    else {
+                        $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                        $('#errorMessageDuplicatePlan').slideDown(700);
+                    }
+                }
+            });
+        }
+        else {
+            detailedGridData.cells(rowId, cellInd).setValue("---");
+        }
     }
     return true;
 }
@@ -618,7 +644,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
     if (stage == 2) // start edit Shipping column
     {
-        if (nValue != null && nValue != "") {
+        if (nValue != null && nValue.trim() != "") {
 
             //Added By Komal Rawal to Change the value in array if grid updated              
             var NewValue = htmlDecode(nValue);
@@ -718,6 +744,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 }
                             });
                         }
+                LineItemGrid.forEachRow(function (id) {
+                    LineItemGrid.cells(id, 0).open();
+                });
                         return true;
                     }
                     if (htmlDecode(nValue) != oValue) {//Modified by Rahul Shah on 30/11/2015 for PL #1778. here in special character nValue data carry with Extra character.
@@ -844,6 +873,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
                         });
                         //End
+                        if(UpdateVal != "Planned Cost"){
+                            LineItemGrid.forEachRow(function (id) {
+                                LineItemGrid.cells(id, 0).open();
+                            });
+                        }
                         return true;
                     }
             //Modified By Komal Rawal for #1848 Link To tactic feature
@@ -863,6 +897,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
                     });
             //End
+                    LineItemGrid.forEachRow(function (id) {
+                        LineItemGrid.cells(id, 0).open();
+                    });
                     return true;
                 }
             }

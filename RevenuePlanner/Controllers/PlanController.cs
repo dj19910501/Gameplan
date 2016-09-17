@@ -10843,7 +10843,7 @@ namespace RevenuePlanner.Controllers
                     Oct = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY10"].ToString()), PlanExchangeRate),
                     Nov = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY11"].ToString()), PlanExchangeRate),
                     Dec = objCurrency.GetValueByExchangeRate(ParseDoubleValue(row["CY12"].ToString()), PlanExchangeRate)
-                } : null ,
+                } : null,
                 CreatedBy = new Guid(row["CreatedBy"].ToString()),
                 isEditable = Convert.ToBoolean(row["IsEditable"]),
                 ActivityType = row["ActivityType"].ToString(),
@@ -10913,6 +10913,7 @@ namespace RevenuePlanner.Controllers
             }
             //End Added by Mitesh Vaishnav - set flag for editing campaign/program/tactic/plan 
 
+            model = ManageLineItems(model);
             //Set actual for quarters
             if (AllocatedBy == "quarters")  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
             {
@@ -10935,14 +10936,13 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-            model = ManageLineItems(model);
             Sessions.PlanId = objPlan.PlanId;
             List<BudgetDHTMLXGridModel> lstBudgetDHTMLXGrid = new List<BudgetDHTMLXGridModel>();
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-            
+
             foreach (BudgetModel bml in
                         model.Where(p =>
-                                        //p.ActivityType == ActivityType.ActivityLineItem && p.ActivityId.Replace("cptl_","") == Convert.ToString(LineItemId)).OrderBy(p => p.ActivityName))
+                            //p.ActivityType == ActivityType.ActivityLineItem && p.ActivityId.Replace("cptl_","") == Convert.ToString(LineItemId)).OrderBy(p => p.ActivityName))
                                         p.ActivityType == ActivityType.ActivityLineItem).OrderBy(p => p.ActivityName))
             {
                 objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
@@ -10981,7 +10981,7 @@ namespace RevenuePlanner.Controllers
                 objBudgetDHTMLXGrid.LineItemId = Int32.Parse(bml.Id);
                 lstBudgetDHTMLXGrid.Add(objBudgetDHTMLXGrid);
             }
-            
+
             return lstBudgetDHTMLXGrid;
         }
 
@@ -14204,7 +14204,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #region method to generate grid header
-        public List<PlanHead> GenerateJsonHeader(string MQLTitle, int modelid, List<TacticTypeModel> TacticTypeList, string PlanYear, bool IsNotLineItemListing = true)
+        public List<PlanHead> GenerateJsonHeader(string MQLTitle, int modelid, List<TacticTypeModel> TacticTypeList, string PlanYear)
         {
             // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
             List<PlanHead> headobjlist = new List<PlanHead>();
@@ -14244,18 +14244,6 @@ namespace RevenuePlanner.Controllers
                 headobj.value = "Activity Type";
                 headobjlist.Add(headobj);
 
-                if (!IsNotLineItemListing)
-                {
-                    // First Column Activity Type
-                    headobj.type = "sub_row_grid";
-                    //headobj.align = "center";
-                    headobj.id = "subgridicon";
-                    headobj.sort = "na";
-                    headobj.width = 30;
-                    headobj.value = "";
-                    headobjlist.Add(headobj);
-                }
-
                 //Second Column : Task Name
                 headobj = new PlanHead();
                 headobj.type = "tree";
@@ -14266,31 +14254,16 @@ namespace RevenuePlanner.Controllers
                 headobj.value = "Task Name" + manageviewicon;
                 headobjlist.Add(headobj);
 
-                // Modified by Arpita Soni to resolve issue in Ticket #2237 due to #2270/#2271
-                if (IsNotLineItemListing)
-                {
-                    // Third Column : Empty
-                    headobj = new PlanHead();
-                    headobj.type = "ro";
-                    headobj.align = "center";
-                    headobj.id = "add";
-                    headobj.sort = "na";
-                    headobj.width = 85; //modified by Rahul shah on 04/12/2015-to increase width for honeycomb feature
-                    headobj.value = "";
-                    headobjlist.Add(headobj);
-                }
-                else
-                {
-                    // Third Column : Empty
-                    headobj = new PlanHead();
-                    headobj.type = "ro";
-                    headobj.align = "center";
-                    headobj.id = "add";
-                    headobj.sort = "na";
-                    headobj.width = 45; // decreased width of column in case of line item grid
-                    headobj.value = "";
-                    headobjlist.Add(headobj);
-                }
+                // Third Column : Empty
+                headobj = new PlanHead();
+                headobj.type = "ro";
+                headobj.align = "center";
+                headobj.id = "add";
+                headobj.sort = "na";
+                headobj.width = 85; //modified by Rahul shah on 04/12/2015-to increase width for honeycomb feature
+                headobj.value = "";
+                headobjlist.Add(headobj);
+
                 // Fourth Column : Id
                 headobj = new PlanHead();
                 headobj.type = "ro";
@@ -14301,28 +14274,26 @@ namespace RevenuePlanner.Controllers
                 headobj.value = "id";
                 headobjlist.Add(headobj);
 
-                if (IsNotLineItemListing)
-                {
-                    // Fifth Column : Start Date
-                    headobj = new PlanHead();
-                    headobj.type = "dhxCalendar";
-                    headobj.align = "center";
-                    headobj.id = "startdate";
-                    headobj.sort = "date";
-                    headobj.width = 110;
-                    headobj.value = "Start Date" + manageviewicon;
-                    headobjlist.Add(headobj);
+                // Fifth Column : Start Date
+                headobj = new PlanHead();
+                headobj.type = "dhxCalendar";
+                headobj.align = "center";
+                headobj.id = "startdate";
+                headobj.sort = "date";
+                headobj.width = 110;
+                headobj.value = "Start Date" + manageviewicon;
+                headobjlist.Add(headobj);
 
-                    // Sixth Column : End Date
-                    headobj = new PlanHead();
-                    headobj.type = "dhxCalendar";
-                    headobj.align = "center";
-                    headobj.id = "enddate";
-                    headobj.sort = "date";
-                    headobj.width = 100;
-                    headobj.value = "End Date" + manageviewicon;
-                    headobjlist.Add(headobj);
-                }
+                // Sixth Column : End Date
+                headobj = new PlanHead();
+                headobj.type = "dhxCalendar";
+                headobj.align = "center";
+                headobj.id = "enddate";
+                headobj.sort = "date";
+                headobj.width = 100;
+                headobj.value = "End Date" + manageviewicon;
+                headobjlist.Add(headobj);
+
                 // Seventh Column: Planned Cost
                 headobj = new PlanHead();
                 headobj.type = "ron";
@@ -14333,18 +14304,15 @@ namespace RevenuePlanner.Controllers
                 headobj.value = "Planned Cost" + manageviewicon;
                 headobjlist.Add(headobj);
 
-                // Added by Arpita Soni for Ticket #2354 on 07/12/2016
-                if (IsNotLineItemListing)
-                {
-                    headobj = new PlanHead();
-                    headobj.type = "ro";
-                    headobj.align = "center";
-                    headobj.id = "roitactictype";
-                    headobj.sort = "str";
-                    headobj.width = 150;
-                    headobj.value = "Tactic Category" + manageviewicon;
-                    headobjlist.Add(headobj);
-                }
+                headobj = new PlanHead();
+                headobj.type = "ro";
+                headobj.align = "center";
+                headobj.id = "roitactictype";
+                headobj.sort = "str";
+                headobj.width = 150;
+                headobj.value = "Tactic Category" + manageviewicon;
+                headobjlist.Add(headobj);
+
 
                 // Eight Column : Type
                 headobj = new PlanHead();
@@ -14368,91 +14336,209 @@ namespace RevenuePlanner.Controllers
                 headobj.options = lstOwner;
                 headobjlist.Add(headobj);
 
-                if (IsNotLineItemListing)
+                // Tenth Column : Target Stage Goal
+                headobj = new PlanHead();
+                headobj.type = "ron";
+                headobj.align = "center";
+                headobj.id = "inq";
+                headobj.sort = "int";
+                headobj.width = 150;
+                headobj.value = "Target Stage Goal" + manageviewicon;
+                headobjlist.Add(headobj);
+
+                // Eleventh Column: MQl
+                headobj = new PlanHead();
+                headobj.type = "ron";
+                headobj.align = "center";
+                headobj.id = "mql";
+                headobj.sort = "int";
+                headobj.width = 150;
+                headobj.value = MQLTitle + manageviewicon;
+                headobjlist.Add(headobj);
+                // Twelveth Column : Revenue
+                headobj = new PlanHead();
+                headobj.type = "ron";
+                headobj.align = "center";
+                headobj.id = "revenue";
+                headobj.sort = "int";
+                headobj.width = 150;
+                headobj.value = "Revenue" + manageviewicon;
+                headobjlist.Add(headobj);
+                //Add External Name Column as a last column of gridview
+                //Thirteenth Column : Empty
+                headobj = new PlanHead();
+                headobj.type = "ro";
+                //headobj.align = "left";
+                headobj.id = "machinename";
+                headobj.sort = "str";
+                headobj.width = 0;
+                headobj.value = "Machine Name";
+                headobjlist.Add(headobj);
+                IColumnView objcolumnView = new ColumnView();
+
+                DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.ClientId);
+
+                if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
                 {
-                    // Tenth Column : Target Stage Goal
-                    headobj = new PlanHead();
-                    headobj.type = "ron";
-                    headobj.align = "center";
-                    headobj.id = "inq";
-                    headobj.sort = "int";
-                    headobj.width = 150;
-                    headobj.value = "Target Stage Goal" + manageviewicon;
-                    headobjlist.Add(headobj);
 
-                    // Eleventh Column: MQl
-                    headobj = new PlanHead();
-                    headobj.type = "ron";
-                    headobj.align = "center";
-                    headobj.id = "mql";
-                    headobj.sort = "int";
-                    headobj.width = 150;
-                    headobj.value = MQLTitle + manageviewicon;
-                    headobjlist.Add(headobj);
-                    // Twelveth Column : Revenue
-                    headobj = new PlanHead();
-                    headobj.type = "ron";
-                    headobj.align = "center";
-                    headobj.id = "revenue";
-                    headobj.sort = "int";
-                    headobj.width = 150;
-                    headobj.value = "Revenue" + manageviewicon;
-                    headobjlist.Add(headobj);
-                    //Add External Name Column as a last column of gridview
-                    //Thirteenth Column : Empty
-                    headobj = new PlanHead();
-                    headobj.type = "ro";
-                    //headobj.align = "left";
-                    headobj.id = "machinename";
-                    headobj.sort = "str";
-                    headobj.width = 0;
-                    headobj.value = "Machine Name";
-                    headobjlist.Add(headobj);
-                    IColumnView objcolumnView = new ColumnView();
-
-                    DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.ClientId);
-
-                    if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
+                    var columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new
                     {
+                        EntityType = Convert.ToString(row["EntityType"]),
+                        CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
+                        CutomfieldName = Convert.ToString(row["Name"]),
+                        ParentId = Convert.ToInt32(row["ParentId"]),
+                        CustomfiledType = Convert.ToString(row["CustomFieldType"])
 
-                        var columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new
+                    }).Where(row => row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Campaign).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Program).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower()
+                        || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Lineitem).ToLower()).OrderBy(a => a.EntityType).ToList();
+                    List<int> customfieldid = columnattribute.Select(a => a.CustomFieldId).ToList();
+                    var customattributeoptionlist = db.CustomFieldOptions.Where(a => a.CustomField.ClientId == Sessions.User.ClientId && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new
+                    {
+                        CustomFieldId = a.CustomFieldId,
+                        CustomFieldOptionId = a.CustomFieldOptionId,
+                        OptionValue = a.Value
+                    }).ToList();
+                    ViewBag.CustomAttributOotion = customattributeoptionlist;
+
+                    foreach (var objcustom in columnattribute)
+                    {
+                        headobj = new PlanHead();
+                        headobj.type = "ed";
+                        headobj.id = "custom_" + objcustom.CustomFieldId.ToString();
+                        headobj.sort = "str";
+                        headobj.width = 150;
+                        headobj.value = objcustom.CutomfieldName;
+                        if (Convert.ToString(objcustom.CustomfiledType) == Convert.ToString(Enums.CustomFieldType.DropDownList))
                         {
-                            EntityType = Convert.ToString(row["EntityType"]),
-                            CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
-                            CutomfieldName = Convert.ToString(row["Name"]),
-                            ParentId = Convert.ToInt32(row["ParentId"]),
-                            CustomfiledType = Convert.ToString(row["CustomFieldType"])
 
-                        }).Where(row => row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Campaign).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Program).ToLower() || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower()
-                            || row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Lineitem).ToLower()).OrderBy(a => a.EntityType).ToList();
-                        List<int> customfieldid = columnattribute.Select(a => a.CustomFieldId).ToList();
-                        var customattributeoptionlist = db.CustomFieldOptions.Where(a => a.CustomField.ClientId == Sessions.User.ClientId && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new
-                        {
-                            CustomFieldId = a.CustomFieldId,
-                            CustomFieldOptionId = a.CustomFieldOptionId,
-                            OptionValue = a.Value
-                        }).ToList();
-                        ViewBag.CustomAttributOotion = customattributeoptionlist;
-
-
-                        foreach (var objcustom in columnattribute)
-                        {
-                            headobj = new PlanHead();
-                            headobj.type = "ed";
-                            headobj.id = "custom_" + objcustom.CustomFieldId.ToString();
-                            headobj.sort = "str";
-                            headobj.width = 150;
-                            headobj.value = objcustom.CutomfieldName;
-                            if (Convert.ToString(objcustom.CustomfiledType) == Convert.ToString(Enums.CustomFieldType.DropDownList))
-                            {
-
-                                headobj.type = "clist";
-                            }
-                           
-                            headobjlist.Add(headobj);
+                            headobj.type = "clist";
                         }
+
+                        headobjlist.Add(headobj);
+                    }
+
+                }
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+            }
+            return headobjlist;
+        }
+        #endregion
+        #region method to generate grid header
+        public List<PlanHead> GenerateJsonHeaderForLineItemListing(List<TacticTypeModel> TacticTypeList)
+        {
+            // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
+            List<PlanHead> headobjlist = new List<PlanHead>();
+            PlanHead headobj = new PlanHead();
+            List<PlanOptions> lstOwner = new List<PlanOptions>();
+            List<PlanOptions> lstTacticType = new List<PlanOptions>();
+            try
+            {
+
+                if (TacticTypeList != null && TacticTypeList.Count > 0)
+                    lstTacticType = TacticTypeList.Select(tacttype => new PlanOptions { id = tacttype.TacticTypeId.ToString(), value = HttpUtility.HtmlDecode(tacttype.Title) }).ToList();
+
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = lstUsers.Where(i => i.IsDeleted == false).ToList();
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+
+
+
+                if (lstClientUsers.Count() > 0)
+                {
+                    string strUserList = string.Join(",", lstClientUsers);
+                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId);   //PL #1532 Grid View & Tactic Pop-up: Displaying Users which are not in Gameplan - Dashrath Prajapati                
+
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.UserId.ToString(), value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
                     }
                 }
+                // First Column Activity Type
+                headobj.type = "ro";
+                //headobj.align = "center";
+                headobj.id = "activitytype";
+                headobj.sort = "na";
+                headobj.width = 0;
+                headobj.value = "Activity Type";
+                headobjlist.Add(headobj);
+
+
+                // Second Column to create a sub row grid
+                headobj.type = "sub_row_grid";
+                //headobj.align = "center";
+                headobj.id = "subgridicon";
+                headobj.sort = "na";
+                headobj.width = 30;
+                headobj.value = "";
+                headobjlist.Add(headobj);
+
+                //Third Column : Task Name
+                headobj = new PlanHead();
+                headobj.type = "tree";
+                headobj.align = "left";
+                headobj.id = "taskname";
+                headobj.sort = "str";
+                headobj.width = 330;
+                headobj.value = "Task Name";
+                headobjlist.Add(headobj);
+
+                // Modified by Arpita Soni to resolve issue in Ticket #2237 due to #2270/#2271
+                // Fourth Column : Add/Search Icon
+                headobj = new PlanHead();
+                headobj.type = "ro";
+                headobj.align = "center";
+                headobj.id = "add";
+                headobj.sort = "na";
+                headobj.width = 45; // decreased width of column in case of line item grid
+                headobj.value = "";
+                headobjlist.Add(headobj);
+
+                // Fifth Column : Id
+                headobj = new PlanHead();
+                headobj.type = "ro";
+                //headobj.align = "center";
+                headobj.id = "id";
+                headobj.sort = "na";
+                headobj.width = 0;
+                headobj.value = "id";
+                headobjlist.Add(headobj);
+
+                // Sixth Column: Planned Cost
+                headobj = new PlanHead();
+                headobj.type = "ron";
+                headobj.align = "center";
+                headobj.id = "plannedcost";
+                headobj.sort = "int";
+                headobj.width = 160;
+                headobj.value = "Planned Cost";
+                headobjlist.Add(headobj);
+
+                // Seventh Column : Type
+                headobj = new PlanHead();
+                headobj.type = "coro";
+                headobj.align = "center";
+                headobj.id = "tactictype";
+                headobj.sort = "sort_TacticType";
+                headobj.width = 150;
+                headobj.value = "Type";
+                headobj.options = lstTacticType;
+                headobjlist.Add(headobj);
+
+                // Eighth Column : Owner
+                headobj = new PlanHead();
+                headobj.type = "coro";
+                headobj.align = "center";
+                headobj.id = "owner";
+                headobj.sort = "sort_Owner";
+                headobj.width = 115;
+                headobj.value = "Owner";
+                headobj.options = lstOwner;
+                headobjlist.Add(headobj);
             }
             catch (Exception objException)
             {
@@ -14484,7 +14570,7 @@ namespace RevenuePlanner.Controllers
                     CustomfiledType = Convert.ToString(row["CustomFieldType"])
 
                 }).ToList();
-                  
+
                 List<int> customfieldid = columnattribute.Select(a => a.CustomFieldId).ToList();
                 var customattributeoptionlist = db.CustomFieldOptions.Where(a => a.CustomField.ClientId == Sessions.User.ClientId && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new
                 {
@@ -14493,7 +14579,7 @@ namespace RevenuePlanner.Controllers
                     OptionValue = (a.Value)
                 }).ToList();
                 ViewBag.CustomAttributOotion = customattributeoptionlist;
-                
+
             }
 
 
@@ -15676,7 +15762,7 @@ namespace RevenuePlanner.Controllers
                         //Desc: To Enable edit owner feature from Lineitem popup
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                         {
-                        linkedLineItem.CreatedBy = new Guid(UpdateVal);
+                            linkedLineItem.CreatedBy = new Guid(UpdateVal);
                         }
                         //ENd
                         db.Entry(linkedLineItem).State = EntityState.Modified;
