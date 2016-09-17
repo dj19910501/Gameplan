@@ -385,6 +385,70 @@ namespace RevenuePlanner.Models
         public List<PlanDHTMLXGridDataModel> rows { get; set; }
     }
 
+    // Add By Nishant Sheth
+    // class for get grid default/common data
+    public class GridDefaultModel
+    {
+        public string UniqueId { get; set; }
+        public Int64 EntityId { get; set; }
+        public string EntityTitle { get; set; }
+        public Nullable<Int64> ParentEntityId { get; set; }
+        public string ParentUniqueId { get; set; }
+        public string EntityType { get; set; }
+        public string ColorCode { get; set; }
+        public string Status { get; set; }
+        public Nullable<DateTime> StartDate { get; set; }
+        public Nullable<DateTime> EndDate { get; set; }
+        public Guid CreatedBy { get; set; }
+        public string AltId { get; set; }
+        public string TaskId { get; set; }
+        public string ParentTaskId { get; set; }
+        public Int64 PlanId { get; set; }
+        public Nullable<Int64> ModelId { get; set; }
+        public string AssetType { get; set; }
+        public string TacticType { get; set; }
+        public Nullable<Int32> TacticTypeId { get; set; }
+        public Nullable<Int32> LineItemTypeId { get; set; }
+        public string LineItemType { get; set; }
+        public Nullable<double> PlannedCost { get; set; }
+        public Nullable<double> ProjectedStageValue { get; set; }
+        public string ProjectedStage { get; set; }
+        public Nullable<Int64> MQL { get; set; }
+        public Nullable<decimal> Revenue { get; set; }
+        public string MachineName { get; set; }
+    }
+
+    // Add By Nishant Sheth
+    // Get list of custom fields
+    public class GridCustomFields
+    {
+        public int CustomFieldId { get; set; }
+        public string CustomFieldName { get; set; }
+        public int CustomFieldTypeId { get; set; }
+        public bool IsRequired { get; set; }
+        public string EntityType { get; set; }
+        public string AbbreviationForMulti { get; set; }
+    }
+
+    // Add By Nishant Sheth
+    // Get list of Entity custom field values
+    public class GridCustomFieldEntityValues
+    {
+        public Int64 EntityId { get; set; }
+        public string EntityType { get; set; }
+        public Nullable<int> CustomFieldId { get; set; }
+        public Nullable<int> CustomFieldEntityId { get; set; }
+        public string Value { get; set; }
+    }
+
+    // Add By Nishant Sheth
+    // Combine list of custom field and it's entities values
+    public class GridCustomColumnData
+    {
+        public List<GridCustomFields> CustomFields { get; set; }
+        public List<GridCustomFieldEntityValues> CustomFieldValues { get; set; }
+    }
+
     public class Planuserdatagrid
     {
         public string psdate { get; set; }

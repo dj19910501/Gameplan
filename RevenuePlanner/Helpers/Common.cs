@@ -9937,6 +9937,27 @@ namespace RevenuePlanner.Helpers
     }
     #endregion
 
+    // Add By Nishant Sheth
+    // Home Grid Properties
+    #region Home Grid style properties
+    public class HomeGridProperties
+    {
+        public string stylecolorblack = "color:#000";
+        public string stylecolorgray = "color:#727272";
+        public string doubledesh = "--";
+        public string typero = "ro";
+        public string typeEdn = "edn";
+        public string openstateone = "1";
+        public string lockedstateone = "1";
+        public string lockedstatezero = "0";
+
+        public string PlanBackgroundColor = "#e6e6e6";
+        public string CampaignBackgroundColor = "#c6ebf3";
+        public string ProgramBackgroundColor = "#dff0f8";
+        public string TacticBackgroundColor = "#e4f1e1";
+        public string LineItemBackgroundColor = "#ffffff";
+    }
+    #endregion
 
 
 

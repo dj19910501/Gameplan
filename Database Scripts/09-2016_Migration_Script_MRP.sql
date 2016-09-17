@@ -505,39 +505,34 @@ GO
 -- Create date: 09/08/2016
 -- Description:	This store proc. return data for budget tab for repective plan, campaign, program and tactic
 -- =============================================
-ALTER PROCEDURE [dbo].[GetPlanBudget]
+ALTER PROCEDURE [dbo].[GetPlanBudget]--[GetPlanBudget] '20212,20203,19569'
 	(
 	@PlanId NVARCHAR(MAX),
 	@ownerIds nvarchar(max)='',
 	@tactictypeIds varchar(max)='',
-	@statusIds varchar(max)=''
+	@statusIds varchar(max)='',
+	@UserID varchar(36)=''
 	)
 AS
 BEGIN
 	
 DECLARE @tmp TABLE
 (
-			UniqueId		NVARCHAR(30), 
 			EntityId		BIGINT,
-			EntityTitle		NVARCHAR(1000),
-			ParentEntityId	BIGINT, 
-			ParentUniqueId	NVARCHAR(30),
-			EntityType		NVARCHAR(15), 
-			ColorCode		NVARCHAR(7),
-			[Status]		NVARCHAR(15), 
-			StartDate		DATETIME, 
-			EndDate			DATETIME, 
-			CreatedBy		UNIQUEIDENTIFIER
+			ParentEntityId	BIGINT,
+			EntityType NVARCHAR(50)
 )
 
 INSERT INTO @tmp
-SELECT * FROM fnGetFilterEntityHierarchy( @PlanId,@ownerIds,@tactictypeIds,@statusIds)
+--SELECT * FROM fnGetFilterEntityHierarchy( @PlanId,@ownerIds,@tactictypeIds,@statusIds)
+SELECT EntityId,ParentEntityId,EntityType FROM fnGetEntitieHirarchyByPlanId(@PlanId)
 
 SELECT ActivityId
 			,ActivityType
 			,Title
 			,ParentActivityId
 			,CreatedBy
+			,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
 			,Budget
 			,[Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
 			,(ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalAllocationBudget
@@ -572,6 +567,7 @@ SELECT
 		,Title
 		,ParentActivityId
 		,CreatedBy
+		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
 		,Budget
 		,[Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
 		,(ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalAllocationBudget
@@ -606,6 +602,7 @@ UNION ALL
 		,Title
 		,ParentActivityId
 		,CreatedBy
+		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
 		,Budget
 		,[Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
 		,(ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalAllocationBudget
@@ -640,6 +637,7 @@ UNION ALL
 		,Title
 		,ParentActivityId
 		,CreatedBy
+		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
 		,Budget
 		,[Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
 		,(ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalAllocationBudget
@@ -691,6 +689,7 @@ UNION ALL
 		,Title
 		,ParentActivityId
 		,CreatedBy
+		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
 		,0 Budget
 		,0 [Y1],0 [Y2],0 [Y3],0 [Y4],0 [Y5],0 [Y6],0 [Y7],0 [Y8],0 [Y9],0 [Y10],0 [Y11],0 [Y12]
 		,0 TotalAllocationBudget
@@ -726,7 +725,6 @@ UNION ALL
 				  for APeriod in ([ActualY1], [ActualY2], [ActualY3], [ActualY4],[ActualY5], [ActualY6], [ActualY7], [ActualY8],[ActualY9], [ActualY10], [ActualY11], [ActualY12])
 				)LineItemMain
 END
-
 GO
 
 
@@ -851,6 +849,810 @@ CREATE NONCLUSTERED INDEX [IX_Plan_Campaign_Program_Tactic_Budget_1] ON [dbo].[P
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 END
 GO
+
+
+-- Add by Nishant Sheth
+-- Below Scripting for grid view data
+--Function fnGetEntitieHirarchyByPlanId
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetEntitieHirarchyByPlanId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+BEGIN
+execute dbo.sp_executesql @statement = N'
+--This function will return all the enties with hirarchy
+--Multiple plan ids can be passed saperated by comma
+--If we pass null then it will retuen all plans hirarchy data
+ALTER FUNCTION [dbo].[fnGetEntitieHirarchyByPlanId] ( @PlanIds NVARCHAR(MAX))
+RETURNS @Entities TABLE (
+			UniqueId		NVARCHAR(30), 
+			EntityId		BIGINT,
+			EntityTitle		NVARCHAR(1000),
+			ParentEntityId	BIGINT, 
+			ParentUniqueId	NVARCHAR(30),
+			EntityType		NVARCHAR(15), 
+			ColorCode		NVARCHAR(7),
+			[Status]		NVARCHAR(15), 
+			StartDate		DATETIME, 
+			EndDate			DATETIME, 
+			CreatedBy		UNIQUEIDENTIFIER,
+			AltId			NVARCHAR(500),
+			TaskId			NVARCHAR(500),
+			ParentTaskId	NVARCHAR(500),
+			PlanId			BIGINT,
+			ModelId			BIGINT
+		)
+AS
+BEGIN
+
+	;WITH FilteredPlan AS(
+		SELECT ''Plan'' EntityType,''P_'' + CAST(P.PlanId AS NVARCHAR(10)) UniqueId,P.PlanId EntityId, P.Title EntityTitle,NULL ParentEntityId,NULL ParentUniqueId, P.Status, NULL StartDate, NULL EndDate,P.CreatedBy 
+		,CAST(P.PlanId AS NVARCHAR(50)) AS AltId
+		,''L''+CAST(P.PlanId AS NVARCHAR(50)) AS TaskId
+		,NULL AS ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM [Plan] P 
+			--INNER JOIN Model M ON M.ModelId = P.ModelId AND M.ClientId = @ClientId
+		WHERE P.IsDeleted = 0 
+			AND (
+					@PlanIds IS NULL 
+					OR P.PlanId IN (SELECT DISTINCT dimension FROM dbo.fnSplitString(@PlanIds,'',''))
+				)
+	),
+	Campaigns AS (
+		SELECT ''Campaign'' EntityType,''P_C_'' + CAST(C.PlanCampaignId AS NVARCHAR(10)) UniqueId,C.PlanCampaignId EntityId, C.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, C.Status, C.StartDate StartDate, C.EndDate EndDate,C.CreatedBy 
+		,CAST(P.AltId AS NVARCHAR(500))+''_''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+''_C''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS TaskId
+		,''L''+CAST(C.PlanId  AS NVARCHAR(500)) AS ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM Plan_Campaign C
+			INNER JOIN FilteredPlan P ON P.EntityId = C.PlanId 
+		WHERE C.IsDeleted = 0 
+	),
+	Programs AS (
+		SELECT ''Program'' EntityType,''P_C_P_'' + CAST(P.PlanProgramId AS NVARCHAR(10)) UniqueId,P.PlanProgramId EntityId, P.Title EntityTitle, C.EntityId ParentEntityId,C.UniqueId ParentUniqueId, P.Status, P.StartDate StartDate, P.EndDate EndDate,P.CreatedBy 
+		,CAST(C.AltId AS NVARCHAR(500))+''_''+CAST(P.PlanProgramId AS NVARCHAR(50)) As AltId
+		,CAST(C.TaskId AS NVARCHAR(500))+''_P''+CAST(P.PlanProgramId AS NVARCHAR(50)) As TaskId
+		,CAST(C.ParentTaskId AS NVARCHAR(500))+''_C''+CAST(P.PlanCampaignId AS NVARCHAR(50)) As ParentTaskId
+		,C.PlanId
+		,C.ModelId
+		FROM Plan_Campaign_Program P
+			INNER JOIN Campaigns C ON C.EntityId = P.PlanCampaignId
+		WHERE P.IsDeleted = 0 
+	),
+	Tactics AS (
+		SELECT ''Tactic'' EntityType,''P_C_P_T_'' + CAST(T.PlanTacticId AS NVARCHAR(10)) UniqueId,T.PlanTacticId EntityId, T.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, T.Status, T.StartDate StartDate, T.EndDate EndDate,T.CreatedBy 
+		,CAST(P.AltId AS NVARCHAR(500))+''_''+CAST(T.PlanTacticId AS NVARCHAR(50)) As AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+''_T''+CAST(T.PlanTacticId AS NVARCHAR(50)) As TaskId
+		,CAST(P.ParentTaskId AS NVARCHAR(500))+''_P''+CAST(T.PlanProgramId AS NVARCHAR(50)) As ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM Plan_Campaign_Program_Tactic T
+			INNER JOIN Programs P ON P.EntityId = T.PlanProgramId
+		WHERE T.IsDeleted = 0 
+	),
+	LineItems AS (
+		SELECT ''LineItem'' EntityType,''P_C_P_T_L_'' + CAST(L.PlanLineItemId AS NVARCHAR(10)) UniqueId,L.PlanLineItemId EntityId, L.Title EntityTitle, T.EntityId ParentEntityId,T.UniqueId ParentUniqueId, NULL Status, L.StartDate StartDate, L.EndDate EndDate,L.CreatedBy 
+		,CAST(T.AltId AS NVARCHAR(500))+''_''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As AltId
+		,CAST(T.TaskId AS NVARCHAR(500))+''_X''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As TaskId
+		,CAST(T.ParentTaskId AS NVARCHAR(500))+''_T''+CAST(L.PlanTacticId AS NVARCHAR(50)) As ParentTaskId
+		,T.PlanId
+		,T.ModelId
+		FROM Plan_Campaign_Program_Tactic_LineItem L
+			INNER JOIN Tactics T ON T.EntityId = L.PlanTacticId
+		WHERE L.IsDeleted = 0 
+	),
+	AllEntities AS (    
+		SELECT * FROM FilteredPlan UNION ALL
+		SELECT * FROM Campaigns UNION ALL
+		SELECT * FROM Programs UNION ALL
+		SELECT * FROM Tactics UNION ALL
+		SELECT * FROM LineItems
+	)
+	INSERT INTO @Entities (UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)
+	SELECT E.UniqueId, E.EntityId,E.EntityTitle, E.ParentEntityId,E.ParentUniqueId,E.EntityType, C.ColorCode,E.Status,E.StartDate,E.EndDate,E.CreatedBy,E.AltId,E.TaskId,E.ParentTaskId,E.PlanId,E.ModelId FROM AllEntities E
+	LEFT JOIN EntityTypeColor C ON C.EntityType = E.EntityType
+
+	RETURN
+END'
+END
+ELSE 
+BEGIN
+execute dbo.sp_executesql @statement = N'
+--This function will return all the enties with hirarchy
+--Multiple plan ids can be passed saperated by comma
+--If we pass null then it will retuen all plans hirarchy data
+ALTER FUNCTION [dbo].[fnGetEntitieHirarchyByPlanId] ( @PlanIds NVARCHAR(MAX))
+RETURNS @Entities TABLE (
+			UniqueId		NVARCHAR(30), 
+			EntityId		BIGINT,
+			EntityTitle		NVARCHAR(1000),
+			ParentEntityId	BIGINT, 
+			ParentUniqueId	NVARCHAR(30),
+			EntityType		NVARCHAR(15), 
+			ColorCode		NVARCHAR(7),
+			[Status]		NVARCHAR(15), 
+			StartDate		DATETIME, 
+			EndDate			DATETIME, 
+			CreatedBy		UNIQUEIDENTIFIER,
+			AltId			NVARCHAR(500),
+			TaskId			NVARCHAR(500),
+			ParentTaskId	NVARCHAR(500),
+			PlanId			BIGINT,
+			ModelId			BIGINT
+		)
+AS
+BEGIN
+
+	;WITH FilteredPlan AS(
+		SELECT ''Plan'' EntityType,''P_'' + CAST(P.PlanId AS NVARCHAR(10)) UniqueId,P.PlanId EntityId, P.Title EntityTitle,NULL ParentEntityId,NULL ParentUniqueId, P.Status, NULL StartDate, NULL EndDate,P.CreatedBy 
+		,CAST(P.PlanId AS NVARCHAR(50)) AS AltId
+		,''L''+CAST(P.PlanId AS NVARCHAR(50)) AS TaskId
+		,NULL AS ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM [Plan] P 
+			--INNER JOIN Model M ON M.ModelId = P.ModelId AND M.ClientId = @ClientId
+		WHERE P.IsDeleted = 0 
+			AND (
+					@PlanIds IS NULL 
+					OR P.PlanId IN (SELECT DISTINCT dimension FROM dbo.fnSplitString(@PlanIds,'',''))
+				)
+	),
+	Campaigns AS (
+		SELECT ''Campaign'' EntityType,''P_C_'' + CAST(C.PlanCampaignId AS NVARCHAR(10)) UniqueId,C.PlanCampaignId EntityId, C.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, C.Status, C.StartDate StartDate, C.EndDate EndDate,C.CreatedBy 
+		,CAST(P.AltId AS NVARCHAR(500))+''_''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+''_C''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS TaskId
+		,''L''+CAST(C.PlanId  AS NVARCHAR(500)) AS ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM Plan_Campaign C
+			INNER JOIN FilteredPlan P ON P.EntityId = C.PlanId 
+		WHERE C.IsDeleted = 0 
+	),
+	Programs AS (
+		SELECT ''Program'' EntityType,''P_C_P_'' + CAST(P.PlanProgramId AS NVARCHAR(10)) UniqueId,P.PlanProgramId EntityId, P.Title EntityTitle, C.EntityId ParentEntityId,C.UniqueId ParentUniqueId, P.Status, P.StartDate StartDate, P.EndDate EndDate,P.CreatedBy 
+		,CAST(C.AltId AS NVARCHAR(500))+''_''+CAST(P.PlanProgramId AS NVARCHAR(50)) As AltId
+		,CAST(C.TaskId AS NVARCHAR(500))+''_P''+CAST(P.PlanProgramId AS NVARCHAR(50)) As TaskId
+		,CAST(C.ParentTaskId AS NVARCHAR(500))+''_C''+CAST(P.PlanCampaignId AS NVARCHAR(50)) As ParentTaskId
+		,C.PlanId
+		,C.ModelId
+		FROM Plan_Campaign_Program P
+			INNER JOIN Campaigns C ON C.EntityId = P.PlanCampaignId
+		WHERE P.IsDeleted = 0 
+	),
+	Tactics AS (
+		SELECT ''Tactic'' EntityType,''P_C_P_T_'' + CAST(T.PlanTacticId AS NVARCHAR(10)) UniqueId,T.PlanTacticId EntityId, T.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, T.Status, T.StartDate StartDate, T.EndDate EndDate,T.CreatedBy 
+		,CAST(P.AltId AS NVARCHAR(500))+''_''+CAST(T.PlanTacticId AS NVARCHAR(50)) As AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+''_T''+CAST(T.PlanTacticId AS NVARCHAR(50)) As TaskId
+		,CAST(P.ParentTaskId AS NVARCHAR(500))+''_P''+CAST(T.PlanProgramId AS NVARCHAR(50)) As ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM Plan_Campaign_Program_Tactic T
+			INNER JOIN Programs P ON P.EntityId = T.PlanProgramId
+		WHERE T.IsDeleted = 0 
+	),
+	LineItems AS (
+		SELECT ''LineItem'' EntityType,''P_C_P_T_L_'' + CAST(L.PlanLineItemId AS NVARCHAR(10)) UniqueId,L.PlanLineItemId EntityId, L.Title EntityTitle, T.EntityId ParentEntityId,T.UniqueId ParentUniqueId, NULL Status, L.StartDate StartDate, L.EndDate EndDate,L.CreatedBy 
+		,CAST(T.AltId AS NVARCHAR(500))+''_''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As AltId
+		,CAST(T.TaskId AS NVARCHAR(500))+''_X''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As TaskId
+		,CAST(T.ParentTaskId AS NVARCHAR(500))+''_T''+CAST(L.PlanTacticId AS NVARCHAR(50)) As ParentTaskId
+		,T.PlanId
+		,T.ModelId
+		FROM Plan_Campaign_Program_Tactic_LineItem L
+			INNER JOIN Tactics T ON T.EntityId = L.PlanTacticId
+		WHERE L.IsDeleted = 0 
+	),
+	AllEntities AS (    
+		SELECT * FROM FilteredPlan UNION ALL
+		SELECT * FROM Campaigns UNION ALL
+		SELECT * FROM Programs UNION ALL
+		SELECT * FROM Tactics UNION ALL
+		SELECT * FROM LineItems
+	)
+	INSERT INTO @Entities (UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)
+	SELECT E.UniqueId, E.EntityId,E.EntityTitle, E.ParentEntityId,E.ParentUniqueId,E.EntityType, C.ColorCode,E.Status,E.StartDate,E.EndDate,E.CreatedBy,E.AltId,E.TaskId,E.ParentTaskId,E.PlanId,E.ModelId FROM AllEntities E
+	LEFT JOIN EntityTypeColor C ON C.EntityType = E.EntityType
+
+	RETURN
+END'
+END
+
+--Function fnGetMqlByEntityTypeAndEntityId
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetEntitieHirarchyByPlanId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+BEGIN
+	execute dbo.sp_executesql @statement = N'CREATE FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId](
+	 @EntityType NVARCHAR(100)=''''
+	 ,@ClientId uniqueidentifier = NULL
+	 ,@StageMinLevel INT = 0
+	 ,@StageMaxLevel INT = 0
+	 ,@ModelId INT = 0
+	 ,@ProjectedStageValue decimal=0
+	)
+RETURNS @RevenueTbl TABLE(
+	Value bigint
+)
+AS
+BEGIN
+	DECLARE @AggregateValue float = 1
+	DECLARE @value INT = 0 
+	IF (@EntityType=''Tactic'')
+	BEGIN
+		SELECT @AggregateValue *= (Ms.Value/100) FROM Model_Stage MS WITH (NOLOCK)
+			CROSS APPLY (SELECT S.StageId FROM Stage S WITH (NOLOCK) WHERE S.[Level] >= @StageMinLevel AND S.[Level] < @StageMaxLevel 
+							AND S.ClientId=@ClientId
+							AND S.StageId = MS.StageId) S
+				WHERE Ms.ModelId=@ModelId
+						AND StageType=''CR''
+		SET @value = (@ProjectedStageValue * @AggregateValue)
+	END
+
+	INSERT INTO @RevenueTbl VALUES(@value)
+	RETURN
+END
+'
+END
+ELSE 
+BEGIN
+	execute dbo.sp_executesql @statement = N'ALTER FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId](
+	 @EntityType NVARCHAR(100)=''''
+	 ,@ClientId uniqueidentifier = NULL
+	 ,@StageMinLevel INT = 0
+	 ,@StageMaxLevel INT = 0
+	 ,@ModelId INT = 0
+	 ,@ProjectedStageValue decimal=0
+	)
+RETURNS @RevenueTbl TABLE(
+	Value bigint
+)
+AS
+BEGIN
+	DECLARE @AggregateValue float = 1
+	DECLARE @value INT = 0 
+	IF (@EntityType=''Tactic'')
+	BEGIN
+		SELECT @AggregateValue *= (Ms.Value/100) FROM Model_Stage MS WITH (NOLOCK)
+			CROSS APPLY (SELECT S.StageId FROM Stage S WITH (NOLOCK) WHERE S.[Level] >= @StageMinLevel AND S.[Level] < @StageMaxLevel 
+							AND S.ClientId=@ClientId
+							AND S.StageId = MS.StageId) S
+				WHERE Ms.ModelId=@ModelId
+						AND StageType=''CR''
+		SET @value = (@ProjectedStageValue * @AggregateValue)
+	END
+
+	INSERT INTO @RevenueTbl VALUES(@value)
+	RETURN
+END
+'
+END
+
+--Function fnGetRevueneByEntityTypeAndEntityId
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetRevueneByEntityTypeAndEntityId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+BEGIN
+	execute dbo.sp_executesql @statement = N'CREATE FUNCTION [dbo].[fnGetRevueneByEntityTypeAndEntityId](
+	@EntityType NVARCHAR(100)=''''
+	 ,@ClientId uniqueidentifier = NULL
+	 ,@StageMinLevel INT = 0
+	 ,@StageMaxLevel INT = 0
+	 ,@ModelId INT = 0
+	 ,@ProjectedStageValue decimal=0
+	 ,@ADS decimal=0
+	)
+RETURNS @RevenueTbl TABLE(
+	Value decimal(38,2)
+)
+AS
+BEGIN
+	DECLARE @AggregateValue float = 1
+	--DECLARE @ADS float = 1
+	DECLARE @value decimal = 0
+
+	IF (@EntityType=''Tactic'')
+	BEGIN
+
+		SELECT @AggregateValue *= (Ms.Value/100)
+		 FROM Model_Stage MS WITH (NOLOCK)
+			CROSS APPLY (SELECT S.StageId FROM Stage S WITH (NOLOCK) WHERE 
+							(S.[Level] IS NULL AND S.ClientId=@ClientId)
+							OR (S.[Level] >= @StageMinLevel AND S.[Level] <= @StageMaxLevel 
+							AND S.ClientId=@ClientId)
+							AND S.IsDeleted=0
+							) S
+			WHERE Ms.ModelId=@ModelId
+				AND S.StageId=MS.StageId
+						AND (StageType=''CR'' OR StageType=''Size'')
+
+		SET @value = ((@ProjectedStageValue * @AggregateValue)* @ADS)
+		INSERT INTO @RevenueTbl VALUES(@value)
+	END
+	
+	RETURN 
+END
+'
+END
+ELSE 
+BEGIN
+	execute dbo.sp_executesql @statement = N'ALTER FUNCTION [dbo].[fnGetRevueneByEntityTypeAndEntityId](
+	@EntityType NVARCHAR(100)=''''
+	 ,@ClientId uniqueidentifier = NULL
+	 ,@StageMinLevel INT = 0
+	 ,@StageMaxLevel INT = 0
+	 ,@ModelId INT = 0
+	 ,@ProjectedStageValue decimal=0
+	 ,@ADS decimal=0
+	)
+RETURNS @RevenueTbl TABLE(
+	Value decimal(38,2)
+)
+AS
+BEGIN
+	DECLARE @AggregateValue float = 1
+	DECLARE @value decimal = 0
+
+	IF (@EntityType=''Tactic'')
+	BEGIN
+
+		SELECT @AggregateValue *= (Ms.Value/100)
+		 FROM Model_Stage MS WITH (NOLOCK)
+			CROSS APPLY (SELECT S.StageId FROM Stage S WITH (NOLOCK) WHERE 
+							(S.[Level] IS NULL AND S.ClientId=@ClientId)
+							OR (S.[Level] >= @StageMinLevel AND S.[Level] <= @StageMaxLevel 
+							AND S.ClientId=@ClientId)
+							AND S.IsDeleted=0
+							) S
+			WHERE Ms.ModelId=@ModelId
+				AND S.StageId=MS.StageId
+						AND (StageType=''CR'' OR StageType=''Size'')
+
+		SET @value = ((@ProjectedStageValue * @AggregateValue)* @ADS)
+		INSERT INTO @RevenueTbl VALUES(@value)
+	END
+	
+	RETURN 
+END
+'
+END
+
+
+-- View Plan_PlannedCost
+IF EXISTS(select * FROM sys.views where name = 'Plan_PlannedCost')
+BEGIN
+	DROP VIEW [dbo].[Plan_PlannedCost]
+END
+GO
+
+ CREATE VIEW [dbo].[Plan_PlannedCost] WITH SCHEMABINDING
+	AS 
+   SELECT [dbo].[Plan_Campaign].[PlanId], 
+   SUM([dbo].[Plan_Campaign_Program_Tactic].[Cost]) AS PlannedCost
+   FROM  [dbo].[Plan_Campaign], [dbo].[Plan_Campaign_Program],[dbo].[Plan_Campaign_Program_Tactic]
+		WHERE [dbo].[Plan_Campaign].[IsDeleted] = 0 
+		 AND [dbo].[Plan_Campaign_Program].[IsDeleted]  = 0
+			AND  [dbo].[Plan_Campaign_Program_Tactic].[IsDeleted] = 0  				
+			  AND  [dbo].[Plan_Campaign].[PlanCampaignId] = [dbo].[Plan_Campaign_Program].[PlanCampaignId] 
+			    AND  [dbo].[Plan_Campaign_Program].[PlanProgramId] = [dbo].[Plan_Campaign_Program_Tactic].[PlanProgramId] 
+			      --AND [Plan_Campaign].PlanId=19569
+			 GROUP BY  [dbo].[Plan_Campaign].[PlanId]  
+GO
+
+-- View Campaign_PlannedCost
+IF EXISTS(select * FROM sys.views where name = 'Campaign_PlannedCost')
+BEGIN
+	DROP VIEW [dbo].[Campaign_PlannedCost]
+END
+GO
+
+CREATE VIEW [dbo].[Campaign_PlannedCost] WITH SCHEMABINDING
+	AS 
+SELECT  [dbo].[Plan_Campaign_Program].[PlanCampaignId] as [PlanCampaignId], 
+	SUM([MRPDev].[dbo].[Plan_Campaign_Program_Tactic].[Cost]) AS PlannedCost
+	FROM  [dbo].[Plan_Campaign_Program_Tactic],  
+	[dbo].[Plan_Campaign_Program]   
+	WHERE  
+	[dbo].[Plan_Campaign_Program].[IsDeleted] = 0  AND  
+	[dbo].[Plan_Campaign_Program_Tactic].[IsDeleted] = 0  AND  
+	[dbo].[Plan_Campaign_Program].[PlanProgramId]  = [dbo].[Plan_Campaign_Program_Tactic].[PlanProgramId]
+	GROUP BY  [dbo].[Plan_Campaign_Program].[PlanCampaignId]  
+
+GO
+
+-- View Program_PlannedCost
+IF EXISTS(select * FROM sys.views where name = 'Program_PlannedCost')
+BEGIN
+	DROP VIEW [dbo].[Program_PlannedCost]
+END
+GO
+
+   CREATE VIEW [dbo].[Program_PlannedCost] WITH SCHEMABINDING
+	AS 
+   SELECT [dbo].[Plan_Campaign_Program_Tactic].[PlanProgramId], 
+   SUM([dbo].[Plan_Campaign_Program_Tactic].[Cost]) AS PlannedCost
+   FROM [dbo].[Plan_Campaign_Program],[dbo].[Plan_Campaign_Program_Tactic]
+		WHERE [dbo].[Plan_Campaign_Program].[IsDeleted]  = 0
+			AND  [dbo].[Plan_Campaign_Program_Tactic].[IsDeleted] = 0  				
+			 AND   [dbo].[Plan_Campaign_Program].[PlanProgramId] = [dbo].[Plan_Campaign_Program_Tactic].[PlanProgramId] 
+			 GROUP BY  [dbo].[Plan_Campaign_Program_Tactic].[PlanProgramId]  
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GridCustomFieldData]') AND type in (N'P', N'PC'))
+BEGIN
+	EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GridCustomFieldData] AS' 
+END
+GO
+
+-- =============================================
+-- Author:		Nishant Sheth
+-- Create date: 16-Sep-2016
+-- Description:	Get home grid customfields and it's values
+-- =============================================
+ALTER PROCEDURE [dbo].[GridCustomFieldData]
+	@PlanId	 NVARCHAR(MAX)=''
+	,@ClientId uniqueidentifier =''
+AS
+BEGIN
+
+SET NOCOUNT ON;
+
+	SELECT CustomFieldId
+			,Name AS 'CustomFieldName' 
+			,CustomFieldTypeId 
+			,IsRequired
+			,EntityType
+			,AbbreviationForMulti
+			FROM CustomField 
+				WHERE ClientId=@ClientId
+					AND IsDeleted=0
+					AND EntityType NOT IN('Budget','MediaCode')
+
+	SELECT Hireachy.EntityId,Hireachy.EntityType,C.CustomFieldId,C.CustomFieldEntityId,C.Value
+		 FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
+			CROSS APPLY (SELECT C.CustomFieldId
+								,C.EntityType
+								,CE.CustomFieldEntityId
+								,Ce.Value
+							 FROM CustomField C
+							 CROSS APPLY(SELECT CE.CustomFieldEntityId
+												,CE.CustomFieldId
+												,CE.Value FROM CustomField_Entity CE
+											WHERE C.CustomFieldId = CE.CustomFieldId
+													AND Hireachy.EntityId = CE.EntityId
+										)CE
+								WHERE C.ClientId=@ClientId
+									AND C.IsDeleted=0
+									AND C.EntityType NOT IN('Budget','MediaCode')
+									AND C.EntityType = Hireachy.EntityType) C
+
+END
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridData]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetGridData] AS' 
+END
+GO
+
+-- =============================================
+-- Author:		Nishant Sheth
+-- Create date: 09-Sep-2016
+-- Description:	Get home grid data with custom field 19910781.11
+-- =============================================
+ALTER PROCEDURE [dbo].[GetGridData]
+	-- Add the parameters for the stored procedure here
+	@PlanId NVARCHAR(MAX) = ''
+	,@ClientId uniqueidentifier =''
+	,@OwnerIds nvarchar(max)=''
+	,@TacticTypeIds varchar(max)=''
+	,@StatusIds varchar(max)=''
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+		
+	DECLARE @StageMqlMaxLevel INT = 1
+	DECLARE @StageRevenueMaxLevel INT = 1
+
+	SELECT @StageMqlMaxLevel = [Level] FROM Stage
+			 WHERE Stage.ClientId=@ClientId
+					AND Stage.IsDeleted=0
+						AND Stage.Code='MQL'
+
+	SELECT @StageRevenueMaxLevel = [Level] FROM Stage
+			 WHERE Stage.ClientId=@ClientId
+					AND Stage.IsDeleted=0
+						AND Stage.Code='CW'
+
+	SELECT Hireachy.*,
+				TacticType.AssetType,
+				TacticType.Title AS TacticType,
+				Tactic.TacticTypeId,
+				LineItem.LineItemTypeId,
+				LineItem.LineItemType,
+				CASE WHEN EntityType = 'Tactic'
+						THEN Tactic.Cost 
+							WHEN EntityType = 'LineItem' 
+								THEN LineItem.Cost
+							WHEN EntityType='Program'
+								THEN ProgramPlannedCost.PlannedCost
+							WHEN EntityType='Campaign'
+								THEN CampaignPlannedCost.PlannedCost
+							WHEN EntityType='Plan'
+								THEN PlanPlannedCost.PlannedCost
+					END AS PlannedCost
+				,Tactic.ProjectedStageValue 
+				,Stage.Title AS 'ProjectedStage'
+				,MQL.Value as MQL
+				,Revenue.Value as Revenue
+				,NULL AS 'MachineName'
+				FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
+	OUTER APPLY (SELECT M.AverageDealSize FROM Model M WITH (NOLOCK)
+					WHERE M.IsDeleted = 0
+							AND Hireachy.ModelId = M.ModelId
+							) M
+				--FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds) Hireachy 
+	OUTER APPLY (SELECT Tactic.PlanTacticId,
+						Tactic.TacticTypeId,
+						Tactic.Cost,
+						Tactic.StageId,
+						Tactic.ProjectedStageValue,
+						Tactic.PlanProgramId
+						FROM Plan_Campaign_Program_Tactic Tactic WITH (NOLOCK)
+							WHERE Hireachy.EntityType='Tactic'
+						AND Hireachy.EntityId = Tactic.PlanTacticId) Tactic
+	OUTER APPLY(SELECT TacticType.TacticTypeId,
+						TacticType.AssetType,
+						TacticType.Title  
+						FROM TacticType WITH (NOLOCK)
+						WHERE Tactic.TacticTypeId = TacticType.TacticTypeId) TacticType
+	OUTER APPLY (SELECT LineItem.LineItemTypeId,
+						LineItem.PlanLineItemId,
+						LineItem.Cost,
+						LT.Title AS 'LineItemType'
+						FROM Plan_Campaign_Program_Tactic_LineItem LineItem WITH (NOLOCK)
+						CROSS APPLY(SELECT LT.LineItemTypeId,LT.Title FROM LineItemType LT
+									WHERE LineItem.LineItemTypeId = LT.LineItemTypeId
+									AND LT.IsDeleted = 0)LT
+						WHERE Hireachy.EntityType = 'LineItem'
+						AND Hireachy.EntityId = LineItem.PlanLineItemId) LineItem
+	OUTER APPLY (SELECT Stage.Title,Stage.StageId,Stage.[Level] FROM Stage WITH (NOLOCK) WHERE Tactic.StageId = Stage.StageId AND Stage.IsDeleted=0) Stage
+	OUTER APPLY (SELECT Value FROM dbo.fnGetMqlByEntityTypeAndEntityId(Hireachy.EntityType,@ClientId,Stage.[Level],@StageMqlMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue) MQL
+					WHERE Hireachy.EntityType='Tactic') AS MQL
+	OUTER APPLY (SELECT Value FROM dbo.fnGetRevueneByEntityTypeAndEntityId(Hireachy.EntityType,@ClientId,Stage.[Level],@StageRevenueMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue,M.AverageDealSize) Revenue
+					WHERE Hireachy.EntityType='Tactic') AS Revenue
+	OUTER APPLY (SELECT PlanPlannedCost.PlanId
+						,PlanPlannedCost.PlannedCost FROM Plan_PlannedCost PlanPlannedCost WHERE 
+						Hireachy.EntityType='Plan'
+							AND Hireachy.EntityId=PlanPlannedCost.PlanId)PlanPlannedCost
+	OUTER APPLY (SELECT CampaignPlannedCost.PlanCampaignId
+							,CampaignPlannedCost.PlannedCost FROM Campaign_PlannedCost CampaignPlannedCost WHERE 
+							Hireachy.EntityType='Campaign'
+								AND Hireachy.EntityId=CampaignPlannedCost.PlanCampaignId)CampaignPlannedCost
+	OUTER APPLY (SELECT ProgramPlannedCost.PlanProgramId
+							,ProgramPlannedCost.PlannedCost FROM Program_PlannedCost ProgramPlannedCost WHERE 
+							Hireachy.EntityType='Program'
+								AND Hireachy.EntityId=ProgramPlannedCost.PlanProgramId)ProgramPlannedCost
+	
+END
+GO
+
+-- Indexes
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_Campaign_Plan' AND object_id = OBJECT_ID('Plan_Campaign'))
+BEGIN
+	DROP INDEX [IX_Campaign_Plan] ON [dbo].[Plan_Campaign]
+
+	CREATE NONCLUSTERED INDEX [IX_Campaign_Plan] ON [dbo].[Plan_Campaign]
+	(
+		[PlanId] ASC
+	)
+	INCLUDE ([PlanCampaignId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_Program_Campaign' AND object_id = OBJECT_ID('Plan_Campaign_Program'))
+BEGIN
+	DROP INDEX [IX_Program_Campaign] ON [dbo].[Plan_Campaign_Program]
+
+	
+	CREATE NONCLUSTERED INDEX [IX_Program_Campaign] ON [dbo].[Plan_Campaign_Program]
+	(
+		[PlanCampaignId] ASC
+	)
+	INCLUDE ([PlanProgramId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_Program_Campaign_Tactic' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic'))
+BEGIN
+	DROP INDEX [IX_Program_Campaign_Tactic] ON [dbo].[Plan_Campaign_Program_Tactic]
+
+	CREATE NONCLUSTERED INDEX [IX_Program_Campaign_Tactic] ON [dbo].[Plan_Campaign_Program_Tactic]
+	(
+		[PlanProgramId] ASC
+	)
+	INCLUDE ([PlanTacticId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_Program_Campaign_Tactic_TacticType' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic'))
+BEGIN
+	DROP INDEX [IX_Program_Campaign_Tactic_TacticType] ON [dbo].[Plan_Campaign_Program_Tactic]
+
+	CREATE NONCLUSTERED INDEX [IX_Program_Campaign_Tactic_TacticType] ON [dbo].[Plan_Campaign_Program_Tactic]
+	(
+		[TacticTypeId] ASC
+	)
+	INCLUDE ([PlanTacticId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_Program_Campaign_Tactic_LineItem' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic_LineItem'))
+BEGIN
+	DROP INDEX [IX_Program_Campaign_Tactic_LineItem] ON [dbo].[Plan_Campaign_Program_Tactic_LineItem]
+
+	CREATE NONCLUSTERED INDEX [IX_Program_Campaign_Tactic_LineItem] ON [dbo].[Plan_Campaign_Program_Tactic_LineItem]
+	(
+		[PlanTacticId] ASC
+	)
+	INCLUDE ([PlanLineItemId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_Program_Campaign_Tactic_LineItem_LineItemType' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic_LineItem'))
+BEGIN
+	DROP INDEX [IX_Program_Campaign_Tactic_LineItem_LineItemType] ON [dbo].[Plan_Campaign_Program_Tactic_LineItem]
+
+	CREATE NONCLUSTERED INDEX [IX_Program_Campaign_Tactic_LineItem_LineItemType] ON [dbo].[Plan_Campaign_Program_Tactic_LineItem]
+	(
+		[LineItemTypeId] ASC
+	)
+	INCLUDE ([PlanLineItemId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_CustomField_Entity_EntityId' AND object_id = OBJECT_ID('CustomField_Entity'))
+BEGIN
+	DROP INDEX [IX_CustomField_Entity_EntityId] ON [dbo].[CustomField_Entity]
+
+	CREATE NONCLUSTERED INDEX [IX_CustomField_Entity_EntityId] ON [dbo].[CustomField_Entity]
+	(
+		[EntityId] ASC,
+		[CustomFieldId] ASC
+	)
+	INCLUDE ( 	[CustomFieldEntityId],
+		[Value]) WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='_dta_index_Plan_Campaign_32_2101582525__K2_K17_K1' AND object_id = OBJECT_ID('Plan_Campaign'))
+BEGIN
+	DROP INDEX [_dta_index_Plan_Campaign_32_2101582525__K2_K17_K1] ON [dbo].[Plan_Campaign]
+
+	CREATE NONCLUSTERED INDEX [_dta_index_Plan_Campaign_32_2101582525__K2_K17_K1] ON [dbo].[Plan_Campaign]
+	(
+		[PlanId] ASC,
+		[IsDeleted] ASC,
+		[PlanCampaignId] ASC
+	)WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='_dta_index_Plan_Campaign_Program_32_2133582639__K2_K17_K1' AND object_id = OBJECT_ID('Plan_Campaign_Program'))
+BEGIN
+	DROP INDEX [_dta_index_Plan_Campaign_Program_32_2133582639__K2_K17_K1] ON [dbo].[Plan_Campaign_Program]
+	CREATE NONCLUSTERED INDEX [_dta_index_Plan_Campaign_Program_32_2133582639__K2_K17_K1] ON [dbo].[Plan_Campaign_Program]
+	(
+		[PlanCampaignId] ASC,
+		[IsDeleted] ASC,
+		[PlanProgramId] ASC
+	)WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='_dta_index_Plan_Campaign_Program_32_2133582639__K2_K17_K1' AND object_id = OBJECT_ID('Plan_Campaign_Program'))
+BEGIN
+	DROP INDEX [_dta_index_Plan_Campaign_Program_32_2133582639__K17_K2_K1] ON [dbo].[Plan_Campaign_Program]
+	CREATE NONCLUSTERED INDEX [_dta_index_Plan_Campaign_Program_32_2133582639__K17_K2_K1] ON [dbo].[Plan_Campaign_Program]
+	(
+		[IsDeleted] ASC,
+		[PlanCampaignId] ASC,
+		[PlanProgramId] ASC
+	)WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='_dta_index_Plan_Campaign_Program_Tactic_32_56387270__K15_K2_K1_8' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic'))
+BEGIN
+	DROP INDEX [_dta_index_Plan_Campaign_Program_Tactic_32_56387270__K15_K2_K1_8] ON [dbo].[Plan_Campaign_Program_Tactic]
+	CREATE NONCLUSTERED INDEX [_dta_index_Plan_Campaign_Program_Tactic_32_56387270__K15_K2_K1_8] ON [dbo].[Plan_Campaign_Program_Tactic]
+	(
+		[IsDeleted] ASC,
+		[PlanProgramId] ASC,
+		[PlanTacticId] ASC
+	)
+	INCLUDE ( 	[Cost]) WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END
+GO
+
+IF EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='_dta_index_Model_Stage_32_1330103779__K13_K4_K3_K1_5' AND object_id = OBJECT_ID('Model_Stage'))
+BEGIN
+	DROP INDEX [_dta_index_Model_Stage_32_1330103779__K13_K4_K3_K1_5] ON [dbo].[Model_Stage]
+	CREATE NONCLUSTERED INDEX [_dta_index_Model_Stage_32_1330103779__K13_K4_K3_K1_5] ON [dbo].[Model_Stage]
+	(
+		[ModelId] ASC,
+		[StageType] ASC,
+		[StageId] ASC,
+		[ModelStageId] ASC
+	)
+	INCLUDE ( 	[Value]) WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END
+GO
+
+-- STATISTICS
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_2101582525_17_1')
+BEGIN
+	CREATE STATISTICS [_dta_stat_2101582525_17_1] ON [dbo].[Plan_Campaign]([IsDeleted], [PlanCampaignId])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_2101582525_1_2_17')
+BEGIN	
+	CREATE STATISTICS [_dta_stat_2101582525_1_2_17] ON [dbo].[Plan_Campaign]([PlanCampaignId], [PlanId], [IsDeleted])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_2133582639_1_17')
+BEGIN	
+	CREATE STATISTICS [_dta_stat_2133582639_1_17] ON [dbo].[Plan_Campaign_Program]([PlanProgramId], [IsDeleted])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_56387270_15_1')
+BEGIN	
+	CREATE STATISTICS [_dta_stat_56387270_15_1] ON [dbo].[Plan_Campaign_Program_Tactic]([IsDeleted], [PlanTacticId])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_56387270_1_2_15')
+BEGIN	
+	CREATE STATISTICS [_dta_stat_56387270_1_2_15] ON [dbo].[Plan_Campaign_Program_Tactic]([PlanTacticId], [PlanProgramId], [IsDeleted])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_1330103779_4_1_3_13')
+BEGIN
+	CREATE STATISTICS [_dta_stat_1330103779_4_1_3_13] ON [dbo].[Model_Stage]([StageType], [ModelStageId], [StageId], [ModelId])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_1330103779_13_3')
+BEGIN
+	CREATE STATISTICS [_dta_stat_1330103779_13_3] ON [dbo].[Model_Stage]([ModelId], [StageId])
+END
+GO
+-- End By Nishant Sheth
 
 
 -- ===========================Please put your script above this script=============================

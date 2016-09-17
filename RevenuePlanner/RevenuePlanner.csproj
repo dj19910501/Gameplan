@@ -273,11 +273,13 @@
     <Compile Include="Services\Currency.cs" />
     <Compile Include="Services\Filter.cs" />
     <Compile Include="Services\Finance.cs" />
+    <Compile Include="Services\Grid.cs" />
     <Compile Include="Services\IAlerts.cs" />
     <Compile Include="Services\IColumnView.cs" />
     <Compile Include="Services\ICurrency.cs" />
     <Compile Include="Services\IFilter.cs" />
     <Compile Include="Services\IFinance.cs" />
+    <Compile Include="Services\IGrid.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
