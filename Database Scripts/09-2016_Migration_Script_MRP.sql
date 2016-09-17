@@ -1334,7 +1334,7 @@ GO
 -- Create date: 09-Sep-2016
 -- Description:	Get home grid data with custom field 19910781.11
 -- =============================================
-ALTER PROCEDURE [dbo].[GetGridData]
+ALTER PROCEDURE GetGridData
 	-- Add the parameters for the stored procedure here
 	@PlanId NVARCHAR(MAX) = ''
 	,@ClientId uniqueidentifier =''
@@ -1381,7 +1381,16 @@ BEGIN
 				,Stage.Title AS 'ProjectedStage'
 				,MQL.Value as MQL
 				,Revenue.Value as Revenue
-				,NULL AS 'MachineName'
+				,Tactic.TacticCustomName AS 'MachineName'
+				,Tactic.LinkedPlanId
+				,Tactic.LinkedTacticId
+				,P.PlanName AS 'LinkedPlanName'
+				,ROI.AnchorTacticID
+				,(SELECT SUBSTRING((	
+						SELECT ',' + CAST(PlanTacticId AS VARCHAR) FROM ROI_PackageDetail R
+						WHERE ROI.AnchorTacticID = R.AnchorTacticID
+						FOR XML PATH('')), 2,900000
+					))AS PackageTacticIds
 				FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
 	OUTER APPLY (SELECT M.AverageDealSize FROM Model M WITH (NOLOCK)
 					WHERE M.IsDeleted = 0
@@ -1393,10 +1402,18 @@ BEGIN
 						Tactic.Cost,
 						Tactic.StageId,
 						Tactic.ProjectedStageValue,
-						Tactic.PlanProgramId
+						Tactic.PlanProgramId,
+						Tactic.LinkedPlanId,
+						Tactic.LinkedTacticId,
+						Tactic.TacticCustomName
 						FROM Plan_Campaign_Program_Tactic Tactic WITH (NOLOCK)
 							WHERE Hireachy.EntityType='Tactic'
 						AND Hireachy.EntityId = Tactic.PlanTacticId) Tactic
+	OUTER APPLY (SELECT ROI.PlanTacticId
+						,ROI.AnchorTacticID FROM ROI_PackageDetail ROI
+						WHERE Tactic.PlanTacticId = ROI.PlanTacticId) ROI
+	OUTER APPLY (SELECT Title AS 'PlanName' FROM [Plan] P WITH (NOLOCK)
+					WHERE Tactic.LinkedPlanId = P.PlanId) P
 	OUTER APPLY(SELECT TacticType.TacticTypeId,
 						TacticType.AssetType,
 						TacticType.Title  

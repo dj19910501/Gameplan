@@ -416,6 +416,11 @@ namespace RevenuePlanner.Models
         public Nullable<Int64> MQL { get; set; }
         public Nullable<decimal> Revenue { get; set; }
         public string MachineName { get; set; }
+        public Nullable<int> LinkedPlanId { get; set; }
+        public Nullable<int> LinkedTacticId { get; set; }
+        public string LinkedPlanName { get; set; }
+        public Nullable<int> AnchorTacticID { get; set; }
+        public string PackageTacticIds { get; set; }
     }
 
     // Add By Nishant Sheth

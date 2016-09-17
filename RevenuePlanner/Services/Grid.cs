@@ -143,28 +143,28 @@ namespace RevenuePlanner.Services
         #region Get Model for Grid Data
         public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, Guid ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate)
         {
-            
+
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
 
             var GridHireachyData = GetGridDefaultData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds);
 
             var ModelId = GridHireachyData.Select(a => a.ModelId).Distinct().ToList();
 
-            List<TacticTypeModel> TacticTypeList = objDbMrpEntities.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) &&
-                                                                                       tactype.IsDeployedToModel &&
-                                                                                       ModelId.Contains(tactype.ModelId)).
-                                                      Select(tacttype => new TacticTypeModel
-                                                      {
-                                                          TacticTypeId = tacttype.TacticTypeId,
-                                                          Title = tacttype.Title,
-                                                          AssetType = tacttype.AssetType
-                                                      }).ToList().OrderBy(tactype => tactype.Title).ToList();
+            //List<TacticTypeModel> TacticTypeList = objDbMrpEntities.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) &&
+            //                                                                           tactype.IsDeployedToModel &&
+            //                                                                           ModelId.Contains(tactype.ModelId)).
+            //                                          Select(tacttype => new TacticTypeModel
+            //                                          {
+            //                                              TacticTypeId = tacttype.TacticTypeId,
+            //                                              Title = tacttype.Title,
+            //                                              AssetType = tacttype.AssetType
+            //                                          }).ToList().OrderBy(tactype => tactype.Title).ToList();
 
             List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == ClientId && stage.IsDeleted == false)
                 .Select(stage => stage).ToList();
             string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
 
-            var ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle, TacticTypeList);
+            var ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle);
 
             var ListOfCustomData = GridCustomFieldData(PlanIds, ClientId);
             GridCustomHead(ListOfCustomData.CustomFields, ref ListOfDefaultColumnHeader);
@@ -279,7 +279,7 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region method to generate grid header
-        public List<PlanHead> GenerateJsonHeader(string MQLTitle, List<TacticTypeModel> TacticTypeList, bool IsNotLineItemListing = true)
+        public List<PlanHead> GenerateJsonHeader(string MQLTitle, bool IsNotLineItemListing = true)
         {
             // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
             List<PlanHead> headobjlist = new List<PlanHead>();
@@ -563,7 +563,7 @@ namespace RevenuePlanner.Services
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
-            return new PlanDHTMLXGridDataModel { id = Row.UniqueId, data = EntitydataobjCreateItem.Select(a => a.Value).ToList(), rows = children, bgColor = GridBackgroundColor(Row.EntityType), open = GridEntityOpenState(Row.EntityType), userdata = objUserData };
+            return new PlanDHTMLXGridDataModel { id = Row.UniqueId, data = EntitydataobjCreateItem.Select(a => a.Value).ToList(), rows = children, bgColor = GridBackgroundColor(Row.EntityType), open = GridEntityOpenState(Row.EntityType), userdata = GridUserData(DataList, Row.EntityType, Row.UniqueId, Row) };
         }
         #endregion
 
@@ -601,13 +601,14 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<string, Plandataobj> GridPlanRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
         {
             try
             {
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                bool IsPlanEditable = false;
+                bool IsPlanEditable = true;
                 string cellTextColor = string.Empty;
 
                 cellTextColor = IsPlanEditable ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
@@ -630,7 +631,7 @@ namespace RevenuePlanner.Services
                 // Add Plan Add Row
                 EntitydataobjCreateItem.Add("AddRow", new Plandataobj
                 {
-                    value = "<div class=grid_Search id=Plan title=View ></div>" + (IsPlanEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId + " per=" + IsPlanEditable.ToString().ToLower() + " title=Add></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=PlanAdd dhtmlxrowid='" + Row.EntityId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + "" + "' altId=" + Row.EntityId + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>"
+                    value = "<div class=grid_Search id=Plan title=View ></div>" + (IsPlanEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId + " per=" + IsPlanEditable.ToString().ToLower() + " title=Add></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=PlanAdd dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + "" + "' altId=" + Row.EntityId + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>"
                 });
 
                 // Add Plan Entity Id
@@ -742,6 +743,7 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<string, Plandataobj> GridCampaignRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
         {
             try
@@ -895,6 +897,7 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<string, Plandataobj> GridProgramRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
         {
             try
@@ -1048,6 +1051,7 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<string, Plandataobj> GridTacticRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
         {
             try
@@ -1066,7 +1070,9 @@ namespace RevenuePlanner.Services
                 // Add Plan Entity Title
                 EntitydataobjCreateItem.Add("EntityTitle", new Plandataobj
                 {
-                    value = HttpUtility.HtmlEncode(Row.EntityTitle),
+                    value = ((Row.AnchorTacticID == Row.EntityId) ?
+                              "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id=pkgIcon onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids=" + Convert.ToString(Row.PackageTacticIds) + "><i class='fa fa-object-group'></i></div>" : "")
+                              + HttpUtility.HtmlEncode(Row.EntityTitle),
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
                     style = cellTextColor
                 });
@@ -1075,7 +1081,7 @@ namespace RevenuePlanner.Services
                 EntitydataobjCreateItem.Add("AddRow", new Plandataobj
                 {
                     //value = "<div class=grid_Search id=Plan title=View ></div>" + (IsEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + " title=Add></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=PlanAdd dhtmlxrowid='" + Row.EntityId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + "" + "' altId=" + Row.EntityId + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>",
-                    value = "<div class=grid_Search id=TP title=View></div>" + (IsEditable ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Row.ParentEntityId + "_" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + "  LinkTacticper ='" + false + "' LinkedTacticId = '" + 0 + "' tacticaddId='" + Row.EntityId + "' title=Add></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb'  pcptid = " + Row.TaskId + " anchortacticid='" + 0 + "' dhtmlxrowid='" + Row.EntityType + Row.EntityId + "'  roitactictype='" + Row.AssetType + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode + "'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' altId=__" + Row.ParentEntityId + "_" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>",
+                    value = "<div class=grid_Search id=TP title=View></div>" + (IsEditable ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Row.ParentEntityId + "_" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + "  LinkTacticper ='" + false + "' LinkedTacticId = '" + 0 + "' tacticaddId='" + Row.EntityId + "' title=Add></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb'  pcptid = " + Row.TaskId + " anchortacticid='" + 0 + "' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "'  roitactictype='" + Row.AssetType + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode + "'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' altId=__" + Row.ParentEntityId + "_" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>",
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
                     style = cellTextColor
                 });
@@ -1206,6 +1212,7 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<string, Plandataobj> GridLineItemRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
         {
             try
@@ -1361,7 +1368,7 @@ namespace RevenuePlanner.Services
 
         #endregion
 
-        #region method to convert number in k, m formate
+        #region Method to convert number in k, m formate
 
         /// <summary>
         /// Added By devanshi gandhi/ Bhavesh Dobariya to hadle format at server side and avoide at client side - Change made to improve performance of grid view
@@ -1391,6 +1398,125 @@ namespace RevenuePlanner.Services
                 return "0";
 
 
+        }
+        #endregion
+
+        #region Grid user data
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Planuserdatagrid GridUserData(List<GridDefaultModel> DataList, string EntityType, string UniqueId, GridDefaultModel Row)
+        {
+            Planuserdatagrid objUserData = new Planuserdatagrid();
+            try
+            {
+                if (EntityType.ToLower() == Convert.ToString(Enums.EntityType.Campaign).ToLower())
+                {
+                    CampaignUserData(DataList, ref objUserData, UniqueId);
+                }
+                else if (EntityType.ToLower() == Convert.ToString(Enums.EntityType.Program).ToLower())
+                {
+                    ProgramUserData(DataList, ref objUserData, UniqueId);
+                }
+                else if (EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower())
+                {
+                    TacticUserData(Row, ref objUserData);
+                }
+                else if (EntityType.ToLower() == Convert.ToString(Enums.EntityType.Lineitem).ToLower())
+                {
+                    LineItemUserData(Row, ref objUserData);
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return objUserData;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Planuserdatagrid CampaignUserData(List<GridDefaultModel> DataList, ref Planuserdatagrid objUserData, string UniqueId)
+        {
+            try
+            {
+                var ProgramDetail = DataList.Where(prg => prg.ParentUniqueId == UniqueId)
+                                    .Select(prg => new
+                                    {
+                                        prg.UniqueId,
+                                        prg.StartDate,
+                                        prg.EndDate
+                                    });
+
+                var TacticDetail = (from objPrg in ProgramDetail
+                                    join objData in DataList
+                                        on objPrg.UniqueId equals objData.ParentUniqueId
+                                    select new
+                                    {
+                                        objData.StartDate,
+                                        objData.EndDate
+                                    }).ToList();
+
+                objUserData.psdate = ProgramDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
+                objUserData.pedate = ProgramDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
+
+                objUserData.tsdate = TacticDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
+                objUserData.tedate = TacticDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return objUserData;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Planuserdatagrid ProgramUserData(List<GridDefaultModel> DataList, ref Planuserdatagrid objUserData, string UniqueId)
+        {
+            try
+            {
+                var TacticDetail = DataList.Where(tac => tac.ParentUniqueId == UniqueId)
+                                    .Select(tac => new
+                                    {
+                                        tac.StartDate,
+                                        tac.EndDate
+                                    });
+
+                objUserData.tsdate = TacticDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
+                objUserData.tedate = TacticDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return objUserData;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Planuserdatagrid TacticUserData(GridDefaultModel Row, ref Planuserdatagrid objUserData)
+        {
+            try
+            {
+                objUserData.stage = Row.ProjectedStage;
+                objUserData.tactictype = Convert.ToString(Row.TacticTypeId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return objUserData;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Planuserdatagrid LineItemUserData(GridDefaultModel Row, ref Planuserdatagrid objUserData)
+        {
+            try
+            {
+                string IsOther = Convert.ToString(!string.IsNullOrEmpty(Row.LineItemType) ? false : true);
+                objUserData.IsOther = IsOther;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return objUserData;
         }
         #endregion
     }
