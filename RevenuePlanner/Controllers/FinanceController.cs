@@ -185,7 +185,7 @@ namespace RevenuePlanner.Controllers
                 var Selectedids = Values.Select(ids => int.Parse(ids.Id.ToString())).FirstOrDefault();
 
                 var SelectedBudgetDetail = (from details in db.Budget_Detail
-                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == null
+                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == false
                                             select new
                                             {
                                                 details.Id,
@@ -198,7 +198,7 @@ namespace RevenuePlanner.Controllers
                 var BudgetDetailJoin = (from details in db.Budget_Detail
                                         join selectdetails in
                                             (from details in db.Budget_Detail
-                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == null
+                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == false
                                              select new
                                              {
                                                  details.Id,
@@ -1820,7 +1820,7 @@ namespace RevenuePlanner.Controllers
                 var Selectedids = Values.Select(ids => int.Parse(ids.Id.ToString())).FirstOrDefault();
 
                 var SelectedBudgetDetail = (from details in db.Budget_Detail
-                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == null
+                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == false
                                             select new
                                             {
                                                 details.Id,
@@ -1833,7 +1833,7 @@ namespace RevenuePlanner.Controllers
                 var BudgetDetailJoin = (from details in db.Budget_Detail
                                         join selectdetails in
                                             (from details in db.Budget_Detail
-                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == null
+                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == false
                                              select new
                                              {
                                                  details.Id,
@@ -2639,7 +2639,7 @@ namespace RevenuePlanner.Controllers
             if (varBudgetIds != null)
             {
                 BudgetDetailList = db.Budget_Detail.Where(a => (a.Id == (BudgetId > 0 ? BudgetId : a.BudgetId) || a.ParentId == (BudgetId > 0 ? BudgetId : a.ParentId)
-                   || a.BudgetId == (varBudgetIds.BudgetId != null ? varBudgetIds.BudgetId : 0)) && a.IsDeleted == false).Select(a => a).ToList();
+                   || a.BudgetId == (varBudgetIds.BudgetId != 0 ? varBudgetIds.BudgetId : 0)) && a.IsDeleted == false).Select(a => a).ToList();
             }
             List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
             List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
@@ -4071,7 +4071,7 @@ namespace RevenuePlanner.Controllers
                     if (ColumnName == CustomCol.CustomField.Name)
                     {
                         CustomField_Entity objCustomFieldEnity = new CustomField_Entity();
-                        objCustomFieldEnity = db.CustomField_Entity.Where(a => a.EntityId == (BudgetId != null ? BudgetId : 0) && a.CustomFieldId == CustomCol.CustomFieldId).FirstOrDefault();
+                        objCustomFieldEnity = db.CustomField_Entity.Where(a => a.EntityId == (BudgetId != 0 ? BudgetId : 0) && a.CustomFieldId == CustomCol.CustomFieldId).FirstOrDefault();
                         //Moidified by Rahul Shah for PL #2505 to Apply multicurrency on custom collumn.
                         if (DoubleColumnValidation.Contains(CustomCol.ValidationType))
                         {

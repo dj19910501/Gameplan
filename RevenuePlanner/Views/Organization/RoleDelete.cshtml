@@ -90,6 +90,11 @@
     $('#delbtn').click(function () {
         var deleterole = '@ViewData["deleterole"]';
         var reassignrole = $('#ddllist').val();
+
+        if (reassignrole == undefined) {
+            reassignrole = '@Guid.Empty';//or else the action match will fail
+        }
+
         var check = '@lstUsers.Count';
 
         if (parseInt(check) > 0 && reassignrole == "") {

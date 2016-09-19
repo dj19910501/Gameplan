@@ -1093,12 +1093,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">model id</param>
         /// <param name="UserId">logged in user id</param>
         /// <returns>returns json object</returns>
-        public JsonResult deleteModel(int id, string UserId = "")
+        public JsonResult deleteModel(int id, int UserId = 0)
         {
             //// Check for cross user login request
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1300,7 +1300,7 @@ namespace RevenuePlanner.Controllers
                 clientid = Sessions.User.CID,
                 modelId = tacticType.ModelId, //// TFS Bug - 179 : Improper behavior when editing Tactic in model   Changed By : Nirav shah on 6 Feb 2014 Change : add modelId = p.ModelId,    
                 title = tacticType.Title,
-                Stage = (tacticType.StageId == null) ? "-" : tacticType.Stage.Title, //// Modified by dharmraj for ticket #475, Old line : Stage = (p.StageId == null) ? "-" : p.Stage.Code
+                Stage = (tacticType.StageId == null) ? "-":"TBW", //TODO: zz tacticType.Stage.Title, //// Modified by dharmraj for ticket #475, Old line : Stage = (p.StageId == null) ? "-" : p.Stage.Code
                 //// changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                 ProjectedStageValue = (tacticType.ProjectedStageValue == null) ? 0 : tacticType.ProjectedStageValue,
                 revenue = (tacticType.ProjectedRevenue == null) ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tacticType.ProjectedRevenue)),PlanExchangeRate), //Added by Rahul Shah for PL #2498.
@@ -1562,13 +1562,13 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult DeleteTactic(int id = 0, string UserId = "")
+        public ActionResult DeleteTactic(int id = 0, int UserId = 0)
         {
             //// Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
             //// Cross client user login check
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1894,13 +1894,13 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns json object</returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult saveAllTactic(string ids, string rejids, int ModelId, bool isModelPublished, string EffectiveDate, string UserId = "")
+        public ActionResult saveAllTactic(string ids, string rejids, int ModelId, bool isModelPublished, string EffectiveDate, int UserId = 0)
         {
             //// Start - Added by Sohel Pathan on 31/12/2014 for PL ticket #1063
             //// Check cross user login
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2349,12 +2349,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="integrationId">integration instance id</param>
         /// <param name="UserId">legged in user id</param>
         /// <returns>returns json result object</returns>
-        public JsonResult SaveAllIntegration(int modelId, int integrationId, string UserId = "")
+        public JsonResult SaveAllIntegration(int modelId, int integrationId, int UserId = 0)
         {
             //// Cross user login check
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);

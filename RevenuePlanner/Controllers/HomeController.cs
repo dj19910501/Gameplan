@@ -40,28 +40,12 @@ namespace RevenuePlanner.Controllers
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
 
         #endregion
-
-        //public HomeController()
+      
+        //public ActionResult IndexNewDesign() // Added by Bhumika for new HTML #2621 Remove when task finished 
         //{
-        //    if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
-        //    {
-        //        Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
-        //        Common.objCached.loadMsg(Common.xmlMsgFilePath);
-        //        System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
-        //        CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
-        //        System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
-        //    }
-        //    else
-        //    {
-        //        Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
-
-        //    }
+        //    return View();
         //}
-        public ActionResult IndexNewDesign() // Added by Bhumika for new HTML #2621 Remove when task finished 
-        {
-            return View();
-        }
-        
+
         #region "Index"
 
         /// <summary>
@@ -77,7 +61,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planProgramId">planProgramId used for notification email shared link</param>
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0,bool IsRequest = false)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false)
         {
             var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
             var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
@@ -573,6 +557,440 @@ namespace RevenuePlanner.Controllers
                 }
 
                 return View("Index", planmodel);
+            }
+            else
+            {
+                if (activeMenu != Enums.ActiveMenu.Plan)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = null;
+                }
+
+                //// Start - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
+                if (ViewBag.ShowInspectPopup != null)
+                {
+                    if ((bool)ViewBag.ShowInspectPopup == false)
+                    {
+                        TempData["ErrorMessage"] = ViewBag.ShowInspectPopupErrorMessage;
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;
+                    }
+                }
+                //// End - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
+
+                return RedirectToAction("PlanSelector", "Plan");
+            }
+        }
+
+        public ActionResult IndexNewDesign(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Plan, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false)
+        {
+            var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+            var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
+            Sessions.User.RoleId = RoleId;
+            Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
+            Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
+            if (Sessions.AppMenus != null)
+            {
+                var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+                var item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Model.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+
+                isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit) ||
+                    AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit));
+                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Boost.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+
+                isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
+                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+
+                isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
+                      AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView) ||
+                      AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
+                      AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView));
+
+                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.MarketingBudget.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+
+                isAuthorized = Sessions.AppMenus.Select(x => x.Code.ToLower()).Contains(Enums.ActiveMenu.Plan.ToString().ToLower());
+                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
+                if (item != null && !isAuthorized)
+                {
+                    Sessions.AppMenus.Remove(item);
+                }
+            }
+            ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+            ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+            bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditable = false;
+            bool isPublished = false;
+            ViewBag.IsPlanSelector = IsPlanSelector;
+            ViewBag.PreviousPlanID = PreviousPlanID;
+            ViewBag.IsRequest = IsRequest;
+            Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
+            ViewBag.TacticTaskColor = TacticColor;
+            ViewBag.ActiveMenu = activeMenu;
+            ViewBag.ShowInspectForPlanTacticId = planTacticId;
+            ViewBag.ShowInspectForPlanCampaignId = planCampaignId;
+            ViewBag.ShowInspectForPlanProgramId = planProgramId;
+            ViewBag.IsImprovement = isImprovement;
+            ViewBag.GridView = isGridView;
+            ViewBag.ShowInspectForPlanLineItemId = planLineItemId;
+            if (currentPlanId > 0)
+            {
+                var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.ID);
+                var objPlan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId == currentPlanId);
+
+                if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) 
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
+                {
+                    if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
+                    {
+                        IsPlanEditable = true;
+                    }
+                }
+
+                Plan Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(currentPlanId));
+                isPublished = Plan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
+
+
+
+            }
+            ViewBag.IsPlanEditable = IsPlanEditable;
+            ViewBag.IsPublished = isPublished;
+           
+            ViewBag.RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
+            if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+            {
+                currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
+            }
+            else if (activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
+            {
+                ViewBag.ShowInspectPopup = false;
+                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
+            }
+            else if ((activeMenu.Equals(Enums.ActiveMenu.Plan) || activeMenu.Equals(Enums.ActiveMenu.Home)) && currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
+            {
+                ViewBag.ShowInspectPopup = false;
+                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
+            }
+            else
+            {
+                ViewBag.ShowInspectPopup = true;
+            }
+            ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
+            ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
+
+            if (TempData["SuccessMessageDeletedPlan"] != null)
+            {
+                ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDeletedPlan"];
+                TempData["SuccessMessageDeletedPlan"] = string.Empty;
+            }
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessage"];
+                TempData["ErrorMessage"] = string.Empty;
+            }
+
+            HomePlanModel planmodel = new Models.HomePlanModel();
+            List<int> modelIds = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.ClientId) && model.IsDeleted == false).Select(m => m.ModelId).ToList();
+            
+            List<Plan> activePlan = objDbMrpEntities.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
+
+            Plan currentPlan = new Plan();
+            Plan latestPlan = new Plan();
+            string currentYear = DateTime.Now.Year.ToString();
+            string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+            if (activePlan.Count() > 0)
+            {
+                IsPlanEditable = true;
+                ViewBag.IsPlanEditable = IsPlanEditable;
+                if (activeMenu.Equals(Enums.ActiveMenu.Plan))
+                {
+                    latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                }
+                else
+                {
+                    latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                }
+
+                List<Plan> fiterActivePlan = new List<Plan>();
+                fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
+                if (fiterActivePlan != null && fiterActivePlan.Any())
+                {
+                    if (activeMenu.Equals(Enums.ActiveMenu.Plan))
+                    {
+                        latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+                    }
+                    else
+                    {
+                        latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+
+                    }
+                }
+                if (currentPlanId != 0)
+                {
+                    currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).FirstOrDefault();
+                    if (currentPlan == null)
+                    {
+                        currentPlan = latestPlan;
+                        currentPlanId = currentPlan.PlanId;
+                    }
+                }
+                else if (!Common.IsPlanPublished(Sessions.PlanId))
+                {
+                    if (Sessions.PublishedPlanId == 0)
+                    {
+                        fiterActivePlan = new List<Plan>();
+                        fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
+                        if (fiterActivePlan != null && fiterActivePlan.Any())
+                        {
+                            currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
+                        }
+                        else
+                        {
+                            currentPlan = latestPlan;
+                        }
+                    }
+                    else
+                    {
+                        currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PublishedPlanId)).OrderBy(plan => plan.Title).FirstOrDefault();
+                        if (currentPlan == null)
+                        {
+                            currentPlan = latestPlan;
+                        }
+                    }
+                }
+                else
+                {
+                    if (Sessions.PlanId == 0)
+                    {
+                        fiterActivePlan = new List<Plan>();
+                        fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
+                        if (fiterActivePlan != null && fiterActivePlan.Any())
+                        {
+                            currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
+                        }
+                        else
+                        {
+                            currentPlan = latestPlan;
+                        }
+
+                    }
+                    else
+                    {
+                        currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PlanId)).FirstOrDefault();
+                        if (currentPlan == null)
+                        {
+                            currentPlan = latestPlan;
+                        }
+
+                    }
+                }
+                isPublished = currentPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString()); //Added by Dashrath Prajapati-PL #1758 Publish Plan: Unable to Publish Draft Plan 
+                ViewBag.IsPublished = isPublished;
+            }
+            var Label = Enums.FilterLabel.Plan.ToString();
+            var FilterName = Sessions.FilterPresetName;
+            var SetOFLastViews = new List<Plan_UserSavedViews>();
+            if (Sessions.PlanUserSavedViews == null)
+            {
+                SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
+            }
+            else
+            {
+                if (FilterName != null && FilterName != "")
+                {
+                    SetOFLastViews = Sessions.PlanUserSavedViews.ToList();
+
+                }
+                else
+                {
+                    SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
+                }
+            }
+            var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.ID).ToList();
+            Common.PlanUserSavedViews = SetOFLastViews; 
+            if (Enums.ActiveMenu.Home.Equals(activeMenu))
+            {
+                var LastSetOfPlanSelected = new List<string>();
+                var LastSetOfYearSelected = new List<string>();
+                var Yearlabel = Enums.FilterLabel.Year.ToString();
+                var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.ID).ToList();
+                var FinalSetOfPlanSelected = "";
+                var FinalSetOfYearsSelected = "";
+                if (FilterName != null && FilterName != "")
+                {
+                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == FilterName).Select(View => View.FilterValues).FirstOrDefault();
+                    FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.ViewName == FilterName).Select(View => View.FilterValues).FirstOrDefault();
+                }
+                else
+                {
+                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.IsDefaultPreset == true).Select(View => View.FilterValues).FirstOrDefault();
+                    if (FinalSetOfPlanSelected == null)
+                    {
+                        FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+                    }
+
+                    FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.IsDefaultPreset == true).Select(View => View.FilterValues).FirstOrDefault();
+                    if (FinalSetOfYearsSelected == null)
+                    {
+                        FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+                    }
+
+                }
+                if (FinalSetOfPlanSelected != null)
+                {
+                    LastSetOfPlanSelected = FinalSetOfPlanSelected.Split(',').ToList();
+                }
+
+                if (FinalSetOfYearsSelected != null)
+                {
+                    LastSetOfYearSelected = FinalSetOfYearsSelected.Split(',').ToList();
+                }
+
+                activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
+                var SelectedYear = activePlan.Where(plan => plan.PlanId == currentPlan.PlanId).Select(plan => plan.Year).ToList();
+                if (LastSetOfYearSelected.Count > 0)
+                {
+                    SelectedYear = activePlan.Where(plan => LastSetOfYearSelected.Contains(plan.Year.ToString())).Select(plan => plan.Year).Distinct().ToList();
+                    if (SelectedYear.Count == 0)
+                    {
+                        SelectedYear = LastSetOfYearSelected;
+                    }
+                }
+                else
+                {
+                    if (LastSetOfPlanSelected.Count > 0)
+                    {
+                        SelectedYear = activePlan.Where(plan => LastSetOfPlanSelected.Contains(plan.PlanId.ToString())).Select(plan => plan.Year).Distinct().ToList();
+                    }
+                }
+
+                var uniqueplanids = activePlan.Select(p => p.PlanId).Distinct().ToList();
+
+                var CampPlans = objDbMrpEntities.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId))
+                    .Select(camp => new
+                    {
+                        PlanId = camp.PlanId,
+                        StartYear = camp.StartDate.Year,
+                        EndYear = camp.EndDate.Year,
+                        StartDate = camp.StartDate,
+                        EndDate = camp.EndDate
+                    })
+                    .ToList();
+
+                var CampPlanIds = CampPlans.Where(camp => SelectedYear.Contains(camp.StartDate.Year.ToString()) || SelectedYear.Contains(camp.EndDate.Year.ToString()))
+                    .Select(camp => camp.PlanId).Distinct().ToList();
+
+                var PlanIds = activePlan.Where(plan => SelectedYear.Contains(plan.Year))
+                 .Select(plan => plan.PlanId).Distinct().ToList();
+                var allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
+                var YearWiseListOfPlans = activePlan.Where(list => allPlanIds.Contains(list.PlanId)).ToList();
+
+                planmodel.lstPlan = YearWiseListOfPlans.Select(plan => new PlanListModel
+                {
+                    PlanId = plan.PlanId,
+                    Title = HttpUtility.HtmlDecode(plan.Title),
+                    Checked = LastSetOfPlanSelected.Count.Equals(0) ? plan.PlanId == currentPlan.PlanId ? "checked" : "" : LastSetOfPlanSelected.Contains(plan.PlanId.ToString()) ? "checked" : "",
+                    Year = plan.Year
+
+                }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
+
+                List<SelectListItem> lstYear = new List<SelectListItem>();               
+                var StartYears = CampPlans.Select(camp => camp.StartYear)
+             .Distinct().ToList();
+
+                var EndYears = CampPlans.Select(camp => camp.EndYear)
+                    .Distinct().ToList();
+
+                var PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
+                var yearlist = PlanYears;
+                SelectListItem objYear = new SelectListItem();
+                foreach (int years in yearlist)
+                {
+                    string yearname = Convert.ToString(years);
+                    objYear = new SelectListItem();
+
+                    objYear.Text = years.ToString();
+
+                    objYear.Value = yearname;
+                    objYear.Selected = SelectedYear.Contains(years.ToString()) ? true : false;
+                    lstYear.Add(objYear);
+                }
+                ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
+               
+                if (LastSetOfPlanSelected.Count() == 1)
+                {
+                    if (LastSetOfPlanSelected.Contains(currentPlan.PlanId.ToString()) == false)
+                    {
+                        var LastViewedPlan = activePlan.Where(plan => LastSetOfPlanSelected.Contains(plan.PlanId.ToString())).Select(plan => plan).FirstOrDefault();
+                        currentPlan = LastViewedPlan;
+
+                    }
+                }
+            }
+            if (activePlan.Count() > 0)
+            {
+                try
+                {
+                    //// added by Nirav for plan consistency on 14 apr 2014
+                    planmodel.PlanTitle = currentPlan.Title;
+                    planmodel.PlanId = currentPlan.PlanId;
+                    // planmodel.objplanhomemodelheader = new HomePlanModelHeader();
+                    planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(currentPlan.PlanId, onlyplan: true);
+
+                    Sessions.PlanId = planmodel.PlanId;
+                    GetCustomAttributesIndex(ref planmodel);                    
+                    if (ViewBag.ShowInspectPopup != null)
+                    {
+                        if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+                        {
+                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
+                            ViewBag.ShowInspectPopup = isCustomRestrictionPass;
+                            if (isCustomRestrictionPass.Equals(false))
+                            {
+                                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.CustomRestrictionFailedForInspectPopup.ToString();
+                            }
+                        }
+                    }                    
+                }
+                catch (Exception objException)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(objException);                    
+                    if (objException is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        return RedirectToAction("ServiceUnavailable", "Login");
+                    }
+                }
+                return View("IndexNewDesign", planmodel);
             }
             else
             {
@@ -6846,11 +7264,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="ownerId"></param>
         /// <param name="UserId"></param>
         /// <returns>Returns Json Result.</returns>
-        public JsonResult GetActualTactic(int status, string tacticTypeId, string customFieldId, string ownerId, int PlanId, string UserId = "")
+        public JsonResult GetActualTactic(int status, string tacticTypeId, string customFieldId, string ownerId, int PlanId, int UserId = 0)
         {
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnLoginURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -7411,9 +7829,9 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="UserId">user id</param>
         /// <returns>returns json result with redirect url.</returns>
-        public ActionResult CheckUserId(string UserId)
+        public ActionResult CheckUserId(int UserId)
         {
-            if (Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+            if (Sessions.User.ID == UserId)
             {
                 return Json(new { returnURL = "#" }, JsonRequestBehavior.AllowGet);
             }
@@ -7716,22 +8134,6 @@ namespace RevenuePlanner.Controllers
         {
             //// Fetch the list of Upcoming Activity
             List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears);
-
-            //bool IsItemExists = objUpcomingActivity.Where(activity => activity.Value == CurrentTime).Any();
-
-            //if (IsItemExists)
-            //{
-            //    foreach (SelectListItem activity in objUpcomingActivity)
-            //    {
-            //        activity.Selected = false;
-            //        //// Set it Selected ture if we found current time value in the list.
-            //        if (CurrentTime == activity.Value)
-            //        {
-            //            activity.Selected = true;
-            //        }
-            //    }
-            //}
-
             objUpcomingActivity = objUpcomingActivity.Where(activity => !string.IsNullOrEmpty(activity.Text)).OrderBy(activity => activity.Text, new AlphaNumericComparer()).ToList();
             return Json(objUpcomingActivity.ToList(), JsonRequestBehavior.AllowGet);
         }
@@ -9802,8 +10204,50 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        #region method for getting goal value.
+        public JsonResult GetGoalValues(string planids)
+        {
+            var MQL = Enums.PlanGoalType.MQL.ToString();
+            var INQ = Enums.PlanGoalType.INQ.ToString();
+            var Revenue = Enums.PlanGoalType.Revenue.ToString();
+            var CW = Enums.Stage.CW.ToString();
+            string MQLLabel = string.Empty;
+            string INQLabel = string.Empty;
+            double MQLValue = 0;
+            double INQValue = 0;
+            double RevenueValue = 0;
+            string RevenueLabel = string.Empty;
+            string CWLabel = string.Empty;
+            double CWValue = 0;
+            List<GoalValueModel> GoalValueListResult = objSp.spgetgoalvalues(planids);
 
+            MQLLabel = GoalValueListResult.Where(list => list.StageCode == MQL).Select(list => list.Title).FirstOrDefault();
+            MQLValue = GoalValueListResult.Where(list => list.StageCode == MQL).Select(list => list.Value).FirstOrDefault();
+            INQLabel = GoalValueListResult.Where(list => list.StageCode == INQ).Select(list => list.Title).FirstOrDefault();
+            INQValue = GoalValueListResult.Where(list => list.StageCode == INQ).Select(list => list.Value).FirstOrDefault();
+            CWLabel = GoalValueListResult.Where(list => list.StageCode == CW).Select(list => list.Title).FirstOrDefault();
+            CWValue = GoalValueListResult.Where(list => list.StageCode == CW).Select(list => list.Value).FirstOrDefault();
+            RevenueLabel = GoalValueListResult.Where(list => list.StageCode == Revenue).Select(list => list.Title).FirstOrDefault();
+            RevenueValue = GoalValueListResult.Where(list => list.StageCode == Revenue).Select(list => list.Value).FirstOrDefault();
 
+            return Json(new { MQLLabel = MQLLabel, MQLValue = MQLValue, INQLabel = INQLabel, INQValue = INQValue, CWLabel = CWLabel, CWValue = CWValue, RevenueLabel = RevenueLabel, RevenueValue = RevenueValue }, JsonRequestBehavior.AllowGet);
+
+        }
+        #endregion
+
+        #region"Plan Calendar related functions"
+        public PartialViewResult LoadPlanCalendar()
+        {
+            try
+            {
+                return PartialView("_PlanCalendar");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
         public void GetCacheValue()
         {
 

@@ -1789,7 +1789,7 @@ namespace RevenuePlanner.Test.Controllers
 
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            string UserId = Sessions.User.UserId.ToString();
+            int UserId = Sessions.User.ID;
             var result = objHomeController.CheckUserId(UserId) as JsonResult;
             var serializedData = new RouteValueDictionary(result.Data);
             var resultvalue = serializedData["returnURL"];

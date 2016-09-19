@@ -341,15 +341,15 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param> Added by Sohel Pathan on 07/08/2014 for PL ticket #672
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SavePlan(PlanModel objPlanModel, string BudgetInputValues = "", string RedirectType = "", string UserId = "")
+        public JsonResult SavePlan(PlanModel objPlanModel, string BudgetInputValues = "", string RedirectType = "", int UserId = 0)
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 // Start - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
-                if (!string.IsNullOrEmpty(UserId))
+                if (UserId != 0)
                 {
-                    if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                    if (Sessions.User.ID != UserId)
                     {
                         TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                         return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -628,15 +628,15 @@ namespace RevenuePlanner.Controllers
         }
 
         //Added By Komal Rawal for new Home Page UI
-        public JsonResult SavePlanDefination(PlanModel objPlanModel, string UserId = "", bool IsPlanChange = false) //Modified BY Komal Rawal for #2072 to check if plan is changed
+        public JsonResult SavePlanDefination(PlanModel objPlanModel, int UserId = 0, bool IsPlanChange = false) //Modified BY Komal Rawal for #2072 to check if plan is changed
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 var ReloadAllFilters = false;
-                if (!string.IsNullOrEmpty(UserId))
+                if (UserId != 0)
                 {
-                    if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                    if (Sessions.User.ID != UserId)
                     {
                         TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                         return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1747,14 +1747,14 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         //   [ActionName("ApplyToCalendar")] 
         //Modified By Komal Rawal for new UI
-        public ActionResult PublishPlan(string UserId = "")
+        public ActionResult PublishPlan(int UserId = 0)
         {
             try
             {
                 //// Check cross user login check
-                if (!string.IsNullOrEmpty(UserId))
+                if (UserId != 0)
                 {
-                    if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                    if (Sessions.User.ID != UserId)
                     {
                         TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                         return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2394,12 +2394,12 @@ namespace RevenuePlanner.Controllers
             changed by : Nirav Shah on 13 feb 2014
             Changed : add new Parameter  RedirectType
          */
-        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget = "")
+        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false, string closedTask = null, int UserId = 0, string CalledFromBudget = "")
         {
             //// Check whether UserId is loggined User or Not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2476,12 +2476,12 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-        public ActionResult DeleteProgram(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget = "")
+        public ActionResult DeleteProgram(int id = 0, bool RedirectType = false, string closedTask = null, int UserId = 0, string CalledFromBudget = "")
         {
             //// Check whether UserId is loggined User or Not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2559,12 +2559,12 @@ namespace RevenuePlanner.Controllers
            Add delete tactic feature
          */
         [HttpPost]
-        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget = "")
+        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false, string closedTask = null, int UserId = 0, string CalledFromBudget = "")
         {
             //// Check whether UserId is loggined User or Not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2650,7 +2650,7 @@ namespace RevenuePlanner.Controllers
                 revenue = tt.ProjectedRevenue == null ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tt.ProjectedRevenue)), PlanExchangeRate),
                 IsDeployedToIntegration = tt.IsDeployedToIntegration,
                 stageId = tt.StageId,
-                stageTitle = tt.Stage.Title,
+                stageTitle = "Stage", //tt.Stage.Title, //TODO: stage object within tt is NULL zz
                 TacticTypeName = tt.Title,
                 projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue
             }, JsonRequestBehavior.AllowGet);
@@ -2666,12 +2666,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param>
         /// <param name="CalledFromBudget"></param>
         /// <returns></returns>
-        public ActionResult DeleteLineItem(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget = "")
+        public ActionResult DeleteLineItem(int id = 0, bool RedirectType = false, string closedTask = null, int UserId = 0, string CalledFromBudget = "")
         {
             //// Check whether UserId is loggined User or Not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -3038,12 +3038,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="PlanId">Plan id</param>
         /// <param name="UserId">User id of logged in user</param>
         /// <returns>returns json result object</returns>
-        public JsonResult DeletePlan(int PlanId, string UserId = "")
+        public JsonResult DeletePlan(int PlanId, int UserId = 0)
         {
             //// check whether UserId is currently loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -4217,12 +4217,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="SuggestionIMPTacticIdList"></param>
         /// <param name="UserId"></param>
         /// <returns></returns>
-        public JsonResult DeleteSuggestedBoxImprovementTactic(string SuggestionIMPTacticIdList, string UserId = "")
+        public JsonResult DeleteSuggestedBoxImprovementTactic(string SuggestionIMPTacticIdList, int UserId = 0)
         {
             //// Check whether UserId is loggined User or Not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -13351,7 +13351,1133 @@ namespace RevenuePlanner.Controllers
 
                 string doubledesh = "--";
                 string typero = "ro";
+                string dollarsymbol = Sessions.PlanCurrencySymbol; // Modified By Nishant Sheth #2497               
+                if (IsPlan)
+                {
+                    foreach (var planitem in lstplandetail)
+                    {
+                        gridjsonlistplanobj = new PlanDHTMLXGridDataModel();
+
+                        if (planitem.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            IsPlanEditable = true;
+                        }
+                        else if (IsPlanEditAllAuthorized)
+                        {
+                            IsPlanEditable = true;
+                        }
+                        else if (IsPlanEditSubordinatesAuthorized)
+                        {
+                            if (lstSubordinatesIds.Contains(planitem.CreatedBy))
+                            {
+                                IsPlanEditable = true;
+                            }
+                        }
+
+                        planid = planitem.PlanId;
+                        if (lstcampaigndetail.Count > 0)
+                        {
+                            Startdate = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList().Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                            Enddate = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList().Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                        }
+                        else
+                        {
+                            Startdate = new DateTime(Convert.ToInt32(planitem.Year), 1, 1).ToString("MM/dd/yyyy");
+                            Enddate = new DateTime(Convert.ToInt32(planitem.Year), 12, 31).ToString("MM/dd/yyyy");
+                        }
+
+
+                        totalcost = LineItemList.Count > 0 ? LineItemList.Where(l => lsttacticId.Contains(l.PlanTacticId)).Sum(l => l.Cost) : 0;
+                        totalmql = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => lsttacticId.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
+                        totalrevenue = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => lsttacticId.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
+
+
+                        if (IsPlanCreateAll == false)
+                        {
+                            if (planitem.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(planitem.CreatedBy))
+                                IsPlanCreateAll = true;
+                            else
+                                IsPlanCreateAll = false;
+                        }
+
+                        // Added ID,open,bgcolor
+                        gridjsonlistplanobj.id = "plan." + PlanCnt;
+                        gridjsonlistplanobj.open = openstateone;
+                        gridjsonlistplanobj.bgColor = bgcolorPlan;
+
+                        // Declare Data List and Object variable
+                        List<Plandataobj> plandataobjlist = new List<Plandataobj>();
+                        Plandataobj plandataobj = new Plandataobj();
+                        cellTextColor = IsPlanEditable ? stylecolorblack : stylecolorgray; // Modified By Nishant Sheth #1987
+
+                        plandataobj.value = "Plan";
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = HttpUtility.HtmlEncode(planitem.Title);
+                        plandataobj.locked = IsPlanEditable ? lockedstatezero : lockedstateone;
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        //#1780
+                        //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=add_Remove_Entity onclick=javascript:AddRemoveEntity(this) id=PlanAdd altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() +"></div>";
+                        //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName='" + (HttpUtility.HtmlEncode(planitem.Title).Replace("'", "&#39;")) + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>";
+                        plandataobj.value = "<div class=grid_Search id=Plan title=View ></div>" + (IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + " title=Add></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=PlanAdd dhtmlxrowid='" + gridjsonlistplanobj.id + "' TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName='" + (HttpUtility.HtmlEncode(planitem.Title).Replace("'", "&#39;")) + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "' taskId=" + planitem.PlanId + " csvId=Plan_" + planitem.PlanId + " ></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = planitem.PlanId.ToString();
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = Startdate;
+                        plandataobj.locked = lockedstateone;
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = Enddate;
+                        plandataobj.locked = lockedstateone;
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        string planTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(totalcost)), PlanExchangeRate));  // Add By Nishant Sheth #2497
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = planTotalCost;
+                        plandataobj.actval = planTotalCost;
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = doubledesh;
+                        plandataobj.type = typero;
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = doubledesh;
+                        plandataobj.type = typero;
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = Common.GetUserName(planitem.CreatedBy);
+                        plandataobj.style = cellTextColor;
+                        //Modified by Rahul Shah on 09/03/2016 for PL #1939                       
+                        if (IsPlanEditable)
+                        {
+                            plandataobj.locked = lockedstatezero;
+                        }
+                        else
+                        {
+                            plandataobj.locked = lockedstateone;
+                        }
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = doubledesh;
+                        plandataobj.style = cellTextColor;
+                        plandataobj.type = typero;
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = ConvertNumberToRoundFormate(totalmql).ToString();
+                        plandataobj.actval = totalmql.ToString();
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(totalrevenue).ToString();
+                        plandataobj.actval = totalrevenue.ToString();
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        //Add External Name Column as a last column of gridview
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = "";
+                        plandataobj.locked = IsPlanEditable ? lockedstatezero : lockedstateone;
+                        plandataobj.style = cellTextColor;
+                        plandataobjlist.Add(plandataobj);
+
+                        gridjsonlistplanobj.data = plandataobjlist;
+                        //Modified by Maitri Gandhi for #2037, on 4/3/2016
+                        Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).OrderBy(c => c.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Campaign title   // && (((filterOwner.Count > 0 ? filterOwner.Contains(campaign.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(campaign.Status) : true)) || ownercampaignids.Contains(campaign.PlanCampaignId))
+                        CampCnt = 1;
+                        if (Campaignfilterlst.Count > 0)
+                        {
+
+                            List<PlanDHTMLXGridDataModel> campaignrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                            PlanDHTMLXGridDataModel campaignrowsobj = new PlanDHTMLXGridDataModel();
+                            var lstcampaignTaskData = Campaignfilterlst.Select((taskdata, index) => new
+                            {
+                                totalcost = LineItemList.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.Cost),
+                                totalmql = ListTacticMQLValue.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.MQL),
+
+                                PlanCampaignId = taskdata.PlanCampaignId,
+                                totalrevenue = ListTacticMQLValue.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.Revenue),
+                                Title = taskdata.Title,
+                                StartDate = taskdata.StartDate,
+                                EndDate = taskdata.EndDate,
+                                IsCampEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? true : false,
+                                CreatedBy = GetUserName(taskdata.CreatedBy),
+                                IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                CreatedByID = taskdata.CreatedBy,
+                                tacticids = TacticfilterList.Where(t => t.Plan_Campaign_Program.PlanCampaignId == taskdata.PlanCampaignId).Any()
+                            });
+                            foreach (var Campaignitem in lstcampaignTaskData)
+                            {
+                                // Comment this code not require #ticket 1906, by bhavesh dobariya, date: 20-jan-2016
+                                //if (!IsFiltered)
+                                //{
+                                //    IsPlan = true;
+
+                                //}
+                                //else
+                                //{
+                                //    if (Campaignitem.tacticids == true)
+                                //    {
+                                //        IsPlan = true;
+                                //    }
+                                //    else
+                                //    {
+                                //        IsPlan = false;
+                                //    }
+                                //}
+
+
+                                if (IsPlan)
+                                {
+                                    //Modified By Komal Rawal for #1505
+                                    if (Campaignitem.IsCampEditable == false)
+                                    {
+                                        if (lstSubordinatesIds.Contains(Campaignitem.CreatedByID))
+                                        {
+
+                                            CustomTacticids = TacticfilterList.Where(tact => tact.Plan_Campaign_Program.PlanCampaignId == Campaignitem.PlanCampaignId).Select(tact => tact.PlanTacticId).ToList();
+                                            //Modified By Komal Rawal for #1545 to check custom restrictions.
+                                            if (CustomTacticids.Count > 0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Count() != CustomTacticids.Count)
+                                            {
+                                                IsEditable = lockedstateone; // readonly
+                                                cellTextColor = stylecolorgray; // Modified By Nishant Sheth #1987
+                                            }
+                                            else
+                                            {
+                                                cellTextColor = stylecolorblack;
+                                                IsEditable = lockedstatezero;// editable
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            IsEditable = lockedstateone;
+                                            cellTextColor = stylecolorgray; // Modified By Nishant Sheth #1987
+
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        cellTextColor = stylecolorblack;
+                                        IsEditable = lockedstatezero;
+                                    }
+                                    //End
+
+                                    campaignrowsobj = new PlanDHTMLXGridDataModel();
+                                    campaignrowsobj.id = "camp." + PlanCnt + "." + CampCnt;
+                                    campaignrowsobj.open = openstateone;
+                                    campaignrowsobj.bgColor = bgcolorCampaign;
+                                    List<Plandataobj> campaigndataobjlist = new List<Plandataobj>();
+
+                                    Plandataobj campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = "Campaign";
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = HttpUtility.HtmlEncode(Campaignitem.Title);
+                                    campaigndataobj.locked = IsEditable;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") +  "<div class=add_Remove_Entity id=CampaignAdd onclick=javascript:AddRemoveEntity(this) altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                    //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + GetOwnerName(Campaignitem.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Campaignitem.Title).Replace("'", "&#39;")) + "' altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                    campaigndataobj.value = "<div class=grid_Search id=CP title=View></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + " title=Add> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' dhtmlxrowid='" + campaignrowsobj.id + "' TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + GetOwnerName(Campaignitem.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Campaignitem.Title).Replace("'", "&#39;")) + "' altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "' taskId= " + Campaignitem.PlanCampaignId + " csvId=Campaign_" + Campaignitem.PlanCampaignId + "></div>";//Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = Campaignitem.PlanCampaignId.ToString();
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = Campaignitem.StartDate.ToString("MM/dd/yyyy");
+                                    campaigndataobj.locked = IsEditable;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = Campaignitem.EndDate.ToString("MM/dd/yyyy");
+                                    campaigndataobj.locked = IsEditable;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    string campTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Campaignitem.totalcost)), PlanExchangeRate)); // Add By Nishant Sheth #2497
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = campTotalCost;
+                                    campaigndataobj.actval = campTotalCost;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = doubledesh;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobj.type = typero;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = doubledesh;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobj.type = typero;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = Campaignitem.CreatedBy.ToString();
+                                    campaigndataobj.locked = IsEditable;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = doubledesh;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = ConvertNumberToRoundFormate(Campaignitem.totalmql).ToString();
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobj.actval = Campaignitem.totalmql.ToString();
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Campaignitem.totalrevenue).ToString();
+                                    campaigndataobj.actval = Campaignitem.totalrevenue.ToString();
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    //Add External Name Column as a last column of gridview
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = "";
+                                    campaigndataobj.locked = IsEditable;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaignrowsobj.data = campaigndataobjlist;
+
+                                    //Modified by Maitri Gandhi for #2037 on 4/3/2016
+                                    Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).OrderBy(p => p.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Program title    //&& (((filterOwner.Count > 0 ? filterOwner.Contains(prog.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(prog.Status) : true)) || ownerProgramids.Contains(prog.PlanProgramId))
+                                    if (Programfilterlst != null && Programfilterlst.Count > 0)
+                                    {
+                                        Startdate = Programfilterlst.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                        Enddate = Programfilterlst.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                                        Planuserdatagrid campaignuserdata = new Planuserdatagrid();
+                                        campaignuserdata.psdate = Startdate;
+                                        campaignuserdata.pedate = Enddate;
+
+                                        var CampaignTactic = programtactic.Where(tact => tact.Plan_Campaign_Program.PlanCampaignId == Campaignitem.PlanCampaignId).ToList();
+                                        if (CampaignTactic != null && CampaignTactic.Count > 0)
+                                        {
+                                            Startdate = CampaignTactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                            Enddate = CampaignTactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                                            campaignuserdata.tsdate = Startdate;
+                                            campaignuserdata.tedate = Enddate;
+                                        }
+
+                                        campaignrowsobj.userdata = campaignuserdata;
+                                        ProgCnt = 1;
+
+                                        var lstprogramTaskData = Programfilterlst.Select((taskdata, index) => new
+                                        {
+                                            totalcost = LineItemList.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.Cost),
+                                            totalmql = ListTacticMQLValue.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.MQL),
+                                            totalrevenue = ListTacticMQLValue.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.Revenue),
+                                            PlanProgramId = taskdata.PlanProgramId,
+                                            Title = taskdata.Title,
+                                            StartDate = taskdata.StartDate,
+                                            EndDate = taskdata.EndDate,
+                                            CreatedBy = GetUserName(taskdata.CreatedBy),
+                                            IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                            IsProgEditable = taskdata.CreatedBy.Equals(Sessions.User.UserId),
+                                            CreatedByID = taskdata.CreatedBy,
+                                            tacticids = !IsFiltered ? true : TacticfilterList.Where(t => t.PlanProgramId == taskdata.PlanProgramId).Any()
+
+                                        });
+                                        List<PlanDHTMLXGridDataModel> programrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                                        PlanDHTMLXGridDataModel programrowsobj = new PlanDHTMLXGridDataModel();
+                                        foreach (var Programitem in lstprogramTaskData)
+                                        {
+                                            //if (Programitem.tacticids)
+                                            {
+                                                cellTextColor = stylecolorblack;
+                                                IsEditable = lockedstatezero;
+                                                //Modified By Komal Rawal for #1505
+                                                if (!Programitem.IsProgEditable)
+                                                {
+                                                    if (lstSubordinatesIds.Contains(Programitem.CreatedByID))
+                                                    {
+                                                        CustomTacticids = TacticfilterList.Where(tact => tact.PlanProgramId == Programitem.PlanProgramId).Select(tact => tact.PlanTacticId).ToList();
+
+                                                        // if (CustomTacticids.Count > 0 &&  lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Any() == false)
+                                                        if (CustomTacticids.Count > 0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Count() != CustomTacticids.Count)
+                                                        {
+                                                            IsEditable = lockedstateone;
+                                                            cellTextColor = stylecolorgray; // Modified By Nishant Sheth #1987
+                                                        }
+                                                        else
+                                                        {
+                                                            cellTextColor = stylecolorblack;
+                                                            IsEditable = lockedstatezero;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        IsEditable = lockedstateone;
+                                                        cellTextColor = stylecolorgray;// Modified By Nishant Sheth #1987
+
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    cellTextColor = stylecolorblack;
+                                                    IsEditable = lockedstatezero;
+                                                }
+                                                //End
+
+                                                programrowsobj = new PlanDHTMLXGridDataModel();
+                                                programrowsobj.id = "prog." + PlanCnt + "." + CampCnt + "." + ProgCnt;
+                                                programrowsobj.open = openstateone;
+                                                programrowsobj.bgColor = bgcolorProgram;
+                                                List<Plandataobj> programdataobjlist = new List<Plandataobj>();
+
+                                                Plandataobj programdataobj = new Plandataobj();
+                                                programdataobj.value = "Program";
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = HttpUtility.HtmlEncode(Programitem.Title);
+                                                programdataobj.locked = IsEditable;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=ProgramAdd onclick=javascript:AddRemoveEntity(this); altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                programdataobj.value = "<div class=grid_Search id=PP title=View></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + " title=Add></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this);  title = 'Add to Honeycomb' dhtmlxrowid='" + programrowsobj.id + "' TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "'  taskId= " + Programitem.PlanProgramId + " csvId=Program_" + Programitem.PlanProgramId + "></div>";  //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                                                              
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = Programitem.PlanProgramId.ToString();
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = Programitem.StartDate.ToString("MM/dd/yyyy");
+                                                programdataobj.locked = IsEditable;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = Programitem.EndDate.ToString("MM/dd/yyyy");
+                                                programdataobj.locked = IsEditable;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                double progToatalCost = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(Programitem.totalcost)), PlanExchangeRate);
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = progToatalCost.ToString();
+                                                programdataobj.actval = progToatalCost.ToString();
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = doubledesh;
+                                                programdataobj.type = typero;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = doubledesh;
+                                                programdataobj.type = typero;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = Programitem.CreatedBy.ToString();
+                                                programdataobj.locked = IsEditable;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = doubledesh;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = ConvertNumberToRoundFormate(Programitem.totalmql).ToString();
+                                                programdataobj.actval = Programitem.totalmql.ToString();
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Programitem.totalrevenue).ToString();
+                                                programdataobj.actval = Programitem.totalrevenue.ToString();
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                //Add External Name Column as a last column of gridview
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = "";
+                                                programdataobj.locked = IsEditable;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programrowsobj.data = programdataobjlist;
+
+
+                                                //if ((filterOwner.Count() == 0 && filterTacticType.Count() == 0 && filterStatus.Count() == 0 && filteredCustomFields.Count() == 0) && !IsFiltered)
+                                                //{
+                                                //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
+                                                // Modified By Nishant Sheth 
+                                                // Desc:: To resolve the #1790 observation
+                                                //  finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId && (tacticfilter.CreatedBy == Sessions.User.UserId)).OrderBy(t => t.Title).ToList();
+                                                //}
+                                                //else
+                                                //{
+                                                finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId && (((filterOwner.Count > 0 ? filterOwner.Contains(tacticfilter.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(tacticfilter.Status) : true)) || ownerTacticids.Contains(tacticfilter.PlanTacticId))).OrderBy(t => t.Title).ToList();
+
+                                                //}
+                                                if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
+                                                {
+                                                    Startdate = Enddate = string.Empty;
+                                                    var ProgramTactic = programtactic.Where(tact => tact.PlanProgramId == Programitem.PlanProgramId).ToList();
+                                                    if (ProgramTactic != null && ProgramTactic.Count > 0)
+                                                    {
+                                                        Startdate = ProgramTactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                                        Enddate = ProgramTactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+
+                                                    }
+                                                    Planuserdatagrid programuserdata = new Planuserdatagrid();
+                                                    programuserdata.tsdate = Startdate;
+                                                    programuserdata.tedate = Enddate;
+
+                                                    programrowsobj.userdata = programuserdata;
+
+                                                    var lsttacticTaskData = finalTacticfilterList.Select((taskdata, index) => new
+                                                    {
+                                                        index = index,
+                                                        totalcost = LineItemList.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Cost),
+                                                        totalmql = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.MQL),
+                                                        totalrevenue = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Revenue),
+
+                                                        PlanTacticId = taskdata.PlanTacticId,
+                                                        title = taskdata.Title,
+                                                        startdate = taskdata.StartDate,
+                                                        enddate = taskdata.EndDate,
+                                                        tactictypetitle = taskdata.TacticType.Title,
+                                                        CreatedBy = GetUserName(taskdata.CreatedBy),
+                                                        tactictypeid = taskdata.TacticTypeId,
+                                                        projectedstagevalue = taskdata.ProjectedStageValue == null ? 0 : taskdata.ProjectedStageValue,
+                                                        IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                                        ProjectStage = taskdata.Stage.Title,
+                                                        IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "0",
+                                                        IsRequiredfalse = false,//CheckTacticRequiredfieldFinal(taskdata,DependencyListFinal, customfieldlist)//// Commented by Bhavesh:  To False required flag display in grid view Date: 05/11/2015 Ticket : #1550
+                                                        LinkTacticId = taskdata.LinkedTacticId,
+                                                        LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(taskdata.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault(),
+                                                        machineName = taskdata.TacticCustomName,
+                                                        ROITacticType = string.IsNullOrEmpty(taskdata.TacticType.AssetType) ? "Promotion" : taskdata.TacticType.AssetType,  // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                        AnchorTacticId = lstPackages.Where(p => p.PlanTacticId == taskdata.PlanTacticId).Select(pkg => pkg.AnchorTacticID).FirstOrDefault()    // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                    });
+
+                                                    List<PlanDHTMLXGridDataModel> tacticrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                                                    PlanDHTMLXGridDataModel tacticrowsobj = new PlanDHTMLXGridDataModel();
+                                                    foreach (var tactic in lsttacticTaskData)
+                                                    {
+                                                        var LinkTacticPermission = ((tactic.enddate.Year - tactic.startdate.Year) > 0) ? true : false;
+                                                        var LinkedTacticId = tactic.LinkTacticId == null ? "null" : tactic.LinkTacticId.ToString();
+                                                        cellTextColor = tactic.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
+
+                                                        tacticrowsobj = new PlanDHTMLXGridDataModel();
+                                                        tacticrowsobj.id = "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index;
+                                                        tacticrowsobj.bgColor = bgcolorTactic;
+                                                        List<Plandataobj> tacticdataobjlist = new List<Plandataobj>();
+                                                        Plandataobj tacticdataobj = new Plandataobj();
+
+                                                        tacticdataobj.value = "Tactic";
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        //Modified By Komal Rawal for PL 1845 link tactic feature.
+                                                        // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                        string pkgTacticIds = string.Join(",", lstPackages.Where(p => p.AnchorTacticID == tactic.AnchorTacticId).Select(x => x.PlanTacticId));
+                                                        //tacticdataobj.value = (LinkTacticPermission == true ? tactic.LinkTacticId == null ? "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" : "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + HttpUtility.HtmlEncode(tactic.LinkedPlanName).Replace("'", "&#39;") + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "") + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? "<span id='tacticIsRequired'></span>" : "");
+                                                        //  tacticdataobj.value = (LinkTacticPermission == true ? tactic.LinkTacticId == null ? "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" : "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + (tactic.LinkedPlanName == null ? null : HttpUtility.HtmlEncode(tactic.LinkedPlanName).Replace("'", "&#39;")) + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "") + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? "<span id='tacticIsRequired'></span>" : "");
+                                                        tacticdataobj.value = ((tactic.AnchorTacticId == tactic.PlanTacticId) ?
+                                                        "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id=pkgIcon onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids=" + pkgTacticIds + "><i class='fa fa-object-group'></i></div>" : "") + ((LinkTacticPermission == true && tactic.LinkTacticId == null) ?
+                                                        "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" :
+                                                        ((LinkTacticPermission == true && tactic.LinkTacticId != null) || tactic.LinkTacticId != null) ? "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='"
+                                                      + (tactic.LinkedPlanName == null ? null
+                                                        : HttpUtility.HtmlEncode(tactic.LinkedPlanName).Replace("'", "&#39;"))
+                                                       + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "") + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true
+                                                       ? "<span id='tacticIsRequired'></span>" : "");
+
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        // Modified by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                        tacticdataobj = new Plandataobj();
+                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                        tacticdataobj.value = "<div class=grid_Search id=TP title=View></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "' title=Add></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb'  pcptid = L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "_T" + tactic.PlanTacticId + " anchortacticid='" + tactic.AnchorTacticId + "' dhtmlxrowid='" + tacticrowsobj.id + "'  roitactictype='" + tactic.ROITacticType + "' TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + " csvId=Tactic_" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.PlanTacticId.ToString();
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.startdate.ToString("MM/dd/yyyy");
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.enddate.ToString("MM/dd/yyyy");
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        string tacTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tactic.totalcost)), PlanExchangeRate));// Add By Nishant Sheth #2497
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tacTotalCost;
+                                                        tacticdataobj.actval = tacTotalCost;
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.type = "edn";
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        // Added by Arpita Soni for Ticket #2354 on 07/12/2016
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.ROITacticType.ToString();
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobj.locked = "1";
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.tactictypeid.ToString();
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.CreatedBy.ToString();
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = (Math.Round(Convert.ToDouble(tactic.projectedstagevalue)) > 0 ? Math.Round(Convert.ToDouble(tactic.projectedstagevalue)).ToString("#,#") : "0") + " " + tactic.ProjectStage;
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobj.type = "edn";
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = ConvertNumberToRoundFormate(tactic.totalmql).ToString();
+                                                        tacticdataobj.actval = tactic.totalmql.ToString();
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        double tacTotalRevenue = double.Parse(Convert.ToString(tactic.totalrevenue));// Add By Nishant Sheth #2497
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(tactic.totalrevenue).ToString();
+                                                        tacticdataobj.actval = tactic.totalrevenue.ToString();
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        //Add External Name Column as a last column of gridview
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = HttpUtility.HtmlEncode(tactic.machineName);
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticrowsobj.data = tacticdataobjlist;
+
+                                                        Planuserdatagrid tacticuserdata = new Planuserdatagrid();
+                                                        tacticuserdata.stage = tactic.ProjectStage;
+                                                        tacticuserdata.tactictype = tactic.tactictypeid.ToString();
+
+                                                        tacticrowsobj.userdata = tacticuserdata;
+
+                                                        finalLineitem = DBLineItemList.Where(lintitem => lintitem.PlanTacticId == tactic.PlanTacticId).OrderBy(l => l.Title).ToList(); // Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for line item title
+                                                        if (finalLineitem != null && finalLineitem.Count > 0)
+                                                        {
+                                                            var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
+                                                            {
+                                                                index = index,
+                                                                Cost = taskdata.Cost,
+                                                                lineitemtype = taskdata.LineItemTypeId,
+                                                                PlanLineItemId = taskdata.PlanLineItemId,
+                                                                title = taskdata.Title,
+                                                                Typeid = taskdata.LineItemTypeId,
+                                                                Type = taskdata.LineItemTypeId != null ? taskdata.LineItemType.Title : "",
+                                                                CreatedBy = taskdata.CreatedBy,
+                                                                IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                                                IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || (tactic.IstactEditable == "0")) == true ? "0" : "1"//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
+                                                            });
+
+                                                            List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                                                            PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
+                                                            foreach (var lineitem in lstLineItemTaskData)
+                                                            {
+                                                                cellTextColor = lineitem.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
+
+                                                                lineitemrowsobj = new PlanDHTMLXGridDataModel();
+                                                                lineitemrowsobj.id = "line." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "." + lineitem.index;
+                                                                lineitemrowsobj.bgColor = bgcolorLineItem;
+                                                                List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
+                                                                Plandataobj lineitemdataobj = new Plandataobj();
+
+                                                                lineitemdataobj.value = "LineItem";
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.title);
+                                                                lineitemdataobj.locked = lineitem.IstactEditable;
+                                                                lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = "<div class=grid_Search id=LP title=View></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + " title=Add></div>" : "");
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = lineitem.PlanLineItemId.ToString();
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.locked = lockedstateone;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.locked = lockedstateone;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                string lineTotalCost = Convert.ToString(objCurrency.GetValueByExchangeRate(lineitem.Cost, PlanExchangeRate)); // Add By Nishant Sheth #2497
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = lineTotalCost;
+                                                                lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
+                                                                lineitemdataobj.type = "edn";
+                                                                lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.style = cellTextColor;// Add By Nishant Sheth #1987
+                                                                lineitemdataobj.type = typero;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.Type);
+                                                                lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = lstUserDetails.Where(lst => lst.ID == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault();
+                                                                // Add By Nishant Sheth #1987
+                                                                lineitemdataobj.locked = lineitem.IstactEditable;
+                                                                lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.style = cellTextColor;// Add By Nishant Sheth #1987
+                                                                lineitemdataobj.type = typero;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.style = cellTextColor;// Add By Nishant Sheth #1987
+                                                                lineitemdataobj.type = typero;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.style = cellTextColor;// Add By Nishant Sheth #1987
+                                                                lineitemdataobj.type = typero;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                //Add External Name Column as a last column of gridview
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = "";
+                                                                lineitemdataobj.locked = lineitem.IstactEditable;
+                                                                lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+
+                                                                lineitemrowsobj.data = lineitemdataobjlist;
+
+                                                                Planuserdatagrid lineitemuserdata = new Planuserdatagrid();
+                                                                lineitemuserdata.IsOther = ((lineitem.Type == null || lineitem.Type == "") ? true : false).ToString();
+                                                                lineitemrowsobj.userdata = lineitemuserdata;
+
+                                                                lineitemrowsobjlist.Add(lineitemrowsobj);
+                                                            }
+                                                            tacticrowsobj.rows = lineitemrowsobjlist;
+                                                        }
+                                                        tacticrowsobjlist.Add(tacticrowsobj);
+                                                    }
+                                                    programrowsobj.rows = tacticrowsobjlist;
+                                                }
+                                                ProgCnt = ProgCnt + 1;
+                                                //Added By Maitri Gandhi for #2040 on 27/4/2016
+                                                if (programrowsobj.rows == null)
+                                                {
+                                                    programrowsobj.open = null;
+                                                }
+                                                programrowsobjlist.Add(programrowsobj);//Add for : To resolve filter issue for display grid
+                                            }
+                                            //programrowsobjlist.Add(programrowsobj); //Comment for : To resolve filter issue for display grid
+                                        }
+                                        campaignrowsobj.rows = programrowsobjlist;//Add for : To resolve filter issue for display grid
+                                    }
+
+                                    CampCnt = CampCnt + 1;
+                                    //Added By Maitri Gandhi for #2040 on 27/4/2016
+                                    if (campaignrowsobj.rows == null)
+                                    {
+                                        campaignrowsobj.open = null;
+                                    }
+                                    campaignrowsobjlist.Add(campaignrowsobj);
+                                }
+                                //campaignrowsobjlist.Add(campaignrowsobj); //Comment for : To resolve filter issue for display grid
+                            }
+                            gridjsonlistplanobj.rows = campaignrowsobjlist;
+                        }
+
+                        PlanCnt = PlanCnt + 1;
+                        gridjsonlist.Add(gridjsonlistplanobj);
+                    }
+                }               
+                objPlanMainDHTMLXGrid.rows = gridjsonlist;                
+                objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            await Task.Delay(1);
+            return PartialView("_HomeGrid", objplangrid);
+        }
+
+        public async Task<ActionResult> LoadHomeGrid_NewDesign(string PlanId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
+        {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
+            bool IsPlanCreateAll = false;
+            bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+            bool IsFiltered = false;
+            string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
+            string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+
+            string xmlstring = string.Empty;
+            string xmlUserlist = string.Empty;
+            string stageMQL = Enums.Stage.MQL.ToString();
+            Plangrid objplangrid = new Plangrid();
+
+            TacticTypeListForHC = db.TacticTypes.Where(tt => tt.IsDeleted == false).Select(tt => tt).ToList();
+            //Added By Komal rawal for honeycomb feature
+            Dictionary<string, string> ColorCodelist = db.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
+            var ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
+            var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
+            var PlanColor = ColorCodelist[Enums.EntityType.Plan.ToString().ToLower()];
+            //Declare json object list & variable
+            List<PlanDHTMLXGridDataModel> gridjsonlist = new List<PlanDHTMLXGridDataModel>();
+            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+
+            try
+            {
+                // Add By Nishant Sheth
+                // Desc :: To Reslove owner filter issue
+                var Label = Enums.FilterLabel.Plan.ToString();
+                //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+                var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
+                /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
+                //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+                // End By Nishant sheth
+                List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
+                //// Owner filter criteria.
+                List<int> filterOwner = ownerIds.Count() == 0 ? new List<int>() : ownerIds;
+                // Add By Nishant Sheth
+                // Desc :: To resolve the select and deselct all owner issues
+                //if (planselectedowner == null)
+                //{
+                //    filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+                //}
+                // End By Nishant Sheth
+                //Modified by komal rawal for #1283
+                //TacticType filter criteria
+                List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+                //TacticType filter criteria
+                List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
+
+                if (IsPlanCreateAllAuthorized)
+                {
+                    IsPlanCreateAll = true;
+                }
+                List<int> lstSubordinatesIds = new List<int>();
+                bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                if (IsTacticAllowForSubordinates)
+                {
+                    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);
+                }
+                //Modified By Komal Rawal for #1499
+                // Get current user permission for edit own and subordinates plans.
+                bool IsPlanEditable = false;
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+
+
+                stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
+                string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
+
+                //Added By Komal Rawal to get mql title for csv in honeycomb
+                ViewBag.MQLTitle = MQLTitle;
+
+                int MainPlanID = 0;
+
+                MainPlanID = Convert.ToInt32(planIds[0].ToString());
+                List<Plan> lstplandetail = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
+                int modelId = lstplandetail.Where(p => p.PlanId == MainPlanID).Select(p => p.ModelId).FirstOrDefault();
+                string Year = lstplandetail.Where(p => p.PlanId == MainPlanID).Select(p => p.Year).FirstOrDefault(); //Added by Rahul Shah on 30/11/2015 for PL#1764. 
+                // Generate Tactic Type dropdown data on click of edit dropdown cell
+                // Get Tactic Type List : Added By Bhavesh : 17-Nov-2015 : Changes related to line item dropdown allow editable in grid view
+                List<TacticTypeModel> TacticTypeList = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) &&
+                                                                                        tactype.IsDeployedToModel &&
+                                                                                        tactype.ModelId == modelId).
+                                                       Select(tacttype => new TacticTypeModel
+                                                       {
+                                                           TacticTypeId = tacttype.TacticTypeId,
+                                                           Title = tacttype.Title,
+                                                           AssetType = tacttype.AssetType
+                                                       }).ToList().OrderBy(tactype => tactype.Title).ToList();
+                // Store Tactic Type list in view bag
+                ViewBag.TacticTypelist = TacticTypeList;
+                ViewBag.Year = Year; //Added by Rahul Shah on 30/11/2015 for PL#1764. 
+                // Generate Json Header
+                objPlanMainDHTMLXGrid.head = GenerateJsonHeader(MQLTitle, modelId, TacticTypeList, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
+                GetGoalValue(lstplandetail, modelId, stageList, objplangrid); // for plan grid header to bind goal detail
+
+                //call method to get custom field option list added by devanshi
+                GetCustomfieldDropdownOption();
+                //end
+                var lstcampaigndetail = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && campaign.IsDeleted == false).ToList();
+
+                List<int> lstCampaignId = lstcampaigndetail.Select(campaign => campaign.PlanCampaignId).ToList();
+
+                List<Plan_Campaign_Program> programdetail = db.Plan_Campaign_Program.Where(prog => lstCampaignId.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).ToList();
+
+                List<int> lstprogramId = programdetail.Select(program => program.PlanProgramId).ToList();
+                var programtactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => lstprogramId.Contains(_tactic.PlanProgramId) && _tactic.IsDeleted.Equals(false)).ToList();
+
+                List<int> lsttacticId = programtactic.Select(tactic => tactic.PlanTacticId).ToList();
+                string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+                string section = Enums.Section.Tactic.ToString();
+                var cusomfield = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.CID && customField.IsDeleted == false).ToList();
+                var customfieldidlist = cusomfield.Select(c => c.CustomFieldId).ToList();
+
+                var lstAllTacticCustomFieldEntitiesanony = db.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
+                                                                                                       .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
+
+                List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
+                                                            join lst in lsttacticId on tbl.EntityId equals lst
+                                                            select new CustomField_Entity
+                                                            {
+                                                                EntityId = tbl.EntityId,
+                                                                CustomFieldId = tbl.CustomFieldId,
+                                                                Value = tbl.Value
+                                                            }).ToList();
+
+                CalculateTacticCostRevenue(modelId, lsttacticId, programtactic, MainPlanID);
+
+                List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                List<Plan_Campaign_Program_Tactic> TacticfilterList = new List<Plan_Campaign_Program_Tactic>();
+                List<int> lstTacticIds = new List<int>();
+                List<int> lstAllowedEntityIds = new List<int>();
+                //// Custom Field Filter Criteria.
+                List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+                if (filteredCustomFields.Count > 0)
+                {
+                    filteredCustomFields.ForEach(customField =>
+                    {
+                        string[] splittedCustomField = customField.Split('_');
+                        lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                        lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                    });
+
+
+
+                }
+                //Modified By Komal Rawal for #1499
+                TacticfilterList = programtactic.Where(pcptobj => pcptobj.IsDeleted == false).ToList();
+
+
+                lstTacticIds = TacticfilterList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+                {
+                    IsFiltered = true;
+                    TacticfilterList = TacticfilterList.Where(pcptobj => (filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                             (filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
+                                             (filterStatus.Contains(pcptobj.Status))).ToList();
+
+                    //// Apply Custom restriction for None type
+                    if (TacticfilterList.Count() > 0)
+                    {
+
+                        if (filteredCustomFields.Count > 0)
+                        {
+                            lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds, customfieldlist);
+                            //// get Allowed Entity Ids
+                            TacticfilterList = TacticfilterList.Where(tacticlist => lstTacticIds.Contains(tacticlist.PlanTacticId)).ToList();
+                        }
+
+                    }
+                }
+                int intmodelId = (int)modelId;
+                var lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == intmodelId).Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
+                string strLineType = string.Empty;
+                // Store Line item type list in Viewbag
+                // Generate dropdown for line item type on click of cell
+                // Added by bhavesh : 17-Nov-2015 : Allow line item type editable
+                ViewBag.lineitemtype = lstLineItemType;
+                // Comment by bhavesh TO load line item type later
+                //foreach (var typelist in lstLineItemType)
+                //{
+                //    strLineType = strLineType + "<option value='" + typelist.LineItemTypeId + "'>" + HttpUtility.HtmlEncode((typelist.Title)) + "</option>";
+                //}
+
+                //to improve performance logic changed
+                // Commented By Nishant Sheth 
+                // Desc:: To resolve the #1790 observation
+                //List<string> collaboratorIds = new List<string>();
+                //var planTacticModifiedBy = programtactic.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+                //var planTacticCreatedBy = programtactic.Select(t => t.CreatedBy.ToString()).ToList();
+                //var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => lstTacticIds.Contains(pc.Plan_Campaign_Program_Tactic.PlanTacticId));
+                //var planTacticCommentCreatedBy = programtactic.Select(pc => pc.CreatedBy.ToString()).ToList();
+                //collaboratorIds.AddRange(planTacticCreatedBy);
+                //collaboratorIds.AddRange(planTacticModifiedBy);
+                //collaboratorIds.AddRange(planTacticCommentCreatedBy);
+
+                //List<Guid> collaboratorIdsList = collaboratorIds.Distinct().ToList<string>().Select(Guid.Parse).ToList();
+
+                List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false, customfieldlist);
+                lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false, customfieldlist);
+                //TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
+                // Add By Nishant Shet
+                // Desc:: To resolve owner filter issue
+                TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId)
+                    || (filterOwner.Contains(tacticlist.CreatedBy))).Select(tacticlist => tacticlist).ToList();
+                //End By Nishant Sheth
+
+                TempData["TacticfilterList"] = TacticfilterList;
+                TempData["lsteditableEntityIds"] = lsteditableEntityIds;
+                //End
+                int PlanCnt = 1, CampCnt = 1, ProgCnt = 1;
+                bool IsPlan = true;
+                int planid = 0;
+                string type = string.Empty;
+                string Startdate = string.Empty;
+                string Enddate = string.Empty;
+                double totalcost = 0;
+                double totalmql = 0;
+                double totalrevenue = 0;
+                List<Plan_Campaign> Campaignfilterlst = new List<Plan_Campaign>();
+                List<Plan_Campaign_Program> Programfilterlst = new List<Plan_Campaign_Program>();
+                List<Plan_Campaign_Program_Tactic> finalTacticfilterList = new List<Plan_Campaign_Program_Tactic>();
+                List<Plan_Campaign_Program_Tactic_LineItem> finalLineitem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                string cellTextColor = string.Empty;
+                string IsEditable = string.Empty;
+                List<int> CustomTacticids = new List<int>();
+                // Comment this code not require #ticket 1906, by bhavesh dobariya, date: 20-jan-2016
+                //if (!(filterTacticType.Count > 0 || filteredCustomFields.Count > 0))
+                //{
+                //    IsPlan = true;
+                //}
+                //else
+                //{
+                //    if (TacticfilterList.Count() > 0)
+                //    {
+                //        IsPlan = true;
+                //    }
+                //    else
+                //    {
+                //        IsPlan = false;
+                //    }
+                //}
+                //Added by Komal Rawal for #1845 Link tactic to plan 
+                // #ticket 1906, by bhavesh dobariya, date: 20-jan-2016
+                var ownerTacticids = TacticfilterList.Select(t => t.PlanTacticId).ToList();
+                var ownerProgramids = TacticfilterList.Select(t => t.PlanProgramId).ToList().Concat(TacticfilterList.Where(tacticfilter => (((filterOwner.Count > 0 ? filterOwner.Contains(tacticfilter.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(tacticfilter.Status) : true)) || ownerTacticids.Contains(tacticfilter.PlanTacticId))).Select(t => t.PlanProgramId).ToList());
+                var ownercampaignids = TacticfilterList.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList().Concat(programdetail.Where(prog => prog.IsDeleted == false && (((filterOwner.Count > 0 ? filterOwner.Contains(prog.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(prog.Status) : true)) || ownerProgramids.Contains(prog.PlanProgramId))).Select(p => p.PlanCampaignId).ToList());
+                var ownerPlanids = TacticfilterList.Select(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId).ToList().Concat(lstcampaigndetail.Where(campaign => campaign.IsDeleted == false && (((filterOwner.Count > 0 ? filterOwner.Contains(campaign.CreatedBy) : true) && (filterStatus.Count > 0 ? filterStatus.Contains(campaign.Status) : true)) || ownercampaignids.Contains(campaign.PlanCampaignId))).Select(c => c.PlanId).ToList());
+                var LinkedTacticList = TacticfilterList.Where(list => list.LinkedTacticId != null && list.LinkedPlanId != null).ToList();
+
+                var ListOfLinkedPlanIds = LinkedTacticList.Select(list =>
+                          list.LinkedPlanId
+                   ).Distinct().ToList();
+
+
+                var ListOfLinkedPlans = db.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
+
+                // Get list of packages
+                var lstPackages = db.ROI_PackageDetail.ToList();
+                var ListOfLinkedTactics = LinkedTacticList.Select(list =>
+                    new
+                    {
+                        TacticId = list.LinkedTacticId,
+                        PlanName = ListOfLinkedPlans.Where(l => l.PlanId == list.LinkedPlanId).Select(l => l.Title).FirstOrDefault()
+
+                    }
+                    );
+                //End
+                // Declare Variable for XML to JSON
+                PlanDHTMLXGridDataModel gridjsonlistplanobj = new PlanDHTMLXGridDataModel();
+                string openstateone = "1", lockedstateone = "1";
+                string lockedstatezero = "0";
+                string bgcolorPlan = PlanBackgroundColor;
+                string bgcolorCampaign = CampaignBackgroundColor;
+                string bgcolorProgram = ProgramBackgroundColor;
+                string bgcolorTactic = TacticBackgroundColor;
+                string bgcolorLineItem = LineItemBackgroundColor;
+
+
+                string stylecolorblack = "color:#000";
+                string stylecolorgray = "color:#727272"; // Add By Nishant Sheth #1987 , color change by Bhumika reg. PL ticket 2312
+
+                string doubledesh = "--";
+                string typero = "ro";
                 string dollarsymbol = Sessions.PlanCurrencySymbol; // Modified By Nishant Sheth #2497
+                //if (false)
+                //{
                 if (IsPlan)
                 {
                     foreach (var planitem in lstplandetail)
@@ -14170,7 +15296,11 @@ namespace RevenuePlanner.Controllers
                         gridjsonlist.Add(gridjsonlistplanobj);
                     }
                 }
+                //}
                 objPlanMainDHTMLXGrid.rows = gridjsonlist;
+                //IGrid objGrid = new Grid();
+                //objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(PlanId,Sessions.User.ClientId,ownerIds,TacticTypeid,StatusIds,customFieldIds,Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate);
+
                 objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
             }
             catch (Exception objException)
@@ -14185,7 +15315,7 @@ namespace RevenuePlanner.Controllers
             }
 
             await Task.Delay(1);
-            return PartialView("_HomeGrid", objplangrid);
+            return PartialView("_HomeGrid_New", objplangrid);
         }
 
         #region method to generate grid header
@@ -18941,5 +20071,216 @@ namespace RevenuePlanner.Controllers
             return value;
         }
 
+        public ActionResult GetBudgetedData_New()
+        {
+            List<BudgetDHTMLXGridDataModel> TestGridObj = new List<BudgetDHTMLXGridDataModel>();
+            BudgetDHTMLXGridDataModel objTest = new BudgetDHTMLXGridDataModel();
+            objTest.data = new List<Budgetdataobj>();
+            objTest.bgColor = "#e6e6e6";
+            objTest.id = "planplan_20212";
+            objTest.open = "1";
+
+            Budgetdataobj TestBudgetDataObj0 = new Budgetdataobj();
+            TestBudgetDataObj0.actval = null;
+            TestBudgetDataObj0.locked = null;
+            TestBudgetDataObj0.style = null;
+            TestBudgetDataObj0.type = null;
+            TestBudgetDataObj0.value = "20212";
+            objTest.data.Add(TestBudgetDataObj0);
+
+            Budgetdataobj TestBudgetDataObj1 = new Budgetdataobj();
+            TestBudgetDataObj1.actval = null;
+            TestBudgetDataObj1.locked = null;
+            TestBudgetDataObj1.style = null;
+            TestBudgetDataObj1.type = null;
+            TestBudgetDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;######2578&lt;/a&gt;";
+            objTest.data.Add(TestBudgetDataObj1);
+
+            Budgetdataobj TestBudgetDataObj2 = new Budgetdataobj();
+            TestBudgetDataObj2.actval = null;
+            TestBudgetDataObj2.locked = null;
+            TestBudgetDataObj2.style = null;
+            TestBudgetDataObj2.type = null;
+            TestBudgetDataObj2.value = "&lt;div class=budgetingmaincolumn&gt; &lt;div id=planplan_20212 mainbudget =100 style = position:relative  class=&#39;planLevel clueallocatedCost topCorner&#39;&gt;10,500&lt;span mnth txt=10500 class=&#39;red-corner-budget clickme&#39; rel = #loadme style = cursor:pointer &gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;";
+            objTest.data.Add(TestBudgetDataObj2);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "0";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTest.data.Add(TestBudgetDataObjTest);
+            }
+
+            BudgetDHTMLXGridDataModel objTestCampaign = new BudgetDHTMLXGridDataModel();
+            objTestCampaign.data = new List<Budgetdataobj>();
+            objTestCampaign.bgColor = "#c6ebf3";
+            objTestCampaign.id = "campaignc_27286";
+            objTestCampaign.open = null;
+            objTestCampaign.rows = new List<BudgetDHTMLXGridDataModel>();
+
+
+            Budgetdataobj TestCampDataObj0 = new Budgetdataobj();
+            TestCampDataObj0.actval = null;
+            TestCampDataObj0.locked = null;
+            TestCampDataObj0.style = null;
+            TestCampDataObj0.type = null;
+            TestCampDataObj0.value = "27286";
+            objTestCampaign.data.Add(TestCampDataObj0);
+
+            Budgetdataobj TestCampDataObj1 = new Budgetdataobj();
+            TestCampDataObj1.actval = null;
+            TestCampDataObj1.locked = null;
+            TestCampDataObj1.style = null;
+            TestCampDataObj1.type = null;
+            TestCampDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;Camp_2578&lt;/a&gt;";
+            objTestCampaign.data.Add(TestCampDataObj1);
+
+            objTestCampaign.data.Add(TestBudgetDataObj2);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "1";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTestCampaign.data.Add(TestBudgetDataObjTest);
+            }
+
+            BudgetDHTMLXGridDataModel objTestProgram = new BudgetDHTMLXGridDataModel();
+            objTestProgram.data = new List<Budgetdataobj>();
+            objTestProgram.bgColor = "#dff0f8";
+            objTestProgram.id = "programcp_33878";
+            objTestProgram.open = null;
+            objTestProgram.rows = new List<BudgetDHTMLXGridDataModel>();
+
+            Budgetdataobj TestProgDataObj0 = new Budgetdataobj();
+            TestProgDataObj0.actval = null;
+            TestProgDataObj0.locked = null;
+            TestProgDataObj0.style = null;
+            TestProgDataObj0.type = null;
+            TestProgDataObj0.value = "33878";
+            objTestProgram.data.Add(TestProgDataObj0);
+
+            Budgetdataobj TestProgDataObj1 = new Budgetdataobj();
+            TestProgDataObj1.actval = null;
+            TestProgDataObj1.locked = null;
+            TestProgDataObj1.style = null;
+            TestProgDataObj1.type = null;
+            TestProgDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;prog_2578 27330&lt;/a&gt;";
+            objTestProgram.data.Add(TestProgDataObj1);
+
+            objTestProgram.data.Add(TestBudgetDataObj2);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "0";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTestProgram.data.Add(TestBudgetDataObjTest);
+            }
+
+            objTestCampaign.rows = new List<BudgetDHTMLXGridDataModel>();
+            objTestCampaign.rows.Add(objTestProgram);
+
+            objTest.rows = new List<BudgetDHTMLXGridDataModel>();
+            objTest.rows.Add(objTestCampaign);
+
+            TestGridObj = new List<BudgetDHTMLXGridDataModel>();
+            TestGridObj.Add(objTest);
+
+            List<BudgetModel> model = new List<BudgetModel>();
+            BudgetDHTMLXGridModel objTestBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
+            objTestBudgetDHTMLXGrid = GenerateHeaderString_New("months", objTestBudgetDHTMLXGrid, model, "1");
+            objTestBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
+            objTestBudgetDHTMLXGrid.Grid.rows = TestGridObj;
+            return PartialView("~/Views/Budget/Budget.cshtml", objTestBudgetDHTMLXGrid);
+        }
+
+        public BudgetDHTMLXGridModel GenerateHeaderString_New(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<BudgetModel> model, string tab)
+        {
+            string setHeader = "", colType = "", width = "", colSorting = "";
+            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+            if (tab == "1")
+            {
+                setHeader = "ActivityId,Task Name,Planned Cost";
+                colType = "ro,tree,ro";
+                width = "100,250,100";
+                colSorting = "na,na,na";
+            }
+            else
+            {
+                setHeader = "ActivityId,Task Name";
+                colType = "ro,tree";
+                width = "100,250";
+                colSorting = "na,na";
+            }
+
+
+            //BudgetModel plan = model.SingleOrDefault(p => p.ActivityType == ActivityType.ActivityPlan);
+            //string activityId = plan.ActivityId;
+            //BudgetMonth obj = plan.Month;
+            //BudgetMonth parent = plan.ParentMonth;
+
+            //bool isEditable = model.Where(p => p.ActivityType == ActivityType.ActivityPlan.ToString()).Select(p => p.isEditable).FirstOrDefault();
+
+            if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
+            {
+                int quarterCounter = 1;
+                for (int i = 1; i <= 11; i += 3)
+                {
+                    DateTime dt = new DateTime(2012, i, 1);
+                    setHeader = setHeader + ",Q" + quarterCounter.ToString();
+                    colType = colType + ",ro";
+                    width = width + ",100";
+                    colSorting = colSorting + ",str";
+                    quarterCounter++;
+                }
+            }
+            else
+            {
+                for (int i = 1; i <= 12; i++)
+                {
+                    DateTime dt = new DateTime(2012, i, 1);
+                    setHeader = setHeader + "," + dt.ToString("MMM").ToUpper();
+                    colType = colType + ",ed";
+                    width = width + ",100";
+                    colSorting = colSorting + ",str";
+
+                    setHeader = setHeader + ",A" + dt.ToString("MMM").ToUpper();
+                    colType = colType + ",ed";
+                    width = width + ",100";
+                    colSorting = colSorting + ",str";
+
+                    setHeader = setHeader + ",C" + dt.ToString("MMM").ToUpper();
+                    colType = colType + ",ed";
+                    width = width + ",100";
+                    colSorting = colSorting + ",str";
+                }
+            }
+
+            if (tab == "2")
+            {
+                setHeader = setHeader + ",Total";
+                colType = colType + ",ro";
+                width = width + ",100";
+                colSorting = colSorting + ",str";
+            }
+
+            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
+            objBudgetDHTMLXGrid.SetHeader = setHeader + ",";
+            objBudgetDHTMLXGrid.ColType = colType + ",ro";
+            objBudgetDHTMLXGrid.Width = width + ",10";
+            objBudgetDHTMLXGrid.ColSorting = colSorting + ",na";
+            return objBudgetDHTMLXGrid;
+        }
     }
 }

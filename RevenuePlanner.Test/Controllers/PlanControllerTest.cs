@@ -191,7 +191,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             Sessions.PlanId = DataHelper.GetPlanId();
-            var result = controller.PublishPlan(Sessions.User.UserId.ToString()) as JsonResult;
+            var result = controller.PublishPlan(Sessions.User.ID) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             // data object should not be null in json result
             Assert.IsNotNull(result.Data);
@@ -1334,7 +1334,7 @@ namespace RevenuePlanner.Test.Controllers
             var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID);
             string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
 
-            string allocatedBy = Sessions.User.UserId.ToString();
+            int allocatedBy = Sessions.User.ID;
             var result = controller.DeleteSuggestedBoxImprovementTactic(EntityId, allocatedBy) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);

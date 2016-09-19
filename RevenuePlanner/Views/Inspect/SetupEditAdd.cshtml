@@ -1179,6 +1179,7 @@
         $('#ddlTacticType').next().find('.sbSelector').focus();
     }
     $('#ddlTacticType').change(function (e) {
+        debugger;
     	// Modified by Arpita Soni for Ticket #2354 on 07/19/2016
         var newTacticTypeId = $(this).val();
         var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticTypes))');

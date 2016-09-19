@@ -6269,8 +6269,7 @@ namespace RevenuePlanner.Helpers
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Status.ToString(), Value = PlanGanttTypes.Status.ToString() });
-            // lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Request.ToString(), Value = PlanGanttTypes.Request.ToString() });
-            //lstViewByTab = lstViewByTab.Where(viewBy => !string.IsNullOrEmpty(viewBy.Text)).OrderBy(viewBy => viewBy.Text, new AlphaNumericComparer()).ToList();
+      
 
             //// Check that if list of PlanTactic is not null then we are going to fetch the Custom Fields
             if (lstTactic != null && lstTactic.Count > 0)
@@ -6430,7 +6429,7 @@ namespace RevenuePlanner.Helpers
             //                       orderby parent.Name
             //                       select new { child.Name, child.Id }).Distinct().ToList();
 
-            var customfieldlist = db.Budget_Detail.Where(a => a.ParentId == ParentId && (a.IsDeleted == false || a.IsDeleted == null) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
+            var customfieldlist = db.Budget_Detail.Where(a => a.ParentId == ParentId && (a.IsDeleted == false || a.IsDeleted == false) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
             lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
             return lstBudget;
         }
@@ -7135,7 +7134,7 @@ namespace RevenuePlanner.Helpers
 
             }
 
-            if (createdBy != null && modifiedDate != null)
+            if (createdBy != 0 && modifiedDate != null)
             {
                 ////Checking if created by is empty then system generated modification
                 if (createdBy == 0)
@@ -9300,7 +9299,7 @@ namespace RevenuePlanner.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveAllCurrentUserCache()
         {
-            if (Sessions.User != null && Sessions.User.ID != null && HttpContext.Current.Session.Contents.SessionID != null)
+            if (Sessions.User != null && Sessions.User.ID != 0 && HttpContext.Current.Session.Contents.SessionID != null)
             {
                 string[] names = Enum.GetNames(typeof(Enums.CacheObject));
                 for (int i = 0; i < names.Length; i++)
@@ -9937,6 +9936,30 @@ namespace RevenuePlanner.Helpers
 
         //ENd
 
+
+        //Added by Komal Rawal on 16-09-2016 to get goal values in header for plans
+        public List<GoalValueModel> spgetgoalvalues(string Planids)
+        {
+            MRPEntities db = new MRPEntities();
+            List<GoalValueModel> GoalValues = new List<GoalValueModel>();
+        
+            SqlParameter[] para = new SqlParameter[2];
+
+            para[0] = new SqlParameter()
+            {
+                ParameterName = "PlanId",
+                Value = Planids
+            };
+            para[1] = new SqlParameter()
+            {
+                ParameterName = "ClientId",
+                Value = Sessions.User.ClientId
+            };
+         
+            var CustomGoalValues = db.Database.SqlQuery<GoalValueModel>("spGetGoalValuesForPlan @PlanId,@ClientId", para).ToList();
+            return GoalValues = GoalValues.Concat(CustomGoalValues).ToList();
+        }
+        //End
     }
     #endregion
 

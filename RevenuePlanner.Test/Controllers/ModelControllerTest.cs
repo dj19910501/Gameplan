@@ -637,7 +637,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             int TacticTypeId = DataHelper.GetdeletedTacticTypeId(ModelId);
             Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
-            var result = objModelController.DeleteTactic(TacticTypeId, Sessions.User.UserId.ToString()) as JsonResult;
+            var result = objModelController.DeleteTactic(TacticTypeId, Sessions.User.ID) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
         }

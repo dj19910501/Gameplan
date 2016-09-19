@@ -3429,10 +3429,10 @@ namespace RevenuePlanner.BDSService {
         System.Threading.Tasks.Task<int> UpdateClientDataExAsync(RevenuePlanner.BDSService.Client client, int modifiedBy);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserRoleEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserRoleExResponse")]
-        string GetUserRoleEx(System.Guid id, System.Guid applicationId, int ClientId);
+        string GetUserRoleEx(int userId, System.Guid applicationId, int ClientId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserRoleEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserRoleExResponse")]
-        System.Threading.Tasks.Task<string> GetUserRoleExAsync(System.Guid id, System.Guid applicationId, int ClientId);
+        System.Threading.Tasks.Task<string> GetUserRoleExAsync(int userId, System.Guid applicationId, int ClientId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetClientNameEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetClientNameExResponse")]
         string GetClientNameEx(int userId);
@@ -4340,12 +4340,12 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.UpdateClientDataExAsync(client, modifiedBy);
         }
         
-        public string GetUserRoleEx(System.Guid id, System.Guid applicationId, int ClientId) {
-            return base.Channel.GetUserRoleEx(id, applicationId, ClientId);
+        public string GetUserRoleEx(int userId, System.Guid applicationId, int ClientId) {
+            return base.Channel.GetUserRoleEx(userId, applicationId, ClientId);
         }
         
-        public System.Threading.Tasks.Task<string> GetUserRoleExAsync(System.Guid id, System.Guid applicationId, int ClientId) {
-            return base.Channel.GetUserRoleExAsync(id, applicationId, ClientId);
+        public System.Threading.Tasks.Task<string> GetUserRoleExAsync(int userId, System.Guid applicationId, int ClientId) {
+            return base.Channel.GetUserRoleExAsync(userId, applicationId, ClientId);
         }
         
         public string GetClientNameEx(int userId) {

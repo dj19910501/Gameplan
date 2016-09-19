@@ -141,12 +141,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param> Added by Sohel Pathan on 07/08/2014 for PL ticket #672
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SavePlanDetails(InspectModel objPlanModel, string BudgetInputValues = "", string planBudget = "", string RedirectType = "", string UserId = "", string AllocatedBy = "", int YearDiffrence = 0)
+        public JsonResult SavePlanDetails(InspectModel objPlanModel, string BudgetInputValues = "", string planBudget = "", string RedirectType = "", int UserId = 0, string AllocatedBy = "", int YearDiffrence = 0)
         {
             //// check whether UserId is current loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -911,12 +911,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="planId"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string title, string customFieldInputs, string UserId = "", int planId = 0)
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string title, string customFieldInputs, int UserId = 0, int planId = 0)
         {
             //// check whether UserId is current loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -1475,12 +1475,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="title">Title of Program.</param>
         /// <returns>Returns Save/Error message.</returns>
         [HttpPost]
-        public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, string UserId = "", string title = "")
+        public ActionResult SetupSaveProgram(Plan_Campaign_ProgramModel form, string customFieldInputs, int UserId = 0, string title = "")
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     return Json(new { IsSaved = false, errormsg = Common.objCached.LoginWithSameSession }, JsonRequestBehavior.AllowGet);
                 }
@@ -2994,14 +2994,14 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param>
         /// <returns>Returns JsonResult.</returns>
         [HttpPost]
-        public JsonResult UploadResult(List<InspectActual> tacticactual, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActual, string UserId = "", string tactictitle = "")
+        public JsonResult UploadResult(List<InspectActual> tacticactual, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActual, int UserId = 0, string tactictitle = "")
         {
             bool isLineItemForTactic = false;
             PlanExchangeRate = Sessions.PlanExchangeRate;
             //// check whether UserId is current loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = Url.Content("#") }, JsonRequestBehavior.AllowGet);
@@ -3796,13 +3796,13 @@ namespace RevenuePlanner.Controllers
         /// <param name="strDescription"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, string UserId = "", string strDescription = "", bool resubmission = false)
+        public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, int UserId = 0, string strDescription = "", bool resubmission = false)
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
             //// check whether UserId is current loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -3900,7 +3900,6 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.CreatedBy = form.OwnerId;             // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.TacticBudget = form.Cost; //modified for 1229
-                                if (pcpobj.StageId == 0) pcpobj.StageId = 1; //TODO: this must be fixed! zz
                                 if (isDeployedToIntegration)
                                 {
                                     if (sfdcInstanceId > 0)
@@ -5397,11 +5396,11 @@ namespace RevenuePlanner.Controllers
         /// <CreatedDate>18/11/2014</CreatedDate>
         /// <param name="UserId"></param>
         /// <returns></returns>
-        public JsonResult fillOwner(string UserId = "")
+        public JsonResult fillOwner(int UserId = 0)
         {
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -6840,13 +6839,13 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of edit Setup Tab.</returns>
         [HttpPost]
 
-        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues, string customFieldInputs, string UserId = "", int tacticId = 0)
+        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues, string customFieldInputs, int UserId = 0, int tacticId = 0)
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
             //// Check whether current user is loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -10544,7 +10543,7 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
 
                 var individuals = new List<RevenuePlanner.BDSService.User>();
-                if (Sessions.User != null && Sessions.User.CID != null && Sessions.ApplicationId != null && Sessions.User.ID != null) //Added by komal to check session is null for #2299
+                if (Sessions.User != null && Sessions.User.CID != 0 && Sessions.ApplicationId != null && Sessions.User.ID != 0) //Added by komal to check session is null for #2299
                 {
                     individuals = bdsUserRepository.GetTeamMemberListEx(Sessions.User.CID, Sessions.ApplicationId, Sessions.User.ID, true);
                 }
@@ -10878,12 +10877,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="IsIndex"></param>
         /// <param name="RedirectType"></param>
         /// <returns></returns>
-        public ActionResult DeleteSection(int id = 0, string DeleteType = "", string UserId = "", string closedTask = null, string CalledFromBudget = "", bool IsIndex = false, bool RedirectType = false)
+        public ActionResult DeleteSection(int id = 0, string DeleteType = "", int UserId = 0, string closedTask = null, string CalledFromBudget = "", bool IsIndex = false, bool RedirectType = false)
         {
             //// check whether UserId is currently loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);

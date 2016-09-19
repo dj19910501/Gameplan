@@ -1,6 +1,5 @@
 ﻿
-function GetHeadsUpData(HeaderUrl,ChartUrl,activemenu,timeframe)
-{
+function GetHeadsUpData(HeaderUrl, ChartUrl, activemenu, timeframe) {
     var _filters = {
         selectedPlanIds: [],
         OwnerIds: [],
@@ -74,7 +73,7 @@ function GetHeadsUpData(HeaderUrl,ChartUrl,activemenu,timeframe)
         }
     });
 
-    GetHeaderData(HeaderUrl,activemenu,timeframe,_filters.selectedPlanIds,_filters.customFieldIds,_filters.OwnerIds,_filters.TacticTypeids,_filters.StatusIds);
+    GetHeaderData(HeaderUrl, activemenu, timeframe, _filters.selectedPlanIds, _filters.customFieldIds, _filters.OwnerIds, _filters.TacticTypeids, _filters.StatusIds);
     GetNumberOfActivityPerMonByPlanId(ChartUrl, activemenu, timeframe, _filters.selectedPlanIds, _filters.customFieldIds, _filters.OwnerIds, _filters.TacticTypeids, _filters.StatusIds);
 }
 
@@ -83,7 +82,6 @@ function GetHeaderData(url, activemenu, timeframe, selectedPlanIds, Customid, Ow
     $.ajax(
     {
         type: "POST",
-        cache: false,
         url: url,
         data: {
             planid: selectedPlanIds.toString(),
@@ -143,15 +141,14 @@ function GetHeaderData(url, activemenu, timeframe, selectedPlanIds, Customid, Ow
 }
 
 
-function GetNumberOfActivityPerMonByPlanId(url, activemenu, timeframe,selectedPlanIds, Customid, OwnerId, Tacticids, StatusId) {
+function GetNumberOfActivityPerMonByPlanId(url, activemenu, timeframe, selectedPlanIds, Customid, OwnerId, Tacticids, StatusId) {
     var isMultiple = false;
     if (activemenu == "home") {
         isMultiple = true;
     }
     $.ajax(
     {
-        type: "POST", 
-        cache: false,
+        type: "POST",
         url: url,
         data: {
             planid: selectedPlanIds.toString(),
@@ -161,7 +158,7 @@ function GetNumberOfActivityPerMonByPlanId(url, activemenu, timeframe,selectedPl
             OwnerIds: OwnerId.toString(),
             TacticTypeids: Tacticids.toString(),
             StatusIds: StatusId.toString(),
-           
+
         },
         dataType: "json",
         success: function (data) {
@@ -249,8 +246,7 @@ function setgraphdata(data) {
 }
 
 
-function GetMultiplePlanNames()
-{
+function GetMultiplePlanNames() {
     var PlanNames = "";
     var PlanCount = 0;
     $('#ulSelectedPlans').find("input[type=checkbox]:checked").each(function () {
@@ -260,7 +256,89 @@ function GetMultiplePlanNames()
     });
     PlanNames = PlanNames.slice(0, -1);
     $("#PlanTitle").html(PlanNames);
-    $("#PlanTitle").attr('title',PlanNames);
+    $("#PlanTitle").attr('title', PlanNames);
     $("#PlanCount").html(PlanCount + " Plans Selected")
 
+}
+
+function GetGoalValues(url,selectedPlanIds) {
+    $.ajax(
+   {
+       type: "POST",
+       url: url,
+       data: {
+           planids: selectedPlanIds.toString(),
+       },
+       dataType: "json",
+       success: function (data) {
+           $("#Revlbl").html(data.RevenueLabel + " :");
+           $("#spnrevenue").html(data.RevenueValue);
+           SetBudget("#spnrevenue");
+           $("#mqllbl").html(data.MQLLabel + " :");
+           $("#spnmql").html(data.MQLValue);
+           SetPriceValue("#spnmql");
+           $("#inqlbl").html(data.INQLabel + " :");
+           $("#spninq").html(data.INQValue);
+           SetPriceValue("#spninq");
+           $("#cwlbl").html(data.CWLabel + " :");
+           $("#spncw").html(data.CWValue);
+           SetPriceValue("#spncw");
+       }
+   });
+
+}
+
+function BindUpcomingActivites(SelectedPlanIds,url) {
+    var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+    var years = "";
+    $.each(listCheckbox, function () {
+        if ($(this).attr("checked")) {
+            years += $(this).attr('yearValue') + ",";
+        }
+    });
+    years = years.slice(0, -1);
+  
+    var currentval = $("#ddlUpComingActivites").val();
+    $.ajax({
+        type: 'POST',
+        url: url,
+        async: false,
+        data: {
+            planids: SelectedPlanIds.toString(),
+            fltrYears: years
+        },
+        success: function (data) {
+            BindUpcomingActivies(data);
+            var upcomingvalues = [];
+            $.each($("#ddlUpComingActivites option"), function () {
+                upcomingvalues.push(this.value.toString());
+            });
+            if (upcomingvalues.indexOf(currentval) > 0) {
+                $.each($("#ddlUpComingActivites option"), function () {
+                    $(this).removeAttr('selected');
+                });
+                $("#ddlUpComingActivites option[value='" + currentval + "']").attr('selected', 'selected');
+                $("#ddlUpComingActivites").selectbox('detach');
+                $("#ddlUpComingActivites").selectbox("attach");
+            }
+        }
+    });
+}
+
+function BindUpcomingActivies(items) {
+    var $dropdown = $("#ddlUpComingActivites");
+    $dropdown.html('');
+    var $html = '';
+    if (items.length > 0) {
+        $.each(items, function (index, pvalues) {
+            if (pvalues.Selected) {
+                $html += '<option value="' + pvalues.Value + '" selected="selected">' + pvalues.Text + '</option>';
+            } else {
+                $html += '<option value="' + pvalues.Value + '">' + pvalues.Text + '</option>';
+            }
+        });
+    }
+    $dropdown.append($html);
+    $("#ddlUpComingActivites").selectbox('detach');
+    $("#ddlUpComingActivites").selectbox("attach");
 }

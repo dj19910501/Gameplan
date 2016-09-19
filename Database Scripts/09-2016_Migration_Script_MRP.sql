@@ -73,7 +73,7 @@ BEGIN
 			Insert into Alert_Rules (RuleSummary,EntityId,EntityType,Indicator,IndicatorComparision,IndicatorGoal,CompletionGoal,Frequency,DayOfWeek,DateOfMonth,LastProcessingDate,
 				UserId,ClientId,IsDisabled,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,UniqueRuleCode)
 			values(@RuleSummary,@EntityId,@EntityType,@Indicator,@IndicatorComparision,@IndicatorGoal,@CompletionGoal,@Frequency,@DayOfWeek,@DateOfMonth,GETDATE(),
-				@UserId,@ClientId,0,GETDATE(),@CreatedBy,null,null,@UniqueRule)
+				@UserId,@ClientId,0,GETDATE(),@CreatedBy,GETDATE(),@CreatedBy,@UniqueRule)
 			set @IsExists=0
 		End
 		Else
@@ -835,7 +835,6 @@ BEGIN
 	SELECT @revenue as Title, @RevenueTotal as Value, @revenue as StageCode
 	
 END
-
 GO
 
 --Index Add to improve performance for Getbudget store proc.
@@ -1058,7 +1057,7 @@ END'
 END
 
 --Function fnGetMqlByEntityTypeAndEntityId
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetEntitieHirarchyByPlanId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetMqlByEntityTypeAndEntityId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 BEGIN
 	execute dbo.sp_executesql @statement = N'CREATE FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId](
 	 @EntityType NVARCHAR(100)=''''
@@ -1124,6 +1123,7 @@ BEGIN
 END
 '
 END
+GO
 
 --Function fnGetRevueneByEntityTypeAndEntityId
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetRevueneByEntityTypeAndEntityId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
@@ -1211,14 +1211,16 @@ BEGIN
 END
 '
 END
-
-
--- View Plan_PlannedCost
-IF EXISTS(select 1 FROM sys.views where name = 'Plan_PlannedCost')
-DROP VIEW [Plan_PlannedCost]
 GO
 
- ALTER VIEW [dbo].[Plan_PlannedCost] WITH SCHEMABINDING
+-- View Plan_PlannedCost
+IF EXISTS(select * FROM sys.views where name = 'Plan_PlannedCost')
+BEGIN
+	DROP VIEW [dbo].[Plan_PlannedCost]
+END
+GO
+
+ CREATE VIEW [dbo].[Plan_PlannedCost] WITH SCHEMABINDING
 	AS 
    SELECT [dbo].[Plan_Campaign].[PlanId], 
    SUM([dbo].[Plan_Campaign_Program_Tactic].[Cost]) AS PlannedCost
@@ -1320,8 +1322,8 @@ SET NOCOUNT ON;
 									AND C.EntityType = Hireachy.EntityType) C
 
 END
-
 GO
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridData]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetGridData] AS' 

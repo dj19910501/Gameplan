@@ -248,7 +248,7 @@ namespace RevenuePlanner.Test.Controllers
                 string desc = ImprovementTacticTypeData.Description;
                 string title = ImprovementTacticTypeData.Title;
                 bool deployToIntegrationStatus = ImprovementTacticTypeData.IsDeployedToIntegration;
-                string UserId = ImprovementTacticTypeData.CreatedBy.ToString();
+                int UserId = ImprovementTacticTypeData.CreatedBy;
                 var result = objBoostController.saveImprovementTacticData(improvementId, improvementDetails, status, cost, desc, title, deployToIntegrationStatus, UserId) as JsonResult;
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
                 Assert.IsNotNull(result.Data);
@@ -282,7 +282,7 @@ namespace RevenuePlanner.Test.Controllers
             string desc = "";
             string title = "New Improvement Tactic Type Test 1234";
             bool deployToIntegrationStatus = false;
-            string UserId = Sessions.User.UserId.ToString();
+            int UserId = Sessions.User.ID;
             var result = objBoostController.saveImprovementTacticData(improvementId, improvementDetails, status, cost, desc, title, deployToIntegrationStatus, UserId) as JsonResult;            
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -316,7 +316,7 @@ namespace RevenuePlanner.Test.Controllers
                 Sessions.User.ID = ImprovementTacticTypeData.CreatedBy;
                 int improvementId = ImprovementTacticTypeData.ImprovementTacticTypeId;
                 bool deployToIntegrationStatus = ImprovementTacticTypeData.IsDeployedToIntegration;
-                string UserId = ImprovementTacticTypeData.CreatedBy.ToString();
+                int UserId = ImprovementTacticTypeData.CreatedBy;
                 var result = objBoostController.SaveDeployedToIntegrationStatus(improvementId, deployToIntegrationStatus, UserId) as JsonResult;
                 var serializedData = new RouteValueDictionary(result.Data);
                 var resultvalue = serializedData["message"];
@@ -352,7 +352,7 @@ namespace RevenuePlanner.Test.Controllers
                 Sessions.User.ID= ImprovementTacticTypeData.CreatedBy;
                 int improvementId = ImprovementTacticTypeData.ImprovementTacticTypeId;
                 bool deploye = ImprovementTacticTypeData.IsDeployed;
-                string UserId = ImprovementTacticTypeData.CreatedBy.ToString();
+                int UserId = ImprovementTacticTypeData.CreatedBy;
                 var result = objBoostController.SaveDeployedToIntegrationStatus(improvementId, deploye, UserId) as JsonResult;
                 var serializedData = new RouteValueDictionary(result.Data);
                 var resultvalue = serializedData["message"];                

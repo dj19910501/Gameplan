@@ -292,7 +292,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.User.ID = DataHelper.GetUserId(PlanId);
             string currentPassword = "Test1234";
-            var result = objLoginController.CheckCurrentPassword(currentPassword, Sessions.User.ID.ToString()) as JsonResult;
+            var result = objLoginController.CheckCurrentPassword(currentPassword, Sessions.User.ID) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
             

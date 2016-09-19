@@ -305,15 +305,15 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">user to be deleted</param>
         /// <returns> Redirect to Index Action</returns>
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult Delete(Guid id)
+        public ActionResult Delete(int id)
         {
             try
             {
-                if (id != null)
+                if (id != 0)
                 {
                     //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                     string userRole = objBDSServiceClient.GetUserRoleEx(id, Sessions.ApplicationId, Sessions.User.CID);
-                    int retVal = objBDSServiceClient.DeleteUser(id, Sessions.ApplicationId);
+                    int retVal = objBDSServiceClient.DeleteUserEx(id, Sessions.ApplicationId);
                     if (retVal == 1)
                         TempData["SuccessMessage"] = Common.objCached.UserDeleted;
                 }
@@ -727,7 +727,7 @@ namespace RevenuePlanner.Controllers
                 //To handle unavailability of BDSService
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    if (usrid == null)
+                    if (usrid == 0)
                     {
                         //// Flag to indicate unavailability of web service.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.

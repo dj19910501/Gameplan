@@ -1354,7 +1354,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="currentPassword">current password</param>
         /// <returns>Returns true if the operation is successful, 0 otherwise.</returns>
-        public ActionResult CheckCurrentPassword(string currentPassword, string userId)
+        public ActionResult CheckCurrentPassword(string currentPassword, int userId)
         {
             bool isValid = false;
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
@@ -1363,7 +1363,7 @@ namespace RevenuePlanner.Controllers
             /*--------------------------------------------------------------------------------------------*/
             try
             {
-                isValid = objBDSServiceClient.CheckCurrentPassword(new Guid(userId), SingleHash_CurrentPassword);
+                isValid = objBDSServiceClient.CheckCurrentPasswordEx(userId, SingleHash_CurrentPassword);
             }
             catch (Exception e)
             {

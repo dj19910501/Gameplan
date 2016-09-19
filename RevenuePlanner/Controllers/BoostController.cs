@@ -341,7 +341,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param>
         /// <returns>Return Save/Error messagee</returns>
         [AuthorizeUser(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult saveImprovementTacticData(int improvementId, string improvementDetails, bool status, double cost, string desc, string title, bool deployToIntegrationStatus, string UserId = "")
+        public ActionResult saveImprovementTacticData(int improvementId, string improvementDetails, bool status, double cost, string desc, string title, bool deployToIntegrationStatus, int UserId = 0)
         {
             string successMessage = string.Empty;
             string ErrorMessage = string.Empty;
@@ -458,12 +458,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="id"></param>
         /// <param name="isDeployedToIntegration"></param>
         /// <param name="UserId"></param>
-        public JsonResult SaveDeployedToIntegrationStatus(int id, bool isDeployedToIntegration, string UserId = "")
+        public JsonResult SaveDeployedToIntegrationStatus(int id, bool isDeployedToIntegration, int UserId = 0)
         {
             //// Check whether UserId is current loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -501,12 +501,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="isDeployed"></param>
         /// <param name="UserId"></param>
         /// <returns>Return Message in Json result.</returns>
-        public JsonResult SaveDeployeStatus(int id, bool isDeployed, string UserId = "")
+        public JsonResult SaveDeployeStatus(int id, bool isDeployed, int UserId = 0)
         {
             //// Check whether UserId is current loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);

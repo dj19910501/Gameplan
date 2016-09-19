@@ -1351,12 +1351,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Integration Instance Id</param>
         /// <param name="UserId">user id of the logged in user</param>
         /// <returns>returns json result object with sync status flag and sync timestamp</returns>
-        public JsonResult SyncNow(int id, string UserId = "")
+        public JsonResult SyncNow(int id, int UserId = 0)
         {
             //// Check whether UserId is loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2212,12 +2212,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">user of current logged in user</param>
         /// <returns>returns json result with data save status flag and success/error message</returns>
         [HttpPost]
-        public JsonResult SaveDataMapping(IList<GameplanDataTypeModel> form, int IntegrationInstanceId, string UserId = "")
+        public JsonResult SaveDataMapping(IList<GameplanDataTypeModel> form, int IntegrationInstanceId, int UserId = 0)
         {
             //// Check whether UserId is loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2313,12 +2313,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param>
         /// <returns>Returns status = 1 and success message on success and status = 0 and failure message on error</returns>
         [HttpPost]
-        public JsonResult SaveDataMappingPullCloseDeal(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "", string closedwon = "")
+        public JsonResult SaveDataMappingPullCloseDeal(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, int UserId = 0, string closedwon = "")
         {
             //// Check whether UserId is loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -2348,12 +2348,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">user id of logged in user</param>
         /// <returns>Returns status = 1 and success message on success and status = 0 and failure message on error</returns>
         [HttpPost]
-        public JsonResult SaveDataMappingPulling(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string IntegrationType = "", string UserId = "", string closedwon = "")
+        public JsonResult SaveDataMappingPulling(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string IntegrationType = "", int UserId = 0, string closedwon = "")
         {
             //// Check whether UserId is loggined user or not.
-            if (!string.IsNullOrEmpty(UserId))
+            if (UserId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User.ID != UserId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);

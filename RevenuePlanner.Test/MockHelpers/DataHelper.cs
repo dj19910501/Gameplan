@@ -435,7 +435,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <returns>returns an deleted PlanId </returns>
         public static int GetDeletedPlanId()
         {            
-            return db.Plans.Where(p => p.IsDeleted == true && p.CreatedBy != null).Select(p => p.PlanId).FirstOrDefault();
+            return db.Plans.Where(p => p.IsDeleted == true && p.CreatedBy != 0).Select(p => p.PlanId).FirstOrDefault();
         }
         /// <summary>
         /// Get a UserId for the given PlanId or ModelId
@@ -452,7 +452,7 @@ namespace RevenuePlanner.Test.MockHelpers
                 UserId = db.Plans.Where(pl => pl.PlanId == PlanId && pl.CreatedBy != 0).Select(pl => pl.CreatedBy).FirstOrDefault();
             }
             else {
-                UserId = db.Models.Where(pl => pl.ModelId == ModelId && pl.CreatedBy != null).Select(pl => pl.CreatedBy).FirstOrDefault();
+                UserId = db.Models.Where(pl => pl.ModelId == ModelId && pl.CreatedBy != 0).Select(pl => pl.CreatedBy).FirstOrDefault();
             }
             
             return UserId;
