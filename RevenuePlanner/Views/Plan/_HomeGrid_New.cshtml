@@ -1,0 +1,242 @@
+﻿@model RevenuePlanner.Models.Plangrid
+@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
+@{
+    var countrows = Model.PlanDHTMLXGrid.rows.Count;
+    List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);   
+
+}
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
+<style>   
+    .manageviewicon .fa {
+        color: #fff;
+        margin-left: 10px;
+    }
+    div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa {
+        color: #F8710E;
+    }
+</style>
+<div id="gridbox" style="background-color:white;width:100%;" ></div>
+<div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
+<div class="row-fluid calc-height">
+    <div class="span12">
+        <div id="divMovetacticPopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div>
+                <form>
+                    <h2 class="primary-title source-sans-prosemibold resubmission_header">Moving a Tactic</h2>
+                    <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to move a tactic to </label>
+                    <label id="lipname" style="text-align: center; width: 100%; font-weight:800;" class="resubmission_content"></label>
+                    <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
+                    <input type="hidden" id="hdnsourceid" />
+                    <input type="hidden" id="hdndestid" />
+                    <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button_Movetactic">Proceed</button>
+                    <button id="cancel-button_Movetactic" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<input type="button" id="useless" value="Click" name="useless" style="display:none;" />*@
+@*<p style="display:none;">Scrolled <span id="spanscroll">0</span> times.</p>*@
+<script src="~/Scripts/js/Home/HomeGrid.js"></script>
+<script type="text/javascript">
+    var HomeGrid;
+    //Add  new
+    var hdnYear= @ViewBag.Year;
+    var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
+    var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');
+    var IslineItemDelete = false;
+    var isCopyTacticHomeGrid = 0;
+    var isEditTacticHomeGrid = 0;
+    var GridHiddenId = 0;
+    var ActivitypeHidden = 0;
+    var MachineNameHidden = 0;
+    //end
+
+    var plannedCostColId='plannedcost';
+    var TaskNameColIndex = 0;
+    var PlannedCostColIndex = 0;
+    var AssetTypeColIndex = 0;
+    var TypeColIndex = 0;
+    var OwnerColIndex = 0;
+    var TargetStageGoalColIndex = 0;
+    var MQLColIndex = 0;
+    var RevenueColIndex = 0;
+    var StartDateCurrentYear = '@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear';
+    var EndDateCurrentYear =  '@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear';
+    var DateComapreValidation = '@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation';
+    var TacticStartDateCompareWithParentStartDate = '@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate';
+    var ProgramStartDateCompareWithParentStartDate = '@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate';
+    var TacticEndDateCompareWithParentEndDate = '@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate';
+    var ProgramEndDateCompareWithParentEndDate = '@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate';
+
+    $(document).ready(function () {
+        $("#BudgetIcon").show();
+        $("#BtnTabIcons").addClass("bdrRadius");
+        $('.nav').addClass('no-bottom-border');
+        BindHomeGrid();
+        $("input[name='useless']").click(doIt);
+        function doIt() {
+            return true;
+        }
+        $("#useless").click();
+        window.focus();
+        pageIsScroll = false;
+        $('.task-tbl div.gridbox').css('height', $(window).height() - 450);
+        if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+            $(".honeycombbox").hide();
+        }
+        else {
+            $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+            $(".honeycombbox").show();
+        }
+        HomeGrid.enableEditEvents(true,false,true);
+        SetTooltip();
+        $('#cancel-button_Movetactic').on("click", function () {
+            $('#divMovetacticPopup').modal("hide");
+
+        });
+        $('#proceed-button_Movetactic').on("click", function () {
+            SaveMoveTactic();
+            $('#divMovetacticPopup').modal("hide");
+        });
+    });
+
+
+    $(document).ajaxComplete(function () {
+        HomeGrid.setSizes();
+    });
+
+    var GridDataHomeGrid;
+    var JsonModelData = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
+    BindHomeGrid(JsonModelData);
+    function BindHomeGrid() {
+        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
+        HomeGrid = new dhtmlXGridObject('gridbox');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        HomeGrid.setImagePath(imgpath);
+        HomeGrid.enableDragAndDrop(true);
+        HomeGrid.enableAutoHeight(false);
+        HomeGrid.enableAutoWidth(false);
+        HomeGrid.setNumberFormat(""+CurrencySybmol+"0,000", 6, ".", ",");
+        HomeGrid.setImageSize(1, 1);
+        HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
+        HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
+        HomeGrid.csvParser = HomeGrid.csvExtParser;
+        HomeGrid.init();
+
+        HomeGrid.attachEvent("onDistributedEnd", function () {
+            HomeGrid.loadOpenStates();
+            LoadAfterParsing();
+            if(HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '')
+            {
+                HomeGrid.showRow(HomeGrid.getRowId(state0));
+                HomeGrid.openItem(HomeGrid.getRowId(state0));
+            }
+            if(!IslineItemDelete){
+                if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
+                    HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                    HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                }
+            }
+
+            if ($("#gridbox").find(".rowselected").length >= 1) {
+                var scrolltop = $(".rowselected").offset().top;
+                $(window).scrollTop(scrolltop - 100);
+            }
+        });
+        HomeGrid.enableDistributedParsing(true, 10, 0.1);
+        HomeGrid.enableColumnMove(true);
+        var mainGridData = JsonModel;
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
+        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+        HomeGrid.parse(GridDataHomeGrid, "json");
+        TaskNameColIndex = HomeGrid.getColIndexById("taskname");
+        PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
+        AssetTypeColIndex = HomeGrid.getColIndexById("roitactictype");
+        TypeColIndex = HomeGrid.getColIndexById("tactictype");
+        OwnerColIndex = HomeGrid.getColIndexById("owner");
+        TargetStageGoalColIndex = HomeGrid.getColIndexById("inq");
+        MQLColIndex = HomeGrid.getColIndexById("mql");
+        RevenueColIndex = HomeGrid.getColIndexById("revenue");
+        GridHiddenId = HomeGrid.getColIndexById('id');
+        ActivitypeHidden = HomeGrid.getColIndexById('activitytype');
+        MachineNameHidden = HomeGrid.getColIndexById('machinename');
+        HomeGrid.setColumnHidden(GridHiddenId,true);
+        HomeGrid.setColumnHidden(ActivitypeHidden,true);
+        HomeGrid.setColumnHidden(MachineNameHidden,true);
+
+        HomeGrid.attachEvent("onAfterCMove", function(cInd,posInd){
+            var ColumnCount = HomeGrid.getColumnCount();
+            var ColumnDetail  = [];
+            for (var i = 0; i < ColumnCount; i++)
+            {
+                var ColWidth = HomeGrid.getColWidth(i);
+                if(ColWidth != 0)
+                {
+                    ColumnDetail.push({
+                        AttributeId   : HomeGrid.getColumnId(i).toString(),
+                        ColumnOrder   :  i
+                    });
+                }
+            }
+            if(ColumnDetail != null && ColumnDetail.length > 0 && ColumnDetail != undefined)
+            {
+                ColumnDetail = JSON.stringify(ColumnDetail);
+                $.ajax({
+                    url: '@Url.Action("SaveColumnView", "ColumnView")', // we are calling json method
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: "{'AttributeDetail':" + (ColumnDetail) + "}",
+                    success: function (data) {
+                    }
+                });
+            }
+        });
+        HomeGrid.collapseAll();
+        var cookie = document.cookie;
+        if(cookie.indexOf("gridOpengridbox") > -1){
+            var cookies = cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                if (cookies[i] == "gridOpengridbox") {
+                    if (cookies[i].indexOf("|") > -1) {
+                        cookies[i] = "gridOpengridbox=plan.1";
+                        document.cookie = "gridOpengridbox=plan.1";
+                    }
+                }
+            }
+        }
+        else{
+            document.cookie = "gridOpengridbox=plan.1";
+        }
+        setTimeout(function () {
+            HomeGrid.loadOpenStates();},1000);
+        LoadAfterParsing();
+
+        if(parseInt('@countrows')>0)
+        {
+            $('#lblMarkringActivitiestitle').hide();
+            $("#gridbox").show();
+            $("#goalwrapper").show();
+            $(".pull-right.toggle-status.source-sans-proregular").show();
+            $("#NodatawithfilterGrid").hide();
+
+        }else{
+            $('#lblMarkringActivitiestitle').hide();
+            $("#gridbox").hide();
+            $("#goalwrapper").hide();
+            $(".pull-right.toggle-status.source-sans-proregular").hide();
+            $("#improvements").hide();
+            $("#NodatawithfilterGrid").show();
+        }
+        if($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null)
+        {
+            GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ",""));
+        }
+    }
+
+
+</script>

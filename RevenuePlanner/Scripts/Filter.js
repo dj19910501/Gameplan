@@ -1055,7 +1055,8 @@ function GetFilterIds() {
         filters.OwnerIds.push($(this).attr('id').toString());
     });
     $("#ulTacticType li input[type=checkbox]:checked").each(function () {
-        filters.TacticTypeids.push($(this).attr('id').toString());
+        var Value = $(this).attr("id").replace("CbTT", "");
+            filters.TacticTypeids.push(Value);        
     });
     $("#ulStatus li input[type=checkbox]:checked").each(function () {
         filters.StatusIds.push($(this).attr('id').toString());

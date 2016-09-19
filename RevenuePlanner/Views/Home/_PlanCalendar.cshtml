@@ -1,0 +1,34 @@
+﻿<link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
+<div class="calendar-gant-table">
+    <div class="gantt-padding market-activity-main  cf lenght-div" style="min-height: 720px;">
+        @*"gantt-padding" class removed by Bhumika to remove 40px-top & 5px-left padding for #2112*@
+        @* Modified by : Sohel Pathan on 29/10/2014 for PL ticket #899 *@
+
+        <div id="gantt_here"></div>
+        <div id="gantt_honey"></div>
+        @*<div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
+            </div>*@
+
+    </div>
+    <div class="shadow-scroll-gantt"></div>
+    <div class="table-row">
+        <table id="table_activities" class="table table-striped table-hover bold" style="display:none">
+            <thead>
+                <tr>
+                    <th class="border-r show-modal">Title</th>
+                    @*<th class="show-modal">@Html.LabelForINQ("INQ")</th>
+                    <th class="show-modal">@Html.LabelForMQL("MQL")</th>*@
+                    <th class="show-modal">INQ</th>
+                    <th class="show-modal">MQL</th>
+                    <th class="show-modal">Revenue</th>
+                    <th class="border-r show-modal">Cost</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--tr elements are add dinamically with javascript-->
+            </tbody>
+        </table>
+    </div>
+</div>

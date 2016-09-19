@@ -697,6 +697,9 @@
     <Content Include="Scripts\js\highcharts-funnel.js" />
     <Content Include="Scripts\js\highcharts-more.js" />
     <Content Include="Scripts\js\highcharts-v2.js" />
+    <Content Include="Scripts\js\Home\Grid_CalendarCommon.js" />
+    <Content Include="Scripts\js\Home\HomeGrid.js" />
+    <Content Include="Scripts\js\Home\planCalendar.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js.map" />
@@ -1016,6 +1019,13 @@
     <Content Include="Views\Home\Index - Copy.cshtml" />
     <Content Include="Views\Filter\Filters.cshtml" />
     <Content Include="Views\Shared\_Planhud.cshtml" />
+    <Content Include="Views\Budget\Budget.cshtml" />
+    <Content Include="Views\Plan\Budget.cshtml" />
+    <Content Include="Views\Plan\_HomeGrid_New.cshtml" />
+    <Content Include="Views\Home\Index1.cshtml" />
+    <Content Include="Views\Home\_HomeGrid_New.cshtml" />
+    <Content Include="Views\Home\_HoneyComb.cshtml" />
+    <Content Include="Views\Home\_PlanCalendar.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

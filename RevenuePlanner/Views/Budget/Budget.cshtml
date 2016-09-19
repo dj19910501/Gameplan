@@ -1,0 +1,136 @@
+﻿@model RevenuePlanner.Models.BudgetDHTMLXGridModel
+@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
+
+@{
+    //string AllocatedBy = ViewBag.AllocatedBy;
+    //string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
+    bool isquarter = false;
+    //if (AllocatedBy.ToLower() == strQuarters)
+    //{
+    //    isquarter = true;
+    //}
+}
+
+ @*<script src="~/Scripts/jquery.cluetip.js"></script>*@
+<style>
+    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+        text-align: center;
+        padding-left: 0px !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+        width: 100% !important;
+    }
+
+        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr tr {
+            color: black;
+        }
+
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+        width: 100% !important;
+    }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr {
+            color: black;
+        }
+
+            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.treegrid_cell {
+                text-align: left !important;
+            }
+
+            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div {
+                text-align: center;
+            }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar.budgetError {
+            background: #ff1e26 none repeat scroll 0 0;
+        }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar {
+            background: #3fa9f5 none repeat scroll 0 0;
+            bottom: 0;
+            height: 2px !important;
+            left: 0;
+            margin: 0;
+            max-width: 100%;
+            padding: 0;
+            position: absolute;
+        }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.budgetError, span.budgetError {
+            color: #ff1e26;
+        }
+
+    #gridbox.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td {
+        position: relative;
+    }
+
+    .dhxgrid_sort_asc, .dhxgrid_sort_desc {
+        background-repeat: no-repeat;
+        height: 26px;
+        top: 44px !important;
+        width: 15px;
+    }
+
+    /*Added by Rushil Bhuptani on 26/05/2016 for #2191*/
+    .clickmeAnchor {
+        color: #000 !important;
+        cursor: pointer;
+    }
+</style>
+
+<div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
+
+
+<script type="text/javascript">
+    var HomeGrid;
+    var eventidonedit = 0;
+    $(document).ready(function () {
+        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
+        HomeGrid = new dhtmlXGridObject('gridbox');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        HomeGrid.setImagePath(imgpath);
+        HomeGrid.setImageSize(1, 1);
+        HomeGrid.setHeader('@Model.SetHeader');
+        HomeGrid.setColTypes('@Model.ColType');
+        HomeGrid.setInitWidths('@Model.Width');
+        HomeGrid.setColSorting('@Model.ColSorting');
+        HomeGrid.enableAutoHeight(true);
+        HomeGrid.enableAutoWidth(false);
+        HomeGrid.setEditable(true);
+        HomeGrid.init();
+        setTimeout(function () {
+            HomeGrid.loadOpenStates();
+        }, 500);
+        setTimeout(function () {
+            HomeGrid.setSizes();
+        }, 200);
+        var mainGridData = JsonModel;
+        mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+
+        HomeGrid.parse(GridDataHomeGrid, "json");
+        HomeGrid.setColumnHidden(0, true);
+        HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
+
+        LoadAfterParsing();
+    });
+
+    function LoadAfterParsing() {
+        if (eventidonedit != 0) {
+            HomeGrid.detachEvent(eventidonedit);
+        }
+        eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
+    }
+
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+        if (stage == 0)
+        {
+            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+            if ((locked != null && locked != "") && locked == "1")
+                return false;
+        }
+    }
+    
+</script>

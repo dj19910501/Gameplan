@@ -2,6 +2,19 @@
 @{
     ViewBag.Title = "IndexNewDesign";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = ViewBag.ActiveMenu;
+    int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
+    string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
+    bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
+    bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
+    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+    bool IsPlanPublished = (bool)ViewBag.IsPublished;
+    var Successmsgduplicate = (string)ViewBag.SuccessMessageDuplicatePlan;
+    var errormsgduplicate = (string)ViewBag.ErrorMessageDuplicatePlan;
+    var IsGridView = (bool)ViewBag.GridView;
+    var TacticTaskColor = (string)ViewBag.TacticTaskColor;
+    string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
+    var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
 }
 <!-- Stylesheet Only For Homepage -->
 @section FilterEx{
@@ -12,9 +25,18 @@
 @section Sidebar{
 <div id="divFilter"></div>
 }
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+}
 
-
+@*add new*@
+@Html.Hidden("IsGridView", IsGridView)
+@*end*@
 <script type="text/javascript" src="~/Scripts/Planhud.js"></script>
+<script src="~/Scripts/js/Home/planCalendar.js"></script>
 
 @* ================= Header section start ==================  *@
 <div class="cf full-width-header" id="planHeader">
@@ -25,10 +47,10 @@
     <div class="planheader-left">
         <div class="plan-header-grid">
             <div class="request-icon-block">
-                <a class="new-btn-plan-left P-icon-active" href="#">
+                <a class="new-btn-plan-left P-icon-active" href="#" id="btngridcalendar">
                     <i class="fa fa-calendar"></i>
                 </a>
-                <a id="btngrid" class="new-btn-plan-right" href="#">
+                <a id="btnbudget" class="new-btn-plan-right" href="#">
                     <i class="fa fa-money"></i>
                 </a>
             </div>
@@ -40,7 +62,7 @@
                     <i class="fa fa-external-link"></i><span>Export</span>
                 </a>
                 <ul id="" class="dropdown-menu export-dd">
-                    <li title=""><a href="#">.csv</a></li>
+                    <li title=""><a href="#" id="ExportCSV" onclick="ExportToCsvSp()">.csv</a></li>
                     <li title=""><a href="#">PDF</a></li>
                 </ul>
             </div>
@@ -67,10 +89,47 @@
 @* ================= Grid box start here ================= *@
 <div class="task-tbl">
     <div class="gridbox-wrapper" style="width: 100%; height: 400px; border:1px solid #ccc; margin:0 0 10px 0">
-        Please Note : Grid is coming here
-
+        <div id="GridGanttContent" style="width: 100%; height: 400px; border:1px solid #ccc; margin:0 0 10px 0; display:none" ></div>
+        <div id="divgridview"  style="width: 100%; height: 400px; border:1px solid #ccc; margin:0 0 10px 0"></div>
+        <div class="market-activity-main">
+            <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 11;" id="popupType">
     </div>
 </div>   
+    </div>
+</div>
+
+@*Inspect Popup Div*@
+
+<div class="container-fluid all-height" id="modalMainContainer">
+    <div class="row-fluid calc-height content-wrapper-main">
+        <div class="container-fluid">
+            <div class="row-fluid ">
+                <div class="span12">
+                    <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed; overflow: hidden;" data-backdrop="static" data-keyboard="false">
+                        <div class="partial_wrapper">
+                            <div id="successMessage" class="alert alert-success messagewidth">
+                                <a class="close">×</a>
+                                <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+                            </div>
+                            <div id="errorMessage" class="alert alert-error hide messagewidth">
+                                <a class="close">×</a>
+                                <strong>Error!</strong> <span id="spanMessageError">@Common.objCached.ValidateForEmptyField</span>
+                            </div>
+                            <div id="divPartial" class="partial_wrapper">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divResubmission"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dvCopyEntity"></div>
+<div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
+<script src="~/Scripts/js/Home/Grid_CalendarCommon.js"></script>
+<script src="~/Scripts/js/Home/HomeGrid.js"></script>
+
     <script type="text/javascript">	 
        $("#ddlTabViewBy").multiselect({
             multiple: false,
@@ -92,6 +151,94 @@
             $("#sidebar").toggleClass("slideLeft");
             $("#content_wraper").toggleClass("slideLeft");
         })
+    var urlContent = '@Url.Content("~/")';
+    var urlServiceUnavailibility = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+    var secTactic = '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()';
+    var secProgram = '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()';
+    var secCampaign = '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()';
+    var secLineItem = '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()';
+    var reaIndex = '@Enums.InspectPopupRequestedModules.Index.ToString()';
+    var secPlan = '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()';
+    var secHome = '@Enums.ActiveMenu.Home.ToString().ToLower()'
+    var inspectEdit = '@Enums.InspectPopupMode.Edit.ToString()';
+    var inspectAdd = '@Enums.InspectPopupMode.Add.ToString()';
+    var inspectRequestIndex = '@Enums.InspectPopupRequestedModules.Index.ToString()';
+    var glblsrchExternalName = '@Enums.GlobalSearch.ExternalName.ToString().ToUpper()';
+    var glblsrchActivityName = '@Enums.GlobalSearch.ActivityName.ToString().ToUpper()';
+    var planCloneType = '@Enums.DuplicationModule.Plan';
+    var campaignCloneType = '@Enums.DuplicationModule.Campaign';
+    var programCloneType = '@Enums.DuplicationModule.Program';
+    var tacticCloneType = '@Enums.DuplicationModule.Tactic';
+    var lineItemCloneType = '@Enums.DuplicationModule.LineItem';    
+    var activeMenu = '@ViewBag.ActiveMenu.ToString()';
+    var ActivityName = '@Enums.GlobalSearch.ActivityName.ToString().ToLower()';
+    var ExternalName = '@Enums.GlobalSearch.ExternalName.ToString().ToLower()';
+    var AssetTypeAsset = '@Enums.AssetType.Asset.ToString()';
+
+    var ValidateForEmptyField = '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField'
+    var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
+    var ExportSelectedIds = {
+        TaskID: [],
+        Title: [],
+        ColorCode: [],
+        OwnerName: [],
+        TacticType: [],
+        PlanFlag: [],
+        CsvId: [],
+        ROITacticType: [],
+        CalendarEntityType: [],
+        DhtmlxRowId: [],
+        AnchorTacticId: [],
+    };
+    var IsPackageView = false;
+    var isDisplayGridview = true;
+
+    var filters = {
+        parentCustomFieldsIds: [],
+        customFieldIds: [],
+        PlanIDs: [],
+        SelectedPlans: [],
+        PlanTitles: [],
+        OwnerIds: [],
+        TacticTypeids: [],
+        tempTacticTypeIds: [],
+        tempOwnerIds: [],
+        StatusIds: [],
+        SelectedYears: []
+
+    };
+
+
+    $('.sidebar-toogle a').toggle(
+    function () {
+        $('#sidebar').css({
+            'position': 'relative',
+            'left': 'auto',
+            'width': '1px',
+            'background': 'transparent',
+        });
+
+        $(".sidebar-section").css("display", "none");
+        $("#improvements > .accordion-group").css('display', 'none');
+        $(".wraper-btns").css("display", "none");
+        $("#content_wraper").css('width', 'calc(100% - 2px)');
+        $('#sidebar.sidebar').css({ 'width': '1px', 'background': 'transparent', });
+
+    },
+    function () {
+        $('#sidebar').css({
+            'position': 'static',
+            'left': 'auto',
+            'width': '280px',
+        });
+
+        $(".sidebar-section").css("display", "block");
+        $(".wraper-btns").css("display", "block");
+        $("#content_wraper").css('width', 'calc(100% - 282px)');
+        $('#sidebar.sidebar').css({ 'width': '280px' });
+
+    }
+);
         $(document).ready(function () {
             $(".selectBox select").selectbox();
             $("#ddlTabViewBy").multiselect();
@@ -129,10 +276,55 @@
                     GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
                     GetMultiplePlanNames();
                     GetGoalValues('@Url.Action("GetGoalValues", "Home")',planids);
+					GetFilterIds();
+                    if (isDisplayGridview) {
+                        LoadPlanGrid();
+                    }
                 }
             }
         });
     })
+
+    $('#btngridcalendar').click(function () {
+        $('#btnbudget').removeClass('P-icon-active');
+        if ($(this).hasClass('P-icon-active')) {
+            if ($('#IsGridView').val().toLowerCase() == "false") {
+                $("#GridGanttContent").hide();
+                $("#divgridview").show();
+                $('#divgridview').empty();
+                LoadPlanGrid();
+                $('#IsGridView').val('true');
+            } else {
+                $('#IsGridView').val('false');
+                $("#divgridview").hide();
+                $("#GridGanttContent").show();
+                BindPlanCalendar();
+            }
+        }
+        else {
+            $('#btngridcalendar').addClass('P-icon-active');
+            if ($('#IsGridView').val().toLowerCase() == "true") {
+                $("#GridGanttContent").hide();
+                $("#divgridview").show();
+                $('#divgridview').empty();
+                LoadPlanGrid();
+            } else {
+                $("#divgridview").hide();
+                $("#GridGanttContent").show();
+                BindPlanCalendar();
+            }
+        }
+    });
+
+    $('#btnbudget').click(function () {
+        $('#btngridcalendar').removeClass('P-icon-active');
+        $('#btnbudget').addClass('P-icon-active');
+        $("#GridGanttContent").hide();
+        $("#divgridview").show();
+        $('#divgridview').empty();
+        $('#divgridview').load('@Url.Action("GetBudgetedData_New", "Plan")');
+    });
+
 
 </script>
 
