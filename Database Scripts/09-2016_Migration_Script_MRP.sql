@@ -835,7 +835,6 @@ BEGIN
 	SELECT @revenue as Title, @RevenueTotal as Value, @revenue as StageCode
 	
 END
-
 GO
 
 --Index Add to improve performance for Getbudget store proc.
@@ -1058,7 +1057,7 @@ END'
 END
 
 --Function fnGetMqlByEntityTypeAndEntityId
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetEntitieHirarchyByPlanId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetMqlByEntityTypeAndEntityId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 BEGIN
 	execute dbo.sp_executesql @statement = N'CREATE FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId](
 	 @EntityType NVARCHAR(100)=''''
@@ -1124,6 +1123,7 @@ BEGIN
 END
 '
 END
+GO
 
 --Function fnGetRevueneByEntityTypeAndEntityId
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetRevueneByEntityTypeAndEntityId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
@@ -1211,7 +1211,7 @@ BEGIN
 END
 '
 END
-
+GO
 
 -- View Plan_PlannedCost
 IF EXISTS(select * FROM sys.views where name = 'Plan_PlannedCost')
@@ -1244,7 +1244,7 @@ GO
 CREATE VIEW [dbo].[Campaign_PlannedCost] WITH SCHEMABINDING
 	AS 
 SELECT  [dbo].[Plan_Campaign_Program].[PlanCampaignId] as [PlanCampaignId], 
-	SUM([MRPDev].[dbo].[Plan_Campaign_Program_Tactic].[Cost]) AS PlannedCost
+	SUM([dbo].[Plan_Campaign_Program_Tactic].[Cost]) AS PlannedCost
 	FROM  [dbo].[Plan_Campaign_Program_Tactic],  
 	[dbo].[Plan_Campaign_Program]   
 	WHERE  
@@ -1322,6 +1322,7 @@ SET NOCOUNT ON;
 									AND C.EntityType = Hireachy.EntityType) C
 
 END
+GO
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridData]') AND type in (N'P', N'PC'))
 BEGIN
