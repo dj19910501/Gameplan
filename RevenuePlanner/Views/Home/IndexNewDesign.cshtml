@@ -36,7 +36,7 @@
 @Html.Hidden("IsGridView", IsGridView)
 @*end*@
 <script type="text/javascript" src="~/Scripts/Planhud.js"></script>
-<script src="~/Scripts/js/Home/planCalendar.js"></script>
+@*<script src="~/Scripts/js/Home/planCalendar.js"></script>*@
 
 @* ================= Header section start ==================  *@
 <div class="cf full-width-header" id="planHeader">
@@ -131,26 +131,7 @@
 <script src="~/Scripts/js/Home/HomeGrid.js"></script>
 
     <script type="text/javascript">	 
-       $("#ddlTabViewBy").multiselect({
-            multiple: false,
-            noneSelectedText: "Please Select",
-            selectedList: 1,
-            CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle",
-
-            classes: 'custom-right-pos', // Added by Sohel Pathan on 11/11/2014 for PL ticket #934, NOTE : Please don't change class name, it is used in js.
-            IsTacticSection: "TACTIC SECTION"
-        }).multiselectfilter({
-            CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle"
-        });
-
-        $('.sidebar-toogle a').click(function () {
-            $("#sidebar").toggleClass("slideLeft");
-            $("#content_wraper").toggleClass("slideLeft");
-        })
+      
     var urlContent = '@Url.Content("~/")';
     var urlServiceUnavailibility = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
     var secTactic = '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()';
@@ -208,37 +189,27 @@
 
     };
 
+    $("#ddlTabViewBy").multiselect({
+        multiple: false,
+        noneSelectedText: "Please Select",
+        selectedList: 1,
+        CustomCampaignName: "@Common.CampaignCustomTitle",
+        CustomProgramName: "@Common.ProgramCustomTitle",
+        CustomTacticName: "@Common.TacticCustomTitle",
 
-    $('.sidebar-toogle a').toggle(
-    function () {
-        $('#sidebar').css({
-            'position': 'relative',
-            'left': 'auto',
-            'width': '1px',
-            'background': 'transparent',
-        });
+        classes: 'custom-right-pos', // Added by Sohel Pathan on 11/11/2014 for PL ticket #934, NOTE : Please don't change class name, it is used in js.
+        IsTacticSection: "TACTIC SECTION"
+    }).multiselectfilter({
+        CustomCampaignName: "@Common.CampaignCustomTitle",
+        CustomProgramName: "@Common.ProgramCustomTitle",
+        CustomTacticName: "@Common.TacticCustomTitle"
+    });
 
-        $(".sidebar-section").css("display", "none");
-        $("#improvements > .accordion-group").css('display', 'none');
-        $(".wraper-btns").css("display", "none");
-        $("#content_wraper").css('width', 'calc(100% - 2px)');
-        $('#sidebar.sidebar').css({ 'width': '1px', 'background': 'transparent', });
-
-    },
-    function () {
-        $('#sidebar').css({
-            'position': 'static',
-            'left': 'auto',
-            'width': '280px',
-        });
-
-        $(".sidebar-section").css("display", "block");
-        $(".wraper-btns").css("display", "block");
-        $("#content_wraper").css('width', 'calc(100% - 282px)');
-        $('#sidebar.sidebar').css({ 'width': '280px' });
-
-    }
-);
+    $('.sidebar-toogle a').click(function () {
+        $("#sidebar").toggleClass("slideLeft");
+        $("#content_wraper").toggleClass("slideLeft");
+    })
+   
         $(document).ready(function () {
             $(".selectBox select").selectbox();
             $("#ddlTabViewBy").multiselect();

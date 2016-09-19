@@ -10628,6 +10628,19 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region"Plan Calendar related functions"
+        public PartialViewResult LoadPlanCalendar()
+        {
+            try
+            {
+                return PartialView("_PlanCalendar");
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        #endregion
         public void GetCacheValue()
         {
 
