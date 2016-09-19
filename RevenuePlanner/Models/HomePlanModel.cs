@@ -530,4 +530,12 @@ namespace RevenuePlanner.Models
         public string Name { get; set; }
         public bool? IsDefaultPreset { get; set; }
     }
+
+    public class GoalValueModel
+    {
+        public string Title { get; set; }
+        public double Value { get; set; }
+
+        public string StageCode { get; set; }
+    }
 }

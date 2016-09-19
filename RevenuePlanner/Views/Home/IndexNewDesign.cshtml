@@ -50,9 +50,6 @@
                 <label id="lblUpcoming_Activies1" for="Time_Frame:">Time Frame:</label>
                 <span style="width: 100px;" id="ddlUpComingActivitesSelectBox" class="selectBox">
                     <select name="ddlUpComingActivites" id="ddlUpComingActivites" class="hide" sb="85765995" style="display: none;">
-                        <option value="2016" selected="selected">2016</option>
-                        <option value="thismonth">this month</option>
-                        <option value="thisquarter">this quarter</option>
                     </select>
                 </span>
             </div>
@@ -73,12 +70,24 @@
         Please Note : Grid is coming here
 
     </div>
-
-    <div id="ImprovementGrid" class="improvement-grid-wrapper">
-        Please Note : Improvement Activity is coming here
-    </div>
 </div>   
-    <script type="text/javascript">
+    <script type="text/javascript">	 
+       $("#ddlTabViewBy").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+            CustomCampaignName: "@Common.CampaignCustomTitle",
+            CustomProgramName: "@Common.ProgramCustomTitle",
+            CustomTacticName: "@Common.TacticCustomTitle",
+
+            classes: 'custom-right-pos', // Added by Sohel Pathan on 11/11/2014 for PL ticket #934, NOTE : Please don't change class name, it is used in js.
+            IsTacticSection: "TACTIC SECTION"
+        }).multiselectfilter({
+            CustomCampaignName: "@Common.CampaignCustomTitle",
+            CustomProgramName: "@Common.ProgramCustomTitle",
+            CustomTacticName: "@Common.TacticCustomTitle"
+        });
+
         $('.sidebar-toogle a').click(function () {
             $("#sidebar").toggleClass("slideLeft");
             $("#content_wraper").toggleClass("slideLeft");
@@ -115,30 +124,15 @@
                     GetTacticTypelist(planids);
                     GetOwnerListForFilter(planids);
                     GetLastSetofViews($('#FilterPresetName').val());
+                    BindUpcomingActivites(planids, '@Url.Content("~/Home/BindUpcomingActivitesValues/")');
                     var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
                     GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
                     GetMultiplePlanNames();
-
-                    //LoadImprovementGrid('@Sessions.PlanPlanIds');
+                    GetGoalValues('@Url.Action("GetGoalValues", "Home")',planids);
                 }
             }
         });
     })
 
-    function LoadImprovementGrid(PlanID) {
-        $.ajax({
-            beforeSend: function (x) {
-                myApp.hidePleaseWait();
-            },
-            url: '@Url.Content("~/Plan/LoadImprovementGrid/")',
-            data: {
-                id: PlanID
-            },
-            success: function (result) {
-                $("#ImprovementGrid").html('');
-                $("#ImprovementGrid").html(result);
-            }
-        });
-    }
 </script>
 

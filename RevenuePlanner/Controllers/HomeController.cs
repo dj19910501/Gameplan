@@ -40,28 +40,12 @@ namespace RevenuePlanner.Controllers
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
 
         #endregion
-
-        //public HomeController()
-        //{
-        //    if (System.Web.HttpContext.Current.Cache["CommonMsg"] == null)
-        //    {
-        //        Common.xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");//Modify by Akashdeep Kadia on 09/05/2016 to resolve PL ticket #989.
-        //        Common.objCached.loadMsg(Common.xmlMsgFilePath);
-        //        System.Web.HttpContext.Current.Cache["CommonMsg"] = Common.objCached;
-        //        CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
-        //        System.Web.HttpContext.Current.Cache.Insert("CommonMsg", Common.objCached, dependency);
-        //    }
-        //    else
-        //    {
-        //        Common.objCached = (Message)System.Web.HttpContext.Current.Cache["CommonMsg"];
-
-        //    }
-        //}
+      
         public ActionResult IndexNewDesign() // Added by Bhumika for new HTML #2621 Remove when task finished 
         {
             return View();
         }
-        
+
         #region "Index"
 
         /// <summary>
@@ -77,7 +61,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planProgramId">planProgramId used for notification email shared link</param>
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0,bool IsRequest = false)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false)
         {
             var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
             var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
@@ -8109,22 +8093,6 @@ namespace RevenuePlanner.Controllers
         {
             //// Fetch the list of Upcoming Activity
             List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears);
-
-            //bool IsItemExists = objUpcomingActivity.Where(activity => activity.Value == CurrentTime).Any();
-
-            //if (IsItemExists)
-            //{
-            //    foreach (SelectListItem activity in objUpcomingActivity)
-            //    {
-            //        activity.Selected = false;
-            //        //// Set it Selected ture if we found current time value in the list.
-            //        if (CurrentTime == activity.Value)
-            //        {
-            //            activity.Selected = true;
-            //        }
-            //    }
-            //}
-
             objUpcomingActivity = objUpcomingActivity.Where(activity => !string.IsNullOrEmpty(activity.Text)).OrderBy(activity => activity.Text, new AlphaNumericComparer()).ToList();
             return Json(objUpcomingActivity.ToList(), JsonRequestBehavior.AllowGet);
         }
@@ -10195,7 +10163,36 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        #region method for getting goal value.
+        public JsonResult GetGoalValues(string planids)
+        {
+            var MQL = Enums.PlanGoalType.MQL.ToString();
+            var INQ = Enums.PlanGoalType.INQ.ToString();
+            var Revenue = Enums.PlanGoalType.Revenue.ToString();
+            var CW = Enums.Stage.CW.ToString();
+            string MQLLabel = string.Empty;
+            string INQLabel = string.Empty;
+            double MQLValue = 0;
+            double INQValue = 0;
+            double RevenueValue = 0;
+            string RevenueLabel = string.Empty;
+            string CWLabel = string.Empty;
+            double CWValue = 0;
+            List<GoalValueModel> GoalValueListResult = objSp.spgetgoalvalues(planids);
 
+            MQLLabel = GoalValueListResult.Where(list => list.StageCode == MQL).Select(list => list.Title).FirstOrDefault();
+            MQLValue = GoalValueListResult.Where(list => list.StageCode == MQL).Select(list => list.Value).FirstOrDefault();
+            INQLabel = GoalValueListResult.Where(list => list.StageCode == INQ).Select(list => list.Title).FirstOrDefault();
+            INQValue = GoalValueListResult.Where(list => list.StageCode == INQ).Select(list => list.Value).FirstOrDefault();
+            CWLabel = GoalValueListResult.Where(list => list.StageCode == CW).Select(list => list.Title).FirstOrDefault();
+            CWValue = GoalValueListResult.Where(list => list.StageCode == CW).Select(list => list.Value).FirstOrDefault();
+            RevenueLabel = GoalValueListResult.Where(list => list.StageCode == Revenue).Select(list => list.Title).FirstOrDefault();
+            RevenueValue = GoalValueListResult.Where(list => list.StageCode == Revenue).Select(list => list.Value).FirstOrDefault();
+
+            return Json(new { MQLLabel = MQLLabel, MQLValue = MQLValue, INQLabel = INQLabel, INQValue = INQValue, CWLabel = CWLabel, CWValue = CWValue, RevenueLabel = RevenueLabel, RevenueValue = RevenueValue }, JsonRequestBehavior.AllowGet);
+
+        }
+        #endregion
 
         public void GetCacheValue()
         {
