@@ -19,7 +19,5 @@ namespace RevenuePlanner.Models
         public Nullable<int> IntegrationInstanceLogId { get; set; }
         public System.DateTime LogTime { get; set; }
         public string LogDescription { get; set; }
-    
-        public virtual IntegrationInstanceLog IntegrationInstanceLog { get; set; }
     }
 }

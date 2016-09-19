@@ -18,7 +18,6 @@ namespace RevenuePlanner.Models
         {
             this.LineItemTypes = new HashSet<LineItemType>();
             this.Model1 = new HashSet<Model>();
-            this.Model_Stage = new HashSet<Model_Stage>();
             this.Plans = new HashSet<Plan>();
             this.TacticTypes = new HashSet<TacticType>();
         }
@@ -31,36 +30,31 @@ namespace RevenuePlanner.Models
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
-        public Nullable<int> ParentModelId { get; set; }
         public Nullable<bool> IsBenchmarked { get; set; }
+        public Nullable<int> ParentModelId { get; set; }
         public Nullable<System.DateTime> EffectiveDate { get; set; }
         public Nullable<int> IntegrationInstanceId { get; set; }
         public Nullable<int> IntegrationInstanceIdINQ { get; set; }
         public Nullable<int> IntegrationInstanceIdMQL { get; set; }
         public Nullable<int> IntegrationInstanceIdCW { get; set; }
-        public System.Guid ClientId { get; set; }
         public double AverageDealSize { get; set; }
         public Nullable<int> IntegrationInstanceIdProjMgmt { get; set; }
         public Nullable<int> IntegrationInstanceEloquaId { get; set; }
         public Nullable<int> IntegrationInstanceMarketoID { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
+        public int ClientId { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstance IntegrationInstance1 { get; set; }
         public virtual IntegrationInstance IntegrationInstance2 { get; set; }
         public virtual IntegrationInstance IntegrationInstance3 { get; set; }
+        public virtual IntegrationInstance IntegrationInstance4 { get; set; }
         public virtual ICollection<LineItemType> LineItemTypes { get; set; }
         public virtual ICollection<Model> Model1 { get; set; }
         public virtual Model Model2 { get; set; }
-        public virtual ICollection<Model_Stage> Model_Stage { get; set; }
         public virtual ICollection<Plan> Plans { get; set; }
-        public virtual IntegrationInstance IntegrationInstance4 { get; set; }
-        public virtual Model Model11 { get; set; }
-        public virtual Model Model3 { get; set; }
-        public virtual IntegrationInstance IntegrationInstance11 { get; set; }
-        public virtual IntegrationInstance IntegrationInstance41 { get; set; }
         public virtual ICollection<TacticType> TacticTypes { get; set; }
     }
 }

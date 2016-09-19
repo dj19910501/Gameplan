@@ -31,10 +31,10 @@ namespace RevenuePlanner.Models
         public double Cost { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
         public Nullable<int> LinkedLineItemId { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
     
         public virtual ICollection<LineItem_Budget> LineItem_Budget { get; set; }
         public virtual LineItemType LineItemType { get; set; }

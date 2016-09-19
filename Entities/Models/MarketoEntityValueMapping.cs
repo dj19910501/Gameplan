@@ -21,8 +21,8 @@ namespace RevenuePlanner.Models
         public string ProgramType { get; set; }
         public string Channel { get; set; }
         public Nullable<int> IntegrationInstanceId { get; set; }
-        public Nullable<System.Guid> LastModifiedBy { get; set; }
         public Nullable<System.DateTime> LastModifiedDate { get; set; }
+        public int LastModifiedBy { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
     }

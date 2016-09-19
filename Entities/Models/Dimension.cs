@@ -14,6 +14,21 @@ namespace RevenuePlanner.Models
     
     public partial class Dimension
     {
+        public Dimension()
+        {
+            this.DashboardDimensions = new HashSet<DashboardDimension>();
+            this.AttrPositionConfigs = new HashSet<AttrPositionConfig>();
+            this.Dimension_RestrictedDimensionValues = new HashSet<Dimension_RestrictedDimensionValues>();
+            this.Dimension_RestrictedDimensionValues1 = new HashSet<Dimension_RestrictedDimensionValues>();
+            this.GoalDimensions = new HashSet<GoalDimension>();
+            this.KeyDataDimensions = new HashSet<KeyDataDimension>();
+            this.ReportAxis = new HashSet<ReportAxi>();
+            this.ReportTableColumns = new HashSet<ReportTableColumn>();
+            this.ReportTableDimensions = new HashSet<ReportTableDimension>();
+            this.Role_RestrictedDimensionValues = new HashSet<Role_RestrictedDimensionValues>();
+            this.User_RestrictedDimensionValues = new HashSet<User_RestrictedDimensionValues>();
+        }
+    
         public int id { get; set; }
         public string Name { get; set; }
         public string TableName { get; set; }
@@ -27,5 +42,17 @@ namespace RevenuePlanner.Models
         public Nullable<bool> ComputeAllValues { get; set; }
         public Nullable<System.DateTime> StartDate { get; set; }
         public Nullable<System.DateTime> EndDate { get; set; }
+    
+        public virtual ICollection<DashboardDimension> DashboardDimensions { get; set; }
+        public virtual ICollection<AttrPositionConfig> AttrPositionConfigs { get; set; }
+        public virtual ICollection<Dimension_RestrictedDimensionValues> Dimension_RestrictedDimensionValues { get; set; }
+        public virtual ICollection<Dimension_RestrictedDimensionValues> Dimension_RestrictedDimensionValues1 { get; set; }
+        public virtual ICollection<GoalDimension> GoalDimensions { get; set; }
+        public virtual ICollection<KeyDataDimension> KeyDataDimensions { get; set; }
+        public virtual ICollection<ReportAxi> ReportAxis { get; set; }
+        public virtual ICollection<ReportTableColumn> ReportTableColumns { get; set; }
+        public virtual ICollection<ReportTableDimension> ReportTableDimensions { get; set; }
+        public virtual ICollection<Role_RestrictedDimensionValues> Role_RestrictedDimensionValues { get; set; }
+        public virtual ICollection<User_RestrictedDimensionValues> User_RestrictedDimensionValues { get; set; }
     }
 }

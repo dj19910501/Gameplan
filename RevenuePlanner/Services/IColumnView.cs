@@ -9,8 +9,8 @@ namespace RevenuePlanner.Services
 {
     public interface IColumnView
     {
-        int SaveColumnView(Guid UserId, string ViewName, List<AttributeDetail> AttributeDetail, bool Isgrid = true);
-        DataTable GetCustomFieldList(Guid ClientId);
-        List<ColumnViewEntity> GetCutomefieldModel(Guid ClientId, bool Isgrid, out bool IsSelectall);
+        int SaveColumnView(int UserId, string ViewName, List<AttributeDetail> AttributeDetail, bool Isgrid = true);
+        DataTable GetCustomFieldList(int ClientId);
+        List<ColumnViewEntity> GetCutomefieldModel(int ClientId, bool Isgrid, out bool IsSelectall);
     }
 }

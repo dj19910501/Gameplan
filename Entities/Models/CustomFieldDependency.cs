@@ -19,9 +19,9 @@ namespace RevenuePlanner.Models
         public int ChildCustomFieldId { get; set; }
         public Nullable<int> ChildOptionId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public bool IsDeleted { get; set; }
         public int DependencyId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual CustomField CustomField { get; set; }
         public virtual CustomField CustomField1 { get; set; }

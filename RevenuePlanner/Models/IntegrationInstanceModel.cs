@@ -16,7 +16,7 @@ namespace RevenuePlanner.Models
         public int IntegrationTypeId { get; set; }
 
         [Required]
-        public Guid ClientId { get; set; }
+        public int ClientId { get; set; }
 
         [Display(Name = "Instance Name")]
         [Required]

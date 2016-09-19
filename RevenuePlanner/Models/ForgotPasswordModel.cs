@@ -25,7 +25,7 @@ namespace RevenuePlanner.Models
     {
         public Guid PasswordResetRequestId { get; set; }
 
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
 
         public int AttemptCount { get; set; }
 
@@ -39,7 +39,7 @@ namespace RevenuePlanner.Models
     //For Reset Password
     public class ResetPasswordModel
     {
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
                 
         [Required]
         [DataType(DataType.Password)]

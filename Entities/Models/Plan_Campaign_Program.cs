@@ -29,9 +29,7 @@ namespace RevenuePlanner.Models
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool IsDeleted { get; set; }
         public string Status { get; set; }
         public bool IsDeployedToIntegration { get; set; }
@@ -39,6 +37,8 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> LastSyncDate { get; set; }
         public double ProgramBudget { get; set; }
         public string Abbreviation { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
     
         public virtual Plan_Campaign Plan_Campaign { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }

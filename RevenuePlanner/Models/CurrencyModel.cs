@@ -23,8 +23,8 @@ namespace RevenuePlanner.Models
         //public DateTime CreatedDate { get; set; }
         public long ClientCurrencyId { get; set; }
      
-        public Guid ClientId { get; set; }
-        public Guid UserId { get; set; }
+        public int ClientId { get; set; }
+        public int UserId { get; set; }
         public bool IsDefault { get; set; }
         public bool IsPreferred { get; set; }
         // Add By Nishant Sheth
@@ -32,7 +32,7 @@ namespace RevenuePlanner.Models
         {
             public string CurrencyCode { get; set; }
             public string CurrencySymbol { get; set; }
-            public System.Guid ClientId { get; set; }
+            public int ClientId { get; set; }
             public System.DateTime StartDate { get; set; }
             public System.DateTime EndDate { get; set; }
             public double ExchangeRate { get; set; }

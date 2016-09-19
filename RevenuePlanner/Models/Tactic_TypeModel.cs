@@ -9,16 +9,16 @@ namespace RevenuePlanner.Models
     {
         [Key]
         public int TacticTypeId { get; set; }
-        public Guid? ClientId { get; set; }
+        public int ClientId { get; set; }
         public int? ModelId { get; set; }
         public int? StageId { get; set; }
         //changes done by uday for #497
         public Nullable<double> ProjectedStageValue { get; set; }
         public Nullable<double> ProjectedRevenue { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
+        public int ModifiedBy { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }

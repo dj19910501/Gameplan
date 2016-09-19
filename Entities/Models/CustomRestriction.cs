@@ -15,12 +15,12 @@ namespace RevenuePlanner.Models
     public partial class CustomRestriction
     {
         public int CustomRestrictionId { get; set; }
-        public System.Guid UserId { get; set; }
         public int CustomFieldId { get; set; }
         public int CustomFieldOptionId { get; set; }
         public short Permission { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int UserId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual CustomField CustomField { get; set; }
         public virtual CustomFieldOption CustomFieldOption { get; set; }

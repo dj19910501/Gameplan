@@ -152,13 +152,13 @@ namespace RevenuePlanner.Test.MockHelpers
             return string.Join(",", planIds.Select(plan => plan.ToString()));
         }
 
-        public static Plan_Campaign_Program_Tactic GetPlanTactic(Guid clientId)
+        public static Plan_Campaign_Program_Tactic GetPlanTactic(int clientId)
         {
             var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).FirstOrDefault();
             return objTactic;
         }
 
-        public static Plan_Campaign_Program_Tactic GetPlanTacticForPackage(Guid clientId)
+        public static Plan_Campaign_Program_Tactic GetPlanTacticForPackage(int clientId)
         {
             var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == clientId && 
                                                                   a.IsDeleted == false &&
@@ -168,38 +168,38 @@ namespace RevenuePlanner.Test.MockHelpers
             return objTactic;
         }
 
-        public static Plan_Campaign_Program_Tactic_LineItem GetPlanLineItem(Guid clientId)
+        public static Plan_Campaign_Program_Tactic_LineItem GetPlanLineItem(int ClientId)
         {
-            Guid UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
+            int UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ID;
             //var objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             var objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.CreatedBy == UserId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
 
             return objLineItem;
         }
 
-        public static Plan_Campaign_Program GetPlanProgram(Guid clientId)
+        public static Plan_Campaign_Program GetPlanProgram(int clientId)
         {
             var objProgram = db.Plan_Campaign_Program.Where(a => a.Plan_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             return objProgram;
         }
 
-        public static Plan GetPlan(Guid clientId)
+        public static Plan GetPlan(int clientId)
         {
             var objPlan = db.Plans.Where(a => a.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             return objPlan;
         }
-        public static Plan_Campaign GetPlanCampaign(Guid clientId)
+        public static Plan_Campaign GetPlanCampaign(int clientId)
         {
             var objCampaign = db.Plan_Campaign.Where(a => a.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             return objCampaign;
         }
-        public static List<Plan_Improvement_Campaign_Program_Tactic> GetPlanImprovementTacticList(Guid clientId)
+        public static List<Plan_Improvement_Campaign_Program_Tactic> GetPlanImprovementTacticList(int clientId)
         {
             var objImprovementtactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).Take(10).ToList();
             return objImprovementtactic;
         }
 
-        public static Plan_Improvement_Campaign_Program_Tactic GetPlanImprovementTactic(Guid clientId)
+        public static Plan_Improvement_Campaign_Program_Tactic GetPlanImprovementTactic(int clientId)
         {
             var objImprovementtactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.ClientId == clientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             return objImprovementtactic;
@@ -260,7 +260,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <param name="_userId">User Id.</param>
         /// <param name="_integrationInstanceId"> Integration Instance Id.</param>
         /// <returns>return Integration Instance Log Id.</returns>
-        public static int GetIntegrationInstanceLogId(Guid _userId, int _integrationInstanceId)
+        public static int GetIntegrationInstanceLogId(int _userId, int _integrationInstanceId)
         {
             IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
             instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_integrationInstanceId);
@@ -280,7 +280,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>returns comma separated string of custom restrictions</returns>
-        public static string GetCustomRestrictionInViewEditForm(Guid userId)
+        public static string GetCustomRestrictionInViewEditForm(int userId)
         {
             StringBuilder sbCustomRestrictions = new StringBuilder(string.Empty);
 
@@ -302,7 +302,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="userId">user id</param>
         /// <returns></returns>
-        public static string GetSearchFilterForCustomRestriction(Guid userId)
+        public static string GetSearchFilterForCustomRestriction(int userId)
         {
             StringBuilder sbCustomRestrictions = new StringBuilder(string.Empty);
 
@@ -333,7 +333,7 @@ namespace RevenuePlanner.Test.MockHelpers
             //// Getting current year's all published plan for all custom fields of clientid of director.
             List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
             List<int> planIds = new List<int>();
-            List<Guid> ownerIds = new List<Guid>();
+            List<int> ownerIds = new List<int>();
             List<int> TactictypeIds = new List<int>();
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
@@ -361,7 +361,7 @@ namespace RevenuePlanner.Test.MockHelpers
             //Added by Komal Rawal
             if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
             {
-                ownerIds = Sessions.ReportOwnerIds.Select(owner => new Guid(owner)).ToList();
+                ownerIds = Sessions.ReportOwnerIds.Select(owner => owner).ToList();
                 tacticList = tacticList.Where(tactic => ownerIds.Contains(tactic.CreatedBy)
                                                               ).ToList();
             }
@@ -395,9 +395,9 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <param name="PlanId">PlanId</param>
         /// <param name="ModelId">ModelId</param>
         /// <returns>returns an ClientId for given PlanId or ModelId</returns>
-        public static Guid GetClientId(int PlanId = 0, int ModelId = 0)
+        public static int GetClientId(int PlanId = 0, int ModelId = 0)
         {
-            Guid ClientId = new Guid();
+            int ClientId = 0;
             if (PlanId > 0)
             {
                ClientId = (from i in db.Models
@@ -422,7 +422,7 @@ namespace RevenuePlanner.Test.MockHelpers
             return Convert.ToString(DashboardId);
         }
         #endregion
-        public static string GetPlanIdListClientWise(Guid clientId)
+        public static string GetPlanIdListClientWise(int clientId)
         {
             var planIds = db.Plans.Where(p => p.IsDeleted == false && p.Model.ClientId == clientId).Select(p => p.PlanId).Take(10).ToList();
             return string.Join(",", planIds.Select(plan => plan.ToString()));
@@ -444,12 +444,12 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <param name="PlanId">PlanId</param>
         /// <param name="ModelId">ModelId</param>
         /// <returns>returns an ClientId for given PlanId or ModelId</returns>
-        public static Guid GetUserId(int PlanId = 0 , int ModelId = 0)
+        public static int GetUserId(int PlanId = 0 , int ModelId = 0)
         {
-            Guid UserId = new Guid();
+            int UserId = 0;
             if (PlanId > 0)
             {
-                UserId = db.Plans.Where(pl => pl.PlanId == PlanId && pl.CreatedBy != null).Select(pl => pl.CreatedBy).FirstOrDefault();
+                UserId = db.Plans.Where(pl => pl.PlanId == PlanId && pl.CreatedBy != 0).Select(pl => pl.CreatedBy).FirstOrDefault();
             }
             else {
                 UserId = db.Models.Where(pl => pl.ModelId == ModelId && pl.CreatedBy != null).Select(pl => pl.CreatedBy).FirstOrDefault();
@@ -463,7 +463,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="PlanId">PlanId</param>        
         /// <returns>returns an ClientId for given PlanId</returns>
-        public static Guid GetDeletedPlanClientId(int PlanId)
+        public static int GetDeletedPlanClientId(int PlanId)
         {
             var ClientId = (from i in db.Models
                             join t in db.Plans on i.ModelId equals t.ModelId
@@ -489,7 +489,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="ClientId">ClientId</param>
         /// <returns>returns ClientId for given PlanId</returns>
-        public static int GetStageId(Guid clientId)
+        public static int GetStageId(int clientId)
         {
             var StageId = db.Stages.Where(pl => pl.ClientId == clientId && pl.IsDeleted == false).Select(pl => pl.StageId).FirstOrDefault();
             return StageId;
@@ -553,7 +553,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="ClientId">ClientId</param>
         /// <returns>returns Best in Class List for given ClientId</returns>        
-        public static List<BestInClass> GetBestInClassList(Guid ClientId)
+        public static List<BestInClass> GetBestInClassList(int ClientId)
         {
             var objBestInClassList = db.BestInClasses.Where(a => a.Stage.ClientId == ClientId && a.IsDeleted == false).OrderBy(a => Guid.NewGuid()).ToList();
             return objBestInClassList;
@@ -576,9 +576,9 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="ClientId">ClientId</param>
         /// <returns>returns an Improvement TacticType id for given ClientId</returns>
-        public static int GetImprovementTacticTypeId(Guid Clientid)
+        public static int GetImprovementTacticTypeId(int clientId)
         {
-            return  db.ImprovementTacticTypes.Where(pl => pl.ClientId == Clientid && pl.IsDeleted == false).Select(pl => pl.ImprovementTacticTypeId).FirstOrDefault();            
+            return  db.ImprovementTacticTypes.Where(pl => pl.ClientId == clientId && pl.IsDeleted == false).Select(pl => pl.ImprovementTacticTypeId).FirstOrDefault();            
         }
         /// <summary>
         /// Get deleted Improvement Tactic Type id for the given ClientId
@@ -586,9 +586,9 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="ClientId">ClientId</param>
         /// <returns>returns deleted Improvement TacticType id for given ClientId</returns>
-        public static int GetDeletedImprovementTacticTypeId(Guid Clientid)
+        public static int GetDeletedImprovementTacticTypeId(int clientId)
         {
-            return db.ImprovementTacticTypes.Where(pl => pl.ClientId == Clientid && pl.IsDeleted == true).Select(pl => pl.ImprovementTacticTypeId).FirstOrDefault();
+            return db.ImprovementTacticTypes.Where(pl => pl.ClientId == clientId && pl.IsDeleted == true).Select(pl => pl.ImprovementTacticTypeId).FirstOrDefault();
         }
 
         /// <summary>
@@ -597,16 +597,16 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <param name="ClientId">ClientId</param>
         /// <returns>returns an Improvement TacticType for given ClientId</returns>
-        public static ImprovementTacticType GetImprovementTacticType(Guid Clientid)
+        public static ImprovementTacticType GetImprovementTacticType(int clientId)
         {
-            return db.ImprovementTacticTypes.Where(pl => pl.ClientId == Clientid && pl.IsDeleted == false).Select(pl => pl).FirstOrDefault();
+            return db.ImprovementTacticTypes.Where(pl => pl.ClientId == clientId && pl.IsDeleted == false).Select(pl => pl).FirstOrDefault();
         }
        
         //added by devanshi to get Alertrule Id
-        public static int GetAlertruleId(Guid UserID)
+        public static int GetAlertruleId(int userId)
         {
             int ruleId = 0;
-            var rules= db.Alert_Rules.Where(a=>a.UserId==UserID ).Select(a => a).FirstOrDefault();
+            var rules= db.Alert_Rules.Where(a=>a.UserId== userId ).Select(a => a).FirstOrDefault();
             if (rules != null)
                 ruleId = rules.RuleId;
             return ruleId;

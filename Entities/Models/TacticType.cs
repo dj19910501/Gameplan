@@ -23,13 +23,11 @@ namespace RevenuePlanner.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string ColorCode { get; set; }
+        public System.DateTime CreatedDate { get; set; }
+        public Nullable<System.DateTime> ModifiedDate { get; set; }
         public int ModelId { get; set; }
         public Nullable<int> StageId { get; set; }
         public Nullable<double> ProjectedRevenue { get; set; }
-        public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
-        public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
         public Nullable<int> PreviousTacticTypeId { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
         public bool IsDeployedToIntegration { get; set; }
@@ -38,6 +36,8 @@ namespace RevenuePlanner.Models
         public string Abbreviation { get; set; }
         public Nullable<int> WorkFrontTemplateId { get; set; }
         public string AssetType { get; set; }
+        public int ModifiedBy { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual IntegrationWorkFrontTemplate IntegrationWorkFrontTemplate { get; set; }
         public virtual Model Model { get; set; }

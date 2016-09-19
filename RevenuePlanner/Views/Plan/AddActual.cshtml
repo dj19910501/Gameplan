@@ -227,7 +227,7 @@
                                     string id = "liOwner" + item.UserId;
                                     string name = item.FirstName + " " + item.LastName;
 
-                                    if (item.UserId == Sessions.User.UserId)
+                                    if (item.UserId == Sessions.User.ID)
                                     {
                                         <li class="accordion-inner close-list" id="@id" title="@name"><span class="sidebarliwidth">@name</span><input type="checkbox" class="chkbxfilter" id="@item.UserId" onchange="toggleOwner(this)" checked="checked" /></li>
                                     }
@@ -1022,7 +1022,7 @@
 
                 GetOwnerListForFilter(CurrentPlanId, false);
                 $('#ulSelectedOwner li input:checkbox').each(function () {
-                    @*if ($(this).attr('id') != '@Sessions.User.UserId') {
+                    @*if ($(this).attr('id') != '@Sessions.User.ID') {
 
                         $(this).removeAttr("checked");
                         $(this).parent().removeClass("close-list");

@@ -15,11 +15,11 @@ namespace RevenuePlanner.Models
     public partial class Client_Integration_Permission
     {
         public int ClientIntegrationPermissionId { get; set; }
-        public System.Guid ClientId { get; set; }
         public int IntegrationTypeId { get; set; }
         public string PermissionCode { get; set; }
-        public Nullable<System.Guid> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
+        public int ClientId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual IntegrationType IntegrationType { get; set; }
     }

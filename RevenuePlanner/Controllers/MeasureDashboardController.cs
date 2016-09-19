@@ -65,7 +65,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     Custom_Dashboard model = new Custom_Dashboard();
-                    string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                    string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashId + "&UserId=" + Sessions.User.ID + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
                     try
                     {
                         ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
@@ -103,7 +103,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                     ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                     ViewBag.ApiUrl = ApiUrl;
-                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.UserId.ToString());
+                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID.ToString());
                     ViewBag.DashboardAccess = true;
 
                     return View("Index", model);
@@ -114,7 +114,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.AuthorizedReportAPIUserName = string.Empty;
                     ViewBag.AuthorizedReportAPIPassword = string.Empty;
                     ViewBag.ApiUrl = string.Empty;
-                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.UserId.ToString());
+                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID.ToString());
                     ViewBag.DashboardAccess = false;
                     Custom_Dashboard model = new Custom_Dashboard();
                     return View("Index", model);

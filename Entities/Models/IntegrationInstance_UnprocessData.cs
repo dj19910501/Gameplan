@@ -21,7 +21,7 @@ namespace RevenuePlanner.Models
         public System.DateTime ResponseDateTime { get; set; }
         public int ResponseCount { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
     }

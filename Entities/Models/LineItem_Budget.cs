@@ -18,8 +18,8 @@ namespace RevenuePlanner.Models
         public int BudgetDetailId { get; set; }
         public int PlanLineItemId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public Nullable<System.Guid> CreatedBy { get; set; }
         public Nullable<byte> Weightage { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Budget_Detail Budget_Detail { get; set; }
         public virtual Plan_Campaign_Program_Tactic_LineItem Plan_Campaign_Program_Tactic_LineItem { get; set; }

@@ -19,7 +19,7 @@ namespace RevenuePlanner.Models
         public string EmailId { get; set; }
         public string EmailBody { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Plan_Improvement_Campaign_Program_Tactic Plan_Improvement_Campaign_Program_Tactic { get; set; }
     }

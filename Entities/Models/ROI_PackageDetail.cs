@@ -18,7 +18,7 @@ namespace RevenuePlanner.Models
         public int AnchorTacticID { get; set; }
         public int PlanTacticId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic1 { get; set; }

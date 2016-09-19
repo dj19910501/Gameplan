@@ -20,7 +20,7 @@ namespace RevenuePlanner.Services
         }
 
         #region Method to get Client wise entity list
-        public List<vClientWise_EntityList> SearchEntities(Guid ClientId)
+        public List<vClientWise_EntityList> SearchEntities(int ClientId)
         {
             List<vClientWise_EntityList> EntityList = new List<vClientWise_EntityList>();
             DataTable datatable = new DataTable();
@@ -52,7 +52,7 @@ namespace RevenuePlanner.Services
 
 
         #region method to get list or alert rules created
-        public List<AlertRuleDetail> GetAletRuleList(Guid UserId, Guid ClientId)
+        public List<AlertRuleDetail> GetAletRuleList(int UserId, int ClientId)
         {
             List<AlertRuleDetail> lsAlerttRule = new List<AlertRuleDetail>();
             try
@@ -89,7 +89,7 @@ namespace RevenuePlanner.Services
         }
         #endregion
         #region method to update Alert rule
-        public int UpdateAlertRule(AlertRuleDetail objRule, Guid UserId)
+        public int UpdateAlertRule(AlertRuleDetail objRule, int UserId)
         {
 
             int result = 0;
@@ -178,7 +178,7 @@ namespace RevenuePlanner.Services
         }
         #endregion
         #region method to get alert and noti summary
-        public List<Alert> GetAlertAummary(Guid UserId)
+        public List<Alert> GetAlertAummary(int UserId)
         {
             List<Alert> lstAlerts = new List<Alert>();
             try
@@ -196,7 +196,7 @@ namespace RevenuePlanner.Services
             return lstAlerts;
         }
 
-        public List<User_Notification_Messages> GetNotificationListing(Guid UserId)
+        public List<User_Notification_Messages> GetNotificationListing(int UserId)
         {
             List<User_Notification_Messages> lstNotifications = new List<User_Notification_Messages>();
             try
@@ -216,7 +216,7 @@ namespace RevenuePlanner.Services
 
         #endregion
         #region method to update Alert rule IsRead
-        public int UpdateAlert_Notification_IsRead(string Type, Guid UserId)
+        public int UpdateAlert_Notification_IsRead(string Type, int UserId)
         {
 
             int result = 0;
@@ -278,7 +278,7 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region method to Add update Alert rule
-        public int AddUpdate_AlertRule(AlertRuleDetail objRule, Guid ClientId, Guid UserId, int RuleId)
+        public int AddUpdate_AlertRule(AlertRuleDetail objRule, int ClientId, int UserId, int RuleId)
         {
 
             int result = 0;
@@ -303,7 +303,7 @@ namespace RevenuePlanner.Services
                             DateOfMonth = 10;
                     }
 
-                    command.Parameters.AddWithValue("@ClientId", ClientId.ToString());
+                    command.Parameters.AddWithValue("@ClientId", ClientId);
                     command.Parameters.AddWithValue("@RuleId", RuleId);
                     command.Parameters.AddWithValue("@RuleSummary", objRule.RuleSummary);
                     command.Parameters.AddWithValue("@EntityId", Int32.Parse(objRule.EntityID));
@@ -315,9 +315,9 @@ namespace RevenuePlanner.Services
                     command.Parameters.AddWithValue("@Frequency", objRule.Frequency);
                     command.Parameters.AddWithValue("@DayOfWeek", DayOfWeek);
                     command.Parameters.AddWithValue("@DateOfMonth", DateOfMonth);
-                    command.Parameters.AddWithValue("@UserId", UserId.ToString());
-                    command.Parameters.AddWithValue("@CreatedBy", UserId.ToString());
-                    command.Parameters.AddWithValue("@ModifiedBy", UserId.ToString());
+                    command.Parameters.AddWithValue("@UserId", UserId);
+                    command.Parameters.AddWithValue("@CreatedBy", UserId);
+                    command.Parameters.AddWithValue("@ModifiedBy", UserId);
                     command.Parameters.AddWithValue("@IsExists", IsExists).Direction = ParameterDirection.Output;
 
                     SqlDataAdapter adp = new SqlDataAdapter(command);

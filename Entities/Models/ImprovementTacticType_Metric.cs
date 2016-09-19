@@ -17,9 +17,9 @@ namespace RevenuePlanner.Models
         public int ImprovementTacticTypeId { get; set; }
         public double Weight { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public int StageId { get; set; }
         public string StageType { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual ImprovementTacticType ImprovementTacticType { get; set; }
         public virtual Stage Stage { get; set; }

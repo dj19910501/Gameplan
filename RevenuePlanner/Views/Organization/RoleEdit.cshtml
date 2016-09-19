@@ -7,7 +7,7 @@
     var lstActivity = ViewData["activitylist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["activitylist"];
     var lstpermission = ViewData["permissionlist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["permissionlist"];
     string varUrl = Url.Action("vieweditpermission", "Organization");
-    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
+    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.ID + "&Mode=MyPermission";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     ViewBag.PageTitle = "ManageRole";
     ViewBag.ModuleTitle = "Organization";

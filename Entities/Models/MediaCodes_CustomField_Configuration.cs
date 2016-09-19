@@ -16,10 +16,10 @@ namespace RevenuePlanner.Models
     {
         public int MediaConfId { get; set; }
         public int CustomFieldId { get; set; }
-        public System.Guid ClientId { get; set; }
         public Nullable<int> Sequence { get; set; }
         public Nullable<int> Length { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
+        public int ClientId { get; set; }
     
         public virtual CustomField CustomField { get; set; }
     }

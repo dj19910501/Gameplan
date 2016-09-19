@@ -20,7 +20,7 @@ GO
 -- =============================================
 ALTER PROCEDURE [dbo].[SP_Save_AlertRule]
 
-	@ClientId NVARCHAR(255)  ,
+	@ClientId INT  ,
 	@RuleId int,
 	@RuleSummary nvarchar(max),
 	@EntityId int,
@@ -32,9 +32,9 @@ ALTER PROCEDURE [dbo].[SP_Save_AlertRule]
 	@Frequency nvarchar(50),
 	@DayOfWeek tinyint=null,
 	@DateOfMonth tinyint=null,
-	@UserId NVARCHAR(255),
-	@CreatedBy NVARCHAR(255),
-	@ModifiedBy  NVARCHAR(255),
+	@UserId INT,
+	@CreatedBy INT,
+	@ModifiedBy  INT,
 	@IsExists int Output
 
 AS
@@ -96,9 +96,9 @@ BEGIN
 CREATE TABLE [dbo].[User_CoulmnView](
 	[ViewId] [int] IDENTITY(1,1) NOT NULL,
 	[ViewName] [nvarchar](50) NULL,
-	[CreatedBy] [uniqueidentifier] NULL,
+	[CreatedBy] INT NULL,
 	[CreatedDate] [datetime] NULL,
-	[ModifyBy] [uniqueidentifier] NULL,
+	[ModifyBy] INT NULL,
 	[ModifyDate] [datetime] NULL,
 	[IsDefault] [bit] NULL,
 	[GridAttribute] [xml] NULL,
@@ -123,7 +123,7 @@ END
 GO
 
 ALTER PROCEDURE [dbo].[sp_GetCustomFieldList]
-@ClientId nvarchar(250)=null
+@ClientId INT = 0
 AS
 BEGIN
 SET NOCOUNT ON;
@@ -356,7 +356,7 @@ RETURNS @Entities TABLE (
 			[Status]		NVARCHAR(15), 
 			StartDate		DATETIME, 
 			EndDate			DATETIME, 
-			CreatedBy		UNIQUEIDENTIFIER
+			CreatedBy		INT
 		)
 AS
 BEGIN
@@ -447,7 +447,7 @@ RETURNS @Entities TABLE (
 			[Status]		NVARCHAR(15), 
 			StartDate		DATETIME, 
 			EndDate			DATETIME, 
-			CreatedBy		UNIQUEIDENTIFIER
+			CreatedBy		INT
 		)
 AS
 BEGIN
@@ -465,7 +465,7 @@ Select * from fnGetEntitieHirarchyByPlanId(@planIds)
 ,tac as (
 	Select distinct ent.* 
 	FROM FilteredEnt as ent
-	Join [Plan_Campaign_Program_Tactic] as tac on ent.EntityId = tac.PlanTacticId and ent.EntityType=@entTactic AND tac.[Status] IN (select val from comma_split(@statusIds,'','')) and  tac.[CreatedBy] IN (select case when val = '''' then null else Convert(uniqueidentifier,val) end from comma_split(@ownerIds,'',''))
+	Join [Plan_Campaign_Program_Tactic] as tac on ent.EntityId = tac.PlanTacticId and ent.EntityType=@entTactic AND tac.[Status] IN (select val from comma_split(@statusIds,'','')) and  tac.[CreatedBy] IN (select val from comma_split(@ownerIds,'',''))
 	Join [TacticType] as typ on tac.TacticTypeId = typ.TacticTypeId and typ.IsDeleted=''0'' and typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,'',''))
 	where ent.EntityType = @entTactic
 )
@@ -511,7 +511,7 @@ ALTER PROCEDURE [dbo].[GetPlanBudget]--[GetPlanBudget] '20212,20203,19569'
 	@ownerIds nvarchar(max)='',
 	@tactictypeIds varchar(max)='',
 	@statusIds varchar(max)='',
-	@UserID varchar(36)=''
+	@UserID INT = 0
 	)
 AS
 BEGIN
@@ -751,7 +751,7 @@ GO
 -- =============================================
 ALTER PROCEDURE [dbo].[spGetGoalValuesForPlan]
 	@PlanIds VARCHAR(max),
-	@ClientId UNIQUEIDENTIFIER
+	@ClientId INT
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -973,7 +973,7 @@ RETURNS @Entities TABLE (
 			[Status]		NVARCHAR(15), 
 			StartDate		DATETIME, 
 			EndDate			DATETIME, 
-			CreatedBy		UNIQUEIDENTIFIER,
+			CreatedBy		INT,
 			AltId			NVARCHAR(500),
 			TaskId			NVARCHAR(500),
 			ParentTaskId	NVARCHAR(500),
@@ -1062,7 +1062,7 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fn
 BEGIN
 	execute dbo.sp_executesql @statement = N'CREATE FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId](
 	 @EntityType NVARCHAR(100)=''''
-	 ,@ClientId uniqueidentifier = NULL
+	 ,@ClientId INT = 0
 	 ,@StageMinLevel INT = 0
 	 ,@StageMaxLevel INT = 0
 	 ,@ModelId INT = 0
@@ -1095,7 +1095,7 @@ ELSE
 BEGIN
 	execute dbo.sp_executesql @statement = N'ALTER FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId](
 	 @EntityType NVARCHAR(100)=''''
-	 ,@ClientId uniqueidentifier = NULL
+	 ,@ClientId INT = 0
 	 ,@StageMinLevel INT = 0
 	 ,@StageMaxLevel INT = 0
 	 ,@ModelId INT = 0
@@ -1130,7 +1130,7 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fn
 BEGIN
 	execute dbo.sp_executesql @statement = N'CREATE FUNCTION [dbo].[fnGetRevueneByEntityTypeAndEntityId](
 	@EntityType NVARCHAR(100)=''''
-	 ,@ClientId uniqueidentifier = NULL
+	 ,@ClientId INT = 0
 	 ,@StageMinLevel INT = 0
 	 ,@StageMaxLevel INT = 0
 	 ,@ModelId INT = 0
@@ -1173,7 +1173,7 @@ ELSE
 BEGIN
 	execute dbo.sp_executesql @statement = N'ALTER FUNCTION [dbo].[fnGetRevueneByEntityTypeAndEntityId](
 	@EntityType NVARCHAR(100)=''''
-	 ,@ClientId uniqueidentifier = NULL
+	 ,@ClientId INT = 0
 	 ,@StageMinLevel INT = 0
 	 ,@StageMaxLevel INT = 0
 	 ,@ModelId INT = 0
@@ -1214,13 +1214,11 @@ END
 
 
 -- View Plan_PlannedCost
-IF EXISTS(select * FROM sys.views where name = 'Plan_PlannedCost')
-BEGIN
-	DROP VIEW [dbo].[Plan_PlannedCost]
-END
+IF EXISTS(select 1 FROM sys.views where name = 'Plan_PlannedCost')
+DROP VIEW [Plan_PlannedCost]
 GO
 
- CREATE VIEW [dbo].[Plan_PlannedCost] WITH SCHEMABINDING
+ ALTER VIEW [dbo].[Plan_PlannedCost] WITH SCHEMABINDING
 	AS 
    SELECT [dbo].[Plan_Campaign].[PlanId], 
    SUM([dbo].[Plan_Campaign_Program_Tactic].[Cost]) AS PlannedCost
@@ -1244,7 +1242,7 @@ GO
 CREATE VIEW [dbo].[Campaign_PlannedCost] WITH SCHEMABINDING
 	AS 
 SELECT  [dbo].[Plan_Campaign_Program].[PlanCampaignId] as [PlanCampaignId], 
-	SUM([MRPDev].[dbo].[Plan_Campaign_Program_Tactic].[Cost]) AS PlannedCost
+	SUM([dbo].[Plan_Campaign_Program_Tactic].[Cost]) AS PlannedCost
 	FROM  [dbo].[Plan_Campaign_Program_Tactic],  
 	[dbo].[Plan_Campaign_Program]   
 	WHERE  
@@ -1286,7 +1284,7 @@ GO
 -- =============================================
 ALTER PROCEDURE [dbo].[GridCustomFieldData]
 	@PlanId	 NVARCHAR(MAX)=''
-	,@ClientId uniqueidentifier =''
+	,@ClientId INT = 0
 AS
 BEGIN
 
@@ -1323,6 +1321,7 @@ SET NOCOUNT ON;
 
 END
 
+GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridData]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetGridData] AS' 
@@ -1337,8 +1336,8 @@ GO
 ALTER PROCEDURE GetGridData
 	-- Add the parameters for the stored procedure here
 	@PlanId NVARCHAR(MAX) = ''
-	,@ClientId uniqueidentifier =''
-	,@OwnerIds nvarchar(max)=''
+	,@ClientId INT = 0
+	,@OwnerIds NVARCHAR(MAX) = ''
 	,@TacticTypeIds varchar(max)=''
 	,@StatusIds varchar(max)=''
 AS

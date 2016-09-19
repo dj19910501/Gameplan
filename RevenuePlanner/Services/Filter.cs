@@ -28,7 +28,7 @@ namespace RevenuePlanner.Services
         /// <param name="UserId">UserId</param>
         /// <param name="ClientId">ClientId</param>
         /// <returns>returns List of TacticTypeModel</returns>
-        public List<TacticTypeModel> GetTacticTypeListForFilter(string PlanId, Guid UserId, Guid ClientId)
+        public List<TacticTypeModel> GetTacticTypeListForFilter(string PlanId, int UserId, int ClientId)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace RevenuePlanner.Services
         /// <param name="lstAllowedEntityIds">List of Allowed EntityId</param>
         /// <param name="UserId">UserId</param>
         /// <returns>returns List of TacticTypeModel</returns>
-        public List<TacticTypeModel> GetTacticTypeList(List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, Guid UserId)
+        public List<TacticTypeModel> GetTacticTypeList(List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, int UserId)
         {
             var TacticUserList = tacticList.ToList();
             if (TacticUserList.Count > 0)
@@ -92,7 +92,7 @@ namespace RevenuePlanner.Services
         /// <param name="PresetName">Preset Name</param>
         /// <param name="isLoadPreset">isLoadPreset</param>
         /// <returns>returns List of Last Set Of Views</returns>
-        public List<Plan_UserSavedViews> LastSetOfViews(Guid UserId, List<Plan_UserSavedViews> PlanUserSavedViews, string PresetName = "", Boolean isLoadPreset = false)
+        public List<Plan_UserSavedViews> LastSetOfViews(int UserId, List<Plan_UserSavedViews> PlanUserSavedViews, string PresetName = "", Boolean isLoadPreset = false)
         {
             var StatusLabel = Enums.FilterLabel.Status.ToString();
             var LastSetOfStatus = new List<string>();
@@ -161,7 +161,7 @@ namespace RevenuePlanner.Services
         /// <param name="ViewBy">ViewBy</param>
         /// <param name="ActiveMenu">ActiveMenu</param>
         /// <returns>returns List of Owner</returns>
-        public List<OwnerModel> GetOwnerListForFilter(Guid ClientId, Guid UserId, string FirstName, string LastName, Guid ApplicationId, string PlanId, string ViewBy, string ActiveMenu)
+        public List<OwnerModel> GetOwnerListForFilter(int ClientId, int UserId, string FirstName, string LastName, Guid ApplicationId, string PlanId, string ViewBy, string ActiveMenu)
         {
             try
             {
@@ -256,7 +256,7 @@ namespace RevenuePlanner.Services
         /// <param name="ApplicationId">ApplicationId</param>
         /// <param name="UserId">UserId</param>
         /// <returns>returns List of Owner</returns>
-        public List<OwnerModel> GetOwnerList(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, Guid ApplicationId, Guid UserId)
+        public List<OwnerModel> GetOwnerList(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, Guid ApplicationId, int UserId)
         {
             var lstOwners = GetIndividualsByPlanId(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, ApplicationId, UserId);
             List<OwnerModel> lstAllowedOwners = lstOwners.Select(owner => new OwnerModel
@@ -280,7 +280,7 @@ namespace RevenuePlanner.Services
         /// <param name="ApplicationId">ApplicationId</param>
         /// <param name="UserId">UserId</param>
         /// <returns>returns List of Individuals By PlanId</returns>
-        public List<User> GetIndividualsByPlanId(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, Guid ApplicationId, Guid UserId)
+        public List<User> GetIndividualsByPlanId(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, Guid ApplicationId, int UserId)
         {
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
             if (ActiveMenu.Equals(Enums.ActiveMenu.Plan.ToString()))

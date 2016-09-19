@@ -24,8 +24,8 @@ namespace RevenuePlanner.Models
         public string ActionName { get; set; }
         public string ActionSuffix { get; set; }
         public System.DateTime TimeStamp { get; set; }
-        public Nullable<System.Guid> UserId { get; set; }
         public bool IsDeleted { get; set; }
-        public Nullable<System.Guid> ClientId { get; set; }
+        public int ClientId { get; set; }
+        public int UserId { get; set; }
     }
 }

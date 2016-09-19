@@ -7,16 +7,16 @@ namespace RevenuePlanner.Services
 {
     public interface IAlerts
     {
-        List<vClientWise_EntityList> SearchEntities(Guid ClientId);
+        List<vClientWise_EntityList> SearchEntities(int ClientId);
      
-		  List<AlertRuleDetail> GetAletRuleList(Guid UserId, Guid ClientId);
-        int UpdateAlertRule(AlertRuleDetail objRule, Guid UserId);
+		  List<AlertRuleDetail> GetAletRuleList(int UserId, int ClientId);
+        int UpdateAlertRule(AlertRuleDetail objRule, int UserId);
         int DeleteAlertRule(int RuleId);
         int DisableAlertRule(int RuleId, bool RuleOn);
-        List<Alert> GetAlertAummary(Guid UserId);
-        List<User_Notification_Messages> GetNotificationListing(Guid UserId);
-		 int UpdateAlert_Notification_IsRead(string Type, Guid UserId);
+        List<Alert> GetAlertAummary(int UserId);
+        List<User_Notification_Messages> GetNotificationListing(int UserId);
+		 int UpdateAlert_Notification_IsRead(string Type, int UserId);
          int DismissAlert_Notification(string Type, int Id);
-         int AddUpdate_AlertRule(AlertRuleDetail objRule, Guid ClientId, Guid UserId, int RuleId);
+         int AddUpdate_AlertRule(AlertRuleDetail objRule, int ClientId, int UserId, int RuleId);
     }
 }

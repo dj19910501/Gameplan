@@ -16,19 +16,21 @@ namespace RevenuePlanner.Models
     {
         public Tactic_MediaCodes()
         {
+            this.Plan_Campaign_Program_Tactic_Actual_MediaCode = new HashSet<Plan_Campaign_Program_Tactic_Actual_MediaCode>();
             this.Tactic_MediaCodes_CustomFieldMapping = new HashSet<Tactic_MediaCodes_CustomFieldMapping>();
         }
     
         public int MediaCodeId { get; set; }
         public int TacticId { get; set; }
         public string MediaCodeValue { get; set; }
-        public Nullable<long> MediaCode { get; set; }
-        public Nullable<System.Guid> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
-        public Nullable<System.Guid> LastModifiedBy { get; set; }
         public Nullable<System.DateTime> LastModifiedDate { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
+        public Nullable<long> MediaCode { get; set; }
+        public int CreatedBy { get; set; }
+        public int LastModifiedBy { get; set; }
     
+        public virtual ICollection<Plan_Campaign_Program_Tactic_Actual_MediaCode> Plan_Campaign_Program_Tactic_Actual_MediaCode { get; set; }
         public virtual ICollection<Tactic_MediaCodes_CustomFieldMapping> Tactic_MediaCodes_CustomFieldMapping { get; set; }
     }
 }

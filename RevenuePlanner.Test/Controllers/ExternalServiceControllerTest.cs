@@ -402,7 +402,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ExternalServiceController controller = new ExternalServiceController();
             int planId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(planId);
+            Sessions.User.CID = DataHelper.GetClientId(planId);
             var result = controller.GetMarketoFolderPlanList(DateTime.Now.Year.ToString()) as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.ViewName:  " + result.ViewName);
             Assert.AreEqual("_MarketoFolderPlanList", result.ViewName);
@@ -423,7 +423,7 @@ namespace RevenuePlanner.Test.Controllers
 
             MRPEntities db = new MRPEntities();
             int planId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(planId);
+            Sessions.User.CID = DataHelper.GetClientId(planId);
             int MarketoInstanceTypeId = db.IntegrationTypes.Where(inst => inst.Title == "Marketo").Select(id => id.IntegrationTypeId).FirstOrDefault();
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
             var result = controller.GetMarketoFolderPlanList(DateTime.Now.Year.ToString(), IntegrationInstanceId) as PartialViewResult;
@@ -555,11 +555,11 @@ namespace RevenuePlanner.Test.Controllers
             int MarketoInstanceTypeId = ObjMarketoInstanceTypeId.IntegrationTypeId;
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
             var record = db.IntegrationInstances
-                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == IntegrationInstanceId)
+                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.CID && ii.IntegrationInstanceId == IntegrationInstanceId)
                                    .Select(ii => ii).FirstOrDefault();
 
             var recordAttribute = db.IntegrationInstance_Attribute
-                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.CID)
                          .Select(attr => attr).ToList();
             if (record != null)
             {
@@ -588,7 +588,7 @@ namespace RevenuePlanner.Test.Controllers
                 form.IntegrationInstanceId = record.IntegrationInstanceId;
                 form.IntegrationTypeId = record.IntegrationTypeId;
                 form.IsActive = record.IsActive;
-                form.ClientId = Sessions.User.ClientId;
+                form.ClientId = Sessions.User.CID;
                 form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
                 IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
                 objIntegrationTypeModel.Title = ObjMarketoInstanceTypeId.Title;
@@ -619,7 +619,7 @@ namespace RevenuePlanner.Test.Controllers
             int MarketoInstanceTypeId = ObjMarketoInstanceTypeId.IntegrationTypeId;
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
             var recordAttribute = db.IntegrationInstance_Attribute
-                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.CID)
                          .Select(attr => attr).ToList();
 
             //// Add IntegrationType Attributes data to List.
@@ -670,11 +670,11 @@ namespace RevenuePlanner.Test.Controllers
             int MarketoInstanceTypeId = ObjMarketoInstanceTypeId.IntegrationTypeId;
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == MarketoInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
             var record = db.IntegrationInstances
-                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == IntegrationInstanceId)
+                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.CID && ii.IntegrationInstanceId == IntegrationInstanceId)
                                    .Select(ii => ii).FirstOrDefault();
 
             var recordAttribute = db.IntegrationInstance_Attribute
-                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.CID)
                          .Select(attr => attr).ToList();
             if (record != null)
             {
@@ -704,7 +704,7 @@ namespace RevenuePlanner.Test.Controllers
                 form.IntegrationInstanceId = record.IntegrationInstanceId;
                 form.IntegrationTypeId = record.IntegrationTypeId;
                 form.IsActive = record.IsActive;
-                form.ClientId = Sessions.User.ClientId;
+                form.ClientId = Sessions.User.CID;
                 form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
 
                 IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
@@ -714,7 +714,7 @@ namespace RevenuePlanner.Test.Controllers
                 form.IntegrationType = objIntegrationTypeModel;
 
                 var recordSync = db.SyncFrequencies
-                                          .Where(freq => freq.IntegrationInstanceId == IntegrationInstanceId && freq.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                          .Where(freq => freq.IntegrationInstanceId == IntegrationInstanceId && freq.IntegrationInstance.ClientId == Sessions.User.CID)
                                           .Select(freq => freq).FirstOrDefault();
 
                 SyncFrequencyModel objSync = new SyncFrequencyModel();
@@ -788,11 +788,11 @@ namespace RevenuePlanner.Test.Controllers
             int sfdcInstanceTypeId = objSFDCInstanceTypeId.IntegrationTypeId;
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == sfdcInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
             var record = db.IntegrationInstances
-                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == IntegrationInstanceId)
+                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.CID && ii.IntegrationInstanceId == IntegrationInstanceId)
                                    .Select(ii => ii).FirstOrDefault();
 
             var recordAttribute = db.IntegrationInstance_Attribute
-                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.CID)
                          .Select(attr => attr).ToList();
 
             //// Add IntegrationType Attributes data to List.
@@ -822,7 +822,7 @@ namespace RevenuePlanner.Test.Controllers
                 form.IntegrationInstanceId = record.IntegrationInstanceId;
                 form.IntegrationTypeId = record.IntegrationTypeId;
                 form.IsActive = record.IsActive;
-                form.ClientId = Sessions.User.ClientId;
+                form.ClientId = Sessions.User.CID;
                 form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
             }
 
@@ -857,7 +857,7 @@ namespace RevenuePlanner.Test.Controllers
             int sfdcInstanceTypeId = objSFDCInstanceTypeId.IntegrationTypeId;
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == sfdcInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
             var recordAttribute = db.IntegrationInstance_Attribute
-                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.CID)
                          .Select(attr => attr).ToList();
 
             //// Add IntegrationType Attributes data to List.
@@ -915,11 +915,11 @@ namespace RevenuePlanner.Test.Controllers
             int sfdcInstanceTypeId = objSFDCInstanceTypeId.IntegrationTypeId;
             int IntegrationInstanceId = db.IntegrationInstances.Where(id => id.IntegrationTypeId == sfdcInstanceTypeId && id.IsDeleted == false).Select(id => id.IntegrationInstanceId).FirstOrDefault();
             var record = db.IntegrationInstances
-                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == IntegrationInstanceId)
+                                   .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.CID && ii.IntegrationInstanceId == IntegrationInstanceId)
                                    .Select(ii => ii).FirstOrDefault();
 
             var recordAttribute = db.IntegrationInstance_Attribute
-                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                         .Where(attr => attr.IntegrationInstanceId == IntegrationInstanceId && attr.IntegrationInstance.ClientId == Sessions.User.CID)
                          .Select(attr => attr).ToList();
 
             //// Add IntegrationType Attributes data to List.
@@ -950,7 +950,7 @@ namespace RevenuePlanner.Test.Controllers
                 form.IntegrationInstanceId = record.IntegrationInstanceId;
                 form.IntegrationTypeId = record.IntegrationTypeId;
                 form.IsActive = record.IsActive;
-                form.ClientId = Sessions.User.ClientId;
+                form.ClientId = Sessions.User.CID;
                 form.IntegrationTypeAttributes = lstObjIntegrationTypeAttributeModel;
             }
 
@@ -961,7 +961,7 @@ namespace RevenuePlanner.Test.Controllers
             form.IntegrationType = objIntegrationTypeModel;
 
             var recordSync = db.SyncFrequencies
-                                      .Where(freq => freq.IntegrationInstanceId == IntegrationInstanceId && freq.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                      .Where(freq => freq.IntegrationInstanceId == IntegrationInstanceId && freq.IntegrationInstance.ClientId == Sessions.User.CID)
                                       .Select(freq => freq).FirstOrDefault();
 
             SyncFrequencyModel objSync = new SyncFrequencyModel();
@@ -1037,7 +1037,7 @@ namespace RevenuePlanner.Test.Controllers
 
             int planTacticId = db.IntegrationWorkFrontTacticSettings.Where(x => lstTacIds.Contains(x.TacticId) &&
                                 x.TacticApprovalObject.Equals("Project")).Select(t => t.TacticId).FirstOrDefault();
-            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
+            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.ID, EntityType.Tactic);
 
             externalIntegration.Sync();
 
@@ -1080,7 +1080,7 @@ namespace RevenuePlanner.Test.Controllers
 
             int planTacticId = db.IntegrationWorkFrontRequests.Where(x => lstTacIds.Contains(x.PlanTacticId)).
                                     Select(t => t.PlanTacticId).FirstOrDefault();
-            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
+            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.ID, EntityType.Tactic);
 
             externalIntegration.Sync();
 
@@ -1123,7 +1123,7 @@ namespace RevenuePlanner.Test.Controllers
 
             int planTacticId = db.IntegrationWorkFrontTacticSettings.Where(x => lstTacIds.Contains(x.TacticId) &&
                                 x.TacticApprovalObject.Equals("Project2")).Select(t => t.TacticId).FirstOrDefault();
-            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
+            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.ID, EntityType.Tactic);
 
             externalIntegration.Sync();
                         

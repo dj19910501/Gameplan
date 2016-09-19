@@ -46,13 +46,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\AggregationProcessLog.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AggregationQuery.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\AggregationStatu.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AggregationStep.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Alert.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Alert_Rules.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AttrPositionConfig.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BestInClass.cs">
@@ -82,6 +94,9 @@
     <Compile Include="Models\ChangeLog.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChartOptionAttribute.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ClientTacticType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -91,10 +106,25 @@
     <Compile Include="Models\Client_Integration_Permission.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ColorSequence.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\comma_split_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ConfigurationTestCas.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CoRelationReportGraphResults_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CustomField.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CustomFieldDependency.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CustomFieldDependency_Temp.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CustomFieldOption.cs">
@@ -109,10 +139,34 @@
     <Compile Include="Models\CustomRestriction.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Dashboard.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DashboardContent.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DashboardDimension.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DashboardPage.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Dimension.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DimensionValue.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Dimension_RestrictedDimensionValues.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DimTime.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DrillDataConfig.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DynamicDimension.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ELMAH_Error.cs">
@@ -124,16 +178,115 @@
     <Compile Include="Models\EntityTypeColor.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ExtractTableFromXml_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\fGetWeeksList_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\FindDimensionsForTable_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\FindMatrixInverse_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\FiscalQuarterYear.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\fnSplitString_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\GameplanDataType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\GameplanDataTypePull.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\GetBudgetListAndLineItemBudgetList_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetClientEntityList_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\GetCollaboratorId1_Result.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\GetCollaboratorId_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetCustomFieldEntityList_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetDashboardContentData_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetDimensions_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetEntitiesReachedCompletionGoal_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetGraphMeasure_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetLineItemList_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetMeasures_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetRestrictedValues_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetSFDCSourceTargetMappingData_Marketo3Way_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetSFDCSourceTargetMappingData_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetSourceTargetMappingData_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetTacCustomNameMappingList_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetTacticActualCostMappingData_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetTacticLineItemList_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetTacticsForAllRuleEntities_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetTacticTypeList_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Goal.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GoalDimension.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GoalDistribution.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GraphRelation.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\HelpText.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Homepage.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\HomepageContent.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\HomepageDimension.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IdentifyDimensions_Result.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ImprovementTacticType.cs">
@@ -202,10 +355,22 @@
     <Compile Include="Models\IntegrationWorkFrontUser.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\KeyData.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\KeyDataDimension.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LinearRegression_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\LineItemType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\LineItem_Budget.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Logging.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\MarketoEntityValueMapping.cs">
@@ -214,7 +379,19 @@
     <Compile Include="Models\MasterTacticType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Measure.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MeasureOutputValue.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MeasureValue.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\MediaCodes_CustomField_Configuration.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MenuItem.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Model.cs">
@@ -247,6 +424,9 @@
     <Compile Include="Models\Plan_Budget.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Plan_Budget_Cost_Actual_Detail_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Plan_Campaign.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -263,6 +443,12 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Plan_Campaign_Program_Tactic_Actual.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Plan_Campaign_Program_Tactic_Actual_MediaCode.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User_CoulmnView.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Plan_Campaign_Program_Tactic_Budget.cs">
@@ -304,10 +490,55 @@
     <Compile Include="Models\Plan_UserSavedViews.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ProcessedFQY.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ProjectedValuesForPlans_Result.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReportAxi.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReportGraph.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReportGraphColumn.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReportGraphRowExclude.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReportTable.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReportTableColumn.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReportTableDimension.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReportTableRowExclude.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Report_Intergration_Conf.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Report_Share.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ROI_PackageDetail.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Role_Permission.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Role_RestrictedDimensionValues.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Setting.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\spViewByDropDownList_Result.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Stage.cs">
@@ -328,7 +559,7 @@
     <Compile Include="Models\Tactic_Share.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\User_CoulmnView.cs">
+    <Compile Include="Models\UserSetting.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User_Filter.cs">
@@ -343,10 +574,16 @@
     <Compile Include="Models\User_Permission.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\User_RestrictedDimensionValues.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\vClientWise_EntityList.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\vClientWise_Tactic.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Versioning.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -57,7 +57,7 @@ namespace Integration.Salesforce
         private List<CampaignNameConvention> SequencialOrderedTableList { get; set; }
         private int _integrationInstanceId { get; set; }
         private int _id { get; set; }
-        private Guid _userId { get; set; }
+        private int _userId { get; set; }
         private int _integrationInstanceLogId { get; set; }
         private EntityType _entityType { get; set; }
         private readonly string objectName;
@@ -70,7 +70,7 @@ namespace Integration.Salesforce
         public string _ErrorMessage { get; set; }
         private int _integrationInstanceSectionId { get; set; }
         //Start - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
-        private Guid _clientId { get; set; }
+        private int _clientId { get; set; }
         private bool _CustomNamingPermissionForInstance = false;
         private bool IsClientAllowedForCustomNaming = false;
         Guid _applicationId = Guid.Empty;
@@ -96,7 +96,7 @@ namespace Integration.Salesforce
         {
         }
 
-        public IntegrationSalesforceClient(int integrationInstanceId, int id, EntityType entityType, Guid userId, int integrationInstanceLogId, Guid applicationId)
+        public IntegrationSalesforceClient(int integrationInstanceId, int id, EntityType entityType, int userId, int integrationInstanceLogId, Guid applicationId)
         {
             _integrationInstanceId = integrationInstanceId;
             _id = id;
@@ -1105,7 +1105,7 @@ namespace Integration.Salesforce
                 }
                 #endregion
 
-                Guid ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+                int ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
                 //// Get Eloqua integration type Id.
                 var eloquaIntegrationType = db.IntegrationTypes.Where(type => type.Code == EloquaCode && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
@@ -1899,7 +1899,7 @@ namespace Integration.Salesforce
             int MQLStageId = 0, MQLLevel = 0;
             try
             {
-                Guid ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+                int ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
                 #region "Get MQL StageId & Title from Stage Table"
                 Stage stageMQL = db.Stages.FirstOrDefault(s => s.ClientId == ClientId && s.Code == Common.StageMQL && s.IsDeleted == false);
@@ -2806,7 +2806,7 @@ namespace Integration.Salesforce
                 }
                 #endregion
 
-                Guid ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+                int ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
                 //// Get Eloqua integration type Id.
                 var eloquaIntegrationType = db.IntegrationTypes.Where(type => type.Code == EloquaCode && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
@@ -3841,7 +3841,7 @@ namespace Integration.Salesforce
                 try
                 {
                     BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-                    _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
+                    _mappingUser = objBDSservice.GetUserListByClientIdEx(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
 
                     if (_CustomNamingPermissionForInstance)
                     {

@@ -16,9 +16,9 @@ namespace RevenuePlanner.Models
     {
         public int ViewId { get; set; }
         public string ViewName { get; set; }
-        public Nullable<System.Guid> CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
-        public Nullable<System.Guid> ModifyBy { get; set; }
+        public int ModifyBy { get; set; }
         public Nullable<System.DateTime> ModifyDate { get; set; }
         public Nullable<bool> IsDefault { get; set; }
         public string GridAttribute { get; set; }

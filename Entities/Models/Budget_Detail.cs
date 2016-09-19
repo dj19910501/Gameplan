@@ -16,9 +16,9 @@ namespace RevenuePlanner.Models
     {
         public Budget_Detail()
         {
+            this.Budget_Permission = new HashSet<Budget_Permission>();
             this.Budget_DetailAmount = new HashSet<Budget_DetailAmount>();
             this.LineItem_Budget = new HashSet<LineItem_Budget>();
-            this.Budget_Permission = new HashSet<Budget_Permission>();
         }
     
         public int Id { get; set; }
@@ -26,13 +26,13 @@ namespace RevenuePlanner.Models
         public string Name { get; set; }
         public Nullable<int> ParentId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsForecast { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Budget Budget { get; set; }
+        public virtual ICollection<Budget_Permission> Budget_Permission { get; set; }
         public virtual ICollection<Budget_DetailAmount> Budget_DetailAmount { get; set; }
         public virtual ICollection<LineItem_Budget> LineItem_Budget { get; set; }
-        public virtual ICollection<Budget_Permission> Budget_Permission { get; set; }
     }
 }

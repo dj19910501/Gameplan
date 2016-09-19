@@ -232,7 +232,7 @@ namespace RevenuePlanner.Controllers
                                 Sessions.User = obj;
                                 ViewBag.Expired = Common.objCached.PasswordExpired;
                                 ResetPasswordModel ObjResetPwd = new ResetPasswordModel();
-                                ObjResetPwd.UserId = obj.UserId;
+                                ObjResetPwd.UserId = obj.ID;
                                 return View("ResetPassword", ObjResetPwd);
                             }
                         }
@@ -248,7 +248,7 @@ namespace RevenuePlanner.Controllers
                     //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
                     Sessions.User = obj;                    
                     // Add By Nishant Sheth Set Cache for exchange rate #2496
-                    objCurrency.SetUserCurrencyCache(Sessions.User.ClientId, Sessions.User.UserId);
+                    objCurrency.SetUserCurrencyCache(Sessions.User.CID, Sessions.User.ID);
 
                     //Start Manoj Limbachiya : 11/23/2013 - Menu filling and Role Permission
                     //Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
@@ -287,7 +287,7 @@ namespace RevenuePlanner.Controllers
                     //// Set user activity permission session.
                     SetUserActivityPermission();
                     //Start - PL#1675 
-                    var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == obj.ClientId).ToList();
+                    var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == obj.CID).ToList();
                     var ApplicationActivityList = objBDSServiceClient.GetClientApplicationactivitylist(applicationId);
                     var clientApplicationActivityList = (from c in clientActivityList
                                                          join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
@@ -351,7 +351,7 @@ namespace RevenuePlanner.Controllers
 
                     // Added by bhavesh Dobariya @Date: 26/11/2014
                     Sessions.IsDisplayDataInconsistencyMsg = false;
-                    Guid ClientId = obj.ClientId;
+                    int ClientId = obj.ID;
                     List<int> deletedStageId = db.Stages.Where(s => s.ClientId == ClientId && s.IsDeleted == true).Select(s => s.StageId).ToList();
                     if (deletedStageId.Count > 0)
                     {
@@ -375,7 +375,7 @@ namespace RevenuePlanner.Controllers
                     if (isMediaCodePermission)
                     {
                         CacheObject objCache = new CacheObject();
-                        var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.ClientId && a.CustomField.IsDeleted == false).ToList().Select(a => new TacticCustomfieldConfig
+                        var lstmediaCodeCustomfield = db.MediaCodes_CustomField_Configuration.Where(a => a.ClientId == Sessions.User.CID && a.CustomField.IsDeleted == false).ToList().Select(a => new TacticCustomfieldConfig
                         {
                             CustomFieldId = a.CustomFieldId,
                             CustomFieldName = a.CustomField.Name,
@@ -414,7 +414,7 @@ namespace RevenuePlanner.Controllers
 
                     //Update last login date for user
 
-                    objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
+                    objBDSServiceClient.UpdateLastLoginDateEx(Sessions.User.ID, Sessions.ApplicationId);
 
                     if ((!string.IsNullOrWhiteSpace(returnUrl)) && IsLocalUrl(returnUrl))
                     {
@@ -535,7 +535,7 @@ namespace RevenuePlanner.Controllers
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
             // Get user application activity permission using BDSService
-            var lstUserActivityPermissions = objBDSServiceClient.GetUserActivityPermission(Sessions.User.UserId, Sessions.ApplicationId);
+            var lstUserActivityPermissions = objBDSServiceClient.GetUserActivityPermissionEx(Sessions.User.ID, Sessions.ApplicationId);
             Sessions.UserActivityPermission = new Enums.ApplicationActivity();
             foreach (string permission in lstUserActivityPermissions)
             {
@@ -548,7 +548,7 @@ namespace RevenuePlanner.Controllers
             bool isMediaCodePermission = false;
             try
             {
-                if (Sessions.User.ClientId != Guid.Empty)
+                if (Sessions.User.CID != 0)
                 {
                     int appActivityId = 0;
                     BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
@@ -558,7 +558,7 @@ namespace RevenuePlanner.Controllers
                         appActivityId = ApplicationActivityList.Where(act => act.Code.ToLower() == strMediaCodeActivity).Select(act => act.ApplicationActivityId).FirstOrDefault();
                     //GetClientApplicationactivitylist(_applicationId);
 
-                    if (db.Client_Activity.Any(act => act.ClientId == Sessions.User.ClientId && act.ApplicationActivityId == appActivityId))
+                    if (db.Client_Activity.Any(act => act.ClientId == Sessions.User.CID && act.ApplicationActivityId == appActivityId))
                         isMediaCodePermission = true;
                 }
             }
@@ -577,7 +577,7 @@ namespace RevenuePlanner.Controllers
             bool isAlertPermission = false;
             try
             {
-                if (Sessions.User.ClientId != Guid.Empty)
+                if (Sessions.User.CID != 0)
                 {
                     int appActivityId = 0;
                     BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
@@ -587,7 +587,7 @@ namespace RevenuePlanner.Controllers
                         appActivityId = ApplicationActivityList.Where(act => act.Code.ToLower() == strAlertActivity).Select(act => act.ApplicationActivityId).FirstOrDefault();
                     //GetClientApplicationactivitylist(_applicationId);
 
-                    if (db.Client_Activity.Any(act => act.ClientId == Sessions.User.ClientId && act.ApplicationActivityId == appActivityId))
+                    if (db.Client_Activity.Any(act => act.ClientId == Sessions.User.CID && act.ApplicationActivityId == appActivityId))
                         isAlertPermission = true;
                 }
             }
@@ -676,7 +676,7 @@ namespace RevenuePlanner.Controllers
                     }
                 case Enums.ActiveMenu.Organization:
                     //// For actions with organization controller 06/30/2014 Added By Maninder Singh Wadhva to handle return URL view.
-                    return RedirectToAction("ViewEditPermission", currentMenuOfUrl.ControllerName, new { id = Sessions.User.UserId, Mode = "MyPermission" });
+                    return RedirectToAction("ViewEditPermission", currentMenuOfUrl.ControllerName, new { id = Sessions.User.ID, Mode = "MyPermission" });
                 default:
                     return RedirectToAction(currentMenuOfUrl.ActionName, currentMenuOfUrl.ControllerName);
             }
@@ -749,7 +749,7 @@ namespace RevenuePlanner.Controllers
         //    {
         //        BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         //        BDSService.User objUser = new BDSService.User();
-        //        objUser.UserId = Sessions.User.UserId;
+        //        objUser.UserId = Sessions.User.ID;
         //        objUser.SecurityQuestionId = form.SecurityQuestionId;
 
         //        string encryptedAnswer = Common.Encrypt(form.Answer);
@@ -817,7 +817,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult LogOff()
         {
             //LoginSession l = new LoginSession();
-            //l.RemoveSession(Session.SessionID, Sessions.User.UserId.ToString());
+            //l.RemoveSession(Session.SessionID, Sessions.User.ID.ToString());
             // Add By Nishant Sheth
             // Desc:: Remove user cache memory
             CacheObject objCache = new CacheObject();
@@ -1086,7 +1086,7 @@ namespace RevenuePlanner.Controllers
         //            else
         //            {
         //                Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
-        //                var objUser = objBDSServiceClient.GetTeamMemberDetails(objPasswordResetRequest.UserId, applicationId);
+        //                var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(objPasswordResetRequest.UserId, applicationId);
 
         //                objSecurityQuestionModel.PasswordResetRequestId = objPasswordResetRequest.PasswordResetRequestId;
         //                objSecurityQuestionModel.UserId = objPasswordResetRequest.UserId;
@@ -1137,7 +1137,7 @@ namespace RevenuePlanner.Controllers
         //        int PossibleAttemptCount = int.Parse(ConfigurationManager.AppSettings["PossibleAttemptCount"]);
         //        if (form.AttemptCount < PossibleAttemptCount)
         //        {
-        //            var objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]));
+        //            var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(form.UserId, Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]));
         //            if (Common.Encrypt(form.Answer) != objUser.Answer)
         //            {
         //                form.AttemptCount = form.AttemptCount + 1;
@@ -1247,8 +1247,8 @@ namespace RevenuePlanner.Controllers
                                 objPasswordResetRequest.IsUsed = true;
                             }
                             objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
-                            //Guid UserId = Guid.Parse(TempData["UserId"].ToString());                      //Commented by Rahul Shah on 09/09/2015 for #1577
-                            Guid UserId = objPasswordResetRequest.UserId;                               //Added by Rahul Shah on 09/09/2015 for #1577  
+                            //int UserId = Guid.Parse(TempData["UserId"].ToString());                      //Commented by Rahul Shah on 09/09/2015 for #1577
+                            int UserId = objPasswordResetRequest.UID;                               //Added by Rahul Shah on 09/09/2015 for #1577  
 
                             TempData["UserId"] = null;
 
@@ -1294,13 +1294,13 @@ namespace RevenuePlanner.Controllers
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
-                var objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, applicationId);
+                var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(form.UserId, applicationId);
 
                 /* ------------------------------- single hash current password ------------------------------*/
                 string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
                 /*--------------------------------------------------------------------------------------------*/
 
-                if (objBDSServiceClient.CheckCurrentPassword(form.UserId, SingleHash_CurrentPassword))
+                if (objBDSServiceClient.CheckCurrentPasswordEx(form.UserId, SingleHash_CurrentPassword))
                 {
                     ModelState.AddModelError("", "New and current password cannot be same.");
                 }
@@ -1312,7 +1312,7 @@ namespace RevenuePlanner.Controllers
                     //Added By Maitri Gandhi on 8/4/2016 for #2105
                     //string returnMessage = objBDSServiceClient.CreatePasswordHistory(form.UserId, SingleHash_NewPassword, form.UserId);
                     //Modified by Maitri Gandhi on 19/4/2016
-                    string returnMessage = objBDSServiceClient._ResetPassword(form.UserId, SingleHash_NewPassword);
+                    string returnMessage = objBDSServiceClient._ResetPasswordEx(form.UserId, SingleHash_NewPassword);
                     if (returnMessage != "Success")
                     {
                         ModelState.AddModelError("", returnMessage);

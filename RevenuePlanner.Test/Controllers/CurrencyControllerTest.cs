@@ -56,8 +56,8 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             ICurrency objCurrency = new Currency();
-            var UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).UserId;
-            var ClientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ClientId;
+            var UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ID;
+            var ClientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).CID;
             objCurrency.SetUserCurrencyCache(ClientId, UserId);
             CurrencyController objCurrencyController = new CurrencyController();
             objCurrencyController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objCurrencyController);

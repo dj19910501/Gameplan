@@ -37,7 +37,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
-            var result = objOrganizationController.ViewEditPermission(Guid.Empty.ToString(), Enums.UserPermissionMode.View.ToString()) as ViewResult;
+            var result = objOrganizationController.ViewEditPermission(0, Enums.UserPermissionMode.View.ToString()) as ViewResult;
             
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
             Assert.AreEqual("ViewEditPermission", result.ViewName);
@@ -60,7 +60,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
-            var result = objOrganizationController.ViewEditPermission(Sessions.User.UserId.ToString(), Enums.UserPermissionMode.View.ToString()) as ViewResult;
+            var result = objOrganizationController.ViewEditPermission(Sessions.User.ID, Enums.UserPermissionMode.View.ToString()) as ViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
             Assert.AreEqual("ViewEditPermission", result.ViewName);
            
@@ -82,7 +82,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
-            var result = objOrganizationController.ViewEditPermission(Guid.Empty.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ViewResult;
+            var result = objOrganizationController.ViewEditPermission(0, Enums.UserPermissionMode.Edit.ToString()) as ViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
             Assert.IsNull(result);
         
@@ -104,7 +104,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call view edit permission method
             OrganizationController objOrganizationController = new OrganizationController();
-            var result = objOrganizationController.ViewEditPermission(Sessions.User.UserId.ToString(), Enums.UserPermissionMode.Edit.ToString()) as ActionResult;
+            var result = objOrganizationController.ViewEditPermission(Sessions.User.ID, Enums.UserPermissionMode.Edit.ToString()) as ActionResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
             Assert.IsNotNull(result);
            
@@ -126,7 +126,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call save user permission and custom restriction method
             OrganizationController objOrganizationController = new OrganizationController();
-            var result = objOrganizationController.SaveUserPermission(string.Empty, Guid.Empty.ToString()) as JsonResult;
+            var result = objOrganizationController.SaveUserPermission(string.Empty, 0) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("status"));
@@ -150,8 +150,8 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call save user permission and custom restriction method
             OrganizationController objOrganizationController = new OrganizationController();
-            string customRestrictions = DataHelper.GetCustomRestrictionInViewEditForm(Sessions.User.UserId);
-            var result = objOrganizationController.SaveUserPermission(customRestrictions, Sessions.User.UserId.ToString()) as JsonResult;
+            string customRestrictions = DataHelper.GetCustomRestrictionInViewEditForm(Sessions.User.ID);
+            var result = objOrganizationController.SaveUserPermission(customRestrictions, Sessions.User.ID) as JsonResult;
 
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);

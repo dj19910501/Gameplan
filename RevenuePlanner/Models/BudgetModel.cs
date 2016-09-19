@@ -47,7 +47,7 @@ namespace RevenuePlanner.Models
         public int Weightage { get; set; }
         public string CustomFieldType { get; set; }
         public bool isEditable { get; set; }
-        public Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public bool isAfterApproved { get; set; }
         public int? LineItemTypeId { get; set; }
     }

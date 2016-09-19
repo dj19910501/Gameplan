@@ -104,7 +104,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             HomeController objHomeController = new HomeController();
             int planId = DataHelper.GetPlanId();
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             var result = objHomeController.Index(Enums.ActiveMenu.Plan, planId) as ViewResult;
 
@@ -331,7 +331,7 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Tactic.ToString();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
@@ -362,7 +362,7 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Custom.ToString();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
@@ -487,7 +487,7 @@ namespace RevenuePlanner.Test.Controllers
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
 
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
 
@@ -532,7 +532,7 @@ namespace RevenuePlanner.Test.Controllers
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
 
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
 
@@ -766,7 +766,7 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Tactic.ToString();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
@@ -797,7 +797,7 @@ namespace RevenuePlanner.Test.Controllers
             string ViewBy = PlanGanttTypes.Custom.ToString();
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
             var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
@@ -921,7 +921,7 @@ namespace RevenuePlanner.Test.Controllers
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
 
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
 
@@ -966,7 +966,7 @@ namespace RevenuePlanner.Test.Controllers
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
 
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
 
@@ -995,7 +995,7 @@ namespace RevenuePlanner.Test.Controllers
             {
                 CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
             }
-            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
 
             var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, Year, CommaSeparatedCustomFields, OwnerIds, Activemenu, getViewByList, Tactictypeids, Statusids, true) as Task<JsonResult>;
             return new JsonResult();
@@ -1028,7 +1028,7 @@ namespace RevenuePlanner.Test.Controllers
             string singlehash = DataHelper.ComputeSingleHash(password);
             RevenuePlanner.BDSService.BDSServiceClient objBDSServiceClient = new RevenuePlanner.BDSService.BDSServiceClient();
             Sessions.User = objBDSServiceClient.Validate_UserOverAll(userName, singlehash);
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             var result = objHomeController.AddActual(Convert.ToInt32(Sessions.PlanId)) as ViewResult;
 
@@ -1117,7 +1117,7 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 0; // Open tactic
-            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
             var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
@@ -1142,7 +1142,7 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 1; // All tactic
-            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
             var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -1183,8 +1183,8 @@ namespace RevenuePlanner.Test.Controllers
         //    string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
         //    string Year = DataHelper.GetYear();
         //    int planId = DataHelper.GetPlanId();
-        //    Sessions.User.ClientId = DataHelper.GetClientId(planId);
-        //    Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
+        //    Sessions.User.CID = DataHelper.GetClientId(planId);
+        //    Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.ID).ToList();
         //    var result = objPlanController.GetPlanByMultiplePlanIDs(CommaSeparatedPlanId, Enums.ActiveMenu.Home.ToString(), Year) as JsonResult;
 
         //    if (result != null)
@@ -1261,10 +1261,10 @@ namespace RevenuePlanner.Test.Controllers
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
 
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
 
-            var UserID = Sessions.User.UserId;
+            var UserID = Sessions.User.ID;
 
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(UserID);
 
@@ -1296,7 +1296,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
-            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.ID).ToList();
             var result = objHomeController.SaveLastSetofViews("", "", "", "", "", "", "", "") as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -1362,7 +1362,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
 
-            var SavedPresetNames = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
+            var SavedPresetNames = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).Select(view => view).ToList();
             List<Preset> PresetList = (from item in SavedPresetNames
                                        where item.ViewName != null
                                        select new Preset
@@ -1396,7 +1396,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
 
-            var SavedPresetNames = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
+            var SavedPresetNames = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).Select(view => view).ToList();
             List<Preset> PresetList = (from item in SavedPresetNames
                                        where item.ViewName != null
                                        select new Preset
@@ -1430,7 +1430,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
             HomeController objHomeController = new HomeController();
-            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
+            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.ID).ToList();
             var result = objHomeController.DeletePreset("Test") as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.GetValue:  " + result.GetValue("isSuccess"));
             Assert.AreEqual(true, result.GetValue("isSuccess"));            
@@ -1496,7 +1496,7 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => PlanId == id.Plan_Campaign_Program.Plan_Campaign.PlanId).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
             string year = db.Plans.Where(pl => pl.PlanId == PlanId).Select(pl => pl.Year).FirstOrDefault();
@@ -1636,7 +1636,7 @@ namespace RevenuePlanner.Test.Controllers
     ),
     routes
 );
-            var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlan(Sessions.User.CID);
             int PlanId = TaskData.PlanId;
             Sessions.PlanId = PlanId;
             string Year = TaskData.Year;
@@ -1873,7 +1873,7 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
 
-            var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlan(Sessions.User.CID);
             int PlanId = TaskData.PlanId;
             Sessions.PlanId = PlanId;
             string strParam = TaskData.Year.ToString();
@@ -1968,7 +1968,7 @@ namespace RevenuePlanner.Test.Controllers
             objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
             objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
-            var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlan(Sessions.User.CID);
             int PlanId = TaskData.PlanId;
             Sessions.PlanId = PlanId;
             string Year = TaskData.Year;
@@ -2036,7 +2036,7 @@ namespace RevenuePlanner.Test.Controllers
             objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
-            Plan_Campaign_Program_Tactic objTactic = DataHelper.GetPlanTacticForPackage(Sessions.User.ClientId);
+            Plan_Campaign_Program_Tactic objTactic = DataHelper.GetPlanTacticForPackage(Sessions.User.CID);
             Sessions.PlanPlanIds = new List<int>();
             Sessions.PlanPlanIds.Add(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId);
 

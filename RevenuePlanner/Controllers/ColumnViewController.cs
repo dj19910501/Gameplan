@@ -40,7 +40,7 @@ namespace RevenuePlanner.Controllers
 
 
                 ViewBag.IsGrid = IsGrid;
-                allattributeList = objcolumnView.GetCutomefieldModel(Sessions.User.ClientId, IsGrid, out IsSelectall);
+                allattributeList = objcolumnView.GetCutomefieldModel(Sessions.User.CID, IsGrid, out IsSelectall);
                 ViewBag.IsSelectAll = IsSelectall;
 
 
@@ -65,7 +65,7 @@ namespace RevenuePlanner.Controllers
 
 
 
-                int viewId = objcolumnView.SaveColumnView(Sessions.User.UserId, ViewName, AttributeDetail, Isgrid);
+                int viewId = objcolumnView.SaveColumnView(Sessions.User.ID, ViewName, AttributeDetail, Isgrid);
 
                 if (viewId > 0)
                 {

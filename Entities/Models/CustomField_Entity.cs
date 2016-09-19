@@ -19,9 +19,9 @@ namespace RevenuePlanner.Models
         public int CustomFieldId { get; set; }
         public string Value { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<byte> Weightage { get; set; }
         public Nullable<byte> CostWeightage { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual CustomField CustomField { get; set; }
     }

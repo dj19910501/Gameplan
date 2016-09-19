@@ -37,12 +37,12 @@ namespace Integration.WorkFront
         private string _password { get; set; }
         private string _companyName { get; set; }
         private Guid _applicationId = Guid.Empty;
-        private Guid _userId { get; set; }
+        private int _userId { get; set; }
         private Dictionary<string, string> _mappingTacticPushData { get; set; }
         private Dictionary<string, string> _mappingCustomFieldPullData { get; set; }
         private Dictionary<string, string> _mappingTacticCombined { get; set; }
         private List<string> _customFieldIds { get; set; }
-        private Guid _clientId { get; set; }
+        private int _clientId { get; set; }
         //api URL must be prepended with the company name
         private string apiURL;
         private string _apiURL { get { return apiURL; } set { apiURL = string.Concat(string.Concat("https://", _companyName), value); } }
@@ -86,7 +86,7 @@ namespace Integration.WorkFront
         /// <param name="entityType">Entity type.</param>
         /// <param name="userId">User Id.</param>
         /// <param name="integrationInstanceLogId">Integration instance log id.</param>
-        public IntegrationWorkFrontSession(int integrationInstanceId, int id, EntityType entityType, Guid userId, int integrationInstanceLogId, Guid applicationId)
+        public IntegrationWorkFrontSession(int integrationInstanceId, int id, EntityType entityType, int userId, int integrationInstanceLogId, Guid applicationId)
         {
             _integrationInstanceId = integrationInstanceId;
             _entityID = id;
@@ -1690,7 +1690,7 @@ namespace Integration.WorkFront
                 else if (tacticField.Key == Fields.GameplanField.PROGRAM_OWNER.ToAPIString())
                 {
                     BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                    BDSService.User user = objBDSServiceClient.GetTeamMemberDetails(tactic.Plan_Campaign_Program.Plan_Campaign.CreatedBy, _applicationId);
+                    BDSService.User user = objBDSServiceClient.GetTeamMemberDetailsEx(tactic.Plan_Campaign_Program.Plan_Campaign.CreatedBy, _applicationId);
                     updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(user.Email) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.PROGRAM_START.ToAPIString())
@@ -1704,7 +1704,7 @@ namespace Integration.WorkFront
                 else if (tacticField.Key == Fields.GameplanField.CAMPAIGN_OWNER.ToAPIString())
                 {
                     BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                    BDSService.User user = objBDSServiceClient.GetTeamMemberDetails(tactic.Plan_Campaign_Program.Plan_Campaign.CreatedBy, _applicationId);
+                    BDSService.User user = objBDSServiceClient.GetTeamMemberDetailsEx(tactic.Plan_Campaign_Program.Plan_Campaign.CreatedBy, _applicationId);
                     updateList.Append(tacticField.Value + ":'" + HttpUtility.UrlEncode(user.Email) + "'");
                 }
                 else if (tacticField.Key == Fields.GameplanField.CAMPAIGN_START.ToAPIString())

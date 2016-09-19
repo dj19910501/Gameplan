@@ -27,7 +27,7 @@ namespace RevenuePlanner.Test.Helper
             Console.WriteLine("To Check Generate custom name with null object.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient();
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            Guid clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ClientId;
+            int clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).CID;
             string result = controller.TestGenerateCustomName(null, clientId);
             
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result:  " + result);
@@ -44,7 +44,7 @@ namespace RevenuePlanner.Test.Helper
         {
             Console.WriteLine("To Check Generate custom name with null object and empty GUID.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient();
-            string result = controller.TestGenerateCustomName(null, Guid.Empty);
+            string result = controller.TestGenerateCustomName(null, 0);
            
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result:  " + result);
             Assert.AreEqual(string.Empty, result);
@@ -61,7 +61,7 @@ namespace RevenuePlanner.Test.Helper
             Console.WriteLine("To Check Generate custom name with tactic object.\n");
             IntegrationEloquaClient controller = new IntegrationEloquaClient();
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            Guid clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ClientId;
+            int clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).CID;
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
             objTactic = DataHelper.GetPlanTactic(clientId);
             string result = controller.TestGenerateCustomName(objTactic, clientId);
@@ -98,7 +98,7 @@ namespace RevenuePlanner.Test.Helper
         {
             Console.WriteLine("To Get All custom fields name with tactic object.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            Guid clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ClientId;
+            int clientId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).CID;
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
             objTactic = DataHelper.GetPlanTactic(clientId);
             List<int> tacticIds = new List<int>();

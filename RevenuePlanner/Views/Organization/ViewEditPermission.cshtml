@@ -12,7 +12,7 @@
     //// End - Added by Sohel Pathan on 15/01/2015 for PL ticket #1139
     var cDashboardList = ViewData["CustomDashboardList"] != null ? ViewData["CustomDashboardList"] as List<RevenuePlanner.Models.CustomDashboardModel> : new List<RevenuePlanner.Models.CustomDashboardModel>();
     string varUrl = Url.Action("vieweditpermission", "Organization");
-    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission"; 
+    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.ID + "&Mode=MyPermission"; 
     //Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     if (ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
     {

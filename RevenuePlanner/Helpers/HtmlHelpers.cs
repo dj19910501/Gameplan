@@ -4320,7 +4320,7 @@ namespace RevenuePlanner.Helpers
             {
                 //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
                 //// User custom Restrictions
-                var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
+                var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.ID, true);
                 MRPEntities db = new MRPEntities();
                 string TacticType = "";
                 int PlanID = 0;
@@ -6607,7 +6607,7 @@ namespace RevenuePlanner.Helpers
         {
 
             MRPEntities db = new MRPEntities();
-            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).Select(a => a.Id).ToList();
+            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.CID && a.IsDeleted == false).Select(a => a.Id).ToList();
             List<Budget_Detail> BudgetDetails = db.Budget_Detail.Where(a => BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
             List<int> SelectedOptionIDs = db.LineItem_Budget.Where(list => list.PlanLineItemId == Id).Select(list => list.BudgetDetailId).ToList();
             List<string> SelectedOptionValues = BudgetDetails.Where(Detaillist => SelectedOptionIDs.Contains(Detaillist.Id)).Select(Detaillist => Detaillist.Name).ToList();
@@ -6731,7 +6731,7 @@ namespace RevenuePlanner.Helpers
                 }
             }
             string result = string.Empty;
-            string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&StartDate=" + Sessions.StartDate + "&EndDate=" + Sessions.EndDate + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+            string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.ID + "&RoleId=" + Sessions.User.RoleId + "&StartDate=" + Sessions.StartDate + "&EndDate=" + Sessions.EndDate + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
             try
             {
                 ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;

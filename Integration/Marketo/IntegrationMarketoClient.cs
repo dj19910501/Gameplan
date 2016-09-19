@@ -22,10 +22,10 @@ namespace Integration.Marketo
         private int _integrationInstanceLogId { get; set; }
         private int _integrationInstanceId { get; set; }
         private bool _isResultError { get; set; }
-        private Guid _clientId { get; set; }
+        private int _clientId { get; set; }
         private EntityType _entityType { get; set; }
         private int _id { get; set; }
-        private Guid _userId { get; set; }
+        private int _userId { get; set; }
         public string _ErrorMessage { get; set; }
         Guid _applicationId = Guid.Empty;
 
@@ -37,7 +37,7 @@ namespace Integration.Marketo
         {
         }
 
-        public IntegrationMarketoClient(int integrationInstanceId, int id, EntityType entityType, Guid userId, int integrationInstanceLogId, Guid applicationId)
+        public IntegrationMarketoClient(int integrationInstanceId, int id, EntityType entityType, int userId, int integrationInstanceLogId, Guid applicationId)
         {
             _integrationInstanceId = integrationInstanceId;
             _id = id;

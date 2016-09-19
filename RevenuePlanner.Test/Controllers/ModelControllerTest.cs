@@ -124,8 +124,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            int StageId = DataHelper.GetStageId(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            int StageId = DataHelper.GetStageId(Sessions.User.CID);
             var result = objModelController.CheckTargetStage(ModelId, StageId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -199,7 +199,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             string ModelTitle = DataHelper.GetModel(ModelId).Title;
             var result = objModelController.CheckDuplicateModelTitle(ModelTitle) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
@@ -223,7 +223,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             string ModelTitle = DataHelper.GetModel(ModelId).Title + "Not Exist";
             var result = objModelController.CheckDuplicateModelTitle(ModelTitle) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
@@ -248,7 +248,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.GetModelData(ModelId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -270,7 +270,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.GetModelData() as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -294,7 +294,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.ModelZero() as ViewResult;
 
             var serializedData = new RouteValueDictionary(result.ViewData);
@@ -327,7 +327,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             string listtype = "active";
             var result = objModelController.GetModelList(listtype) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
@@ -350,7 +350,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             string listtype = "all";
             var result = objModelController.GetModelList(listtype) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
@@ -373,7 +373,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             string listtype = "Invalid";
             var result = objModelController.GetModelList(listtype) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
@@ -398,7 +398,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             string ModelTitle = "Baseline Model";
             int New_ModelId = 0;
             var result = objModelController.LoadModelOverview(ModelTitle, New_ModelId) as PartialViewResult;
@@ -423,7 +423,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             string ModelTitle = DataHelper.GetModel(ModelId).Title;
             var result = objModelController.LoadModelOverview(ModelTitle, ModelId) as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value ViewName :  " + result.ViewName);
@@ -448,7 +448,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             double Msize = DataHelper.GetModel(ModelId).AverageDealSize;
             var result = objModelController.LoadContactInquiry(Msize) as PartialViewResult;
             var serializedData = new RouteValueDictionary(result.ViewData);
@@ -478,7 +478,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.Tactics() as ViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value ViewName :  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
@@ -500,7 +500,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.Tactics() as ViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value ViewName :  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
@@ -525,7 +525,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.FillVersion(ModelId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data :  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -549,7 +549,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.GetTacticDatabyid(ModelId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data :  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -573,7 +573,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             int TacticTypeId = DataHelper.GetTacticTypeId(ModelId);
             var result = objModelController.DetailTacticData(TacticTypeId, ModelId) as PartialViewResult;
             var serializedData = new RouteValueDictionary(result.ViewData);
@@ -603,7 +603,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.CreateTacticData(ModelId) as PartialViewResult;
 
 
@@ -634,9 +634,9 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetDeletedModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             int TacticTypeId = DataHelper.GetdeletedTacticTypeId(ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             var result = objModelController.DeleteTactic(TacticTypeId, Sessions.User.UserId.ToString()) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -658,9 +658,9 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetDeletedModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             int TacticTypeId = DataHelper.GetdeletedTacticTypeId(ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             var result = objModelController.DeleteTactic(TacticTypeId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -684,7 +684,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             TacticType TaskData = DataHelper.GetTacticType(ModelId);
             if (TaskData != null)
             {
@@ -725,7 +725,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             TacticType TaskData = DataHelper.GetTacticType(ModelId);
             if (TaskData != null)
             {
@@ -765,10 +765,10 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Model ModelData = DataHelper.GetModel(ModelId);
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             
             List<TacticType> TaskData = DataHelper.GetTacticTypeList(ModelId);
-            Sessions.User.UserId = ModelData.CreatedBy;
+            Sessions.User.ID = ModelData.CreatedBy;
             if (TaskData != null && TaskData.Count > 0)
             {
                 List<string> tacticIds = new List<string>();
@@ -815,7 +815,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
             Model ModelData = DataHelper.GetModel(ModelId);
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             List<TacticType> TaskData = DataHelper.GetTacticTypeList(ModelId);
             if (TaskData != null && TaskData.Count > 0)
             {
@@ -846,7 +846,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.Integration(ModelId) as ViewResult;
 
             var serializedData = new RouteValueDictionary(result.ViewData);
@@ -876,7 +876,7 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objModelController.GetIntegrationDatabyid(ModelId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
@@ -901,8 +901,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             Model TaskData = DataHelper.GetModel(ModelId);
             if (TaskData != null)
             {
@@ -932,8 +932,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             Model TaskData = DataHelper.GetModel(ModelId);
             if (TaskData != null)
             {
@@ -965,8 +965,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             Model TaskData = DataHelper.GetModel(ModelId);
             if (TaskData != null)
             {
@@ -1001,8 +1001,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             Model TaskData = DataHelper.GetModel(ModelId);
             if (TaskData != null)
             {
@@ -1038,8 +1038,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             var result = objModelController.GetDefaultDuplicateModelName(ModelId) as JsonResult;
 
             var serializedData = new RouteValueDictionary(result.Data);
@@ -1067,8 +1067,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             var result = objModelController.GetDefaultDuplicateModelName(0) as JsonResult;
 
             var serializedData = new RouteValueDictionary(result.Data);
@@ -1098,8 +1098,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             Model TaskData = DataHelper.GetModel(ModelId);
             if (TaskData != null)
             {
@@ -1131,8 +1131,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             var result = objModelController.IntegrationSelection(ModelId) as ViewResult;
 
             var serializedData = new RouteValueDictionary(result.ViewData);
@@ -1162,8 +1162,8 @@ namespace RevenuePlanner.Test.Controllers
             objModelController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objModelController);
             objModelController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID= DataHelper.GetUserId(0, ModelId);
             var result = objModelController.IntegrationOverview(ModelId) as ViewResult;
 
             var serializedData = new RouteValueDictionary(result.ViewData);

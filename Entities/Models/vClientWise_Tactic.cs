@@ -19,12 +19,12 @@ namespace RevenuePlanner.Models
         public int MediaCodeId { get; set; }
         public int TacticId { get; set; }
         public string MediaCodeValue { get; set; }
-        public Nullable<long> MediaCode { get; set; }
-        public Nullable<System.Guid> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
-        public Nullable<System.Guid> LastModifiedBy { get; set; }
         public Nullable<System.DateTime> LastModifiedDate { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
-        public System.Guid ClientId { get; set; }
+        public Nullable<long> MediaCode { get; set; }
+        public int CreatedBy { get; set; }
+        public int LastModifiedBy { get; set; }
+        public int ClientId { get; set; }
     }
 }

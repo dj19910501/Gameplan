@@ -30,13 +30,13 @@ namespace RevenuePlanner.Models
         public string Status { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool IsDeployedToIntegration { get; set; }
         public string IntegrationInstanceTacticId { get; set; }
         public Nullable<System.DateTime> LastSyncDate { get; set; }
         public string IntegrationInstanceEloquaId { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
     
         public virtual ImprovementTacticType ImprovementTacticType { get; set; }
         public virtual Plan_Improvement_Campaign_Program Plan_Improvement_Campaign_Program { get; set; }

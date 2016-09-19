@@ -118,7 +118,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
                 //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
-                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.UserId).Any();
+                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.ID).Any();
             }
             else
             {
@@ -141,7 +141,7 @@ namespace RevenuePlanner.Controllers
             List<ModelVersion> lstVersions = new List<ModelVersion>();
             if (ModelId != 0)
             {
-                var versions = (from model in objDbMrpEntities.Models where model.IsDeleted == false && model.ClientId == Sessions.User.ClientId && model.ModelId == ModelId select model).FirstOrDefault();
+                var versions = (from model in objDbMrpEntities.Models where model.IsDeleted == false && model.ClientId == Sessions.User.CID && model.ModelId == ModelId select model).FirstOrDefault();
                 if (versions != null)
                 {
                     //// Current Model
@@ -231,7 +231,7 @@ namespace RevenuePlanner.Controllers
                 List<ModelStage> listModelStage = new List<ModelStage>();
                 string CW = Convert.ToString(Enums.Stage.CW);
 
-                var StageList = objDbMrpEntities.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId && stage.Level != null && stage.Code != CW).OrderBy(stage => stage.Level).ToList();
+                var StageList = objDbMrpEntities.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.CID && stage.Level != null && stage.Code != CW).OrderBy(stage => stage.Level).ToList();
                 if (StageList != null && StageList.Count > 0)
                 {
                     foreach (var objStage in StageList)
@@ -320,11 +320,11 @@ namespace RevenuePlanner.Controllers
                                 objModel.Version = "1.0";
                                 objModel.Year = DateTime.Now.Year;
                                 objModel.Status = Enums.ModelStatusValues.Single(modelStatus => modelStatus.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
-                                objModel.ClientId = Sessions.User.ClientId;
+                                objModel.ClientId = Sessions.User.CID;
                                 objModel.IsActive = true;
                                 objModel.IsDeleted = false;
                                 objModel.CreatedDate = DateTime.Now;
-                                objModel.CreatedBy = Sessions.User.UserId;
+                                objModel.CreatedBy = Sessions.User.ID;
                                 objModel.IsBenchmarked = IsBenchmarked;
                                 objModel.AverageDealSize = averageDealSize;
                                 objDbMrpEntities.Models.Add(objModel);
@@ -333,7 +333,7 @@ namespace RevenuePlanner.Controllers
 
                                 //// Start - Added by Sohel Pathan on 17/07/2014 for PL ticket #594 
                                 //// Insert TacticType entry from ClientTacticType table of logged in client.
-                                var lstClientTacticType = objDbMrpEntities.ClientTacticTypes.Where(clientTacticType => clientTacticType.ClientId == Sessions.User.ClientId && clientTacticType.IsDeleted == false).ToList();
+                                var lstClientTacticType = objDbMrpEntities.ClientTacticTypes.Where(clientTacticType => clientTacticType.ClientId == Sessions.User.CID && clientTacticType.IsDeleted == false).ToList();
                                 if (lstClientTacticType != null)
                                 {
                                     if (lstClientTacticType.Count > 0)
@@ -343,7 +343,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             objTacticType = new TacticType();
                                             objTacticType.ColorCode = clientTacticType.ColorCode;
-                                            objTacticType.CreatedBy = Sessions.User.UserId;
+                                            objTacticType.CreatedBy = Sessions.User.ID;
                                             objTacticType.CreatedDate = DateTime.Now;
                                             objTacticType.Description = clientTacticType.Description;
                                             objTacticType.IsDeleted = false;
@@ -371,7 +371,7 @@ namespace RevenuePlanner.Controllers
                                     objLineItemType.Description = Enums.LineItemTypes.None.ToString();
                                     objLineItemType.IsDeleted = false;
                                     objLineItemType.CreatedDate = DateTime.Now;
-                                    objLineItemType.CreatedBy = Sessions.User.UserId;
+                                    objLineItemType.CreatedBy = Sessions.User.ID;
                                     objDbMrpEntities.LineItemTypes.Add(objLineItemType);
                                     objDbMrpEntities.SaveChanges();
                                 }
@@ -382,9 +382,9 @@ namespace RevenuePlanner.Controllers
                                 isBenchmarkDb = objExistingModel.IsBenchmarked;
                                 if (objModel != null)
                                 {
-                                    objExistingModel.ClientId = Sessions.User.ClientId;
+                                    objExistingModel.ClientId = Sessions.User.CID;
                                     objExistingModel.ModifiedDate = DateTime.Now;
-                                    objExistingModel.ModifiedBy = Sessions.User.UserId;
+                                    objExistingModel.ModifiedBy = Sessions.User.ID;
                                     objExistingModel.IsBenchmarked = IsBenchmarked;
                                     objExistingModel.AverageDealSize = averageDealSize;
                                     objDbMrpEntities.Entry(objExistingModel).State = EntityState.Modified;
@@ -585,7 +585,7 @@ namespace RevenuePlanner.Controllers
                     if (existingModelFunnelStage == null)
                     {
                         objModel_Funnel_Stage.CreatedDate = DateTime.Now;
-                        objModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
+                        objModel_Funnel_Stage.CreatedBy = Sessions.User.ID;
                         objDbMrpEntities.Model_Stage.Add(objModel_Funnel_Stage);
                         objDbMrpEntities.SaveChanges();
                     }
@@ -593,7 +593,7 @@ namespace RevenuePlanner.Controllers
                     {
                         //// PL #497 	Customized Target stage - Model Inputs By Udaya on 06/12/2014
                         existingModelFunnelStage.Value = objModel_Funnel_Stage.Value;
-                        existingModelFunnelStage.ModifiedBy = Sessions.User.UserId;
+                        existingModelFunnelStage.ModifiedBy = Sessions.User.ID;
                         existingModelFunnelStage.ModifiedDate = DateTime.Now;
                         existingModelFunnelStage.AllowedTargetStage = boolValue;
                         objDbMrpEntities.Entry(existingModelFunnelStage).State = EntityState.Modified;
@@ -649,7 +649,7 @@ namespace RevenuePlanner.Controllers
                 try
                 {
                     //// get Client code from logged in client id.
-                    clientcode = objBDSUserRepository.GetClientById(Sessions.User.ClientId).Code;
+                    clientcode = objBDSUserRepository.GetClientByIdEx(Sessions.User.CID).Code;
                 }
                 catch (Exception objException)
                 {
@@ -667,7 +667,7 @@ namespace RevenuePlanner.Controllers
                 bool stageExistsForClient = false;
                 bool anyTargetStageExists = false;
 
-                List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId).ToList();
+                List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.CID).ToList();
 
                 //// parse xml doc file and check stage and its corresponding target stage is exist. Based on parsing set the flags for stage and stage target.
                 foreach (XmlNode _class in xmlDoc.SelectNodes(@"/Model/ModelInput"))
@@ -750,7 +750,7 @@ namespace RevenuePlanner.Controllers
 
                 //// Retrieve client code
                 BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                string clientcode = objBDSUserRepository.GetClientById(Sessions.User.ClientId).Code;
+                string clientcode = objBDSUserRepository.GetClientByIdEx(Sessions.User.CID).Code;
                 bool isClientDataExists = false;
 
                 foreach (XmlNode _class in xmlDoc.SelectNodes(@"/Model/ModelInput"))
@@ -823,7 +823,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns StageId for given StageName</returns>
         public int GetStageIdByStageCode(string code)
         {
-            int StageId = objDbMrpEntities.Stages.Where(stage => stage.Code.ToLower() == code.ToLower() && stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId).Select(stage => stage.StageId).FirstOrDefault();
+            int StageId = objDbMrpEntities.Stages.Where(stage => stage.Code.ToLower() == code.ToLower() && stage.IsDeleted == false && stage.ClientId == Sessions.User.CID).Select(stage => stage.StageId).FirstOrDefault();
             return StageId;
         }
 
@@ -851,14 +851,14 @@ namespace RevenuePlanner.Controllers
             {
                 objModel_Funnel_Stage.AllowedTargetStage = stageValue;
                 objModel_Funnel_Stage.CreatedDate = DateTime.Now;
-                objModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
+                objModel_Funnel_Stage.CreatedBy = Sessions.User.ID;
                 objDbMrpEntities.Model_Stage.Add(objModel_Funnel_Stage);
             }
             else
             {
                 tsvModel_Funnel_Stage.AllowedTargetStage = stageValue;
                 tsvModel_Funnel_Stage.Value = objModel_Funnel_Stage.Value;
-                tsvModel_Funnel_Stage.ModifiedBy = Sessions.User.UserId;
+                tsvModel_Funnel_Stage.ModifiedBy = Sessions.User.ID;
                 tsvModel_Funnel_Stage.ModifiedDate = DateTime.Now;
                 objDbMrpEntities.Entry(tsvModel_Funnel_Stage).State = EntityState.Modified;
             }
@@ -876,7 +876,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult CheckDuplicateModelTitle(string Title)
         {
-            var objModel = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ClientId == Sessions.User.ClientId && model.Title.Trim().ToLower() == Title.Trim().ToLower()).FirstOrDefault();
+            var objModel = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ClientId == Sessions.User.CID && model.Title.Trim().ToLower() == Title.Trim().ToLower()).FirstOrDefault();
             if (objModel == null)
             {
                 return Json("notexist", JsonRequestBehavior.AllowGet);
@@ -928,7 +928,7 @@ namespace RevenuePlanner.Controllers
                     Model objModel = new Model();
                     if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))
                     {
-                        Guid clientId = Sessions.User.ClientId;
+                        int clientId = Sessions.User.CID;
                         objModel = (from model in objDbMrpEntities.Models
                                     where model.ClientId == clientId && model.IsDeleted == false
                                     select model).OrderBy(model => model.Status).ThenBy(model => model.CreatedDate).FirstOrDefault();
@@ -985,7 +985,7 @@ namespace RevenuePlanner.Controllers
                 List<Model> objModelList = new List<Model>();
                 if (!String.IsNullOrWhiteSpace(listType))
                 {
-                    Guid clientId = Sessions.User.ClientId;
+                    int clientId = Sessions.User.CID;
                     List<Model> lstModels = (from model in objDbMrpEntities.Models
                                              where model.IsDeleted == false && model.ClientId == clientId && (model.ParentModelId == 0 || model.ParentModelId == null)
                                              select model).ToList();
@@ -1218,7 +1218,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
                 //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
-                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.UserId).Any();
+                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.ID).Any();
             }
             else
             {
@@ -1297,7 +1297,7 @@ namespace RevenuePlanner.Controllers
             var allTacticTypes = objTacticList.Select(tacticType => new
             {
                 id = tacticType.TacticTypeId,
-                clientid = Sessions.User.ClientId,
+                clientid = Sessions.User.CID,
                 modelId = tacticType.ModelId, //// TFS Bug - 179 : Improper behavior when editing Tactic in model   Changed By : Nirav shah on 6 Feb 2014 Change : add modelId = p.ModelId,    
                 title = tacticType.Title,
                 Stage = (tacticType.StageId == null) ? "-" : tacticType.Stage.Title, //// Modified by dharmraj for ticket #475, Old line : Stage = (p.StageId == null) ? "-" : p.Stage.Code
@@ -1340,7 +1340,7 @@ namespace RevenuePlanner.Controllers
                     //Begin added by Brad Gray 7/28/2015 PL#1374, #1373
                     IntegrationInstance intInstanceProjMgmt = objModel.IntegrationInstance4;
                     bool isIntegratedWithWorkFront = false;
-                    var Marketoinstance = objModel.IntegrationInstance41;
+                    var Marketoinstance = objModel.IntegrationInstance4;
 
                     List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
                     if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString()))
@@ -1407,7 +1407,7 @@ namespace RevenuePlanner.Controllers
                 TacticType objTacticType = objDbMrpEntities.TacticTypes.Where(tacticType => tacticType.TacticTypeId.Equals(id)).FirstOrDefault();
                 objTacticTypeMdoel.TacticTypeId = objTacticType.TacticTypeId;
                 objTacticTypeMdoel.Title = System.Web.HttpUtility.HtmlDecode(objTacticType.Title);  /////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                objTacticTypeMdoel.ClientId = Sessions.User.ClientId;
+                objTacticTypeMdoel.ClientId = Sessions.User.CID;
                 objTacticTypeMdoel.Description = System.Web.HttpUtility.HtmlDecode(objTacticType.Description);  ////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 //// changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014
                 //// changed by Nirav Shah on 2 APR 2013
@@ -1475,7 +1475,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsModelIntegrated = true;
                 var intInstanceProjMgmt = objModel.IntegrationInstance4;
-                var Marketoinstance = objModel.IntegrationInstance41;
+                var Marketoinstance = objModel.IntegrationInstance4;
                 bool isIntegratedWithWorkFront = false;
                 bool isIntegratedWithMarketo = false;
                 List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
@@ -1598,7 +1598,7 @@ namespace RevenuePlanner.Controllers
             if (objTacticTypeDB != null)
             {
                 objTacticTypeDB.IsDeleted = true;
-                objTacticTypeDB.ModifiedBy = Sessions.User.UserId;
+                objTacticTypeDB.ModifiedBy = Sessions.User.ID;
                 objTacticTypeDB.ModifiedDate = DateTime.Now;
                 objDbMrpEntities.TacticTypes.Attach(objTacticTypeDB);
                 objDbMrpEntities.Entry(objTacticTypeDB).State = EntityState.Modified;
@@ -1678,7 +1678,7 @@ namespace RevenuePlanner.Controllers
                 int intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
                 objtactic.ColorCode = Convert.ToString(Common.ColorcodeList[intRandomColorNumber]);
                 objtactic.CreatedDate = System.DateTime.Now;
-                objtactic.CreatedBy = Sessions.User.UserId;
+                objtactic.CreatedBy = Sessions.User.ID;
                 //// Start Manoj Limbachiya PL # 486
                 objtactic.ModelId = ModelId;
                 objtactic.IsDeployedToModel = isDeployedToModel;
@@ -2089,7 +2089,7 @@ namespace RevenuePlanner.Controllers
                                 intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
                                 objtactic.ColorCode = Convert.ToString(Common.ColorcodeList[intRandomColorNumber]);
                                 objtactic.CreatedDate = DateTime.Now;
-                                objtactic.CreatedBy = Sessions.User.UserId;
+                                objtactic.CreatedBy = Sessions.User.ID;
                                 objtactic.ModelId = ModelId;
                                 objtactic.PreviousTacticTypeId = tacticType.PreviousTacticTypeId;
 
@@ -2292,7 +2292,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
                 //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
-                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.UserId).Any();
+                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.ID).Any();
             }
             else
             {
@@ -2312,7 +2312,7 @@ namespace RevenuePlanner.Controllers
         {
             Model objModel = objDbMrpEntities.Models.FirstOrDefault(model => model.ModelId == id);
             int integrationInstanceId = objModel.IntegrationInstanceId == null ? 0 : Convert.ToInt32(objModel.IntegrationInstanceId);
-            var lstIntegrationInstance = objDbMrpEntities.IntegrationInstances.Where(integrationInstace => integrationInstace.IsDeleted == false && integrationInstace.IsActive == true && integrationInstace.ClientId == Sessions.User.ClientId).ToList().Select(integrationInstace => integrationInstace);
+            var lstIntegrationInstance = objDbMrpEntities.IntegrationInstances.Where(integrationInstace => integrationInstace.IsDeleted == false && integrationInstace.IsActive == true && integrationInstace.ClientId == Sessions.User.CID).ToList().Select(integrationInstace => integrationInstace);
 
             //// Retrieve all Integrations
             var allIntegrationInstance = lstIntegrationInstance.Select(integrationInstace => new
@@ -2380,7 +2380,7 @@ namespace RevenuePlanner.Controllers
                         objModel.IntegrationInstanceId = integrationId;
                     }
 
-                    objModel.ModifiedBy = Sessions.User.UserId;
+                    objModel.ModifiedBy = Sessions.User.ID;
                     objModel.ModifiedDate = DateTime.Now;
 
                     objDbMrpEntities.Entry(objModel).State = EntityState.Modified;
@@ -2520,46 +2520,9 @@ namespace RevenuePlanner.Controllers
                             isPublish = true;
                             // Add By Nishant Sheth
                             // Desc : #2225 performance issue with publishing model
-                            objDbMrpEntities.PublishModel(modelId, Sessions.User.UserId);
+                            objDbMrpEntities.PublishModel(modelId, Sessions.User.ID);
                             Sessions.PlanUserSavedViews = null;
                             // End By Nishant Sheth
-
-                            #region Old Code
-                            // Commentd below code by nishant Sheth on 06-Jun-2016
-                            // Desc : #2225 performance issue with publishing model
-
-                            //// TFS point 252: editing a published model, Added by Nirav Shah on 18 feb 2014
-                            //// Update ModelId in plan and set latest published modelid.
-                            //while (objModel.Model2 != null)
-                            //{
-                            //    objModel = objModel.Model2;
-                            //    if (objModel.Status.ToLower() != Enums.ModelStatus.Draft.ToString().ToLower())
-                            //    {
-                            //        var objPlan = objDbMrpEntities.Plans.Where(plan => plan.ModelId == objModel.ModelId).ToList();
-                            //        if (objPlan.Count != 0)
-                            //        {
-                            //            foreach (var plan in objPlan)
-                            //            {
-                            //                UpdatePlanTactic(modelId, objModel.ModelId, plan.PlanId);
-                            //                try
-                            //                {
-                            //                    plan.ModelId = modelId;
-                            //                    //objDbMrpEntities.Configuration.AutoDetectChangesEnabled = false;
-                            //                    objDbMrpEntities.Entry(plan).State = EntityState.Modified;
-                            //                }
-                            //                catch (Exception ex)
-                            //                {
-                            //                    throw ex;
-                            //                }
-                            //                finally
-                            //                {
-                            //                    //objDbMrpEntities.Configuration.AutoDetectChangesEnabled = true;
-                            //                }
-                            //            }
-                            //            objDbMrpEntities.SaveChanges();
-                            //        }
-                            //    }
-                            //}
                             #endregion
                         }
                     }
@@ -2573,34 +2536,7 @@ namespace RevenuePlanner.Controllers
             return isPublish;
         }
 
-        #endregion
-
         #region Common Functions for Model
-        //Commented by Rahul Shah because its not used.
-        ///// <summary>
-        ///// Function to update tactics
-        ///// </summary>
-        ///// <param name="NewVersionmodelId">model of new versioned model</param>
-        ///// <param name="oldVersionModelId">model of old versioned model</param>
-        ///// <param name="PlanId">plan id of the model</param>
-        //public void UpdatePlanTactic(int NewVersionmodelId, int oldVersionModelId, int PlanId)
-        //{
-        //    var lstTacticType = objDbMrpEntities.TacticTypes.Where(taticType => taticType.ModelId == NewVersionmodelId).ToList();
-        //    var listPlanTactics = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.TacticTypeId != null && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId == oldVersionModelId && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId).ToList();
-        //    foreach (var tactic in listPlanTactics)
-        //    {
-        //        foreach (var tacticType in lstTacticType)
-        //        {
-        //            objDbMrpEntities.Plan_Campaign_Program_Tactic.Attach(tactic);
-        //            objDbMrpEntities.Entry(tactic).State = EntityState.Modified;
-        //            if (tactic.TacticType.TacticTypeId == tacticType.PreviousTacticTypeId)
-        //            {
-        //                tactic.TacticTypeId = tacticType.TacticTypeId;
-        //                objDbMrpEntities.SaveChanges();
-        //            }
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// Function to check parent published model
@@ -2610,7 +2546,7 @@ namespace RevenuePlanner.Controllers
         public bool chekckParentPublishModel(int modelId)
         {
             bool isParentPublishedModel = true;
-            Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId && model.ClientId == Sessions.User.ClientId && model.ParentModelId == null).FirstOrDefault();
+            Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == modelId && model.ClientId == Sessions.User.CID && model.ParentModelId == null).FirstOrDefault();
             if (objModel != null)
             {
                 isParentPublishedModel = false;
@@ -2660,8 +2596,8 @@ namespace RevenuePlanner.Controllers
 
                                         newModel_Funnel_Stage = objModel_Funnel_Stage;
                                         newModel_Funnel_Stage.CreatedDate = DateTime.Now;
-                                        newModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
-                                        newModel_Funnel_Stage.ModifiedBy = null;
+                                        newModel_Funnel_Stage.CreatedBy = Sessions.User.ID;
+                                        newModel_Funnel_Stage.ModifiedBy = 0;
                                         newModel_Funnel_Stage.ModifiedDate = null;
                                         newModel_Funnel_Stage.ModelId = NewModelID;
                                         mrp.Model_Stage.Add(newModel_Funnel_Stage);
@@ -2748,8 +2684,7 @@ namespace RevenuePlanner.Controllers
 
                 if (!string.IsNullOrEmpty(Convert.ToString(clientId)))
                 {
-                    Guid clientid = Guid.Parse(Convert.ToString(clientId));
-                    var obj = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ClientId == clientid && model.Title.Trim().ToLower() == title.Trim().ToLower()).FirstOrDefault();
+                    var obj = objDbMrpEntities.Models.Where(model => model.IsDeleted == false && model.ClientId == clientId && model.Title.Trim().ToLower() == title.Trim().ToLower()).FirstOrDefault();
                     if (obj == null)
                     {
                         return Json("notexist", JsonRequestBehavior.AllowGet);
@@ -2801,8 +2736,8 @@ namespace RevenuePlanner.Controllers
                             newModel.IntegrationInstanceEloquaId = null;
                             newModel.IntegrationInstanceMarketoID = null; //Added By komal Rawal for #2190
                             newModel.EffectiveDate = null;
-                            newModel.Model11 = null;
-                            newModel.Model3 = null;
+                            newModel.Model1 = null;
+                            newModel.Model2 = null;
                         }
                     }
                     else
@@ -2827,7 +2762,7 @@ namespace RevenuePlanner.Controllers
                         ////End :Added by Mitesh Vaishnav for PL ticket #659 
                         //// title condition added by uday for review point on 5-6-2014 bcoz version clashes when two users are creating version of same buisiness unit.
 
-                        var version = tblModels.Where(model => model.ClientId.Equals(Sessions.User.ClientId) && model.Title == Title).OrderByDescending(model => model.CreatedDate).Select(model => model.Version).FirstOrDefault();
+                        var version = tblModels.Where(model => model.ClientId.Equals(Sessions.User.CID) && model.Title == Title).OrderByDescending(model => model.CreatedDate).Select(model => model.Version).FirstOrDefault();
                         if (version != null && version != "")
                         {
                             newModel.Version = Convert.ToString((Convert.ToDecimal(version) + (decimal)0.1)); //Modified By Komal Rawal for #1245
@@ -2841,8 +2776,8 @@ namespace RevenuePlanner.Controllers
                     newModel.Title = Title;
                     newModel.Status = Enums.ModelStatusValues.FirstOrDefault(modelStatus => modelStatus.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
                     newModel.CreatedDate = DateTime.Now;
-                    newModel.CreatedBy = Sessions.User.UserId;
-                    newModel.ModifiedBy = null;
+                    newModel.CreatedBy = Sessions.User.ID;
+                    newModel.ModifiedBy = 0;
                     newModel.ModifiedDate = null;
                     objMrpEntities.Models.Add(newModel);
                     objMrpEntities.SaveChanges();
@@ -2860,7 +2795,7 @@ namespace RevenuePlanner.Controllers
                         objLineItemType.Description = Enums.LineItemTypes.None.ToString();
                         objLineItemType.IsDeleted = false;
                         objLineItemType.CreatedDate = DateTime.Now;
-                        objLineItemType.CreatedBy = Sessions.User.UserId;
+                        objLineItemType.CreatedBy = Sessions.User.ID;
                         objDbMrpEntities.LineItemTypes.Add(objLineItemType);
                         objDbMrpEntities.SaveChanges();
                     }
@@ -2892,8 +2827,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 //// End - Added by Sohel Pathan on 20/08/2014 for PL ticket #713
                                 newTacticTypes.CreatedDate = DateTime.Now;
-                                newTacticTypes.CreatedBy = Sessions.User.UserId;
-                                newTacticTypes.ModifiedBy = null;
+                                newTacticTypes.CreatedBy = Sessions.User.ID;
+                                newTacticTypes.ModifiedBy = 0;
                                 newTacticTypes.ModifiedDate = null;
                                 objMrpEntities.TacticTypes.Add(newTacticTypes);
 
@@ -2979,7 +2914,7 @@ namespace RevenuePlanner.Controllers
                         objModel.IntegrationInstanceIdProjMgmt = objBaselineModel.IntegrationInstanceIdProjMgmt; //added Brad Gray 22 July 2015 for PL#1448
                         objModel.IntegrationInstanceEloquaId = objBaselineModel.IntegrationInstanceEloquaId; //added Bhavesh Dobariya #1534
                         objModel.IntegrationInstanceMarketoID = objBaselineModel.IntegrationInstanceMarketoID; //added Komal Rawal #2190
-                        objModel.ModifiedBy = Sessions.User.UserId;
+                        objModel.ModifiedBy = Sessions.User.ID;
                         objModel.ModifiedDate = DateTime.Now;
                         objDbMrpEntities.Entry(objModel).State = EntityState.Modified;
                         int result = objDbMrpEntities.SaveChanges();
@@ -3031,7 +2966,7 @@ namespace RevenuePlanner.Controllers
             if (id != 0)
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
-                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.UserId).Any();  //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
+                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.ID).Any();  //// Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
             }
             else
             {
@@ -3234,7 +3169,7 @@ namespace RevenuePlanner.Controllers
             if (id != 0)
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
-                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.UserId).Any();
+                ViewBag.IsOwner = objDbMrpEntities.Models.Where(model => model.IsDeleted.Equals(false) && model.ModelId == id && model.CreatedBy == Sessions.User.ID).Any();
             }
             else
             {
@@ -3243,7 +3178,7 @@ namespace RevenuePlanner.Controllers
 
             //// List of integration instance of model
             //Modified by Rahul Shah on 26/02/2016 for PL #2017 
-            List<lstInstance> lstInstance = objDbMrpEntities.IntegrationInstances.Where(instance => instance.ClientId == Sessions.User.ClientId && instance.IsDeleted == false)
+            List<lstInstance> lstInstance = objDbMrpEntities.IntegrationInstances.Where(instance => instance.ClientId == Sessions.User.CID && instance.IsDeleted == false)
                 .Select(instance => new lstInstance
                 {
                     InstanceName = instance.Instance,
@@ -3266,7 +3201,7 @@ namespace RevenuePlanner.Controllers
             ViewData["IntegrationInstancesMarketo"] = lstInstance.Where(instance => instance.Code == MarketoType);//Added by Komal Rawal for PL#2190
 
             #region "Filtered MQL Eloqua Integration Instances based on Client Integration Permisssion"
-            Guid clientId = Sessions.User.ClientId;
+            int clientId = Sessions.User.CID;
             string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
             //Modified by Rahul Shah on 26/02/2016 for PL #2017. to bind mql list for SFDC depending on Permission.
             var IntegrationTypeList = objDbMrpEntities.IntegrationTypes.Where(type => type.Code == elqType || type.Code == insType && type.IsDeleted == false).ToList();
@@ -3348,7 +3283,7 @@ namespace RevenuePlanner.Controllers
                     ObjMarketoSettings.ProgramType = ProgramType;
                     ObjMarketoSettings.Channel = Channel;
                     ObjMarketoSettings.LastModifiedDate = DateTime.Now;
-                    ObjMarketoSettings.LastModifiedBy = Sessions.User.UserId;
+                    ObjMarketoSettings.LastModifiedBy = Sessions.User.ID;
                     objDbMrpEntities.SaveChanges();
                 }
             }

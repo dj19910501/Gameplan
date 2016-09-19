@@ -8,7 +8,7 @@
     ViewBag.Title = "Add User";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    Guid clientId = Guid.Parse(Convert.ToString(ViewBag.CurrClientId));
+    int clientId = ViewBag.CurrClientId;
     string client = (string)ViewBag.CurrClient;
     @Html.Hidden("hdnLoggedInUserRole", Sessions.User.RoleCode.ToString());     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
     //ViewBag.ModuleTitle = "MyProfile";   Commented by Rahul Shah on 11/09/2015 fo PL Ticket #1112*

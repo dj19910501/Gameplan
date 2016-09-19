@@ -289,7 +289,7 @@ namespace RevenuePlanner.Test.Controllers
 
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
-            Plan_Campaign campaign = db.Plan_Campaign.Where(a => a.Plan.Model.ClientId == Sessions.User.ClientId && a.IsDeleted == false && a.Plan.AllocatedBy.ToLower() != "quarter").OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            Plan_Campaign campaign = db.Plan_Campaign.Where(a => a.Plan.Model.ClientId == Sessions.User.CID && a.IsDeleted == false && a.Plan.AllocatedBy.ToLower() != "quarter").OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             int CampaignId = 0;
             if (campaign != null)
             {
@@ -322,7 +322,7 @@ namespace RevenuePlanner.Test.Controllers
 
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
-            Plan_Campaign campaign = DataHelper.GetPlanCampaign(Sessions.User.ClientId);
+            Plan_Campaign campaign = DataHelper.GetPlanCampaign(Sessions.User.CID);
             int CampaignId = 0;
             if (campaign != null)
             {
@@ -354,11 +354,11 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int>Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
-            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
 
             List<string> lststatus = new List<string>();
             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
@@ -472,7 +472,7 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int planId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(planId);
+            Sessions.User.CID = DataHelper.GetClientId(planId);
             //string CommaSeparatedPlanId = DataHelper.GetPlanIdList().ToString();
             //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
             var tactic = db.Plan_Campaign_Program_Tactic.Where(id => planId == id.Plan_Campaign_Program.Plan_Campaign.PlanId).Select(t =>
@@ -515,11 +515,11 @@ namespace RevenuePlanner.Test.Controllers
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             var TaskData = db.Plan_Campaign_Program_Tactic.Where(id => PlanId == id.Plan_Campaign_Program.Plan_Campaign.PlanId).ToList();
             if (TaskData != null && TaskData.Count > 0)
             {
-                List<Guid> Owner = TaskData.Select(plan => plan.CreatedBy).ToList();
+                List<int>Owner = TaskData.Select(plan => plan.CreatedBy).ToList();
                 string Ownerids = string.Join(",", Owner);
                 List<int> tactic = TaskData.Select(tactictype => tactictype.TacticTypeId).ToList();
                 string tactictypeids = string.Join(",", tactic);
@@ -566,9 +566,9 @@ namespace RevenuePlanner.Test.Controllers
             int PlanId = DataHelper.GetPlanId();
             int ExportPlanId = 0;
             Sessions.PlanId = PlanId;
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             List<int> honeyCombIds = new List<int>();
-            var TaskData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanTactic(Sessions.User.CID);
             string honeyCombId = string.Empty;
             if (TaskData != null)
             {
@@ -608,14 +608,14 @@ namespace RevenuePlanner.Test.Controllers
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int>Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
-            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
 
             List<string> lststatus = new List<string>();
             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
@@ -826,8 +826,8 @@ namespace RevenuePlanner.Test.Controllers
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             string Year = DataHelper.GetYear();
             int planId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(planId);
-            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.UserId).ToList();
+            Sessions.User.CID = DataHelper.GetClientId(planId);
+            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.ID).ToList();
             var result = objPlanController.GetPlanByMultiplePlanIDsPer(Convert.ToString(planId), Enums.ActiveMenu.Home.ToString(), Year) as Task<JsonResult>;
             //// Json result data should not be null
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Status);
@@ -852,9 +852,9 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var TacticData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+            var TacticData = DataHelper.GetPlanTactic(Sessions.User.CID);
             int TacticId = TacticData.PlanTacticId;
-            string OwnerId = TacticData.CreatedBy.ToString();
+            int OwnerId = TacticData.CreatedBy;
 
             var result = controller.CheckPermissionByOwner(OwnerId, Enums.Section.Tactic.ToString(), TacticId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -876,7 +876,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var LineItemData = DataHelper.GetPlanLineItem(Sessions.User.ClientId);
+            var LineItemData = DataHelper.GetPlanLineItem(Sessions.User.CID);
             int TacticId = LineItemData.PlanTacticId;
             int ProgramId = LineItemData.Plan_Campaign_Program_Tactic.PlanProgramId;
 
@@ -900,7 +900,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var TacticData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+            var TacticData = DataHelper.GetPlanTactic(Sessions.User.CID);
             int ProgramId = TacticData.PlanProgramId;
             int CampaignId = TacticData.Plan_Campaign_Program.PlanCampaignId;
 
@@ -921,7 +921,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var ProgramData = DataHelper.GetPlanProgram(Sessions.User.ClientId);
+            var ProgramData = DataHelper.GetPlanProgram(Sessions.User.CID);
             int CampaignId = ProgramData.PlanCampaignId;
             int PlanId = ProgramData.Plan_Campaign.PlanId;
             var result = controller.GetMinMaxDate(PlanId, Enums.Section.Program.ToString(), CampaignId) as JsonResult;
@@ -945,8 +945,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            var TaskData = DataHelper.GetPlanLineItem(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            var TaskData = DataHelper.GetPlanLineItem(Sessions.User.CID);
             if (TaskData != null)
             {
                 string UpdateValue = "Copy_Test_cases" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm");
@@ -981,8 +981,8 @@ namespace RevenuePlanner.Test.Controllers
             routes
             );
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            var TaskData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            var TaskData = DataHelper.GetPlanTactic(Sessions.User.CID);
             if (TaskData != null)
             {
                 //string UpdateValue = TaskData.Title.ToString() + "Copy_Test_cases";
@@ -1009,8 +1009,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            var TaskData = DataHelper.GetPlanProgram(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            var TaskData = DataHelper.GetPlanProgram(Sessions.User.CID);
             if (TaskData != null)
             {
                 string UpdateValue = "Copy_Test_cases" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm"); 
@@ -1037,8 +1037,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            var TaskData = DataHelper.GetPlanCampaign(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            var TaskData = DataHelper.GetPlanCampaign(Sessions.User.CID);
             if (TaskData != null)
             {
                 string UpdateValue = "Copy_Test_cases" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm");
@@ -1064,8 +1064,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            var TaskData = DataHelper.GetPlan(Sessions.User.CID);
             if (TaskData != null)
             {
                 string UpdateValue = "Copy_Test_cases" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm");
@@ -1096,8 +1096,8 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
 
             int EntityId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(EntityId);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(EntityId);
+            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
             if (TaskData != null)
             {
                 int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
@@ -1149,7 +1149,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            int EntityId = DataHelper.GetPlanLineItem(Sessions.User.ClientId).PlanLineItemId;
+            int EntityId = DataHelper.GetPlanLineItem(Sessions.User.CID).PlanLineItemId;
 
             var result = controller.GetActualsLineitemData(EntityId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -1309,7 +1309,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlan(Sessions.User.CID);
             int EntityId = TaskData.PlanId;
             string allocatedBy = TaskData.CreatedBy.ToString();
             var result = controller.GetAllocatedBudgetForPlan(EntityId, allocatedBy) as JsonResult;
@@ -1331,7 +1331,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID);
             string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
 
             string allocatedBy = Sessions.User.UserId.ToString();
@@ -1355,12 +1355,12 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
+            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID);
             if (TaskData != null && TaskData.Count > 0)
             {
                 string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
+                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
                 Sessions.PlanId = PlanId;
                 var result = controller.GetConversionImprovementTacticType(EntityId) as JsonResult;
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -1384,12 +1384,12 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
+            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID);
             if (TaskData != null && TaskData.Count > 0)
             {
                 string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
+                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
                 Sessions.PlanId = PlanId;
                 var result = controller.GetHeaderValueForSuggestedImprovement(EntityId) as JsonResult;
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -1414,12 +1414,12 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
+            var TaskData = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID);
             if (TaskData != null && TaskData.Count > 0)
             {
                 string EntityId = string.Join(",", TaskData.Select(imp => imp.ImprovementPlanTacticId.ToString()));
-                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.ClientId).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
+                int PlanId = DataHelper.GetPlanImprovementTacticList(Sessions.User.CID).Select(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId).FirstOrDefault();
                 Sessions.PlanId = PlanId;
                 var result = controller.GetADSImprovementTacticType(EntityId) as JsonResult;
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -1443,8 +1443,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
+            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
             if (TaskData != null)
             {
                 int EntityId = TaskData.ImprovementPlanProgramId;
@@ -1474,8 +1474,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
+            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
             if (TaskData != null)
             {
                 int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
@@ -1502,8 +1502,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
+            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
             if (TaskData != null)
             {
                 int PlanId = TaskData.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId;
@@ -1531,8 +1531,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
+            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
             if (TaskData != null)
             {
                 int EntityId = TaskData.ImprovementPlanTacticId;
@@ -1563,8 +1563,8 @@ namespace RevenuePlanner.Test.Controllers
 
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
+            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
             if (TaskData != null)
             {
                 int EntityId = TaskData.ImprovementPlanTacticId;
@@ -1594,9 +1594,9 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
             if (TaskData != null)
             {
                 int EntityId = TaskData.ImprovementPlanTacticId;
@@ -1625,9 +1625,9 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int plan_Id = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(plan_Id);
+            Sessions.User.CID = DataHelper.GetClientId(plan_Id);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanImprovementTactic(Sessions.User.CID);
             if (TaskData != null)
             {
                 int EntityId = TaskData.ImprovementPlanTacticId;
@@ -1704,8 +1704,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            int TacticTypeId = DataHelper.GetPlanTactic(Sessions.User.ClientId).TacticTypeId;
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            int TacticTypeId = DataHelper.GetPlanTactic(Sessions.User.CID).TacticTypeId;
             Sessions.PlanId = PlanId;
             var result = controller.LoadTacticTypeValue(TacticTypeId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -1774,7 +1774,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            var TaskData = DataHelper.GetPlanCampaign(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanCampaign(Sessions.User.CID);
             int EntityId = TaskData.PlanCampaignId;
             string startDate = TaskData.StartDate.ToString();
             double Duration = 50.0;
@@ -1802,7 +1802,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            var TaskData = DataHelper.GetPlanProgram(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanProgram(Sessions.User.CID);
             int EntityId = TaskData.PlanProgramId;
             string startDate = TaskData.StartDate.ToString();
             double Duration = 50.0;
@@ -1831,7 +1831,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            var TaskData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanTactic(Sessions.User.CID);
             int EntityId = TaskData.PlanTacticId;
             string startDate = TaskData.StartDate.ToString();
             double Duration = 50.0;
@@ -1910,7 +1910,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
-            var TaskData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanTactic(Sessions.User.CID);
             int TacticId = TaskData.PlanTacticId;
             int ProgramId = TaskData.PlanProgramId;
             int CampaignId = TaskData.Plan_Campaign_Program.PlanCampaignId;
@@ -1939,7 +1939,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var TaskData = DataHelper.GetPlanLineItem(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanLineItem(Sessions.User.CID);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
             string Title = TaskData.Title.ToString();
@@ -1964,7 +1964,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var TaskData = DataHelper.GetPlanTactic(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanTactic(Sessions.User.CID);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
             string Title = TaskData.Title.ToString();
@@ -1990,7 +1990,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var TaskData = DataHelper.GetPlanProgram(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanProgram(Sessions.User.CID);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
             string Title = TaskData.Title.ToString();
@@ -2016,7 +2016,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var TaskData = DataHelper.GetPlanCampaign(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlanCampaign(Sessions.User.CID);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
             string Title = TaskData.Title.ToString();
@@ -2042,7 +2042,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
-            var TaskData = DataHelper.GetPlan(Sessions.User.ClientId);
+            var TaskData = DataHelper.GetPlan(Sessions.User.CID);
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
             string Title = TaskData.Title.ToString();

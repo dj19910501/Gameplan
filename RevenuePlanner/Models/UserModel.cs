@@ -10,7 +10,7 @@ namespace RevenuePlanner.Models
     public class UserModel
     {
         [Key]
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
 
         //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in First Name.")]
         [AllowHtml]
@@ -60,7 +60,7 @@ namespace RevenuePlanner.Models
         public string RoleTitle { get; set; }
 
         [Display(Name = "Organization")]
-        public Guid ClientId { get; set; }
+        public int ClientId { get; set; }
 
         [Display(Name = "Organization")]
         public string Client { get; set; }
@@ -92,13 +92,13 @@ namespace RevenuePlanner.Models
         public string IsDeleted { get; set; }
 
         // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-        public Guid? ManagerId { get; set; }
+        public int ManagerId { get; set; }
 
         public string ManagerName { get; set; }
 
         public bool IsManager { get; set; }
 
-        public Guid? NewManagerId { get; set; }
+        public int NewManagerId { get; set; }
 
         [Display(Name = "Phone")]
         [RegularExpression(@"^[0-9-+ #*]+", ErrorMessage = "Please enter proper phone number.")]

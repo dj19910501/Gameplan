@@ -73,7 +73,7 @@ namespace Integration.Eloqua
         /// <param name="IntegrationInstanceLogId">Integration Instance Log Id.</param>
         /// <param name="_applicationId">Application Id.</param>
         /// <param name="_entityType">Entity Type.</param>
-        public bool SetTacticMQLs(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType, out List<SyncError> _lstSyncError)
+        public bool SetTacticMQLs(int IntegrationInstanceId, int _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType, out List<SyncError> _lstSyncError)
         {
             _lstSyncError = new List<SyncError>();
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
@@ -105,7 +105,7 @@ namespace Integration.Eloqua
                 } 
                 #endregion
                 
-                Guid _ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == IntegrationInstanceId).ClientId;
+                int _ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == IntegrationInstanceId).ClientId;
 
                 #region "Old Code"
                 //// Get SalesForce integration type Id.
@@ -725,7 +725,7 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="IntegrationInstanceId"></param>
         /// <returns></returns>
-        public bool GetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, out List<SyncError> lstSyncError)
+        public bool GetTacticResponse(int IntegrationInstanceId, int _userId, int IntegrationInstanceLogId, Guid _applicationId, out List<SyncError> lstSyncError)
         {
             lstSyncError = new List<SyncError>();
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;

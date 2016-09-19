@@ -22,10 +22,10 @@ namespace RevenuePlanner.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public System.Guid ClientId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
+        public int ClientId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual ICollection<Budget_Columns> Budget_Columns { get; set; }
     }

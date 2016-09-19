@@ -14,10 +14,10 @@ namespace RevenuePlanner.Models
     
     public partial class User_Notification
     {
-        public System.Guid UserId { get; set; }
         public int NotificationId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int UserId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Notification Notification { get; set; }
     }

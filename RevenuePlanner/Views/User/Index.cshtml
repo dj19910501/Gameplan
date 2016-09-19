@@ -191,7 +191,7 @@
                                     <tbody>
                                         @foreach (var item in (List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers)
                                         {
-                                            <tr id="@item.UserId">
+                                            <tr id="@item.ID">
                                                 <td class="Inactive OtherUserList" title="@item.FirstName">
                                                     @Html.DisplayFor(model => item.FirstName)
                                                 </td>

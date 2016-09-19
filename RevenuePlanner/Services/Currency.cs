@@ -21,9 +21,9 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// #2496 : Set the cache of currency exchange rate for users's preferd currency
         /// </summary>
-        /// <param name="ClientId"></param>
-        /// <param name="UserId"></param>
-        public void SetUserCurrencyCache(Guid ClientId, Guid UserId)
+        /// <param name="clientId"></param>
+        /// <param name="userId"></param>
+        public void SetUserCurrencyCache(int clientId, int userId)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace RevenuePlanner.Services
                 DateTime CurrentMonthStartDate = GetFirstDayOfMonth(now.Month, now.Year);
                 DateTime CurrentMonthEndDate = GetLastDayOfMonth(now.Month, now.Year);
 
-                objUserCurrency = objBDSServiceClient.GetCurrencyExchangeRate(ClientId, UserId); // Call the BDS Sevice for get exchange rate 
+                objUserCurrency = objBDSServiceClient.GetCurrencyExchangeRateEx(clientId, userId); // Call the BDS Sevice for get exchange rate 
 
                 if (objUserCurrency.UserCurrency != null)
                 {
@@ -69,7 +69,7 @@ namespace RevenuePlanner.Services
                                 .Select(curr =>
                                     new RevenuePlanner.Models.CurrencyModel.ClientCurrency
                                     {
-                                        ClientId = curr.ClientId,
+                                        ClientId = curr.CID,
                                         Component = curr.Component,
                                         CurrencyCode = curr.CurrencyCode,
                                         CurrencySymbol = curr.CurrencySymbol,

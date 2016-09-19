@@ -42,7 +42,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
             //store userlist data into tempdata
-            List<User> lstUserDetail = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).ToList();
+            List<User> lstUserDetail = objBDSServiceClient.GetTeamMemberListEx(Sessions.User.CID, Sessions.ApplicationId, Sessions.User.ID, true).ToList();
 
             lstUserDetail.Add(new User
             {
@@ -134,10 +134,10 @@ namespace RevenuePlanner.Controllers
                 try
                 {
                     Budget objBudget = new Budget();
-                    objBudget.ClientId = Sessions.User.ClientId;
+                    objBudget.ClientId = Sessions.User.CID;
                     objBudget.Name = budgetName;
                     objBudget.Desc = string.Empty;
-                    objBudget.CreatedBy = Sessions.User.UserId;
+                    objBudget.CreatedBy = Sessions.User.ID;
                     objBudget.CreatedDate = DateTime.Now;
                     objBudget.IsDeleted = false;
                     db.Entry(objBudget).State = EntityState.Added;
@@ -148,7 +148,7 @@ namespace RevenuePlanner.Controllers
                     objBudgetDetail.BudgetId = budgetId;
                     objBudgetDetail.Name = budgetName;
                     objBudgetDetail.IsDeleted = false;
-                    objBudgetDetail.CreatedBy = Sessions.User.UserId;
+                    objBudgetDetail.CreatedBy = Sessions.User.ID;
                     objBudgetDetail.CreatedDate = DateTime.Now;
                     db.Entry(objBudgetDetail).State = EntityState.Added;
                     db.SaveChanges();
@@ -338,7 +338,7 @@ namespace RevenuePlanner.Controllers
                         objBudgetDetail.BudgetId = _budgetId;
                         objBudgetDetail.Name = BudgetDetailName;
                         objBudgetDetail.ParentId = !string.IsNullOrEmpty(ParentId) ? Int32.Parse(ParentId) : 0;
-                        objBudgetDetail.CreatedBy = Sessions.User.UserId;
+                        objBudgetDetail.CreatedBy = Sessions.User.ID;
                         objBudgetDetail.CreatedDate = DateTime.Now;
                         objBudgetDetail.IsDeleted = false;
                         db.Entry(objBudgetDetail).State = EntityState.Added;
@@ -396,7 +396,7 @@ namespace RevenuePlanner.Controllers
                 List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
                                                    join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
                                                    where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
-                                                   && ColumnSet.ClientId == Sessions.User.ClientId
+                                                   && ColumnSet.ClientId == Sessions.User.CID
                                                    select Columns).ToList();
 
                 var ListOfCustomFieldId = objColumns.Select(a => a.CustomFieldId).ToList();
@@ -492,7 +492,7 @@ namespace RevenuePlanner.Controllers
                 string trimHeaderStyle = HeaderStyle.ToString().TrimEnd(',');
                 #endregion
                 //budgetId = 8;
-                List<Budget_Detail> tblBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && (bdgt.Budget.IsDeleted == false || bdgt.Budget.IsDeleted == null) && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).ToList();
+                List<Budget_Detail> tblBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.CID) && (bdgt.Budget.IsDeleted == false || bdgt.Budget.IsDeleted == null) && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).ToList();
                 var lstBudgetDetails = tblBudgetDetails.Select(a => new { a.Id, a.ParentId, a.Name, a.IsForecast, a.CreatedBy }).ToList();
                 List<string> tacticStatus = Common.GetStatusListAfterApproved();// Add By Nishant Sheth
 
@@ -546,8 +546,8 @@ namespace RevenuePlanner.Controllers
                                                                                          select Actual).ToList();
 
                 List<BDSService.User> lstUser = null;
-                lstUser = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ToList();
-                var lstUserId = lstUser.Select(a => a.UserId).ToList();
+                lstUser = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ToList();
+                var lstUserId = lstUser.Select(a => a.ID).ToList();
                 var ListOfUserPermission = db.Budget_Permission.Where(a => lstUserId.Contains(a.UserId)).ToList();
                 string rowId = string.Empty;
                 string GridrowId = string.Empty;
@@ -568,13 +568,12 @@ namespace RevenuePlanner.Controllers
                 var CustomColumnsValue = db.CustomField_Entity.Where(a => CustomCoulmnsId.Contains(a.CustomFieldId)).Select(a => new { a.Value, a.CustomFieldId, a.CustomFieldEntityId, a.EntityId }).ToList();
                 //Added By komal for #2243 to make owner dropdown editable.
                 List<User> lstUsers = lstUser.Where(a => a.IsDeleted == false).ToList();
-                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+                List<int> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.CID, lstUsers);
                 List<PlanOptions> lstOwner = new List<PlanOptions>();
 
                 if (lstClientUsers.Count() > 0)
                 {
-                    string strUserList = string.Join(",", lstClientUsers);
-                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId);
+                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, Sessions.ApplicationId);
 
                     if (lstUserDetails.Count > 0)
                     {
@@ -604,7 +603,7 @@ namespace RevenuePlanner.Controllers
                         objBudgetAmount = GetMainGridAmountValue(isQuarterly, mainTimeFrame, BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == i.Id).ToList());
 
                         // Get Owner name
-                        var OwnerName = lstUser.Where(a => a.UserId == i.CreatedBy).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
+                        var OwnerName = lstUser.Where(a => a.ID == i.CreatedBy).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
 
                         int count = 0;
                         var CountUser = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id).Select(t => t.UserId).Distinct().ToList();
@@ -612,7 +611,7 @@ namespace RevenuePlanner.Controllers
                         {
                             count = CountUser.Count;
                         }
-                        var CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id && a.UserId == Sessions.User.UserId).ToList();
+                        var CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id && a.UserId == Sessions.User.ID).ToList();
                         //Modified by Komal Rawal on 08-06-2016 for #2244 when no permission show all data in grey and dash
                         int? GetParentId = 0;
                         string isEdit = "";
@@ -625,7 +624,7 @@ namespace RevenuePlanner.Controllers
                             var CheckParentForecast = tblBudgetDetails.Where(a => a.Id == GetParentId && a.IsForecast == true).Select(per => per).FirstOrDefault();
                             if (CheckParentForecast != null)
                             {
-                                CheckParentForecastPermission = CheckParentForecast.Budget_Permission.Where(user => user.UserId == Sessions.User.UserId).Select(user => user.PermisssionCode).FirstOrDefault();
+                                CheckParentForecastPermission = CheckParentForecast.Budget_Permission.Where(user => user.UserId == Sessions.User.ID).Select(user => user.PermisssionCode).FirstOrDefault();
                             }
 
 
@@ -1173,7 +1172,7 @@ namespace RevenuePlanner.Controllers
             #endregion
             return new DhtmlxGridRowDataModel { id = rowId, data = ParentData, rows = children, style = stylecolorgray, Detailid = Convert.ToString(id), FinanemodelheaderObj = objHeader };
         }
-        public ActionResult UpdateBudgetDetail(string BudgetId, string BudgetDetailId, string ParentId, string mainTimeFrame = "Yearly", string ListofCheckedColums = "", string ownerId = "", string BudgetDetailName = "", string ChildItemIds = "")
+        public ActionResult UpdateBudgetDetail(string BudgetId, string BudgetDetailId, string ParentId, string mainTimeFrame = "Yearly", string ListofCheckedColums = "", int ownerId = 0, string BudgetDetailName = "", string ChildItemIds = "")
         {
             int budgetId = 0, budgetDetailId = 0, parentId = 0;
             try
@@ -1205,12 +1204,12 @@ namespace RevenuePlanner.Controllers
 
 
                         listobjBudgetDetail = db.Budget_Detail.ToList().Where(budgtDtl => ListItems.Contains(Convert.ToString(budgtDtl.Id)) && budgtDtl.IsDeleted == false).ToList();
-                        if (!string.IsNullOrEmpty(ChildItemIds) && !string.IsNullOrEmpty(ownerId) && ownerId != "undefined")
+                        if (!string.IsNullOrEmpty(ChildItemIds) && ownerId != 0)
                         {
                             listobjBudgetDetail.Where(item => item.Id != budgetDetailId).Select(item =>
                             {
-                                if (item.CreatedBy != Guid.Parse(ownerId))
-                                    item.CreatedBy = Guid.Parse(ownerId);
+                                if (item.CreatedBy != ownerId)
+                                    item.CreatedBy = ownerId;
 
                                 return item;
 
@@ -1219,31 +1218,31 @@ namespace RevenuePlanner.Controllers
 
                             List<Budget_Permission> BudgetPermissionData = db.Budget_Permission.ToList().Where(item => ListItems.Contains(item.BudgetDetailId.ToString())).ToList();
 
-                            List<Budget_Permission> BudgetPermissionDataExists = BudgetPermissionData.Where(item => item.UserId == Guid.Parse(ownerId) && item.IsOwner == false).ToList();
+                            List<Budget_Permission> BudgetPermissionDataExists = BudgetPermissionData.Where(item => item.UserId == ownerId && item.IsOwner == false).ToList();
                             if (BudgetPermissionDataExists.Count > 0)
                             {
                                 BudgetPermissionDataExists.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                             }
 
                             List<Budget_Permission> OwnerBudgetPermissionData = BudgetPermissionData.Where(item => item.IsOwner == true).ToList();
-                            OwnerBudgetPermissionData.Select(id => { id.UserId = Guid.Parse(ownerId); return id; }).ToList();
+                            OwnerBudgetPermissionData.Select(id => { id.UserId = ownerId; return id; }).ToList();
 
 
 
                         }
-                        else if (!string.IsNullOrEmpty(ownerId) && ownerId != "undefined")
+                        else if (ownerId != 0)
                         {
 
                             List<Budget_Permission> BudgetPermissionData = db.Budget_Permission.ToList().Where(item => item.BudgetDetailId == budgetDetailId && item.IsOwner == true).ToList();
 
-                            List<Budget_Permission> BudgetPermissionDataExists = BudgetPermissionData.Where(item => item.UserId == Guid.Parse(ownerId) && item.IsOwner == false).ToList();
+                            List<Budget_Permission> BudgetPermissionDataExists = BudgetPermissionData.Where(item => item.UserId == ownerId && item.IsOwner == false).ToList();
                             if (BudgetPermissionDataExists.Count > 0)
                             {
                                 BudgetPermissionDataExists.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                             }
 
                             List<Budget_Permission> OwnerBudgetPermissionData = BudgetPermissionData.Where(item => item.IsOwner == true).ToList();
-                            OwnerBudgetPermissionData.Select(id => { id.UserId = Guid.Parse(ownerId); return id; }).ToList();
+                            OwnerBudgetPermissionData.Select(id => { id.UserId = ownerId; return id; }).ToList();
 
 
 
@@ -1267,9 +1266,9 @@ namespace RevenuePlanner.Controllers
                             {
                                 objBudgetDetail.Name = BudgetDetailName.Trim();
                             }
-                            if (ownerId != "" && ownerId != "undefined" && ownerId != null)
+                            if (ownerId != 0)
                             {
-                                objBudgetDetail.CreatedBy = Guid.Parse(ownerId);
+                                objBudgetDetail.CreatedBy = ownerId;
                             }
                             db.Entry(objBudgetDetail).State = EntityState.Modified;
 
@@ -1281,7 +1280,7 @@ namespace RevenuePlanner.Controllers
                     {
                         #region "Update Budget Name and owner"
                         Budget objBudget = new Budget();
-                        Guid clientId = Sessions.User.ClientId;
+                        int clientId = Sessions.User.CID;
                         objBudget = db.Budgets.Where(budgt => budgt.Id == budgetId && budgt.IsDeleted == false && budgt.ClientId == clientId).FirstOrDefault();
                         if (objBudget != null)
                         {
@@ -1289,9 +1288,9 @@ namespace RevenuePlanner.Controllers
                             {
                                 objBudget.Name = BudgetDetailName.Trim();
                             }
-                            if (!string.IsNullOrEmpty(ownerId) && ownerId != "undefined")
+                            if (ownerId != 0)
                             {
-                                objBudget.CreatedBy = Guid.Parse(ownerId);
+                                objBudget.CreatedBy = ownerId;
                             }
                             db.Entry(objBudget).State = EntityState.Modified;
                         }
@@ -1306,9 +1305,9 @@ namespace RevenuePlanner.Controllers
                             {
                                 objMainBudgetDetail.Name = BudgetDetailName.Trim();
                             }
-                            if (!string.IsNullOrEmpty(ownerId) && ownerId != "undefined")
+                            if (ownerId != 0)
                             {
-                                objMainBudgetDetail.CreatedBy = Guid.Parse(ownerId);
+                                objMainBudgetDetail.CreatedBy = ownerId;
                             }
                             db.Entry(objMainBudgetDetail).State = EntityState.Modified;
                         }
@@ -1399,7 +1398,7 @@ namespace RevenuePlanner.Controllers
             }
 
             objFinanceModel.Userpermission = _user.OrderBy(i => i.FirstName, new AlphaNumericComparer()).ToList();
-            var index = _user.FindIndex(x => x.id == Sessions.User.UserId.ToString());
+            var index = _user.FindIndex(x => x.id == Sessions.User.ID.ToString());
             if (index != -1)
             {
                 var item = _user[index];
@@ -1418,7 +1417,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">contains user's Id</param>
         /// <returns>If success than return true</returns>
         [HttpPost]
-        public JsonResult Delete(Guid id, int budgetId, string ChildItems)
+        public JsonResult Delete(int id, int budgetId, string ChildItems)
         {
             //Modified by Komal Rawal for #2242 delete child item user permission on deletion of parent item user
             List<string> ListItems = new List<string>();
@@ -1485,22 +1484,22 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="Id">contains user's id</param>
         /// <returns>User Record</returns>
-        public JsonResult GetuserRecord(string Id)
+        public JsonResult GetuserRecord(int Id)
         {
-            Guid userId = new Guid();
-            if (Id == null)
+            int userId = 0;
+            if (Id == 0)
             {
-                userId = Sessions.User.UserId;
+                userId = Sessions.User.ID;
             }
             else
             {
-                userId = Guid.Parse(Id);
+                userId = Id;
             }
             BDSService.User objUser = new BDSService.User();
             UserModel objUserModel = new UserModel();
             try
             {
-                objUser = objBDSServiceClient.GetTeamMemberDetails(userId, Sessions.ApplicationId);
+                objUser = objBDSServiceClient.GetTeamMemberDetailsEx(userId, Sessions.ApplicationId);
                 if (objUser != null)
                 {
                     objUserModel.DisplayName = objUser.DisplayName;
@@ -1509,7 +1508,7 @@ namespace RevenuePlanner.Controllers
                     objUserModel.FirstName = objUser.FirstName;
                     objUserModel.JobTitle = objUser.JobTitle;
                     objUserModel.LastName = objUser.LastName;
-                    objUserModel.UserId = objUser.UserId;
+                    objUserModel.UserId = objUser.ID;
                     objUserModel.RoleTitle = objUser.RoleTitle;
                 }
             }
@@ -1576,13 +1575,13 @@ namespace RevenuePlanner.Controllers
                     {
                         db.Configuration.AutoDetectChangesEnabled = false;
                         objBudget_Permission = new Budget_Permission();
-                        Guid id = Guid.Parse(FinalUserData[i].UserId);
+                        int id = FinalUserData[i].UserId;
                         CurrentobjBudget_Permission = BudgetDetailList.Where(t => t.BudgetDetailId.Equals(FinalUserData[i].BudgetDetailId) && t.UserId.Equals(id)).FirstOrDefault();
                         if (CurrentobjBudget_Permission == null)
                         {
-                            objBudget_Permission.UserId = Guid.Parse(FinalUserData[i].UserId);
+                            objBudget_Permission.UserId = FinalUserData[i].UserId;
                             objBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
-                            objBudget_Permission.CreatedBy = Sessions.User.UserId;
+                            objBudget_Permission.CreatedBy = Sessions.User.ID;
                             objBudget_Permission.CreatedDate = DateTime.Now;
                             objBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
                             db.Entry(objBudget_Permission).State = EntityState.Added;
@@ -1591,7 +1590,7 @@ namespace RevenuePlanner.Controllers
                         {
                             if (!CurrentobjBudget_Permission.IsOwner)
                             {
-                                CurrentobjBudget_Permission.UserId = Guid.Parse(FinalUserData[i].UserId);
+                                CurrentobjBudget_Permission.UserId = FinalUserData[i].UserId;
                                 CurrentobjBudget_Permission.BudgetDetailId = Convert.ToInt32(FinalUserData[i].BudgetDetailId);
                                 CurrentobjBudget_Permission.CreatedDate = DateTime.Now;
                                 CurrentobjBudget_Permission.PermisssionCode = FinalUserData[i].PermisssionCode;
@@ -1634,11 +1633,11 @@ namespace RevenuePlanner.Controllers
 
             List<BDSService.User> lstUser = new List<BDSService.User>();
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            lstUser = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ToList();
-            var lstUserId = lstUser.Select(a => a.UserId).ToList();
+            lstUser = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ToList();
+            var lstUserId = lstUser.Select(a => a.ID).ToList();
             var ListOfUserPermission = db.Budget_Permission.Where(a => lstUserId.Contains(a.UserId)).ToList();
 
-            var CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)BudgetId && a.UserId == Sessions.User.UserId).ToList();
+            var CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)BudgetId && a.UserId == Sessions.User.ID).ToList();
             string isEdit = "";
             string strUserAction = string.Empty;
             if (CheckUserPermission.Count > 0)
@@ -1666,7 +1665,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.FlagCondition = "View";
 
             }
-            Guid userId = new Guid();
+
             BDSService.User objUser = new BDSService.User();
             var UserList = (from c in db.Budget_Permission
                             where c.BudgetDetailId == BudgetId
@@ -1676,7 +1675,7 @@ namespace RevenuePlanner.Controllers
             for (int i = 0; i < UserList.Count; i++)
             {
                 UserPermission user = new UserPermission();
-                objUser = objBDSServiceClient.GetTeamMemberDetails(userId = Guid.Parse(UserList[i].UserId.ToString()), Sessions.ApplicationId);
+                objUser = objBDSServiceClient.GetTeamMemberDetailsEx(UserList[i].UserId, Sessions.ApplicationId);
                 user.budgetID = BudgetId;
                 user.id = objUser.UserId.ToString();
                 user.FirstName = objUser.FirstName;
@@ -1691,47 +1690,13 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Added by Dashrath Prajapati for PL ticket #1679
-        /// Save detail on aading new budgetitem in Budget_Permission table
-        /// </summary>
-        /// <param name="BudgetId">contains BudgetDetailid</param>
-        //public void SaveUserBudgetpermission(int budgetId)
-        //{
-        //    int Id = 0;
-        //    if(ParentId != null)
-        //    {
-        //        Id = Convert.ToInt32(ParentId);
-        //    }
-        //    Budget_Permission objBudget_Permission = new Budget_Permission();
-        //    List<Guid> Users = new List<Guid>();
-        //    if (Id > 0)
-        //    {
-        //        Users = db.Budget_Permission.Where(Uid => Uid.BudgetDetailId == Id).Select(Uid => Uid.UserId).Distinct().ToList();
-
-        //    }
-        //    Users.Add(Sessions.User.UserId);
-        //    foreach (var UserId in Users.Distinct())
-        //    {
-        //        objBudget_Permission = new Budget_Permission();
-        //        objBudget_Permission.UserId = UserId;
-        //        objBudget_Permission.BudgetDetailId = budgetId;
-        //        objBudget_Permission.CreatedDate = System.DateTime.Now.Date;
-        //        objBudget_Permission.CreatedBy = Sessions.User.UserId;
-        //        objBudget_Permission.PermisssionCode = 0;
-        //        db.Entry(objBudget_Permission).State = EntityState.Added;
-
-        //    }
-        //    db.SaveChanges();
-
-        //}
-        /// <summary>
         /// Added by Komal Rawal for PL ticket #2242
         /// Save detail on aading new budgetitem in Budget_Permission table
         /// </summary>
         /// <param name="BudgetId">contains BudgetDetailid</param>
         public void SaveUserBudgetpermission(int budgetId)
         {
-            db.SaveuserBudgetPermission(budgetId, 0, Sessions.User.UserId); //Sp to get users of all parent ids and assign to current budget item.
+            db.SaveuserBudgetPermission(budgetId, 0, Sessions.User.ID); //Sp to get users of all parent ids and assign to current budget item.
 
         }
         #endregion
@@ -1819,7 +1784,7 @@ namespace RevenuePlanner.Controllers
         {
             List<ViewByModel> lstColumnset = (from ColumnSet in db.Budget_ColumnSet
                                               join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
-                                              where ColumnSet.ClientId == Sessions.User.ClientId && ColumnSet.IsDeleted == false
+                                              where ColumnSet.ClientId == Sessions.User.CID && ColumnSet.IsDeleted == false
                                               && Columns.IsDeleted == false
                                               select new
                                               {
@@ -1922,7 +1887,7 @@ namespace RevenuePlanner.Controllers
                     }
                     db.SaveChanges();
                 }
-                //db.DeleteBudget(Selectedids, Convert.ToString(Sessions.User.ClientId));
+
             }
 
             #endregion
@@ -1943,7 +1908,7 @@ namespace RevenuePlanner.Controllers
 
             #region CheckPermission for user
             // For Handle user is change the Edit permission from inspect element browser
-            var objBudgetPermission = db.Budget_Permission.Where(a => a.UserId == Sessions.User.UserId && a.BudgetDetailId == BudgetId).ToList();
+            var objBudgetPermission = db.Budget_Permission.Where(a => a.UserId == Sessions.User.ID && a.BudgetDetailId == BudgetId).ToList();
 
             if (objBudgetPermission.Count > 0)
             {
@@ -1967,7 +1932,7 @@ namespace RevenuePlanner.Controllers
             List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
                                                join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
                                                where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
-                                               && ColumnSet.ClientId == Sessions.User.ClientId
+                                               && ColumnSet.ClientId == Sessions.User.CID
                                                select Columns).ToList();
             var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a).ToList();
             var objTimeFrameColumns = objColumns.Where(a => a.IsTimeFrame == true).Select(a => a).ToList();
@@ -3052,7 +3017,7 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult GetListofForecastNames(int BudgetId)
         {
-            var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && (m.IsDeleted == false || m.IsDeleted == null)).Select(m => m.Id).ToList();
+            var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.CID && (m.IsDeleted == false || m.IsDeleted == null)).Select(m => m.Id).ToList();
             int? ParentId = 0;
             var checkParent = db.Budget_Detail.Where(a => a.Id == BudgetId && (a.IsDeleted == false || a.IsDeleted == false)).Select(a => a.ParentId).ToList();
             ParentId = checkParent.Count > 0 ? checkParent[0] : 0;
@@ -3819,7 +3784,7 @@ namespace RevenuePlanner.Controllers
             List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
                                                join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
                                                where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
-                                               && ColumnSet.ClientId == Sessions.User.ClientId
+                                               && ColumnSet.ClientId == Sessions.User.CID
                                                select Columns).ToList();
             var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a).ToList();
             var CustomCol = objCustomColumns.Where(a => a.CustomField.Name == (ColumnName != null ? ColumnName.Trim() : "")).Select(a => a).FirstOrDefault();
@@ -3868,7 +3833,7 @@ namespace RevenuePlanner.Controllers
                         objBudgetDetail.ParentId = Convert.ToInt32(ParentRowId);
                         objBudgetDetail.BudgetId = Convert.ToInt32(DetailParentId.BudgetId);
                         objBudgetDetail.CreatedDate = System.DateTime.Now;
-                        objBudgetDetail.CreatedBy = Sessions.User.UserId;
+                        objBudgetDetail.CreatedBy = Sessions.User.ID;
                         objBudgetDetail.IsDeleted = false;
                         db.Entry(objBudgetDetail).State = EntityState.Added;
                         db.SaveChanges();
@@ -4128,7 +4093,7 @@ namespace RevenuePlanner.Controllers
                             objCustomFieldEnity.CustomFieldId = CustomCol.CustomFieldId;
                             objCustomFieldEnity.EntityId = BudgetId;
                             objCustomFieldEnity.Value = nValue;
-                            objCustomFieldEnity.CreatedBy = Sessions.User.UserId;
+                            objCustomFieldEnity.CreatedBy = Sessions.User.ID;
                             objCustomFieldEnity.CreatedDate = System.DateTime.Now;
                             db.Entry(objCustomFieldEnity).State = EntityState.Added;
                         }

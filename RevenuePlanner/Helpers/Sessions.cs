@@ -462,13 +462,13 @@ namespace RevenuePlanner.Helpers
             }
         }
         //Added By Komal Rawal
-        public static List<string> ReportOwnerIds
+        public static List<int> ReportOwnerIds
         {
             get
             {
                 if (HttpContext.Current.Session["ReportOwnerIds"] != null)
                 {
-                    return (List<string>)HttpContext.Current.Session["ReportOwnerIds"];
+                    return (List<int>)HttpContext.Current.Session["ReportOwnerIds"];
                 }
                 return null;
             }

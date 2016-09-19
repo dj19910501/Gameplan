@@ -38,6 +38,6 @@ namespace RevenuePlanner.Models
         public double BaseLineRate { get; set; }
         public double PlanWithoutTactic { get; set; }
         public double PlanWithTactic { get; set; }
-        public Guid? ClientId { get; set; }
+        public int ClientId { get; set; }
     }
 }

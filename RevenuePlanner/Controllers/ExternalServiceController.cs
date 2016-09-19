@@ -97,7 +97,7 @@ namespace RevenuePlanner.Controllers
             //// Get Integration Instance List.
 
             var IntegrationInstanceList = db.IntegrationInstances
-                                            .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId)
+                                            .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.CID)
                                             .Select(ii => ii).ToList();
 
             List<BDSService.User> lstUser = null;
@@ -172,8 +172,8 @@ namespace RevenuePlanner.Controllers
 
                     #region "Get Force Sync User"
                     strForceSyncUser = string.Empty;
-                    if (inst.ForceSyncUser.HasValue && lstUser != null && lstUser.Count > 0)
-                        strForceSyncUser = lstUser.Where(a => a.UserId == inst.ForceSyncUser.Value).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
+                    if (inst.ForceSyncUser != 0 && lstUser != null && lstUser.Count > 0)
+                        strForceSyncUser = lstUser.Where(a => a.ID == inst.ForceSyncUser).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
                     else
                         strForceSyncUser = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
                     objInst.ForceSyncUser = strForceSyncUser;
@@ -209,7 +209,7 @@ namespace RevenuePlanner.Controllers
                 string strInProgressStatus = Enums.SyncStatusValues[Enums.SyncStatus.InProgress.ToString()].ToString(); // Get In-Progress status.
                 //// Get Integration Instance List.
                 List<IntegrationInstance> IntegrationInstanceList = db.IntegrationInstances
-                                                .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.LastSyncStatus == strInProgressStatus)
+                                                .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.CID && ii.LastSyncStatus == strInProgressStatus)
                                                 .Select(ii => ii).ToList();
 
                 if (IntegrationInstanceList != null && IntegrationInstanceList.Count > 0)
@@ -284,7 +284,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IntegrationTypeCode = integrationTypeObj.Code;
                 }
 
-                Guid clientId = Sessions.User.ClientId;
+                int clientId = Sessions.User.CID;
 
                 ////Get published plan list year for logged in client.
                 var objPlan = (from _pln in db.Plans
@@ -314,7 +314,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                Guid clientId = Sessions.User.ClientId;
+                int clientId = Sessions.User.CID;
                 string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
                 int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
 
@@ -411,7 +411,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IntegrationTypeCode = integrationTypeObj.Code;
                 }
 
-                Guid clientId = Sessions.User.ClientId;
+                int clientId = Sessions.User.CID;
 
                 ////Get published plan list year for logged in client.
                 var objPlan = (from _pln in db.Plans
@@ -443,7 +443,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                Guid clientId = Sessions.User.ClientId;
+                int clientId = Sessions.User.CID;
                 string status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
                 int Int_Year = Convert.ToInt32(!string.IsNullOrEmpty(Year) ? Convert.ToInt32(Year) : 0);
 
@@ -561,7 +561,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     objAddCampaign = new MarketoEntityValueMapping();
                                     objAddCampaign.MarketoCampaignFolderId = item.CampaignfolderValue;
-                                    objAddCampaign.LastModifiedBy = Sessions.User.UserId;
+                                    objAddCampaign.LastModifiedBy = Sessions.User.ID;
                                     objAddCampaign.LastModifiedDate = DateTime.Now.Date;
                                     objAddCampaign.EntityType = Enums.EntityType.Plan.ToString();
                                     objAddCampaign.EntityID = item.PlanId;
@@ -656,7 +656,7 @@ namespace RevenuePlanner.Controllers
                 using (var scope = new TransactionScope())
                 {
                     //// Handle Duplication.
-                    var isDuplicate = db.IntegrationInstances.Where(_intgrtn => _intgrtn.Instance == form.Instance && _intgrtn.ClientId == Sessions.User.ClientId && _intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId).Any();
+                    var isDuplicate = db.IntegrationInstances.Where(_intgrtn => _intgrtn.Instance == form.Instance && _intgrtn.ClientId == Sessions.User.CID && _intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId).Any();
                     if (isDuplicate)
                     {
                         TempData["ErrorMessage"] = Common.objCached.IntegrationDuplicate;
@@ -666,8 +666,8 @@ namespace RevenuePlanner.Controllers
 
                     // Save data
                     IntegrationInstance objIntegrationInstance = new IntegrationInstance();
-                    objIntegrationInstance.ClientId = Sessions.User.ClientId;
-                    objIntegrationInstance.CreatedBy = Sessions.User.UserId;
+                    objIntegrationInstance.ClientId = Sessions.User.CID;
+                    objIntegrationInstance.CreatedBy = Sessions.User.ID;
                     objIntegrationInstance.CreatedDate = DateTime.Now;
                     objIntegrationInstance.Instance = form.Instance;
                     objIntegrationInstance.IsDeleted = false;
@@ -682,7 +682,7 @@ namespace RevenuePlanner.Controllers
 
                     SyncFrequency objSyncFrequency = new SyncFrequency();
                     objSyncFrequency.IntegrationInstanceId = objIntegrationInstance.IntegrationInstanceId;
-                    objSyncFrequency.CreatedBy = Sessions.User.UserId;
+                    objSyncFrequency.CreatedBy = Sessions.User.ID;
                     objSyncFrequency.CreatedDate = DateTime.Now;
                     objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
                     if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly.ToString())
@@ -740,7 +740,7 @@ namespace RevenuePlanner.Controllers
                         foreach (var item in form.IntegrationTypeAttributes)
                         {
                             objIntegrationInstance_Attribute = new IntegrationInstance_Attribute();
-                            objIntegrationInstance_Attribute.CreatedBy = Sessions.User.UserId;
+                            objIntegrationInstance_Attribute.CreatedBy = Sessions.User.ID;
                             objIntegrationInstance_Attribute.CreatedDate = DateTime.Now;
                             objIntegrationInstance_Attribute.IntegrationInstanceId = objIntegrationInstance.IntegrationInstanceId;
                             objIntegrationInstance_Attribute.IntegrationTypeAttributeId = item.IntegrationTypeAttributeId;
@@ -993,7 +993,7 @@ namespace RevenuePlanner.Controllers
             int IntegrationTypeId = 0;
             var record = (dynamic)null;
             IntegrationModel objView = new IntegrationModel();
-            Guid clientId = Sessions.User.ClientId;
+            int clientId = Sessions.User.CID;
             string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
             bool IsMQLShow = false;
             bool IsPermission = false;
@@ -1007,7 +1007,7 @@ namespace RevenuePlanner.Controllers
             else
             {
                 record = db.IntegrationInstances
-                                    .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == id)
+                                    .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.CID && ii.IntegrationInstanceId == id)
                                     .Select(ii => ii).FirstOrDefault();
                 if (record != null)
                 {
@@ -1023,7 +1023,7 @@ namespace RevenuePlanner.Controllers
                     IntegrationTypeId = record.IntegrationTypeId;
 
                     var recordSync = db.SyncFrequencies
-                                            .Where(freq => freq.IntegrationInstanceId == id && freq.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                            .Where(freq => freq.IntegrationInstanceId == id && freq.IntegrationInstance.ClientId == Sessions.User.CID)
                                             .Select(freq => freq).FirstOrDefault();
 
                     SyncFrequencyModel objSync = new SyncFrequencyModel();
@@ -1046,7 +1046,7 @@ namespace RevenuePlanner.Controllers
                     objView.SyncFrequency = objSync;
 
                     var recordAttribute = db.IntegrationInstance_Attribute
-                                        .Where(attr => attr.IntegrationTypeAttributeId == attr.IntegrationTypeAttribute.IntegrationTypeAttributeId && attr.IntegrationInstanceId == id && attr.IntegrationInstance.ClientId == Sessions.User.ClientId)
+                                        .Where(attr => attr.IntegrationTypeAttributeId == attr.IntegrationTypeAttribute.IntegrationTypeAttributeId && attr.IntegrationInstanceId == id && attr.IntegrationInstance.ClientId == Sessions.User.CID)
                                         .Select(attr => attr).ToList();
 
                     //// Add IntegrationType Attributes data to List.
@@ -1162,7 +1162,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
                 ViewBag.integrationTypeId = form.IntegrationTypeId;
 
-                var isDuplicate = db.IntegrationInstances.Where(_intgrt => _intgrt.Instance == form.Instance && _intgrt.ClientId == Sessions.User.ClientId && _intgrt.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
+                var isDuplicate = db.IntegrationInstances.Where(_intgrt => _intgrt.Instance == form.Instance && _intgrt.ClientId == Sessions.User.CID && _intgrt.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
                     && _intgrt.IntegrationInstanceId != form.IntegrationInstanceId).Any();
 
                 if (isDuplicate)
@@ -1179,13 +1179,13 @@ namespace RevenuePlanner.Controllers
                 {
                     // update data
                     IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(_intgrt => _intgrt.IntegrationInstanceId == form.IntegrationInstanceId && _intgrt.IsDeleted.Equals(false) &&
-                        _intgrt.ClientId == Sessions.User.ClientId).FirstOrDefault();
+                        _intgrt.ClientId == Sessions.User.CID).FirstOrDefault();
 
                     if (objIntegrationInstance != null)
                     {
                         //// Update IntergrationInstance data to Table.
-                        objIntegrationInstance.ClientId = Sessions.User.ClientId;
-                        objIntegrationInstance.ModifiedBy = Sessions.User.UserId;
+                        objIntegrationInstance.ClientId = Sessions.User.CID;
+                        objIntegrationInstance.ModifiedBy = Sessions.User.ID;
                         objIntegrationInstance.ModifiedDate = DateTime.Now;
                         objIntegrationInstance.Instance = form.Instance;
                         objIntegrationInstance.IsDeleted = form.IsDeleted;
@@ -1302,11 +1302,11 @@ namespace RevenuePlanner.Controllers
 
                         // Get Salesforce Model list and remove respective record from that table.
                         List<Model> salModelList = ModelList.Where(_mdl => (_mdl.IntegrationInstanceId == form.IntegrationInstanceId)).ToList();
-                        salModelList.ForEach(_mdl => { _mdl.IntegrationInstanceId = null; _mdl.ModifiedDate = DateTime.Now; _mdl.ModifiedBy = Sessions.User.UserId; db.Entry(_mdl).State = EntityState.Modified; });
+                        salModelList.ForEach(_mdl => { _mdl.IntegrationInstanceId = null; _mdl.ModifiedDate = DateTime.Now; _mdl.ModifiedBy = Sessions.User.ID; db.Entry(_mdl).State = EntityState.Modified; });
 
                         // Get Eloqua Model list and remove respective record from that table.
                         List<Model> elqModelList = ModelList.Where(_mdl => (_mdl.IntegrationInstanceEloquaId == form.IntegrationInstanceId)).ToList();
-                        elqModelList.ForEach(_mdl => { _mdl.IntegrationInstanceEloquaId = null; _mdl.ModifiedDate = DateTime.Now; _mdl.ModifiedBy = Sessions.User.UserId; db.Entry(_mdl).State = EntityState.Modified; });
+                        elqModelList.ForEach(_mdl => { _mdl.IntegrationInstanceEloquaId = null; _mdl.ModifiedDate = DateTime.Now; _mdl.ModifiedBy = Sessions.User.ID; db.Entry(_mdl).State = EntityState.Modified; });
                         db.SaveChanges();
                     }
                     scope.Complete();
@@ -1366,7 +1366,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 Message.SaveIntegrationInstanceLogDetails(id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "create external integration");
-                ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId);
+                ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.ID);
 
                 Message.SaveIntegrationInstanceLogDetails(id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Start");
                 externalIntegration.Sync();
@@ -1381,9 +1381,9 @@ namespace RevenuePlanner.Controllers
                     #region "Get ForceSync User"
                     BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                     string strForceUser = string.Empty;
-                    if (integrationInstance.ForceSyncUser.HasValue)
+                    if (integrationInstance.ForceSyncUser != 0)
                     {
-                        var ForceUser = objBDSServiceClient.GetTeamMemberDetails(integrationInstance.ForceSyncUser.Value, Sessions.ApplicationId);
+                        var ForceUser = objBDSServiceClient.GetTeamMemberDetailsEx(integrationInstance.ForceSyncUser, Sessions.ApplicationId);
                         if (ForceUser != null)
                         {
                             strForceUser = ForceUser.FirstName + " " + ForceUser.LastName;
@@ -1646,7 +1646,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IntegrationTypeName = integrationTypeName;
 
                 //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
-                var lstStages = db.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId).Select(stage => new { Code = stage.Code, Title = stage.Title }).ToList();
+                var lstStages = db.Stages.Where(stage => stage.IsDeleted == false && stage.ClientId == Sessions.User.CID).Select(stage => new { Code = stage.Code, Title = stage.Title }).ToList();
                 var listStageCode = lstStages.Select(stage => stage.Code).ToList();
 
                 //// Get GamePlanDataType Stage Zero data.
@@ -1747,7 +1747,7 @@ namespace RevenuePlanner.Controllers
                                 objMapping.GameplanDataTypeId = obj.GameplanDataTypeId;
                                 objMapping.TargetDataType = obj.TargetDataType;
                                 objMapping.CreatedDate = DateTime.Now;
-                                objMapping.CreatedBy = Sessions.User.UserId;
+                                objMapping.CreatedBy = Sessions.User.ID;
                                 mrp.Entry(objMapping).State = EntityState.Added;
                                 mrp.SaveChanges();
                             }
@@ -1841,7 +1841,7 @@ namespace RevenuePlanner.Controllers
                 listCustGet = (from custm in db.CustomFields
                                join m1 in db.IntegrationInstanceDataTypeMappings on custm.CustomFieldId equals m1.CustomFieldId into mapping
                                from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                               where custm.IsDeleted == false && custm.ClientId == Sessions.User.ClientId && custm.IsGet == true &&
+                               where custm.IsDeleted == false && custm.ClientId == Sessions.User.CID && custm.IsGet == true &&
                                (integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : 1 == 1)
                                select new GameplanDataTypeModel
                                {
@@ -2074,7 +2074,7 @@ namespace RevenuePlanner.Controllers
                 listGameplanDataTypeCustomFields = (from custm in db.CustomFields
                                                     join m1 in db.IntegrationInstanceDataTypeMappings on custm.CustomFieldId equals m1.CustomFieldId into mapping
                                                     from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                    where custm.IsDeleted == false && custm.ClientId == Sessions.User.ClientId && custm.IsGet == false &&
+                                                    where custm.IsDeleted == false && custm.ClientId == Sessions.User.CID && custm.IsGet == false &&
                                                     ((integrationTypeCode == Eloqua ? (custm.EntityType == Tactic_EntityType) : (integrationTypeCode == Marketo ? (custm.EntityType == Tactic_EntityType) : (integrationTypeCode == WorkFront ? (custm.EntityType == Tactic_EntityType) : 1 == 1)))) //Modified by Viral for PL #2266.
                                                     select new GameplanDataTypeModel
                                                     {
@@ -2284,7 +2284,7 @@ namespace RevenuePlanner.Controllers
                                 //// End - Modified by :- Sohel Pathan on 03/12/2014 for PL #993
                                 objMapping.TargetDataType = obj.TargetDataType;
                                 objMapping.CreatedDate = DateTime.Now;
-                                objMapping.CreatedBy = Sessions.User.UserId;
+                                objMapping.CreatedBy = Sessions.User.ID;
                                 mrp.Entry(objMapping).State = EntityState.Added;
                             }
                         }
@@ -2421,7 +2421,7 @@ namespace RevenuePlanner.Controllers
                             objMappingPull.GameplanDataTypePullId = obj.GameplanDataTypePullId;
                             objMappingPull.TargetDataType = obj.TargetDataType;
                             objMappingPull.CreatedDate = DateTime.Now;
-                            objMappingPull.CreatedBy = Sessions.User.UserId;
+                            objMappingPull.CreatedBy = Sessions.User.ID;
                             mrp.Entry(objMappingPull).State = EntityState.Added;
                         }
                     }
@@ -2473,7 +2473,7 @@ namespace RevenuePlanner.Controllers
             int Result = 0;
 
             IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(intgrtn => intgrtn.IntegrationInstanceId == form.IntegrationInstanceId && intgrtn.IsDeleted.Equals(false) &&
-                            intgrtn.ClientId == Sessions.User.ClientId).FirstOrDefault();
+                            intgrtn.ClientId == Sessions.User.CID).FirstOrDefault();
 
             if (objIntegrationInstance != null)
             {
@@ -2526,12 +2526,12 @@ namespace RevenuePlanner.Controllers
 
                     if (IsAddOperation)
                     {
-                        isDuplicate = db.IntegrationInstances.Where(intgrtn => intgrtn.Instance == form.Instance && intgrtn.ClientId == Sessions.User.ClientId && intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId &&
+                        isDuplicate = db.IntegrationInstances.Where(intgrtn => intgrtn.Instance == form.Instance && intgrtn.ClientId == Sessions.User.CID && intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId &&
                             intgrtn.IsDeleted == false).Any();
                     }
                     else
                     {
-                        isDuplicate = db.IntegrationInstances.Where(intgrtn => intgrtn.Instance == form.Instance && intgrtn.ClientId == Sessions.User.ClientId && intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
+                        isDuplicate = db.IntegrationInstances.Where(intgrtn => intgrtn.Instance == form.Instance && intgrtn.ClientId == Sessions.User.CID && intgrtn.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
                                         && intgrtn.IsDeleted == false && intgrtn.IntegrationInstanceId != form.IntegrationInstanceId).Any();
                     }
 
@@ -2551,7 +2551,7 @@ namespace RevenuePlanner.Controllers
                                 objIntegrationInstance.IsDeleted = false;
                                 objIntegrationInstance.IntegrationTypeId = form.IntegrationTypeId;
                                 //// Added By : Kalpesh Sharma #781 Synchronization with Scheduler
-                                objIntegrationInstance.CreatedBy = Sessions.User.UserId;
+                                objIntegrationInstance.CreatedBy = Sessions.User.ID;
                                 //Added by RahuL Shah for PL #2184
                                 if (form.IntegrationType.Code == Enums.IntegrationInstanceType.Marketo.ToString())
                                 {
@@ -2561,9 +2561,9 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 objIntegrationInstance = db.IntegrationInstances.Where(intgrtn => intgrtn.IntegrationInstanceId == form.IntegrationInstanceId && intgrtn.IsDeleted.Equals(false) &&
-                                                        intgrtn.ClientId == Sessions.User.ClientId).FirstOrDefault();
+                                                        intgrtn.ClientId == Sessions.User.CID).FirstOrDefault();
                                 objIntegrationInstance.IsDeleted = (Convert.ToString(form.IsDeleted).ToLower() == "true" ? true : false);
-                                objIntegrationInstance.ModifiedBy = Sessions.User.UserId;
+                                objIntegrationInstance.ModifiedBy = Sessions.User.ID;
                                 objIntegrationInstance.ModifiedDate = DateTime.Now;
 
                                 //// Start - Added by Sohel Pathan on 29/12/2014 for an Internal Review Point
@@ -2574,7 +2574,7 @@ namespace RevenuePlanner.Controllers
                                 //// End - Added by Sohel Pathan on 29/12/2014 for an Internal Review Point
                             }
 
-                            objIntegrationInstance.ClientId = Sessions.User.ClientId;
+                            objIntegrationInstance.ClientId = Sessions.User.CID;
                             objIntegrationInstance.Instance = form.Instance;
                             objIntegrationInstance.IsImportActuals = form.IsImportActuals;
                             objIntegrationInstance.IsActive = form.IsActive;
@@ -2610,7 +2610,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 objSyncFrequency = new SyncFrequency();
                                 objSyncFrequency.IntegrationInstanceId = objIntegrationInstance.IntegrationInstanceId;
-                                objSyncFrequency.CreatedBy = Sessions.User.UserId;
+                                objSyncFrequency.CreatedBy = Sessions.User.ID;
                                 objSyncFrequency.CreatedDate = DateTime.Now;
 
                                 if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly)
@@ -2770,7 +2770,7 @@ namespace RevenuePlanner.Controllers
                                     if (IsAddOperation)
                                     {
                                         objIntegrationInstance_Attribute = new IntegrationInstance_Attribute();
-                                        objIntegrationInstance_Attribute.CreatedBy = Sessions.User.UserId;
+                                        objIntegrationInstance_Attribute.CreatedBy = Sessions.User.ID;
                                         objIntegrationInstance_Attribute.CreatedDate = DateTime.Now;
                                         objIntegrationInstance_Attribute.IntegrationInstanceId = objIntegrationInstance.IntegrationInstanceId;
                                         objIntegrationInstance_Attribute.IntegrationTypeAttributeId = item.IntegrationTypeAttributeId;
@@ -2817,7 +2817,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         ObjIntegrationInstance.IntegrationInstanceId = null;
                                         ObjIntegrationInstance.ModifiedDate = DateTime.Now;
-                                        ObjIntegrationInstance.ModifiedBy = Sessions.User.UserId;
+                                        ObjIntegrationInstance.ModifiedBy = Sessions.User.ID;
                                         db.Entry(ObjIntegrationInstance).State = EntityState.Modified;
                                     });
 
@@ -2827,7 +2827,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         ObjIntegrationInstance.IntegrationInstanceEloquaId = null;
                                         ObjIntegrationInstance.ModifiedDate = DateTime.Now;
-                                        ObjIntegrationInstance.ModifiedBy = Sessions.User.UserId;
+                                        ObjIntegrationInstance.ModifiedBy = Sessions.User.ID;
                                         db.Entry(ObjIntegrationInstance).State = EntityState.Modified;
                                     });
 
@@ -2837,7 +2837,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         INQ.IntegrationInstanceIdINQ = null;
                                         INQ.ModifiedDate = DateTime.Now;
-                                        INQ.ModifiedBy = Sessions.User.UserId;
+                                        INQ.ModifiedBy = Sessions.User.ID;
                                         db.Entry(INQ).State = EntityState.Modified;
                                     });
 
@@ -2847,7 +2847,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         MQL.IntegrationInstanceIdMQL = null;
                                         MQL.ModifiedDate = DateTime.Now;
-                                        MQL.ModifiedBy = Sessions.User.UserId;
+                                        MQL.ModifiedBy = Sessions.User.ID;
                                         db.Entry(MQL).State = EntityState.Modified;
                                     });
 
@@ -2857,7 +2857,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         CW.IntegrationInstanceIdCW = null;
                                         CW.ModifiedDate = DateTime.Now;
-                                        CW.ModifiedBy = Sessions.User.UserId;
+                                        CW.ModifiedBy = Sessions.User.ID;
                                         db.Entry(CW).State = EntityState.Modified;
                                     });
 
@@ -2867,7 +2867,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         ProjMgmt.IntegrationInstanceIdProjMgmt = null;
                                         ProjMgmt.ModifiedDate = DateTime.Now;
-                                        ProjMgmt.ModifiedBy = Sessions.User.UserId;
+                                        ProjMgmt.ModifiedBy = Sessions.User.ID;
                                         db.Entry(ProjMgmt).State = EntityState.Modified;
                                     });
 
@@ -3023,7 +3023,7 @@ namespace RevenuePlanner.Controllers
                 {
                     obj.SFTPPort = frm.SFTPPort;
                 }
-                obj.CreatedBy = Sessions.User.UserId;
+                obj.CreatedBy = Sessions.User.ID;
                 obj.CreatedDate = DateTime.Now;
                 obj.IsDeleted = false;
                 db.Entry(obj).State = System.Data.EntityState.Added;
@@ -3048,7 +3048,7 @@ namespace RevenuePlanner.Controllers
                     {
                         obj.SFTPPort = frm.SFTPPort;
                     }
-                    obj.ModifiedBy = Sessions.User.UserId;
+                    obj.ModifiedBy = Sessions.User.ID;
                     obj.ModifiedDate = DateTime.Now;
                     db.Entry(obj).State = System.Data.EntityState.Modified;
                     db.SaveChanges();
@@ -3069,7 +3069,7 @@ namespace RevenuePlanner.Controllers
             if (obj != null)
             {
                 obj.IsDeleted = true;
-                obj.ModifiedBy = Sessions.User.UserId;
+                obj.ModifiedBy = Sessions.User.ID;
                 obj.ModifiedDate = DateTime.Now;
                 db.Entry(obj).State = System.Data.EntityState.Modified;
                 return db.SaveChanges();

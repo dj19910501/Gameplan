@@ -25,14 +25,14 @@ namespace RevenuePlanner.Models
         public string Description { get; set; }
         public double Cost { get; set; }
         public string ColorCode { get; set; }
-        public System.Guid ClientId { get; set; }
         public bool IsDeployed { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public bool IsDeployedToIntegration { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
+        public int ClientId { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
     
         public virtual ICollection<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }

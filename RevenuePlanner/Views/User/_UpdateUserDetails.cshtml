@@ -2,7 +2,7 @@
 @using RevenuePlanner.Helpers
 @{
     var srcval = (string)ViewBag.SourceValue;
-    var currentUserId = (string)ViewBag.CurrentUserId;
+    int currentUserId = ViewBag.CurrentUserId;
 }
 <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
@@ -19,7 +19,7 @@
 
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.FirstName)
-            @if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
+            @if (Model.UserId == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                                                             @Html.TextBoxFor(model => model.FirstName, new { @class = "input-small", id = "txtFirstName" })
                 @Html.ValidationMessageFor(model => model.FirstName)
@@ -35,7 +35,7 @@
         </div>
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.LastName)
-            @if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) // || permRoleCodesForDel.Contains(Model.RoleCode))
+            @if (Model.UserId == currentUserId || (bool)ViewBag.IsUserAdminAuthorized) // || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                                                             @Html.TextBoxFor(model => model.LastName, new { id = "txtLastName" })
                 @Html.ValidationMessageFor(model => model.LastName)
@@ -61,7 +61,7 @@
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.Phone)
-            @if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)
+            @if (Model.UserId == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)
                     {
                 @Html.TextBoxFor(model => model.Phone)
                 @Html.ValidationMessageFor(model => model.Phone)
@@ -76,7 +76,7 @@
                     
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.JobTitle)
-            @if ((Convert.ToString(Model.UserId) == currentUserId) || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
+            @if ((Model.UserId == currentUserId) || (bool)ViewBag.IsUserAdminAuthorized) //|| permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                                                                     @Html.TextBoxFor(model => model.JobTitle, new { id = "txtJobTitle" })
                 @Html.ValidationMessageFor(model => model.JobTitle)
@@ -138,7 +138,7 @@
 
         <div class="cf inputs-aligned-horizontal">
             @Html.LabelFor(model => model.RoleId)
-            @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
+            @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Model.UserId)
                     {
                         //Modified by :- Sohel on 27 March 2014 for ticket #334
                 <div class="selectBox UserProfile" id="ddlRoleIdSelectBox">
@@ -157,7 +157,7 @@
                 
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517   
         <div class="cf inputs-aligned-horizontal" id="divManager">
-            @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
+            @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Model.UserId)
                         {
                 @Html.Label("Manager")
                 <div class="selectBox UserProfile" id="ddlManagerIdSelectBox">
@@ -182,7 +182,7 @@
         </div>
                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517   
                 
-                if (currentUserId != Convert.ToString(Model.UserId))
+                if (currentUserId != Model.UserId)
                 {
                     if ((bool)ViewBag.IsUserAdminAuthorized) //permRoleCodesForDel.Contains(Model.RoleCode))
                     {
@@ -237,7 +237,7 @@
                     }
                 }
 
-                if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)//isViewOnly != "true")
+                if (Model.UserId == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)//isViewOnly != "true")
                 {
         <div class="cf inputs-aligned-horizontal">
             <div class="container-button">

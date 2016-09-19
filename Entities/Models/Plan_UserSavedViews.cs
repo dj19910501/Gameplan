@@ -18,8 +18,8 @@ namespace RevenuePlanner.Models
         public string ViewName { get; set; }
         public string FilterName { get; set; }
         public string FilterValues { get; set; }
-        public Nullable<System.Guid> Userid { get; set; }
         public System.DateTime LastModifiedDate { get; set; }
         public Nullable<bool> IsDefaultPreset { get; set; }
+        public int Userid { get; set; }
     }
 }

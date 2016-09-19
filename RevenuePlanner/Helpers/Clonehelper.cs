@@ -27,7 +27,7 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public int ToClone(string Suffix = "", string CopyClone = "", int ID = 0, int PlanId = 0)
         {
-            Guid UserId = Sessions.User.UserId;
+            int UserId = Sessions.User.ID;
             if (PlanId == 0)
             {
                 PlanId = Sessions.PlanId;
@@ -65,7 +65,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="PlanStatus"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int PlanClone(int PlanId, string Suffix, Guid UserId, string PlanStatus, string TacticStatus)
+        public int PlanClone(int PlanId, string Suffix, int UserId, string PlanStatus, string TacticStatus)
         {
             int returnFlag = 0;
             if (PlanId == 0)
@@ -90,7 +90,7 @@ namespace RevenuePlanner.Helpers
                     proj.Plan_Team = null;
                     //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1127
                     proj.ModifiedDate = null;
-                    proj.ModifiedBy = null;
+                    proj.ModifiedBy = 0;
                     //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1127
                     //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                     proj.Year = DateTime.Now.Year.ToString();
@@ -104,7 +104,7 @@ namespace RevenuePlanner.Helpers
                             t.Tactic_Share = null;
                             //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                             t.ModifiedDate = null;
-                            t.ModifiedBy = null;
+                            t.ModifiedBy = 0;
                             //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                             ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                             t.IntegrationInstanceCampaignId = null;
@@ -124,7 +124,7 @@ namespace RevenuePlanner.Helpers
                                 //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                 pcp.CreatedDate = DateTime.Now;
                                 pcp.ModifiedDate = null;
-                                pcp.ModifiedBy = null;
+                                pcp.ModifiedBy = 0;
                                 //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                 ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                                 pcp.IntegrationInstanceProgramId = null;
@@ -149,7 +149,7 @@ namespace RevenuePlanner.Helpers
                                     //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                     pcpt.CreatedDate = DateTime.Now;
                                     pcpt.ModifiedDate = null;
-                                    pcpt.ModifiedBy = null;
+                                    pcpt.ModifiedBy = 0;
                                     pcpt.TacticCustomName = null;
                                     //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                     ////Start- Added by Mitesh Vaishnav for PL ticket #1129
@@ -173,7 +173,7 @@ namespace RevenuePlanner.Helpers
                                         //// Start - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                         pcptl.CreatedDate = DateTime.Now;
                                         pcptl.ModifiedDate = null;
-                                        pcptl.ModifiedBy = null;
+                                        pcptl.ModifiedBy = 0;
                                         pcptl.LinkedLineItemId = null;
                                         //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                         //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
@@ -242,7 +242,7 @@ namespace RevenuePlanner.Helpers
                     ////End Added by Mitesh Vaishnav for PL ticket #718
 
                     Sessions.PlanId = proj.PlanId;
-                    Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, proj.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", proj.CreatedBy.ToString());
+                    Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, proj.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", proj.CreatedBy);
                     returnFlag = planId;
                     return returnFlag;
                 }
@@ -268,7 +268,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int CampaignClone(int PlanId, string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int CampaignClone(int PlanId, string Suffix, int UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
             string title = string.Empty;
@@ -297,7 +297,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.Plan = null;
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaign.ModifiedDate = null;
-                    objPlanCampaign.ModifiedBy = null;
+                    objPlanCampaign.ModifiedBy = 0;
                     //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
                     objPlanCampaign.Status = TacticStatus;
@@ -314,7 +314,7 @@ namespace RevenuePlanner.Helpers
                             t.Status = TacticStatus;
                             //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             t.ModifiedDate = null;
-                            t.ModifiedBy = null;
+                            t.ModifiedBy = 0;
                             //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                             t.IntegrationInstanceProgramId = null;
@@ -333,7 +333,7 @@ namespace RevenuePlanner.Helpers
                                 //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                                 pcpt.CreatedDate = DateTime.Now;
                                 pcpt.ModifiedDate = null;
-                                pcpt.ModifiedBy = null;
+                                pcpt.ModifiedBy = 0;
                                 pcpt.TacticCustomName = null;
                                 //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                                 ////Start- Added by Mitesh Vaishnav for PL ticket #1129
@@ -409,7 +409,7 @@ namespace RevenuePlanner.Helpers
                     db.SaveChanges();
                     ////End Added by Mitesh Vaishnav for PL ticket #718
 
-                    Common.InsertChangeLog(PlanId, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaign.CreatedBy.ToString());
+                    Common.InsertChangeLog(PlanId, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaign.CreatedBy);
                     returnFlag = PlanCampaignId;
                     return returnFlag;
                 }
@@ -434,7 +434,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="UserId"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public int ProgramClone(int planId, string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int ProgramClone(int planId, string Suffix, int UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
 
@@ -470,7 +470,7 @@ namespace RevenuePlanner.Helpers
                     ////End- Added by Mitesh Vaishnav for PL ticket #1129
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignPrograms.ModifiedDate = null;
-                    objPlanCampaignPrograms.ModifiedBy = null;
+                    objPlanCampaignPrograms.ModifiedBy = 0;
                     //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
@@ -487,7 +487,7 @@ namespace RevenuePlanner.Helpers
                             t.Status = TacticStatus;
                             //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             t.ModifiedDate = null;
-                            t.ModifiedBy = null;
+                            t.ModifiedBy = 0;
                             t.TacticCustomName = null;
                             //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             ////Start- Added by Mitesh Vaishnav for PL ticket #1129
@@ -549,7 +549,7 @@ namespace RevenuePlanner.Helpers
                     db.SaveChanges();
                     ////End Added by Mitesh Vaishnav for PL ticket #719
 
-                    Common.InsertChangeLog(planId, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignPrograms.CreatedBy.ToString());
+                    Common.InsertChangeLog(planId, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignPrograms.CreatedBy);
                     returnFlag = PlanProgramId;
                     return returnFlag;
                 }
@@ -575,7 +575,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int TacticClone(int planid, string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int TacticClone(int planid, string Suffix, int UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
             if (ID == 0)
@@ -622,7 +622,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.LinkedPlanId = null;
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignProgramTactic.ModifiedDate = null;
-                    objPlanCampaignProgramTactic.ModifiedBy = null;
+                    objPlanCampaignProgramTactic.ModifiedBy = 0;
                     //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     List<Plan_Campaign_Program_Tactic_LineItem> lstLineItems = new List<Plan_Campaign_Program_Tactic_LineItem>();
                     lstLineItems = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == true).ToList();
@@ -636,7 +636,7 @@ namespace RevenuePlanner.Helpers
                       {
                             // Start - Added by Viral Kadiya for PL ticket #1967 - We will need to change the owner of the line items to the one that copied the tactic.
                             pcptl.CreatedBy = UserId;
-                          pcptl.CreatedDate = DateTime.Now;
+                            pcptl.CreatedDate = DateTime.Now;
                             // End - Added by Viral Kadiya for PL ticket #1967 - We will need to change the owner of the line items to the one that copied the tactic.
 
                             if (pcptl.LineItemTypeId == null)
@@ -648,6 +648,7 @@ namespace RevenuePlanner.Helpers
                           pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                           pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();// Add  By Nishant Sheth
                         });
+
 
                 }
                 objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
@@ -689,7 +690,7 @@ namespace RevenuePlanner.Helpers
                 db.SaveChanges();
                 ////End Added by Mitesh Vaishnav for PL ticket #720
 
-                Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignProgramTactic.CreatedBy.ToString());
+                Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignProgramTactic.CreatedBy);
                 returnFlag = planTacticId;
                 return returnFlag;
             }
@@ -712,7 +713,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int LineItemClone(int planid, string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int LineItemClone(int planid, string Suffix, int UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
 
@@ -745,7 +746,7 @@ namespace RevenuePlanner.Helpers
                     objLinkedLineItem.Plan_Campaign_Program_Tactic = null;
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objLinkedLineItem.ModifiedDate = null;
-                    objLinkedLineItem.ModifiedBy = null;
+                    objLinkedLineItem.ModifiedBy = 0;
                     //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objLinkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost = objLinkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                     db.Plan_Campaign_Program_Tactic_LineItem.Add(objLinkedLineItem);
@@ -785,7 +786,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic = null;
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignProgramTacticLineItem.ModifiedDate = null;
-                    objPlanCampaignProgramTacticLineItem.ModifiedBy = null;
+                    objPlanCampaignProgramTacticLineItem.ModifiedBy = 0;
                     objPlanCampaignProgramTacticLineItem.LinkedLineItemId = CopyLinkedID;
                     //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                     objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
@@ -858,7 +859,7 @@ namespace RevenuePlanner.Helpers
                         objtacticCost.PlanTacticId = objTactic.PlanTacticId;
                         objtacticCost.Period = PeriodChar + startmonth;
                         objtacticCost.Value = lineItemtotalCost;
-                        objtacticCost.CreatedBy = Sessions.User.UserId;
+                        objtacticCost.CreatedBy = Sessions.User.ID;
                         objtacticCost.CreatedDate = DateTime.Now;
                         db.Entry(objtacticCost).State = EntityState.Added;
                         objTactic.Cost = objTactic.Cost + lineItemtotalCost;
@@ -869,7 +870,7 @@ namespace RevenuePlanner.Helpers
                     db.Entry(objTactic).State = EntityState.Modified;
                     int result = db.SaveChanges();
                     //CostCalculacation(TacticId);
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTacticLineItem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignProgramTacticLineItem.CreatedBy.ToString());
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTacticLineItem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignProgramTacticLineItem.CreatedBy);
                 }
 
                 return returnFlag;
@@ -914,7 +915,7 @@ namespace RevenuePlanner.Helpers
                     LineitemBudgetMapping = new LineItem_Budget();
                     LineitemBudgetMapping.BudgetDetailId = item.BudgetDetailId;
                     LineitemBudgetMapping.PlanLineItemId = NewID;
-                    LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
+                    LineitemBudgetMapping.CreatedBy = Sessions.User.ID;
                     LineitemBudgetMapping.CreatedDate = DateTime.Now;
                     LineitemBudgetMapping.Weightage = (byte)item.Weightage;
                     db.Entry(LineitemBudgetMapping).State = EntityState.Added;
@@ -970,7 +971,7 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public int CloneToOtherPlan(List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping, string cloneType = "", int entityId = 0, int PlanId = 0, int parentEntityId = 0, bool isdifferModel = false)
         {
-            Guid UserId = Sessions.User.UserId;
+            int UserId = Sessions.User.ID;
             if (PlanId == 0)
             {
                 PlanId = Sessions.PlanId;
@@ -1001,7 +1002,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int CloneTacticToOtherPlan(int planid, Guid UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
+        public int CloneTacticToOtherPlan(int planid, int UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
         {
             int returnFlag = 0;
             if (entityId == 0)
@@ -1047,7 +1048,7 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.LinkedPlanId = null;
                     objPlanTactic.LinkedTacticId = null;
                     objPlanTactic.ModifiedDate = null;
-                    objPlanTactic.ModifiedBy = null;
+                    objPlanTactic.ModifiedBy = 0;
                     objPlanTactic.LinkedTacticId = null;
                     objPlanTactic.LinkedPlanId = null;
                     objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDate(objPlanTactic.StartDate, startDate, true) : objPlanTactic.StartDate;
@@ -1109,7 +1110,7 @@ namespace RevenuePlanner.Helpers
 
                     db.SaveChanges();
 
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanTactic.CreatedBy.ToString());
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanTactic.CreatedBy);
                     returnFlag = planTacticId;
                 } // To handle object null reference exception  - Dashrath Prajapati - 29/01/2016
                 return returnFlag;
@@ -1134,7 +1135,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int CloneCampaignToOtherPlan(int planid, Guid UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
+        public int CloneCampaignToOtherPlan(int planid, int UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
         {
             int returnFlag = 0;
             string title = string.Empty;
@@ -1161,7 +1162,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.Plan_Campaign_Program_Tactic_Comment = null;
                     objPlanCampaign.Plan = null;
                     objPlanCampaign.ModifiedDate = null;
-                    objPlanCampaign.ModifiedBy = null;
+                    objPlanCampaign.ModifiedBy = 0;
                     objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
                     objPlanCampaign.Status = TacticStatus;
                     objPlanCampaign.IntegrationInstanceCampaignId = null;
@@ -1178,7 +1179,7 @@ namespace RevenuePlanner.Helpers
                             t.CreatedDate = DateTime.Now;
                             t.Status = TacticStatus;
                             t.ModifiedDate = null;
-                            t.ModifiedBy = null;
+                            t.ModifiedBy = 0;
                             t.IntegrationInstanceProgramId = null;
                             t.LastSyncDate = null;
                             t.Plan_Campaign_Program_Budget = t.Plan_Campaign_Program_Budget;
@@ -1195,7 +1196,7 @@ namespace RevenuePlanner.Helpers
                                 pcpt.TacticType = null;
                                 pcpt.CreatedDate = DateTime.Now;
                                 pcpt.ModifiedDate = null;
-                                pcpt.ModifiedBy = null;
+                                pcpt.ModifiedBy = 0;
                                 pcpt.TacticCustomName = null;
                                 pcpt.IntegrationInstanceTacticId = null;
                                 pcpt.IntegrationInstanceEloquaId = null;
@@ -1280,7 +1281,7 @@ namespace RevenuePlanner.Helpers
 
                     db.SaveChanges();
 
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaign.CreatedBy.ToString());
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaign.CreatedBy);
                     returnFlag = PlanCampaignId;
                     return returnFlag;
                 }
@@ -1305,7 +1306,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="UserId"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public int CloneProgramToOtherPlan(int planid, Guid UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
+        public int CloneProgramToOtherPlan(int planid, int UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
         {
             int returnFlag = 0;
 
@@ -1343,7 +1344,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignPrograms.IntegrationInstanceProgramId = null;
                     objPlanCampaignPrograms.LastSyncDate = null;
                     objPlanCampaignPrograms.ModifiedDate = null;
-                    objPlanCampaignPrograms.ModifiedBy = null;
+                    objPlanCampaignPrograms.ModifiedBy = 0;
                     objPlanCampaignPrograms.PlanCampaignId = parentEntityId;
                     objPlanCampaignPrograms.StartDate = (objPlanCampaignPrograms.StartDate.Year != startDate.Year) ? GetResultDate(objPlanCampaignPrograms.StartDate, startDate, true) : objPlanCampaignPrograms.StartDate;
                     objPlanCampaignPrograms.EndDate = (objPlanCampaignPrograms.EndDate.Year != endDate.Year) ? GetResultDate(objPlanCampaignPrograms.EndDate, endDate, false) : objPlanCampaignPrograms.EndDate;
@@ -1361,7 +1362,7 @@ namespace RevenuePlanner.Helpers
                             t.TacticType = null;
                             t.Status = TacticStatus;
                             t.ModifiedDate = null;
-                            t.ModifiedBy = null;
+                            t.ModifiedBy = 0;
                             t.TacticCustomName = null;
                             t.IntegrationInstanceTacticId = null;
                             t.IntegrationInstanceEloquaId = null;
@@ -1430,7 +1431,7 @@ namespace RevenuePlanner.Helpers
 
                     db.SaveChanges();
 
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignPrograms.CreatedBy.ToString());
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignPrograms.CreatedBy);
                     returnFlag = PlanProgramId;
                     return returnFlag;
                 }
@@ -1597,7 +1598,7 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public int LinkToOtherPlan(List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping, string cloneType = "", int entityId = 0, int PlanId = 0, int parentEntityId = 0, bool isdifferModel = false)
         {
-            Guid UserId = Sessions.User.UserId;
+            int UserId = Sessions.User.ID;
             if (PlanId == 0)
             {
                 PlanId = Sessions.PlanId;
@@ -1630,7 +1631,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int LinkTacticToOtherPlan(int planid, Guid UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
+        public int LinkTacticToOtherPlan(int planid, int UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
         {
             int returnFlag = 0;
             if (entityId == 0)
@@ -1668,7 +1669,7 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.StartDate = GetResultDateforLink(objPlanTactic.StartDate, startDate, true);
                     objPlanTactic.EndDate = objPlanTactic.EndDate;
                     objPlanTactic.Cost = 0;
-                    objPlanTactic.ModifiedBy = Sessions.User.UserId;
+                    objPlanTactic.ModifiedBy = Sessions.User.ID;
                     objPlanTactic.ModifiedDate = System.DateTime.Now;
                     //objPlanTactic.StartDate = objPlanTactic.StartDate;
                     //objPlanTactic.EndDate = objPlanTactic.EndDate;
@@ -1849,7 +1850,7 @@ namespace RevenuePlanner.Helpers
                     foreach (var objMediaCode in lstMediacode)
                     {
                         Tactic_MediaCodes objlinkedMediaCode = new Tactic_MediaCodes();
-                        objlinkedMediaCode.CreatedBy = Sessions.User.UserId;
+                        objlinkedMediaCode.CreatedBy = Sessions.User.ID;
                         objlinkedMediaCode.CreatedDate = DateTime.Now;
                         objlinkedMediaCode.IsDeleted = objMediaCode.IsDeleted;
                         objlinkedMediaCode.MediaCode = objMediaCode.MediaCode;
@@ -1875,7 +1876,7 @@ namespace RevenuePlanner.Helpers
 
                     db.SaveChanges();
 
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanTactic.CreatedBy.ToString());
+                    Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanTactic.CreatedBy);
                     returnFlag = planTacticId;
                 } // To handle object null reference exception - Dashrath Prajapati - 29/01/2016
                 return returnFlag;

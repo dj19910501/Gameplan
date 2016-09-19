@@ -114,7 +114,7 @@ namespace RevenuePlanner.Models
 
         public string Owner { get; set; }
 
-        public Guid OwnerId { get; set; }
+        public int OwnerId { get; set; }
 
         public DateTime StartDate { get; set; }
 
@@ -208,7 +208,7 @@ namespace RevenuePlanner.Models
 
         public string CommentedBy { get; set; }
 
-        public Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
 
     }
 
@@ -257,7 +257,7 @@ namespace RevenuePlanner.Models
         public DateTime MinStartDate { get; set; }
         public int ImprovePlanId { get; set; }
         public Plan_Improvement_Campaign_Program_Tactic ImprovementTactic { get; set; }
-        public System.Guid CreatedBy { get; set; } 
+        public int CreatedBy { get; set; } 
     }
 
     public class CustomFields
@@ -283,7 +283,7 @@ namespace RevenuePlanner.Models
         public double CampaignProgress { get; set; }
         public double ProgramProgress { get; set; }
         public List<int> lstCustomEntityId { get; set; }
-        public System.Guid CreatedBy { get; set; } 
+        public int CreatedBy { get; set; } 
         public DateTime PlanStartDate { get; set; }
         public DateTime PlanEndDate { get; set; }
         public bool LinkTacticPermission { get; set; }
@@ -337,7 +337,7 @@ namespace RevenuePlanner.Models
         public string parent { get; set; }
         public string color { get; set; }
         public int planid { get; set; }
-        public Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public string Status{ get; set; }
     }
     public class Plan_Tactic
@@ -349,7 +349,7 @@ namespace RevenuePlanner.Models
         public Plan_Campaign_Program objPlanTacticProgram { get; set; }
         public Plan_Campaign objPlanTacticCampaign { get; set; }
         public Plan objPlanTacticCampaignPlan { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
@@ -366,7 +366,7 @@ namespace RevenuePlanner.Models
         public string ViewName { get; set; }
         public string FilterName { get; set; }
         public string FilterValues { get; set; }
-        public Nullable<System.Guid> Userid { get; set; }
+        public int Userid { get; set; }
         public System.DateTime LastModifiedDate { get; set; }
     }
 	public class PlanMainDHTMLXGrid

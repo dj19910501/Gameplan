@@ -65,7 +65,7 @@ namespace Integration
     {
         int? _integrationInstanceId { get; set; }
         int _id { get; set; }
-        Guid _userId { get; set; }
+        int _userId { get; set; }
         EntityType _entityType { get; set; }
         string _integrationType { get; set; }
         public bool _isResultError { get; set; }
@@ -101,7 +101,7 @@ namespace Integration
             {TacticStatus.Complete.ToString(), "Complete"}
         };
 
-        public ExternalIntegration(int id, Guid applicationId, Guid UserId = new Guid(), EntityType entityType = EntityType.IntegrationInstance,bool isTacticMoved=false)
+        public ExternalIntegration(int id, Guid applicationId, int UserId = 0, EntityType entityType = EntityType.IntegrationInstance,bool isTacticMoved=false)
         {
             _id = id;
             _userId = UserId;
@@ -257,7 +257,7 @@ namespace Integration
                     Instance.LastSyncStatus = StatusResult.Error.ToString();
                     Instance.LastSyncDate = DateTime.Now;
                     instanceLogStart.SyncEnd = DateTime.Now;
-                    if (_userId == Guid.Empty)
+                    if (_userId == 0)
                         instanceLogStart.IsAutoSync = true;      // PL ticket #1449: Update IntegrationInstanceLog that Sync process by Auth or Manual.
                     else
                         Instance.ForceSyncUser = _userId;
@@ -540,7 +540,7 @@ namespace Integration
             ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
             Common.IsAutoSync = false;
 
-            if (_userId == Guid.Empty)
+            if (_userId == 0)
             {
                     _userId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).CreatedBy;
                 Common.IsAutoSync = true;
@@ -771,7 +771,7 @@ namespace Integration
             try
             {
                 BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                ClientName = objBDSUserRepository.GetClientName(_userId);
+                ClientName = objBDSUserRepository.GetClientNameEx(_userId);
                 _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Client Name", ClientName), Enums.SyncStatus.Header, DateTime.Now));
             }
             catch
@@ -811,7 +811,7 @@ namespace Integration
             {
                 #region "Get Client wise MQL Permission"
                 int IntegrationTypeId=0;
-                Guid ClientId = new Guid();
+                int ClientId = 0;
                 IntegrationInstance objInstance = db.IntegrationInstances.Where(inst => inst.IntegrationInstanceId == _integrationInstanceId.Value).FirstOrDefault();
                 bool isMQLPermission = false;
                 if(objInstance != null && objInstance.IntegrationInstanceId >0)

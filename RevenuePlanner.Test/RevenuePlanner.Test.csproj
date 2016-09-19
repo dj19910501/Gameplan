@@ -120,6 +120,20 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\Integration.BDSService.AppConfiguration.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.ApplicationActivity.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Client.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.ClientDatabase.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Currency.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.CustomRestriction.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Menu.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.PasswordResetRequest.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Permission.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Role.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.SecurityQuestion.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.User.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.UserApplicationPermission.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.UserHierarchy.datasource" />
     <None Include="Properties\DataSources\RevenuePlanner.BDSService.AppConfiguration.datasource" />
     <None Include="Properties\DataSources\RevenuePlanner.BDSService.ApplicationActivity.datasource" />
     <None Include="Properties\DataSources\RevenuePlanner.BDSService.Client.datasource" />

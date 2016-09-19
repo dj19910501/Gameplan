@@ -18,12 +18,12 @@ namespace RevenuePlanner.Models
         public int Column_SetId { get; set; }
         public int CustomFieldId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<bool> IsTimeFrame { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
         public string MapTableName { get; set; }
         public Nullable<int> ValueOnEditable { get; set; }
         public string ValidationType { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Budget_ColumnSet Budget_ColumnSet { get; set; }
         public virtual CustomField CustomField { get; set; }

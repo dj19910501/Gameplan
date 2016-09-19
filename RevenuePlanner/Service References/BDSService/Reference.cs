@@ -15,459 +15,6 @@ namespace RevenuePlanner.BDSService {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Currency", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class Currency : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid ClientIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid CreatedByField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.DateTime CreatedDateField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CurrencyDetailField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CurrencySymbolField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ISOCurrencyCodeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IsDefaultField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IsDeletedField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private RevenuePlanner.BDSService.Currency.UserCurrencyRate UserCurrencyField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid ClientId {
-            get {
-                return this.ClientIdField;
-            }
-            set {
-                if ((this.ClientIdField.Equals(value) != true)) {
-                    this.ClientIdField = value;
-                    this.RaisePropertyChanged("ClientId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid CreatedBy {
-            get {
-                return this.CreatedByField;
-            }
-            set {
-                if ((this.CreatedByField.Equals(value) != true)) {
-                    this.CreatedByField = value;
-                    this.RaisePropertyChanged("CreatedBy");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.DateTime CreatedDate {
-            get {
-                return this.CreatedDateField;
-            }
-            set {
-                if ((this.CreatedDateField.Equals(value) != true)) {
-                    this.CreatedDateField = value;
-                    this.RaisePropertyChanged("CreatedDate");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string CurrencyDetail {
-            get {
-                return this.CurrencyDetailField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CurrencyDetailField, value) != true)) {
-                    this.CurrencyDetailField = value;
-                    this.RaisePropertyChanged("CurrencyDetail");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string CurrencySymbol {
-            get {
-                return this.CurrencySymbolField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CurrencySymbolField, value) != true)) {
-                    this.CurrencySymbolField = value;
-                    this.RaisePropertyChanged("CurrencySymbol");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ISOCurrencyCode {
-            get {
-                return this.ISOCurrencyCodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ISOCurrencyCodeField, value) != true)) {
-                    this.ISOCurrencyCodeField = value;
-                    this.RaisePropertyChanged("ISOCurrencyCode");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsDefault {
-            get {
-                return this.IsDefaultField;
-            }
-            set {
-                if ((this.IsDefaultField.Equals(value) != true)) {
-                    this.IsDefaultField = value;
-                    this.RaisePropertyChanged("IsDefault");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsDeleted {
-            get {
-                return this.IsDeletedField;
-            }
-            set {
-                if ((this.IsDeletedField.Equals(value) != true)) {
-                    this.IsDeletedField = value;
-                    this.RaisePropertyChanged("IsDeleted");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public RevenuePlanner.BDSService.Currency.UserCurrencyRate UserCurrency {
-            get {
-                return this.UserCurrencyField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.UserCurrencyField, value) != true)) {
-                    this.UserCurrencyField = value;
-                    this.RaisePropertyChanged("UserCurrency");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-        
-        [System.Diagnostics.DebuggerStepThroughAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-        [System.Runtime.Serialization.DataContractAttribute(Name="Currency.UserCurrencyRate", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-        [System.SerializableAttribute()]
-        public partial class UserCurrencyRate : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-            
-            [System.NonSerializedAttribute()]
-            private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Collections.Generic.List<RevenuePlanner.BDSService.Currency.CurrencyExchangeRate> CurrencyExchangeRateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string UserPreferredCurrencyCodeField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string UserPreferredCurrencySymbolField;
-            
-            public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-                get {
-                    return this.extensionDataField;
-                }
-                set {
-                    this.extensionDataField = value;
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Collections.Generic.List<RevenuePlanner.BDSService.Currency.CurrencyExchangeRate> CurrencyExchangeRate {
-                get {
-                    return this.CurrencyExchangeRateField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.CurrencyExchangeRateField, value) != true)) {
-                        this.CurrencyExchangeRateField = value;
-                        this.RaisePropertyChanged("CurrencyExchangeRate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string UserPreferredCurrencyCode {
-                get {
-                    return this.UserPreferredCurrencyCodeField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.UserPreferredCurrencyCodeField, value) != true)) {
-                        this.UserPreferredCurrencyCodeField = value;
-                        this.RaisePropertyChanged("UserPreferredCurrencyCode");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string UserPreferredCurrencySymbol {
-                get {
-                    return this.UserPreferredCurrencySymbolField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.UserPreferredCurrencySymbolField, value) != true)) {
-                        this.UserPreferredCurrencySymbolField = value;
-                        this.RaisePropertyChanged("UserPreferredCurrencySymbol");
-                    }
-                }
-            }
-            
-            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-            
-            protected void RaisePropertyChanged(string propertyName) {
-                System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-                if ((propertyChanged != null)) {
-                    propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-                }
-            }
-        }
-        
-        [System.Diagnostics.DebuggerStepThroughAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-        [System.Runtime.Serialization.DataContractAttribute(Name="Currency.CurrencyExchangeRate", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-        [System.SerializableAttribute()]
-        public partial class CurrencyExchangeRate : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-            
-            [System.NonSerializedAttribute()]
-            private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Guid ClientIdField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string ComponentField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Guid CreatedByField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.DateTime CreatedDateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string CurrencyCodeField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private string CurrencySymbolField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.DateTime EndDateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private double ExchangeRateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Nullable<System.Guid> LastModifiedByField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.Nullable<System.DateTime> LastModifiedDateField;
-            
-            [System.Runtime.Serialization.OptionalFieldAttribute()]
-            private System.DateTime StartDateField;
-            
-            public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-                get {
-                    return this.extensionDataField;
-                }
-                set {
-                    this.extensionDataField = value;
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Guid ClientId {
-                get {
-                    return this.ClientIdField;
-                }
-                set {
-                    if ((this.ClientIdField.Equals(value) != true)) {
-                        this.ClientIdField = value;
-                        this.RaisePropertyChanged("ClientId");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string Component {
-                get {
-                    return this.ComponentField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.ComponentField, value) != true)) {
-                        this.ComponentField = value;
-                        this.RaisePropertyChanged("Component");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Guid CreatedBy {
-                get {
-                    return this.CreatedByField;
-                }
-                set {
-                    if ((this.CreatedByField.Equals(value) != true)) {
-                        this.CreatedByField = value;
-                        this.RaisePropertyChanged("CreatedBy");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.DateTime CreatedDate {
-                get {
-                    return this.CreatedDateField;
-                }
-                set {
-                    if ((this.CreatedDateField.Equals(value) != true)) {
-                        this.CreatedDateField = value;
-                        this.RaisePropertyChanged("CreatedDate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string CurrencyCode {
-                get {
-                    return this.CurrencyCodeField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.CurrencyCodeField, value) != true)) {
-                        this.CurrencyCodeField = value;
-                        this.RaisePropertyChanged("CurrencyCode");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public string CurrencySymbol {
-                get {
-                    return this.CurrencySymbolField;
-                }
-                set {
-                    if ((object.ReferenceEquals(this.CurrencySymbolField, value) != true)) {
-                        this.CurrencySymbolField = value;
-                        this.RaisePropertyChanged("CurrencySymbol");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.DateTime EndDate {
-                get {
-                    return this.EndDateField;
-                }
-                set {
-                    if ((this.EndDateField.Equals(value) != true)) {
-                        this.EndDateField = value;
-                        this.RaisePropertyChanged("EndDate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public double ExchangeRate {
-                get {
-                    return this.ExchangeRateField;
-                }
-                set {
-                    if ((this.ExchangeRateField.Equals(value) != true)) {
-                        this.ExchangeRateField = value;
-                        this.RaisePropertyChanged("ExchangeRate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Nullable<System.Guid> LastModifiedBy {
-                get {
-                    return this.LastModifiedByField;
-                }
-                set {
-                    if ((this.LastModifiedByField.Equals(value) != true)) {
-                        this.LastModifiedByField = value;
-                        this.RaisePropertyChanged("LastModifiedBy");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.Nullable<System.DateTime> LastModifiedDate {
-                get {
-                    return this.LastModifiedDateField;
-                }
-                set {
-                    if ((this.LastModifiedDateField.Equals(value) != true)) {
-                        this.LastModifiedDateField = value;
-                        this.RaisePropertyChanged("LastModifiedDate");
-                    }
-                }
-            }
-            
-            [System.Runtime.Serialization.DataMemberAttribute()]
-            public System.DateTime StartDate {
-                get {
-                    return this.StartDateField;
-                }
-                set {
-                    if ((this.StartDateField.Equals(value) != true)) {
-                        this.StartDateField = value;
-                        this.RaisePropertyChanged("StartDate");
-                    }
-                }
-            }
-            
-            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-            
-            protected void RaisePropertyChanged(string propertyName) {
-                System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-                if ((propertyChanged != null)) {
-                    propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-                }
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="User", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
     [System.SerializableAttribute()]
     public partial class User : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
@@ -530,10 +77,16 @@ namespace RevenuePlanner.BDSService {
         private string LastNameField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int MIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Nullable<System.Guid> ManagerIdField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string ManagerNameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int NewMIDField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Nullable<System.Guid> NewManagerIdField;
@@ -816,6 +369,19 @@ namespace RevenuePlanner.BDSService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
+        public int MID {
+            get {
+                return this.MIDField;
+            }
+            set {
+                if ((this.MIDField.Equals(value) != true)) {
+                    this.MIDField = value;
+                    this.RaisePropertyChanged("MID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
         public System.Nullable<System.Guid> ManagerId {
             get {
                 return this.ManagerIdField;
@@ -837,6 +403,19 @@ namespace RevenuePlanner.BDSService {
                 if ((object.ReferenceEquals(this.ManagerNameField, value) != true)) {
                     this.ManagerNameField = value;
                     this.RaisePropertyChanged("ManagerName");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int NewMID {
+            get {
+                return this.NewMIDField;
+            }
+            set {
+                if ((this.NewMIDField.Equals(value) != true)) {
+                    this.NewMIDField = value;
+                    this.RaisePropertyChanged("NewMID");
                 }
             }
         }
@@ -1117,115 +696,6 @@ namespace RevenuePlanner.BDSService {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="AppConfiguration", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class AppConfiguration : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.Guid> ApplicationIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.Guid> ClientIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string Config_KeyField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string Config_ValueField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.DateTime PasswordModifiedDateField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.Guid> ApplicationId {
-            get {
-                return this.ApplicationIdField;
-            }
-            set {
-                if ((this.ApplicationIdField.Equals(value) != true)) {
-                    this.ApplicationIdField = value;
-                    this.RaisePropertyChanged("ApplicationId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.Guid> ClientId {
-            get {
-                return this.ClientIdField;
-            }
-            set {
-                if ((this.ClientIdField.Equals(value) != true)) {
-                    this.ClientIdField = value;
-                    this.RaisePropertyChanged("ClientId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Config_Key {
-            get {
-                return this.Config_KeyField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.Config_KeyField, value) != true)) {
-                    this.Config_KeyField = value;
-                    this.RaisePropertyChanged("Config_Key");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Config_Value {
-            get {
-                return this.Config_ValueField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.Config_ValueField, value) != true)) {
-                    this.Config_ValueField = value;
-                    this.RaisePropertyChanged("Config_Value");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.DateTime PasswordModifiedDate {
-            get {
-                return this.PasswordModifiedDateField;
-            }
-            set {
-                if ((this.PasswordModifiedDateField.Equals(value) != true)) {
-                    this.PasswordModifiedDateField = value;
-                    this.RaisePropertyChanged("PasswordModifiedDate");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="Client", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
     [System.SerializableAttribute()]
     public partial class Client : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
@@ -1255,6 +725,9 @@ namespace RevenuePlanner.BDSService {
         private System.Nullable<System.Guid> CreatedByField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CreatedByIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Nullable<System.DateTime> CreatedDateField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -1268,6 +741,9 @@ namespace RevenuePlanner.BDSService {
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Nullable<System.Guid> ModifiedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int ModifiedByIDField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Nullable<System.DateTime> ModifiedDateField;
@@ -1383,6 +859,19 @@ namespace RevenuePlanner.BDSService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CreatedByID {
+            get {
+                return this.CreatedByIDField;
+            }
+            set {
+                if ((this.CreatedByIDField.Equals(value) != true)) {
+                    this.CreatedByIDField = value;
+                    this.RaisePropertyChanged("CreatedByID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
         public System.Nullable<System.DateTime> CreatedDate {
             get {
                 return this.CreatedDateField;
@@ -1448,6 +937,19 @@ namespace RevenuePlanner.BDSService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
+        public int ModifiedByID {
+            get {
+                return this.ModifiedByIDField;
+            }
+            set {
+                if ((this.ModifiedByIDField.Equals(value) != true)) {
+                    this.ModifiedByIDField = value;
+                    this.RaisePropertyChanged("ModifiedByID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
         public System.Nullable<System.DateTime> ModifiedDate {
             get {
                 return this.ModifiedDateField;
@@ -1495,6 +997,1529 @@ namespace RevenuePlanner.BDSService {
                 if ((object.ReferenceEquals(this.ZipCodeField, value) != true)) {
                     this.ZipCodeField = value;
                     this.RaisePropertyChanged("ZipCode");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Role", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class Role : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> ClientIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CodeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ColorCodeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> CreatedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CreatedByIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.DateTime> CreatedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string DescriptionField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsDeletedField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> ModifiedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int ModifiedByIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.DateTime> ModifiedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid RoleIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string TitleField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CID {
+            get {
+                return this.CIDField;
+            }
+            set {
+                if ((this.CIDField.Equals(value) != true)) {
+                    this.CIDField = value;
+                    this.RaisePropertyChanged("CID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> ClientId {
+            get {
+                return this.ClientIdField;
+            }
+            set {
+                if ((this.ClientIdField.Equals(value) != true)) {
+                    this.ClientIdField = value;
+                    this.RaisePropertyChanged("ClientId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Code {
+            get {
+                return this.CodeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CodeField, value) != true)) {
+                    this.CodeField = value;
+                    this.RaisePropertyChanged("Code");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ColorCode {
+            get {
+                return this.ColorCodeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ColorCodeField, value) != true)) {
+                    this.ColorCodeField = value;
+                    this.RaisePropertyChanged("ColorCode");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> CreatedBy {
+            get {
+                return this.CreatedByField;
+            }
+            set {
+                if ((this.CreatedByField.Equals(value) != true)) {
+                    this.CreatedByField = value;
+                    this.RaisePropertyChanged("CreatedBy");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CreatedByID {
+            get {
+                return this.CreatedByIDField;
+            }
+            set {
+                if ((this.CreatedByIDField.Equals(value) != true)) {
+                    this.CreatedByIDField = value;
+                    this.RaisePropertyChanged("CreatedByID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.DateTime> CreatedDate {
+            get {
+                return this.CreatedDateField;
+            }
+            set {
+                if ((this.CreatedDateField.Equals(value) != true)) {
+                    this.CreatedDateField = value;
+                    this.RaisePropertyChanged("CreatedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Description {
+            get {
+                return this.DescriptionField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.DescriptionField, value) != true)) {
+                    this.DescriptionField = value;
+                    this.RaisePropertyChanged("Description");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsDeleted {
+            get {
+                return this.IsDeletedField;
+            }
+            set {
+                if ((this.IsDeletedField.Equals(value) != true)) {
+                    this.IsDeletedField = value;
+                    this.RaisePropertyChanged("IsDeleted");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> ModifiedBy {
+            get {
+                return this.ModifiedByField;
+            }
+            set {
+                if ((this.ModifiedByField.Equals(value) != true)) {
+                    this.ModifiedByField = value;
+                    this.RaisePropertyChanged("ModifiedBy");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int ModifiedByID {
+            get {
+                return this.ModifiedByIDField;
+            }
+            set {
+                if ((this.ModifiedByIDField.Equals(value) != true)) {
+                    this.ModifiedByIDField = value;
+                    this.RaisePropertyChanged("ModifiedByID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.DateTime> ModifiedDate {
+            get {
+                return this.ModifiedDateField;
+            }
+            set {
+                if ((this.ModifiedDateField.Equals(value) != true)) {
+                    this.ModifiedDateField = value;
+                    this.RaisePropertyChanged("ModifiedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid RoleId {
+            get {
+                return this.RoleIdField;
+            }
+            set {
+                if ((this.RoleIdField.Equals(value) != true)) {
+                    this.RoleIdField = value;
+                    this.RaisePropertyChanged("RoleId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Title {
+            get {
+                return this.TitleField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.TitleField, value) != true)) {
+                    this.TitleField = value;
+                    this.RaisePropertyChanged("Title");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="UserApplicationPermission", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class UserApplicationPermission : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int ApplicationActivityIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid CreatedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CreatedByIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime CreatedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int UIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid UserIdField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int ApplicationActivityId {
+            get {
+                return this.ApplicationActivityIdField;
+            }
+            set {
+                if ((this.ApplicationActivityIdField.Equals(value) != true)) {
+                    this.ApplicationActivityIdField = value;
+                    this.RaisePropertyChanged("ApplicationActivityId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid CreatedBy {
+            get {
+                return this.CreatedByField;
+            }
+            set {
+                if ((this.CreatedByField.Equals(value) != true)) {
+                    this.CreatedByField = value;
+                    this.RaisePropertyChanged("CreatedBy");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CreatedByID {
+            get {
+                return this.CreatedByIDField;
+            }
+            set {
+                if ((this.CreatedByIDField.Equals(value) != true)) {
+                    this.CreatedByIDField = value;
+                    this.RaisePropertyChanged("CreatedByID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime CreatedDate {
+            get {
+                return this.CreatedDateField;
+            }
+            set {
+                if ((this.CreatedDateField.Equals(value) != true)) {
+                    this.CreatedDateField = value;
+                    this.RaisePropertyChanged("CreatedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int UID {
+            get {
+                return this.UIDField;
+            }
+            set {
+                if ((this.UIDField.Equals(value) != true)) {
+                    this.UIDField = value;
+                    this.RaisePropertyChanged("UID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid UserId {
+            get {
+                return this.UserIdField;
+            }
+            set {
+                if ((this.UserIdField.Equals(value) != true)) {
+                    this.UserIdField = value;
+                    this.RaisePropertyChanged("UserId");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="CustomRestriction", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class CustomRestriction : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid CreatedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime CreatedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CustomFieldField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CustomFieldIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CustomRestrictionIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int PermissionField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int UIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid UserIdField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid CreatedBy {
+            get {
+                return this.CreatedByField;
+            }
+            set {
+                if ((this.CreatedByField.Equals(value) != true)) {
+                    this.CreatedByField = value;
+                    this.RaisePropertyChanged("CreatedBy");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime CreatedDate {
+            get {
+                return this.CreatedDateField;
+            }
+            set {
+                if ((this.CreatedDateField.Equals(value) != true)) {
+                    this.CreatedDateField = value;
+                    this.RaisePropertyChanged("CreatedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string CustomField {
+            get {
+                return this.CustomFieldField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CustomFieldField, value) != true)) {
+                    this.CustomFieldField = value;
+                    this.RaisePropertyChanged("CustomField");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string CustomFieldId {
+            get {
+                return this.CustomFieldIdField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CustomFieldIdField, value) != true)) {
+                    this.CustomFieldIdField = value;
+                    this.RaisePropertyChanged("CustomFieldId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CustomRestrictionId {
+            get {
+                return this.CustomRestrictionIdField;
+            }
+            set {
+                if ((this.CustomRestrictionIdField.Equals(value) != true)) {
+                    this.CustomRestrictionIdField = value;
+                    this.RaisePropertyChanged("CustomRestrictionId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Permission {
+            get {
+                return this.PermissionField;
+            }
+            set {
+                if ((this.PermissionField.Equals(value) != true)) {
+                    this.PermissionField = value;
+                    this.RaisePropertyChanged("Permission");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int UID {
+            get {
+                return this.UIDField;
+            }
+            set {
+                if ((this.UIDField.Equals(value) != true)) {
+                    this.UIDField = value;
+                    this.RaisePropertyChanged("UID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid UserId {
+            get {
+                return this.UserIdField;
+            }
+            set {
+                if ((this.UserIdField.Equals(value) != true)) {
+                    this.UserIdField = value;
+                    this.RaisePropertyChanged("UserId");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="UserHierarchy", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class UserHierarchy : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ColorCodeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string EmailField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string FirstNameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string JobTitleField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string LastNameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int MIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> ManagerIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string PhoneField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid RoleIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string RoleTitleField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int UIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid UserIdField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ColorCode {
+            get {
+                return this.ColorCodeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ColorCodeField, value) != true)) {
+                    this.ColorCodeField = value;
+                    this.RaisePropertyChanged("ColorCode");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Email {
+            get {
+                return this.EmailField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.EmailField, value) != true)) {
+                    this.EmailField = value;
+                    this.RaisePropertyChanged("Email");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string FirstName {
+            get {
+                return this.FirstNameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.FirstNameField, value) != true)) {
+                    this.FirstNameField = value;
+                    this.RaisePropertyChanged("FirstName");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string JobTitle {
+            get {
+                return this.JobTitleField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.JobTitleField, value) != true)) {
+                    this.JobTitleField = value;
+                    this.RaisePropertyChanged("JobTitle");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string LastName {
+            get {
+                return this.LastNameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.LastNameField, value) != true)) {
+                    this.LastNameField = value;
+                    this.RaisePropertyChanged("LastName");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int MID {
+            get {
+                return this.MIDField;
+            }
+            set {
+                if ((this.MIDField.Equals(value) != true)) {
+                    this.MIDField = value;
+                    this.RaisePropertyChanged("MID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> ManagerId {
+            get {
+                return this.ManagerIdField;
+            }
+            set {
+                if ((this.ManagerIdField.Equals(value) != true)) {
+                    this.ManagerIdField = value;
+                    this.RaisePropertyChanged("ManagerId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Phone {
+            get {
+                return this.PhoneField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.PhoneField, value) != true)) {
+                    this.PhoneField = value;
+                    this.RaisePropertyChanged("Phone");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid RoleId {
+            get {
+                return this.RoleIdField;
+            }
+            set {
+                if ((this.RoleIdField.Equals(value) != true)) {
+                    this.RoleIdField = value;
+                    this.RaisePropertyChanged("RoleId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string RoleTitle {
+            get {
+                return this.RoleTitleField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.RoleTitleField, value) != true)) {
+                    this.RoleTitleField = value;
+                    this.RaisePropertyChanged("RoleTitle");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int UID {
+            get {
+                return this.UIDField;
+            }
+            set {
+                if ((this.UIDField.Equals(value) != true)) {
+                    this.UIDField = value;
+                    this.RaisePropertyChanged("UID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid UserId {
+            get {
+                return this.UserIdField;
+            }
+            set {
+                if ((this.UserIdField.Equals(value) != true)) {
+                    this.UserIdField = value;
+                    this.RaisePropertyChanged("UserId");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ClientDatabase", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class ClientDatabase : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int ClientDatabaseIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid ClientIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ConnectionStringField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string DatabaseNameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private byte[] EncryptedConnectionStringField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CID {
+            get {
+                return this.CIDField;
+            }
+            set {
+                if ((this.CIDField.Equals(value) != true)) {
+                    this.CIDField = value;
+                    this.RaisePropertyChanged("CID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int ClientDatabaseID {
+            get {
+                return this.ClientDatabaseIDField;
+            }
+            set {
+                if ((this.ClientDatabaseIDField.Equals(value) != true)) {
+                    this.ClientDatabaseIDField = value;
+                    this.RaisePropertyChanged("ClientDatabaseID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid ClientID {
+            get {
+                return this.ClientIDField;
+            }
+            set {
+                if ((this.ClientIDField.Equals(value) != true)) {
+                    this.ClientIDField = value;
+                    this.RaisePropertyChanged("ClientID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ConnectionString {
+            get {
+                return this.ConnectionStringField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ConnectionStringField, value) != true)) {
+                    this.ConnectionStringField = value;
+                    this.RaisePropertyChanged("ConnectionString");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string DatabaseName {
+            get {
+                return this.DatabaseNameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.DatabaseNameField, value) != true)) {
+                    this.DatabaseNameField = value;
+                    this.RaisePropertyChanged("DatabaseName");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public byte[] EncryptedConnectionString {
+            get {
+                return this.EncryptedConnectionStringField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.EncryptedConnectionStringField, value) != true)) {
+                    this.EncryptedConnectionStringField = value;
+                    this.RaisePropertyChanged("EncryptedConnectionString");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Currency", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class Currency : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid ClientIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid CreatedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CreatedByIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime CreatedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CurrencyDetailField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CurrencySymbolField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ISOCurrencyCodeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsDefaultField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsDeletedField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private RevenuePlanner.BDSService.Currency.UserCurrencyRate UserCurrencyField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid ClientId {
+            get {
+                return this.ClientIdField;
+            }
+            set {
+                if ((this.ClientIdField.Equals(value) != true)) {
+                    this.ClientIdField = value;
+                    this.RaisePropertyChanged("ClientId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid CreatedBy {
+            get {
+                return this.CreatedByField;
+            }
+            set {
+                if ((this.CreatedByField.Equals(value) != true)) {
+                    this.CreatedByField = value;
+                    this.RaisePropertyChanged("CreatedBy");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CreatedByID {
+            get {
+                return this.CreatedByIDField;
+            }
+            set {
+                if ((this.CreatedByIDField.Equals(value) != true)) {
+                    this.CreatedByIDField = value;
+                    this.RaisePropertyChanged("CreatedByID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime CreatedDate {
+            get {
+                return this.CreatedDateField;
+            }
+            set {
+                if ((this.CreatedDateField.Equals(value) != true)) {
+                    this.CreatedDateField = value;
+                    this.RaisePropertyChanged("CreatedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string CurrencyDetail {
+            get {
+                return this.CurrencyDetailField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CurrencyDetailField, value) != true)) {
+                    this.CurrencyDetailField = value;
+                    this.RaisePropertyChanged("CurrencyDetail");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string CurrencySymbol {
+            get {
+                return this.CurrencySymbolField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CurrencySymbolField, value) != true)) {
+                    this.CurrencySymbolField = value;
+                    this.RaisePropertyChanged("CurrencySymbol");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ISOCurrencyCode {
+            get {
+                return this.ISOCurrencyCodeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ISOCurrencyCodeField, value) != true)) {
+                    this.ISOCurrencyCodeField = value;
+                    this.RaisePropertyChanged("ISOCurrencyCode");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsDefault {
+            get {
+                return this.IsDefaultField;
+            }
+            set {
+                if ((this.IsDefaultField.Equals(value) != true)) {
+                    this.IsDefaultField = value;
+                    this.RaisePropertyChanged("IsDefault");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsDeleted {
+            get {
+                return this.IsDeletedField;
+            }
+            set {
+                if ((this.IsDeletedField.Equals(value) != true)) {
+                    this.IsDeletedField = value;
+                    this.RaisePropertyChanged("IsDeleted");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public RevenuePlanner.BDSService.Currency.UserCurrencyRate UserCurrency {
+            get {
+                return this.UserCurrencyField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.UserCurrencyField, value) != true)) {
+                    this.UserCurrencyField = value;
+                    this.RaisePropertyChanged("UserCurrency");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+        
+        [System.Diagnostics.DebuggerStepThroughAttribute()]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+        [System.Runtime.Serialization.DataContractAttribute(Name="Currency.UserCurrencyRate", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+        [System.SerializableAttribute()]
+        public partial class UserCurrencyRate : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+            
+            [System.NonSerializedAttribute()]
+            private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Collections.Generic.List<RevenuePlanner.BDSService.Currency.CurrencyExchangeRate> CurrencyExchangeRateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string UserPreferredCurrencyCodeField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string UserPreferredCurrencySymbolField;
+            
+            public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+                get {
+                    return this.extensionDataField;
+                }
+                set {
+                    this.extensionDataField = value;
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Collections.Generic.List<RevenuePlanner.BDSService.Currency.CurrencyExchangeRate> CurrencyExchangeRate {
+                get {
+                    return this.CurrencyExchangeRateField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.CurrencyExchangeRateField, value) != true)) {
+                        this.CurrencyExchangeRateField = value;
+                        this.RaisePropertyChanged("CurrencyExchangeRate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string UserPreferredCurrencyCode {
+                get {
+                    return this.UserPreferredCurrencyCodeField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.UserPreferredCurrencyCodeField, value) != true)) {
+                        this.UserPreferredCurrencyCodeField = value;
+                        this.RaisePropertyChanged("UserPreferredCurrencyCode");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string UserPreferredCurrencySymbol {
+                get {
+                    return this.UserPreferredCurrencySymbolField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.UserPreferredCurrencySymbolField, value) != true)) {
+                        this.UserPreferredCurrencySymbolField = value;
+                        this.RaisePropertyChanged("UserPreferredCurrencySymbol");
+                    }
+                }
+            }
+            
+            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+            
+            protected void RaisePropertyChanged(string propertyName) {
+                System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+                if ((propertyChanged != null)) {
+                    propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+                }
+            }
+        }
+        
+        [System.Diagnostics.DebuggerStepThroughAttribute()]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+        [System.Runtime.Serialization.DataContractAttribute(Name="Currency.CurrencyExchangeRate", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+        [System.SerializableAttribute()]
+        public partial class CurrencyExchangeRate : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+            
+            [System.NonSerializedAttribute()]
+            private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private int CIDField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Guid ClientIdField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string ComponentField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Guid CreatedByField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private int CreatedByIDField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.DateTime CreatedDateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string CurrencyCodeField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private string CurrencySymbolField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.DateTime EndDateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private double ExchangeRateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Nullable<System.Guid> LastModifiedByField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private int LastModifiedByIDField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.Nullable<System.DateTime> LastModifiedDateField;
+            
+            [System.Runtime.Serialization.OptionalFieldAttribute()]
+            private System.DateTime StartDateField;
+            
+            public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+                get {
+                    return this.extensionDataField;
+                }
+                set {
+                    this.extensionDataField = value;
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public int CID {
+                get {
+                    return this.CIDField;
+                }
+                set {
+                    if ((this.CIDField.Equals(value) != true)) {
+                        this.CIDField = value;
+                        this.RaisePropertyChanged("CID");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Guid ClientId {
+                get {
+                    return this.ClientIdField;
+                }
+                set {
+                    if ((this.ClientIdField.Equals(value) != true)) {
+                        this.ClientIdField = value;
+                        this.RaisePropertyChanged("ClientId");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string Component {
+                get {
+                    return this.ComponentField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.ComponentField, value) != true)) {
+                        this.ComponentField = value;
+                        this.RaisePropertyChanged("Component");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Guid CreatedBy {
+                get {
+                    return this.CreatedByField;
+                }
+                set {
+                    if ((this.CreatedByField.Equals(value) != true)) {
+                        this.CreatedByField = value;
+                        this.RaisePropertyChanged("CreatedBy");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public int CreatedByID {
+                get {
+                    return this.CreatedByIDField;
+                }
+                set {
+                    if ((this.CreatedByIDField.Equals(value) != true)) {
+                        this.CreatedByIDField = value;
+                        this.RaisePropertyChanged("CreatedByID");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.DateTime CreatedDate {
+                get {
+                    return this.CreatedDateField;
+                }
+                set {
+                    if ((this.CreatedDateField.Equals(value) != true)) {
+                        this.CreatedDateField = value;
+                        this.RaisePropertyChanged("CreatedDate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string CurrencyCode {
+                get {
+                    return this.CurrencyCodeField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.CurrencyCodeField, value) != true)) {
+                        this.CurrencyCodeField = value;
+                        this.RaisePropertyChanged("CurrencyCode");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public string CurrencySymbol {
+                get {
+                    return this.CurrencySymbolField;
+                }
+                set {
+                    if ((object.ReferenceEquals(this.CurrencySymbolField, value) != true)) {
+                        this.CurrencySymbolField = value;
+                        this.RaisePropertyChanged("CurrencySymbol");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.DateTime EndDate {
+                get {
+                    return this.EndDateField;
+                }
+                set {
+                    if ((this.EndDateField.Equals(value) != true)) {
+                        this.EndDateField = value;
+                        this.RaisePropertyChanged("EndDate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public double ExchangeRate {
+                get {
+                    return this.ExchangeRateField;
+                }
+                set {
+                    if ((this.ExchangeRateField.Equals(value) != true)) {
+                        this.ExchangeRateField = value;
+                        this.RaisePropertyChanged("ExchangeRate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Nullable<System.Guid> LastModifiedBy {
+                get {
+                    return this.LastModifiedByField;
+                }
+                set {
+                    if ((this.LastModifiedByField.Equals(value) != true)) {
+                        this.LastModifiedByField = value;
+                        this.RaisePropertyChanged("LastModifiedBy");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public int LastModifiedByID {
+                get {
+                    return this.LastModifiedByIDField;
+                }
+                set {
+                    if ((this.LastModifiedByIDField.Equals(value) != true)) {
+                        this.LastModifiedByIDField = value;
+                        this.RaisePropertyChanged("LastModifiedByID");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.Nullable<System.DateTime> LastModifiedDate {
+                get {
+                    return this.LastModifiedDateField;
+                }
+                set {
+                    if ((this.LastModifiedDateField.Equals(value) != true)) {
+                        this.LastModifiedDateField = value;
+                        this.RaisePropertyChanged("LastModifiedDate");
+                    }
+                }
+            }
+            
+            [System.Runtime.Serialization.DataMemberAttribute()]
+            public System.DateTime StartDate {
+                get {
+                    return this.StartDateField;
+                }
+                set {
+                    if ((this.StartDateField.Equals(value) != true)) {
+                        this.StartDateField = value;
+                        this.RaisePropertyChanged("StartDate");
+                    }
+                }
+            }
+            
+            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+            
+            protected void RaisePropertyChanged(string propertyName) {
+                System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+                if ((propertyChanged != null)) {
+                    propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+                }
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="AppConfiguration", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class AppConfiguration : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> ApplicationIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CIDField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> ClientIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string Config_KeyField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string Config_ValueField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime PasswordModifiedDateField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> ApplicationId {
+            get {
+                return this.ApplicationIdField;
+            }
+            set {
+                if ((this.ApplicationIdField.Equals(value) != true)) {
+                    this.ApplicationIdField = value;
+                    this.RaisePropertyChanged("ApplicationId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CID {
+            get {
+                return this.CIDField;
+            }
+            set {
+                if ((this.CIDField.Equals(value) != true)) {
+                    this.CIDField = value;
+                    this.RaisePropertyChanged("CID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> ClientId {
+            get {
+                return this.ClientIdField;
+            }
+            set {
+                if ((this.ClientIdField.Equals(value) != true)) {
+                    this.ClientIdField = value;
+                    this.RaisePropertyChanged("ClientId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Config_Key {
+            get {
+                return this.Config_KeyField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.Config_KeyField, value) != true)) {
+                    this.Config_KeyField = value;
+                    this.RaisePropertyChanged("Config_Key");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Config_Value {
+            get {
+                return this.Config_ValueField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.Config_ValueField, value) != true)) {
+                    this.Config_ValueField = value;
+                    this.RaisePropertyChanged("Config_Value");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime PasswordModifiedDate {
+            get {
+                return this.PasswordModifiedDateField;
+            }
+            set {
+                if ((this.PasswordModifiedDateField.Equals(value) != true)) {
+                    this.PasswordModifiedDateField = value;
+                    this.RaisePropertyChanged("PasswordModifiedDate");
                 }
             }
         }
@@ -1777,211 +2802,6 @@ namespace RevenuePlanner.BDSService {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Role", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class Role : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.Guid> ClientIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CodeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ColorCodeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.Guid> CreatedByField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.DateTime> CreatedDateField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string DescriptionField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IsDeletedField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.Guid> ModifiedByField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.DateTime> ModifiedDateField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid RoleIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string TitleField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.Guid> ClientId {
-            get {
-                return this.ClientIdField;
-            }
-            set {
-                if ((this.ClientIdField.Equals(value) != true)) {
-                    this.ClientIdField = value;
-                    this.RaisePropertyChanged("ClientId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Code {
-            get {
-                return this.CodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CodeField, value) != true)) {
-                    this.CodeField = value;
-                    this.RaisePropertyChanged("Code");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ColorCode {
-            get {
-                return this.ColorCodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ColorCodeField, value) != true)) {
-                    this.ColorCodeField = value;
-                    this.RaisePropertyChanged("ColorCode");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.Guid> CreatedBy {
-            get {
-                return this.CreatedByField;
-            }
-            set {
-                if ((this.CreatedByField.Equals(value) != true)) {
-                    this.CreatedByField = value;
-                    this.RaisePropertyChanged("CreatedBy");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.DateTime> CreatedDate {
-            get {
-                return this.CreatedDateField;
-            }
-            set {
-                if ((this.CreatedDateField.Equals(value) != true)) {
-                    this.CreatedDateField = value;
-                    this.RaisePropertyChanged("CreatedDate");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Description {
-            get {
-                return this.DescriptionField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.DescriptionField, value) != true)) {
-                    this.DescriptionField = value;
-                    this.RaisePropertyChanged("Description");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsDeleted {
-            get {
-                return this.IsDeletedField;
-            }
-            set {
-                if ((this.IsDeletedField.Equals(value) != true)) {
-                    this.IsDeletedField = value;
-                    this.RaisePropertyChanged("IsDeleted");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.Guid> ModifiedBy {
-            get {
-                return this.ModifiedByField;
-            }
-            set {
-                if ((this.ModifiedByField.Equals(value) != true)) {
-                    this.ModifiedByField = value;
-                    this.RaisePropertyChanged("ModifiedBy");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.DateTime> ModifiedDate {
-            get {
-                return this.ModifiedDateField;
-            }
-            set {
-                if ((this.ModifiedDateField.Equals(value) != true)) {
-                    this.ModifiedDateField = value;
-                    this.RaisePropertyChanged("ModifiedDate");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid RoleId {
-            get {
-                return this.RoleIdField;
-            }
-            set {
-                if ((this.RoleIdField.Equals(value) != true)) {
-                    this.RoleIdField = value;
-                    this.RaisePropertyChanged("RoleId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Title {
-            get {
-                return this.TitleField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.TitleField, value) != true)) {
-                    this.TitleField = value;
-                    this.RaisePropertyChanged("Title");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="PasswordResetRequest", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
     [System.SerializableAttribute()]
     public partial class PasswordResetRequest : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
@@ -2000,6 +2820,9 @@ namespace RevenuePlanner.BDSService {
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Guid PasswordResetRequestIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int UIDField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Guid UserIdField;
@@ -2062,6 +2885,19 @@ namespace RevenuePlanner.BDSService {
                 if ((this.PasswordResetRequestIdField.Equals(value) != true)) {
                     this.PasswordResetRequestIdField = value;
                     this.RaisePropertyChanged("PasswordResetRequestId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int UID {
+            get {
+                return this.UIDField;
+            }
+            set {
+                if ((this.UIDField.Equals(value) != true)) {
+                    this.UIDField = value;
+                    this.RaisePropertyChanged("UID");
                 }
             }
         }
@@ -2261,538 +3097,6 @@ namespace RevenuePlanner.BDSService {
                 if ((this.ParentIdField.Equals(value) != true)) {
                     this.ParentIdField = value;
                     this.RaisePropertyChanged("ParentId");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="UserApplicationPermission", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class UserApplicationPermission : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int ApplicationActivityIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid CreatedByField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.DateTime CreatedDateField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid UserIdField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int ApplicationActivityId {
-            get {
-                return this.ApplicationActivityIdField;
-            }
-            set {
-                if ((this.ApplicationActivityIdField.Equals(value) != true)) {
-                    this.ApplicationActivityIdField = value;
-                    this.RaisePropertyChanged("ApplicationActivityId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid CreatedBy {
-            get {
-                return this.CreatedByField;
-            }
-            set {
-                if ((this.CreatedByField.Equals(value) != true)) {
-                    this.CreatedByField = value;
-                    this.RaisePropertyChanged("CreatedBy");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.DateTime CreatedDate {
-            get {
-                return this.CreatedDateField;
-            }
-            set {
-                if ((this.CreatedDateField.Equals(value) != true)) {
-                    this.CreatedDateField = value;
-                    this.RaisePropertyChanged("CreatedDate");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid UserId {
-            get {
-                return this.UserIdField;
-            }
-            set {
-                if ((this.UserIdField.Equals(value) != true)) {
-                    this.UserIdField = value;
-                    this.RaisePropertyChanged("UserId");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="CustomRestriction", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class CustomRestriction : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid CreatedByField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.DateTime CreatedDateField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CustomFieldField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CustomFieldIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int CustomRestrictionIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int PermissionField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid UserIdField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid CreatedBy {
-            get {
-                return this.CreatedByField;
-            }
-            set {
-                if ((this.CreatedByField.Equals(value) != true)) {
-                    this.CreatedByField = value;
-                    this.RaisePropertyChanged("CreatedBy");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.DateTime CreatedDate {
-            get {
-                return this.CreatedDateField;
-            }
-            set {
-                if ((this.CreatedDateField.Equals(value) != true)) {
-                    this.CreatedDateField = value;
-                    this.RaisePropertyChanged("CreatedDate");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string CustomField {
-            get {
-                return this.CustomFieldField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CustomFieldField, value) != true)) {
-                    this.CustomFieldField = value;
-                    this.RaisePropertyChanged("CustomField");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string CustomFieldId {
-            get {
-                return this.CustomFieldIdField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CustomFieldIdField, value) != true)) {
-                    this.CustomFieldIdField = value;
-                    this.RaisePropertyChanged("CustomFieldId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int CustomRestrictionId {
-            get {
-                return this.CustomRestrictionIdField;
-            }
-            set {
-                if ((this.CustomRestrictionIdField.Equals(value) != true)) {
-                    this.CustomRestrictionIdField = value;
-                    this.RaisePropertyChanged("CustomRestrictionId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int Permission {
-            get {
-                return this.PermissionField;
-            }
-            set {
-                if ((this.PermissionField.Equals(value) != true)) {
-                    this.PermissionField = value;
-                    this.RaisePropertyChanged("Permission");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid UserId {
-            get {
-                return this.UserIdField;
-            }
-            set {
-                if ((this.UserIdField.Equals(value) != true)) {
-                    this.UserIdField = value;
-                    this.RaisePropertyChanged("UserId");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="UserHierarchy", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class UserHierarchy : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ColorCodeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string EmailField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string FirstNameField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string JobTitleField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string LastNameField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.Guid> ManagerIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string PhoneField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid RoleIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string RoleTitleField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid UserIdField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ColorCode {
-            get {
-                return this.ColorCodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ColorCodeField, value) != true)) {
-                    this.ColorCodeField = value;
-                    this.RaisePropertyChanged("ColorCode");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Email {
-            get {
-                return this.EmailField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.EmailField, value) != true)) {
-                    this.EmailField = value;
-                    this.RaisePropertyChanged("Email");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string FirstName {
-            get {
-                return this.FirstNameField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.FirstNameField, value) != true)) {
-                    this.FirstNameField = value;
-                    this.RaisePropertyChanged("FirstName");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string JobTitle {
-            get {
-                return this.JobTitleField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.JobTitleField, value) != true)) {
-                    this.JobTitleField = value;
-                    this.RaisePropertyChanged("JobTitle");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string LastName {
-            get {
-                return this.LastNameField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.LastNameField, value) != true)) {
-                    this.LastNameField = value;
-                    this.RaisePropertyChanged("LastName");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.Guid> ManagerId {
-            get {
-                return this.ManagerIdField;
-            }
-            set {
-                if ((this.ManagerIdField.Equals(value) != true)) {
-                    this.ManagerIdField = value;
-                    this.RaisePropertyChanged("ManagerId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Phone {
-            get {
-                return this.PhoneField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.PhoneField, value) != true)) {
-                    this.PhoneField = value;
-                    this.RaisePropertyChanged("Phone");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid RoleId {
-            get {
-                return this.RoleIdField;
-            }
-            set {
-                if ((this.RoleIdField.Equals(value) != true)) {
-                    this.RoleIdField = value;
-                    this.RaisePropertyChanged("RoleId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string RoleTitle {
-            get {
-                return this.RoleTitleField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.RoleTitleField, value) != true)) {
-                    this.RoleTitleField = value;
-                    this.RaisePropertyChanged("RoleTitle");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid UserId {
-            get {
-                return this.UserIdField;
-            }
-            set {
-                if ((this.UserIdField.Equals(value) != true)) {
-                    this.UserIdField = value;
-                    this.RaisePropertyChanged("UserId");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ClientDatabase", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class ClientDatabase : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int ClientDatabaseIDField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid ClientIDField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ConnectionStringField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string DatabaseNameField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private byte[] EncryptedConnectionStringField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int ClientDatabaseID {
-            get {
-                return this.ClientDatabaseIDField;
-            }
-            set {
-                if ((this.ClientDatabaseIDField.Equals(value) != true)) {
-                    this.ClientDatabaseIDField = value;
-                    this.RaisePropertyChanged("ClientDatabaseID");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid ClientID {
-            get {
-                return this.ClientIDField;
-            }
-            set {
-                if ((this.ClientIDField.Equals(value) != true)) {
-                    this.ClientIDField = value;
-                    this.RaisePropertyChanged("ClientID");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ConnectionString {
-            get {
-                return this.ConnectionStringField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ConnectionStringField, value) != true)) {
-                    this.ConnectionStringField = value;
-                    this.RaisePropertyChanged("ConnectionString");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string DatabaseName {
-            get {
-                return this.DatabaseNameField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.DatabaseNameField, value) != true)) {
-                    this.DatabaseNameField = value;
-                    this.RaisePropertyChanged("DatabaseName");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public byte[] EncryptedConnectionString {
-            get {
-                return this.EncryptedConnectionStringField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.EncryptedConnectionStringField, value) != true)) {
-                    this.EncryptedConnectionStringField = value;
-                    this.RaisePropertyChanged("EncryptedConnectionString");
                 }
             }
         }
@@ -3016,11 +3320,337 @@ namespace RevenuePlanner.BDSService {
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="BDSService.IBDSService")]
     public interface IBDSService {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate", ReplyAction="http://tempuri.org/IBDSService/GetCurrencyExchangeRateResponse")]
-        RevenuePlanner.BDSService.Currency GetCurrencyExchangeRate(System.Guid clientId, System.Guid UserId);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/ValidateUserByClientEx", ReplyAction="http://tempuri.org/IBDSServiceEx/ValidateUserByClientExResponse")]
+        RevenuePlanner.BDSService.User ValidateUserByClientEx(System.Guid applicationId, string userEmail, string userPassword, int clientId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate", ReplyAction="http://tempuri.org/IBDSService/GetCurrencyExchangeRateResponse")]
-        System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateAsync(System.Guid clientId, System.Guid UserId);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/ValidateUserByClientEx", ReplyAction="http://tempuri.org/IBDSServiceEx/ValidateUserByClientExResponse")]
+        System.Threading.Tasks.Task<RevenuePlanner.BDSService.User> ValidateUserByClientExAsync(System.Guid applicationId, string userEmail, string userPassword, int clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetTeamMemberDetailsEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetTeamMemberDetailsExResponse")]
+        RevenuePlanner.BDSService.User GetTeamMemberDetailsEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetTeamMemberDetailsEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetTeamMemberDetailsExResponse")]
+        System.Threading.Tasks.Task<RevenuePlanner.BDSService.User> GetTeamMemberDetailsExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetTeamMemberListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetTeamMemberListExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetTeamMemberListEx(int clientId, System.Guid applicationId, int userId, bool isSystemAdmin);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetTeamMemberListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetTeamMemberListExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetTeamMemberListExAsync(int clientId, System.Guid applicationId, int userId, bool isSystemAdmin);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetClientByIdEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetClientByIdExResponse")]
+        RevenuePlanner.BDSService.Client GetClientByIdEx(int clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetClientByIdEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetClientByIdExResponse")]
+        System.Threading.Tasks.Task<RevenuePlanner.BDSService.Client> GetClientByIdExAsync(int clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberDetailsEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberDetailsExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberDetailsEx(System.Collections.Generic.List<int> userIdList, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberDetailsEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberDetailsExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberDetailsExAsync(System.Collections.Generic.List<int> userIdList, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/ChangePasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/ChangePasswordExResponse")]
+        int ChangePasswordEx(int userId, string newPassword, string currPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/ChangePasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/ChangePasswordExResponse")]
+        System.Threading.Tasks.Task<int> ChangePasswordExAsync(int userId, string newPassword, string currPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_ChangePasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_ChangePasswordExResponse")]
+        string _ChangePasswordEx(int userId, string newPassword, string currPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_ChangePasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_ChangePasswordExResponse")]
+        System.Threading.Tasks.Task<string> _ChangePasswordExAsync(int userId, string newPassword, string currPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordExResponse")]
+        bool CheckCurrentPasswordEx(int userId, string currentPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CheckCurrentPasswordExResponse")]
+        System.Threading.Tasks.Task<bool> CheckCurrentPasswordExAsync(int userId, string currentPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteUserExResponse")]
+        int DeleteUserEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteUserExResponse")]
+        System.Threading.Tasks.Task<int> DeleteUserExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserDetailsByIdEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserDetailsByIdExResponse")]
+        RevenuePlanner.BDSService.User GetUserDetailsByIdEx(int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserDetailsByIdEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserDetailsByIdExResponse")]
+        System.Threading.Tasks.Task<RevenuePlanner.BDSService.User> GetUserDetailsByIdExAsync(int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateUserExResponse")]
+        int CreateUserEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateUserExResponse")]
+        System.Threading.Tasks.Task<int> CreateUserExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_CreateUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_CreateUserExResponse")]
+        int _CreateUserEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_CreateUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_CreateUserExResponse")]
+        System.Threading.Tasks.Task<int> _CreateUserExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateUserBasicEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateUserBasicExResponse")]
+        int CreateUserBasicEx(RevenuePlanner.BDSService.User user, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateUserBasicEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateUserBasicExResponse")]
+        System.Threading.Tasks.Task<int> CreateUserBasicExAsync(RevenuePlanner.BDSService.User user, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateUserWithPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateUserWithPermissionExResponse")]
+        int CreateUserWithPermissionEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateUserWithPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateUserWithPermissionExResponse")]
+        System.Threading.Tasks.Task<int> CreateUserWithPermissionExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_CreateUserWithPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_CreateUserWithPermissionExResponse")]
+        string _CreateUserWithPermissionEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_CreateUserWithPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_CreateUserWithPermissionExResponse")]
+        System.Threading.Tasks.Task<string> _CreateUserWithPermissionExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateUserExResponse")]
+        int UpdateUserEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int modifiedBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateUserExResponse")]
+        System.Threading.Tasks.Task<int> UpdateUserExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int modifiedBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateUserDataEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateUserDataExResponse")]
+        int UpdateUserDataEx(RevenuePlanner.BDSService.User user, int modifiedBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateUserDataEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateUserDataExResponse")]
+        System.Threading.Tasks.Task<int> UpdateUserDataExAsync(RevenuePlanner.BDSService.User user, int modifiedBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateClientDataEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateClientDataExResponse")]
+        int UpdateClientDataEx(RevenuePlanner.BDSService.Client client, int modifiedBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateClientDataEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateClientDataExResponse")]
+        System.Threading.Tasks.Task<int> UpdateClientDataExAsync(RevenuePlanner.BDSService.Client client, int modifiedBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserRoleEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserRoleExResponse")]
+        string GetUserRoleEx(System.Guid id, System.Guid applicationId, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserRoleEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserRoleExResponse")]
+        System.Threading.Tasks.Task<string> GetUserRoleExAsync(System.Guid id, System.Guid applicationId, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetClientNameEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetClientNameExResponse")]
+        string GetClientNameEx(int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetClientNameEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetClientNameExResponse")]
+        System.Threading.Tasks.Task<string> GetClientNameExAsync(int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/ResetPasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/ResetPasswordExResponse")]
+        int ResetPasswordEx(int userId, string SingleHash_NewPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/ResetPasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/ResetPasswordExResponse")]
+        System.Threading.Tasks.Task<int> ResetPasswordExAsync(int userId, string SingleHash_NewPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_ResetPasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_ResetPasswordExResponse")]
+        string _ResetPasswordEx(int userId, string SingleHash_NewPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/_ResetPasswordEx", ReplyAction="http://tempuri.org/IBDSServiceEx/_ResetPasswordExResponse")]
+        System.Threading.Tasks.Task<string> _ResetPasswordExAsync(int userId, string SingleHash_NewPassword);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateLastLoginDateEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateLastLoginDateExResponse")]
+        int UpdateLastLoginDateEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateLastLoginDateEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateLastLoginDateExResponse")]
+        System.Threading.Tasks.Task<int> UpdateLastLoginDateExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserListByClientIdEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserListByClientIdExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListByClientIdEx(int clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserListByClientIdEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserListByClientIdExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListByClientIdExAsync(int clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserActivityPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserActivityPermissionExResponse")]
+        System.Collections.Generic.List<string> GetUserActivityPermissionEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserActivityPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserActivityPermissionExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<string>> GetUserActivityPermissionExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetAllRoleListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetAllRoleListExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.Role> GetAllRoleListEx(System.Guid applicationid, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetAllRoleListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetAllRoleListExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Role>> GetAllRoleListExAsync(System.Guid applicationid, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DuplicateRoleCheckEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DuplicateRoleCheckExResponse")]
+        int DuplicateRoleCheckEx(RevenuePlanner.BDSService.Role role, System.Guid applicationid, int ClientID);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DuplicateRoleCheckEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DuplicateRoleCheckExResponse")]
+        System.Threading.Tasks.Task<int> DuplicateRoleCheckExAsync(RevenuePlanner.BDSService.Role role, System.Guid applicationid, int ClientID);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteRoleAndReassignEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteRoleAndReassignExResponse")]
+        int DeleteRoleAndReassignEx(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, int modifiedBy, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteRoleAndReassignEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteRoleAndReassignExResponse")]
+        System.Threading.Tasks.Task<int> DeleteRoleAndReassignExAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, int modifiedBy, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateRoleEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateRoleExResponse")]
+        int CreateRoleEx(string roledesc, string permissionID, string colorcode, System.Guid applicationid, int createdby, System.Guid roleid, string delpermission, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateRoleEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateRoleExResponse")]
+        System.Threading.Tasks.Task<int> CreateRoleExAsync(string roledesc, string permissionID, string colorcode, System.Guid applicationid, int createdby, System.Guid roleid, string delpermission, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateRoleWithoutPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateRoleWithoutPermissionExResponse")]
+        System.Guid CreateRoleWithoutPermissionEx(string roledesc, string colorcode, System.Guid applicationid, int createdby, System.Guid roleid, string delpermission, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreateRoleWithoutPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreateRoleWithoutPermissionExResponse")]
+        System.Threading.Tasks.Task<System.Guid> CreateRoleWithoutPermissionExAsync(string roledesc, string colorcode, System.Guid applicationid, int createdby, System.Guid roleid, string delpermission, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CopyRoleEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CopyRoleExResponse")]
+        int CopyRoleEx(string copyroledesc, System.Guid originalid, System.Guid applicationid, int createdby, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CopyRoleEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CopyRoleExResponse")]
+        System.Threading.Tasks.Task<int> CopyRoleExAsync(string copyroledesc, System.Guid originalid, System.Guid applicationid, int createdby, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserActivityEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserActivityExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.UserApplicationPermission> GetUserActivityEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserActivityEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserActivityExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.UserApplicationPermission>> GetUserActivityExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserCustomRestrictionListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserCustomRestrictionListExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.CustomRestriction> GetUserCustomRestrictionListEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserCustomRestrictionListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserCustomRestrictionListExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.CustomRestriction>> GetUserCustomRestrictionListExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/AddUserActivityPermissionsEx", ReplyAction="http://tempuri.org/IBDSServiceEx/AddUserActivityPermissionsExResponse")]
+        int AddUserActivityPermissionsEx(int userId, int CreatorId, System.Collections.Generic.List<string> permissions, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/AddUserActivityPermissionsEx", ReplyAction="http://tempuri.org/IBDSServiceEx/AddUserActivityPermissionsExResponse")]
+        System.Threading.Tasks.Task<int> AddUserActivityPermissionsExAsync(int userId, int CreatorId, System.Collections.Generic.List<string> permissions, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteUserActivityPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteUserActivityPermissionExResponse")]
+        int DeleteUserActivityPermissionEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteUserActivityPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteUserActivityPermissionExResponse")]
+        System.Threading.Tasks.Task<int> DeleteUserActivityPermissionExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteUserCustomrestrictionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteUserCustomrestrictionExResponse")]
+        int DeleteUserCustomrestrictionEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteUserCustomrestrictionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteUserCustomrestrictionExResponse")]
+        System.Threading.Tasks.Task<int> DeleteUserCustomrestrictionExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/ResetToRoleDefaultEx", ReplyAction="http://tempuri.org/IBDSServiceEx/ResetToRoleDefaultExResponse")]
+        int ResetToRoleDefaultEx(int userId, int CretorId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/ResetToRoleDefaultEx", ReplyAction="http://tempuri.org/IBDSServiceEx/ResetToRoleDefaultExResponse")]
+        System.Threading.Tasks.Task<int> ResetToRoleDefaultExAsync(int userId, int CretorId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CopyRoleWithoutPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CopyRoleWithoutPermissionExResponse")]
+        System.Guid CopyRoleWithoutPermissionEx(string copyroledesc, System.Guid originalid, System.Guid applicationid, int createdby, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CopyRoleWithoutPermissionEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CopyRoleWithoutPermissionExResponse")]
+        System.Threading.Tasks.Task<System.Guid> CopyRoleWithoutPermissionExAsync(string copyroledesc, System.Guid originalid, System.Guid applicationid, int createdby, int ClientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetRoleIdFromUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetRoleIdFromUserExResponse")]
+        System.Guid GetRoleIdFromUserEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetRoleIdFromUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetRoleIdFromUserExResponse")]
+        System.Threading.Tasks.Task<System.Guid> GetRoleIdFromUserExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserHierarchyEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserHierarchyExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.UserHierarchy> GetUserHierarchyEx(int clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserHierarchyEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserHierarchyExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.UserHierarchy>> GetUserHierarchyExAsync(int clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetManagerListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetManagerListExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetManagerListEx(int clientId, System.Guid applicationId, int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetManagerListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetManagerListExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListExAsync(int clientId, System.Guid applicationId, int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetOtherApplicationUsersEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetOtherApplicationUsersExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetOtherApplicationUsersEx(int clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetOtherApplicationUsersEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetOtherApplicationUsersExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetOtherApplicationUsersExAsync(int clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/AssignUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/AssignUserExResponse")]
+        int AssignUserEx(int UserId, System.Guid RoleId, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/AssignUserEx", ReplyAction="http://tempuri.org/IBDSServiceEx/AssignUserExResponse")]
+        System.Threading.Tasks.Task<int> AssignUserExAsync(int UserId, System.Guid RoleId, System.Guid applicationId, int createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserListWithCustomRestrictionsEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserListWithCustomRestrictionsExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictionsEx(int userId, int clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetUserListWithCustomRestrictionsEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetUserListWithCustomRestrictionsExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListWithCustomRestrictionsExAsync(int userId, int clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberNameEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberNameExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberNameEx(System.Collections.Generic.List<int> userIdList);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberNameEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberNameExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberNameExAsync(System.Collections.Generic.List<int> userIdList);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberNameByApplicationIdEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberNameByApplicationIdExRespon" +
+            "se")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberNameByApplicationIdEx(System.Collections.Generic.List<int> userIdList, System.Guid applicationid);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberNameByApplicationIdEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetMultipleTeamMemberNameByApplicationIdExRespon" +
+            "se")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberNameByApplicationIdExAsync(System.Collections.Generic.List<int> userIdList, System.Guid applicationid);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetDatabaseListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetDatabaseListExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.ClientDatabase> GetDatabaseListEx(int userid);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetDatabaseListEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetDatabaseListExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.ClientDatabase>> GetDatabaseListExAsync(int userid);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/SetDefaultRightsForDababaseEx", ReplyAction="http://tempuri.org/IBDSServiceEx/SetDefaultRightsForDababaseExResponse")]
+        int SetDefaultRightsForDababaseEx(int userId, int clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/SetDefaultRightsForDababaseEx", ReplyAction="http://tempuri.org/IBDSServiceEx/SetDefaultRightsForDababaseExResponse")]
+        System.Threading.Tasks.Task<int> SetDefaultRightsForDababaseExAsync(int userId, int clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateLicenseAgreedEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateLicenseAgreedExResponse")]
+        int UpdateLicenseAgreedEx(int userId, System.Guid applicationId, bool IsAgreed);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/UpdateLicenseAgreedEx", ReplyAction="http://tempuri.org/IBDSServiceEx/UpdateLicenseAgreedExResponse")]
+        System.Threading.Tasks.Task<int> UpdateLicenseAgreedExAsync(int userId, System.Guid applicationId, bool IsAgreed);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetLicenseAgreedEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetLicenseAgreedExResponse")]
+        int GetLicenseAgreedEx(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetLicenseAgreedEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetLicenseAgreedExResponse")]
+        System.Threading.Tasks.Task<int> GetLicenseAgreedExAsync(int userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreatePasswordHistoryEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreatePasswordHistoryExResponse")]
+        string CreatePasswordHistoryEx(int UserId, string Password, int CreatedBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/CreatePasswordHistoryEx", ReplyAction="http://tempuri.org/IBDSServiceEx/CreatePasswordHistoryExResponse")]
+        System.Threading.Tasks.Task<string> CreatePasswordHistoryExAsync(int UserId, string Password, int CreatedBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetClientCurrencyEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetClientCurrencyExResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.Currency> GetClientCurrencyEx(int clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetClientCurrencyEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetClientCurrencyExResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Currency>> GetClientCurrencyExAsync(int clientId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteExchangeRateEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteExchangeRateExResponse")]
+        bool DeleteExchangeRateEx(int clientId, string code);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/DeleteExchangeRateEx", ReplyAction="http://tempuri.org/IBDSServiceEx/DeleteExchangeRateExResponse")]
+        System.Threading.Tasks.Task<bool> DeleteExchangeRateExAsync(int clientId, string code);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/SaveClientCurrencyEx", ReplyAction="http://tempuri.org/IBDSServiceEx/SaveClientCurrencyExResponse")]
+        bool SaveClientCurrencyEx(System.Collections.Generic.List<string> currencyIds, int clientId, int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/SaveClientCurrencyEx", ReplyAction="http://tempuri.org/IBDSServiceEx/SaveClientCurrencyExResponse")]
+        System.Threading.Tasks.Task<bool> SaveClientCurrencyExAsync(System.Collections.Generic.List<string> currencyIds, int clientId, int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetCurrencyExchangeRateEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetCurrencyExchangeRateExResponse")]
+        RevenuePlanner.BDSService.Currency GetCurrencyExchangeRateEx(int clientId, int UserId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSServiceEx/GetCurrencyExchangeRateEx", ReplyAction="http://tempuri.org/IBDSServiceEx/GetCurrencyExchangeRateExResponse")]
+        System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateExAsync(int clientId, int UserId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/ValidateUser", ReplyAction="http://tempuri.org/IBDSService/ValidateUserResponse")]
         RevenuePlanner.BDSService.User ValidateUser(System.Guid applicationId, string userEmail, string userPassword);
@@ -3531,6 +4161,12 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/SaveExchangeRateList", ReplyAction="http://tempuri.org/IBDSService/SaveExchangeRateListResponse")]
         System.Threading.Tasks.Task<bool> SaveExchangeRateListAsync(System.Collections.Generic.List<RevenuePlanner.BDSService.ExchangeRate_Log> lstExchnageRate);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate", ReplyAction="http://tempuri.org/IBDSService/GetCurrencyExchangeRateResponse")]
+        RevenuePlanner.BDSService.Currency GetCurrencyExchangeRate(System.Guid clientId, System.Guid UserId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetCurrencyExchangeRate", ReplyAction="http://tempuri.org/IBDSService/GetCurrencyExchangeRateResponse")]
+        System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateAsync(System.Guid clientId, System.Guid UserId);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -3560,12 +4196,444 @@ namespace RevenuePlanner.BDSService {
                 base(binding, remoteAddress) {
         }
         
-        public RevenuePlanner.BDSService.Currency GetCurrencyExchangeRate(System.Guid clientId, System.Guid UserId) {
-            return base.Channel.GetCurrencyExchangeRate(clientId, UserId);
+        public RevenuePlanner.BDSService.User ValidateUserByClientEx(System.Guid applicationId, string userEmail, string userPassword, int clientId) {
+            return base.Channel.ValidateUserByClientEx(applicationId, userEmail, userPassword, clientId);
         }
         
-        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateAsync(System.Guid clientId, System.Guid UserId) {
-            return base.Channel.GetCurrencyExchangeRateAsync(clientId, UserId);
+        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.User> ValidateUserByClientExAsync(System.Guid applicationId, string userEmail, string userPassword, int clientId) {
+            return base.Channel.ValidateUserByClientExAsync(applicationId, userEmail, userPassword, clientId);
+        }
+        
+        public RevenuePlanner.BDSService.User GetTeamMemberDetailsEx(int userId, System.Guid applicationId) {
+            return base.Channel.GetTeamMemberDetailsEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.User> GetTeamMemberDetailsExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.GetTeamMemberDetailsExAsync(userId, applicationId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetTeamMemberListEx(int clientId, System.Guid applicationId, int userId, bool isSystemAdmin) {
+            return base.Channel.GetTeamMemberListEx(clientId, applicationId, userId, isSystemAdmin);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetTeamMemberListExAsync(int clientId, System.Guid applicationId, int userId, bool isSystemAdmin) {
+            return base.Channel.GetTeamMemberListExAsync(clientId, applicationId, userId, isSystemAdmin);
+        }
+        
+        public RevenuePlanner.BDSService.Client GetClientByIdEx(int clientId) {
+            return base.Channel.GetClientByIdEx(clientId);
+        }
+        
+        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.Client> GetClientByIdExAsync(int clientId) {
+            return base.Channel.GetClientByIdExAsync(clientId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberDetailsEx(System.Collections.Generic.List<int> userIdList, System.Guid applicationId) {
+            return base.Channel.GetMultipleTeamMemberDetailsEx(userIdList, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberDetailsExAsync(System.Collections.Generic.List<int> userIdList, System.Guid applicationId) {
+            return base.Channel.GetMultipleTeamMemberDetailsExAsync(userIdList, applicationId);
+        }
+        
+        public int ChangePasswordEx(int userId, string newPassword, string currPassword) {
+            return base.Channel.ChangePasswordEx(userId, newPassword, currPassword);
+        }
+        
+        public System.Threading.Tasks.Task<int> ChangePasswordExAsync(int userId, string newPassword, string currPassword) {
+            return base.Channel.ChangePasswordExAsync(userId, newPassword, currPassword);
+        }
+        
+        public string _ChangePasswordEx(int userId, string newPassword, string currPassword) {
+            return base.Channel._ChangePasswordEx(userId, newPassword, currPassword);
+        }
+        
+        public System.Threading.Tasks.Task<string> _ChangePasswordExAsync(int userId, string newPassword, string currPassword) {
+            return base.Channel._ChangePasswordExAsync(userId, newPassword, currPassword);
+        }
+        
+        public bool CheckCurrentPasswordEx(int userId, string currentPassword) {
+            return base.Channel.CheckCurrentPasswordEx(userId, currentPassword);
+        }
+        
+        public System.Threading.Tasks.Task<bool> CheckCurrentPasswordExAsync(int userId, string currentPassword) {
+            return base.Channel.CheckCurrentPasswordExAsync(userId, currentPassword);
+        }
+        
+        public int DeleteUserEx(int userId, System.Guid applicationId) {
+            return base.Channel.DeleteUserEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<int> DeleteUserExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.DeleteUserExAsync(userId, applicationId);
+        }
+        
+        public RevenuePlanner.BDSService.User GetUserDetailsByIdEx(int userId) {
+            return base.Channel.GetUserDetailsByIdEx(userId);
+        }
+        
+        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.User> GetUserDetailsByIdExAsync(int userId) {
+            return base.Channel.GetUserDetailsByIdExAsync(userId);
+        }
+        
+        public int CreateUserEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy) {
+            return base.Channel.CreateUserEx(user, applicationId, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> CreateUserExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy) {
+            return base.Channel.CreateUserExAsync(user, applicationId, createdBy);
+        }
+        
+        public int _CreateUserEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy) {
+            return base.Channel._CreateUserEx(user, applicationId, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> _CreateUserExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy) {
+            return base.Channel._CreateUserExAsync(user, applicationId, createdBy);
+        }
+        
+        public int CreateUserBasicEx(RevenuePlanner.BDSService.User user, int createdBy) {
+            return base.Channel.CreateUserBasicEx(user, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> CreateUserBasicExAsync(RevenuePlanner.BDSService.User user, int createdBy) {
+            return base.Channel.CreateUserBasicExAsync(user, createdBy);
+        }
+        
+        public int CreateUserWithPermissionEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy) {
+            return base.Channel.CreateUserWithPermissionEx(user, applicationId, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> CreateUserWithPermissionExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy) {
+            return base.Channel.CreateUserWithPermissionExAsync(user, applicationId, createdBy);
+        }
+        
+        public string _CreateUserWithPermissionEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy) {
+            return base.Channel._CreateUserWithPermissionEx(user, applicationId, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<string> _CreateUserWithPermissionExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int createdBy) {
+            return base.Channel._CreateUserWithPermissionExAsync(user, applicationId, createdBy);
+        }
+        
+        public int UpdateUserEx(RevenuePlanner.BDSService.User user, System.Guid applicationId, int modifiedBy) {
+            return base.Channel.UpdateUserEx(user, applicationId, modifiedBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> UpdateUserExAsync(RevenuePlanner.BDSService.User user, System.Guid applicationId, int modifiedBy) {
+            return base.Channel.UpdateUserExAsync(user, applicationId, modifiedBy);
+        }
+        
+        public int UpdateUserDataEx(RevenuePlanner.BDSService.User user, int modifiedBy) {
+            return base.Channel.UpdateUserDataEx(user, modifiedBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> UpdateUserDataExAsync(RevenuePlanner.BDSService.User user, int modifiedBy) {
+            return base.Channel.UpdateUserDataExAsync(user, modifiedBy);
+        }
+        
+        public int UpdateClientDataEx(RevenuePlanner.BDSService.Client client, int modifiedBy) {
+            return base.Channel.UpdateClientDataEx(client, modifiedBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> UpdateClientDataExAsync(RevenuePlanner.BDSService.Client client, int modifiedBy) {
+            return base.Channel.UpdateClientDataExAsync(client, modifiedBy);
+        }
+        
+        public string GetUserRoleEx(System.Guid id, System.Guid applicationId, int ClientId) {
+            return base.Channel.GetUserRoleEx(id, applicationId, ClientId);
+        }
+        
+        public System.Threading.Tasks.Task<string> GetUserRoleExAsync(System.Guid id, System.Guid applicationId, int ClientId) {
+            return base.Channel.GetUserRoleExAsync(id, applicationId, ClientId);
+        }
+        
+        public string GetClientNameEx(int userId) {
+            return base.Channel.GetClientNameEx(userId);
+        }
+        
+        public System.Threading.Tasks.Task<string> GetClientNameExAsync(int userId) {
+            return base.Channel.GetClientNameExAsync(userId);
+        }
+        
+        public int ResetPasswordEx(int userId, string SingleHash_NewPassword) {
+            return base.Channel.ResetPasswordEx(userId, SingleHash_NewPassword);
+        }
+        
+        public System.Threading.Tasks.Task<int> ResetPasswordExAsync(int userId, string SingleHash_NewPassword) {
+            return base.Channel.ResetPasswordExAsync(userId, SingleHash_NewPassword);
+        }
+        
+        public string _ResetPasswordEx(int userId, string SingleHash_NewPassword) {
+            return base.Channel._ResetPasswordEx(userId, SingleHash_NewPassword);
+        }
+        
+        public System.Threading.Tasks.Task<string> _ResetPasswordExAsync(int userId, string SingleHash_NewPassword) {
+            return base.Channel._ResetPasswordExAsync(userId, SingleHash_NewPassword);
+        }
+        
+        public int UpdateLastLoginDateEx(int userId, System.Guid applicationId) {
+            return base.Channel.UpdateLastLoginDateEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<int> UpdateLastLoginDateExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.UpdateLastLoginDateExAsync(userId, applicationId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListByClientIdEx(int clientId) {
+            return base.Channel.GetUserListByClientIdEx(clientId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListByClientIdExAsync(int clientId) {
+            return base.Channel.GetUserListByClientIdExAsync(clientId);
+        }
+        
+        public System.Collections.Generic.List<string> GetUserActivityPermissionEx(int userId, System.Guid applicationId) {
+            return base.Channel.GetUserActivityPermissionEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<string>> GetUserActivityPermissionExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.GetUserActivityPermissionExAsync(userId, applicationId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.Role> GetAllRoleListEx(System.Guid applicationid, int ClientId) {
+            return base.Channel.GetAllRoleListEx(applicationid, ClientId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Role>> GetAllRoleListExAsync(System.Guid applicationid, int ClientId) {
+            return base.Channel.GetAllRoleListExAsync(applicationid, ClientId);
+        }
+        
+        public int DuplicateRoleCheckEx(RevenuePlanner.BDSService.Role role, System.Guid applicationid, int ClientID) {
+            return base.Channel.DuplicateRoleCheckEx(role, applicationid, ClientID);
+        }
+        
+        public System.Threading.Tasks.Task<int> DuplicateRoleCheckExAsync(RevenuePlanner.BDSService.Role role, System.Guid applicationid, int ClientID) {
+            return base.Channel.DuplicateRoleCheckExAsync(role, applicationid, ClientID);
+        }
+        
+        public int DeleteRoleAndReassignEx(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, int modifiedBy, int ClientId) {
+            return base.Channel.DeleteRoleAndReassignEx(delroleid, reassignroleid, applicationid, modifiedBy, ClientId);
+        }
+        
+        public System.Threading.Tasks.Task<int> DeleteRoleAndReassignExAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, int modifiedBy, int ClientId) {
+            return base.Channel.DeleteRoleAndReassignExAsync(delroleid, reassignroleid, applicationid, modifiedBy, ClientId);
+        }
+        
+        public int CreateRoleEx(string roledesc, string permissionID, string colorcode, System.Guid applicationid, int createdby, System.Guid roleid, string delpermission, int ClientId) {
+            return base.Channel.CreateRoleEx(roledesc, permissionID, colorcode, applicationid, createdby, roleid, delpermission, ClientId);
+        }
+        
+        public System.Threading.Tasks.Task<int> CreateRoleExAsync(string roledesc, string permissionID, string colorcode, System.Guid applicationid, int createdby, System.Guid roleid, string delpermission, int ClientId) {
+            return base.Channel.CreateRoleExAsync(roledesc, permissionID, colorcode, applicationid, createdby, roleid, delpermission, ClientId);
+        }
+        
+        public System.Guid CreateRoleWithoutPermissionEx(string roledesc, string colorcode, System.Guid applicationid, int createdby, System.Guid roleid, string delpermission, int ClientId) {
+            return base.Channel.CreateRoleWithoutPermissionEx(roledesc, colorcode, applicationid, createdby, roleid, delpermission, ClientId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Guid> CreateRoleWithoutPermissionExAsync(string roledesc, string colorcode, System.Guid applicationid, int createdby, System.Guid roleid, string delpermission, int ClientId) {
+            return base.Channel.CreateRoleWithoutPermissionExAsync(roledesc, colorcode, applicationid, createdby, roleid, delpermission, ClientId);
+        }
+        
+        public int CopyRoleEx(string copyroledesc, System.Guid originalid, System.Guid applicationid, int createdby, int ClientId) {
+            return base.Channel.CopyRoleEx(copyroledesc, originalid, applicationid, createdby, ClientId);
+        }
+        
+        public System.Threading.Tasks.Task<int> CopyRoleExAsync(string copyroledesc, System.Guid originalid, System.Guid applicationid, int createdby, int ClientId) {
+            return base.Channel.CopyRoleExAsync(copyroledesc, originalid, applicationid, createdby, ClientId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.UserApplicationPermission> GetUserActivityEx(int userId, System.Guid applicationId) {
+            return base.Channel.GetUserActivityEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.UserApplicationPermission>> GetUserActivityExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.GetUserActivityExAsync(userId, applicationId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.CustomRestriction> GetUserCustomRestrictionListEx(int userId, System.Guid applicationId) {
+            return base.Channel.GetUserCustomRestrictionListEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.CustomRestriction>> GetUserCustomRestrictionListExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.GetUserCustomRestrictionListExAsync(userId, applicationId);
+        }
+        
+        public int AddUserActivityPermissionsEx(int userId, int CreatorId, System.Collections.Generic.List<string> permissions, System.Guid applicationId) {
+            return base.Channel.AddUserActivityPermissionsEx(userId, CreatorId, permissions, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<int> AddUserActivityPermissionsExAsync(int userId, int CreatorId, System.Collections.Generic.List<string> permissions, System.Guid applicationId) {
+            return base.Channel.AddUserActivityPermissionsExAsync(userId, CreatorId, permissions, applicationId);
+        }
+        
+        public int DeleteUserActivityPermissionEx(int userId, System.Guid applicationId) {
+            return base.Channel.DeleteUserActivityPermissionEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<int> DeleteUserActivityPermissionExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.DeleteUserActivityPermissionExAsync(userId, applicationId);
+        }
+        
+        public int DeleteUserCustomrestrictionEx(int userId, System.Guid applicationId) {
+            return base.Channel.DeleteUserCustomrestrictionEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<int> DeleteUserCustomrestrictionExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.DeleteUserCustomrestrictionExAsync(userId, applicationId);
+        }
+        
+        public int ResetToRoleDefaultEx(int userId, int CretorId, System.Guid applicationId) {
+            return base.Channel.ResetToRoleDefaultEx(userId, CretorId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<int> ResetToRoleDefaultExAsync(int userId, int CretorId, System.Guid applicationId) {
+            return base.Channel.ResetToRoleDefaultExAsync(userId, CretorId, applicationId);
+        }
+        
+        public System.Guid CopyRoleWithoutPermissionEx(string copyroledesc, System.Guid originalid, System.Guid applicationid, int createdby, int ClientId) {
+            return base.Channel.CopyRoleWithoutPermissionEx(copyroledesc, originalid, applicationid, createdby, ClientId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Guid> CopyRoleWithoutPermissionExAsync(string copyroledesc, System.Guid originalid, System.Guid applicationid, int createdby, int ClientId) {
+            return base.Channel.CopyRoleWithoutPermissionExAsync(copyroledesc, originalid, applicationid, createdby, ClientId);
+        }
+        
+        public System.Guid GetRoleIdFromUserEx(int userId, System.Guid applicationId) {
+            return base.Channel.GetRoleIdFromUserEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Guid> GetRoleIdFromUserExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.GetRoleIdFromUserExAsync(userId, applicationId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.UserHierarchy> GetUserHierarchyEx(int clientId, System.Guid applicationId) {
+            return base.Channel.GetUserHierarchyEx(clientId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.UserHierarchy>> GetUserHierarchyExAsync(int clientId, System.Guid applicationId) {
+            return base.Channel.GetUserHierarchyExAsync(clientId, applicationId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetManagerListEx(int clientId, System.Guid applicationId, int userId) {
+            return base.Channel.GetManagerListEx(clientId, applicationId, userId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListExAsync(int clientId, System.Guid applicationId, int userId) {
+            return base.Channel.GetManagerListExAsync(clientId, applicationId, userId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetOtherApplicationUsersEx(int clientId, System.Guid applicationId) {
+            return base.Channel.GetOtherApplicationUsersEx(clientId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetOtherApplicationUsersExAsync(int clientId, System.Guid applicationId) {
+            return base.Channel.GetOtherApplicationUsersExAsync(clientId, applicationId);
+        }
+        
+        public int AssignUserEx(int UserId, System.Guid RoleId, System.Guid applicationId, int createdBy) {
+            return base.Channel.AssignUserEx(UserId, RoleId, applicationId, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> AssignUserExAsync(int UserId, System.Guid RoleId, System.Guid applicationId, int createdBy) {
+            return base.Channel.AssignUserExAsync(UserId, RoleId, applicationId, createdBy);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListWithCustomRestrictionsEx(int userId, int clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds) {
+            return base.Channel.GetUserListWithCustomRestrictionsEx(userId, clientId, applicationId, customRestrictionFieldIds);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListWithCustomRestrictionsExAsync(int userId, int clientId, System.Guid applicationId, System.Collections.Generic.Dictionary<string, string> customRestrictionFieldIds) {
+            return base.Channel.GetUserListWithCustomRestrictionsExAsync(userId, clientId, applicationId, customRestrictionFieldIds);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberNameEx(System.Collections.Generic.List<int> userIdList) {
+            return base.Channel.GetMultipleTeamMemberNameEx(userIdList);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberNameExAsync(System.Collections.Generic.List<int> userIdList) {
+            return base.Channel.GetMultipleTeamMemberNameExAsync(userIdList);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberNameByApplicationIdEx(System.Collections.Generic.List<int> userIdList, System.Guid applicationid) {
+            return base.Channel.GetMultipleTeamMemberNameByApplicationIdEx(userIdList, applicationid);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberNameByApplicationIdExAsync(System.Collections.Generic.List<int> userIdList, System.Guid applicationid) {
+            return base.Channel.GetMultipleTeamMemberNameByApplicationIdExAsync(userIdList, applicationid);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.ClientDatabase> GetDatabaseListEx(int userid) {
+            return base.Channel.GetDatabaseListEx(userid);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.ClientDatabase>> GetDatabaseListExAsync(int userid) {
+            return base.Channel.GetDatabaseListExAsync(userid);
+        }
+        
+        public int SetDefaultRightsForDababaseEx(int userId, int clientId) {
+            return base.Channel.SetDefaultRightsForDababaseEx(userId, clientId);
+        }
+        
+        public System.Threading.Tasks.Task<int> SetDefaultRightsForDababaseExAsync(int userId, int clientId) {
+            return base.Channel.SetDefaultRightsForDababaseExAsync(userId, clientId);
+        }
+        
+        public int UpdateLicenseAgreedEx(int userId, System.Guid applicationId, bool IsAgreed) {
+            return base.Channel.UpdateLicenseAgreedEx(userId, applicationId, IsAgreed);
+        }
+        
+        public System.Threading.Tasks.Task<int> UpdateLicenseAgreedExAsync(int userId, System.Guid applicationId, bool IsAgreed) {
+            return base.Channel.UpdateLicenseAgreedExAsync(userId, applicationId, IsAgreed);
+        }
+        
+        public int GetLicenseAgreedEx(int userId, System.Guid applicationId) {
+            return base.Channel.GetLicenseAgreedEx(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<int> GetLicenseAgreedExAsync(int userId, System.Guid applicationId) {
+            return base.Channel.GetLicenseAgreedExAsync(userId, applicationId);
+        }
+        
+        public string CreatePasswordHistoryEx(int UserId, string Password, int CreatedBy) {
+            return base.Channel.CreatePasswordHistoryEx(UserId, Password, CreatedBy);
+        }
+        
+        public System.Threading.Tasks.Task<string> CreatePasswordHistoryExAsync(int UserId, string Password, int CreatedBy) {
+            return base.Channel.CreatePasswordHistoryExAsync(UserId, Password, CreatedBy);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.Currency> GetClientCurrencyEx(int clientId) {
+            return base.Channel.GetClientCurrencyEx(clientId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Currency>> GetClientCurrencyExAsync(int clientId) {
+            return base.Channel.GetClientCurrencyExAsync(clientId);
+        }
+        
+        public bool DeleteExchangeRateEx(int clientId, string code) {
+            return base.Channel.DeleteExchangeRateEx(clientId, code);
+        }
+        
+        public System.Threading.Tasks.Task<bool> DeleteExchangeRateExAsync(int clientId, string code) {
+            return base.Channel.DeleteExchangeRateExAsync(clientId, code);
+        }
+        
+        public bool SaveClientCurrencyEx(System.Collections.Generic.List<string> currencyIds, int clientId, int userId) {
+            return base.Channel.SaveClientCurrencyEx(currencyIds, clientId, userId);
+        }
+        
+        public System.Threading.Tasks.Task<bool> SaveClientCurrencyExAsync(System.Collections.Generic.List<string> currencyIds, int clientId, int userId) {
+            return base.Channel.SaveClientCurrencyExAsync(currencyIds, clientId, userId);
+        }
+        
+        public RevenuePlanner.BDSService.Currency GetCurrencyExchangeRateEx(int clientId, int UserId) {
+            return base.Channel.GetCurrencyExchangeRateEx(clientId, UserId);
+        }
+        
+        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateExAsync(int clientId, int UserId) {
+            return base.Channel.GetCurrencyExchangeRateExAsync(clientId, UserId);
         }
         
         public RevenuePlanner.BDSService.User ValidateUser(System.Guid applicationId, string userEmail, string userPassword) {
@@ -4246,6 +5314,14 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<bool> SaveExchangeRateListAsync(System.Collections.Generic.List<RevenuePlanner.BDSService.ExchangeRate_Log> lstExchnageRate) {
             return base.Channel.SaveExchangeRateListAsync(lstExchnageRate);
+        }
+        
+        public RevenuePlanner.BDSService.Currency GetCurrencyExchangeRate(System.Guid clientId, System.Guid UserId) {
+            return base.Channel.GetCurrencyExchangeRate(clientId, UserId);
+        }
+        
+        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.Currency> GetCurrencyExchangeRateAsync(System.Guid clientId, System.Guid UserId) {
+            return base.Channel.GetCurrencyExchangeRateAsync(clientId, UserId);
         }
     }
 }

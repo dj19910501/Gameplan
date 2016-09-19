@@ -30,7 +30,7 @@ namespace RevenuePlanner.Test.Integration
 
         private static int _integrationInstanceId = 15;
         private static EntityType _entityType = EntityType.IntegrationInstance;
-        private static Guid _userId = Guid.Parse("14D7D588-CF4D-46BE-B4ED-A74063B67D66");
+        private static int _userId = 9999; //Guid.Parse("14D7D588-CF4D-46BE-B4ED-A74063B67D66");
         private static Guid _applicationId = Guid.Parse("1C10D4B9-7931-4A7C-99E9-A158CE158951");
         private static int _integrationInstanceLogId = 0;
 

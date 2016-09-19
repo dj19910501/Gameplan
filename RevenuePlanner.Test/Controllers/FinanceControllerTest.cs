@@ -1092,7 +1092,7 @@ namespace RevenuePlanner.Test.Controllers
             string mainTimeFrame = "Invalid";
             string BudgetDetailName = "Budget Test";
             string ParentId = "0";
-            string OwnerId = Sessions.User.UserId.ToString(); //Changes by komal for #2243 on 16-06-16 as owner is editable in finance grid now.
+            int OwnerId = Sessions.User.ID; //Changes by komal for #2243 on 16-06-16 as owner is editable in finance grid now.
             //// Call UpdateBudgetDetail method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetDetail(budgetId, BudgetDetailId, ParentId, mainTimeFrame, "", OwnerId, BudgetDetailName) as PartialViewResult;
@@ -1338,7 +1338,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
 
-            var result = objFinanceController.Delete(Guid.Empty, 0, null) as JsonResult;
+            var result = objFinanceController.Delete(0, 0, null) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value  result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
            
@@ -1361,7 +1361,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
 
-            var result = objFinanceController.GetuserRecord(null) as JsonResult;
+            var result = objFinanceController.GetuserRecord(0) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value  result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);            
         }

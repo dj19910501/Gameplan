@@ -155,7 +155,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
-                string url = ApiUrl + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                string url = ApiUrl + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.ID + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
                 string result = string.Empty;
                 try
                 {
@@ -234,7 +234,7 @@ namespace RevenuePlanner.Controllers
             ////Start Added by Mitesh Vaishnav for PL ticket #846
             Sessions.ReportPlanIds = new List<int>();
             string published = Convert.ToString(Enums.PlanStatus.Published);
-            List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == published && plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == published && plan.Model.ClientId == Sessions.User.CID).ToList();
 
             // Get Plan Id if Session Plan id not exist : Added By Bhavesh : Report Code ereview
             //string published = Convert.ToString(Enums.PlanStatus.Published);
@@ -257,12 +257,12 @@ namespace RevenuePlanner.Controllers
             var Label = Enums.FilterLabel.Plan.ToString();
             var Yearlabel = Enums.FilterLabel.Year.ToString();
             var FilterName = Sessions.FilterPresetName;
-            //var SetOFLastViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
+            //var SetOFLastViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.ID).ToList();
             //Added By komal Rawal for #1959 to handle last viewed data in session
             var SetOFLastViews = new List<Plan_UserSavedViews>();
             if (Common.PlanUserSavedViews == null)
             {
-                Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.UserId).ToList();
+                Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.ID).ToList();
 
             }
             if (Sessions.PlanUserSavedViews == null)
@@ -282,8 +282,8 @@ namespace RevenuePlanner.Controllers
                 }
             }
             //End
-            var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.UserId).ToList();
-            var SetofLastYearsSelected = SetOFLastViews.Where(listview => listview.FilterName == Yearlabel && listview.Userid == Sessions.User.UserId).ToList();
+            var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.ID).ToList();
+            var SetofLastYearsSelected = SetOFLastViews.Where(listview => listview.FilterName == Yearlabel && listview.Userid == Sessions.User.ID).ToList();
             var FinalSetOfPlanSelected = "";
             var FinalSetOfYearsSelected = "";
             if (FilterName != null && FilterName != "")
@@ -389,7 +389,7 @@ namespace RevenuePlanner.Controllers
             string customFieldType = Convert.ToString(Enums.CustomFieldType.DropDownList);
             int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).FirstOrDefault().CustomFieldTypeId;
 
-            lstCustomFields = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId &&
+            lstCustomFields = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.CID &&
                 customfield.EntityType == tactic &&
                 //customfield.IsRequired == true && // Comment due to ticket #1652
                 customfield.CustomFieldTypeId == customFieldTypeId &&
@@ -465,7 +465,7 @@ namespace RevenuePlanner.Controllers
             // Common.GetReportStartEndDate(selectedYear, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
 
             var DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
-                && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.IsActive == true).ToList();
+                && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.CID && plan.IsActive == true).ToList();
             var uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
             // Modified By Nishant Sheth 
             // Desc #1842 :: as per code review changes
@@ -549,7 +549,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
             //End Added by Mitesh Vaishnav for PL ticket #846
 
-            ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.UserId.ToString());// Add By Nishant Sheth // #2262 : display menu for report's dashboard
+            ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID.ToString());// Add By Nishant Sheth // #2262 : display menu for report's dashboard
 
             var UserMeasureAppCode = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).Any();
             string ReportDBConnString = string.Empty;
@@ -612,7 +612,7 @@ namespace RevenuePlanner.Controllers
             {
                 //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
                 List<int> lstPlanIds = new List<int>();
-                List<string> lstOwnerIds = new List<string>();
+                List<int> lstOwnerIds = new List<int>();
                 List<int> lstTactictypeIds = new List<int>();
                 if (arrCustomFieldFilter.Count() > 0)
                 {
@@ -652,8 +652,8 @@ namespace RevenuePlanner.Controllers
                 //Added By Komal Rawal
                 if (OwnerIDs != string.Empty)
                 {
-                    string[] arrOwnerIds = OwnerIDs.Split(',');
-                    lstOwnerIds = arrOwnerIds.ToList();
+                    string [] arrOwnerIds = OwnerIDs.Split(',');
+                    lstOwnerIds = arrOwnerIds.ToList().Select(a => Convert.ToInt32(a)).ToList();
 
                     if (lstOwnerIds.Count > 0)
                     {
@@ -794,7 +794,7 @@ namespace RevenuePlanner.Controllers
             //// Getting current year's all published plan for all custom fields of clientid of director.
             List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
             List<int> planIds = new List<int>();
-            List<Guid> ownerIds = new List<Guid>();
+            List<int> ownerIds = new List<int>();
             List<int> TactictypeIds = new List<int>();
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
@@ -825,7 +825,7 @@ namespace RevenuePlanner.Controllers
             //Added by Komal Rawal
             if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
             {
-                ownerIds = Sessions.ReportOwnerIds.Select(owner => new Guid(owner)).ToList();
+                ownerIds = Sessions.ReportOwnerIds.Select(a => a).ToList();
                 tacticList = tacticList.Where(tactic => ownerIds.Contains(tactic.CreatedBy)
                                                               ).ToList();
             }
@@ -839,13 +839,13 @@ namespace RevenuePlanner.Controllers
             //    // Desc :: #1839 code review points - Tactic list is different 
             //    // Desc :: To Reslove owner filter issue
             //    var Label = Enums.FilterLabel.Plan.ToString();
-            //    //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
-            //    var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
+            //    //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();
+            //    var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
             //    /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
             //    //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
             //    //if (planselectedowner == null)
             //    //{
-            //    //    tacticList = tacticList.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).ToList();
+            //    //    tacticList = tacticList.Where(tactic => tactic.CreatedBy == Sessions.User.ID).ToList();
             //    //}
             //    // End By Nishant sheth
 
@@ -1374,7 +1374,7 @@ namespace RevenuePlanner.Controllers
             if (ParentLabel == Common.RevenuePlans)
             {
                 string year = selectOption;
-                var plans = db.Plans.Where(plan => plan.Model.ClientId.Equals(Sessions.User.ClientId) && plan.IsDeleted.Equals(false) && plan.Status == PublishedPlan && Sessions.ReportPlanIds.Contains(plan.PlanId)).ToList();
+                var plans = db.Plans.Where(plan => plan.Model.ClientId.Equals(Sessions.User.CID) && plan.IsDeleted.Equals(false) && plan.Status == PublishedPlan && Sessions.ReportPlanIds.Contains(plan.PlanId)).ToList();
                 if (selectOption == Enums.UpcomingActivities.thisquarter.ToString())
                 {
                     year = currentYear;
@@ -1769,9 +1769,9 @@ namespace RevenuePlanner.Controllers
                 #region "Set Campaign,Program,Tactic list to ViewBag"
 
                 //// Get Campaign list for dropdown
-                List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId
+                List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID
                     && (ListYear.Contains(t.StartDate.Year.ToString()) || ListYear.Contains(t.EndDate.Year.ToString()))).ToList();// Modified By Nishant Sheth #1839
-                List<int> campaignIds = db.Plan_Campaign.Where(t => t.Plan.Model.ClientId == Sessions.User.ClientId && t.IsDeleted == false && ReportPlanIds.Contains(t.PlanId)).ToList().Where(t => (ListYear.Contains(t.StartDate.Year.ToString()) || ListYear.Contains(t.EndDate.Year.ToString()))).Select(t => t.PlanCampaignId).Distinct().ToList<int>();// Modified By Nishant Sheth #1839
+                List<int> campaignIds = db.Plan_Campaign.Where(t => t.Plan.Model.ClientId == Sessions.User.CID && t.IsDeleted == false && ReportPlanIds.Contains(t.PlanId)).ToList().Where(t => (ListYear.Contains(t.StartDate.Year.ToString()) || ListYear.Contains(t.EndDate.Year.ToString()))).Select(t => t.PlanCampaignId).Distinct().ToList<int>();// Modified By Nishant Sheth #1839
                 var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId) && pc.IsDeleted == false).ToList() // Modified by Viral Kadiya on 11/17/2015 for PL ticket #1754 - Deleted programs show up on report filters: Add "IsDeleted" filter to show only undeleted records in report filters.
                     .Where(pc => ListYear.Contains(pc.StartDate.Year.ToString()) || ListYear.Contains(pc.EndDate.Year.ToString()))// Modified By Nishant Sheth #1839
                         .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
@@ -2343,7 +2343,7 @@ namespace RevenuePlanner.Controllers
                 //// Added By: Maninder Singh Wadhva on 11/24/2014.
                 //// Ticket: 942 Exception handeling in Gameplan.
                 ViewBag.IsServiceUnavailable = false;
-                var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                var individuals = bdsUserRepository.GetTeamMemberListEx(Sessions.User.CID, Sessions.ApplicationId, Sessions.User.ID, true);
 
                 ////Added by :- Sohel Pathan on 27 March 2014 For Ticket #358
                 if (Sessions.User != null)
@@ -2430,7 +2430,7 @@ namespace RevenuePlanner.Controllers
                             reportShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
                             ////
                             reportShare.CreatedDate = DateTime.Now;
-                            reportShare.CreatedBy = Sessions.User.UserId;
+                            reportShare.CreatedBy = Sessions.User.ID;
                             mrp.Entry(reportShare).State = EntityState.Added;
                             mrp.Report_Share.Add(reportShare);
                             result = mrp.SaveChanges();
@@ -2443,7 +2443,7 @@ namespace RevenuePlanner.Controllers
                         if (RecipientUserIds != null && RecipientUserIds != "")
                         {
                             var UserIds = RecipientUserIds.Split(',').ToList();
-                            Common.InsertChangeLog(null, null, null, null, ChangeLogComponentType, Enums.ChangeLog_TableName.Report, Enums.ChangeLog_Actions.shared, "", "", RecipientUserIds);
+                            Common.InsertChangeLog(null, null, null, null, ChangeLogComponentType, Enums.ChangeLog_TableName.Report, Enums.ChangeLog_Actions.shared, "", 0, RecipientUserIds);
                         }
 
 
@@ -2602,7 +2602,7 @@ namespace RevenuePlanner.Controllers
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
             List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
 
-            List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerId) ? new List<Guid>() : OwnerId.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            List<int> filterOwner = string.IsNullOrWhiteSpace(OwnerId) ? new List<int>() : OwnerId.Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
             List<int> filterTacticType = string.IsNullOrWhiteSpace(TactitTypeId) ? new List<int>() : TactitTypeId.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
 
             List<int> PlanIds = (planIds != "" && planIds != null) ? planIds.Split(',').Select(int.Parse).ToList() : new List<int>();
@@ -2659,7 +2659,7 @@ namespace RevenuePlanner.Controllers
             // Comment By Bhavesh. Not require
             ////// Set Year list.
             //List<SelectListItem> lstYear = new List<SelectListItem>();
-            //var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            //var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.CID).ToList();
             //var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
             //// Remove FY from Year Ticekt #1805 By Bhavesh on Date 07-jan-2016
             //yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = year, Value = year }));
@@ -2702,7 +2702,7 @@ namespace RevenuePlanner.Controllers
                 List<DateTime> listDateTime = new List<DateTime>();
                 listDateTime.Add(new DateTime(2015, 1, 1));
                 var DataPlanList = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
-                    && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.IsActive == true).ToList();
+                    && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.CID && plan.IsActive == true).ToList();
                 var uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
                 var CampPlanIds = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId)).Select(camp => new { PlanId = camp.PlanId, StartDate = camp.StartDate, EndDate = camp.EndDate }).ToList()
                     .Where(camp => ListYears.Contains(camp.StartDate.Year.ToString()) || ListYears.Contains(camp.EndDate.Year.ToString()))
@@ -2716,7 +2716,7 @@ namespace RevenuePlanner.Controllers
                 // End By Nishant Sheth
 
                 //// Set Plan list.
-                //var planList1 = PlanList.Where(plan => plan.Year == Year && plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId).ToList().Select(plan => new
+                //var planList1 = PlanList.Where(plan => plan.Year == Year && plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.CID).ToList().Select(plan => new
                 //{
                 //    Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy),
                 //    Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy
@@ -4650,7 +4650,7 @@ namespace RevenuePlanner.Controllers
         //private List<BudgetModelReport> SetTacticWeightage(List<BudgetModelReport> lstModel, bool IsCustomFieldViewBy)
         //{
         //    List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
-        //    lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.ClientId).ToList();
+        //    lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.CID).ToList();
         //    int PlanTacticId = 0;
         //    int ActivityId = 0;
         //    int weightage = 100;
@@ -4727,7 +4727,7 @@ namespace RevenuePlanner.Controllers
         {
             List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
             List<CustomField_Entity> lstCustomFieldEntities1 = new List<CustomField_Entity>();
-            //lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.ClientId).ToList();
+            //lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.CID).ToList();
 
             var ListofEntityId = lstModel.Where(a => a.Id != null)
                                         .Select(a => int.Parse(a.Id)).ToList();
@@ -4739,22 +4739,22 @@ namespace RevenuePlanner.Controllers
             {
 
                 lstCustomFieldEntities = (from objCustomField in db.CustomFields
-                                          where ListOfCustomFieldID.Contains(objCustomField.CustomFieldId)
-                                          && objCustomField.ClientId == Sessions.User.ClientId
-                                           && objCustomField.IsDeleted == false
-                                          join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
-                                          where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
-                                          select objCustomfieldEntity).ToList();
+                                           where ListOfCustomFieldID.Contains(objCustomField.CustomFieldId)
+                                           && objCustomField.ClientId == Sessions.User.CID
+                                            && objCustomField.IsDeleted == false
+                                           join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
+                                           where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
+                                           select objCustomfieldEntity).ToList();
 
             }
             else
             {
                 lstCustomFieldEntities = (from objCustomField in db.CustomFields
-                                          where objCustomField.ClientId == Sessions.User.ClientId
-                                           && objCustomField.IsDeleted == false
-                                          join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
-                                          where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
-                                          select objCustomfieldEntity).ToList();
+                                           where objCustomField.ClientId == Sessions.User.CID
+                                            && objCustomField.IsDeleted == false
+                                           join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
+                                           where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
+                                           select objCustomfieldEntity).ToList();
             }
 
             int PlanTacticId = 0;
@@ -4926,7 +4926,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                 ViewBag.ApiUrl = ApiUrl;
             }
-            string ClientId = Convert.ToString(Sessions.User.ClientId);
+            string ClientId = Convert.ToString(Sessions.User.CID);
             //var ClientIdCnt = db.DimensionValues.Where(dv => dv.Value.Equals(ClientId)).ToList();
             var ClientIdCnt = db.Dimensions.Where(dv => dv.Name.Equals("ClientId")).ToList();
             if (ClientIdCnt.Count > 0)
@@ -5534,7 +5534,7 @@ namespace RevenuePlanner.Controllers
             if (tacticList.Count > 0)
             {
                 List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
-                var lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                var lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, planTacticIds, false);
 
                 //// Custom Restrictions applied
                 tacticList = tacticList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
@@ -5549,8 +5549,8 @@ namespace RevenuePlanner.Controllers
             }
 
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-            string strContatedIndividualList = string.Join(",", tacticList.Select(tactic => tactic.CreatedBy.ToString()));
-            var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId);
+            var userList = tacticList.Select(tactic => tactic.CreatedBy).Distinct().ToList();
+            var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationIdEx(userList, Sessions.ApplicationId);
 
             return individuals;
 
@@ -6629,7 +6629,7 @@ namespace RevenuePlanner.Controllers
                 if (StageCodeList.Contains(Enums.InspectStage.ProjectedStageValue.ToString()))
                 {
                     string stagecode = Enums.Stage.INQ.ToString();
-                    var stageid = db.Stages.Where(s => s.ClientId == Sessions.User.ClientId && s.IsDeleted == false && s.Code == stagecode).FirstOrDefault().StageId;
+                    var stageid = db.Stages.Where(s => s.ClientId == Sessions.User.CID && s.IsDeleted == false && s.Code == stagecode).FirstOrDefault().StageId;
                     TacticData.Where(t => t.TacticObj.StageId == stageid).ToList().ForEach(t => t.ActualTacticList.ForEach(a => INQActualTacticList.Add(a)));
                 }
 
@@ -7926,7 +7926,7 @@ namespace RevenuePlanner.Controllers
                 {
                     string CR = Enums.StageType.CR.ToString();
                     string stageINQ = Enums.Stage.INQ.ToString();
-                    List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted.Equals(false)).Select(stage => stage).ToList();
+                    List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted.Equals(false)).Select(stage => stage).ToList();
 
                     int levelINQ = stageList.Where(s => s.Code.Equals(stageINQ)).Select(s => s.Level.Value).FirstOrDefault();
                     string stageMQL = Enums.Stage.MQL.ToString();
@@ -12163,7 +12163,7 @@ namespace RevenuePlanner.Controllers
 
                     }
                     // End By Nishant Sheth 
-                    #endregion
+                #endregion
                 }
                 else
                 {
@@ -12199,7 +12199,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-                #endregion
+        #endregion
 
                 #region "Add all list to Master Model"
                 objSubDataTableModel.PerformanceList = PerformanceList;

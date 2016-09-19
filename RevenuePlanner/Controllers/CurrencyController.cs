@@ -48,9 +48,9 @@ namespace RevenuePlanner.Controllers
         {
             List<CurrencyModel> lstCurrency = new List<CurrencyModel>();
             IEnumerable<BDSService.Currency> lstCurrencydata = objBDSServiceClient.GetAllCurrency();
-            IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrency(Sessions.User.ClientId);
+            IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrencyEx(Sessions.User.CID);
             // var users = objBDSServiceClient.GetUserListComplete();
-            var users = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+            var users = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
 
             if (lstCurrencydata != null)
             {
@@ -68,7 +68,7 @@ namespace RevenuePlanner.Controllers
                     else
                         objCurrency.IsDefault = false;
                     if (lstClientCurrency.Where(w => w.ISOCurrencyCode == item.ISOCurrencyCode).Any())
-                        objCurrency.ClientId = Sessions.User.ClientId;
+                        objCurrency.ClientId = Sessions.User.CID;
                     objCurrency.ISOCurrencyCode = item.ISOCurrencyCode;
                     var predata = users.Where(w => w.PreferredCurrencyCode==objCurrency.ISOCurrencyCode).FirstOrDefault();
                     if (predata != null)
@@ -98,7 +98,7 @@ namespace RevenuePlanner.Controllers
             bool status = false;
             try
             {
-                status = objBDSServiceClient.SaveClientCurrency(curruncies, Sessions.User.ClientId, Sessions.User.UserId);
+                status = objBDSServiceClient.SaveClientCurrencyEx(curruncies, Sessions.User.CID, Sessions.User.ID);
             }
             catch (Exception e)
             {
@@ -181,8 +181,8 @@ namespace RevenuePlanner.Controllers
                 string Gridheder = string.Empty;
                 string coltype = string.Empty;
                 headobjlist = GenerateHeader();
-                IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrency(Sessions.User.ClientId);
-                BDSService.Currency lstConversionRate = objBDSServiceClient.GetCurrencyExchangeRate(Sessions.User.ClientId, Sessions.User.UserId);
+                IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrencyEx(Sessions.User.CID);
+                BDSService.Currency lstConversionRate = objBDSServiceClient.GetCurrencyExchangeRateEx(Sessions.User.CID, Sessions.User.ID);
                 for (int i = 0; i < lstClientCurrency.Count(); i++)
                 {
 
@@ -273,39 +273,7 @@ namespace RevenuePlanner.Controllers
             objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
             return objplangrid;
         }
-        //public void SaveExchangeRate(string year, string component, string currencyCode, string oldValue, string newValue, string month)
-        //{
-        //    try
-        //    {
-        //        ExchangeRate_Log obj = new ExchangeRate_Log();
-        //        obj.ISOCurrencyCode = currencyCode;
-        //        obj.ClientId = Sessions.User.ClientId;
-        //        obj.Component = component;
-        //        int monthNo = 0;
-        //        if (!string.IsNullOrEmpty(month))
-        //            monthNo = Convert.ToInt32(month);
-        //        var startDate = new DateTime(Convert.ToInt32(year), monthNo, 1);
-        //        var endDate = startDate.AddMonths(1).AddDays(-1);
-        //        obj.StartDate = startDate;
-        //        obj.EndDate = endDate;
-        //        if (!string.IsNullOrEmpty(oldValue))
-        //            obj.OldExchangeRate = Convert.ToDouble(oldValue);
-        //        //else
-        //        //    obj.OldExchangeRate = null;
-        //        if (!string.IsNullOrEmpty(newValue))
-        //            obj.NewExchangeRate = Convert.ToDouble(newValue);
-        //        //else
-        //        //    obj.NewExchangeRate = null;
 
-        //        obj.CreatedBy = Sessions.User.UserId;
-        //        obj.CreatedDate = DateTime.Now;
-        //        bool status = objBDSServiceClient.SaveExchangeRate(obj);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(ex);
-        //    }
-        //}
         public void SaveExchangeRateList(List<CurrencyModel.ClientCurrency> lstPlan, bool sameAsPlan, List<CurrencyModel.ClientCurrency> lstreport)
         {
             try

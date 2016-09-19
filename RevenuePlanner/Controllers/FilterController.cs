@@ -168,7 +168,7 @@ namespace RevenuePlanner.Controllers
             var SetOFLastViews = new List<Plan_UserSavedViews>();
             if (Sessions.PlanUserSavedViews == null)
             {
-                SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+                SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             }
             else
             {
@@ -181,13 +181,13 @@ namespace RevenuePlanner.Controllers
                     SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
                 }
             }
-            var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
+            var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             var LastSetOfPlanSelected = new List<string>();
             var LastSetOfYearSelected = new List<string>();
             var Yearlabel = Enums.FilterLabel.Year.ToString();
 
-            var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.UserId).ToList();
+            var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.ID).ToList();
             var FinalSetOfPlanSelected = "";
             var FinalSetOfYearsSelected = "";
             if (FilterName != null && FilterName != "")
@@ -312,7 +312,7 @@ namespace RevenuePlanner.Controllers
 
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
             string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
-            var lstCustomField = objDbMrpEntities.CustomFields.Where(customField => customField.ClientId == Sessions.User.ClientId && customField.IsDeleted.Equals(false) &&
+            var lstCustomField = objDbMrpEntities.CustomFields.Where(customField => customField.ClientId == Sessions.User.CID && customField.IsDeleted.Equals(false) &&
                                                                 customField.EntityType.Equals(EntityTypeTactic) && customField.CustomFieldType.Name.Equals(DropDownList) &&
                                                                 customField.IsDisplayForFilter.Equals(true) && customField.CustomFieldOptions.Count() > 0)
                                                                 .Select(customField => new
@@ -338,7 +338,7 @@ namespace RevenuePlanner.Controllers
 
                 bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
 
-                var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
+                var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.ID, true);
 
                 if (userCustomRestrictionList.Count() > 0)
                 {
@@ -469,7 +469,7 @@ namespace RevenuePlanner.Controllers
             {
                 List<int> lstPlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
                 Sessions.PlanPlanIds = lstPlanIds;
-                List<TacticTypeModel> lstTacticType = objCommonFilter.GetTacticTypeListForFilter(PlanId, Sessions.User.UserId, Sessions.User.ClientId);
+                List<TacticTypeModel> lstTacticType = objCommonFilter.GetTacticTypeListForFilter(PlanId, Sessions.User.ID, Sessions.User.CID);
                 return Json(new { isSuccess = true, TacticTypelist = lstTacticType }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception objException)
@@ -495,7 +495,7 @@ namespace RevenuePlanner.Controllers
             var StatusLabel = Enums.FilterLabel.Status.ToString();
             var LastSetOfStatus = new List<string>();
             var NewListOfViews = new List<Plan_UserSavedViews>();
-            List<Plan_UserSavedViews> listofsavedviews = objCommonFilter.LastSetOfViews(Sessions.User.UserId, Sessions.PlanUserSavedViews, PresetName, isLoadPreset);
+            List<Plan_UserSavedViews> listofsavedviews = objCommonFilter.LastSetOfViews(Sessions.User.ID, Sessions.PlanUserSavedViews, PresetName, isLoadPreset);
             if (isLoadPreset == true)
             {
                 List<Preset> listofPreset = objCommonFilter.GetListofPreset(listofsavedviews, PresetName);
@@ -588,10 +588,10 @@ namespace RevenuePlanner.Controllers
             {
                 var LoggedInUser = new OwnerModel
                 {
-                    OwnerId = Sessions.User.UserId.ToString(),
+                    OwnerId = Sessions.User.ID.ToString(),
                     Title = Convert.ToString(Sessions.User.FirstName + " " + Sessions.User.LastName),
                 };
-                List<OwnerModel> lstOwner = objCommonFilter.GetOwnerListForFilter(Sessions.User.ClientId, Sessions.User.UserId, Sessions.User.FirstName, Sessions.User.LastName, Sessions.ApplicationId, PlanId, ViewBy, ActiveMenu);
+                List<OwnerModel> lstOwner = objCommonFilter.GetOwnerListForFilter(Sessions.User.ID, Sessions.User.ID, Sessions.User.FirstName, Sessions.User.LastName, Sessions.ApplicationId, PlanId, ViewBy, ActiveMenu);
                 return Json(new { isSuccess = true, AllowedOwner = lstOwner, LoggedInUser = LoggedInUser }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception objException)

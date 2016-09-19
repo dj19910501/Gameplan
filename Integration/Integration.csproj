@@ -126,19 +126,8 @@
     <Content Include="DLL\RestSharp.dll" />
     <Content Include="DLL\SalesforceSharp.dll" />
     <Content Include="DLL\Tamir.SharpSSH.dll" />
-    <None Include="Service References\BDSService\BDSService.disco" />
-    <None Include="Service References\BDSService\BDSService.wsdl" />
-    <None Include="Service References\BDSService\BDSService.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService3.xsd">
-      <SubType>Designer</SubType>
+    <None Include="Service References\BDSService\Integration.BDSService.AppConfiguration.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\BDSService\Integration.BDSService.ApplicationActivity.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
@@ -147,6 +136,9 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\BDSService\Integration.BDSService.ClientDatabase.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\Integration.BDSService.Currency.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\BDSService\Integration.BDSService.CustomRestriction.datasource">
@@ -182,18 +174,32 @@
     </None>
     <None Include="Service References\BDSService\configuration.svcinfo" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
+    <None Include="Service References\BDSService\BDSService.disco" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="Service References\BDSService\BDSService.wsdl" />
+    <None Include="Service References\BDSService\BDSService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\BDSService\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
@@ -201,7 +207,9 @@
       <Name>Entities</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\BDSService\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

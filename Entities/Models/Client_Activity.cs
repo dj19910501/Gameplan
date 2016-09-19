@@ -15,9 +15,9 @@ namespace RevenuePlanner.Models
     public partial class Client_Activity
     {
         public int ClientActivityId { get; set; }
-        public System.Guid ClientId { get; set; }
         public int ApplicationActivityId { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public System.DateTime CreatedDate { get; set; }
+        public int ClientId { get; set; }
+        public int CreatedBy { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace RevenuePlanner.Models
 
         public int IntegrationTypeId { get; set; }
 
-        public Guid ClientId { get; set; }
+        public int ClientId { get; set; }
 
         [AllowHtml]
         [Display(Name = "Instance Name")]

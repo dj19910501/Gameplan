@@ -29,32 +29,86 @@ namespace RevenuePlanner.Models
             throw new UnintentionalCodeFirstException();
         }
     
+        public DbSet<Dimension> Dimensions { get; set; }
+        public DbSet<DimensionValue> DimensionValues { get; set; }
+        public DbSet<AggregationProcessLog> AggregationProcessLogs { get; set; }
+        public DbSet<Alert_Rules> Alert_Rules { get; set; }
+        public DbSet<Alert> Alerts { get; set; }
         public DbSet<BestInClass> BestInClasses { get; set; }
+        public DbSet<Budget> Budgets { get; set; }
+        public DbSet<Budget_Columns> Budget_Columns { get; set; }
+        public DbSet<Budget_ColumnSet> Budget_ColumnSet { get; set; }
+        public DbSet<Budget_Detail> Budget_Detail { get; set; }
+        public DbSet<Budget_DetailAmount> Budget_DetailAmount { get; set; }
+        public DbSet<Budget_Permission> Budget_Permission { get; set; }
         public DbSet<CampaignNameConvention> CampaignNameConventions { get; set; }
         public DbSet<ChangeLog> ChangeLogs { get; set; }
+        public DbSet<ChartOptionAttribute> ChartOptionAttributes { get; set; }
         public DbSet<Client_Activity> Client_Activity { get; set; }
         public DbSet<Client_Integration_Permission> Client_Integration_Permission { get; set; }
         public DbSet<ClientTacticType> ClientTacticTypes { get; set; }
+        public DbSet<ColorSequence> ColorSequences { get; set; }
+        public DbSet<ConfigurationTestCas> ConfigurationTestCases { get; set; }
         public DbSet<CustomField> CustomFields { get; set; }
+        public DbSet<CustomField_Entity> CustomField_Entity { get; set; }
+        public DbSet<CustomFieldDependency> CustomFieldDependencies { get; set; }
         public DbSet<CustomFieldOption> CustomFieldOptions { get; set; }
         public DbSet<CustomFieldType> CustomFieldTypes { get; set; }
         public DbSet<CustomRestriction> CustomRestrictions { get; set; }
+        public DbSet<Dashboard> Dashboards { get; set; }
+        public DbSet<DashboardContent> DashboardContents { get; set; }
+        public DbSet<DashboardDimension> DashboardDimensions { get; set; }
+        public DbSet<DashboardPage> DashboardPages { get; set; }
+        public DbSet<Dimension_RestrictedDimensionValues> Dimension_RestrictedDimensionValues { get; set; }
+        public DbSet<DimTime> DimTimes { get; set; }
+        public DbSet<DrillDataConfig> DrillDataConfigs { get; set; }
+        public DbSet<ELMAH_Error> ELMAH_Error { get; set; }
+        public DbSet<EntityIntegration_Attribute> EntityIntegration_Attribute { get; set; }
+        public DbSet<EntityTypeColor> EntityTypeColors { get; set; }
+        public DbSet<FiscalQuarterYear> FiscalQuarterYears { get; set; }
         public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
         public DbSet<GameplanDataTypePull> GameplanDataTypePulls { get; set; }
+        public DbSet<Goal> Goals { get; set; }
+        public DbSet<GoalDimension> GoalDimensions { get; set; }
+        public DbSet<GoalDistribution> GoalDistributions { get; set; }
+        public DbSet<GraphRelation> GraphRelations { get; set; }
+        public DbSet<HelpText> HelpTexts { get; set; }
+        public DbSet<Homepage> Homepages { get; set; }
+        public DbSet<HomepageContent> HomepageContents { get; set; }
+        public DbSet<HomepageDimension> HomepageDimensions { get; set; }
         public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
         public DbSet<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public DbSet<IntegrationInstance> IntegrationInstances { get; set; }
         public DbSet<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
+        public DbSet<IntegrationInstance_UnprocessData> IntegrationInstance_UnprocessData { get; set; }
         public DbSet<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public DbSet<IntegrationInstanceDataTypeMappingPull> IntegrationInstanceDataTypeMappingPulls { get; set; }
         public DbSet<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
         public DbSet<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
+        public DbSet<IntegrationInstanceLogDetail> IntegrationInstanceLogDetails { get; set; }
         public DbSet<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public DbSet<IntegrationInstanceSection> IntegrationInstanceSections { get; set; }
         public DbSet<IntegrationType> IntegrationTypes { get; set; }
         public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
+        public DbSet<IntegrationWorkFrontPortfolio_Mapping> IntegrationWorkFrontPortfolio_Mapping { get; set; }
+        public DbSet<IntegrationWorkFrontPortfolio> IntegrationWorkFrontPortfolios { get; set; }
+        public DbSet<IntegrationWorkFrontProgram_Mapping> IntegrationWorkFrontProgram_Mapping { get; set; }
+        public DbSet<IntegrationWorkFrontRequestQueue> IntegrationWorkFrontRequestQueues { get; set; }
+        public DbSet<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
+        public DbSet<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
+        public DbSet<IntegrationWorkFrontTemplate> IntegrationWorkFrontTemplates { get; set; }
+        public DbSet<IntegrationWorkFrontUser> IntegrationWorkFrontUsers { get; set; }
+        public DbSet<KeyData> KeyDatas { get; set; }
+        public DbSet<KeyDataDimension> KeyDataDimensions { get; set; }
+        public DbSet<LineItem_Budget> LineItem_Budget { get; set; }
         public DbSet<LineItemType> LineItemTypes { get; set; }
+        public DbSet<MarketoEntityValueMapping> MarketoEntityValueMappings { get; set; }
         public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
+        public DbSet<Measure> Measures { get; set; }
+        public DbSet<MeasureOutputValue> MeasureOutputValues { get; set; }
+        public DbSet<MeasureValue> MeasureValues { get; set; }
+        public DbSet<MediaCodes_CustomField_Configuration> MediaCodes_CustomField_Configuration { get; set; }
+        public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<Model> Models { get; set; }
         public DbSet<Model_Stage> Model_Stage { get; set; }
         public DbSet<Notification> Notifications { get; set; }
@@ -64,10 +118,13 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Budget> Plan_Campaign_Budget { get; set; }
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
         public DbSet<Plan_Campaign_Program_Budget> Plan_Campaign_Program_Budget { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic_Actual_MediaCode> Plan_Campaign_Program_Tactic_Actual_MediaCode { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Budget> Plan_Campaign_Program_Tactic_Budget { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_LineItem_Actual> Plan_Campaign_Program_Tactic_LineItem_Actual { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost { get; set; }
         public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
@@ -76,53 +133,45 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
         public DbSet<Plan_Team> Plan_Team { get; set; }
+        public DbSet<Plan_UserSavedViews> Plan_UserSavedViews { get; set; }
+        public DbSet<ProcessedFQY> ProcessedFQies { get; set; }
+        public DbSet<Report_Intergration_Conf> Report_Intergration_Conf { get; set; }
         public DbSet<Report_Share> Report_Share { get; set; }
+        public DbSet<ReportAxi> ReportAxis { get; set; }
+        public DbSet<ReportGraph> ReportGraphs { get; set; }
+        public DbSet<ReportGraphColumn> ReportGraphColumns { get; set; }
+        public DbSet<ReportGraphRowExclude> ReportGraphRowExcludes { get; set; }
+        public DbSet<ReportTable> ReportTables { get; set; }
+        public DbSet<ReportTableColumn> ReportTableColumns { get; set; }
+        public DbSet<ReportTableDimension> ReportTableDimensions { get; set; }
+        public DbSet<ReportTableRowExclude> ReportTableRowExcludes { get; set; }
+        public DbSet<ROI_PackageDetail> ROI_PackageDetail { get; set; }
+        public DbSet<Role_Permission> Role_Permission { get; set; }
+        public DbSet<Role_RestrictedDimensionValues> Role_RestrictedDimensionValues { get; set; }
+        public DbSet<Setting> Settings { get; set; }
         public DbSet<Stage> Stages { get; set; }
         public DbSet<SyncFrequency> SyncFrequencies { get; set; }
+        public DbSet<Tactic_MediaCodes> Tactic_MediaCodes { get; set; }
+        public DbSet<Tactic_MediaCodes_CustomFieldMapping> Tactic_MediaCodes_CustomFieldMapping { get; set; }
         public DbSet<Tactic_Share> Tactic_Share { get; set; }
+        public DbSet<TacticType> TacticTypes { get; set; }
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
-        public DbSet<EntityTypeColor> EntityTypeColors { get; set; }
-        public DbSet<ELMAH_Error> ELMAH_Error { get; set; }
-        public DbSet<IntegrationInstance_UnprocessData> IntegrationInstance_UnprocessData { get; set; }
-        public DbSet<IntegrationWorkFrontTemplate> IntegrationWorkFrontTemplates { get; set; }
-        public DbSet<CustomField_Entity> CustomField_Entity { get; set; }
-        public DbSet<IntegrationWorkFrontPortfolio_Mapping> IntegrationWorkFrontPortfolio_Mapping { get; set; }
-        public DbSet<IntegrationWorkFrontPortfolio> IntegrationWorkFrontPortfolios { get; set; }
-        public DbSet<IntegrationInstanceLogDetail> IntegrationInstanceLogDetails { get; set; }
-        public DbSet<Budget> Budgets { get; set; }
-        public DbSet<Budget_DetailAmount> Budget_DetailAmount { get; set; }
-        public DbSet<CustomFieldDependency> CustomFieldDependencies { get; set; }
-        public DbSet<LineItem_Budget> LineItem_Budget { get; set; }
-        public DbSet<Budget_Detail> Budget_Detail { get; set; }
-        public DbSet<Budget_Columns> Budget_Columns { get; set; }
-        public DbSet<Budget_ColumnSet> Budget_ColumnSet { get; set; }
-        public DbSet<Budget_Permission> Budget_Permission { get; set; }
-        public DbSet<Plan_UserSavedViews> Plan_UserSavedViews { get; set; }
-        public DbSet<IntegrationWorkFrontRequestQueue> IntegrationWorkFrontRequestQueues { get; set; }
-        public DbSet<IntegrationWorkFrontUser> IntegrationWorkFrontUsers { get; set; }
-        public DbSet<IntegrationWorkFrontTacticSetting> IntegrationWorkFrontTacticSettings { get; set; }
-        public DbSet<IntegrationWorkFrontRequest> IntegrationWorkFrontRequests { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
-        public DbSet<MarketoEntityValueMapping> MarketoEntityValueMappings { get; set; }
-        public DbSet<EntityIntegration_Attribute> EntityIntegration_Attribute { get; set; }
-        public DbSet<IntegrationWorkFrontProgram_Mapping> IntegrationWorkFrontProgram_Mapping { get; set; }
-        public DbSet<Dimension> Dimensions { get; set; }
-        public DbSet<DimensionValue> DimensionValues { get; set; }
-        public DbSet<AggregationStatu> AggregationStatus { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
-        public DbSet<TacticType> TacticTypes { get; set; }
-        public DbSet<ROI_PackageDetail> ROI_PackageDetail { get; set; }
-        public DbSet<MediaCodes_CustomField_Configuration> MediaCodes_CustomField_Configuration { get; set; }
-        public DbSet<Tactic_MediaCodes_CustomFieldMapping> Tactic_MediaCodes_CustomFieldMapping { get; set; }
-        public DbSet<User_Permission> User_Permission { get; set; }
-        public DbSet<Tactic_MediaCodes> Tactic_MediaCodes { get; set; }
-        public DbSet<vClientWise_Tactic> vClientWise_Tactic { get; set; }
-        public DbSet<Alert_Rules> Alert_Rules { get; set; }
         public DbSet<User_Notification_Messages> User_Notification_Messages { get; set; }
+        public DbSet<User_Permission> User_Permission { get; set; }
+        public DbSet<User_RestrictedDimensionValues> User_RestrictedDimensionValues { get; set; }
+        public DbSet<UserSetting> UserSettings { get; set; }
+        public DbSet<AggregationQuery> AggregationQueries { get; set; }
+        public DbSet<AggregationStatu> AggregationStatus { get; set; }
+        public DbSet<AggregationStep> AggregationSteps { get; set; }
+        public DbSet<AttrPositionConfig> AttrPositionConfigs { get; set; }
+        public DbSet<CustomFieldDependency_Temp> CustomFieldDependency_Temp { get; set; }
+        public DbSet<DynamicDimension> DynamicDimensions { get; set; }
+        public DbSet<Logging> Loggings { get; set; }
+        public DbSet<Versioning> Versionings { get; set; }
         public DbSet<vClientWise_EntityList> vClientWise_EntityList { get; set; }
         public DbSet<User_CoulmnView> User_CoulmnView { get; set; }
-        public DbSet<Alert> Alerts { get; set; }
+        public DbSet<vClientWise_Tactic> vClientWise_Tactic { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {
@@ -203,15 +252,15 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ELMAH_LogError", errorIdParameter, applicationParameter, hostParameter, typeParameter, sourceParameter, messageParameter, userParameter, allXmlParameter, statusCodeParameter, timeUtcParameter, clientParameter);
         }
     
-        public virtual int DeleteBudget(Nullable<int> budgetDetailId, string clientId)
+        public virtual int DeleteBudget(Nullable<int> budgetDetailId, Nullable<int> clientId)
         {
             var budgetDetailIdParameter = budgetDetailId.HasValue ?
                 new ObjectParameter("BudgetDetailId", budgetDetailId) :
                 new ObjectParameter("BudgetDetailId", typeof(int));
     
-            var clientIdParameter = clientId != null ?
+            var clientIdParameter = clientId.HasValue ?
                 new ObjectParameter("ClientId", clientId) :
-                new ObjectParameter("ClientId", typeof(string));
+                new ObjectParameter("ClientId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DeleteBudget", budgetDetailIdParameter, clientIdParameter);
         }
@@ -238,7 +287,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DeleteLastViewedData", userIdParameter, previousIdsParameter);
         }
     
-        public virtual int PublishModel(Nullable<int> newModelId, Nullable<System.Guid> userId)
+        public virtual int PublishModel(Nullable<int> newModelId, Nullable<int> userId)
         {
             var newModelIdParameter = newModelId.HasValue ?
                 new ObjectParameter("NewModelId", newModelId) :
@@ -246,12 +295,12 @@ namespace RevenuePlanner.Models
     
             var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(System.Guid));
+                new ObjectParameter("UserId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PublishModel", newModelIdParameter, userIdParameter);
         }
     
-        public virtual int SaveuserBudgetPermission(Nullable<int> budgetDetailId, Nullable<int> permissionCode, Nullable<System.Guid> createdBy)
+        public virtual int SaveuserBudgetPermission(Nullable<int> budgetDetailId, Nullable<int> permissionCode, Nullable<int> createdBy)
         {
             var budgetDetailIdParameter = budgetDetailId.HasValue ?
                 new ObjectParameter("BudgetDetailId", budgetDetailId) :
@@ -263,9 +312,1846 @@ namespace RevenuePlanner.Models
     
             var createdByParameter = createdBy.HasValue ?
                 new ObjectParameter("CreatedBy", createdBy) :
-                new ObjectParameter("CreatedBy", typeof(System.Guid));
+                new ObjectParameter("CreatedBy", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SaveuserBudgetPermission", budgetDetailIdParameter, permissionCodeParameter, createdByParameter);
+        }
+    
+        public virtual int AttributionCalculation(string touchTableName, string opportunityFieldname, string touchDateFieldName, string opportunityTableName, string opportunityRevenue, string opportunityCloseDate, string touchWhereClause, Nullable<int> attributionType, Nullable<int> maximumDays, Nullable<int> halfLife)
+        {
+            var touchTableNameParameter = touchTableName != null ?
+                new ObjectParameter("TouchTableName", touchTableName) :
+                new ObjectParameter("TouchTableName", typeof(string));
+    
+            var opportunityFieldnameParameter = opportunityFieldname != null ?
+                new ObjectParameter("OpportunityFieldname", opportunityFieldname) :
+                new ObjectParameter("OpportunityFieldname", typeof(string));
+    
+            var touchDateFieldNameParameter = touchDateFieldName != null ?
+                new ObjectParameter("TouchDateFieldName", touchDateFieldName) :
+                new ObjectParameter("TouchDateFieldName", typeof(string));
+    
+            var opportunityTableNameParameter = opportunityTableName != null ?
+                new ObjectParameter("OpportunityTableName", opportunityTableName) :
+                new ObjectParameter("OpportunityTableName", typeof(string));
+    
+            var opportunityRevenueParameter = opportunityRevenue != null ?
+                new ObjectParameter("OpportunityRevenue", opportunityRevenue) :
+                new ObjectParameter("OpportunityRevenue", typeof(string));
+    
+            var opportunityCloseDateParameter = opportunityCloseDate != null ?
+                new ObjectParameter("OpportunityCloseDate", opportunityCloseDate) :
+                new ObjectParameter("OpportunityCloseDate", typeof(string));
+    
+            var touchWhereClauseParameter = touchWhereClause != null ?
+                new ObjectParameter("TouchWhereClause", touchWhereClause) :
+                new ObjectParameter("TouchWhereClause", typeof(string));
+    
+            var attributionTypeParameter = attributionType.HasValue ?
+                new ObjectParameter("AttributionType", attributionType) :
+                new ObjectParameter("AttributionType", typeof(int));
+    
+            var maximumDaysParameter = maximumDays.HasValue ?
+                new ObjectParameter("MaximumDays", maximumDays) :
+                new ObjectParameter("MaximumDays", typeof(int));
+    
+            var halfLifeParameter = halfLife.HasValue ?
+                new ObjectParameter("HalfLife", halfLife) :
+                new ObjectParameter("HalfLife", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AttributionCalculation", touchTableNameParameter, opportunityFieldnameParameter, touchDateFieldNameParameter, opportunityTableNameParameter, opportunityRevenueParameter, opportunityCloseDateParameter, touchWhereClauseParameter, attributionTypeParameter, maximumDaysParameter, halfLifeParameter);
+        }
+    
+        public virtual int AttributionCalculation_TimeDecay(string touchTableName, string opportunityFieldname, string touchDateFieldName, string opportunityTableName, string opportunityRevenue, string opportunityCloseDate, string touchWhereClause, Nullable<int> attributionType, Nullable<int> maximumDays, Nullable<int> halfLife, string query)
+        {
+            var touchTableNameParameter = touchTableName != null ?
+                new ObjectParameter("TouchTableName", touchTableName) :
+                new ObjectParameter("TouchTableName", typeof(string));
+    
+            var opportunityFieldnameParameter = opportunityFieldname != null ?
+                new ObjectParameter("OpportunityFieldname", opportunityFieldname) :
+                new ObjectParameter("OpportunityFieldname", typeof(string));
+    
+            var touchDateFieldNameParameter = touchDateFieldName != null ?
+                new ObjectParameter("TouchDateFieldName", touchDateFieldName) :
+                new ObjectParameter("TouchDateFieldName", typeof(string));
+    
+            var opportunityTableNameParameter = opportunityTableName != null ?
+                new ObjectParameter("OpportunityTableName", opportunityTableName) :
+                new ObjectParameter("OpportunityTableName", typeof(string));
+    
+            var opportunityRevenueParameter = opportunityRevenue != null ?
+                new ObjectParameter("OpportunityRevenue", opportunityRevenue) :
+                new ObjectParameter("OpportunityRevenue", typeof(string));
+    
+            var opportunityCloseDateParameter = opportunityCloseDate != null ?
+                new ObjectParameter("OpportunityCloseDate", opportunityCloseDate) :
+                new ObjectParameter("OpportunityCloseDate", typeof(string));
+    
+            var touchWhereClauseParameter = touchWhereClause != null ?
+                new ObjectParameter("TouchWhereClause", touchWhereClause) :
+                new ObjectParameter("TouchWhereClause", typeof(string));
+    
+            var attributionTypeParameter = attributionType.HasValue ?
+                new ObjectParameter("AttributionType", attributionType) :
+                new ObjectParameter("AttributionType", typeof(int));
+    
+            var maximumDaysParameter = maximumDays.HasValue ?
+                new ObjectParameter("MaximumDays", maximumDays) :
+                new ObjectParameter("MaximumDays", typeof(int));
+    
+            var halfLifeParameter = halfLife.HasValue ?
+                new ObjectParameter("HalfLife", halfLife) :
+                new ObjectParameter("HalfLife", typeof(int));
+    
+            var queryParameter = query != null ?
+                new ObjectParameter("Query", query) :
+                new ObjectParameter("Query", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AttributionCalculation_TimeDecay", touchTableNameParameter, opportunityFieldnameParameter, touchDateFieldNameParameter, opportunityTableNameParameter, opportunityRevenueParameter, opportunityCloseDateParameter, touchWhereClauseParameter, attributionTypeParameter, maximumDaysParameter, halfLifeParameter, queryParameter);
+        }
+    
+        public virtual int BaseDynamicColumnCreation(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("BaseDynamicColumnCreation", dEBUGParameter);
+        }
+    
+        public virtual int BaseDynamicColumnCreationPartial(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("BaseDynamicColumnCreationPartial", dEBUGParameter);
+        }
+    
+        public virtual int CalculateFiscalYearQuarter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CalculateFiscalYearQuarter");
+        }
+    
+        [EdmFunction("MRPEntities", "comma_split")]
+        public virtual IQueryable<comma_split_Result> comma_split(string param, string delimiter)
+        {
+            var paramParameter = param != null ?
+                new ObjectParameter("param", param) :
+                new ObjectParameter("param", typeof(string));
+    
+            var delimiterParameter = delimiter != null ?
+                new ObjectParameter("delimiter", delimiter) :
+                new ObjectParameter("delimiter", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<comma_split_Result>("[MRPEntities].[comma_split](@param, @delimiter)", paramParameter, delimiterParameter);
+        }
+    
+        public virtual int ComputeMultipleRegression(string valuesQuery, Nullable<int> numX)
+        {
+            var valuesQueryParameter = valuesQuery != null ?
+                new ObjectParameter("ValuesQuery", valuesQuery) :
+                new ObjectParameter("ValuesQuery", typeof(string));
+    
+            var numXParameter = numX.HasValue ?
+                new ObjectParameter("NumX", numX) :
+                new ObjectParameter("NumX", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ComputeMultipleRegression", valuesQueryParameter, numXParameter);
+        }
+    
+        public virtual int ConfigurationTest()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ConfigurationTest");
+        }
+    
+        public virtual int CopyOverAggregation(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CopyOverAggregation", dEBUGParameter);
+        }
+    
+        public virtual int CopyOverAggregationPartial(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CopyOverAggregationPartial", dEBUGParameter);
+        }
+    
+        public virtual ObjectResult<CoRelationReportGraphResults_Result> CoRelationReportGraphResults(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<int> userId, Nullable<System.Guid> roleId)
+        {
+            var reportGraphIDParameter = reportGraphID.HasValue ?
+                new ObjectParameter("ReportGraphID", reportGraphID) :
+                new ObjectParameter("ReportGraphID", typeof(int));
+    
+            var dIMENSIONTABLENAMEParameter = dIMENSIONTABLENAME != null ?
+                new ObjectParameter("DIMENSIONTABLENAME", dIMENSIONTABLENAME) :
+                new ObjectParameter("DIMENSIONTABLENAME", typeof(string));
+    
+            var sTARTDATEParameter = sTARTDATE.HasValue ?
+                new ObjectParameter("STARTDATE", sTARTDATE) :
+                new ObjectParameter("STARTDATE", typeof(System.DateTime));
+    
+            var eNDDATEParameter = eNDDATE.HasValue ?
+                new ObjectParameter("ENDDATE", eNDDATE) :
+                new ObjectParameter("ENDDATE", typeof(System.DateTime));
+    
+            var dATEFIELDParameter = dATEFIELD != null ?
+                new ObjectParameter("DATEFIELD", dATEFIELD) :
+                new ObjectParameter("DATEFIELD", typeof(string));
+    
+            var filterValuesParameter = filterValues != null ?
+                new ObjectParameter("FilterValues", filterValues) :
+                new ObjectParameter("FilterValues", typeof(string));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            var subDashboardOtherDimensionTableParameter = subDashboardOtherDimensionTable.HasValue ?
+                new ObjectParameter("SubDashboardOtherDimensionTable", subDashboardOtherDimensionTable) :
+                new ObjectParameter("SubDashboardOtherDimensionTable", typeof(int));
+    
+            var subDashboardMainDimensionTableParameter = subDashboardMainDimensionTable.HasValue ?
+                new ObjectParameter("SubDashboardMainDimensionTable", subDashboardMainDimensionTable) :
+                new ObjectParameter("SubDashboardMainDimensionTable", typeof(int));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var roleIdParameter = roleId.HasValue ?
+                new ObjectParameter("RoleId", roleId) :
+                new ObjectParameter("RoleId", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CoRelationReportGraphResults_Result>("CoRelationReportGraphResults", reportGraphIDParameter, dIMENSIONTABLENAMEParameter, sTARTDATEParameter, eNDDATEParameter, dATEFIELDParameter, filterValuesParameter, viewByValueParameter, subDashboardOtherDimensionTableParameter, subDashboardMainDimensionTableParameter, userIdParameter, roleIdParameter);
+        }
+    
+        public virtual int CorrelationCalculation(string queryToRun)
+        {
+            var queryToRunParameter = queryToRun != null ?
+                new ObjectParameter("QueryToRun", queryToRun) :
+                new ObjectParameter("QueryToRun", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CorrelationCalculation", queryToRunParameter);
+        }
+    
+        public virtual int CreateBaseTableTriggers(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CreateBaseTableTriggers", dEBUGParameter);
+        }
+    
+        public virtual int CreateDynamicColumns(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CreateDynamicColumns", dEBUGParameter);
+        }
+    
+        public virtual int CustomGraphQuery(Nullable<int> reportGraphID, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string filterValues, string viewByValue, string dimensionTableName, Nullable<int> dateDimensionId, Nullable<bool> isDrillDownData, string drillRowValue, string sortBy, string sortDirection, Nullable<int> pageSize, Nullable<int> pageIndex, Nullable<bool> isExportAll)
+        {
+            var reportGraphIDParameter = reportGraphID.HasValue ?
+                new ObjectParameter("ReportGraphID", reportGraphID) :
+                new ObjectParameter("ReportGraphID", typeof(int));
+    
+            var sTARTDATEParameter = sTARTDATE.HasValue ?
+                new ObjectParameter("STARTDATE", sTARTDATE) :
+                new ObjectParameter("STARTDATE", typeof(System.DateTime));
+    
+            var eNDDATEParameter = eNDDATE.HasValue ?
+                new ObjectParameter("ENDDATE", eNDDATE) :
+                new ObjectParameter("ENDDATE", typeof(System.DateTime));
+    
+            var filterValuesParameter = filterValues != null ?
+                new ObjectParameter("FilterValues", filterValues) :
+                new ObjectParameter("FilterValues", typeof(string));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            var dimensionTableNameParameter = dimensionTableName != null ?
+                new ObjectParameter("DimensionTableName", dimensionTableName) :
+                new ObjectParameter("DimensionTableName", typeof(string));
+    
+            var dateDimensionIdParameter = dateDimensionId.HasValue ?
+                new ObjectParameter("DateDimensionId", dateDimensionId) :
+                new ObjectParameter("DateDimensionId", typeof(int));
+    
+            var isDrillDownDataParameter = isDrillDownData.HasValue ?
+                new ObjectParameter("IsDrillDownData", isDrillDownData) :
+                new ObjectParameter("IsDrillDownData", typeof(bool));
+    
+            var drillRowValueParameter = drillRowValue != null ?
+                new ObjectParameter("DrillRowValue", drillRowValue) :
+                new ObjectParameter("DrillRowValue", typeof(string));
+    
+            var sortByParameter = sortBy != null ?
+                new ObjectParameter("SortBy", sortBy) :
+                new ObjectParameter("SortBy", typeof(string));
+    
+            var sortDirectionParameter = sortDirection != null ?
+                new ObjectParameter("SortDirection", sortDirection) :
+                new ObjectParameter("SortDirection", typeof(string));
+    
+            var pageSizeParameter = pageSize.HasValue ?
+                new ObjectParameter("PageSize", pageSize) :
+                new ObjectParameter("PageSize", typeof(int));
+    
+            var pageIndexParameter = pageIndex.HasValue ?
+                new ObjectParameter("PageIndex", pageIndex) :
+                new ObjectParameter("PageIndex", typeof(int));
+    
+            var isExportAllParameter = isExportAll.HasValue ?
+                new ObjectParameter("IsExportAll", isExportAll) :
+                new ObjectParameter("IsExportAll", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CustomGraphQuery", reportGraphIDParameter, sTARTDATEParameter, eNDDATEParameter, filterValuesParameter, viewByValueParameter, dimensionTableNameParameter, dateDimensionIdParameter, isDrillDownDataParameter, drillRowValueParameter, sortByParameter, sortDirectionParameter, pageSizeParameter, pageIndexParameter, isExportAllParameter);
+        }
+    
+        public virtual int CustomTableQuery(Nullable<int> reportTableID, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string filterValues, string viewByValue, string dimensionTableName)
+        {
+            var reportTableIDParameter = reportTableID.HasValue ?
+                new ObjectParameter("ReportTableID", reportTableID) :
+                new ObjectParameter("ReportTableID", typeof(int));
+    
+            var sTARTDATEParameter = sTARTDATE.HasValue ?
+                new ObjectParameter("STARTDATE", sTARTDATE) :
+                new ObjectParameter("STARTDATE", typeof(System.DateTime));
+    
+            var eNDDATEParameter = eNDDATE.HasValue ?
+                new ObjectParameter("ENDDATE", eNDDATE) :
+                new ObjectParameter("ENDDATE", typeof(System.DateTime));
+    
+            var filterValuesParameter = filterValues != null ?
+                new ObjectParameter("FilterValues", filterValues) :
+                new ObjectParameter("FilterValues", typeof(string));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            var dimensionTableNameParameter = dimensionTableName != null ?
+                new ObjectParameter("DimensionTableName", dimensionTableName) :
+                new ObjectParameter("DimensionTableName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CustomTableQuery", reportTableIDParameter, sTARTDATEParameter, eNDDATEParameter, filterValuesParameter, viewByValueParameter, dimensionTableNameParameter);
+        }
+    
+        public virtual int DimensionInvalidFormulaTest(Nullable<int> testNumber, string testName)
+        {
+            var testNumberParameter = testNumber.HasValue ?
+                new ObjectParameter("TestNumber", testNumber) :
+                new ObjectParameter("TestNumber", typeof(int));
+    
+            var testNameParameter = testName != null ?
+                new ObjectParameter("TestName", testName) :
+                new ObjectParameter("TestName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DimensionInvalidFormulaTest", testNumberParameter, testNameParameter);
+        }
+    
+        public virtual int DimensionNonNumericDateOrderByTest(Nullable<int> testNumber, string testName)
+        {
+            var testNumberParameter = testNumber.HasValue ?
+                new ObjectParameter("TestNumber", testNumber) :
+                new ObjectParameter("TestNumber", typeof(int));
+    
+            var testNameParameter = testName != null ?
+                new ObjectParameter("TestName", testName) :
+                new ObjectParameter("TestName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DimensionNonNumericDateOrderByTest", testNumberParameter, testNameParameter);
+        }
+    
+        public virtual int DimensionNullTest(Nullable<int> testNumber, string testName)
+        {
+            var testNumberParameter = testNumber.HasValue ?
+                new ObjectParameter("TestNumber", testNumber) :
+                new ObjectParameter("TestNumber", typeof(int));
+    
+            var testNameParameter = testName != null ?
+                new ObjectParameter("TestName", testName) :
+                new ObjectParameter("TestName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DimensionNullTest", testNumberParameter, testNameParameter);
+        }
+    
+        public virtual int DimensionTooManyValuesTest(Nullable<int> testNumber, string testName)
+        {
+            var testNumberParameter = testNumber.HasValue ?
+                new ObjectParameter("TestNumber", testNumber) :
+                new ObjectParameter("TestNumber", typeof(int));
+    
+            var testNameParameter = testName != null ?
+                new ObjectParameter("TestName", testName) :
+                new ObjectParameter("TestName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DimensionTooManyValuesTest", testNumberParameter, testNameParameter);
+        }
+    
+        public virtual int DimensionValueFormulaNullTest(Nullable<int> testNumber, string testName)
+        {
+            var testNumberParameter = testNumber.HasValue ?
+                new ObjectParameter("TestNumber", testNumber) :
+                new ObjectParameter("TestNumber", typeof(int));
+    
+            var testNameParameter = testName != null ?
+                new ObjectParameter("TestName", testName) :
+                new ObjectParameter("TestName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DimensionValueFormulaNullTest", testNumberParameter, testNameParameter);
+        }
+    
+        public virtual int DimensionValuePopulate(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DimensionValuePopulate", dEBUGParameter);
+        }
+    
+        public virtual int DimensionValuePopulatePartial(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DimensionValuePopulatePartial", dEBUGParameter);
+        }
+    
+        public virtual int DynamicTableCreation(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DynamicTableCreation", dEBUGParameter);
+        }
+    
+        public virtual int DynamicTableCreationPartial(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DynamicTableCreationPartial", dEBUGParameter);
+        }
+    
+        public virtual int EmailStatisticsByDivision_Comcast()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("EmailStatisticsByDivision_Comcast");
+        }
+    
+        public virtual int ExportToCSV(Nullable<int> planId, Nullable<int> clientId, string honeyCombids, Nullable<double> currencyExchangeRate)
+        {
+            var planIdParameter = planId.HasValue ?
+                new ObjectParameter("PlanId", planId) :
+                new ObjectParameter("PlanId", typeof(int));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("clientId", clientId) :
+                new ObjectParameter("clientId", typeof(int));
+    
+            var honeyCombidsParameter = honeyCombids != null ?
+                new ObjectParameter("HoneyCombids", honeyCombids) :
+                new ObjectParameter("HoneyCombids", typeof(string));
+    
+            var currencyExchangeRateParameter = currencyExchangeRate.HasValue ?
+                new ObjectParameter("CurrencyExchangeRate", currencyExchangeRate) :
+                new ObjectParameter("CurrencyExchangeRate", typeof(double));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ExportToCSV", planIdParameter, clientIdParameter, honeyCombidsParameter, currencyExchangeRateParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "ExtractTableFromXml")]
+        public virtual IQueryable<ExtractTableFromXml_Result> ExtractTableFromXml(string xmlString)
+        {
+            var xmlStringParameter = xmlString != null ?
+                new ObjectParameter("XmlString", xmlString) :
+                new ObjectParameter("XmlString", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<ExtractTableFromXml_Result>("[MRPEntities].[ExtractTableFromXml](@XmlString)", xmlStringParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "ExtractValueFromXML")]
+        public virtual IQueryable<string> ExtractValueFromXML(string xmlString, string tableAlias, Nullable<int> isGraph)
+        {
+            var xmlStringParameter = xmlString != null ?
+                new ObjectParameter("XmlString", xmlString) :
+                new ObjectParameter("XmlString", typeof(string));
+    
+            var tableAliasParameter = tableAlias != null ?
+                new ObjectParameter("TableAlias", tableAlias) :
+                new ObjectParameter("TableAlias", typeof(string));
+    
+            var isGraphParameter = isGraph.HasValue ?
+                new ObjectParameter("IsGraph", isGraph) :
+                new ObjectParameter("IsGraph", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<string>("[MRPEntities].[ExtractValueFromXML](@XmlString, @TableAlias, @IsGraph)", xmlStringParameter, tableAliasParameter, isGraphParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "fGetWeeksList")]
+        public virtual IQueryable<fGetWeeksList_Result> fGetWeeksList(Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate)
+        {
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var endDateParameter = endDate.HasValue ?
+                new ObjectParameter("EndDate", endDate) :
+                new ObjectParameter("EndDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<fGetWeeksList_Result>("[MRPEntities].[fGetWeeksList](@StartDate, @EndDate)", startDateParameter, endDateParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "FindDimensionsForTable")]
+        public virtual IQueryable<FindDimensionsForTable_Result> FindDimensionsForTable(string tablename, Nullable<int> dimensions)
+        {
+            var tablenameParameter = tablename != null ?
+                new ObjectParameter("tablename", tablename) :
+                new ObjectParameter("tablename", typeof(string));
+    
+            var dimensionsParameter = dimensions.HasValue ?
+                new ObjectParameter("Dimensions", dimensions) :
+                new ObjectParameter("Dimensions", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<FindDimensionsForTable_Result>("[MRPEntities].[FindDimensionsForTable](@tablename, @Dimensions)", tablenameParameter, dimensionsParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "FindMatrixInverse")]
+        public virtual IQueryable<FindMatrixInverse_Result> FindMatrixInverse()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<FindMatrixInverse_Result>("[MRPEntities].[FindMatrixInverse]()");
+        }
+    
+        [EdmFunction("MRPEntities", "fnGetSalesforceMarketo3WayData")]
+        public virtual IQueryable<string> fnGetSalesforceMarketo3WayData(string entityType, Nullable<int> id, Nullable<int> clientId, Nullable<int> sFDCTitleLengthLimit, Nullable<int> integrationInstanceLogId, Nullable<bool> isClientAllowCustomName)
+        {
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("entityType", entityType) :
+                new ObjectParameter("entityType", typeof(string));
+    
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("clientId", clientId) :
+                new ObjectParameter("clientId", typeof(int));
+    
+            var sFDCTitleLengthLimitParameter = sFDCTitleLengthLimit.HasValue ?
+                new ObjectParameter("SFDCTitleLengthLimit", sFDCTitleLengthLimit) :
+                new ObjectParameter("SFDCTitleLengthLimit", typeof(int));
+    
+            var integrationInstanceLogIdParameter = integrationInstanceLogId.HasValue ?
+                new ObjectParameter("integrationInstanceLogId", integrationInstanceLogId) :
+                new ObjectParameter("integrationInstanceLogId", typeof(int));
+    
+            var isClientAllowCustomNameParameter = isClientAllowCustomName.HasValue ?
+                new ObjectParameter("isClientAllowCustomName", isClientAllowCustomName) :
+                new ObjectParameter("isClientAllowCustomName", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<string>("[MRPEntities].[fnGetSalesforceMarketo3WayData](@entityType, @id, @clientId, @SFDCTitleLengthLimit, @integrationInstanceLogId, @isClientAllowCustomName)", entityTypeParameter, idParameter, clientIdParameter, sFDCTitleLengthLimitParameter, integrationInstanceLogIdParameter, isClientAllowCustomNameParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "fnSplitString")]
+        public virtual IQueryable<fnSplitString_Result> fnSplitString(string @string, string delimiter)
+        {
+            var stringParameter = @string != null ?
+                new ObjectParameter("string", @string) :
+                new ObjectParameter("string", typeof(string));
+    
+            var delimiterParameter = delimiter != null ?
+                new ObjectParameter("delimiter", delimiter) :
+                new ObjectParameter("delimiter", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<fnSplitString_Result>("[MRPEntities].[fnSplitString](@string, @delimiter)", stringParameter, delimiterParameter);
+        }
+    
+        public virtual ObjectResult<GetBudgetListAndLineItemBudgetList_Result> GetBudgetListAndLineItemBudgetList(Nullable<int> clientId, Nullable<int> budgetId)
+        {
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("clientId", clientId) :
+                new ObjectParameter("clientId", typeof(int));
+    
+            var budgetIdParameter = budgetId.HasValue ?
+                new ObjectParameter("BudgetId", budgetId) :
+                new ObjectParameter("BudgetId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetBudgetListAndLineItemBudgetList_Result>("GetBudgetListAndLineItemBudgetList", clientIdParameter, budgetIdParameter);
+        }
+    
+        public virtual ObjectResult<GetClientEntityList_Result> GetClientEntityList(string clientId)
+        {
+            var clientIdParameter = clientId != null ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetClientEntityList_Result>("GetClientEntityList", clientIdParameter);
+        }
+    
+        public virtual int GetCustomDashboardsClientwise(Nullable<int> userId, Nullable<int> clientId)
+        {
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetCustomDashboardsClientwise", userIdParameter, clientIdParameter);
+        }
+    
+        public virtual ObjectResult<GetCustomFieldEntityList_Result> GetCustomFieldEntityList(Nullable<int> customTypeId, string entityType, string clientId)
+        {
+            var customTypeIdParameter = customTypeId.HasValue ?
+                new ObjectParameter("CustomTypeId", customTypeId) :
+                new ObjectParameter("CustomTypeId", typeof(int));
+    
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("EntityType", entityType) :
+                new ObjectParameter("EntityType", typeof(string));
+    
+            var clientIdParameter = clientId != null ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCustomFieldEntityList_Result>("GetCustomFieldEntityList", customTypeIdParameter, entityTypeParameter, clientIdParameter);
+        }
+    
+        public virtual int GetDashboardContent(Nullable<int> homepageId, Nullable<int> dashboardId, Nullable<int> dashboardPageId, Nullable<int> userId)
+        {
+            var homepageIdParameter = homepageId.HasValue ?
+                new ObjectParameter("HomepageId", homepageId) :
+                new ObjectParameter("HomepageId", typeof(int));
+    
+            var dashboardIdParameter = dashboardId.HasValue ?
+                new ObjectParameter("DashboardId", dashboardId) :
+                new ObjectParameter("DashboardId", typeof(int));
+    
+            var dashboardPageIdParameter = dashboardPageId.HasValue ?
+                new ObjectParameter("DashboardPageId", dashboardPageId) :
+                new ObjectParameter("DashboardPageId", typeof(int));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetDashboardContent", homepageIdParameter, dashboardIdParameter, dashboardPageIdParameter, userIdParameter);
+        }
+    
+        public virtual ObjectResult<GetDashboardContentData_Result> GetDashboardContentData(string userId, Nullable<int> dashboardID)
+        {
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            var dashboardIDParameter = dashboardID.HasValue ?
+                new ObjectParameter("DashboardID", dashboardID) :
+                new ObjectParameter("DashboardID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardContentData_Result>("GetDashboardContentData", userIdParameter, dashboardIDParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "GetDimensions")]
+        public virtual IQueryable<GetDimensions_Result> GetDimensions(Nullable<int> reportGraphID, string viewByValue, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string gType, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, string displayStatSignificance)
+        {
+            var reportGraphIDParameter = reportGraphID.HasValue ?
+                new ObjectParameter("ReportGraphID", reportGraphID) :
+                new ObjectParameter("ReportGraphID", typeof(int));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            var dIMENSIONTABLENAMEParameter = dIMENSIONTABLENAME != null ?
+                new ObjectParameter("DIMENSIONTABLENAME", dIMENSIONTABLENAME) :
+                new ObjectParameter("DIMENSIONTABLENAME", typeof(string));
+    
+            var sTARTDATEParameter = sTARTDATE.HasValue ?
+                new ObjectParameter("STARTDATE", sTARTDATE) :
+                new ObjectParameter("STARTDATE", typeof(System.DateTime));
+    
+            var eNDDATEParameter = eNDDATE.HasValue ?
+                new ObjectParameter("ENDDATE", eNDDATE) :
+                new ObjectParameter("ENDDATE", typeof(System.DateTime));
+    
+            var gTypeParameter = gType != null ?
+                new ObjectParameter("GType", gType) :
+                new ObjectParameter("GType", typeof(string));
+    
+            var subDashboardOtherDimensionTableParameter = subDashboardOtherDimensionTable.HasValue ?
+                new ObjectParameter("SubDashboardOtherDimensionTable", subDashboardOtherDimensionTable) :
+                new ObjectParameter("SubDashboardOtherDimensionTable", typeof(int));
+    
+            var subDashboardMainDimensionTableParameter = subDashboardMainDimensionTable.HasValue ?
+                new ObjectParameter("SubDashboardMainDimensionTable", subDashboardMainDimensionTable) :
+                new ObjectParameter("SubDashboardMainDimensionTable", typeof(int));
+    
+            var displayStatSignificanceParameter = displayStatSignificance != null ?
+                new ObjectParameter("DisplayStatSignificance", displayStatSignificance) :
+                new ObjectParameter("DisplayStatSignificance", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<GetDimensions_Result>("[MRPEntities].[GetDimensions](@ReportGraphID, @ViewByValue, @DIMENSIONTABLENAME, @STARTDATE, @ENDDATE, @GType, @SubDashboardOtherDimensionTable, @SubDashboardMainDimensionTable, @DisplayStatSignificance)", reportGraphIDParameter, viewByValueParameter, dIMENSIONTABLENAMEParameter, sTARTDATEParameter, eNDDATEParameter, gTypeParameter, subDashboardOtherDimensionTableParameter, subDashboardMainDimensionTableParameter, displayStatSignificanceParameter);
+        }
+    
+        public virtual int GetFieldMappings(string entityType, Nullable<int> clientId, Nullable<int> integrationTypeId, Nullable<int> id)
+        {
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("entityType", entityType) :
+                new ObjectParameter("entityType", typeof(string));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(int));
+    
+            var integrationTypeIdParameter = integrationTypeId.HasValue ?
+                new ObjectParameter("integrationTypeId", integrationTypeId) :
+                new ObjectParameter("integrationTypeId", typeof(int));
+    
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetFieldMappings", entityTypeParameter, clientIdParameter, integrationTypeIdParameter, idParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "GetGraphMeasure")]
+        public virtual IQueryable<GetGraphMeasure_Result> GetGraphMeasure(Nullable<int> reportGraphID, string viewByValue)
+        {
+            var reportGraphIDParameter = reportGraphID.HasValue ?
+                new ObjectParameter("ReportGraphID", reportGraphID) :
+                new ObjectParameter("ReportGraphID", typeof(int));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<GetGraphMeasure_Result>("[MRPEntities].[GetGraphMeasure](@ReportGraphID, @ViewByValue)", reportGraphIDParameter, viewByValueParameter);
+        }
+    
+        public virtual ObjectResult<string> GetHelpText(Nullable<int> reportDashboardID, string graphType)
+        {
+            var reportDashboardIDParameter = reportDashboardID.HasValue ?
+                new ObjectParameter("ReportDashboardID", reportDashboardID) :
+                new ObjectParameter("ReportDashboardID", typeof(int));
+    
+            var graphTypeParameter = graphType != null ?
+                new ObjectParameter("GraphType", graphType) :
+                new ObjectParameter("GraphType", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetHelpText", reportDashboardIDParameter, graphTypeParameter);
+        }
+    
+        public virtual int GetKeyDataDetails(Nullable<int> keyDataId, string dimensionTableName, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, Nullable<System.DateTime> compStartDate, Nullable<System.DateTime> compEndDate, string dateField, string filterValues, string viewByValue, Nullable<int> userId, Nullable<System.Guid> roleId)
+        {
+            var keyDataIdParameter = keyDataId.HasValue ?
+                new ObjectParameter("KeyDataId", keyDataId) :
+                new ObjectParameter("KeyDataId", typeof(int));
+    
+            var dimensionTableNameParameter = dimensionTableName != null ?
+                new ObjectParameter("DimensionTableName", dimensionTableName) :
+                new ObjectParameter("DimensionTableName", typeof(string));
+    
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var endDateParameter = endDate.HasValue ?
+                new ObjectParameter("EndDate", endDate) :
+                new ObjectParameter("EndDate", typeof(System.DateTime));
+    
+            var compStartDateParameter = compStartDate.HasValue ?
+                new ObjectParameter("CompStartDate", compStartDate) :
+                new ObjectParameter("CompStartDate", typeof(System.DateTime));
+    
+            var compEndDateParameter = compEndDate.HasValue ?
+                new ObjectParameter("CompEndDate", compEndDate) :
+                new ObjectParameter("CompEndDate", typeof(System.DateTime));
+    
+            var dateFieldParameter = dateField != null ?
+                new ObjectParameter("DateField", dateField) :
+                new ObjectParameter("DateField", typeof(string));
+    
+            var filterValuesParameter = filterValues != null ?
+                new ObjectParameter("FilterValues", filterValues) :
+                new ObjectParameter("FilterValues", typeof(string));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var roleIdParameter = roleId.HasValue ?
+                new ObjectParameter("RoleId", roleId) :
+                new ObjectParameter("RoleId", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetKeyDataDetails", keyDataIdParameter, dimensionTableNameParameter, startDateParameter, endDateParameter, compStartDateParameter, compEndDateParameter, dateFieldParameter, filterValuesParameter, viewByValueParameter, userIdParameter, roleIdParameter);
+        }
+    
+        public virtual ObjectResult<GetLineItemList_Result> GetLineItemList(string planId)
+        {
+            var planIdParameter = planId != null ?
+                new ObjectParameter("PlanId", planId) :
+                new ObjectParameter("PlanId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetLineItemList_Result>("GetLineItemList", planIdParameter);
+        }
+    
+        public virtual int GetListPlanCampaignProgramTactic(string planId, Nullable<int> clientId)
+        {
+            var planIdParameter = planId != null ?
+                new ObjectParameter("PlanId", planId) :
+                new ObjectParameter("PlanId", typeof(string));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("clientId", clientId) :
+                new ObjectParameter("clientId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetListPlanCampaignProgramTactic", planIdParameter, clientIdParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "GetMeasures")]
+        public virtual IQueryable<GetMeasures_Result> GetMeasures(Nullable<int> reportGraphID, string viewByValue, Nullable<int> dimensionCount, string gType, string displayStatSignificance)
+        {
+            var reportGraphIDParameter = reportGraphID.HasValue ?
+                new ObjectParameter("ReportGraphID", reportGraphID) :
+                new ObjectParameter("ReportGraphID", typeof(int));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            var dimensionCountParameter = dimensionCount.HasValue ?
+                new ObjectParameter("DimensionCount", dimensionCount) :
+                new ObjectParameter("DimensionCount", typeof(int));
+    
+            var gTypeParameter = gType != null ?
+                new ObjectParameter("GType", gType) :
+                new ObjectParameter("GType", typeof(string));
+    
+            var displayStatSignificanceParameter = displayStatSignificance != null ?
+                new ObjectParameter("DisplayStatSignificance", displayStatSignificance) :
+                new ObjectParameter("DisplayStatSignificance", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<GetMeasures_Result>("[MRPEntities].[GetMeasures](@ReportGraphID, @ViewByValue, @DimensionCount, @GType, @DisplayStatSignificance)", reportGraphIDParameter, viewByValueParameter, dimensionCountParameter, gTypeParameter, displayStatSignificanceParameter);
+        }
+    
+        public virtual ObjectResult<GetRestrictedValues_Result> GetRestrictedValues(Nullable<int> selectedDiemsnionId, Nullable<int> dashboardId, Nullable<int> dashBoardPageId, string filters)
+        {
+            var selectedDiemsnionIdParameter = selectedDiemsnionId.HasValue ?
+                new ObjectParameter("SelectedDiemsnionId", selectedDiemsnionId) :
+                new ObjectParameter("SelectedDiemsnionId", typeof(int));
+    
+            var dashboardIdParameter = dashboardId.HasValue ?
+                new ObjectParameter("DashboardId", dashboardId) :
+                new ObjectParameter("DashboardId", typeof(int));
+    
+            var dashBoardPageIdParameter = dashBoardPageId.HasValue ?
+                new ObjectParameter("dashBoardPageId", dashBoardPageId) :
+                new ObjectParameter("dashBoardPageId", typeof(int));
+    
+            var filtersParameter = filters != null ?
+                new ObjectParameter("Filters", filters) :
+                new ObjectParameter("Filters", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetRestrictedValues_Result>("GetRestrictedValues", selectedDiemsnionIdParameter, dashboardIdParameter, dashBoardPageIdParameter, filtersParameter);
+        }
+    
+        public virtual int GetSFDCFieldMappings(Nullable<int> clientId, Nullable<int> integrationTypeId, Nullable<int> id, Nullable<bool> isSFDCMarketoIntegration)
+        {
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(int));
+    
+            var integrationTypeIdParameter = integrationTypeId.HasValue ?
+                new ObjectParameter("integrationTypeId", integrationTypeId) :
+                new ObjectParameter("integrationTypeId", typeof(int));
+    
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            var isSFDCMarketoIntegrationParameter = isSFDCMarketoIntegration.HasValue ?
+                new ObjectParameter("isSFDCMarketoIntegration", isSFDCMarketoIntegration) :
+                new ObjectParameter("isSFDCMarketoIntegration", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetSFDCFieldMappings", clientIdParameter, integrationTypeIdParameter, idParameter, isSFDCMarketoIntegrationParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "GetSFDCSourceTargetMappingData")]
+        public virtual IQueryable<GetSFDCSourceTargetMappingData_Result> GetSFDCSourceTargetMappingData(string entityType, Nullable<int> clientId, string entityIds, Nullable<int> integrationTypeId, Nullable<int> id, Nullable<int> sFDClength, Nullable<bool> isCustomNameAllow, Nullable<bool> isClientAllowCustomName)
+        {
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("entityType", entityType) :
+                new ObjectParameter("entityType", typeof(string));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(int));
+    
+            var entityIdsParameter = entityIds != null ?
+                new ObjectParameter("EntityIds", entityIds) :
+                new ObjectParameter("EntityIds", typeof(string));
+    
+            var integrationTypeIdParameter = integrationTypeId.HasValue ?
+                new ObjectParameter("integrationTypeId", integrationTypeId) :
+                new ObjectParameter("integrationTypeId", typeof(int));
+    
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            var sFDClengthParameter = sFDClength.HasValue ?
+                new ObjectParameter("SFDClength", sFDClength) :
+                new ObjectParameter("SFDClength", typeof(int));
+    
+            var isCustomNameAllowParameter = isCustomNameAllow.HasValue ?
+                new ObjectParameter("isCustomNameAllow", isCustomNameAllow) :
+                new ObjectParameter("isCustomNameAllow", typeof(bool));
+    
+            var isClientAllowCustomNameParameter = isClientAllowCustomName.HasValue ?
+                new ObjectParameter("isClientAllowCustomName", isClientAllowCustomName) :
+                new ObjectParameter("isClientAllowCustomName", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<GetSFDCSourceTargetMappingData_Result>("[MRPEntities].[GetSFDCSourceTargetMappingData](@entityType, @ClientId, @EntityIds, @integrationTypeId, @id, @SFDClength, @isCustomNameAllow, @isClientAllowCustomName)", entityTypeParameter, clientIdParameter, entityIdsParameter, integrationTypeIdParameter, idParameter, sFDClengthParameter, isCustomNameAllowParameter, isClientAllowCustomNameParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "GetSFDCSourceTargetMappingData_Marketo3Way")]
+        public virtual IQueryable<GetSFDCSourceTargetMappingData_Marketo3Way_Result> GetSFDCSourceTargetMappingData_Marketo3Way(string entityType, Nullable<int> clientId, string entityIds, Nullable<int> integrationTypeId, Nullable<int> id, Nullable<int> sFDClength, Nullable<bool> isCustomNameAllow, Nullable<bool> isClientAllowCustomName)
+        {
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("entityType", entityType) :
+                new ObjectParameter("entityType", typeof(string));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(int));
+    
+            var entityIdsParameter = entityIds != null ?
+                new ObjectParameter("EntityIds", entityIds) :
+                new ObjectParameter("EntityIds", typeof(string));
+    
+            var integrationTypeIdParameter = integrationTypeId.HasValue ?
+                new ObjectParameter("integrationTypeId", integrationTypeId) :
+                new ObjectParameter("integrationTypeId", typeof(int));
+    
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            var sFDClengthParameter = sFDClength.HasValue ?
+                new ObjectParameter("SFDClength", sFDClength) :
+                new ObjectParameter("SFDClength", typeof(int));
+    
+            var isCustomNameAllowParameter = isCustomNameAllow.HasValue ?
+                new ObjectParameter("isCustomNameAllow", isCustomNameAllow) :
+                new ObjectParameter("isCustomNameAllow", typeof(bool));
+    
+            var isClientAllowCustomNameParameter = isClientAllowCustomName.HasValue ?
+                new ObjectParameter("isClientAllowCustomName", isClientAllowCustomName) :
+                new ObjectParameter("isClientAllowCustomName", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<GetSFDCSourceTargetMappingData_Marketo3Way_Result>("[MRPEntities].[GetSFDCSourceTargetMappingData_Marketo3Way](@entityType, @ClientId, @EntityIds, @integrationTypeId, @id, @SFDClength, @isCustomNameAllow, @isClientAllowCustomName)", entityTypeParameter, clientIdParameter, entityIdsParameter, integrationTypeIdParameter, idParameter, sFDClengthParameter, isCustomNameAllowParameter, isClientAllowCustomNameParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "GetSourceTargetMappingData")]
+        public virtual IQueryable<GetSourceTargetMappingData_Result> GetSourceTargetMappingData(string entityType, Nullable<int> clientId, string entityIds, Nullable<int> integrationTypeId, Nullable<int> id, Nullable<int> sFDClength)
+        {
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("entityType", entityType) :
+                new ObjectParameter("entityType", typeof(string));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(int));
+    
+            var entityIdsParameter = entityIds != null ?
+                new ObjectParameter("EntityIds", entityIds) :
+                new ObjectParameter("EntityIds", typeof(string));
+    
+            var integrationTypeIdParameter = integrationTypeId.HasValue ?
+                new ObjectParameter("integrationTypeId", integrationTypeId) :
+                new ObjectParameter("integrationTypeId", typeof(int));
+    
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            var sFDClengthParameter = sFDClength.HasValue ?
+                new ObjectParameter("SFDClength", sFDClength) :
+                new ObjectParameter("SFDClength", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<GetSourceTargetMappingData_Result>("[MRPEntities].[GetSourceTargetMappingData](@entityType, @ClientId, @EntityIds, @integrationTypeId, @id, @SFDClength)", entityTypeParameter, clientIdParameter, entityIdsParameter, integrationTypeIdParameter, idParameter, sFDClengthParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "GetTacCustomNameMappingList")]
+        public virtual IQueryable<GetTacCustomNameMappingList_Result> GetTacCustomNameMappingList(string entityType, Nullable<int> clientId, string entityIds)
+        {
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("entityType", entityType) :
+                new ObjectParameter("entityType", typeof(string));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(int));
+    
+            var entityIdsParameter = entityIds != null ?
+                new ObjectParameter("EntityIds", entityIds) :
+                new ObjectParameter("EntityIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<GetTacCustomNameMappingList_Result>("[MRPEntities].[GetTacCustomNameMappingList](@entityType, @ClientId, @EntityIds)", entityTypeParameter, clientIdParameter, entityIdsParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "GetTacticActualCostMappingData")]
+        public virtual IQueryable<GetTacticActualCostMappingData_Result> GetTacticActualCostMappingData(string entIds)
+        {
+            var entIdsParameter = entIds != null ?
+                new ObjectParameter("entIds", entIds) :
+                new ObjectParameter("entIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<GetTacticActualCostMappingData_Result>("[MRPEntities].[GetTacticActualCostMappingData](@entIds)", entIdsParameter);
+        }
+    
+        public virtual ObjectResult<GetTacticLineItemList_Result> GetTacticLineItemList(string tacticId)
+        {
+            var tacticIdParameter = tacticId != null ?
+                new ObjectParameter("tacticId", tacticId) :
+                new ObjectParameter("tacticId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTacticLineItemList_Result>("GetTacticLineItemList", tacticIdParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "GetTacticsForAllRuleEntities")]
+        public virtual IQueryable<GetTacticsForAllRuleEntities_Result> GetTacticsForAllRuleEntities()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<GetTacticsForAllRuleEntities_Result>("[MRPEntities].[GetTacticsForAllRuleEntities]()");
+        }
+    
+        public virtual ObjectResult<GetTacticTypeList_Result> GetTacticTypeList(string tacticIds)
+        {
+            var tacticIdsParameter = tacticIds != null ?
+                new ObjectParameter("TacticIds", tacticIds) :
+                new ObjectParameter("TacticIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTacticTypeList_Result>("GetTacticTypeList", tacticIdsParameter);
+        }
+    
+        public virtual int GetTTestSignificance(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<int> userId, Nullable<System.Guid> roleId)
+        {
+            var reportGraphIDParameter = reportGraphID.HasValue ?
+                new ObjectParameter("ReportGraphID", reportGraphID) :
+                new ObjectParameter("ReportGraphID", typeof(int));
+    
+            var dIMENSIONTABLENAMEParameter = dIMENSIONTABLENAME != null ?
+                new ObjectParameter("DIMENSIONTABLENAME", dIMENSIONTABLENAME) :
+                new ObjectParameter("DIMENSIONTABLENAME", typeof(string));
+    
+            var sTARTDATEParameter = sTARTDATE.HasValue ?
+                new ObjectParameter("STARTDATE", sTARTDATE) :
+                new ObjectParameter("STARTDATE", typeof(System.DateTime));
+    
+            var eNDDATEParameter = eNDDATE.HasValue ?
+                new ObjectParameter("ENDDATE", eNDDATE) :
+                new ObjectParameter("ENDDATE", typeof(System.DateTime));
+    
+            var dATEFIELDParameter = dATEFIELD != null ?
+                new ObjectParameter("DATEFIELD", dATEFIELD) :
+                new ObjectParameter("DATEFIELD", typeof(string));
+    
+            var filterValuesParameter = filterValues != null ?
+                new ObjectParameter("FilterValues", filterValues) :
+                new ObjectParameter("FilterValues", typeof(string));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            var subDashboardOtherDimensionTableParameter = subDashboardOtherDimensionTable.HasValue ?
+                new ObjectParameter("SubDashboardOtherDimensionTable", subDashboardOtherDimensionTable) :
+                new ObjectParameter("SubDashboardOtherDimensionTable", typeof(int));
+    
+            var subDashboardMainDimensionTableParameter = subDashboardMainDimensionTable.HasValue ?
+                new ObjectParameter("SubDashboardMainDimensionTable", subDashboardMainDimensionTable) :
+                new ObjectParameter("SubDashboardMainDimensionTable", typeof(int));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var roleIdParameter = roleId.HasValue ?
+                new ObjectParameter("RoleId", roleId) :
+                new ObjectParameter("RoleId", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetTTestSignificance", reportGraphIDParameter, dIMENSIONTABLENAMEParameter, sTARTDATEParameter, eNDDATEParameter, dATEFIELDParameter, filterValuesParameter, viewByValueParameter, subDashboardOtherDimensionTableParameter, subDashboardMainDimensionTableParameter, userIdParameter, roleIdParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "IdentifyDimensions")]
+        public virtual IQueryable<IdentifyDimensions_Result> IdentifyDimensions(Nullable<int> objectId, Nullable<int> isGraph, string @string)
+        {
+            var objectIdParameter = objectId.HasValue ?
+                new ObjectParameter("ObjectId", objectId) :
+                new ObjectParameter("ObjectId", typeof(int));
+    
+            var isGraphParameter = isGraph.HasValue ?
+                new ObjectParameter("IsGraph", isGraph) :
+                new ObjectParameter("IsGraph", typeof(int));
+    
+            var stringParameter = @string != null ?
+                new ObjectParameter("String", @string) :
+                new ObjectParameter("String", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<IdentifyDimensions_Result>("[MRPEntities].[IdentifyDimensions](@ObjectId, @IsGraph, @String)", objectIdParameter, isGraphParameter, stringParameter);
+        }
+    
+        public virtual int ImportMarketingBudgetMonthly(string xMLData, Nullable<int> clientId, string userId, Nullable<long> budgetDetailId)
+        {
+            var xMLDataParameter = xMLData != null ?
+                new ObjectParameter("XMLData", xMLData) :
+                new ObjectParameter("XMLData", typeof(string));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("clientId", clientId) :
+                new ObjectParameter("clientId", typeof(int));
+    
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            var budgetDetailIdParameter = budgetDetailId.HasValue ?
+                new ObjectParameter("BudgetDetailId", budgetDetailId) :
+                new ObjectParameter("BudgetDetailId", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ImportMarketingBudgetMonthly", xMLDataParameter, clientIdParameter, userIdParameter, budgetDetailIdParameter);
+        }
+    
+        public virtual int ImportMarketingBudgetQuarter(string xMLData, Nullable<int> clientId, string userId, Nullable<long> budgetDetailId)
+        {
+            var xMLDataParameter = xMLData != null ?
+                new ObjectParameter("XMLData", xMLData) :
+                new ObjectParameter("XMLData", typeof(string));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("clientId", clientId) :
+                new ObjectParameter("clientId", typeof(int));
+    
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            var budgetDetailIdParameter = budgetDetailId.HasValue ?
+                new ObjectParameter("BudgetDetailId", budgetDetailId) :
+                new ObjectParameter("BudgetDetailId", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ImportMarketingBudgetQuarter", xMLDataParameter, clientIdParameter, userIdParameter, budgetDetailIdParameter);
+        }
+    
+        public virtual int InteractionBasedAttrCalc(string attrQuery, string attrWhereQuery, string baseTblName)
+        {
+            var attrQueryParameter = attrQuery != null ?
+                new ObjectParameter("AttrQuery", attrQuery) :
+                new ObjectParameter("AttrQuery", typeof(string));
+    
+            var attrWhereQueryParameter = attrWhereQuery != null ?
+                new ObjectParameter("AttrWhereQuery", attrWhereQuery) :
+                new ObjectParameter("AttrWhereQuery", typeof(string));
+    
+            var baseTblNameParameter = baseTblName != null ?
+                new ObjectParameter("BaseTblName", baseTblName) :
+                new ObjectParameter("BaseTblName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InteractionBasedAttrCalc", attrQueryParameter, attrWhereQueryParameter, baseTblNameParameter);
+        }
+    
+        public virtual int KeyDataGet(Nullable<int> keyDataId, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<System.Guid> userId, Nullable<System.Guid> roleId, ObjectParameter kEYDATAVALUE)
+        {
+            var keyDataIdParameter = keyDataId.HasValue ?
+                new ObjectParameter("KeyDataId", keyDataId) :
+                new ObjectParameter("KeyDataId", typeof(int));
+    
+            var dIMENSIONTABLENAMEParameter = dIMENSIONTABLENAME != null ?
+                new ObjectParameter("DIMENSIONTABLENAME", dIMENSIONTABLENAME) :
+                new ObjectParameter("DIMENSIONTABLENAME", typeof(string));
+    
+            var sTARTDATEParameter = sTARTDATE.HasValue ?
+                new ObjectParameter("STARTDATE", sTARTDATE) :
+                new ObjectParameter("STARTDATE", typeof(System.DateTime));
+    
+            var eNDDATEParameter = eNDDATE.HasValue ?
+                new ObjectParameter("ENDDATE", eNDDATE) :
+                new ObjectParameter("ENDDATE", typeof(System.DateTime));
+    
+            var dATEFIELDParameter = dATEFIELD != null ?
+                new ObjectParameter("DATEFIELD", dATEFIELD) :
+                new ObjectParameter("DATEFIELD", typeof(string));
+    
+            var filterValuesParameter = filterValues != null ?
+                new ObjectParameter("FilterValues", filterValues) :
+                new ObjectParameter("FilterValues", typeof(string));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(System.Guid));
+    
+            var roleIdParameter = roleId.HasValue ?
+                new ObjectParameter("RoleId", roleId) :
+                new ObjectParameter("RoleId", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("KeyDataGet", keyDataIdParameter, dIMENSIONTABLENAMEParameter, sTARTDATEParameter, eNDDATEParameter, dATEFIELDParameter, filterValuesParameter, viewByValueParameter, userIdParameter, roleIdParameter, kEYDATAVALUE);
+        }
+    
+        public virtual ObjectResult<LinearRegression_Result> LinearRegression(string queryToRun)
+        {
+            var queryToRunParameter = queryToRun != null ?
+                new ObjectParameter("QueryToRun", queryToRun) :
+                new ObjectParameter("QueryToRun", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<LinearRegression_Result>("LinearRegression", queryToRunParameter);
+        }
+    
+        public virtual int NightlyAdobeAnalyics()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("NightlyAdobeAnalyics");
+        }
+    
+        public virtual int NightlyRefreshDatabase()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("NightlyRefreshDatabase");
+        }
+    
+        public virtual ObjectResult<Plan_Budget_Cost_Actual_Detail_Result> Plan_Budget_Cost_Actual_Detail(Nullable<int> planId, string userId, string selectedTab)
+        {
+            var planIdParameter = planId.HasValue ?
+                new ObjectParameter("PlanId", planId) :
+                new ObjectParameter("PlanId", typeof(int));
+    
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            var selectedTabParameter = selectedTab != null ?
+                new ObjectParameter("SelectedTab", selectedTab) :
+                new ObjectParameter("SelectedTab", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Plan_Budget_Cost_Actual_Detail_Result>("Plan_Budget_Cost_Actual_Detail", planIdParameter, userIdParameter, selectedTabParameter);
+        }
+    
+        public virtual int PopulateDynamicColumns(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PopulateDynamicColumns", dEBUGParameter);
+        }
+    
+        public virtual int PopulateDynamicColumnsPartial(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PopulateDynamicColumnsPartial", dEBUGParameter);
+        }
+    
+        public virtual int PopulateDynamicDimension(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PopulateDynamicDimension", dEBUGParameter);
+        }
+    
+        public virtual int PopulateDynamicDimensionPartial(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PopulateDynamicDimensionPartial", dEBUGParameter);
+        }
+    
+        public virtual int proc_auditDatabase(string tableName)
+        {
+            var tableNameParameter = tableName != null ?
+                new ObjectParameter("tableName", tableName) :
+                new ObjectParameter("tableName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("proc_auditDatabase", tableNameParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "ProjectedValuesForPlans")]
+        public virtual IQueryable<ProjectedValuesForPlans_Result> ProjectedValuesForPlans()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<ProjectedValuesForPlans_Result>("[MRPEntities].[ProjectedValuesForPlans]()");
+        }
+    
+        public virtual int RebuildIndexes(Nullable<bool> dEBUG)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RebuildIndexes", dEBUGParameter);
+        }
+    
+        public virtual int ReportGraphResultsNew(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, string displayStatSignificance, Nullable<int> userId, Nullable<System.Guid> roleId)
+        {
+            var reportGraphIDParameter = reportGraphID.HasValue ?
+                new ObjectParameter("ReportGraphID", reportGraphID) :
+                new ObjectParameter("ReportGraphID", typeof(int));
+    
+            var dIMENSIONTABLENAMEParameter = dIMENSIONTABLENAME != null ?
+                new ObjectParameter("DIMENSIONTABLENAME", dIMENSIONTABLENAME) :
+                new ObjectParameter("DIMENSIONTABLENAME", typeof(string));
+    
+            var sTARTDATEParameter = sTARTDATE.HasValue ?
+                new ObjectParameter("STARTDATE", sTARTDATE) :
+                new ObjectParameter("STARTDATE", typeof(System.DateTime));
+    
+            var eNDDATEParameter = eNDDATE.HasValue ?
+                new ObjectParameter("ENDDATE", eNDDATE) :
+                new ObjectParameter("ENDDATE", typeof(System.DateTime));
+    
+            var dATEFIELDParameter = dATEFIELD != null ?
+                new ObjectParameter("DATEFIELD", dATEFIELD) :
+                new ObjectParameter("DATEFIELD", typeof(string));
+    
+            var filterValuesParameter = filterValues != null ?
+                new ObjectParameter("FilterValues", filterValues) :
+                new ObjectParameter("FilterValues", typeof(string));
+    
+            var viewByValueParameter = viewByValue != null ?
+                new ObjectParameter("ViewByValue", viewByValue) :
+                new ObjectParameter("ViewByValue", typeof(string));
+    
+            var subDashboardOtherDimensionTableParameter = subDashboardOtherDimensionTable.HasValue ?
+                new ObjectParameter("SubDashboardOtherDimensionTable", subDashboardOtherDimensionTable) :
+                new ObjectParameter("SubDashboardOtherDimensionTable", typeof(int));
+    
+            var subDashboardMainDimensionTableParameter = subDashboardMainDimensionTable.HasValue ?
+                new ObjectParameter("SubDashboardMainDimensionTable", subDashboardMainDimensionTable) :
+                new ObjectParameter("SubDashboardMainDimensionTable", typeof(int));
+    
+            var displayStatSignificanceParameter = displayStatSignificance != null ?
+                new ObjectParameter("DisplayStatSignificance", displayStatSignificance) :
+                new ObjectParameter("DisplayStatSignificance", typeof(string));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var roleIdParameter = roleId.HasValue ?
+                new ObjectParameter("RoleId", roleId) :
+                new ObjectParameter("RoleId", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ReportGraphResultsNew", reportGraphIDParameter, dIMENSIONTABLENAMEParameter, sTARTDATEParameter, eNDDATEParameter, dATEFIELDParameter, filterValuesParameter, viewByValueParameter, subDashboardOtherDimensionTableParameter, subDashboardMainDimensionTableParameter, displayStatSignificanceParameter, userIdParameter, roleIdParameter);
+        }
+    
+        public virtual int RunAggregation(Nullable<bool> dEBUG, Nullable<bool> partial, ObjectParameter returnStatus)
+        {
+            var dEBUGParameter = dEBUG.HasValue ?
+                new ObjectParameter("DEBUG", dEBUG) :
+                new ObjectParameter("DEBUG", typeof(bool));
+    
+            var partialParameter = partial.HasValue ?
+                new ObjectParameter("Partial", partial) :
+                new ObjectParameter("Partial", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RunAggregation", dEBUGParameter, partialParameter, returnStatus);
+        }
+    
+        public virtual int RunAlertRules()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RunAlertRules");
+        }
+    
+        public virtual int SaveLogNoticationdata(string action, string actionSuffix, Nullable<int> componentId, string componentTitle, string description, Nullable<int> objectId, Nullable<int> parentObjectId, string tableName, Nullable<int> userId, Nullable<int> clientId, string userName, string recipientIDs, string entityOwnerID)
+        {
+            var actionParameter = action != null ?
+                new ObjectParameter("action", action) :
+                new ObjectParameter("action", typeof(string));
+    
+            var actionSuffixParameter = actionSuffix != null ?
+                new ObjectParameter("actionSuffix", actionSuffix) :
+                new ObjectParameter("actionSuffix", typeof(string));
+    
+            var componentIdParameter = componentId.HasValue ?
+                new ObjectParameter("componentId", componentId) :
+                new ObjectParameter("componentId", typeof(int));
+    
+            var componentTitleParameter = componentTitle != null ?
+                new ObjectParameter("componentTitle", componentTitle) :
+                new ObjectParameter("componentTitle", typeof(string));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("description", description) :
+                new ObjectParameter("description", typeof(string));
+    
+            var objectIdParameter = objectId.HasValue ?
+                new ObjectParameter("objectId", objectId) :
+                new ObjectParameter("objectId", typeof(int));
+    
+            var parentObjectIdParameter = parentObjectId.HasValue ?
+                new ObjectParameter("parentObjectId", parentObjectId) :
+                new ObjectParameter("parentObjectId", typeof(int));
+    
+            var tableNameParameter = tableName != null ?
+                new ObjectParameter("TableName", tableName) :
+                new ObjectParameter("TableName", typeof(string));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(int));
+    
+            var userNameParameter = userName != null ?
+                new ObjectParameter("UserName", userName) :
+                new ObjectParameter("UserName", typeof(string));
+    
+            var recipientIDsParameter = recipientIDs != null ?
+                new ObjectParameter("RecipientIDs", recipientIDs) :
+                new ObjectParameter("RecipientIDs", typeof(string));
+    
+            var entityOwnerIDParameter = entityOwnerID != null ?
+                new ObjectParameter("EntityOwnerID", entityOwnerID) :
+                new ObjectParameter("EntityOwnerID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SaveLogNoticationdata", actionParameter, actionSuffixParameter, componentIdParameter, componentTitleParameter, descriptionParameter, objectIdParameter, parentObjectIdParameter, tableNameParameter, userIdParameter, clientIdParameter, userNameParameter, recipientIDsParameter, entityOwnerIDParameter);
+        }
+    
+        public virtual int SP_CheckExisting_MediaCode(Nullable<int> clientId, string mediaCode, ObjectParameter isExists)
+        {
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(int));
+    
+            var mediaCodeParameter = mediaCode != null ?
+                new ObjectParameter("MediaCode", mediaCode) :
+                new ObjectParameter("MediaCode", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_CheckExisting_MediaCode", clientIdParameter, mediaCodeParameter, isExists);
+        }
+    
+        public virtual int Sp_GetPlanBudgetDataMonthly(Nullable<int> planId, Nullable<int> userId)
+        {
+            var planIdParameter = planId.HasValue ?
+                new ObjectParameter("PlanId", planId) :
+                new ObjectParameter("PlanId", typeof(int));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Sp_GetPlanBudgetDataMonthly", planIdParameter, userIdParameter);
+        }
+    
+        public virtual int Sp_GetPlanBudgetDataQuarterly(Nullable<int> planId, Nullable<int> userId)
+        {
+            var planIdParameter = planId.HasValue ?
+                new ObjectParameter("PlanId", planId) :
+                new ObjectParameter("PlanId", typeof(int));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Sp_GetPlanBudgetDataQuarterly", planIdParameter, userIdParameter);
+        }
+    
+        public virtual int SP_Save_AlertRule(string clientId, Nullable<int> ruleId, string ruleSummary, Nullable<int> entityId, string entityType, string indicator, string indicatorComparision, Nullable<int> indicatorGoal, Nullable<int> completionGoal, string frequency, Nullable<byte> dayOfWeek, Nullable<byte> dateOfMonth, string userId, Nullable<int> createdBy, Nullable<int> modifiedBy, ObjectParameter isExists)
+        {
+            var clientIdParameter = clientId != null ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(string));
+    
+            var ruleIdParameter = ruleId.HasValue ?
+                new ObjectParameter("RuleId", ruleId) :
+                new ObjectParameter("RuleId", typeof(int));
+    
+            var ruleSummaryParameter = ruleSummary != null ?
+                new ObjectParameter("RuleSummary", ruleSummary) :
+                new ObjectParameter("RuleSummary", typeof(string));
+    
+            var entityIdParameter = entityId.HasValue ?
+                new ObjectParameter("EntityId", entityId) :
+                new ObjectParameter("EntityId", typeof(int));
+    
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("EntityType", entityType) :
+                new ObjectParameter("EntityType", typeof(string));
+    
+            var indicatorParameter = indicator != null ?
+                new ObjectParameter("Indicator", indicator) :
+                new ObjectParameter("Indicator", typeof(string));
+    
+            var indicatorComparisionParameter = indicatorComparision != null ?
+                new ObjectParameter("IndicatorComparision", indicatorComparision) :
+                new ObjectParameter("IndicatorComparision", typeof(string));
+    
+            var indicatorGoalParameter = indicatorGoal.HasValue ?
+                new ObjectParameter("IndicatorGoal", indicatorGoal) :
+                new ObjectParameter("IndicatorGoal", typeof(int));
+    
+            var completionGoalParameter = completionGoal.HasValue ?
+                new ObjectParameter("CompletionGoal", completionGoal) :
+                new ObjectParameter("CompletionGoal", typeof(int));
+    
+            var frequencyParameter = frequency != null ?
+                new ObjectParameter("Frequency", frequency) :
+                new ObjectParameter("Frequency", typeof(string));
+    
+            var dayOfWeekParameter = dayOfWeek.HasValue ?
+                new ObjectParameter("DayOfWeek", dayOfWeek) :
+                new ObjectParameter("DayOfWeek", typeof(byte));
+    
+            var dateOfMonthParameter = dateOfMonth.HasValue ?
+                new ObjectParameter("DateOfMonth", dateOfMonth) :
+                new ObjectParameter("DateOfMonth", typeof(byte));
+    
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            var createdByParameter = createdBy.HasValue ?
+                new ObjectParameter("CreatedBy", createdBy) :
+                new ObjectParameter("CreatedBy", typeof(int));
+    
+            var modifiedByParameter = modifiedBy.HasValue ?
+                new ObjectParameter("ModifiedBy", modifiedBy) :
+                new ObjectParameter("ModifiedBy", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_Save_AlertRule", clientIdParameter, ruleIdParameter, ruleSummaryParameter, entityIdParameter, entityTypeParameter, indicatorParameter, indicatorComparisionParameter, indicatorGoalParameter, completionGoalParameter, frequencyParameter, dayOfWeekParameter, dateOfMonthParameter, userIdParameter, createdByParameter, modifiedByParameter, isExists);
+        }
+    
+        public virtual int spGetMarketoData(string entityType, Nullable<int> id, Nullable<int> clientId, Nullable<int> sFDCTitleLengthLimit, Nullable<int> integrationInstanceLogId)
+        {
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("entityType", entityType) :
+                new ObjectParameter("entityType", typeof(string));
+    
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("clientId", clientId) :
+                new ObjectParameter("clientId", typeof(int));
+    
+            var sFDCTitleLengthLimitParameter = sFDCTitleLengthLimit.HasValue ?
+                new ObjectParameter("SFDCTitleLengthLimit", sFDCTitleLengthLimit) :
+                new ObjectParameter("SFDCTitleLengthLimit", typeof(int));
+    
+            var integrationInstanceLogIdParameter = integrationInstanceLogId.HasValue ?
+                new ObjectParameter("integrationInstanceLogId", integrationInstanceLogId) :
+                new ObjectParameter("integrationInstanceLogId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("spGetMarketoData", entityTypeParameter, idParameter, clientIdParameter, sFDCTitleLengthLimitParameter, integrationInstanceLogIdParameter);
+        }
+    
+        public virtual int spGetSalesforceData(string entityType, Nullable<int> id, Nullable<int> clientId, Nullable<int> sFDCTitleLengthLimit, Nullable<int> integrationInstanceLogId, Nullable<bool> isClientAllowCustomName, Nullable<bool> isSyncSFDCWithMarketo)
+        {
+            var entityTypeParameter = entityType != null ?
+                new ObjectParameter("entityType", entityType) :
+                new ObjectParameter("entityType", typeof(string));
+    
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            var clientIdParameter = clientId.HasValue ?
+                new ObjectParameter("clientId", clientId) :
+                new ObjectParameter("clientId", typeof(int));
+    
+            var sFDCTitleLengthLimitParameter = sFDCTitleLengthLimit.HasValue ?
+                new ObjectParameter("SFDCTitleLengthLimit", sFDCTitleLengthLimit) :
+                new ObjectParameter("SFDCTitleLengthLimit", typeof(int));
+    
+            var integrationInstanceLogIdParameter = integrationInstanceLogId.HasValue ?
+                new ObjectParameter("integrationInstanceLogId", integrationInstanceLogId) :
+                new ObjectParameter("integrationInstanceLogId", typeof(int));
+    
+            var isClientAllowCustomNameParameter = isClientAllowCustomName.HasValue ?
+                new ObjectParameter("isClientAllowCustomName", isClientAllowCustomName) :
+                new ObjectParameter("isClientAllowCustomName", typeof(bool));
+    
+            var isSyncSFDCWithMarketoParameter = isSyncSFDCWithMarketo.HasValue ?
+                new ObjectParameter("isSyncSFDCWithMarketo", isSyncSFDCWithMarketo) :
+                new ObjectParameter("isSyncSFDCWithMarketo", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("spGetSalesforceData", entityTypeParameter, idParameter, clientIdParameter, sFDCTitleLengthLimitParameter, integrationInstanceLogIdParameter, isClientAllowCustomNameParameter, isSyncSFDCWithMarketoParameter);
+        }
+    
+        [EdmFunction("MRPEntities", "SplitString")]
+        public virtual IQueryable<string> SplitString(string input, string character)
+        {
+            var inputParameter = input != null ?
+                new ObjectParameter("Input", input) :
+                new ObjectParameter("Input", typeof(string));
+    
+            var characterParameter = character != null ?
+                new ObjectParameter("Character", character) :
+                new ObjectParameter("Character", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<string>("[MRPEntities].[SplitString](@Input, @Character)", inputParameter, characterParameter);
+        }
+    
+        public virtual ObjectResult<spViewByDropDownList_Result> spViewByDropDownList(string planId, string clientId)
+        {
+            var planIdParameter = planId != null ?
+                new ObjectParameter("PlanId", planId) :
+                new ObjectParameter("PlanId", typeof(string));
+    
+            var clientIdParameter = clientId != null ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spViewByDropDownList_Result>("spViewByDropDownList", planIdParameter, clientIdParameter);
+        }
+    
+        public virtual int StatisticallyInferredAttribution(Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, string baseRateQuery, string cLOSED_WON, string cLOSED_STAGES, string sELECT_CAMPAIGN_COUNTS, string cAMPAIGN_TABLE, string cAMPAIGN_IDFIELD, string mIN_RESPONSES, string cAMPAIGN_WHERE, string cAMPAIGN_START, string fINAL_JOIN)
+        {
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var endDateParameter = endDate.HasValue ?
+                new ObjectParameter("EndDate", endDate) :
+                new ObjectParameter("EndDate", typeof(System.DateTime));
+    
+            var baseRateQueryParameter = baseRateQuery != null ?
+                new ObjectParameter("BaseRateQuery", baseRateQuery) :
+                new ObjectParameter("BaseRateQuery", typeof(string));
+    
+            var cLOSED_WONParameter = cLOSED_WON != null ?
+                new ObjectParameter("CLOSED_WON", cLOSED_WON) :
+                new ObjectParameter("CLOSED_WON", typeof(string));
+    
+            var cLOSED_STAGESParameter = cLOSED_STAGES != null ?
+                new ObjectParameter("CLOSED_STAGES", cLOSED_STAGES) :
+                new ObjectParameter("CLOSED_STAGES", typeof(string));
+    
+            var sELECT_CAMPAIGN_COUNTSParameter = sELECT_CAMPAIGN_COUNTS != null ?
+                new ObjectParameter("SELECT_CAMPAIGN_COUNTS", sELECT_CAMPAIGN_COUNTS) :
+                new ObjectParameter("SELECT_CAMPAIGN_COUNTS", typeof(string));
+    
+            var cAMPAIGN_TABLEParameter = cAMPAIGN_TABLE != null ?
+                new ObjectParameter("CAMPAIGN_TABLE", cAMPAIGN_TABLE) :
+                new ObjectParameter("CAMPAIGN_TABLE", typeof(string));
+    
+            var cAMPAIGN_IDFIELDParameter = cAMPAIGN_IDFIELD != null ?
+                new ObjectParameter("CAMPAIGN_IDFIELD", cAMPAIGN_IDFIELD) :
+                new ObjectParameter("CAMPAIGN_IDFIELD", typeof(string));
+    
+            var mIN_RESPONSESParameter = mIN_RESPONSES != null ?
+                new ObjectParameter("MIN_RESPONSES", mIN_RESPONSES) :
+                new ObjectParameter("MIN_RESPONSES", typeof(string));
+    
+            var cAMPAIGN_WHEREParameter = cAMPAIGN_WHERE != null ?
+                new ObjectParameter("CAMPAIGN_WHERE", cAMPAIGN_WHERE) :
+                new ObjectParameter("CAMPAIGN_WHERE", typeof(string));
+    
+            var cAMPAIGN_STARTParameter = cAMPAIGN_START != null ?
+                new ObjectParameter("CAMPAIGN_START", cAMPAIGN_START) :
+                new ObjectParameter("CAMPAIGN_START", typeof(string));
+    
+            var fINAL_JOINParameter = fINAL_JOIN != null ?
+                new ObjectParameter("FINAL_JOIN", fINAL_JOIN) :
+                new ObjectParameter("FINAL_JOIN", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("StatisticallyInferredAttribution", startDateParameter, endDateParameter, baseRateQueryParameter, cLOSED_WONParameter, cLOSED_STAGESParameter, sELECT_CAMPAIGN_COUNTSParameter, cAMPAIGN_TABLEParameter, cAMPAIGN_IDFIELDParameter, mIN_RESPONSESParameter, cAMPAIGN_WHEREParameter, cAMPAIGN_STARTParameter, fINAL_JOINParameter);
+        }
+    
+        public virtual int TTestCalculation(string queryToRun, ObjectParameter pvalue)
+        {
+            var queryToRunParameter = queryToRun != null ?
+                new ObjectParameter("QueryToRun", queryToRun) :
+                new ObjectParameter("QueryToRun", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("TTestCalculation", queryToRunParameter, pvalue);
+        }
+    
+        [EdmFunction("MRPEntities", "UF_CSVToTable")]
+        public virtual IQueryable<string> UF_CSVToTable(string psCSString)
+        {
+            var psCSStringParameter = psCSString != null ?
+                new ObjectParameter("psCSString", psCSString) :
+                new ObjectParameter("psCSString", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<string>("[MRPEntities].[UF_CSVToTable](@psCSString)", psCSStringParameter);
+        }
+    
+        public virtual int UpdateAlert_Notification(Nullable<int> userId, string type)
+        {
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var typeParameter = type != null ?
+                new ObjectParameter("Type", type) :
+                new ObjectParameter("Type", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdateAlert_Notification", userIdParameter, typeParameter);
+        }
+    
+        public virtual int UpdateSalesforceIdForMarketoTactic()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdateSalesforceIdForMarketoTactic");
+        }
+    
+        public virtual int UpdateTacticInstanceTacticId_Comment(string strCreatedTacIds, string strUpdatedTacIds, string strUpdateComment, string strCreateComment, Nullable<bool> isAutoSync, Nullable<int> userId, string integrationType)
+        {
+            var strCreatedTacIdsParameter = strCreatedTacIds != null ?
+                new ObjectParameter("strCreatedTacIds", strCreatedTacIds) :
+                new ObjectParameter("strCreatedTacIds", typeof(string));
+    
+            var strUpdatedTacIdsParameter = strUpdatedTacIds != null ?
+                new ObjectParameter("strUpdatedTacIds", strUpdatedTacIds) :
+                new ObjectParameter("strUpdatedTacIds", typeof(string));
+    
+            var strUpdateCommentParameter = strUpdateComment != null ?
+                new ObjectParameter("strUpdateComment", strUpdateComment) :
+                new ObjectParameter("strUpdateComment", typeof(string));
+    
+            var strCreateCommentParameter = strCreateComment != null ?
+                new ObjectParameter("strCreateComment", strCreateComment) :
+                new ObjectParameter("strCreateComment", typeof(string));
+    
+            var isAutoSyncParameter = isAutoSync.HasValue ?
+                new ObjectParameter("isAutoSync", isAutoSync) :
+                new ObjectParameter("isAutoSync", typeof(bool));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var integrationTypeParameter = integrationType != null ?
+                new ObjectParameter("integrationType", integrationType) :
+                new ObjectParameter("integrationType", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdateTacticInstanceTacticId_Comment", strCreatedTacIdsParameter, strUpdatedTacIdsParameter, strUpdateCommentParameter, strCreateCommentParameter, isAutoSyncParameter, userIdParameter, integrationTypeParameter);
+        }
+    
+        public virtual int UpdateTacticInstanceTacticId_Comment_API(string strCreatedTacIds, string strUpdatedTacIds, string strCrtCampaignIds, string strUpdCampaignIds, string strCrtProgramIds, string strUpdProgramIds, string strCrtImprvmntTacIds, string strUpdImprvmntTacIds, Nullable<bool> isAutoSync, Nullable<int> userId, string integrationType)
+        {
+            var strCreatedTacIdsParameter = strCreatedTacIds != null ?
+                new ObjectParameter("strCreatedTacIds", strCreatedTacIds) :
+                new ObjectParameter("strCreatedTacIds", typeof(string));
+    
+            var strUpdatedTacIdsParameter = strUpdatedTacIds != null ?
+                new ObjectParameter("strUpdatedTacIds", strUpdatedTacIds) :
+                new ObjectParameter("strUpdatedTacIds", typeof(string));
+    
+            var strCrtCampaignIdsParameter = strCrtCampaignIds != null ?
+                new ObjectParameter("strCrtCampaignIds", strCrtCampaignIds) :
+                new ObjectParameter("strCrtCampaignIds", typeof(string));
+    
+            var strUpdCampaignIdsParameter = strUpdCampaignIds != null ?
+                new ObjectParameter("strUpdCampaignIds", strUpdCampaignIds) :
+                new ObjectParameter("strUpdCampaignIds", typeof(string));
+    
+            var strCrtProgramIdsParameter = strCrtProgramIds != null ?
+                new ObjectParameter("strCrtProgramIds", strCrtProgramIds) :
+                new ObjectParameter("strCrtProgramIds", typeof(string));
+    
+            var strUpdProgramIdsParameter = strUpdProgramIds != null ?
+                new ObjectParameter("strUpdProgramIds", strUpdProgramIds) :
+                new ObjectParameter("strUpdProgramIds", typeof(string));
+    
+            var strCrtImprvmntTacIdsParameter = strCrtImprvmntTacIds != null ?
+                new ObjectParameter("strCrtImprvmntTacIds", strCrtImprvmntTacIds) :
+                new ObjectParameter("strCrtImprvmntTacIds", typeof(string));
+    
+            var strUpdImprvmntTacIdsParameter = strUpdImprvmntTacIds != null ?
+                new ObjectParameter("strUpdImprvmntTacIds", strUpdImprvmntTacIds) :
+                new ObjectParameter("strUpdImprvmntTacIds", typeof(string));
+    
+            var isAutoSyncParameter = isAutoSync.HasValue ?
+                new ObjectParameter("isAutoSync", isAutoSync) :
+                new ObjectParameter("isAutoSync", typeof(bool));
+    
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var integrationTypeParameter = integrationType != null ?
+                new ObjectParameter("integrationType", integrationType) :
+                new ObjectParameter("integrationType", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdateTacticInstanceTacticId_Comment_API", strCreatedTacIdsParameter, strUpdatedTacIdsParameter, strCrtCampaignIdsParameter, strUpdCampaignIdsParameter, strCrtProgramIdsParameter, strUpdProgramIdsParameter, strCrtImprvmntTacIdsParameter, strUpdImprvmntTacIdsParameter, isAutoSyncParameter, userIdParameter, integrationTypeParameter);
+        }
+    
+        public virtual int WebApiGetReportRawData(Nullable<int> id, Nullable<bool> topOnly, string viewBy, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, string filterValues)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var topOnlyParameter = topOnly.HasValue ?
+                new ObjectParameter("TopOnly", topOnly) :
+                new ObjectParameter("TopOnly", typeof(bool));
+    
+            var viewByParameter = viewBy != null ?
+                new ObjectParameter("ViewBy", viewBy) :
+                new ObjectParameter("ViewBy", typeof(string));
+    
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var endDateParameter = endDate.HasValue ?
+                new ObjectParameter("EndDate", endDate) :
+                new ObjectParameter("EndDate", typeof(System.DateTime));
+    
+            var filterValuesParameter = filterValues != null ?
+                new ObjectParameter("FilterValues", filterValues) :
+                new ObjectParameter("FilterValues", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WebApiGetReportRawData", idParameter, topOnlyParameter, viewByParameter, startDateParameter, endDateParameter, filterValuesParameter);
+        }
+    
+        public virtual int PullResponses(string dataSource, string clientID, string userID)
+        {
+            var dataSourceParameter = dataSource != null ?
+                new ObjectParameter("DataSource", dataSource) :
+                new ObjectParameter("DataSource", typeof(string));
+    
+            var clientIDParameter = clientID != null ?
+                new ObjectParameter("ClientID", clientID) :
+                new ObjectParameter("ClientID", typeof(string));
+    
+            var userIDParameter = userID != null ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PullResponses", dataSourceParameter, clientIDParameter, userIDParameter);
         }
     }
 }

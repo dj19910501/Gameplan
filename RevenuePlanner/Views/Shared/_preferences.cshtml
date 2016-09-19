@@ -57,7 +57,7 @@
                     if (isDataUpdated == 'true')
                         return false;
                     var url = '';
-                    url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+                    url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.ID, src = "myaccount" })';
                     window.location.href = url;
                 });
 
@@ -74,7 +74,7 @@
                 if (isDataUpdated == 'true')
                     return false;
                     var url = '';
-                    url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
+                    url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.ID, Mode = "MyPermission" })';
 
                     window.location.href = url;
                 });

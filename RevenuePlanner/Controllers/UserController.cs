@@ -53,13 +53,13 @@ namespace RevenuePlanner.Controllers
             try
             {
                 //// Get TeamMembers list by Client,Application & User Id.
-                lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).OrderBy(teamlist => teamlist.FirstName, new AlphaNumericComparer()).ToList();
+                lstUser = objBDSServiceClient.GetTeamMemberListEx(Sessions.User.CID, Sessions.ApplicationId, Sessions.User.ID, true).OrderBy(teamlist => teamlist.FirstName, new AlphaNumericComparer()).ToList();
                 if (lstUser.Count() > 0)
                 {
                     foreach (var user in lstUser)
                     {
                         UserModel objUserModel = new UserModel();
-                        objUserModel.ClientId = user.ClientId;
+                        objUserModel.ClientId = user.CID;
                         objUserModel.Client = user.Client;
                         objUserModel.DisplayName = user.DisplayName;
                         objUserModel.Email = user.Email;
@@ -67,7 +67,7 @@ namespace RevenuePlanner.Controllers
                         objUserModel.JobTitle = user.JobTitle;
                         objUserModel.LastName = user.LastName;
                         objUserModel.Password = user.Password;
-                        objUserModel.UserId = user.UserId;
+                        objUserModel.UserId = user.ID;
                         objUserModel.RoleCode = user.RoleCode;
                         objUserModel.RoleId = user.RoleId;
                         objUserModel.RoleTitle = user.RoleTitle;
@@ -78,7 +78,7 @@ namespace RevenuePlanner.Controllers
                 /* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
                 //// If user is Admin then Get Other Application Users list for Suggestion.
                 if ((bool)ViewBag.IsUserAdminAuthorized)
-                    lstOtherUser = objBDSServiceClient.GetOtherApplicationUsers(Sessions.User.ClientId, Sessions.ApplicationId).OrderBy(userlist => userlist.FirstName, new AlphaNumericComparer()).ToList();
+                    lstOtherUser = objBDSServiceClient.GetOtherApplicationUsersEx(Sessions.User.CID, Sessions.ApplicationId).OrderBy(userlist => userlist.FirstName, new AlphaNumericComparer()).ToList();
             }
             catch (Exception e)
             {
@@ -104,7 +104,7 @@ namespace RevenuePlanner.Controllers
                 try
                 {
                     //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                    ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId).OrderBy(role => role.Title, new AlphaNumericComparer());
+                    ViewData["Roles"] = objBDSServiceClient.GetAllRoleListEx(Sessions.ApplicationId, Sessions.User.CID).OrderBy(role => role.Title, new AlphaNumericComparer());
                 }
                 catch (Exception e)
                 {
@@ -157,7 +157,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                if (ModelState.IsValid && Sessions.User.UserId != null)
+                if (ModelState.IsValid && Sessions.User.ID != 0)
                 {
                     //// Compare NewPassword and ConfirmPassword fields.
                     if (form.NewPassword != form.ConfirmNewPassword)
@@ -173,9 +173,9 @@ namespace RevenuePlanner.Controllers
                     //Added By Maitri Gandhi for #2105 on 11/4/2016
                     string returnMessage = "Success";
 
-                    //returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.UserId, SingleHash_NewPassword, Sessions.User.UserId);
+                    //returnMessage = objBDSServiceClient.CreatePasswordHistory(Sessions.User.ID, SingleHash_NewPassword, Sessions.User.ID);
                     //Modified by Maitri Gandhi on 19/4/2016
-                    returnMessage = objBDSServiceClient._ChangePassword(Sessions.User.UserId, SingleHash_NewPassword, SingleHash_CurrentPassword);
+                    returnMessage = objBDSServiceClient._ChangePasswordEx(Sessions.User.ID, SingleHash_NewPassword, SingleHash_CurrentPassword);
                     if (returnMessage == "CurrentUserPasswordNotCorrect")
                     {
                         TempData["ErrorMessage"] = Common.objCached.CurrentUserPasswordNotCorrect;
@@ -193,7 +193,7 @@ namespace RevenuePlanner.Controllers
                         {
                             Sessions.RedirectToChangePassword = false;
                             //Update last login date for user
-                            objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
+                            objBDSServiceClient.UpdateLastLoginDateEx(Sessions.User.ID, Sessions.ApplicationId);
 
                             //Commented By Komal Rawal for #1457
                             //if (Sessions.User.SecurityQuestionId == null)
@@ -240,7 +240,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 //// Verify Current Password by UserId.
-                isValid = objBDSServiceClient.CheckCurrentPassword(Sessions.User.UserId, SingleHash_CurrentPassword);
+                isValid = objBDSServiceClient.CheckCurrentPasswordEx(Sessions.User.ID, SingleHash_CurrentPassword);
             }
             catch (Exception e)
             {
@@ -312,7 +312,7 @@ namespace RevenuePlanner.Controllers
                 if (id != null)
                 {
                     //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-                    string userRole = objBDSServiceClient.GetUserRole(id, Sessions.ApplicationId, Sessions.User.ClientId);
+                    string userRole = objBDSServiceClient.GetUserRoleEx(id, Sessions.ApplicationId, Sessions.User.CID);
                     int retVal = objBDSServiceClient.DeleteUser(id, Sessions.ApplicationId);
                     if (retVal == 1)
                         TempData["SuccessMessage"] = Common.objCached.UserDeleted;
@@ -344,24 +344,23 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="clientId">client</param>
         /// <returns></returns>
-        private void LoadCreateModeComponents(string clientId = "")
+        private void LoadCreateModeComponents(int clientId = 0)
         {
             var IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
-            if (!String.IsNullOrWhiteSpace(clientId))
+            if (clientId != 0)
             {
-                Guid userClientId = Guid.Parse(clientId);
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 if (IsUserAdminAuthorized)
                 {
                     // Get All User List for Manager
-                    ViewData["ManagerList"] = GetManagersList(Guid.Empty, userClientId);
+                    ViewData["ManagerList"] = GetManagersList(0, clientId);
                 }
                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
             }
 
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId).OrderBy(role => role.Title, new AlphaNumericComparer());
-            ViewBag.CurrClientId = Sessions.User.ClientId;
+            ViewData["Roles"] = objBDSServiceClient.GetAllRoleListEx(Sessions.ApplicationId, Sessions.User.CID).OrderBy(role => role.Title, new AlphaNumericComparer());
+            ViewBag.CurrClientId = Sessions.User.CID;
             ViewBag.CurrClient = Sessions.User.Client;
 
             if (IsUserAdminAuthorized)
@@ -381,7 +380,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                LoadCreateModeComponents(Convert.ToString(Sessions.User.ClientId));
+                LoadCreateModeComponents(Sessions.User.CID);
                 // End: Modofied by Dharmraj, For ticket #583
             }
             catch (Exception e)
@@ -424,7 +423,7 @@ namespace RevenuePlanner.Controllers
                         if ((!file.ContentType.ToLower().Contains("jpg") && !file.ContentType.ToLower().Contains("jpeg") && !file.ContentType.ToLower().Contains("png")) || (file.ContentLength > 1 * 1024 * 1024))
                         {
                             TempData["ErrorMessage"] = Common.objCached.InvalidProfileImage;
-                            LoadCreateModeComponents(Convert.ToString(form.ClientId));
+                            LoadCreateModeComponents(form.ClientId);
                             return View(form);
                         }
                     }
@@ -437,7 +436,7 @@ namespace RevenuePlanner.Controllers
                     objUser.Email = form.Email;
                     objUser.Phone = form.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     objUser.JobTitle = form.JobTitle;
-                    objUser.ClientId = form.ClientId;
+                    objUser.CID = form.ClientId;
                     objUser.RoleId = form.RoleId;
                     if (file != null)
                     {
@@ -449,17 +448,17 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                    objUser.ManagerId = form.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                    objUser.ID = form.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
 
                     //// Create User with default Permissions.
-                    //int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.UserId);
+                    //int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.ID);
                     //Modified by Maitri Gandhi on 19/4/2016
-                    string retValMsg = objBDSServiceClient._CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.UserId);
+                    string retValMsg = objBDSServiceClient._CreateUserWithPermissionEx(objUser, Sessions.ApplicationId, Sessions.User.ID);
                     if (retValMsg == "Success")
                     {
                         UserCreatedMail(objUser, password);
                         //var UserDetails = objBDSServiceClient.GetUserDetails(objUser.Email);
-                        //objBDSServiceClient.CreatePasswordHistory(UserDetails.UserId, objUser.Password,Sessions.User.UserId);
+                        //objBDSServiceClient.CreatePasswordHistory(UserDetails.UserId, objUser.Password,Sessions.User.ID);
                         TempData["SuccessMessage"] = Common.objCached.UserAdded;
                         return RedirectToAction("Index");
                     }
@@ -472,7 +471,7 @@ namespace RevenuePlanner.Controllers
                         TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                     }
                 }
-                LoadCreateModeComponents(Convert.ToString(form.ClientId));
+                LoadCreateModeComponents(form.ClientId);
             }
             catch (Exception e)
             {
@@ -562,7 +561,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="clientId">client</param>
         /// <param name="src">source either "myaccount" or "myteam"</param>
         /// <returns></returns>
-        private void LoadEditModeComponents(Guid clientId, string src)
+        private void LoadEditModeComponents(int clientId, string src)
         {
             if (!string.IsNullOrWhiteSpace(src))
             {
@@ -571,9 +570,9 @@ namespace RevenuePlanner.Controllers
             ViewData["Clients"] = objBDSServiceClient.GetClientList();
 
             //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
-            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId, Sessions.User.ClientId);
+            ViewData["Roles"] = objBDSServiceClient.GetAllRoleListEx(Sessions.ApplicationId, Sessions.User.CID);
 
-            ViewBag.CurrentUserId = Convert.ToString(Sessions.User.UserId);
+            ViewBag.CurrentUserId = Sessions.User.ID;
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
         }
 
@@ -598,7 +597,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="isForDelete">Added to give delete option, if user has selected the delete operation from user listing.</param> // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         /// <returns>Returns _UpdateUserDetails partialview with UserModel</returns>
         /// This method is common for MyAccount and Team Member edit page.
-        public ActionResult EditUserDetails(string usrid = null, string src = "myaccount", string isForDelete = "false")
+        public ActionResult EditUserDetails(int usrid = 0, string src = "myaccount", string isForDelete = "false")
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
@@ -606,25 +605,25 @@ namespace RevenuePlanner.Controllers
 
             // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             ViewBag.isForDelete = isForDelete;
-            Guid userId = new Guid();
-            if (usrid == null)
+            int userId = 0;
+            if (usrid == 0)
             {
-                userId = Sessions.User.UserId;
+                userId = Sessions.User.ID;
             }
             else
             {
-                userId = Guid.Parse(usrid);
+                userId = usrid;
             }
 
             BDSService.User objUser = new BDSService.User();
             UserModel objUserModel = new UserModel();
             try
             {
-                objUser = objBDSServiceClient.GetTeamMemberDetails(userId, Sessions.ApplicationId);
+                objUser = objBDSServiceClient.GetTeamMemberDetailsEx(userId, Sessions.ApplicationId);
                 if (objUser != null)
                 {
                     //// Set User details to Model.
-                    objUserModel.ClientId = objUser.ClientId;
+                    objUserModel.ClientId = objUser.CID;
                     objUserModel.Client = objUser.Client;
                     objUserModel.DisplayName = objUser.DisplayName;
                     objUserModel.Email = objUser.Email;
@@ -634,7 +633,7 @@ namespace RevenuePlanner.Controllers
                     objUserModel.LastName = objUser.LastName;
                     objUserModel.Password = objUser.Password;
                     objUserModel.ProfilePhoto = objUser.ProfilePhoto;
-                    objUserModel.UserId = objUser.UserId;
+                    objUserModel.UserId = objUser.ID;
                     objUserModel.RoleCode = objUser.RoleCode;
                     objUserModel.RoleId = objUser.RoleId;
                     objUserModel.RoleTitle = objUser.RoleTitle;
@@ -642,15 +641,15 @@ namespace RevenuePlanner.Controllers
                     objUserModel.ConfirmPassword = objUser.Password;
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     objUserModel.IsManager = objUser.IsManager;
-                    if (objUser.ManagerId != null && objUser.ManagerId != Guid.Empty)
-                        objUserModel.ManagerId = objUser.ManagerId;
+                    if (objUser.MID != 0)
+                        objUserModel.ManagerId = objUser.MID;
                     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     LoadEditModeComponents(objUserModel.ClientId, src);
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-                    if ((bool)ViewBag.IsUserAdminAuthorized && Sessions.User.UserId != objUser.UserId && objUserModel.ClientId != Guid.Empty)
+                    if ((bool)ViewBag.IsUserAdminAuthorized && Sessions.User.ID != objUser.ID && objUserModel.ClientId != 0)
                     {
                         // Get All User List for Manager
-                        ViewData["ManagerList"] = GetManagersList(objUser.UserId, objUserModel.ClientId);
+                        ViewData["ManagerList"] = GetManagersList(objUser.ID, objUserModel.ClientId);
                     }
                     else
                     {
@@ -675,7 +674,7 @@ namespace RevenuePlanner.Controllers
                     }
                     #region " Bind Preferred CurrencyCode Dropdown List "
                     List<SelectListItem> lstPrefCurrCode = new List<SelectListItem>();
-                    IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrency(Sessions.User.ClientId);
+                    IEnumerable<BDSService.Currency> lstClientCurrency = objBDSServiceClient.GetClientCurrencyEx(Sessions.User.CID);
                     foreach (var item in lstClientCurrency)
                     {
                         if (!string.IsNullOrEmpty(item.CurrencySymbol) && !string.IsNullOrEmpty(item.ISOCurrencyCode))
@@ -698,13 +697,13 @@ namespace RevenuePlanner.Controllers
                     }
 
                     #endregion
-                    if (objUser.PreferredCurrencyCode != null)
+                    if (Sessions.User.PreferredCurrencyCode != null)
                     {
-                        objUserModel.PreferredCurrencyCode = objUser.PreferredCurrencyCode;
+                        objUserModel.PreferredCurrencyCode = Sessions.User.PreferredCurrencyCode;
                         //Insertation Start Assign Default Currency if user's preferd currency is removed.
                         if(lstClientCurrency!=null)
                         {
-                            var data = lstClientCurrency.Where(w => w.ISOCurrencyCode == objUser.PreferredCurrencyCode).FirstOrDefault();
+                            var data = lstClientCurrency.Where(w => w.ISOCurrencyCode == Sessions.User.PreferredCurrencyCode).FirstOrDefault();
                             if (data == null)
                                 objUserModel.PreferredCurrencyCode = lstClientCurrency.Where(w => w.IsDefault == true).Select(w => w.ISOCurrencyCode).FirstOrDefault();                           
                                 
@@ -794,7 +793,7 @@ namespace RevenuePlanner.Controllers
                         if ((!file.ContentType.ToLower().Contains("jpg") && !file.ContentType.ToLower().Contains("jpeg") && !file.ContentType.ToLower().Contains("png")) || (file.ContentLength > 1 * 1024 * 1024))
                         {
                             TempData["ErrorMessage"] = Common.objCached.InvalidProfileImage;
-                            if (form.UserId == Sessions.User.UserId)
+                            if (form.UserId == Sessions.User.ID)
                             {
                                 LoadEditModeComponents(form.ClientId, "myaccount");
                             }
@@ -806,7 +805,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     BDSService.User objUser = new BDSService.User();
-                    objUser.UserId = form.UserId;
+                    objUser.ID = form.UserId;
                     objUser.FirstName = form.FirstName;
                     objUser.LastName = form.LastName;
                     objUser.Email = form.Email;
@@ -819,7 +818,7 @@ namespace RevenuePlanner.Controllers
                             objUser.IsDeleted = true;
                             // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                             objUser.IsManager = form.IsManager;
-                            objUser.NewManagerId = form.NewManagerId;
+                            objUser.NewMID = form.NewManagerId;
                             // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                         }
                         else
@@ -844,13 +843,13 @@ namespace RevenuePlanner.Controllers
                     {
 
                         //// Get User Profile photo.
-                        BDSService.User objUsernew = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Sessions.ApplicationId);
+                        BDSService.User objUsernew = objBDSServiceClient.GetTeamMemberDetailsEx(form.UserId, Sessions.ApplicationId);
                         if (objUsernew != null)
                         {
                             objUser.ProfilePhoto = objUsernew.ProfilePhoto;
                         }
                     }
-                    objUser.ClientId = form.ClientId;
+                    objUser.CID = form.ClientId;
                     objUser.PreferredCurrencyCode = form.PreferredCurrencyCode;
                     objUser.RoleId = form.RoleId;
                     if (form.RoleId != null)
@@ -859,23 +858,23 @@ namespace RevenuePlanner.Controllers
                         if (objRole != null)
                         {
                             objUser.RoleCode = objRole.Code;
-                            objUser.ManagerId = form.ManagerId;
+                            objUser.MID = form.ManagerId;
                             // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                         }
                     }
 
                     // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
-                    if (form.ManagerId == null)
+                    if (form.ManagerId == 0)
                         form.ManagerName = "N/A";
 
                     //// Update User details.
-                    int retVal = objBDSServiceClient.UpdateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
+                    int retVal = objBDSServiceClient.UpdateUserEx(objUser, Sessions.ApplicationId, Sessions.User.ID);
                     if (retVal == 1)
                     {
                         TempData["SuccessMessage"] = Common.objCached.UserEdited;
-                        if (form.UserId == Sessions.User.UserId)
+                        if (form.UserId == Sessions.User.ID)
                         {
-                            objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Sessions.ApplicationId);
+                            objUser = objBDSServiceClient.GetTeamMemberDetailsEx(form.UserId, Sessions.ApplicationId);
                             if (objUser.PreferredCurrencyCode != Sessions.User.PreferredCurrencyCode)
                             {
                                 TempData["SuccessMessage"] = Common.objCached.UserEditedWithCurrency;
@@ -895,7 +894,7 @@ namespace RevenuePlanner.Controllers
                         {
                             if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
                             {
-                                int retDelete = objBDSServiceClient.DeleteUser(form.UserId, Sessions.ApplicationId);
+                                int retDelete = objBDSServiceClient.DeleteUserEx(form.UserId, Sessions.ApplicationId);
                                 return RedirectToAction("Index");   // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
                             }
                         }
@@ -916,11 +915,11 @@ namespace RevenuePlanner.Controllers
                 }
 
                 //// Check whether UserId is current loggined User or not.
-                if (form.UserId == Sessions.User.UserId)
+                if (form.UserId == Sessions.User.ID)
                 {
                     // Start - Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
                     ViewBag.SourceValue = "myaccount";
-                    ViewBag.CurrentUserId = Convert.ToString(Sessions.User.UserId);
+                    ViewBag.CurrentUserId = Convert.ToString(Sessions.User.ID);
                     ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
                     // End - Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
                 }
@@ -929,7 +928,7 @@ namespace RevenuePlanner.Controllers
                     LoadEditModeComponents(form.ClientId, "myteam");
 
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                    if ((bool)ViewBag.IsUserAdminAuthorized && form.ClientId != Guid.Empty)
+                    if ((bool)ViewBag.IsUserAdminAuthorized && form.ClientId != 0)
                     {
                         // Get All User List for Manager
                         ViewData["ManagerList"] = GetManagersList(form.UserId, form.ClientId);
@@ -959,7 +958,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                if (form.UserId != Sessions.User.UserId)
+                if (form.UserId != Sessions.User.ID)
                 {
                     return RedirectToAction("Index");
                 }
@@ -998,7 +997,7 @@ namespace RevenuePlanner.Controllers
                 userNotification.NotificationId = item.NotificationId;
 
                 //// Get Current loggined user notification count.
-                cntUsrNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.NotificationId == item.NotificationId && usrNotifctn.UserId == Sessions.User.UserId).Count();
+                cntUsrNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.NotificationId == item.NotificationId && usrNotifctn.UserId == Sessions.User.ID).Count();
 
                 if (cntUsrNotification > 0)
                     userNotification.IsSelected = true;
@@ -1023,7 +1022,7 @@ namespace RevenuePlanner.Controllers
             {
                 
                 List<User_Notification> lstUserNotification = new List<User_Notification>();
-                lstUserNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.UserId == Sessions.User.UserId).ToList();
+                lstUserNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.UserId == Sessions.User.ID).ToList();
 
                 TempData["SuccessMessage"] = Common.objCached.UserNotificationsSaved;
 
@@ -1051,9 +1050,9 @@ namespace RevenuePlanner.Controllers
 
                         //// Add User Notification data to table User_Notification.
                         objUser_Notification = new User_Notification();
-                        objUser_Notification.UserId = Sessions.User.UserId;
+                        objUser_Notification.UserId = Sessions.User.ID;
                         objUser_Notification.NotificationId = notificationId;
-                        objUser_Notification.CreatedBy = Sessions.User.UserId;
+                        objUser_Notification.CreatedBy = Sessions.User.ID;
                         objUser_Notification.CreatedDate = DateTime.Now;
                         db.Entry(objUser_Notification).State = EntityState.Added;
                         db.User_Notification.Add(objUser_Notification);
@@ -1094,18 +1093,18 @@ namespace RevenuePlanner.Controllers
         /// <param name="height">height of photo</param>
         /// <param name="src">Load Team Member Image</param>
         /// <returns>Return User Image file</returns>
-        public ActionResult LoadUserImage(string id = null, int width = 35, int height = 35, string src = null)
+        public ActionResult LoadUserImage(int id = 0, int width = 35, int height = 35, string src = null)
         {
-            Guid userId = new Guid();
+            int userId = 0;
             byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
             try
             {
-                if (id != null)
+                if (id != 0)
                 {
-                    userId = Guid.Parse(id);
+                    userId = id;
                     BDSService.User objUser = new BDSService.User();
                     //// Get User profile photo.
-                    objUser = objBDSServiceClient.GetTeamMemberDetails(userId, Sessions.ApplicationId);
+                    objUser = objBDSServiceClient.GetTeamMemberDetailsEx(userId, Sessions.ApplicationId);
                     if (objUser != null)
                     {
                         if (objUser.ProfilePhoto != null)
@@ -1217,21 +1216,16 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">UserId</param>
         /// <returns>Return Managerlist in JsonResult</returns>
         [AcceptVerbs(HttpVerbs.Get)]
-        public JsonResult GetManagers(string id = null, string UserId = null)
+        public JsonResult GetManagers(int clientId = 0, int UserId = 0)
         {
-            Guid clientId = new Guid();
-            if (id != null)
-            {
-                Guid.TryParse(id, out clientId);
-            }
             List<UserModel> managerList = new List<UserModel>();
-            if (UserId != null)
+            if (UserId != 0)
             {
-                managerList = GetManagersList(Guid.Parse(UserId), clientId);
+                managerList = GetManagersList(UserId, clientId);
             }
             else
             {
-                managerList = GetManagersList(Guid.Empty, clientId);
+                managerList = GetManagersList(0, clientId);
             }
 
             return Json(managerList, JsonRequestBehavior.AllowGet);
@@ -1250,12 +1244,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param>
         /// <param name="ClientId"></param>
         /// <returns>List<UserModel></returns>
-        public List<UserModel> GetManagersList(Guid UserId, Guid ClientId)
+        public List<UserModel> GetManagersList(int UserId, int ClientId)
         {
             if (Sessions.ApplicationId != Guid.Empty && Sessions.ApplicationId != null)
             {
-                var UserList = objBDSServiceClient.GetManagerList(ClientId, Sessions.ApplicationId, UserId);
-                var ManagerList = UserList.Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.ManagerName }).ToList();
+                var UserList = objBDSServiceClient.GetManagerListEx(ClientId, Sessions.ApplicationId, UserId);
+                var ManagerList = UserList.Select(a => new UserModel { ManagerId = a.ID, ManagerName = a.ManagerName }).ToList();
                 return ManagerList.OrderBy(a => a.ManagerName, new AlphaNumericComparer()).ToList();
             }
             return null;
@@ -1275,11 +1269,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">UserId</param>
         /// <param name="RoleId">RoleId</param>
         /// <returns>Return Success message.</returns>
-        public ActionResult AssignUser(string UserId, string RoleId)
+        public ActionResult AssignUser(int UserId, string RoleId)
         {
             try
             {
-                int res = objBDSServiceClient.AssignUser(Guid.Parse(UserId), Guid.Parse(RoleId), Sessions.ApplicationId, Sessions.User.UserId);
+                int res = objBDSServiceClient.AssignUserEx(UserId, Guid.Parse(RoleId), Sessions.ApplicationId, Sessions.User.ID);
                 TempData["SuccessMessage"] = Common.objCached.UserAdded;
                 return Json("success", JsonRequestBehavior.AllowGet);
             }
@@ -1316,7 +1310,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 CacheObject objCache = new CacheObject();
-                var lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId).OrderBy(a=>a.EntityTitle).ToList();
+                var lstentity = objcommonalert.SearchEntities(Sessions.User.CID).OrderBy(a=>a.EntityTitle).ToList();
                 objCache.AddCache(Enums.CacheObject.ClientEntityList.ToString(), lstentity);
             }
             catch (Exception ex)
@@ -1344,7 +1338,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    lstentity = objcommonalert.SearchEntities(Sessions.User.ClientId).OrderBy(a => a.EntityTitle).ToList();
+                    lstentity = objcommonalert.SearchEntities(Sessions.User.CID).OrderBy(a => a.EntityTitle).ToList();
                     objCache.AddCache(Enums.CacheObject.ClientEntityList.ToString(), lstentity);
                 }
                 var lstentityType = Enum.GetValues(typeof(Enums.EntityType)).Cast<Enums.EntityType>().Select(a => a.ToString()).ToList();
@@ -1388,7 +1382,7 @@ namespace RevenuePlanner.Controllers
         public SelectList GetPerformancefector()
         {
             var lstGoalTypes = Enum.GetValues(typeof(Enums.PerformanceFector)).Cast<Enums.PerformanceFector>().Select(a => a.ToString()).ToList();
-            var lstGoalTypeListFromDB = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.ClientId && lstGoalTypes.Contains(a.Code)).Select(a => a).ToList();
+            var lstGoalTypeListFromDB = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.CID && lstGoalTypes.Contains(a.Code)).Select(a => a).ToList();
             Stage objStage = new Stage();
             string revGoalType = Convert.ToString(Enums.PerformanceFector.Revenue);
             objStage.Title = revGoalType;
@@ -1421,7 +1415,7 @@ namespace RevenuePlanner.Controllers
 
                     if (objRule.EntityID != null && Int32.Parse(objRule.EntityID) != 0)
                     {
-                        int result = objcommonalert.AddUpdate_AlertRule(objRule, Sessions.User.ClientId, Sessions.User.UserId, RuleID);
+                        int result = objcommonalert.AddUpdate_AlertRule(objRule, Sessions.User.CID, Sessions.User.ID, RuleID);
                         if (result == 0)
                         {
                             if (RuleID == 0)
@@ -1509,7 +1503,7 @@ namespace RevenuePlanner.Controllers
                     lstWeekdays.Add(objTime);
                 }
                 objalert.lstWeekdays = new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First());
-                List<AlertRuleDetail> lstRuledetail = objcommonalert.GetAletRuleList(Sessions.User.UserId, Sessions.User.ClientId);
+                List<AlertRuleDetail> lstRuledetail = objcommonalert.GetAletRuleList(Sessions.User.ID, Sessions.User.CID);
                 objalert.lstAlertRule = lstRuledetail;
             }
             catch (Exception ex)
@@ -1580,7 +1574,7 @@ namespace RevenuePlanner.Controllers
             {
                 //if (Sessions.IsAlertPermission)
                 //{
-                    var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
+                    var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.ID);
                     if (AllAlert != null && AllAlert.Count > 0)
                     {
                         alertCount = AllAlert.Where(a => a.IsRead == false && DateTime.Compare(a.DisplayDate.Date, DateTime.Now.Date) <= 0).ToList().Count();
@@ -1593,7 +1587,7 @@ namespace RevenuePlanner.Controllers
                     }
                 //}
                 #region code for get notification listing
-                var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.UserId);
+                var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.ID);
 
                 if (AllNotification != null && AllNotification.Count > 0)
                 {
@@ -1650,7 +1644,7 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-                int result = objcommonalert.UpdateAlert_Notification_IsRead(type.ToLower(), Sessions.User.UserId);
+                int result = objcommonalert.UpdateAlert_Notification_IsRead(type.ToLower(), Sessions.User.ID);
             }
             catch (Exception ex)
             {
@@ -1679,7 +1673,7 @@ namespace RevenuePlanner.Controllers
 
             if (type.ToLower() == Convert.ToString(Enums.AlertNotification.Notification).ToLower())
             {
-                var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.UserId);
+                var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.ID);
                 if (AllNotification != null && AllNotification.Count > 0)
                 {
                     DataList = AllNotification.Select(a => new UserAlertsNotification
@@ -1702,7 +1696,7 @@ namespace RevenuePlanner.Controllers
             {
                 //if (Sessions.IsAlertPermission)
                 //{
-                    var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.UserId);
+                    var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.ID);
                     if (AllAlert != null && AllAlert.Count > 0)
                     {
                         DataList = AllAlert.Select(a => new UserAlertsNotification

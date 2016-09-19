@@ -202,7 +202,7 @@ namespace Integration.Helper
         /// <param name="SyncStart">sync start timestamp</param>
         /// <param name="CreateBy">logged in user id</param>
         /// <returns>IntegrationInstanceSectionId</returns>
-        public static int CreateIntegrationInstanceSection(int IntegartionInstanceLogId, int IntegartionInstanceId, string SectionName, DateTime SyncStart, Guid CreateBy)
+        public static int CreateIntegrationInstanceSection(int IntegartionInstanceLogId, int IntegartionInstanceId, string SectionName, DateTime SyncStart, int CreateBy)
         {
             using (MRPEntities db = new MRPEntities())
             {
@@ -601,7 +601,7 @@ namespace Integration.Helper
 
         /// <summary>
         /// </summary>
-        public static string GetClosedWon(Guid _clientId)
+        public static string GetClosedWon(int _clientId)
         {
             string ClosedWonTitle = ClosedWon;
             using (MRPEntities db = new MRPEntities())
@@ -705,7 +705,7 @@ namespace Integration.Helper
         }
         // Add By Rahul Shah
         // Desc :: get FieldMappings data for Marketo
-        public DataSet GetFieldMappings(string entityType, Guid clientId, int IntegrationTypeId, int IntegrationInstanceID)
+        public DataSet GetFieldMappings(string entityType, int clientId, int IntegrationTypeId, int IntegrationInstanceID)
         {
             string clientid = clientId.ToString();
             DataTable datatable = new DataTable();
@@ -736,7 +736,7 @@ namespace Integration.Helper
         }       
         // Added By Viral 
         // Desc :: Get SFDC Field Mappings list.
-        public DataSet GetSFDCFieldMappings(Guid clientId, int IntegrationTypeId, int IntegrationInstanceID,bool isSFDCSyncMarketo)
+        public DataSet GetSFDCFieldMappings(int clientId, int IntegrationTypeId, int IntegrationInstanceID,bool isSFDCSyncMarketo)
         {
             string clientid = clientId.ToString();
             DataTable datatable = new DataTable();

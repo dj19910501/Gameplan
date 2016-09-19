@@ -7,7 +7,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var emptyGuidId = Guid.Empty;
     string varUrl = Url.Action("vieweditpermission", "Organization");
-    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
+    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.ID + "&Mode=MyPermission";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     ViewBag.PageTitle = "ManageRole";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
    ViewBag.ModuleTitle = "Organization";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49

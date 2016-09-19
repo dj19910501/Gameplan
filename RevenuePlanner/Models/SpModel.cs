@@ -28,9 +28,9 @@ namespace RevenuePlanner.Models
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
+        public int ModifiedBy { get; set; }
         public string GoalType { get; set; }
         public double GoalValue { get; set; }
         public string AllocatedBy { get; set; }
@@ -46,9 +46,9 @@ namespace RevenuePlanner.Models
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
+        public int ModifiedBy { get; set; }
         public bool IsDeleted { get; set; }
         public string Status { get; set; }
         public bool IsDeployedToIntegration { get; set; }
@@ -67,9 +67,9 @@ namespace RevenuePlanner.Models
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
+        public int ModifiedBy { get; set; }
         public bool IsDeleted { get; set; }
         public string Status { get; set; }
         public bool IsDeployedToIntegration { get; set; }
@@ -94,9 +94,9 @@ namespace RevenuePlanner.Models
         public double TacticBudget { get; set; }
         public string Status { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
+        public int ModifiedBy { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsDeployedToIntegration { get; set; }
         public string IntegrationInstanceTacticId { get; set; }
@@ -137,7 +137,7 @@ namespace RevenuePlanner.Models
         public int EntityId { get; set; }
         public int CustomFieldId { get; set; }
         public string Value { get; set; }
-        public Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public int CustomFieldEntityId { get; set; }
     }
     public class Custom_CSV
@@ -183,7 +183,7 @@ namespace RevenuePlanner.Models
         public int BudgetDetailId { get; set; }
         public int PlanLineItemId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public Nullable<System.Guid> CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public Nullable<byte> Weightage { get; set; }
     }
     public class Custom_Dashboard

@@ -177,7 +177,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("GetRevenueData section with TimeFrame Empty.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -208,7 +208,7 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
 
             //// Call GetRevenueData() function
@@ -256,7 +256,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("GetRevenueData section with IsQuarterly Empty.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
             //// Set session value
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
@@ -311,7 +311,7 @@ namespace RevenuePlanner.Test.Controllers
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //// Call GetRevenueData() function
@@ -478,7 +478,7 @@ namespace RevenuePlanner.Test.Controllers
             int planId = 126;
             List<int> lst = new List<int>();
             lst.Add(planId);
-            Sessions.User.ClientId = DataHelper.GetClientId(planId);
+            Sessions.User.CID = DataHelper.GetClientId(planId);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             string StrParentLabel = Enums.PlanEntity.Campaign.ToString();
             string Isquater = Enums.ViewByAllocated.Quarterly.ToString();
@@ -662,7 +662,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> includemonth = new List<string>();
             includemonth.Add(PlanYear);
 
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
@@ -717,7 +717,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> includemonth = new List<string>();
             includemonth.Add(PlanYear);
 
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
@@ -767,7 +767,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> includemonth = new List<string>();
             includemonth.Add(PlanYear);
 
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
@@ -818,7 +818,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> includemonth = new List<string>();
             includemonth.Add(PlanYear);
 
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
@@ -869,7 +869,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> includemonth = new List<string>();
             includemonth.Add(PlanYear);
 
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
@@ -920,7 +920,7 @@ namespace RevenuePlanner.Test.Controllers
             List<string> includemonth = new List<string>();
             includemonth.Add(PlanYear);
 
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
@@ -988,7 +988,7 @@ namespace RevenuePlanner.Test.Controllers
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             //int planId=DataHelper.GetPlanId();
@@ -1017,7 +1017,7 @@ namespace RevenuePlanner.Test.Controllers
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             List<int> PlanIds = new List<int>();
             PlanIds.Add(17314);
@@ -1122,7 +1122,7 @@ namespace RevenuePlanner.Test.Controllers
             int planId = DataHelper.GetPlanId();
             List<int> lst = new List<int>();
             lst.Add(planId);
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ReportController ReportController = new ReportController();
@@ -1556,7 +1556,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -1597,7 +1597,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -1639,7 +1639,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -1681,7 +1681,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -1723,7 +1723,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -1765,7 +1765,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
             //TempData["ReportData"] = tacticStageList;
             ReportController.TempData["ReportData"] = tacticStageList;
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.CID).ToList();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
             CardSectionModel objCardSectionModel = new CardSectionModel();

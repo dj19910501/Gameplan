@@ -10,7 +10,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var UserHierarchy = (List<RevenuePlanner.Models.UserHierarchyModel>)ViewBag.UserHierarchy;
     string varUrlnew = Url.Action("vieweditpermission", "Organization");
-    string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
+    string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.ID + "&Mode=MyPermission";
     ViewBag.PageTitle = "OrganizationHierarchy";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     ViewBag.ModuleTitle = "Organization";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
 

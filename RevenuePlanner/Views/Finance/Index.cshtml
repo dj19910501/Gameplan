@@ -11,7 +11,7 @@
     var objColumns = (from ColumnSet in db.Budget_ColumnSet
                       join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
                       where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
-                      && ColumnSet.ClientId == Sessions.User.ClientId
+                      && ColumnSet.ClientId == Sessions.User.CID
                       select Columns).ToList();
     var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a.CustomField.Name).ToList();
     var objTimeFrameColumns = objColumns.Where(a => a.IsTimeFrame == true).Select(a => a.CustomField.Name).ToList();

@@ -60,7 +60,7 @@ namespace RevenuePlanner.Models
 
     public class UserBudgetPermission
     {
-        public string UserId { get; set; }
+        public int UserId { get; set; }
         public int PermisssionCode { get; set; }
         public int BudgetDetailId { get; set; }
     }

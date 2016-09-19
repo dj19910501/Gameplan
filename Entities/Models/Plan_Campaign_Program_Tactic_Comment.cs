@@ -18,9 +18,9 @@ namespace RevenuePlanner.Models
         public Nullable<int> PlanTacticId { get; set; }
         public string Comment { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<int> PlanProgramId { get; set; }
         public Nullable<int> PlanCampaignId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Plan_Campaign Plan_Campaign { get; set; }
         public virtual Plan_Campaign_Program Plan_Campaign_Program { get; set; }

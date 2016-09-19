@@ -20,13 +20,13 @@ namespace RevenuePlanner.Models
         }
     
         public int Id { get; set; }
-        public System.Guid ClientId { get; set; }
         public string Name { get; set; }
         public string Desc { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public bool IsOther { get; set; }
+        public int ClientId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Budget Budget1 { get; set; }
         public virtual Budget Budget2 { get; set; }

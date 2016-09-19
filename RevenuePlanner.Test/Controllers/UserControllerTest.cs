@@ -42,9 +42,9 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
             var result = objUserController.Index() as ViewResult;
             Assert.IsNotNull(result.Model);
             var serializedData = new RouteValueDictionary(result.Model);
@@ -72,7 +72,7 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
          
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
            
             var result = objUserController.ChangePassword() as ViewResult;
@@ -99,9 +99,9 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
            
             int PlanId = DataHelper.GetDeletedPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);           
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);           
            
             UserChangePassword form = new UserChangePassword();
             form.UserId = 0;
@@ -139,9 +139,9 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();          
 
             int PlanId = DataHelper.GetDeletedPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
             string currentPassword = "Test@12345";
           
             var result = objUserController.CheckCurrentPassword(currentPassword) as JsonResult;
@@ -168,7 +168,7 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
 
             var result = objUserController.Create() as ViewResult;
@@ -198,9 +198,9 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanId = DataHelper.GetDeletedPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
 
             UserModel form = new UserModel();
             form.DisplayName = "Test@Hive9";
@@ -210,7 +210,7 @@ namespace RevenuePlanner.Test.Controllers
             form.Password = "hive9@123";
             form.ConfirmPassword = "hive9@123";
             form.RoleTitle = "Admin";
-            form.ClientId = Sessions.User.ClientId;
+            form.ClientId = Sessions.User.CID;
             form.Client = Sessions.User.Client.ToString();
             form.ManagerName = "Hive9";
             form.JobTitle = "Admin";
@@ -242,9 +242,9 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanId = DataHelper.GetDeletedPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
 
             string Email = "UnitTest@Hive9.com";
             var result = objUserController.IsEmailExist(Email) as JsonResult;
@@ -269,9 +269,9 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             var objUser = objBDSServiceClient.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);            
             if (objUser != null)
@@ -305,9 +305,9 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
 
             var result = objUserController.Edit() as ViewResult;
             Assert.IsNotNull(result.ViewName);
@@ -345,9 +345,9 @@ namespace RevenuePlanner.Test.Controllers
             //objUserController.ControllerContext.HttpContext.Request.UrlReferrer.AbsolutePath = "";
             
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
             UserModel form = new UserModel();
             form.DisplayName = "Test@Hive9";
             form.FirstName = "Test";
@@ -356,7 +356,7 @@ namespace RevenuePlanner.Test.Controllers
             form.Password = "hive9@123";
             form.ConfirmPassword = "hive9@123";
             form.RoleTitle = "Admin";
-            form.ClientId = Sessions.User.ClientId;
+            form.ClientId = Sessions.User.CID;
             form.Client = Sessions.User.Client.ToString();
             form.ManagerName = "Hive9";
             form.JobTitle = "Admin";
@@ -393,9 +393,9 @@ namespace RevenuePlanner.Test.Controllers
 );
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);           
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);           
             
             var result = objUserController.Notifications() as ViewResult;
             Assert.IsNotNull(result.Model);
@@ -433,9 +433,9 @@ namespace RevenuePlanner.Test.Controllers
 );
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
             int NotificationId = db.Notifications.Select(no => no.NotificationId).FirstOrDefault();
             string strNotification = NotificationId.ToString();
             try
@@ -476,9 +476,9 @@ namespace RevenuePlanner.Test.Controllers
 );
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
 
             var result = objUserController.GetManagers() as JsonResult;
             Assert.IsNotNull(result.Data);
@@ -512,11 +512,11 @@ namespace RevenuePlanner.Test.Controllers
 );
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
-            string UserId = Sessions.User.UserId.ToString();
-            var result = objUserController.GetManagers(null,UserId) as JsonResult;
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
+            int UserId = Sessions.User.ID;
+            var result = objUserController.GetManagers(0,UserId) as JsonResult;
             Assert.IsNotNull(result.Data);
             var serializedData = new RouteValueDictionary(result.Data);
             var resultvalue = serializedData["Count"];
@@ -547,11 +547,11 @@ namespace RevenuePlanner.Test.Controllers
 );
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
-            string UserId = Sessions.User.UserId.ToString();
-            string ClientId = Sessions.User.ClientId.ToString();
+            Sessions.User.ID = DataHelper.GetUserId(PlanId);
+            int UserId = Sessions.User.ID;
+            int ClientId = Sessions.User.CID;
             var result = objUserController.GetManagers(ClientId, UserId) as JsonResult;
             Assert.IsNotNull(result.Data);
             var serializedData = new RouteValueDictionary(result.Data);
@@ -580,14 +580,14 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();           
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.PlanId = PlanId;
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.ID= DataHelper.GetUserId(PlanId);
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             var objUser = objBDSServiceClient.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
             if (objUser != null)
             {
-                string userId = objUser.UserId.ToString();
+                int userId = objUser.ID;
                 string RoleId = objUser.RoleId.ToString();
                 var result = objUserController.AssignUser(userId, RoleId) as JsonResult;
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
@@ -699,7 +699,7 @@ namespace RevenuePlanner.Test.Controllers
             objUserController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objUserController);
             objUserController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
-            int ruleId = DataHelper.GetAlertruleId(Sessions.User.UserId);
+            int ruleId = DataHelper.GetAlertruleId(Sessions.User.ID);
             bool turnOff = true;
             var result = objUserController.DisableAlertRule(ruleId, turnOff) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);

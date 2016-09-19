@@ -29,7 +29,7 @@ namespace RevenuePlanner.Services
         }
 
         #region Method to get grid default data
-        public List<GridDefaultModel> GetGridDefaultData(string PlanIds, Guid ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
+        public List<GridDefaultModel> GetGridDefaultData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
         {
             List<GridDefaultModel> EntityList = new List<GridDefaultModel>();
             DataTable datatable = new DataTable();
@@ -83,7 +83,7 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region Mtehod to get grid customfield and it's entity value
-        public GridCustomColumnData GetGridCustomFieldData(string PlanIds, Guid ClientId)
+        public GridCustomColumnData GetGridCustomFieldData(string PlanIds, int ClientId)
         {
 
             GridCustomColumnData EntityList = new GridCustomColumnData();
@@ -141,7 +141,7 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region Get Model for Grid Data
-        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, Guid ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate)
+        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate)
         {
 
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
@@ -214,7 +214,7 @@ namespace RevenuePlanner.Services
             return string.Empty;
         }
 
-        public GridCustomColumnData GridCustomFieldData(string PlanIds, Guid ClientId)
+        public GridCustomColumnData GridCustomFieldData(string PlanIds, int ClientId)
         {
             GridCustomColumnData data = new GridCustomColumnData();
             try

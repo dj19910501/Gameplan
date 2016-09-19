@@ -33,7 +33,7 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             var result = objLoginController.Index() as ViewResult;
             var serializedData = new RouteValueDictionary(result.ViewData);
             var resultvalue = serializedData["ApplicationReleaseVersion"];
@@ -54,7 +54,7 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             MockHelpers.MockHelpers.TestTempDataHttpContext tempDataHttpContext = new MockHelpers.MockHelpers.TestTempDataHttpContext();
             objLoginController.TempData["ErrorMessage"] ="Unit";
             var result = objLoginController.Index() as ViewResult;
@@ -85,7 +85,7 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             //int PlanId = DataHelper.GetPlanId();
-            //Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            //Sessions.User.CID = DataHelper.GetClientId(PlanId);
             LoginModel form = new LoginModel();
             form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString() + "Wrong";
             form.Password = ConfigurationSettings.AppSettings["Password"].ToString();
@@ -114,7 +114,7 @@ namespace RevenuePlanner.Test.Controllers
             routes
             );
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             LoginModel form = new LoginModel();
             form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString();
             form.Password = ConfigurationSettings.AppSettings["Password"].ToString();
@@ -134,7 +134,7 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
 
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             LoginModel form = new LoginModel();
             form.UserEmail = ConfigurationSettings.AppSettings["Username"].ToString();
             form.Password = ConfigurationSettings.AppSettings["Password"].ToString() + "Wrong";
@@ -165,8 +165,8 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            Sessions.User.ID = DataHelper.GetUserId(PlanId);
             var result = objLoginController.LoadSupportPartialOnLogin() as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value ViewName:  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
@@ -215,9 +215,9 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
-            var lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            Sessions.User.ID = DataHelper.GetUserId(PlanId);
+            var lstUser = objBDSServiceClient.GetTeamMemberListEx(Sessions.User.CID, Sessions.ApplicationId, Sessions.User.ID, true);
 
             if (lstUser != null && lstUser.Count > 0)
             {
@@ -256,17 +256,17 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            Sessions.User.ID = DataHelper.GetUserId(PlanId);
             ResetPasswordModel form = new ResetPasswordModel();
-            form.UserId = Sessions.User.UserId;
+            form.UserId = Sessions.User.ID;
             form.NewPassword = "test1234";
             form.ConfirmNewPassword = "test1234";
             var result = objLoginController.ResetPassword(form) as ViewResult;
             var serializedData = new RouteValueDictionary(result.Model);
             var resultvalue = serializedData["UserId"];
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value:  " + resultvalue.ToString());
-            Assert.AreEqual(Sessions.User.UserId.ToString(), resultvalue.ToString());
+            Assert.AreEqual(Sessions.User.ID.ToString(), resultvalue.ToString());
          
         }
         #endregion
@@ -289,10 +289,10 @@ namespace RevenuePlanner.Test.Controllers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
-            Sessions.User.UserId = DataHelper.GetUserId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
+            Sessions.User.ID = DataHelper.GetUserId(PlanId);
             string currentPassword = "Test1234";
-            var result = objLoginController.CheckCurrentPassword(currentPassword, Sessions.User.UserId.ToString()) as JsonResult;
+            var result = objLoginController.CheckCurrentPassword(currentPassword, Sessions.User.ID.ToString()) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
             

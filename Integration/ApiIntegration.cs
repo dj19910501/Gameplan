@@ -88,7 +88,7 @@ namespace Integration
         private bool _isAuthenticated { get; set; }
         private int? _integrationInstanceId { get; set; }
         private int _id { get; set; }
-        private Guid _userId { get; set; }
+        private int _userId { get; set; }
         private int _integrationInstanceLogId { get; set; }
         private EntityType _entityType { get; set; }
         Guid _applicationId = Guid.Empty;
@@ -118,7 +118,7 @@ namespace Integration
         }
 
 
-        public ApiIntegration(int integrationInstanceId, int id, EntityType entityType, Guid userId, int integrationInstanceLogId, Guid applicationId)
+        public ApiIntegration(int integrationInstanceId, int id, EntityType entityType, int userId, int integrationInstanceLogId, Guid applicationId)
         {
             _integrationInstanceId = integrationInstanceId;
             _id = id;
@@ -350,7 +350,7 @@ namespace Integration
         /// to push the data to the marketo and get the loglist from marketo
         /// </summary>
         /// <returns></returns>
-        public List<LogDetails> MarketoData_Push(string spName, List<fieldMapping> lstFieldsMap, Guid _clientId, List<SpParameters> spParams)
+        public List<LogDetails> MarketoData_Push(string spName, List<fieldMapping> lstFieldsMap, int _clientId, List<SpParameters> spParams)
         {
             
             bool isAuthenticate = false;
@@ -524,7 +524,7 @@ namespace Integration
         /// to push the data to the Salesforce and get the loglist from Salesforce
         /// </summary>
         /// <returns></returns>
-        public HttpResponseMessage SFDCData_Push(string spName, List<fieldMapping> lstFieldsMap, string AppId, Guid _clientId, List<SpParameters> spParams, Dictionary<string, string> SFDCCredentials)
+        public HttpResponseMessage SFDCData_Push(string spName, List<fieldMapping> lstFieldsMap, string AppId, int _clientId, List<SpParameters> spParams, Dictionary<string, string> SFDCCredentials)
         {
             #region "Declare local varibles"
             int CommonWebAPITimeout = 0;

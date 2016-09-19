@@ -15,9 +15,9 @@ namespace RevenuePlanner.Models
     public partial class Plan_Team
     {
         public int PlanId { get; set; }
-        public System.Guid TeamMemberId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int TeamMemberId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Plan Plan { get; set; }
     }

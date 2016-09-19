@@ -15,12 +15,12 @@ namespace RevenuePlanner.Models
     public partial class Budget_Permission
     {
         public int Id { get; set; }
-        public System.Guid UserId { get; set; }
         public int BudgetDetailId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public int PermisssionCode { get; set; }
         public bool IsOwner { get; set; }
+        public int UserId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual Budget_Detail Budget_Detail { get; set; }
     }

@@ -39,7 +39,7 @@ namespace Integration.Eloqua
         private bool _isAuthenticated { get; set; }
         public int _integrationInstanceId { get; set; }
         private int _id { get; set; }
-        private Guid _userId { get; set; }
+        private int _userId { get; set; }
         private int _integrationInstanceLogId { get; set; }
         private EntityType _entityType { get; set; }
         public string _ErrorMessage { get; set; }
@@ -55,7 +55,7 @@ namespace Integration.Eloqua
         private Dictionary<string, string> customFields { get; set; }
         private static string NotFound = "NotFound";
         //Start - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
-        private Guid _clientId { get; set; }
+        private int _clientId { get; set; }
         private bool _CustomNamingPermissionForInstance = false;
         private bool IsClientAllowedForCustomNaming = false;
         private Guid _applicationId = Guid.Empty;
@@ -105,7 +105,7 @@ namespace Integration.Eloqua
         /// <param name="entityType">Entity type.</param>
         /// <param name="userId">User Id.</param>
         /// <param name="integrationInstanceLogId">Integration instance log id.</param>
-        public IntegrationEloquaClient(int integrationInstanceId, int id, EntityType entityType, Guid userId, int integrationInstanceLogId, Guid applicationId)
+        public IntegrationEloquaClient(int integrationInstanceId, int id, EntityType entityType, int userId, int integrationInstanceLogId, Guid applicationId)
         {
             InitEloqua();
 
@@ -549,7 +549,7 @@ namespace Integration.Eloqua
                 //}
 
                 BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-                _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
+                _mappingUser = objBDSservice.GetUserListByClientIdEx(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
 
                 if (_CustomNamingPermissionForInstance)
                 {
@@ -2199,7 +2199,7 @@ namespace Integration.Eloqua
         #endregion
 
         //This function is called from test project so no need of error logging
-        public string TestGenerateCustomName(Plan_Campaign_Program_Tactic planTactic, Guid clientId)
+        public string TestGenerateCustomName(Plan_Campaign_Program_Tactic planTactic, int clientId)
         {
             string customName = "";
             if (planTactic != null)

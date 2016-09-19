@@ -31,14 +31,14 @@ namespace RevenuePlanner.Models
         public Nullable<byte> DayOfWeek { get; set; }
         public Nullable<byte> DateOfMonth { get; set; }
         public Nullable<System.DateTime> LastProcessingDate { get; set; }
-        public System.Guid UserId { get; set; }
-        public System.Guid ClientId { get; set; }
         public bool IsDisabled { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
         public string UniqueRuleCode { get; set; }
+        public int UserId { get; set; }
+        public int ClientId { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
     
         public virtual ICollection<Alert> Alerts { get; set; }
     }

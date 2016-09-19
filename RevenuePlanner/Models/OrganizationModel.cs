@@ -7,8 +7,8 @@ namespace RevenuePlanner.Models
 {
         public class OrganizationModel
         {
-            public Guid UserId { get; set; }
-            public Guid ClientId { get; set; }
+            public int UserId { get; set; }
+            public int ClientId { get; set; }
             public string Client { get; set; }
             public string DisplayName { get; set; }
             public string FirstName { get; set; }
@@ -34,7 +34,7 @@ namespace RevenuePlanner.Models
 
         public class UserHierarchyModel
         {
-            public Guid UserId { get; set; }
+            public int UserId { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public string Email { get; set; }

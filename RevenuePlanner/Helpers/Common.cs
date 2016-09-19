@@ -141,7 +141,7 @@ namespace RevenuePlanner.Helpers
         public const string ProgramCustomTitle = "ProgramCustom";
         public const string TacticCustomTitle = "TacticCustom";
         public const string LineitemCustomTitle = "LineitemCustom";
-        public const string ColumnCustomTitle = "ColumnCustom";
+
         //Added By Sohel Pathan
         public static string ColorCodeForCustomField = "";
 
@@ -652,64 +652,64 @@ namespace RevenuePlanner.Helpers
         }
 
 
-        public static List<string> GetCollaboratorForTactic(int PlanTacticId)
+        public static List<int> GetCollaboratorForTactic(int PlanTacticId)
         {
             MRPEntities db = new MRPEntities();
-            List<string> collaboratorId = new List<string>();
+            List<int> collaboratorId = new List<int>();
             var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == PlanTacticId);
-            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != 0).Select(t => t.ModifiedBy).ToList();
+            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy).ToList();
             var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.PlanTacticId == PlanTacticId);
-            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy).ToList();
             collaboratorId.AddRange(planTacticCreatedBy);
             collaboratorId.AddRange(planTacticModifiedBy);
             collaboratorId.AddRange(planTacticCommentCreatedBy);
-            return collaboratorId.Distinct().ToList<string>();
+            return collaboratorId.Distinct().ToList<int>();
         }
 
-        public static List<string> GetCollaboratorForImprovementTactic(int ImprovementPlanTacticId)
+        public static List<int> GetCollaboratorForImprovementTactic(int ImprovementPlanTacticId)
         {
             MRPEntities db = new MRPEntities();
-            List<string> collaboratorId = new List<string>();
+            List<int> collaboratorId = new List<int>();
             var planTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId == ImprovementPlanTacticId);
-            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != 0).Select(t => t.ModifiedBy).ToList();
+            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy).ToList();
             var planTacticComment = db.Plan_Improvement_Campaign_Program_Tactic_Comment.Where(pc => pc.ImprovementPlanTacticId == ImprovementPlanTacticId);
-            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy).ToList();
             collaboratorId.AddRange(planTacticCreatedBy);
             collaboratorId.AddRange(planTacticModifiedBy);
             collaboratorId.AddRange(planTacticCommentCreatedBy);
-            return collaboratorId.Distinct().ToList<string>();
+            return collaboratorId.Distinct().ToList<int>();
         }
 
-        public static List<string> GetCollaboratorForProgram(int PlanProgramId)
+        public static List<int> GetCollaboratorForProgram(int PlanProgramId)
         {
             MRPEntities db = new MRPEntities();
-            List<string> collaboratorId = new List<string>();
+            List<int> collaboratorId = new List<int>();
             var planProgram = db.Plan_Campaign_Program.Where(t => t.PlanProgramId == PlanProgramId);
-            var planProgramModifiedBy = planProgram.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-            var planProgramCreatedBy = planProgram.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+            var planProgramModifiedBy = planProgram.ToList().Where(t => t.ModifiedBy != 0).Select(t => t.ModifiedBy).ToList();
+            var planProgramCreatedBy = planProgram.ToList().Select(t => t.CreatedBy).ToList();
             var planProgramComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.PlanProgramId == PlanProgramId);
-            var planProgramCommentCreatedBy = planProgramComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+            var planProgramCommentCreatedBy = planProgramComment.ToList().Select(pc => pc.CreatedBy).ToList();
             collaboratorId.AddRange(planProgramCreatedBy);
             collaboratorId.AddRange(planProgramModifiedBy);
             collaboratorId.AddRange(planProgramCommentCreatedBy);
-            return collaboratorId.Distinct().ToList<string>();
+            return collaboratorId.Distinct().ToList<int>();
         }
 
-        public static List<string> GetCollaboratorForCampaign(int PlanCampaignId)
+        public static List<int> GetCollaboratorForCampaign(int PlanCampaignId)
         {
             MRPEntities db = new MRPEntities();
-            List<string> collaboratorId = new List<string>();
+            List<int> collaboratorId = new List<int>();
             var planCampaign = db.Plan_Campaign.Where(t => t.PlanCampaignId == PlanCampaignId);
-            var planCampaignModifiedBy = planCampaign.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-            var planCampaignCreatedBy = planCampaign.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+            var planCampaignModifiedBy = planCampaign.ToList().Where(t => t.ModifiedBy != 0).Select(t => t.ModifiedBy).ToList();
+            var planCampaignCreatedBy = planCampaign.ToList().Select(t => t.CreatedBy).ToList();
             var planCampaignComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.PlanCampaignId == PlanCampaignId);
-            var planCampaignCommentCreatedBy = planCampaignComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+            var planCampaignCommentCreatedBy = planCampaignComment.ToList().Select(pc => pc.CreatedBy).ToList();
             collaboratorId.AddRange(planCampaignCreatedBy);
             collaboratorId.AddRange(planCampaignModifiedBy);
             collaboratorId.AddRange(planCampaignCommentCreatedBy);
-            return collaboratorId.Distinct().ToList<string>();
+            return collaboratorId.Distinct().ToList<int>();
         }
 
         public static void mailSendForTactic(int planTacticId, string status, string title, bool iscomment = false, string comment = "", string section = "", string URL = "")
@@ -720,9 +720,9 @@ namespace RevenuePlanner.Helpers
             List<string> lst_CollaboratorEmail = new List<string>();
             List<string> lst_CollaboratorUserName = new List<string>();
             //List<string> lst_CollaboratorId = GetCollaboratorForTactic(planTacticId);
-            List<string> lst_CollaboratorId = new List<string>();
-            List<string> List_NotificationUserIds = new List<string>();
-            Guid createdBy = new Guid();
+            List<int> lst_CollaboratorId = new List<int>();
+            List<int> List_NotificationUserIds = new List<int>();
+            int createdBy = 0;
             if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
             {
                 lst_CollaboratorId = GetCollaboratorForTactic(planTacticId);
@@ -740,9 +740,9 @@ namespace RevenuePlanner.Helpers
                 lst_CollaboratorId = GetCollaboratorForImprovementTactic(planTacticId);
             }
 
-            if (Sessions.User != null && lst_CollaboratorId.Contains(Convert.ToString(Sessions.User.UserId)) && !status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
+            if (Sessions.User != null && lst_CollaboratorId.Contains(Sessions.User.ID) && !status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
             {
-                lst_CollaboratorId.Remove(Convert.ToString(Sessions.User.UserId));
+                lst_CollaboratorId.Remove(Sessions.User.ID);
             }
 
             if (lst_CollaboratorId.Count > 0)
@@ -780,13 +780,13 @@ namespace RevenuePlanner.Helpers
                 if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                 {
                     lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-                    objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
-                    lst_CollaboratorId.Add(objOwnerUser.ManagerId.ToString());
+                    objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UID == createdBy);
+                    lst_CollaboratorId.Add(objOwnerUser.MID);
                 }
                 //Added by Mitesh Vaishnav for PL ticket 2551 - remove empty strings from collaborator ids list
                 if (lst_CollaboratorId.Count > 0)
                 {
-                    lst_CollaboratorId.RemoveAll(id => string.IsNullOrEmpty(id));
+                    lst_CollaboratorId.RemoveAll(id => id==0);
                 }
                 var csv = string.Join(", ", lst_CollaboratorId);
                 var NotificationName = status;
@@ -802,7 +802,7 @@ namespace RevenuePlanner.Helpers
                         List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, Enums.Custom_Notification.TacticIsApproved.ToString().ToLower());
                         if (List_NotificationUserIds.Count > 0)
                         {
-                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticApproved.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
                         }
 
@@ -812,7 +812,7 @@ namespace RevenuePlanner.Helpers
                         List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, Enums.Custom_Notification.ProgramIsApproved.ToString().ToLower());
                         if (List_NotificationUserIds.Count > 0)
                         {
-                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramApproved.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
                         }
 
@@ -822,7 +822,7 @@ namespace RevenuePlanner.Helpers
                         List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, Enums.Custom_Notification.CampaignIsApproved.ToString().ToLower());
                         if (List_NotificationUserIds.Count > 0)
                         {
-                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignApproved.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
                         }
                     }
@@ -853,24 +853,24 @@ namespace RevenuePlanner.Helpers
                 }
                 else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                 {
-                    var clientId = Sessions.User.ClientId;
+                    var clientId = Sessions.User.CID;
                     List<string> UserName = new List<string>();
                     List<string> EmailId = new List<string>();
-                    List<string> UserId = new List<string>();
-                    if (createdBy != Sessions.User.UserId)
+                    List<int> UserId = new List<int>();
+                    if (createdBy != Sessions.User.ID)
                     {
-                        UserName.Add(UsersDetails.FirstOrDefault(u => u.UserId == createdBy).FirstName);
-                        EmailId.Add(UsersDetails.FirstOrDefault(u => u.UserId == createdBy).Email);
-                        UserId.Add(createdBy.ToString());
+                        UserName.Add(UsersDetails.FirstOrDefault(u => u.ID == createdBy).FirstName);
+                        EmailId.Add(UsersDetails.FirstOrDefault(u => u.ID == createdBy).Email);
+                        UserId.Add(createdBy);
                     }
                     // To add manager's email address, By dharmraj, Ticket #537
-                    //var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                    //var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.CID, Sessions.ApplicationId);
                     //var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
                     if (objOwnerUser.ManagerId != null)
                     {
-                        EmailId.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).Email);
-                        UserName.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).FirstName);
-                        UserId.Add(objOwnerUser.ManagerId.ToString());
+                        EmailId.Add(lstUserHierarchy.FirstOrDefault(u => u.UID == objOwnerUser.MID).Email);
+                        UserName.Add(lstUserHierarchy.FirstOrDefault(u => u.UID == objOwnerUser.MID).FirstName);
+                        UserId.Add(objOwnerUser.MID);
                     }
 
                     lst_CollaboratorEmail = EmailId;
@@ -881,7 +881,7 @@ namespace RevenuePlanner.Helpers
                         List_NotificationUserIds = GetAllNotificationUserIds(UserId, Enums.Custom_Notification.TacticIsSubmitted.ToString().ToLower());
                         if (List_NotificationUserIds.Count > 0)
                         {
-                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).Distinct().ToList();
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).Distinct().ToList();
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
 
                         }
@@ -906,7 +906,7 @@ namespace RevenuePlanner.Helpers
                     List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, NotificationName.ToLower());
                     if (List_NotificationUserIds.Count > 0)
                     {
-                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
 
                         if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                         {
@@ -920,7 +920,7 @@ namespace RevenuePlanner.Helpers
                     List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, NotificationName.ToLower());
                     if (List_NotificationUserIds.Count > 0)
                     {
-                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
                         if (section == Convert.ToString(Enums.Section.Program).ToLower())
                         {
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
@@ -933,7 +933,7 @@ namespace RevenuePlanner.Helpers
                     List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, NotificationName.ToLower());
                     if (List_NotificationUserIds.Count > 0)
                     {
-                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Convert.ToString(ids.UserId))).Select(u => u.Email).ToList();
+                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
                         if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                         {
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
@@ -959,16 +959,16 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         #region Method to get users who has notification on
 
-        public static List<string> GetAllNotificationUserIds(List<string> UserIds, string NotificationName)
+        public static List<int> GetAllNotificationUserIds(List<int> UserIds, string NotificationName)
         {
-            List<string> userids = new List<string>();
+            List<int> userids = new List<int>();
             MRPEntities db = new MRPEntities();
             var users = (from Uids in db.User_Notification
                          join Nids in db.Notifications on Uids.NotificationId equals Nids.NotificationId
                          where Nids.IsDeleted == false && Nids.NotificationType == "AM" && Nids.NotificationInternalUseOnly == NotificationName
                          select Uids
                        ).ToList();
-            userids = users.Where(Uids => UserIds.Contains(Convert.ToString(Uids.UserId))).Select(UIds => Convert.ToString(UIds.UserId)).Distinct().ToList();
+            userids = users.Where(Uids => UserIds.Contains(Uids.UserId)).Select(UIds => UIds.UserId).Distinct().ToList();
             return userids;
         }
         #endregion
@@ -1242,7 +1242,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
 
             //// Getting active model of client. 
-            var modelIds = db.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m.ModelId).ToList();
+            var modelIds = db.Models.Where(m => m.ClientId == Sessions.User.CID && m.IsDeleted == false).Select(m => m.ModelId).ToList();
 
             //// Getting active plans of ModelId(s).
             var activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p).ToList();
@@ -1378,12 +1378,12 @@ namespace RevenuePlanner.Helpers
             DataSet dsPlanCampProgTac = (DataSet)dataCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
             var plan = dsPlanCampProgTac.Tables[0].AsEnumerable().Select(row => new Plan
             {
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                 CreatedDate = Convert.ToDateTime(Convert.ToString(row["CreatedDate"])),
                 IsActive = Convert.ToBoolean(Convert.ToString(row["IsActive"])),
                 IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])),
                 ModelId = int.Parse(Convert.ToString(row["ModelId"])),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanId = int.Parse(Convert.ToString(row["PlanId"]))
             }).Where(row => row.PlanId.Equals(planId)).FirstOrDefault();
@@ -1400,10 +1400,10 @@ namespace RevenuePlanner.Helpers
 
             var campaignList = dsPlanCampProgTac.Tables[1].AsEnumerable().Select(row => new Plan_Campaign
             {
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                 CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                 IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
                 PlanId = Convert.ToInt32(row["PlanId"])
@@ -1412,10 +1412,10 @@ namespace RevenuePlanner.Helpers
             var programList = dsPlanCampProgTac.Tables[2].AsEnumerable().Select(row => new Plan_Campaign_Program
             {
 
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                 CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                 IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
                 PlanProgramId = Convert.ToInt32(row["PlanProgramId"])
@@ -1423,12 +1423,12 @@ namespace RevenuePlanner.Helpers
 
             var tacticList = dsPlanCampProgTac.Tables[3].AsEnumerable().Select(row => new Custom_Plan_Campaign_Program_Tactic
             {
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                 CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                 IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
                 LinkedPlanId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : row["LinkedPlanId"]),
                 LinkedTacticId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : row["LinkedTacticId"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
                 PlanTacticId = Convert.ToInt32(row["PlanTacticId"]),
@@ -1469,7 +1469,7 @@ namespace RevenuePlanner.Helpers
             return Convert.ToDateTime(lastUpdatedDate.Max());
         }
 
-        public static List<string> GetCollaboratorId(int planId)
+        public static List<int> GetCollaboratorId(int planId)
         {
             MRPEntities db = new MRPEntities();
 
@@ -1485,33 +1485,33 @@ namespace RevenuePlanner.Helpers
 
             var plan = dsPlanCampProgTac.Tables[0].AsEnumerable().Select(row => new Plan
             {
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                 CreatedDate = Convert.ToDateTime(Convert.ToString(row["CreatedDate"])),
                 IsActive = Convert.ToBoolean(Convert.ToString(row["IsActive"])),
                 IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])),
                 ModelId = int.Parse(Convert.ToString(row["ModelId"])),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanId = int.Parse(Convert.ToString(row["PlanId"]))
             }).FirstOrDefault();
 
-            List<string> collaboratorId = new List<string>();
-            if (plan.ModifiedBy != null)
+            List<int> collaboratorId = new List<int>();
+            if (plan.ModifiedBy != 0)
             {
-                collaboratorId.Add(plan.ModifiedBy.ToString());
+                collaboratorId.Add(plan.ModifiedBy);
             }
 
-            if (plan.CreatedBy != null)
+            if (plan.CreatedBy != 0)
             {
-                collaboratorId.Add(plan.CreatedBy.ToString());
+                collaboratorId.Add(plan.CreatedBy);
             }
 
             var campaignList = dsPlanCampProgTac.Tables[1].AsEnumerable().Select(row => new Plan_Campaign
             {
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                 CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                 IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
                 PlanId = Convert.ToInt32(row["PlanId"])
@@ -1520,10 +1520,10 @@ namespace RevenuePlanner.Helpers
             var programList = dsPlanCampProgTac.Tables[2].AsEnumerable().Select(row => new Plan_Campaign_Program
             {
 
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                 CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                 IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
                 PlanProgramId = Convert.ToInt32(row["PlanProgramId"])
@@ -1531,12 +1531,12 @@ namespace RevenuePlanner.Helpers
 
             var tacticList = dsPlanCampProgTac.Tables[3].AsEnumerable().Select(row => new Custom_Plan_Campaign_Program_Tactic
             {
-                CreatedBy = Guid.Parse(Convert.ToString(row["CreatedBy"])),
+                CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                 CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                 IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
                 LinkedPlanId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : row["LinkedPlanId"]),
                 LinkedTacticId = Convert.ToInt32(string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : row["LinkedTacticId"]),
-                ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                 ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                 PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
                 PlanTacticId = Convert.ToInt32(row["PlanTacticId"]),
@@ -1547,14 +1547,14 @@ namespace RevenuePlanner.Helpers
 
             if (tacticList != null && tacticList.Any())
             {
-                var planTacticModifiedBy = tacticList.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-                var planTacticCreatedBy = tacticList.Select(t => t.CreatedBy.ToString()).ToList();
+                var planTacticModifiedBy = tacticList.Where(t => t.ModifiedBy != 0).Select(t => t.ModifiedBy).ToList();
+                var planTacticCreatedBy = tacticList.Select(t => t.CreatedBy).ToList();
 
-                var planProgramModifiedBy = programList.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-                var planProgramCreatedBy = programList.Select(t => t.CreatedBy.ToString()).ToList();
+                var planProgramModifiedBy = programList.Where(t => t.ModifiedBy != 0).Select(t => t.ModifiedBy).ToList();
+                var planProgramCreatedBy = programList.Select(t => t.CreatedBy).ToList();
 
-                var planCampaignModifiedBy = campaignList.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-                var planCampaignCreatedBy = campaignList.Select(t => t.CreatedBy.ToString()).ToList();
+                var planCampaignModifiedBy = campaignList.Where(t => t.ModifiedBy != 0).Select(t => t.ModifiedBy).ToList();
+                var planCampaignCreatedBy = campaignList.Select(t => t.CreatedBy).ToList();
 
                 collaboratorId.AddRange(planTacticCreatedBy);
                 collaboratorId.AddRange(planTacticModifiedBy);
@@ -1570,7 +1570,7 @@ namespace RevenuePlanner.Helpers
             // Add By Nishant Sheth
             // Desc :: #1915 for performance
             var planTacticComment = db.GetCollaboratorId(planId);
-            var planTacticCommentCreatedBy = planTacticComment.Select(pc => pc.CreatedBy.ToString()).ToList();
+            var planTacticCommentCreatedBy = planTacticComment.Select(pc => pc.CreatedBy).ToList();
             collaboratorId.AddRange(planTacticCommentCreatedBy);
 
             return collaboratorId;
@@ -1592,9 +1592,9 @@ namespace RevenuePlanner.Helpers
                 List<string> newCollaboratorId = new List<string>();
                 List<object> data = new List<object>();
                 {
-                    List<string> collaboratorIds = Common.GetCollaboratorId(planId).Distinct().ToList();
+                    List<int> collaboratorIds = Common.GetCollaboratorId(planId).Distinct().ToList();
                     List<User> lstUserDetails = new List<User>();
-                    lstUserDetails = objBDSUserRepository.GetMultipleTeamMemberNameByApplicationId(string.Join(",", collaboratorIds), Sessions.ApplicationId);
+                    lstUserDetails = objBDSUserRepository.GetMultipleTeamMemberNameByApplicationIdEx(collaboratorIds, Sessions.ApplicationId);
                     foreach (string userId in lstUserDetails.Select(x => x.UserId.ToString()))
                     {
                         if (System.Web.HttpContext.Current.Cache[userId + "_photo"] != null)
@@ -1658,7 +1658,7 @@ namespace RevenuePlanner.Helpers
 
         /********************** Function to handle changelog for model & plan ************************/
 
-        public static int InsertChangeLog(int? objectId, int? parentObjectId, int? componentId, string componentTitle, Enums.ChangeLog_ComponentType componentType, Enums.ChangeLog_TableName TableName, Enums.ChangeLog_Actions action, string actionSuffix = "", string EntityOwnerId = "", string ReportRecipientUserIds = "")
+        public static int InsertChangeLog(int? objectId, int? parentObjectId, int? componentId, string componentTitle, Enums.ChangeLog_ComponentType componentType, Enums.ChangeLog_TableName TableName, Enums.ChangeLog_Actions action, string actionSuffix = "", int EntityOwnerId = 0, string ReportRecipientUserIds = "")
         {
             /************************** Get value of component type ******************************/
             var type = typeof(Enums.ChangeLog_ComponentType);
@@ -1683,8 +1683,8 @@ namespace RevenuePlanner.Helpers
             //c1.TimeStamp = DateTime.Now;
             //if (Sessions.User != null)
             //{
-            //    c1.ClientId = Sessions.User.ClientId;
-            //    c1.UserId = Sessions.User.UserId;
+            //    c1.ClientId = Sessions.User.CID;
+            //    c1.UserId = Sessions.User.ID;
             //}
             //else
             //{
@@ -1695,7 +1695,7 @@ namespace RevenuePlanner.Helpers
             //db.ChangeLogs.Add(c1);
             var OwnerID = EntityOwnerId;
             var UserName = Convert.ToString(Sessions.User.FirstName + " " + Sessions.User.LastName);
-            int ret = objSp.SaveLogNoticationdata(action.ToString(), actionSuffix, componentId, componentTitle, description, objectId, parentObjectId, TableName.ToString(), Sessions.User.ClientId, Sessions.User.UserId, UserName, OwnerID, ReportRecipientUserIds);
+            int ret = objSp.SaveLogNoticationdata(action.ToString(), actionSuffix, componentId, componentTitle, description, objectId, parentObjectId, TableName.ToString(), Sessions.User.CID, Sessions.User.ID, UserName, OwnerID, ReportRecipientUserIds);
             if (ret >= 1)
             {
                 retval = 1;
@@ -1733,24 +1733,24 @@ namespace RevenuePlanner.Helpers
 
             if (ObjectId > 0)
             {
-                lst_ChangeLog = db.ChangeLogs.Where(cl => lst_Objects.Contains(cl.ObjectId) && cl.TableName == TableName && cl.IsDeleted == false && cl.ClientId == Sessions.User.ClientId).OrderByDescending(cl => cl.TimeStamp).Take(5).ToList();
+                lst_ChangeLog = db.ChangeLogs.Where(cl => lst_Objects.Contains(cl.ObjectId) && cl.TableName == TableName && cl.IsDeleted == false && cl.ClientId == Sessions.User.CID).OrderByDescending(cl => cl.TimeStamp).Take(5).ToList();
             }
             else
             {
-                lst_ChangeLog = db.ChangeLogs.Where(cl => cl.TableName == TableName && cl.IsDeleted == false && cl.ClientId == Sessions.User.ClientId).OrderByDescending(cl => cl.TimeStamp).Take(5).ToList();
+                lst_ChangeLog = db.ChangeLogs.Where(cl => cl.TableName == TableName && cl.IsDeleted == false && cl.ClientId == Sessions.User.CID).OrderByDescending(cl => cl.TimeStamp).Take(5).ToList();
             }
 
             DateTime Current_date = DateTime.Now.Date;
             List<User> userName = new List<User>();
-            string userList = string.Join(",", lst_ChangeLog.Select(cl => cl.UserId.ToString()).ToArray());
-            userName = bdsservice.GetMultipleTeamMemberName(userList);
+            List<int> userList = lst_ChangeLog.Select(cl => cl.UserId).ToList();
+            userName = bdsservice.GetMultipleTeamMemberNameEx(userList);
             ChangeLog_ViewModel clvm = new ChangeLog_ViewModel();
             User user = new User();
             foreach (var cl in lst_ChangeLog)
             {
                 clvm = new ChangeLog_ViewModel();
                 user = new User();
-                user = userName.Where(u => u.UserId == cl.UserId).Select(u => u).FirstOrDefault(); //bdsservice.GetTeamMemberDetails(cl.UserId, Sessions.ApplicationId);
+                user = userName.Where(u => u.ID == cl.UserId).Select(u => u).FirstOrDefault(); //bdsservice.GetTeamMemberDetails(cl.UserId, Sessions.ApplicationId);
                 clvm.ComponentTitle = cl.ComponentTitle;
                 clvm.ComponentType = cl.ComponentType;
                 clvm.Action = cl.ActionName;
@@ -1793,17 +1793,17 @@ namespace RevenuePlanner.Helpers
             //Added By Komal Rawal for new UI of homepage
             List<SelectListItem> planList = new List<SelectListItem>();
             // Desc :: To resolve the select and deselct all owner issues
-            List<Guid> filterOwner = new List<Guid>();
+            List<int> filterOwner = new List<int>();
             string PlanLabel = Enums.FilterLabel.Plan.ToString();
-            //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
-            //var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
+            //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();
+            //var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
 
             /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
             //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
-            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
             //if (planselectedowner == null)
             //{
-            //    filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            //    filterOwner = Sessions.User.ID.ToString().Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
             //}
             // End By Nishant Sheth
             var lstPlanAll = Common.GetPlan();
@@ -1925,7 +1925,7 @@ namespace RevenuePlanner.Helpers
                 List<int> lstTacticIds = new List<int>();
 
                 //// Owner filter criteria.
-                //List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+                //List<int> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
 
                 //TacticType filter criteria
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
@@ -1966,8 +1966,8 @@ namespace RevenuePlanner.Helpers
 
                     }
                     lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
-                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    //planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || pcptobj.CreatedBy == Sessions.User.UserId).ToList();
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
+                    //planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || pcptobj.CreatedBy == Sessions.User.ID).ToList();
                     // Modified By Nishant sheth
                     // Desc :: to match calendar and grid heads up values
                     planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Contains(pcptobj.CreatedBy))).ToList();
@@ -1976,13 +1976,13 @@ namespace RevenuePlanner.Helpers
                 {
                     //bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                     //List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                    //List<Guid> lstSubordinatesIds = new List<Guid>();
+                    //List<int> lstSubordinatesIds = new List<int>();
                     //if (IsTacticAllowForSubordinates)
                     //{
-                    //    lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
+                    //    lstSubordinatesIds = GetAllSubordinates(Sessions.User.ID);
 
                     //}
-                    //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
                     // Modified By Nishant Sheth
                     planTacticIds = planTacticIds.Where(tactic => (IsHeaderActuals == true || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
 
@@ -2006,7 +2006,7 @@ namespace RevenuePlanner.Helpers
 
 
                         double ADSValue = objPlan.Model.AverageDealSize;
-                        List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                        List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
                         objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(objPlan.ModelId, objPlan.GoalType, objPlan.GoalValue.ToString(), ADSValue, stageList, modelFunnelStageList);
                     }
                     // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
@@ -2108,18 +2108,18 @@ namespace RevenuePlanner.Helpers
             //Added By Komal Rawal for new UI of homepage
             List<SelectListItem> planList = new List<SelectListItem>();
             // Desc :: To resolve the select and deselct all owner issues
-            List<Guid> filterOwner = new List<Guid>();
+            List<int> filterOwner = new List<int>();
             string PlanLabel = Enums.FilterLabel.Plan.ToString();
-            //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+            //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();
             //Commented by Rahul Shah to resolve Elmah error. 
-            //var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
+            //var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
 
             /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
             //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
-            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
             //if (planselectedowner == null)
             //{
-            //    filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            //    filterOwner = Sessions.User.ID.ToString().Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
             //}
             // End By Nishant Sheth
             //var lstPlanAll = Common.GetPlan();
@@ -2223,7 +2223,7 @@ namespace RevenuePlanner.Helpers
                 List<int> lstTacticIds = new List<int>();
 
                 //// Owner filter criteria.
-                //List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+                //List<int> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
 
                 //TacticType filter criteria
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
@@ -2264,8 +2264,8 @@ namespace RevenuePlanner.Helpers
 
                     }
                     lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
-                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    //planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || pcptobj.CreatedBy == Sessions.User.UserId).ToList();
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
+                    //planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || pcptobj.CreatedBy == Sessions.User.ID).ToList();
                     // Modified By Nishant sheth
                     // Desc :: to match calendar and grid heads up values
                     planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Contains(pcptobj.CreatedBy))).ToList();
@@ -2274,13 +2274,13 @@ namespace RevenuePlanner.Helpers
                 {
                     //bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                     //List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                    //List<Guid> lstSubordinatesIds = new List<Guid>();
+                    //List<int> lstSubordinatesIds = new List<int>();
                     //if (IsTacticAllowForSubordinates)
                     //{
-                    //    lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
+                    //    lstSubordinatesIds = GetAllSubordinates(Sessions.User.ID);
 
                     //}
-                    //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
                     // Modified By Nishant Sheth
                     planTacticIds = planTacticIds.Where(tactic => (IsHeaderActuals == true || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
 
@@ -2304,7 +2304,7 @@ namespace RevenuePlanner.Helpers
 
 
                         double ADSValue = objPlan.Model.AverageDealSize;
-                        List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                        List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
                         objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(objPlan.ModelId, objPlan.GoalType, objPlan.GoalValue.ToString(), ADSValue, stageList, modelFunnelStageList);
                     }
                     // End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566
@@ -2454,16 +2454,16 @@ namespace RevenuePlanner.Helpers
             var campplanid = campplist.Select(a => a.PlanId).ToList();
             var campid = campplist.Select(a => a.PlanCampaignId).ToList();
             // Desc :: To resolve the select and deselct all owner issues
-            List<Guid> filterOwner = new List<Guid>();
+            List<int> filterOwner = new List<int>();
             string PlanLabel = Enums.FilterLabel.Plan.ToString();
-            //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
-            var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
+            //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();
+            var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
             /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
             //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
-            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
             //if (planselectedowner == null)
             //{
-            //    filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            //    filterOwner = Sessions.User.ID.ToString().Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
             //}
             // End By Nishant Sheth
 
@@ -2482,7 +2482,7 @@ namespace RevenuePlanner.Helpers
 
 
                 //// Owner filter criteria.
-                //filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+                //filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
 
                 //TacticType filter criteria
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
@@ -2531,7 +2531,7 @@ namespace RevenuePlanner.Helpers
 
                     }
                     lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
-                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
                     planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.objPlanTactic.PlanTacticId) || (filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy))).ToList();// Modified By Nishant Sheth
                 }
                 else
@@ -2560,12 +2560,12 @@ namespace RevenuePlanner.Helpers
                                     }).ToList();
                 Double MQLs = 0;
                 List<Plan_Campaign_Program_Tactic> planTacticIds = new List<Plan_Campaign_Program_Tactic>();
-                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
 
                 //Added By Bhavesh For Performance Issue #Home
                 List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
                 List<StageList> stageListType = Common.GetStageList();
-                var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.ClientId).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
+                var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.CID).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
 
                 var improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
                 List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
@@ -2726,16 +2726,16 @@ namespace RevenuePlanner.Helpers
             var campplanid = campplist.Select(a => a.PlanId).ToList();
             var campid = campplist.Select(a => a.PlanCampaignId).ToList();
             // Desc :: To resolve the select and deselct all owner issues
-            List<Guid> filterOwner = new List<Guid>();
+            List<int> filterOwner = new List<int>();
             string PlanLabel = Enums.FilterLabel.Plan.ToString();
-            //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
-            var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
+            //var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();
+            var SetOfPlanSelected = Common.PlanUserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.ID && view.ViewName == null).Select(View => View).ToList();// Add By Nishant Sheth #1915
             /*Commented By Komal Rawal on 25/2/2016 to get data for all owners*/
             //string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
-            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
             //if (planselectedowner == null)
             //{
-            //    filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            //    filterOwner = Sessions.User.ID.ToString().Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
             //}
             // End By Nishant Sheth
 
@@ -2754,7 +2754,7 @@ namespace RevenuePlanner.Helpers
 
 
                 //// Owner filter criteria.
-                //filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+                //filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Convert.ToInt32(owner)).ToList();
 
                 //TacticType filter criteria
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
@@ -2805,7 +2805,7 @@ namespace RevenuePlanner.Helpers
 
                     }
                     lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
-                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
                     planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Contains(pcptobj.CreatedBy))).ToList();// Modified By Nishant Sheth
                 }
                 else
@@ -2840,12 +2840,12 @@ namespace RevenuePlanner.Helpers
 
                 Double MQLs = 0;
                 List<Custom_Plan_Campaign_Program_Tactic> planTacticIds = new List<Custom_Plan_Campaign_Program_Tactic>();
-                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
 
                 //Added By Bhavesh For Performance Issue #Home
                 List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
                 List<StageList> stageListType = Common.GetStageList();
-                var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.ClientId).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
+                var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.CID).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
 
                 var improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
                 List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
@@ -2991,8 +2991,8 @@ namespace RevenuePlanner.Helpers
 
           var campplist = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).Where(campaign => (!((campaign.EndDate < StartDate) || (campaign.StartDate > EndDate))) && planIds.Contains(campaign.PlanId)).ToList();
           var campplanid = campplist.Select(a => a.PlanId).ToList();
-          List<Guid> filterOwner = new List<Guid>();
-          filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+          List<int> filterOwner = new List<int>();
+          filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Int32.Parse(owner)).ToList();
 
             if (planList != null && planList.Count > 0)
             {
@@ -3049,7 +3049,7 @@ namespace RevenuePlanner.Helpers
 
                     }
                     lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
-                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
                     planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || (filterOwner.Contains(pcptobj.CreatedBy))).ToList();// Modified By Nishant Sheth
                 }
                 else
@@ -3069,11 +3069,11 @@ namespace RevenuePlanner.Helpers
 
                 Double MQLs = 0;
                 List<Custom_Plan_Campaign_Program_Tactic> planTacticIds = new List<Custom_Plan_Campaign_Program_Tactic>();
-                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
 
                 List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
                 List<StageList> stageListType = Common.GetStageList();
-                var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.ClientId).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
+                var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.CID).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
 
                 var improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
                 List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
@@ -3191,19 +3191,19 @@ namespace RevenuePlanner.Helpers
         /// Action to get all collaborators of tactic.
         /// </summary>
         /// <param name="PlanId">Plan Id</param>
-        public static List<string> GetAllCollaborators(List<int> tacticIds)
+        public static List<int> GetAllCollaborators(List<int> tacticIds)
         {
             MRPEntities db = new MRPEntities();
-            List<string> collaboratorId = new List<string>();
+            List<int> collaboratorId = new List<int>();
             var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId));
-            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != 0).Select(t => t.ModifiedBy).ToList();
+            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy).ToList();
             var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => tacticIds.Contains(pc.Plan_Campaign_Program_Tactic.PlanTacticId));
-            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy).ToList();
             collaboratorId.AddRange(planTacticCreatedBy);
             collaboratorId.AddRange(planTacticModifiedBy);
             collaboratorId.AddRange(planTacticCommentCreatedBy);
-            return collaboratorId.Distinct().ToList<string>();
+            return collaboratorId.Distinct().ToList<int>();
         }
 
         #endregion
@@ -3223,7 +3223,7 @@ namespace RevenuePlanner.Helpers
                     string planPublished = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
                     string planDraft = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value;
 
-                    var models = db.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m);
+                    var models = db.Models.Where(m => m.ClientId == Sessions.User.CID && m.IsDeleted == false).Select(m => m);
 
                     var allModelIds = models.Select(m => m.ModelId).ToList();
                     if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.None)
@@ -3376,7 +3376,7 @@ namespace RevenuePlanner.Helpers
                 {
                     StageCode = StageCodeCW;
                 }
-                strStageLabel = objDbMrpEntities.Stages.Where(stage => stage.Code == StageCode && stage.IsDeleted == false && stage.ClientId == Sessions.User.ClientId).Select(stage => stage.Title).FirstOrDefault();
+                strStageLabel = objDbMrpEntities.Stages.Where(stage => stage.Code == StageCode && stage.IsDeleted == false && stage.ClientId == Sessions.User.CID).Select(stage => stage.Title).FirstOrDefault();
                 return strStageLabel;
             }
             catch
@@ -3643,34 +3643,34 @@ namespace RevenuePlanner.Helpers
                                 a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
                             if (iseloquainstance)
                             {
-                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
                             else if (isMarketoinstance) //Added by Komal Rawal for PL#2190
                             {
-                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceMarketoID = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceMarketoID = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
                             else
                             {
-                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
 
                             var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
                                 a.IntegrationInstanceProgramId != null).ToList();
-                            Plan_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
                             var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceCampaignId != null).ToList();
-                            Plan_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
 
                             var Plan_Improvement_Campaign_Program_TacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
                                 a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
                             if (iseloquainstance)
                             {
-                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
                             else
                             {
-                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
 
                             var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
@@ -3687,20 +3687,20 @@ namespace RevenuePlanner.Helpers
                                 {
                                     // Get Eloqua related Models and set null value for that records.
                                     List<Model> elqModelsList = ModelsList.Where(a => a.IntegrationInstanceEloquaId == integrationInstanceId && a.IntegrationInstanceEloquaId != null).ToList();
-                                    elqModelsList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                    elqModelsList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                                 }
                                 else if (isMarketoinstance) //Added by Komal Rawal for PL#2190
                                 {
                                     // Get Marketo related Models and set null value for that records.
                                     List<Model> MarketoModelList = ModelsList.Where(a => a.IntegrationInstanceMarketoID == integrationInstanceId && a.IntegrationInstanceMarketoID != null).ToList();
-                                    MarketoModelList.ForEach(a => { a.IntegrationInstanceMarketoID = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                    MarketoModelList.ForEach(a => { a.IntegrationInstanceMarketoID = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
                                 }
                                 else
                                 {
                                     // Get Salesforce related Models and set null value for that records.
                                     List<Model> salModelsList = ModelsList.Where(a => a.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceId != null).ToList();
-                                    salModelsList.ForEach(a => { a.IntegrationInstanceId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                    salModelsList.ForEach(a => { a.IntegrationInstanceId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                                 }
                             }
                         }
@@ -3711,24 +3711,24 @@ namespace RevenuePlanner.Helpers
                                                                                                         ).ToList();
                             if (iseloquainstance)
                             {
-                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
                             else if (isMarketoinstance) //Added by Komal Rawal for PL#2190
                             {
-                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceMarketoID = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceMarketoID = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
                             else
                             {
-                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
 
                             var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) &&
                                                                                                 a.Plan_Campaign.Plan.ModelId == modelId
                                                                                           ).ToList();
-                            Plan_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
                             var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.Plan.ModelId == modelId).ToList();
-                            Plan_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
 
                             var Plan_Improvement_Campaign_Program_TacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
@@ -3736,11 +3736,11 @@ namespace RevenuePlanner.Helpers
                                                                                                                                 ).ToList();
                             if (iseloquainstance)
                             {
-                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
                             else
                             {
-                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                             }
 
                             var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.ModelId == modelId
@@ -3821,7 +3821,7 @@ namespace RevenuePlanner.Helpers
                     {
                         objPlan_Campaign_Program.Status = newProgramStatus;
                         objPlan_Campaign_Program.ModifiedDate = DateTime.Now;
-                        objPlan_Campaign_Program.ModifiedBy = Sessions.User.UserId;
+                        objPlan_Campaign_Program.ModifiedBy = Sessions.User.ID;
                         db.Entry(objPlan_Campaign_Program).State = EntityState.Modified;
                         if (AddComment)  //Added By Komal Rawal for #1357 - To Add Comment
                         {
@@ -3830,7 +3830,7 @@ namespace RevenuePlanner.Helpers
                             DateTime Currentdate = DateTime.Now;
                             pcptc.CreatedDate = Currentdate;
                             string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
-                            pcptc.CreatedBy = Sessions.User.UserId;
+                            pcptc.CreatedBy = Sessions.User.ID;
                             pcptc.PlanProgramId = PlanProgramId;
                             db.Entry(pcptc).State = EntityState.Added;
                             db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
@@ -3861,7 +3861,7 @@ namespace RevenuePlanner.Helpers
                     {
                         objPlan_Campaign.Status = newCampaignStatus;
                         objPlan_Campaign.ModifiedDate = DateTime.Now;
-                        objPlan_Campaign.ModifiedBy = Sessions.User.UserId;
+                        objPlan_Campaign.ModifiedBy = Sessions.User.ID;
                         db.Entry(objPlan_Campaign).State = EntityState.Modified;
                         if (AddComment)  //Added By Komal Rawal for #1357 - To Add Comment
                         {
@@ -3870,7 +3870,7 @@ namespace RevenuePlanner.Helpers
                             DateTime Currentdate = DateTime.Now;
                             pcptc.CreatedDate = Currentdate;
                             string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
-                            pcptc.CreatedBy = Sessions.User.UserId;
+                            pcptc.CreatedBy = Sessions.User.ID;
                             pcptc.PlanCampaignId = PlanCampaignId;
                             db.Entry(pcptc).State = EntityState.Added;
                             db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
@@ -4141,7 +4141,7 @@ namespace RevenuePlanner.Helpers
             List<string> lstStageTitle = new List<string>();
             string stageMQL = Enums.Stage.MQL.ToString();
             int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == tacticId).Stage.Level);
-            int levelMQL = db.Stages.FirstOrDefault(s => s.ClientId.Equals(Sessions.User.ClientId) && s.IsDeleted == false && s.Code.Equals(stageMQL)).Level.Value;
+            int levelMQL = db.Stages.FirstOrDefault(s => s.ClientId.Equals(Sessions.User.CID) && s.IsDeleted == false && s.Code.Equals(stageMQL)).Level.Value;
 
             if (tacticStageLevel < levelMQL)
             {
@@ -4223,7 +4223,7 @@ namespace RevenuePlanner.Helpers
             List<Stage> stageList = dataCache.Returncache(Enums.CacheObject.StageList.ToString()) as List<Stage>;
             if (stageList == null)
             {
-                stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
             }
             dataCache.AddCache(Enums.CacheObject.StageList.ToString(), stageList);
             //// Fetch the tactic stages and it's value
@@ -4235,7 +4235,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities objDbMRPEntities = new MRPEntities();
             //// Compute the tactic relation list
             List<TacticStageValueRelation> tacticValueRelationList = GetCalculationPerformance(tlist, isIncludeImprovement);
-            List<Stage> stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+            List<Stage> stageList = objDbMRPEntities.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
             //// Fetch the tactic stages and it's value
             //// Return finalized TacticStageValue list to the Parent method 
             return GetTacticStageValueListPerformance(tlist, tacticValueRelationList, stageList, false, IsReport);
@@ -4306,7 +4306,7 @@ namespace RevenuePlanner.Helpers
             {
                 string EntTacticType = Enums.EntityType.Tactic.ToString();
 
-                var customfiedlids = dbStage.CustomFields.Where(c => c.ClientId == Sessions.User.ClientId && c.EntityType == EntTacticType && c.IsDeleted == false).Select(c => c.CustomFieldId).ToList();
+                var customfiedlids = dbStage.CustomFields.Where(c => c.ClientId == Sessions.User.CID && c.EntityType == EntTacticType && c.IsDeleted == false).Select(c => c.CustomFieldId).ToList();
 
                 tblCustomFieldEntities = dbStage.CustomField_Entity.Where(CustEnt => TacticIds.Contains(CustEnt.EntityId) && customfiedlids.Contains(CustEnt.CustomFieldId)).Select(c => c).ToList();
             }
@@ -4399,7 +4399,7 @@ namespace RevenuePlanner.Helpers
             {
                 string EntTacticType = Enums.EntityType.Tactic.ToString();
 
-                var customfiedlids = dbStage.CustomFields.Where(c => c.ClientId == Sessions.User.ClientId && c.EntityType == EntTacticType && c.IsDeleted == false).Select(c => c.CustomFieldId).ToList();
+                var customfiedlids = dbStage.CustomFields.Where(c => c.ClientId == Sessions.User.CID && c.EntityType == EntTacticType && c.IsDeleted == false).Select(c => c.CustomFieldId).ToList();
 
                 tblCustomFieldEntities = dbStage.CustomField_Entity.Where(CustEnt => TacticIds.Contains(CustEnt.EntityId) && customfiedlids.Contains(CustEnt.CustomFieldId)).Select(c => c).ToList();
             }
@@ -4946,7 +4946,7 @@ namespace RevenuePlanner.Helpers
             string size = Enums.StageType.Size.ToString();
             string CR = Enums.StageType.CR.ToString();
 
-            return dbStage.BestInClasses.Where(best => best.Stage.ClientId == Sessions.User.ClientId).Select(best =>
+            return dbStage.BestInClasses.Where(best => best.Stage.ClientId == Sessions.User.CID).Select(best =>
                 new StageRelation
                 {
                     StageId = best.StageId,
@@ -4976,7 +4976,7 @@ namespace RevenuePlanner.Helpers
             List<Stage> stagelist = new List<Stage>();
             #endregion
 
-            stagelist = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false && stage.Code.Equals(ADS)).ToList();
+            stagelist = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false && stage.Code.Equals(ADS)).ToList();
             int adsStageId = stagelist.Select(stage => stage.StageId).FirstOrDefault();
             var ModelFunnelList = dbStage.Model_Stage.Where(m => modleIds.Contains(m.ModelId)).ToList();
 
@@ -5036,7 +5036,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities dbStage = new MRPEntities();
             List<StageList> stageList = new List<StageList>();
             List<Stage> fltrStageList = new List<Stage>();
-            var Stage = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).ToList();
+            var Stage = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).ToList();
             string CW = Enums.Stage.CW.ToString();
             string CR = Enums.StageType.CR.ToString();
             fltrStageList = Stage.Where(st => st.Level != null && st.Code != CW).ToList();
@@ -5281,8 +5281,16 @@ namespace RevenuePlanner.Helpers
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
 
             var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).Distinct().ToList();
-            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
-            List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = null;
+            try
+            {
+                improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+            }
+            catch (Exception ex) {
+                var m = ex.Message;
+                //TODO: must invetigate --zz
+            }
+            List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
             //End #955
 
             List<TacticStageValue> TacticData = GetTacticStageRelationForSinglePlan(lstTactic, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, MainModelId, stageList, isIncludeImprovement);
@@ -5360,7 +5368,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities dbStage = new MRPEntities();
             var planids = tacticPlanList.Select(t => t.PlanId).Distinct().ToList();
             var modelids = dbStage.Plans.Where(p => planids.Contains(p.PlanId)).Select(p => p.ModelId).Distinct();
-            var ModelList = dbStage.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => new { m.ModelId, m.ParentModelId, m.EffectiveDate }).ToList();
+            var ModelList = dbStage.Models.Where(m => m.ClientId == Sessions.User.CID && m.IsDeleted == false).Select(m => new { m.ModelId, m.ParentModelId, m.EffectiveDate }).ToList();
             List<ModelDateList> modelDateList = new List<ModelDateList>();
             foreach (var modelid in modelids)
             {
@@ -5391,7 +5399,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities dbStage = new MRPEntities();
             var planids = tacticPlanList.Select(t => t.PlanId).Distinct().ToList();
             var modelids = dbStage.Plans.Where(p => planids.Contains(p.PlanId)).Select(p => p.ModelId).Distinct();
-            var ModelList = dbStage.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => new { m.ModelId, m.ParentModelId, m.EffectiveDate }).ToList();
+            var ModelList = dbStage.Models.Where(m => m.ClientId == Sessions.User.CID && m.IsDeleted == false).Select(m => new { m.ModelId, m.ParentModelId, m.EffectiveDate }).ToList();
             List<ModelDateList> modelDateList = new List<ModelDateList>();
             foreach (var modelid in modelids)
             {
@@ -5620,15 +5628,15 @@ namespace RevenuePlanner.Helpers
         /// Added By Dharmraj for ticket #538, 23-06-2014
         /// </summary>
         /// <returns></returns>
-        public static List<Guid> GetSubOrdinatesWithPeers()
+        public static List<int> GetSubOrdinatesWithPeers()
         {
             //Get all subordinates of current user
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
             lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-            var lstSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
+            var lstSubOrdinates = lstUserHierarchy.Where(u => u.MID == Sessions.User.ID)
                                                         .ToList()
-                                                        .Select(u => u.UserId)
+                                                        .Select(u => u.UID)
                                                         .ToList();
             var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UserId == Sessions.User.UserId).ManagerId;
             if (ManagerId != null)
@@ -5641,7 +5649,7 @@ namespace RevenuePlanner.Helpers
                 {
                     var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
                                                             .ToList()
-                                                            .Select(u => u.UserId)
+                                                            .Select(u => u.UID)
                                                             .ToList();
 
                     // Get current user permission for Tactic ApproveForPeers.
@@ -5662,38 +5670,38 @@ namespace RevenuePlanner.Helpers
         /// Added By Dharmraj for ticket #573, 4-07-2014
         /// </summary>
         /// <returns>returns list of userIds</returns>
-        public static List<Guid> GetSubOrdinatesWithPeersNLevel()
+        public static List<int> GetSubOrdinatesWithPeersNLevel()
         {
             //// Get all subordinates of current user
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
             lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-            List<Guid> lstSubordinatesId = new List<Guid>();
+            List<int> lstSubordinatesId = new List<int>();
             //// Get list of subordinates of current logged in user
-            List<Guid> lstSubOrdinates = lstUserHierarchy.Where(user => user.ManagerId == Sessions.User.UserId)
-                                                         .Select(user => user.UserId).Distinct().ToList();    // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
+            List<int> lstSubOrdinates = lstUserHierarchy.Where(user => user.ManagerId == Sessions.User.UserId)
+                                                         .Select(user => user.UID).Distinct().ToList();    // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
 
             while (lstSubOrdinates.Count > 0)
             {
                 lstSubOrdinates.ForEach(user => lstSubordinatesId.Add(user));
-                lstSubOrdinates = lstUserHierarchy.Where(user => lstSubOrdinates.Contains(user.ManagerId.GetValueOrDefault(Guid.Empty))).Select(user => user.UserId).Distinct().ToList();
+                lstSubOrdinates = lstUserHierarchy.Where(user => lstSubOrdinates.Contains(user.MID)).Select(user => user.UID).Distinct().ToList();
             }
 
             //// Get current user permission for Tactic ApproveForPeers.
             bool IsTacticApproveForPeersAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveForPeers);
-            List<Guid> lstUpperMostLevelManagers = new List<Guid>();    // Added by Sohel Pathan on 13/08/2014 for PL ticket #689
+            List<int> lstUpperMostLevelManagers = new List<int>();    // Added by Sohel Pathan on 13/08/2014 for PL ticket #689
             //// Get ManagerId of current logged in user
-            var ManagerId = lstUserHierarchy.FirstOrDefault(user => user.UserId == Sessions.User.UserId).ManagerId;
-            if (ManagerId != null)
+            var ManagerId = lstUserHierarchy.FirstOrDefault(user => user.UID == Sessions.User.ID).MID;
+            if (ManagerId != 0)
             {
                 //// Get list of peers of manager of current logged in user 
-                var lstPeersId = lstUserHierarchy.Where(user => user.ManagerId == ManagerId).Select(user => user.UserId).Distinct().ToList();
+                var lstPeersId = lstUserHierarchy.Where(user => user.MID == ManagerId).Select(user => user.UID).Distinct().ToList();
 
                 if (lstPeersId.Count > 0)
                 {
                     //// Get list of subordinates for above selected peers
-                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(user => lstPeersId.Contains(user.ManagerId.GetValueOrDefault(Guid.Empty)))
-                                                            .Select(user => user.UserId).Distinct().ToList(); // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
+                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(user => lstPeersId.Contains(user.MID))
+                                                            .Select(user => user.UID).Distinct().ToList(); // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
 
                     if (IsTacticApproveForPeersAuthorized)
                     {
@@ -5708,18 +5716,18 @@ namespace RevenuePlanner.Helpers
                 if (IsTacticApproveForPeersAuthorized)
                 {
                     //// Get list of user who dont have manager (i.e. most Upper level users)
-                    lstUpperMostLevelManagers = lstUserHierarchy.Where(user => user.ManagerId == null).Select(user => user.UserId).Distinct().ToList();
+                    lstUpperMostLevelManagers = lstUserHierarchy.Where(user => user.MID == 0).Select(user => user.UID).Distinct().ToList();
                     if (lstUpperMostLevelManagers.Count > 0)
                     {
                         lstSubordinatesId = lstSubordinatesId.Concat(lstUpperMostLevelManagers).Distinct().ToList();
 
-                        List<Guid> lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(user => lstUpperMostLevelManagers.Contains(user.ManagerId.GetValueOrDefault(Guid.Empty)))
-                                                                                .Select(user => user.UserId).Distinct().ToList();
+                        List<int> lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(user => lstUpperMostLevelManagers.Contains(user.MID))
+                                                                                .Select(user => user.UID).Distinct().ToList();
 
                         while (lstSubOrdinatesOfUpperMostLevelManagers.Count > 0)
                         {
                             lstSubOrdinatesOfUpperMostLevelManagers.ForEach(user => lstSubordinatesId.Add(user));
-                            lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(user => lstSubOrdinatesOfUpperMostLevelManagers.Contains(user.ManagerId.GetValueOrDefault(Guid.Empty))).Select(user => user.UserId).Distinct().ToList();
+                            lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(user => lstSubOrdinatesOfUpperMostLevelManagers.Contains(user.MID)).Select(user => user.UID).Distinct().ToList();
                         }
                     }
                 }
@@ -5730,12 +5738,12 @@ namespace RevenuePlanner.Helpers
             bool IsTacticApproveOwn = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveOwn);
             if (IsTacticApproveOwn)
             {
-                lstSubordinatesId.Add(Sessions.User.UserId);
+                lstSubordinatesId.Add(Sessions.User.ID);
             }
             else
             {
                 //// Added by Sohel Pathan on 13/08/2014 for PL ticket #689
-                lstSubordinatesId.Remove(Sessions.User.UserId);
+                lstSubordinatesId.Remove(Sessions.User.ID);
             }
             //// End :Added by Mitesh Vaishnav for PL ticket #688 and #689
 
@@ -5750,7 +5758,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="id"></param>
         /// <param name="section"></param>
         /// <returns></returns>
-        public static bool IsSectionApprovable(List<Guid> lstSubordinates, int id, string section)
+        public static bool IsSectionApprovable(List<int> lstSubordinates, int id, string section)
         {
             bool IsApprovable = false;
             MRPEntities db = new MRPEntities();
@@ -5791,23 +5799,23 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static List<Guid> GetAllSubordinates(Guid userId)
+        public static List<int> GetAllSubordinates(int userId)
         {
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
             lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-            List<Guid> lstUserId = new List<Guid>();
+            List<int> lstUserId = new List<int>();
 
-            List<Guid> lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == userId)
+            List<int> lstSubordinates = lstUserHierarchy.Where(u => u.MID == userId)
                                                          .ToList()
-                                                         .Select(u => u.UserId).ToList();
+                                                         .Select(u => u.UID).ToList();
 
 
             while (lstSubordinates.Count > 0)
             {
                 lstSubordinates.ForEach(u => lstUserId.Add(u));
 
-                lstSubordinates = lstUserHierarchy.Where(u => lstSubordinates.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty))).ToList().Select(u => u.UserId).ToList();
+                lstSubordinates = lstUserHierarchy.Where(u => lstSubordinates.Contains(u.MID)).ToList().Select(u => u.UID).ToList();
             }
 
 
@@ -5820,15 +5828,15 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static List<Guid> GetSubordinates(Guid userId)
+        public static List<int> GetSubordinates(int userId)
         {
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
             lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
 
-            var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == userId)
+            var lstSubordinates = lstUserHierarchy.Where(u => u.MID == userId)
                                                           .ToList()
-                                                          .Select(u => u.UserId).ToList();
+                                                          .Select(u => u.UID).ToList();
             return lstSubordinates;
 
         }
@@ -5841,7 +5849,7 @@ namespace RevenuePlanner.Helpers
         {
             bool returnValue = true;
             List<int> lstEditableTacticIds = new List<int>();
-            lstEditableTacticIds = Common.GetViewEditEntityList(Sessions.User.UserId, new List<int>() { planTacticId });
+            lstEditableTacticIds = Common.GetViewEditEntityList(Sessions.User.ID, new List<int>() { planTacticId });
 
             if (lstEditableTacticIds.Count > 0 && !lstEditableTacticIds.Contains(planTacticId))
             {
@@ -5856,7 +5864,7 @@ namespace RevenuePlanner.Helpers
             bool returnValue = true;
             List<int> lstRestrictedTacticIds = new List<int>();
             bool isCustomRestrictionSet = true;
-            lstRestrictedTacticIds = Common.GetRestrictedEntityList(Sessions.User.UserId, out isCustomRestrictionSet);
+            lstRestrictedTacticIds = Common.GetRestrictedEntityList(Sessions.User.ID, out isCustomRestrictionSet);
 
             if (!isCustomRestrictionSet || (lstRestrictedTacticIds.Count > 0 && !lstRestrictedTacticIds.Contains(planTacticId)))
             {
@@ -5898,7 +5906,7 @@ namespace RevenuePlanner.Helpers
         /// <CreatedDate>14/07/2014</CreatedDate>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        public static SelectList GetGoalTypeList(Guid clientId)
+        public static SelectList GetGoalTypeList(int clientId)
         {
             MRPEntities db = new MRPEntities();
             var lstGoalTypes = Enum.GetValues(typeof(Enums.PlanGoalType)).Cast<Enums.PlanGoalType>().Select(a => a.ToString()).ToList();
@@ -5932,7 +5940,7 @@ namespace RevenuePlanner.Helpers
             {
                 MRPEntities dbStage = new MRPEntities();
                 PlanExchangeRate = Sessions.PlanExchangeRate;
-                List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
                 string stageINQ = Enums.Stage.INQ.ToString();
                 int levelINQ = stageList.FirstOrDefault(s => s.Code.Equals(stageINQ)).Level.Value;
                 string stageMQL = Enums.Stage.MQL.ToString();
@@ -6142,7 +6150,7 @@ namespace RevenuePlanner.Helpers
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
             List<CustomFieldDependency> DependencyList = db.CustomFieldDependencies.Where(a => a.IsDeleted == false).Select(a => a).ToList();
             //Modified By Komal Rawal for #1864
-            var lstCustomFields = db.CustomFields.Where(customField => customField.EntityType.ToLower() == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true)).ToList().Select(a => new CustomFieldModel
+            var lstCustomFields = db.CustomFields.Where(customField => customField.EntityType.ToLower() == section && customField.ClientId == Sessions.User.CID && customField.IsDeleted == false && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true)).ToList().Select(a => new CustomFieldModel
             {
                 customFieldId = a.CustomFieldId,
                 name = a.Name,
@@ -6296,7 +6304,7 @@ namespace RevenuePlanner.Helpers
             var CustomFields = (from cf in db.CustomFields
                                 join cfe in db.CustomField_Entity on cf.CustomFieldId equals cfe.CustomFieldId
                                 join t in db.Plan_Campaign_Program_Tactic on cfe.EntityId equals t.PlanTacticId
-                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.ClientId && planTacticIds.Contains(t.PlanTacticId)
+                                where cf.IsDeleted == false && t.IsDeleted == false && cf.EntityType == "Tactic" && cf.ClientId == Sessions.User.CID && planTacticIds.Contains(t.PlanTacticId)
                                 select cf).Distinct().OrderBy(cf => cf.Name).ToList();
 
             //ittrate the custom fields and insert into the temp list
@@ -6330,7 +6338,7 @@ namespace RevenuePlanner.Helpers
                LineItemCustomText = Enums.EntityType.Lineitem.ToString().ToLower();
 
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
-            var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId
+            var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.CID
                 && customfield.IsDeleted == false
                 && customfield.IsDisplayForFilter == true //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
                 && customfield.CustomFieldType.Name == DropDownList).ToList(); //Modified by Arpita Soni for PL ticket 1148 (added filter of CustomFieldTypeId)
@@ -6389,7 +6397,7 @@ namespace RevenuePlanner.Helpers
 
             List<ViewByModel> lstBudget = new List<ViewByModel>();
 
-            var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && (m.IsDeleted == false || m.IsDeleted == null)).Select(m => m.Id).ToList();
+            var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.CID && (m.IsDeleted == false || m.IsDeleted == null)).Select(m => m.Id).ToList();
             var tblBudgetDetail = db.Budget_Detail.Where(a => a.IsDeleted == false && budgeparentids.Contains(a.BudgetId)).Select(a => a).ToList();
             int? ParentId = 0;
             var checkParent = tblBudgetDetail.Where(a => a.Id == BudgetId && (a.IsDeleted == false)).Select(a => a.ParentId).ToList();
@@ -6409,7 +6417,7 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities db = new MRPEntities();
             List<ViewByModel> lstBudget = new List<ViewByModel>();
-            var customfieldlist = db.Budgets.Where(bdgt => bdgt.ClientId == Sessions.User.ClientId && (bdgt.IsDeleted == false || bdgt.IsDeleted == null) && !string.IsNullOrEmpty(bdgt.Name)).ToList();
+            var customfieldlist = db.Budgets.Where(bdgt => bdgt.ClientId == Sessions.User.CID && (bdgt.IsDeleted == false || bdgt.IsDeleted == null) && !string.IsNullOrEmpty(bdgt.Name)).ToList();
             lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
             return lstBudget;
         }
@@ -6515,7 +6523,7 @@ namespace RevenuePlanner.Helpers
                                 //    List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
                                 var lineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false) && lineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
 
-                                lineItemList.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
+                                lineItemList.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.ID; });
                                 List<int> lineItemsIds = lineItemList.Select(lineItem => lineItem.PlanLineItemId).ToList();
                                 var lineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineItemActual => lineItemsIds.Contains(lineItemActual.PlanLineItemId)).ToList();
                                 lineItemActualList.ForEach(lineItemActual => db.Entry(lineItemActual).State = EntityState.Deleted);
@@ -6525,7 +6533,7 @@ namespace RevenuePlanner.Helpers
                                 if (linkedLineItemIds != null && linkedLineItemIds.Count > 0)
                                 {
                                     var linkedLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false) && linkedLineItemIds.Contains(lineItem.PlanLineItemId)).ToList();
-                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
+                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.ID; });
                                     var linkedActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lnkd => linkedLineItemIds.Contains(lnkd.PlanLineItemId)).ToList();
                                     linkedActualList.ForEach(lnkd => db.Entry(lnkd).State = EntityState.Deleted);
                                 }
@@ -6536,7 +6544,7 @@ namespace RevenuePlanner.Helpers
                                 var tacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false && pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
                                 // Added by Arpita Soni for Ticket #2354 on 07/14/2016
                                 RemoveTacticsFromPackage(tacticList);
-                                tacticList.ForEach(pcpt => { pcpt.IsDeleted = true; pcpt.ModifiedDate = System.DateTime.Now; pcpt.ModifiedBy = Sessions.User.UserId; });
+                                tacticList.ForEach(pcpt => { pcpt.IsDeleted = true; pcpt.ModifiedDate = System.DateTime.Now; pcpt.ModifiedBy = Sessions.User.ID; });
                                 var tacticIds = tacticList.Select(a => a.PlanTacticId).ToList();
 
                                 #region "Remove linked Tactic"
@@ -6544,7 +6552,7 @@ namespace RevenuePlanner.Helpers
                                 if (linkedTacticIds != null && linkedTacticIds.Count > 0)
                                 {
                                     var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => lnkdtac.IsDeleted == false && linkedTacticIds.Contains(lnkdtac.PlanTacticId)).ToList();
-                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.ID; });
 
                                     RemoveTacticMediaCode(linkedTacticIds);
                                 }
@@ -6559,13 +6567,13 @@ namespace RevenuePlanner.Helpers
                                 RemoveAlertRule(tacticIds);
 
                                 var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
-                                programList.ForEach(pcp => { pcp.IsDeleted = true; pcp.ModifiedDate = System.DateTime.Now; pcp.ModifiedBy = Sessions.User.UserId; });
+                                programList.ForEach(pcp => { pcp.IsDeleted = true; pcp.ModifiedDate = System.DateTime.Now; pcp.ModifiedBy = Sessions.User.ID; });
                                 var programIds = programList.Select(a => a.PlanProgramId).ToList();
                                 //tblCustomField.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram).ToList().ForEach(a => customFieldList.Add(a));
                                 RemoveAlertRule(programIds);
 
                                 var campaignList = db.Plan_Campaign.Where(pc => pc.PlanId == PlanId && pc.IsDeleted == false).ToList();
-                                campaignList.ForEach(pc => { pc.IsDeleted = true; pc.ModifiedDate = System.DateTime.Now; pc.ModifiedBy = Sessions.User.UserId; });
+                                campaignList.ForEach(pc => { pc.IsDeleted = true; pc.ModifiedDate = System.DateTime.Now; pc.ModifiedBy = Sessions.User.ID; });
                                 var campaignIds = campaignList.Select(a => a.PlanCampaignId).ToList();
                                 //tblCustomField.Where(a => campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(a => customFieldList.Add(a));
                                 RemoveAlertRule(campaignIds);
@@ -6580,7 +6588,7 @@ namespace RevenuePlanner.Helpers
                                 ///Delete entry in Default Table of that plan
                                 var Label = Enums.FilterLabel.Plan.ToString();
 
-                                Plan_UserSavedViews PlanList = db.Plan_UserSavedViews.FirstOrDefault(plan => plan.FilterName.Equals(Label) && plan.Userid == Sessions.User.UserId);
+                                Plan_UserSavedViews PlanList = db.Plan_UserSavedViews.FirstOrDefault(plan => plan.FilterName.Equals(Label) && plan.Userid == Sessions.User.ID);
                                 var DefaultPlanList = "";
                                 if (PlanList != null)
                                 {
@@ -6619,14 +6627,14 @@ namespace RevenuePlanner.Helpers
                                 // List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
 
                                 var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == id && a.IsDeleted.Equals(false)).ToList();
-                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
                                 #region "Remove linked line items & Acutals value"
                                 List<int> linkedLineItemIds = plan_campaign_Program_Tactic_LineItemList.Where(tac => tac.LinkedLineItemId.HasValue).Select(line => line.LinkedLineItemId.Value).Distinct().ToList();
                                 if (linkedLineItemIds != null && linkedLineItemIds.Count > 0)
                                 {
                                     var linkedLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => linkedLineItemIds.Contains(lineItem.PlanLineItemId) && lineItem.IsDeleted.Equals(false)).ToList();
-                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
+                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.ID; });
                                     var linkedActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lnkd => linkedLineItemIds.Contains(lnkd.PlanLineItemId)).ToList();
                                     linkedActualList.ForEach(lnkd => db.Entry(lnkd).State = EntityState.Deleted);
                                 }
@@ -6637,7 +6645,7 @@ namespace RevenuePlanner.Helpers
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == id && a.IsDeleted == false).ToList();
                                 // Added by Arpita Soni for Ticket #2354 on 07/14/2016
                                 RemoveTacticsFromPackage(Plan_Campaign_Program_TacticList);
-                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
 
                                 #region "Remove linked Tactic"
@@ -6645,7 +6653,7 @@ namespace RevenuePlanner.Helpers
                                 if (linkedTacticIds != null && linkedTacticIds.Count > 0)
                                 {
                                     var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId) && lnkdtac.IsDeleted == false).ToList();
-                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.ID; });
                                     RemoveTacticMediaCode(linkedTacticIds);
                                 }
                                 else
@@ -6653,12 +6661,12 @@ namespace RevenuePlanner.Helpers
                                 #endregion
 
                                 var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.PlanCampaignId == id).ToList();
-                                Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                                 var programIds = Plan_Campaign_ProgramList.Select(a => a.PlanProgramId).ToList();
                                 RemoveAlertRule(programIds);
 
                                 var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.PlanCampaignId == id).ToList();
-                                Plan_CampaignList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_CampaignList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                                 var campaignIds = Plan_CampaignList.Select(a => a.PlanCampaignId).ToList();
                                 RemoveAlertRule(campaignIds);
 
@@ -6691,14 +6699,14 @@ namespace RevenuePlanner.Helpers
                                 //  List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
 
                                 var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId == id && a.IsDeleted.Equals(false)).ToList();
-                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
                                 #region "Remove linked line items & Acutals value"
                                 List<int> linkedLineItemIds = plan_campaign_Program_Tactic_LineItemList.Where(tac => tac.LinkedLineItemId.HasValue).Select(line => line.LinkedLineItemId.Value).Distinct().ToList();
                                 if (linkedLineItemIds != null && linkedLineItemIds.Count > 0)
                                 {
                                     var linkedLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => linkedLineItemIds.Contains(lineItem.PlanLineItemId) && lineItem.IsDeleted.Equals(false)).ToList();
-                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
+                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.ID; });
                                     var linkedActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lnkd => linkedLineItemIds.Contains(lnkd.PlanLineItemId)).ToList();
                                     linkedActualList.ForEach(lnkd => db.Entry(lnkd).State = EntityState.Deleted);
                                 }
@@ -6708,14 +6716,14 @@ namespace RevenuePlanner.Helpers
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.PlanProgramId == id && a.IsDeleted == false).ToList();
                                 // Added by Arpita Soni for Ticket #2354 on 07/14/2016
                                 RemoveTacticsFromPackage(Plan_Campaign_Program_TacticList);
-                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
                                 #region "Remove linked Tactic"
                                 List<int> linkedTacticIds = Plan_Campaign_Program_TacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(line => line.LinkedTacticId.Value).Distinct().ToList();
                                 if (linkedTacticIds != null && linkedTacticIds.Count > 0)
                                 {
                                     var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId) && lnkdtac.IsDeleted == false).ToList();
-                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.ID; });
                                     RemoveTacticMediaCode(linkedTacticIds);
                                 }
                                 else
@@ -6723,7 +6731,7 @@ namespace RevenuePlanner.Helpers
                                 #endregion
 
                                 var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == id).ToList();
-                                Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
                                 RemoveAlertRule(Plan_Campaign_ProgramList.Select(a => a.PlanProgramId).ToList());
 
                                 ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
@@ -6749,14 +6757,14 @@ namespace RevenuePlanner.Helpers
                             {
                                 //   List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
                                 var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.PlanTacticId == id && a.IsDeleted.Equals(false)).ToList();
-                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
                                 #region "Remove linked line items & Acutals value"
                                 List<int> linkedLineItemIds = plan_campaign_Program_Tactic_LineItemList.Where(tac => tac.LinkedLineItemId.HasValue).Select(line => line.LinkedLineItemId.Value).Distinct().ToList();
                                 if (linkedLineItemIds != null && linkedLineItemIds.Count > 0)
                                 {
                                     var linkedLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => linkedLineItemIds.Contains(lineItem.PlanLineItemId) && lineItem.IsDeleted.Equals(false)).ToList();
-                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
+                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.ID; });
                                     var linkedActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lnkd => linkedLineItemIds.Contains(lnkd.PlanLineItemId)).ToList();
                                     linkedActualList.ForEach(lnkd => db.Entry(lnkd).State = EntityState.Deleted);
                                 }
@@ -6766,14 +6774,14 @@ namespace RevenuePlanner.Helpers
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
                                 // Added by Arpita Soni for Ticket #2354 on 07/14/2016
                                 RemoveTacticsFromPackage(Plan_Campaign_Program_TacticList);
-                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
                                 #region "Remove linked Tactic"
                                 List<int> linkedTacticIds = Plan_Campaign_Program_TacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(line => line.LinkedTacticId.Value).Distinct().ToList();
                                 if (linkedTacticIds != null && linkedTacticIds.Count > 0)
                                 {
                                     var linkedTactics = db.Plan_Campaign_Program_Tactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId) && lnkdtac.LinkedTacticId == id).ToList();
-                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.ID; });
                                     RemoveTacticMediaCode(linkedTacticIds);
                                 }
                                 else
@@ -6825,7 +6833,7 @@ namespace RevenuePlanner.Helpers
                                         db.Entry(LineItemTactic).State = EntityState.Modified;
                                     }
                                 }
-                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
 
                                 ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
                                 var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => a.PlanLineItemId == id).ToList();
@@ -7004,7 +7012,7 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities db = new MRPEntities();
             string lastModifiedMessage = string.Empty;
-            string createdBy = null;
+            int createdBy = 0;
             DateTime? modifiedDate = null;
 
             //// Checking whether line item actuals exists.
@@ -7014,7 +7022,7 @@ namespace RevenuePlanner.Helpers
             if (lineItemListActuals != null)
             {
                 modifiedDate = lineItemListActuals.CreatedDate;
-                createdBy = lineItemListActuals.CreatedBy.ToString();
+                createdBy = lineItemListActuals.CreatedBy;
             }
             else
             {
@@ -7028,21 +7036,21 @@ namespace RevenuePlanner.Helpers
                     if (tacticActualList.ModifiedDate != null)
                     {
                         modifiedDate = tacticActualList.ModifiedDate;
-                        createdBy = tacticActualList.ModifiedBy.ToString();
+                        createdBy = tacticActualList.ModifiedBy;
                     }
                     else
                     {
                         modifiedDate = tacticActualList.CreatedDate;
-                        createdBy = tacticActualList.CreatedBy.ToString();
+                        createdBy = tacticActualList.CreatedBy;
                     }
                 }
 
             }
 
-            if (createdBy != null && modifiedDate != null)
+            if (createdBy != 0 && modifiedDate != null)
             {
                 ////Checking if created by is empty then system generated modification
-                if (Guid.Parse(createdBy) == Guid.Empty)
+                if (createdBy == 0)
                 {
                     lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), GameplanIntegrationService);
                     return lastModifiedMessage;
@@ -7052,10 +7060,10 @@ namespace RevenuePlanner.Helpers
                     bool isGetFromBDSService = false;////functiona perameter userList have "createdby" user
                     if (userList != null && userList.Count != 0)
                     {
-                        User user = userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault();
+                        User user = userList.Where(u => u.ID == createdBy).FirstOrDefault();
                         if (user != null)
                         {
-                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().FirstName, userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().LastName);
+                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), userList.Where(u => u.ID == createdBy).FirstOrDefault().FirstName, userList.Where(u => u.ID == createdBy).FirstOrDefault().LastName);
                             return lastModifiedMessage;
                         }
                         else
@@ -7071,7 +7079,7 @@ namespace RevenuePlanner.Helpers
                     if (isGetFromBDSService)
                     {
                         BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                        User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
+                        User objUser = objBDSUserRepository.GetTeamMemberDetailsEx(createdBy, Sessions.ApplicationId);
                         lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), objUser.FirstName, objUser.LastName);
                         return lastModifiedMessage;
                     }
@@ -7092,7 +7100,7 @@ namespace RevenuePlanner.Helpers
         public static string TacticModificationMessageActual(int tacticId, List<User> userList = null, List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActList = null, List<Plan_Campaign_Program_Tactic_Actual> tacticActList = null)
         {
             string lastModifiedMessage = string.Empty;
-            string createdBy = null;
+            int createdBy = 0;
             DateTime? modifiedDate = null;
 
             //// Checking whether line item actuals exists.
@@ -7102,7 +7110,7 @@ namespace RevenuePlanner.Helpers
             if (lineItemListActuals != null)
             {
                 modifiedDate = lineItemListActuals.CreatedDate;
-                createdBy = lineItemListActuals.CreatedBy.ToString();
+                createdBy = lineItemListActuals.CreatedBy;
             }
             else
             {
@@ -7116,12 +7124,12 @@ namespace RevenuePlanner.Helpers
                     if (tacticActualList.ModifiedDate != null)
                     {
                         modifiedDate = tacticActualList.ModifiedDate;
-                        createdBy = tacticActualList.ModifiedBy.ToString();
+                        createdBy = tacticActualList.ModifiedBy;
                     }
                     else
                     {
                         modifiedDate = tacticActualList.CreatedDate;
-                        createdBy = tacticActualList.CreatedBy.ToString();
+                        createdBy = tacticActualList.CreatedBy;
                     }
                 }
 
@@ -7130,7 +7138,7 @@ namespace RevenuePlanner.Helpers
             if (createdBy != null && modifiedDate != null)
             {
                 ////Checking if created by is empty then system generated modification
-                if (Guid.Parse(createdBy) == Guid.Empty)
+                if (createdBy == 0)
                 {
                     lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), GameplanIntegrationService);
                     return lastModifiedMessage;
@@ -7140,10 +7148,10 @@ namespace RevenuePlanner.Helpers
                     bool isGetFromBDSService = false;////functiona perameter userList have "createdby" user
                     if (userList != null && userList.Count != 0)
                     {
-                        User user = userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault();
+                        User user = userList.Where(u => u.ID == createdBy).FirstOrDefault();
                         if (user != null)
                         {
-                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().FirstName, userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().LastName);
+                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), userList.Where(u => u.ID == createdBy).FirstOrDefault().FirstName, userList.Where(u => u.ID == createdBy).FirstOrDefault().LastName);
                             return lastModifiedMessage;
                         }
                         else
@@ -7159,7 +7167,7 @@ namespace RevenuePlanner.Helpers
                     if (isGetFromBDSService)
                     {
                         BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                        User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
+                        User objUser = objBDSUserRepository.GetTeamMemberDetailsEx(createdBy, Sessions.ApplicationId);
                         lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd, yyyy"), objUser.FirstName, objUser.LastName);
                         return lastModifiedMessage;
                     }
@@ -7201,7 +7209,7 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities db = new MRPEntities();
             string lastModifiedMessage = string.Empty;
-            string createdBy = null;
+            int createdBy = 0;
             DateTime? modifiedDate = null;
 
             //// Checking whether line item actuals exists.
@@ -7211,13 +7219,13 @@ namespace RevenuePlanner.Helpers
             if (lineItemListActuals.Count != 0)
             {
                 modifiedDate = lineItemListActuals.FirstOrDefault().CreatedDate;
-                createdBy = lineItemListActuals.FirstOrDefault().CreatedBy.ToString();
+                createdBy = lineItemListActuals.FirstOrDefault().CreatedBy;
             }
 
-            if (createdBy != null && modifiedDate != null)
+            if (createdBy != 0 && modifiedDate != null)
             {
                 ////Checking if created by is empty then system generated modification
-                if (Guid.Parse(createdBy) == Guid.Empty)
+                if (createdBy == 0)
                 {
                     lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd,yyyy"), GameplanIntegrationService);
                     return lastModifiedMessage;
@@ -7227,10 +7235,10 @@ namespace RevenuePlanner.Helpers
                     bool isGetFromBDSService = false;////functiona perameter userList have "createdby" user
                     if (userList != null && userList.Count != 0)
                     {
-                        User user = userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault();
+                        User user = userList.Where(u => u.ID == createdBy).FirstOrDefault();
                         if (user != null)
                         {
-                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd,yyyy"), userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().FirstName, userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().LastName);
+                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd,yyyy"), userList.Where(u => u.ID == createdBy).FirstOrDefault().FirstName, userList.Where(u => u.ID == createdBy).FirstOrDefault().LastName);
                             return lastModifiedMessage;
                         }
                         else
@@ -7246,7 +7254,7 @@ namespace RevenuePlanner.Helpers
                     if (isGetFromBDSService)
                     {
                         BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                        User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
+                        User objUser = objBDSUserRepository.GetTeamMemberDetailsEx(createdBy, Sessions.ApplicationId);
                         lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd,yyyy"), objUser.FirstName, objUser.LastName);
                         return lastModifiedMessage;
                     }
@@ -7353,12 +7361,12 @@ namespace RevenuePlanner.Helpers
         }
 
 
-        public static string GetUserName(string UserGuid)
+        public static string GetUserName(int userId)
         {
             BDSServiceClient bdsservice = new BDSServiceClient();
             List<User> userName = new List<User>();
             //userName = bdsservice.GetMultipleTeamMemberName(UserGuid);
-            userName = bdsservice.GetMultipleTeamMemberNameByApplicationId(UserGuid, Sessions.ApplicationId);
+            userName = bdsservice.GetMultipleTeamMemberNameByApplicationIdEx(new List<int> { userId}, Sessions.ApplicationId);
             if (userName.Count > 0)
             {
                 return string.Concat(userName.FirstOrDefault().FirstName, " ", userName.FirstOrDefault().LastName);
@@ -7383,7 +7391,7 @@ namespace RevenuePlanner.Helpers
             var item = (from ParentBudget in db.Budgets
                         join
                             ChildBudget in db.Budget_Detail on ParentBudget.Id equals ChildBudget.BudgetId
-                        where ParentBudget.ClientId == Sessions.User.ClientId
+                        where ParentBudget.ClientId == Sessions.User.CID
                         && (ParentBudget.IsDeleted == false || ParentBudget.IsDeleted == null)
                         && ParentBudget.IsOther == true
                         select new
@@ -7439,7 +7447,7 @@ namespace RevenuePlanner.Helpers
                         if (entityObj.Count() != 0)
                         {
                             IsEntityExists = true;
-                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.CID).Any())
                             {
                                 isValidUser = true;
                                 IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
@@ -7456,7 +7464,7 @@ namespace RevenuePlanner.Helpers
                         if (entityObj.Count() != 0)
                         {
                             IsEntityExists = true;
-                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.CID).Any())
                             {
                                 isValidUser = true;
                                 IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
@@ -7473,7 +7481,7 @@ namespace RevenuePlanner.Helpers
                         if (entityObj.Count() != 0)
                         {
                             IsEntityExists = true;
-                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.CID).Any())
                             {
                                 isValidUser = true;
                                 IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
@@ -7490,7 +7498,7 @@ namespace RevenuePlanner.Helpers
                         if (entityObj.Count() != 0)
                         {
                             IsEntityExists = true;
-                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.CID).Any())
                             {
                                 isValidUser = true;
                                 IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
@@ -7507,7 +7515,7 @@ namespace RevenuePlanner.Helpers
                         if (entityObj.Count() != 0)
                         {
                             IsEntityExists = true;
-                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.CID).Any())
                             {
                                 isValidUser = true;
                                 IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
@@ -7641,7 +7649,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="userId">user id of a user for which custom restriction list to be retrieved</param>
         /// <returns>returns list of CustomRestriction objects</returns>
-        public static List<Models.CustomRestriction> GetUserCustomRestrictionsList(Guid userId, bool IsRequiredOnly = false)
+        public static List<Models.CustomRestriction> GetUserCustomRestrictionsList(int userId, bool IsRequiredOnly = false)
         {
             List<Models.CustomRestriction> lstCustomRestriction = new List<Models.CustomRestriction>();
             try
@@ -7665,11 +7673,11 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="clientId">client Id</param>
         /// <returns></returns>
-        public static List<Guid> GetClientUserListUsingCustomRestrictions(Guid clientId, List<User> lstUsers)
+        public static List<int> GetClientUserListUsingCustomRestrictions(int clientId, List<User> lstUsers)
         {
-            List<Guid> lstClientUsers = new List<Guid>();
-            List<Guid> lstClient = new List<Guid>();
-            List<Guid> lstClientWithoutAnyPermissios = new List<Guid>();
+            List<int> lstClientUsers = new List<int>();
+            List<int> lstClient = new List<int>();
+            List<int> lstClientWithoutAnyPermissios = new List<int>();
 
             try
             {
@@ -7677,7 +7685,7 @@ namespace RevenuePlanner.Helpers
                 {
                     //// List of custom fields of all user of logged in client
                     List<int> lstCustomFields = objDB.CustomFields.Where(customField => customField.ClientId == clientId && customField.IsDeleted == false).Select(customField => customField.CustomFieldId).ToList();
-                    List<Guid> lstUserIDs = lstUsers.Select(user => user.UserId).ToList();
+                    List<int> lstUserIDs = lstUsers.Select(user => user.ID).ToList();
 
                     if (lstCustomFields.Count() > 0)
                     {
@@ -7694,7 +7702,7 @@ namespace RevenuePlanner.Helpers
 
                         lstClient = lstcustomrestriction.Where(customRestriction => (customRestriction.Permission == NoPermission))
                                                                        .Select(customRestriction => customRestriction.UserId).Distinct().ToList();
-                        lstClientWithoutAnyPermissios = lstUsers.Where(user => !lstClient.Contains(user.UserId) && !lstClientUsers.Contains(user.UserId)).Select(user => user.UserId).ToList().Distinct().ToList();
+                        lstClientWithoutAnyPermissios = lstUsers.Where(user => !lstClient.Contains(user.ID) && !lstClientUsers.Contains(user.ID)).Select(user => user.ID).ToList().Distinct().ToList();
 
                         //// Get default custom restriction is viewable or not
                         bool isDefaultRestrictionsViewable = IsDefaultCustomRestrictionsViewable();
@@ -7724,7 +7732,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="userId">user id</param>
         /// <param name="permissionType">permission type</param>
         /// <returns>returns list of CustomRestriction object</returns>
-        public static List<Models.CustomRestriction> GetCustomRestrictionListByPermission(Guid userId, Enums.CustomRestrictionPermission permissionType)
+        public static List<Models.CustomRestriction> GetCustomRestrictionListByPermission(int userId, Enums.CustomRestrictionPermission permissionType)
         {
             List<Models.CustomRestriction> lstCustomRestriction = new List<Models.CustomRestriction>();
             try
@@ -7765,7 +7773,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="userId">user id</param>
         /// <returns>returns list of entities</returns>
-        public static List<int> GetRestrictedEntityList(Guid userId, out bool isCustomRestrictionSet)
+        public static List<int> GetRestrictedEntityList(int userId, out bool isCustomRestrictionSet)
         {
             List<int> lstEntityIds = new List<int>();
             isCustomRestrictionSet = true;
@@ -7820,7 +7828,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="userId">user id</param>
         /// <returns>returns list of entities</returns>
-        public static List<int> GetViewEditEntityList(Guid userId, List<int> lstTacticId)
+        public static List<int> GetViewEditEntityList(int userId, List<int> lstTacticId)
         {
             List<int> lstEntityIds = new List<int>();
             try
@@ -7868,7 +7876,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="userId">user id</param>
         /// <param name="clientId">client id</param>
         /// <returns></returns>
-        public static List<int> GetViewableTacticList(Guid userId, Guid clientId, List<int> lstTactic, bool isDisplayForFilter = true, List<CustomField_Entity> customfieldlEntityist = null)
+        public static List<int> GetViewableTacticList(int userId, int clientId, List<int> lstTactic, bool isDisplayForFilter = true, List<CustomField_Entity> customfieldlEntityist = null)
         {
             List<int> lstAllowedEntityIds = new List<int>();
             CacheObject dataCache = new CacheObject();
@@ -8112,7 +8120,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="userId">user id</param>
         /// <param name="clientId">client id</param>
         /// <returns></returns>
-        public static List<int> GetEditableTacticList(Guid userId, Guid clientId, List<int> lstTactic, bool isDisplayForFilter = true, List<CustomField_Entity> customfieldEntitylist = null)
+        public static List<int> GetEditableTacticList(int userId, int clientId, List<int> lstTactic, bool isDisplayForFilter = true, List<CustomField_Entity> customfieldEntitylist = null)
         {
             List<int> lstEditableEntityIds = new List<int>();
 
@@ -8176,7 +8184,7 @@ namespace RevenuePlanner.Helpers
         }
 
 
-        public static List<int> GetEditableTacticListPO(Guid userId, Guid clientId, List<int> lstTactic, bool IsCustomFeildExist, bool CustomFieldexists, List<CustomField_Entity> Entities, List<CustomField_Entity> lstAllTacticCustomFieldEntities, List<Models.CustomRestriction> userCustomRestrictionList, bool isDisplayForFilter = true)
+        public static List<int> GetEditableTacticListPO(int userId, int clientId, List<int> lstTactic, bool IsCustomFeildExist, bool CustomFieldexists, List<CustomField_Entity> Entities, List<CustomField_Entity> lstAllTacticCustomFieldEntities, List<Models.CustomRestriction> userCustomRestrictionList, bool isDisplayForFilter = true)
         {
             List<int> lstEditableEntityIds = new List<int>();
             List<int> lstEntityIds = new List<int>();
@@ -8265,7 +8273,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="entityType">string entitytype e.g. Tactic,Program</param>
         /// <param name="clientId">Guid client Id</param>
         /// <returns></returns>
-        public static bool IsCustomFeildExist(string entityType, Guid clientId)
+        public static bool IsCustomFeildExist(string entityType, int clientId)
         {
             using (MRPEntities objDbMrpEntities = new MRPEntities())
             {
@@ -8563,7 +8571,7 @@ namespace RevenuePlanner.Helpers
             //List<Plan_Campaign_Program_Tactic_LineItem_Cost> plannedCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
             //List<string> lstMonthly = Common.lstMonthly;
             //MRPEntities db = new MRPEntities();
-            //var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m.Id).ToList();
+            //var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.CID && m.IsDeleted == false).Select(m => m.Id).ToList();
             //var MainBudgetid = isMain == true ? db.Budget_Detail.Where(a => a.BudgetId == budgetId && budgeparentids.Contains(a.BudgetId) && a.ParentId == null).Select(a => a.Id).FirstOrDefault() : 0;
             //var varBudgetDetails = db.Budget_Detail.Where(a => a.Id == (isMain == true ? MainBudgetid : (budgetId > 0 ? budgetId : a.BudgetId)) && budgeparentids.Contains(a.BudgetId)).Select(a => a.Id).ToList();
 
@@ -8647,7 +8655,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
 
             List<Budget_Detail> tblBudgetDetails = new List<Budget_Detail>();
-            tblBudgetDetails = db.Budget_Detail.Where(a => a.Budget.ClientId == Sessions.User.ClientId && a.IsDeleted == false).ToList();
+            tblBudgetDetails = db.Budget_Detail.Where(a => a.Budget.ClientId == Sessions.User.CID && a.IsDeleted == false).ToList();
             List<ViewByModel> lstParentItems = new List<ViewByModel>();
             LineItemDropdownModel objParentListModel = new LineItemDropdownModel();
             int? ParentId = 0, mostParentId = 0;
@@ -8672,7 +8680,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             List<ViewByModel> lstChildItems = new List<ViewByModel>();
             var filterChildList = (from detail1 in db.Budget_Detail
-                                   where detail1.ParentId == ParentBudgetDetailId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name) && detail1.Budget.ClientId == Sessions.User.ClientId
+                                   where detail1.ParentId == ParentBudgetDetailId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name) && detail1.Budget.ClientId == Sessions.User.CID
                                    select new { detail1.Name, detail1.Id }).Distinct().ToList();
             lstChildItems = filterChildList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
             return lstChildItems;
@@ -8892,7 +8900,7 @@ namespace RevenuePlanner.Helpers
                 {
                     AllocatedBy = Convert.ToString(row["AllocatedBy"]),
                     Budget = Convert.ToDouble(Convert.ToString(row["Budget"])), // Change
-                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])), // Change
+                    CreatedBy = Convert.ToInt32(row["CreatedBy"]), // Change
                     CreatedDate = Convert.ToDateTime(Convert.ToString(row["CreatedDate"])),
                     DependencyDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["DependencyDate"])) ? (DateTime?)null : row["DependencyDate"]),
                     Description = (Convert.ToString(row["Description"])),
@@ -8902,7 +8910,7 @@ namespace RevenuePlanner.Helpers
                     IsActive = Convert.ToBoolean(Convert.ToString(row["IsActive"])),
                     IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])),
                     ModelId = Convert.ToInt32(Convert.ToString(row["ModelId"])), // Change
-                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                     ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                     PlanId = Convert.ToInt32(Convert.ToString(row["PlanId"])), // Change
                     Status = Convert.ToString(row["Status"]),
@@ -8925,7 +8933,7 @@ namespace RevenuePlanner.Helpers
                 {
                     Abbreviation = Convert.ToString(row["Abbreviation"]),
                     CampaignBudget = Convert.ToDouble(Convert.ToString(row["CampaignBudget"])),
-                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])), // Change
+                    CreatedBy = Convert.ToInt32(row["CreatedBy"]), // Change
                     CreatedDate = Convert.ToDateTime(Convert.ToString(row["CreatedDate"])), // Change
                     Description = Convert.ToString(Convert.ToString(row["Description"])),
                     EndDate = Convert.ToDateTime(Convert.ToString(row["EndDate"])), // Change
@@ -8933,7 +8941,7 @@ namespace RevenuePlanner.Helpers
                     IsDeleted = Convert.ToBoolean(Convert.ToString(row["IsDeleted"])), // Change
                     IsDeployedToIntegration = Convert.ToBoolean(Convert.ToString(row["IsDeployedToIntegration"])),
                     LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
-                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                     ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                     PlanCampaignId = Convert.ToInt32(Convert.ToString(row["PlanCampaignId"])), // Change
                     PlanId = Convert.ToInt32(Convert.ToString(row["PlanId"])), // Change
@@ -8955,7 +8963,7 @@ namespace RevenuePlanner.Helpers
                 programList = dsPlanCampProgTac.AsEnumerable().Select(row => new Plan_Campaign_Program
                 {
                     Abbreviation = Convert.ToString(row["Abbreviation"]),
-                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])), // Change
+                    CreatedBy = Convert.ToInt32(row["CreatedBy"]), // Change
                     CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                     Description = Convert.ToString(row["Description"]),
                     EndDate = Convert.ToDateTime(row["EndDate"]),
@@ -8963,7 +8971,7 @@ namespace RevenuePlanner.Helpers
                     IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
                     IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
                     LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
-                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                     ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                     PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
                     PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
@@ -8986,7 +8994,7 @@ namespace RevenuePlanner.Helpers
                 lstProgramPer = dsPlanCampProgTac.AsEnumerable().Select(row => new Custom_Plan_Campaign_Program
                 {
                     Abbreviation = Convert.ToString(row["Abbreviation"]),
-                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])),
+                    CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                     CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                     Description = Convert.ToString(row["Description"]),
                     EndDate = Convert.ToDateTime(row["EndDate"]),
@@ -8994,7 +9002,7 @@ namespace RevenuePlanner.Helpers
                     IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
                     IsDeployedToIntegration = Convert.ToBoolean(row["IsDeployedToIntegration"]),
                     LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
-                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                     ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                     PlanCampaignId = Convert.ToInt32(row["PlanCampaignId"]),
                     PlanProgramId = Convert.ToInt32(row["PlanProgramId"]),
@@ -9018,7 +9026,7 @@ namespace RevenuePlanner.Helpers
                 customtacticList = dsPlanCampProgTac.AsEnumerable().Select(row => new Custom_Plan_Campaign_Program_Tactic
                 {
                     Cost = Convert.ToDouble(row["Cost"]),
-                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Convert.ToString(Guid.Empty) : Convert.ToString(row["CreatedBy"])),
+                    CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                     CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                     Description = Convert.ToString(row["Description"]),
                     EndDate = Convert.ToDateTime(row["EndDate"]),
@@ -9033,7 +9041,7 @@ namespace RevenuePlanner.Helpers
                     LastSyncDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["LastSyncDate"])) ? (DateTime?)null : row["LastSyncDate"]),
                     LinkedPlanId = string.IsNullOrEmpty(Convert.ToString(row["LinkedPlanId"])) ? (int?)null : int.Parse(Convert.ToString(row["LinkedPlanId"])),
                     LinkedTacticId = string.IsNullOrEmpty(Convert.ToString(row["LinkedTacticId"])) ? (int?)null : int.Parse(Convert.ToString(row["LinkedTacticId"])),
-                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Convert.ToString(Guid.Empty) : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                     ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                     PlanProgramId = Convert.ToInt32(Convert.ToString(row["PlanProgramId"])),
                     PlanTacticId = Convert.ToInt32(Convert.ToString(row["PlanTacticId"])),
@@ -9074,8 +9082,8 @@ namespace RevenuePlanner.Helpers
                 CustomFieldList = dsCustomfield.AsEnumerable().Select(row => new CustomField
                 {
                     AbbreviationForMulti = Convert.ToString(row["AbbreviationForMulti"]),
-                    ClientId = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ClientId"])) ? Guid.Empty.ToString() : Convert.ToString(row["ClientId"])),
-                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])),
+                    ClientId = Convert.ToInt32(row["ClientID"]),
+                    CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                     CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                     CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
                     CustomFieldTypeId = Convert.ToInt32(row["CustomFieldTypeId"]),
@@ -9086,7 +9094,7 @@ namespace RevenuePlanner.Helpers
                     IsDisplayForFilter = Convert.ToBoolean(row["IsDisplayForFilter"]),
                     IsGet = Convert.ToBoolean(row["IsGet"]),
                     IsRequired = Convert.ToBoolean(row["IsRequired"]),
-                    ModifiedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["ModifiedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["ModifiedBy"])),
+                    ModifiedBy = Convert.ToInt32(row["ModifiedBy"]),
                     ModifiedDate = Convert.ToDateTime(string.IsNullOrEmpty(Convert.ToString(row["ModifiedDate"])) ? (DateTime?)null : row["ModifiedDate"]),
                     Name = Convert.ToString(row["Name"])
                 }).ToList();
@@ -9103,7 +9111,7 @@ namespace RevenuePlanner.Helpers
             {
                 CustomFieldEntityList = dsCustomfieldEntity.AsEnumerable().Select(row => new CacheCustomField
                 {
-                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])),
+                    CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                     CustomFieldEntityId = Convert.ToInt32(row["CustomFieldEntityId"]),
                     CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
                     EntityId = Convert.ToInt32(row["EntityId"]),
@@ -9123,7 +9131,7 @@ namespace RevenuePlanner.Helpers
                 LineItemBudgetList = dt.AsEnumerable().Select(row => new Custom_LineItem_Budget
                 {
                     BudgetDetailId = Convert.ToInt32(row["BudgetDetailId"]),
-                    CreatedBy = Guid.Parse(string.IsNullOrEmpty(Convert.ToString(row["CreatedBy"])) ? Guid.Empty.ToString() : Convert.ToString(row["CreatedBy"])),
+                    CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                     CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
                     Id = Convert.ToInt32(row["Id"]),
                     PlanLineItemId = Convert.ToInt32(row["PlanLineItemId"]),
@@ -9271,7 +9279,7 @@ namespace RevenuePlanner.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object Returncache(string objectName)
         {
-            var obj = HttpRuntime.Cache.Get(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
+            var obj = HttpRuntime.Cache.Get(objectName + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
             if (obj != null)
             {
                 return obj;
@@ -9282,22 +9290,22 @@ namespace RevenuePlanner.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddCache(string objectName, object CacheObject)
         {
-            var obj = HttpRuntime.Cache.Get(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
+            var obj = HttpRuntime.Cache.Get(objectName + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
             if (obj != null)
             {
-                HttpRuntime.Cache.Remove(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
+                HttpRuntime.Cache.Remove(objectName + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
             }
-            HttpRuntime.Cache.Insert(objectName + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString(), CacheObject, null, DateTime.Now.AddHours(3), Cache.NoSlidingExpiration);
+            HttpRuntime.Cache.Insert(objectName + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString(), CacheObject, null, DateTime.Now.AddHours(3), Cache.NoSlidingExpiration);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveAllCurrentUserCache()
         {
-            if (Sessions.User != null && Sessions.User.UserId != null && HttpContext.Current.Session.Contents.SessionID != null)
+            if (Sessions.User != null && Sessions.User.ID != null && HttpContext.Current.Session.Contents.SessionID != null)
             {
                 string[] names = Enum.GetNames(typeof(Enums.CacheObject));
                 for (int i = 0; i < names.Length; i++)
                 {
-                    HttpRuntime.Cache.Remove(names[i] + "-" + Sessions.User.UserId.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
+                    HttpRuntime.Cache.Remove(names[i] + "-" + Sessions.User.ID.ToString() + "-" + HttpContext.Current.Session.Contents.SessionID.ToString());
                 }
             }
         }
@@ -9338,8 +9346,8 @@ namespace RevenuePlanner.Helpers
                 using (command)
                 {
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@UserId", Sessions.User.UserId);
-                    command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                    command.Parameters.AddWithValue("@UserId", Sessions.User.ID);
+                    command.Parameters.AddWithValue("@ClientId", Sessions.User.CID);
                     command.Parameters.AddWithValue("@XMLData", XMLData.InnerXml);
                     command.Parameters.AddWithValue("@ImportBudgetCol", ImportBudgetCol);
                     command.Parameters.AddWithValue("@BudgetDetailId", BudgetDetailId);
@@ -9416,7 +9424,7 @@ namespace RevenuePlanner.Helpers
 
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PlanId", planid);
-                command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                command.Parameters.AddWithValue("@ClientId", Sessions.User.CID);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
                 adp.Fill(dataset);
@@ -9447,7 +9455,7 @@ namespace RevenuePlanner.Helpers
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@CustomTypeId", CustomTypeId);
                 command.Parameters.AddWithValue("@EntityType", EntityType);
-                command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                command.Parameters.AddWithValue("@ClientId", Sessions.User.CID);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
                 adp.Fill(dataset);
@@ -9482,7 +9490,7 @@ namespace RevenuePlanner.Helpers
 
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PlanId", PlanId);
-                command.Parameters.AddWithValue("@UserId", Sessions.User.UserId.ToString());
+                command.Parameters.AddWithValue("@UserId", Sessions.User.ID.ToString());
                 command.Parameters.AddWithValue("@SelectedTab", budgetTab);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
@@ -9584,13 +9592,8 @@ namespace RevenuePlanner.Helpers
             para[1] = new SqlParameter()
             {
                 ParameterName = "ClientId",
-                Value = Sessions.User.ClientId
+                Value = Sessions.User.CID
             };
-            //para[2] = new SqlParameter()
-            //{
-            //    ParameterName = "UserId",
-            //    Value = Sessions.User.UserId
-            //};
             var customViewBy = db.Database.SqlQuery<ViewByModel>("spViewByDropDownList @PlanId,@ClientId", para).ToList();
             return viewByListResult = viewByListResult.Concat(customViewBy).ToList();
         }
@@ -9613,7 +9616,7 @@ namespace RevenuePlanner.Helpers
 
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PlanId", PlanId);
-                command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                command.Parameters.AddWithValue("@ClientId", Sessions.User.CID);
                 command.Parameters.AddWithValue("@HoneyCombids", HoneyCombids);
                 command.Parameters.AddWithValue("@CurrencyExchangeRate", Sessions.PlanExchangeRate);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
@@ -9645,7 +9648,7 @@ namespace RevenuePlanner.Helpers
             using (command)
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@ClientId", Sessions.User.ClientId);
+                command.Parameters.AddWithValue("@ClientId", Sessions.User.CID);
                 command.Parameters.AddWithValue("@BudgetId", BudgetId);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
@@ -9673,7 +9676,7 @@ namespace RevenuePlanner.Helpers
                 command.Parameters.AddWithValue("@HomepageId", 0);
                 command.Parameters.AddWithValue("@DashboardId", DashboardId);
                 command.Parameters.AddWithValue("@DashboardPageId", 0);
-                command.Parameters.AddWithValue("@UserId", Sessions.User.UserId);
+                command.Parameters.AddWithValue("@UserId", Sessions.User.ID);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
                 adp.Fill(ds);
@@ -9725,7 +9728,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="isMonthly">Flag to indicate whether data is monthly or quarterly.</param>
         /// <param name="userId">Id of user.</param>
         /// <returns>Dataset with conflicted ActivityIds.</returns>
-        public DataSet GetPlanBudgetList(DataTable dtNew, bool isMonthly, Guid userId)
+        public DataSet GetPlanBudgetList(DataTable dtNew, bool isMonthly, int userId)
         {
             try
             {
@@ -9819,7 +9822,7 @@ namespace RevenuePlanner.Helpers
             }
         }
 
-        public List<CustomDashboardModel> GetCustomDashboardsClientwise(Guid UserId, Guid ClientId)
+        public List<CustomDashboardModel> GetCustomDashboardsClientwise(int UserId, int ClientId)
         {
             DataTable datatable = new DataTable();
             MRPEntities db = new MRPEntities();
@@ -9842,22 +9845,22 @@ namespace RevenuePlanner.Helpers
             return data;
         }
         //Added by komal rawal on 16-08-2016 regarding #2484 save notifications 
-        public int SaveLogNoticationdata(string action, string actionSuffix, int? componentId, string componentTitle, string description, int? objectid, int? parentObjectId, string TableName, Guid ClientId, Guid User, string UserName, string EntityOwnerID, string ReportRecipientUserIds)
+        public int SaveLogNoticationdata(string action, string actionSuffix, int? componentId, string componentTitle, string description, int? objectid, int? parentObjectId, string TableName, int ClientId, int User, string UserName, int EntityOwnerID, string ReportRecipientUserIds)
         {
             int returnvalue = 0;
             MRPEntities db = new MRPEntities();
             var Connection = db.Database.Connection as SqlConnection;
             try
             {
-                List<string> lst_RecipientId = new List<string>();
+                List<int> lst_RecipientId = new List<int>();
                 if (description == Convert.ToString(Enums.ChangeLog_ComponentType.tactic).ToLower() && componentId != null)
                 {
                     if (action == Convert.ToString(Enums.ChangeLog_Actions.submitted))
                     {
                         BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                        var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-                        var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == Guid.Parse(EntityOwnerID));
-                        lst_RecipientId.Add(Convert.ToString(objOwnerUser.ManagerId));
+                        var lstUserHierarchy = objBDSUserRepository.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
+                        var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UID == EntityOwnerID);
+                        lst_RecipientId.Add(objOwnerUser.MID);
                         lst_RecipientId.Add(EntityOwnerID);
                     }
                     else
@@ -9873,7 +9876,7 @@ namespace RevenuePlanner.Helpers
                 {
                     lst_RecipientId = Common.GetCollaboratorForCampaign(Convert.ToInt32(componentId));
                 }
-                else if ((description == Convert.ToString(Enums.ChangeLog_ComponentType.plan).ToLower() || description == Convert.ToString(Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]).ToLower()) && componentId != null && !string.IsNullOrEmpty(EntityOwnerID))
+                else if ((description == Convert.ToString(Enums.ChangeLog_ComponentType.plan).ToLower() || description == Convert.ToString(Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]).ToLower()) && componentId != null && EntityOwnerID != 0)
                 {
                     lst_RecipientId.Add(EntityOwnerID);
                 }
@@ -9958,7 +9961,6 @@ namespace RevenuePlanner.Helpers
         public string LineItemBackgroundColor = "#ffffff";
     }
     #endregion
-
 
 
 

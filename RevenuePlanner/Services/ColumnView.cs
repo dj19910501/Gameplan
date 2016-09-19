@@ -20,7 +20,7 @@ namespace RevenuePlanner.Services
         }
         #region method to fill custom field for create new view
         // Get Custom field
-        public DataTable GetCustomFieldList(Guid ClientId)
+        public DataTable GetCustomFieldList(int ClientId)
         {
 
             DataTable datatable = new DataTable();
@@ -50,7 +50,7 @@ namespace RevenuePlanner.Services
         }
         #endregion
         #region method to save ColumnView
-        public int SaveColumnView(Guid UserId, string ViewName, List<AttributeDetail> AttributeDetail, bool Isgrid = true)
+        public int SaveColumnView(int UserId, string ViewName, List<AttributeDetail> AttributeDetail, bool Isgrid = true)
         {
             int result = 0;
             string xmlElements = string.Empty;
@@ -125,7 +125,7 @@ namespace RevenuePlanner.Services
 
         #endregion
 
-        public List<ColumnViewEntity> GetCutomefieldModel(Guid ClientId, bool IsGrid, out bool IsSelectall)
+        public List<ColumnViewEntity> GetCutomefieldModel(int ClientId, bool IsGrid, out bool IsSelectall)
         {
             List<CustomAttribute> BasicFields = new List<CustomAttribute>();
             List<ColumnViewEntity> allattributeList = new List<ColumnViewEntity>();
@@ -135,7 +135,7 @@ namespace RevenuePlanner.Services
             try
             {
 
-                var userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == Sessions.User.UserId).FirstOrDefault();
+                var userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == Sessions.User.ID).FirstOrDefault();
                 if (userview == null)
                 {
                     IsSelectall = true;

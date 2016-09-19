@@ -19,11 +19,11 @@ namespace RevenuePlanner.Models
         public string FieldName { get; set; }
         public Nullable<int> CustomFieldId { get; set; }
         public int Sequence { get; set; }
-        public System.Guid ClientId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public bool IsDeleted { get; set; }
         public Nullable<int> CustomNameCharNo { get; set; }
+        public int ClientId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual CustomField CustomField { get; set; }
     }

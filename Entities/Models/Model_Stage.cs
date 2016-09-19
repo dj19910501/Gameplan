@@ -19,13 +19,12 @@ namespace RevenuePlanner.Models
         public string StageType { get; set; }
         public double Value { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool AllowedTargetStage { get; set; }
         public int ModelId { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
     
-        public virtual Model Model { get; set; }
         public virtual Stage Stage { get; set; }
     }
 }

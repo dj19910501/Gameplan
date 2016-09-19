@@ -70,8 +70,8 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            int StageId = DataHelper.GetStageId(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            int StageId = DataHelper.GetStageId(Sessions.User.CID);
             var TaskData = DataHelper.GetStageData(StageId);
             List<BestInClassModel> objBestinClassModelList = new List<BestInClassModel>();
             BestInClassModel objBestinClassModel = new BestInClassModel();
@@ -112,7 +112,7 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objBoostController.Index() as ActionResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
             Assert.IsNotNull(result);
@@ -137,7 +137,7 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
             var result = objBoostController.ImprovementTacticList() as JsonResult;
             var serializedData = new RouteValueDictionary(result.Data);
             var resultvalue = serializedData["Count"];
@@ -166,8 +166,8 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            int ImprovementTacticTypeId = DataHelper.GetImprovementTacticTypeId(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            int ImprovementTacticTypeId = DataHelper.GetImprovementTacticTypeId(Sessions.User.CID);
 
             var result = objBoostController.DetailImprovementTacticData(ImprovementTacticTypeId) as PartialViewResult;
             Assert.IsNotNull(result.ViewName);
@@ -200,7 +200,7 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
 
             var result = objBoostController.DetailImprovementTacticData(0) as PartialViewResult;
 
@@ -236,9 +236,9 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
 
-            ImprovementTacticType ImprovementTacticTypeData = DataHelper.GetImprovementTacticType(Sessions.User.ClientId);
+            ImprovementTacticType ImprovementTacticTypeData = DataHelper.GetImprovementTacticType(Sessions.User.CID);
             if (ImprovementTacticTypeData != null)
             {
                 int improvementId = ImprovementTacticTypeData.ImprovementTacticTypeId;
@@ -272,8 +272,8 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            Sessions.User.UserId = DataHelper.GetUserId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.ID = DataHelper.GetUserId(0, ModelId);
 
             int improvementId = 0;
             string improvementDetails = "[{\"StageId\":\"106\",\"StageType\":\"SV\",\"Value\":\"5\"}]";
@@ -307,13 +307,13 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
 
-            ImprovementTacticType ImprovementTacticTypeData = DataHelper.GetImprovementTacticType(Sessions.User.ClientId);
+            ImprovementTacticType ImprovementTacticTypeData = DataHelper.GetImprovementTacticType(Sessions.User.CID);
 
             if (ImprovementTacticTypeData != null)
             {
-                Sessions.User.UserId = ImprovementTacticTypeData.CreatedBy;
+                Sessions.User.ID = ImprovementTacticTypeData.CreatedBy;
                 int improvementId = ImprovementTacticTypeData.ImprovementTacticTypeId;
                 bool deployToIntegrationStatus = ImprovementTacticTypeData.IsDeployedToIntegration;
                 string UserId = ImprovementTacticTypeData.CreatedBy.ToString();
@@ -345,11 +345,11 @@ namespace RevenuePlanner.Test.Controllers
             objBoostController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objBoostController);
             objBoostController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int ModelId = DataHelper.GetModelId();
-            Sessions.User.ClientId = DataHelper.GetClientId(0, ModelId);
-            ImprovementTacticType ImprovementTacticTypeData = DataHelper.GetImprovementTacticType(Sessions.User.ClientId);
+            Sessions.User.CID = DataHelper.GetClientId(0, ModelId);
+            ImprovementTacticType ImprovementTacticTypeData = DataHelper.GetImprovementTacticType(Sessions.User.CID);
             if (ImprovementTacticTypeData != null)
             {
-                Sessions.User.UserId = ImprovementTacticTypeData.CreatedBy;
+                Sessions.User.ID= ImprovementTacticTypeData.CreatedBy;
                 int improvementId = ImprovementTacticTypeData.ImprovementTacticTypeId;
                 bool deploye = ImprovementTacticTypeData.IsDeployed;
                 string UserId = ImprovementTacticTypeData.CreatedBy.ToString();

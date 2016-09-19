@@ -25,7 +25,7 @@ namespace RevenuePlanner.Services
             List<CustomColumnModel> lstColumns = (from objColumnSet in objDbMrpEntities.Budget_ColumnSet
                                                   join objColumn in objDbMrpEntities.Budget_Columns on objColumnSet.Id equals objColumn.Column_SetId
                                                   join objCustomField in objDbMrpEntities.CustomFields on objColumn.CustomFieldId equals objCustomField.CustomFieldId
-                                                  where objColumnSet.ClientId == Sessions.User.ClientId
+                                                  where objColumnSet.ClientId == Sessions.User.CID
                                                   && objColumn.IsTimeFrame == false
                                                   && objColumnSet.IsDeleted == false && objColumn.IsDeleted == false && objCustomField.IsDeleted == false
                                                   select new CustomColumnModel

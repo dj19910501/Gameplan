@@ -61,7 +61,7 @@ namespace RevenuePlanner.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string Owner { get; set; }
-        public Guid OwnerId { get; set; }
+        public int OwnerId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         //public long? INQs { get; set; }
@@ -88,7 +88,7 @@ namespace RevenuePlanner.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string Owner { get; set; }
-        public Guid OwnerId { get; set; }
+        public int OwnerId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         //public long? INQs { get; set; }
@@ -162,7 +162,7 @@ namespace RevenuePlanner.Models
         public string Description { get; set; }
 
         public string Owner { get; set; }
-        public Guid OwnerId { get; set; }
+        public int OwnerId { get; set; }
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -230,7 +230,7 @@ namespace RevenuePlanner.Models
         //Desc: To Enable edit owner feature from Lineitem popup.
         public bool IsLineItemAddEdit { get; set; }
         public List<SelectListUser> OwnerList { get; set; }
-        public Guid OwnerId { get; set; }
+        public int OwnerId { get; set; }
       
     }
 
@@ -580,7 +580,7 @@ namespace RevenuePlanner.Models
 
     public class SelectListUser
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
     }
     public class SPPlan
@@ -596,9 +596,9 @@ namespace RevenuePlanner.Models
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
+        public int ModifiedBy { get; set; }
         public string GoalType { get; set; }
         public double GoalValue { get; set; }
         public string AllocatedBy { get; set; }

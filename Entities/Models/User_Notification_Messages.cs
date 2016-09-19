@@ -22,9 +22,9 @@ namespace RevenuePlanner.Models
         public string ActionName { get; set; }
         public bool IsRead { get; set; }
         public Nullable<System.DateTime> ReadDate { get; set; }
-        public Nullable<System.Guid> UserId { get; set; }
-        public System.Guid RecipientId { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public Nullable<System.Guid> ClientID { get; set; }
+        public int ClientID { get; set; }
+        public int UserId { get; set; }
+        public int RecipientId { get; set; }
     }
 }

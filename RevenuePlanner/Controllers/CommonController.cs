@@ -48,9 +48,9 @@ namespace RevenuePlanner.Controllers
             // to add client id into elmah error log
             if (Sessions.User != null)
             {
-                if (Sessions.User.ClientId != null)
+                if (Sessions.User.CID != null)
                 {
-                    Common.SetCookie("ClientID", Convert.ToString(Sessions.User.ClientId));
+                    Common.SetCookie("ClientID", Convert.ToString(Sessions.User.CID));
                 }
             }
 

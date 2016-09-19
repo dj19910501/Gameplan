@@ -9,7 +9,7 @@ namespace RevenuePlanner.Services
 {
     public interface ICurrency
     {
-        void SetUserCurrencyCache(Guid ClientId, Guid UserId);
+        void SetUserCurrencyCache(int ClientId, int UserId);
         double GetValueByExchangeRate(double DataValue = 0, double ExchangeRate = 1);
         double SetValueByExchangeRate(double DataValue = 0, double ExchangeRate = 1);
         double GetReportValueByExchangeRate(DateTime StartDate, double DataValue = 0, int Period = 0);

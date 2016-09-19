@@ -82,7 +82,7 @@ namespace RevenuePlanner.Test.Controllers
             objErrorController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objErrorController);
             objErrorController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             int PlanId = DataHelper.GetPlanId();
-            Sessions.User.ClientId = DataHelper.GetClientId(PlanId);
+            Sessions.User.CID = DataHelper.GetClientId(PlanId);
             var result = objErrorController.PageNotFound() as ViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result.ViewName:  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);

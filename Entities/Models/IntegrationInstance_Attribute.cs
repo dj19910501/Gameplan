@@ -18,7 +18,7 @@ namespace RevenuePlanner.Models
         public int IntegrationTypeAttributeId { get; set; }
         public string Value { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationTypeAttribute IntegrationTypeAttribute { get; set; }

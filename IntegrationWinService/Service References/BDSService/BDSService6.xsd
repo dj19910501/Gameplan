@@ -17,4 +17,10 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="ExchangeRate_Log" nillable="true" type="tns:ExchangeRate_Log" />
+  <xs:complexType name="ArrayOfExchangeRate_Log">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ExchangeRate_Log" nillable="true" type="tns:ExchangeRate_Log" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfExchangeRate_Log" nillable="true" type="tns:ArrayOfExchangeRate_Log" />
 </xs:schema>

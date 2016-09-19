@@ -28,7 +28,7 @@ namespace RevenuePlanner.Models
         public string Status { get; set; }
         public string Description { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreateBy { get; set; }
+        public int CreateBy { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstanceLog IntegrationInstanceLog { get; set; }

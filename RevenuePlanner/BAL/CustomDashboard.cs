@@ -87,7 +87,7 @@ namespace RevenuePlanner.BAL
             return EndDate;
         }
 
-        public List<CustomDashboardModel> GetCustomDashboardsClientwise(Guid UserId, Guid ClientId)
+        public List<CustomDashboardModel> GetCustomDashboardsClientwise(int UserId, int ClientId)
         {
             List<CustomDashboardModel> model = new List<CustomDashboardModel>();
 

@@ -549,7 +549,7 @@
             $("#userTable tbody tr").each(function () {
 
                 var Id = $(this).find('td:first').text();
-                if (Id == '@Sessions.User.UserId') {
+                if (Id == '@Sessions.User.ID') {
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
                     $(this).find('a').removeAttr("onclick");
                     $(this).find('a').removeAttr('href', '')
@@ -621,7 +621,7 @@
             var Id = $(this).find('td:first').text();
             var CreatedbyId = $(this).find('td').eq(1).text();
             var IsOwner = $(this).find('td#IsOwner').text();
-            if (Id == '@Sessions.User.UserId') {
+            if (Id == '@Sessions.User.ID') {
                 $(this).find('td,input,span,a').attr("disabled", "disabled");
                 $(this).find('a').removeAttr("onclick");
                 $(this).find('a').removeAttr('href', '')

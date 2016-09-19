@@ -14,11 +14,11 @@ namespace RevenuePlanner.Models
     
     public partial class User_Filter
     {
-        public System.Guid UserId { get; set; }
         public string SearchCriteria { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
+        public int UserId { get; set; }
+        public int ModifiedBy { get; set; }
+        public int CreatedBy { get; set; }
     }
 }

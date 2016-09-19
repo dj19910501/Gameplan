@@ -94,6 +94,20 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\DataSources\Integration.BDSService.AppConfiguration.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.ApplicationActivity.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Client.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.ClientDatabase.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Currency.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.CustomRestriction.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Menu.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.PasswordResetRequest.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Permission.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.Role.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.SecurityQuestion.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.User.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.UserApplicationPermission.datasource" />
+    <None Include="Properties\DataSources\Integration.BDSService.UserHierarchy.datasource" />
     <None Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>
@@ -123,42 +137,6 @@
     <None Include="Service References\BDSService\BDSService8.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.AppConfiguration.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.ApplicationActivity.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Client.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.ClientDatabase.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Currency.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.CustomRestriction.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Menu.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.PasswordResetRequest.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Permission.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Role.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.SecurityQuestion.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.User.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -176,12 +154,6 @@
     <None Include="Service References\BDSService\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.UserApplicationPermission.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\IntegrationWinService.BDSService.UserHierarchy.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
     <None Include="Service References\BDSService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>

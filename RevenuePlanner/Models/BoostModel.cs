@@ -12,7 +12,7 @@ namespace RevenuePlanner.Models
         public string Description { get; set; }
         public double Cost { get; set; }
         public string ColorCode { get; set; }
-        public Guid ClientId { get; set; }
+        public int ClientId { get; set; }
         public bool IsDeployed { get; set; }
         public bool IsDeleted { get; set; }
         public int MetricId { get; set; }

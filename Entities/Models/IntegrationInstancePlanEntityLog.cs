@@ -14,6 +14,8 @@ namespace RevenuePlanner.Models
     
     public partial class IntegrationInstancePlanEntityLog
     {
+        public long IntegrationInstancePlanLogEntityId { get; set; }
+        public int IntegrationInstanceSectionId { get; set; }
         public int IntegrationInstanceId { get; set; }
         public int EntityId { get; set; }
         public string EntityType { get; set; }
@@ -22,9 +24,7 @@ namespace RevenuePlanner.Models
         public string Status { get; set; }
         public string ErrorDescription { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
-        public Nullable<System.Guid> CreatedBy { get; set; }
-        public int IntegrationInstanceSectionId { get; set; }
-        public long IntegrationInstancePlanLogEntityId { get; set; }
+        public int CreatedBy { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstanceSection IntegrationInstanceSection { get; set; }
