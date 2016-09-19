@@ -68,9 +68,12 @@ namespace RevenuePlanner.Services
 
                 if (AttributeDetail != null)
                 {
-                    var AttributexmlElements = new XElement("ViewDetail", AttributeDetail.Select(i => new XElement("attribute", new XAttribute("AttributeType", i.AttributeType),
-                        new XAttribute("AttributeId", i.AttributeId), new XAttribute("ColumnOrder", i.ColumnOrder.ToString())
+                    var AttributexmlElements = new XElement("ViewDetail", AttributeDetail.Select(i => new XElement("attribute",
+                        new XAttribute("AttributeType", i.AttributeType),
+                        new XAttribute("AttributeId", i.AttributeId),
+                        new XAttribute("ColumnOrder", i.ColumnOrder.ToString())
                         )).ToList());
+
                     xmlElements = Convert.ToString(AttributexmlElements);
                 }
                 if (columnview != null)
@@ -100,20 +103,19 @@ namespace RevenuePlanner.Services
                 }
                 else
                 {
-                    User_CoulmnView objcolumnview = new User_CoulmnView();
-                    objcolumnview.ViewName = ViewName;
-                    objcolumnview.CreatedBy = UserId;
-                    objcolumnview.CreatedDate = DateTime.Now;
-                    objcolumnview.IsDefault = true;
+                    columnview = new User_CoulmnView();
+                    columnview.ViewName = ViewName;
+                    columnview.CreatedBy = UserId;
+                    columnview.CreatedDate = DateTime.Now;
+                    columnview.IsDefault = true;
                     if (Isgrid)
-                        objcolumnview.GridAttribute = xmlElements;
+                        columnview.GridAttribute = xmlElements;
                     else
-                        objcolumnview.BudgetAttribute = xmlElements;
-                    objDbMrpEntities.Entry(objcolumnview).State = EntityState.Added;
+                        columnview.BudgetAttribute = xmlElements;
+                    objDbMrpEntities.Entry(columnview).State = EntityState.Added;
                     objDbMrpEntities.SaveChanges();
-                    result = objcolumnview.ViewId;
+                    result = columnview.ViewId;
                 }
-                // }
 
             }
             catch (Exception ex)
