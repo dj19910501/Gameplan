@@ -121,6 +121,16 @@
         HomeGrid.enableAutoHeight(false);
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setNumberFormat(""+CurrencySybmol+"0,000", 6, ".", ",");
+        HomeGrid.attachEvent("onBeforeSorting",function(ind,grid)
+        {
+            if(IsManageviewClick)
+            {
+                IsManageviewClick=false;
+                return false;
+            }
+            else
+                return true;
+        });
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
         HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
@@ -168,23 +178,32 @@
         HomeGrid.setColumnHidden(ActivitypeHidden,true);
         HomeGrid.setColumnHidden(MachineNameHidden,true);
 
+        //Added by Komal Rawal for #2603
         HomeGrid.attachEvent("onAfterCMove", function(cInd,posInd){
             var ColumnCount = HomeGrid.getColumnCount();
             var ColumnDetail  = [];
             for (var i = 0; i < ColumnCount; i++)
             {
                 var ColWidth = HomeGrid.getColWidth(i);
+                var customcolId = HomeGrid.getColumnId(i).toString();
+                if(customcolId.indexOf("custom_")>=0)
+                {
+                   customcolId =customcolId.replace("custom_","");
+                }
                 if(ColWidth != 0)
                 {
                     ColumnDetail.push({
-                        AttributeId   : HomeGrid.getColumnId(i).toString(),
-                        ColumnOrder   :  i
+                        AttributeId   : customcolId,
+                        AttributeType : " ",
+                        ColumnOrder   : parseInt(i)
                     });
                 }
             }
+
             if(ColumnDetail != null && ColumnDetail.length > 0 && ColumnDetail != undefined)
             {
                 ColumnDetail = JSON.stringify(ColumnDetail);
+
                 $.ajax({
                     url: '@Url.Action("SaveColumnView", "ColumnView")', // we are calling json method
                     type: 'post',
@@ -196,6 +215,7 @@
                 });
             }
         });
+        //End
         HomeGrid.collapseAll();
         var cookie = document.cookie;
         if(cookie.indexOf("gridOpengridbox") > -1){

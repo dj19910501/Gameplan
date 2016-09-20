@@ -71,8 +71,7 @@
             <div id="divupcomingact" class="viewby-wrap margin-left9">
                 <label id="lblUpcoming_Activies1" for="Time_Frame:">Time Frame:</label>
                 <span style="width: 100px;" id="ddlUpComingActivitesSelectBox" class="selectBox">
-                    <select name="ddlUpComingActivites" id="ddlUpComingActivites" class="hide" sb="85765995" style="display: none;">
-                    </select>
+                    <select name="ddlUpComingActivites" id="ddlUpComingActivites" class="hide" sb="85765995" style="display: none;"></select>
                 </span>
             </div>
             <div class="viewby-wrap">
@@ -125,6 +124,35 @@
         </div>
     </div>
 </div>
+<div class="modal addview-popup hide" id="CreateNewView" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close closeCreateNewView" data-dismiss="modal" aria-label="Close" id="btnClose"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title  source-sans-proregular" id="myModalLabel">Manage Your Column View </h5>
+            </div>
+            <div class="modal-body">
+
+                <div id="successMessage1" class="alert alert-success hide">
+                    <a class="close closemessage">×</a>
+                    <strong>Success.</strong> <span id="spanMessageSuccess1"></span>
+                </div>
+                <div id="errorMessage1" class="alert alert-error hide">
+                    <a class="close closemessage">×</a>
+                    <strong>Error!</strong> <span id="spanMessageError1"></span>
+                </div>
+                <div id="warningMessage1" class="alert msgWarning hide">
+                    <a class="close closemessage">×</a>
+                    <strong>Warning!</strong> <span id="spanMessageWarning1"></span>
+                </div>
+                <div class="modal-content-grid">
+                    <div id="dvAttributeSelection"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 <div id="dvCopyEntity"></div>
 <div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
 <script src="~/Scripts/js/Home/Grid_CalendarCommon.js"></script>
@@ -155,7 +183,7 @@
     var ActivityName = '@Enums.GlobalSearch.ActivityName.ToString().ToLower()';
     var ExternalName = '@Enums.GlobalSearch.ExternalName.ToString().ToLower()';
     var AssetTypeAsset = '@Enums.AssetType.Asset.ToString()';
-
+    var IsManageviewClick = false;
     var ValidateForEmptyField = '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField'
     var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
     var ExportSelectedIds = {
@@ -297,5 +325,32 @@
     });
 
 
+
+    function OpenCreateNew(IsGridView) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/ColumnView/GetAttributeList_ColumnView/")',
+            data: { IsGrid: IsGridView },
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    $("#dvAttributeSelection").html(data);
+
+                }
+                $('#ddlTabViewBy').multiselect("close");
+
+                $('#CreateNewView').show();
+                $('.modal-body').scrollTop(0);
+            }
+        });
+        IsManageviewClick = true;
+        return true;
+    }
+
+    $(".closeCreateNewView").click(function () {
+        $('#CreateNewView').hide();
+    });
 </script>
 

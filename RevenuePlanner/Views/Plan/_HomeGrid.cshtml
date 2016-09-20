@@ -701,10 +701,15 @@
             for (var i = 0; i < ColumnCount; i++)
             {
                 var ColWidth = HomeGrid.getColWidth(i);
+                var customcolId = HomeGrid.getColumnId(i).toString();
+                if(customcolId.indexOf("custom_")>=0)
+                {
+                   customcolId =customcolId.replace("custom_","");
+                }
                 if(ColWidth != 0)
                 {
                     ColumnDetail.push({
-                        AttributeId   : HomeGrid.getColumnId(i).toString(),
+                        AttributeId   : customcolId,
                         AttributeType : " ",
                         ColumnOrder   : parseInt(i)
                     });

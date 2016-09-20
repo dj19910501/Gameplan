@@ -19,9 +19,7 @@ namespace RevenuePlanner.Controllers
     {
         //
         // GET: /ColumnView/
-        StoredProcedure objSp = new StoredProcedure();
         IColumnView objcolumnView = new ColumnView();
-        private MRPEntities db = new MRPEntities();
         public ActionResult Index()
         {
             return View();

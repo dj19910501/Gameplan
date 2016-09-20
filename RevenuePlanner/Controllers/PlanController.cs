@@ -15326,7 +15326,7 @@ namespace RevenuePlanner.Controllers
             PlanHead headobj = new PlanHead();
             List<PlanOptions> lstOwner = new List<PlanOptions>();
             List<PlanOptions> lstTacticType = new List<PlanOptions>();
-            string manageviewicon = " <a href='javascript:void(0)' onclick='OpenCreateNew(true)' class='manageviewicon' title='Open Column Management'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+            string manageviewicon = "<a href='javascript:void(0)' onclick='OpenCreateNew(true)' class='manageviewicon' title='Open Column Management'><i class='fa fa-edit' aria-hidden='true'></i></a>";
             try
             {
 
@@ -15521,7 +15521,7 @@ namespace RevenuePlanner.Controllers
                         headobj.id = "custom_" + objcustom.CustomFieldId.ToString();
                         headobj.sort = "str";
                         headobj.width = 150;
-                        headobj.value = objcustom.CutomfieldName;
+                        headobj.value = objcustom.CutomfieldName + manageviewicon;
                         if (Convert.ToString(objcustom.CustomfiledType) == Convert.ToString(Enums.CustomFieldType.DropDownList))
                         {
 

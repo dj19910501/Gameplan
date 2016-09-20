@@ -1588,14 +1588,14 @@ namespace RevenuePlanner.Helpers
         }
         public static Dictionary<string, string> CommonGrid_Column = new Dictionary<string, string>()
        {
-           {"taskname","Task Name"},
+          // {"taskname","Task Name"},
            {"startdate","Start Date"},
            {"enddate","End Date"},
-           {"tacticplancost","Planned Cost"},
+           {"plannedcost","Planned Cost"},
            {"roitactictype","Tactic Category"},
            {"tactictype","Type"},
            {"owner","Owner"},
-           {"targetstagegoal","Target Stage Goal"},
+           {"inq","Target Stage Goal"},
            {"revenue","Revenue"}
        };
         //end
