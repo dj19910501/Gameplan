@@ -779,7 +779,7 @@ namespace RevenuePlanner.Helpers
 
                 if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                 {
-                    lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                    lstUserHierarchy = objBDSUserRepository.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
                     objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UID == createdBy);
                     lst_CollaboratorId.Add(objOwnerUser.MID);
                 }
@@ -788,10 +788,9 @@ namespace RevenuePlanner.Helpers
                 {
                     lst_CollaboratorId.RemoveAll(id => id==0);
                 }
-                var csv = string.Join(", ", lst_CollaboratorId);
                 var NotificationName = status;
 
-                var UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                var UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetailsEx(lst_CollaboratorId, Sessions.ApplicationId);
                 lst_CollaboratorEmail = UsersDetails.Select(u => u.Email).ToList();
                 lst_CollaboratorUserName = UsersDetails.Select(u => u.FirstName).ToList();
 
@@ -864,7 +863,7 @@ namespace RevenuePlanner.Helpers
                         UserId.Add(createdBy);
                     }
                     // To add manager's email address, By dharmraj, Ticket #537
-                    //var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.CID, Sessions.ApplicationId);
+                    //var lstUserHierarchy = objBDSUserRepository.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
                     //var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
                     if (objOwnerUser.ManagerId != null)
                     {
@@ -1589,13 +1588,13 @@ namespace RevenuePlanner.Helpers
             {
                 BDSServiceClient objBDSUserRepository = new BDSServiceClient();
                 MRPEntities db = new MRPEntities();
-                List<string> newCollaboratorId = new List<string>();
+                List<int> newCollaboratorId = new List<int>();
                 List<object> data = new List<object>();
                 {
                     List<int> collaboratorIds = Common.GetCollaboratorId(planId).Distinct().ToList();
                     List<User> lstUserDetails = new List<User>();
                     lstUserDetails = objBDSUserRepository.GetMultipleTeamMemberNameByApplicationIdEx(collaboratorIds, Sessions.ApplicationId);
-                    foreach (string userId in lstUserDetails.Select(x => x.UserId.ToString()))
+                    foreach (int userId in lstUserDetails.Select(x => x.ID))
                     {
                         if (System.Web.HttpContext.Current.Cache[userId + "_photo"] != null)
                         {
@@ -1611,7 +1610,7 @@ namespace RevenuePlanner.Helpers
 
                 byte[] imageBytesUserImageNotFound = Common.ReadFile(HttpContext.Current.Server.MapPath("~") + "/content/images/user_image_not_found.png");
 
-                List<User> users = objBDSUserRepository.GetMultipleTeamMemberDetails(string.Join(",", newCollaboratorId), Sessions.ApplicationId);
+                List<User> users = objBDSUserRepository.GetMultipleTeamMemberDetailsEx(newCollaboratorId, Sessions.ApplicationId);
 
                 foreach (User user in users)
                 {
