@@ -1929,21 +1929,21 @@ GO
 
 CREATE VIEW [dbo].[vClientWise_EntityList] AS
 WITH AllPlans AS(
-SELECT P.PlanId EntityId, P.Title EntityTitle, M.ClientId, 'Plan' Entity,P.CreatedDate,P.Title as PlanTitle, 1 EntityOrder 
+SELECT P.PlanId EntityId, P.Title EntityTitle, M.ClientId, 'Plan' Entity,P.CreatedDate,P.Title as PlanTitle, P.PlanId As PlanId  ,1 EntityOrder 
 FROM [Plan] P 
 INNER JOIN Model M ON M.ModelId = P.ModelId AND P.IsDeleted = 0
 WHERE  M.IsDeleted = 0
 ),
 AllCampaigns AS
 (
-       SELECT P.PlanCampaignId EntityId, P.Title EntityTitle,C.ClientId, 'Campaign' Entity,P.CreatedDate,C.PlanTitle as PlanTitle, 2 EntityOrder 
+       SELECT P.PlanCampaignId EntityId, P.Title EntityTitle,C.ClientId, 'Campaign' Entity,P.CreatedDate,C.PlanTitle as PlanTitle, c.PlanId As PlanId, 2 EntityOrder 
        FROM Plan_Campaign P
               INNER JOIN AllPlans C ON P.PlanId = C.EntityId 
        WHERE P.IsDeleted = 0
 ),
 AllProgram AS
 (
-       SELECT P.PlanProgramId EntityId, P.Title EntityTitle,C.ClientId, 'Program' Entity,P.CreatedDate, C.PlanTitle as PlanTitle,3 EntityOrder 
+       SELECT P.PlanProgramId EntityId, P.Title EntityTitle,C.ClientId, 'Program' Entity,P.CreatedDate, C.PlanTitle as PlanTitle, c.PlanId As PlanId, 3 EntityOrder 
        FROM Plan_Campaign_Program P
               INNER JOIN AllCampaigns C ON P.PlanCampaignId = C.EntityId 
        WHERE P.IsDeleted = 0
@@ -1958,7 +1958,7 @@ SELECT P.LinkedTacticId
 ),
 AllTactic AS
 (
-       SELECT P.PlanTacticId EntityId, P.Title EntityTitle,C.ClientId, 'Tactic' Entity,P.CreatedDate,C.PlanTitle as PlanTitle,  4 EntityOrder 
+       SELECT P.PlanTacticId EntityId, P.Title EntityTitle,C.ClientId, 'Tactic' Entity,P.CreatedDate,C.PlanTitle as PlanTitle,  c.PlanId As PlanId,  4 EntityOrder 
        FROM Plan_Campaign_Program_Tactic P
               INNER JOIN AllProgram C ON P.PlanProgramId = C.EntityId 
 			  LEFT OUTER JOIN AllLinkedTactic L on P.PlanTacticId=L.LinkedTacticId
@@ -1966,7 +1966,7 @@ AllTactic AS
 ),
 AllLineitem AS
 (
-       SELECT P.PlanLineItemId EntityId, P.Title EntityTitle, C.ClientId, 'Line Item' Entity,P.CreatedDate,C.PlanTitle as PlanTitle, 5 EntityOrder 
+       SELECT P.PlanLineItemId EntityId, P.Title EntityTitle, C.ClientId, 'Line Item' Entity,P.CreatedDate,C.PlanTitle as PlanTitle,  c.PlanId As PlanId,  5 EntityOrder 
        FROM Plan_Campaign_Program_Tactic_LineItem P
               INNER JOIN AllTactic C ON P.PlanTacticId = C.EntityId 
        WHERE P.IsDeleted = 0 and P.LineItemTypeId is not null
@@ -1980,7 +1980,6 @@ UNION ALL
 SELECT * FROM AllTactic
 UNION ALL 
 SELECT * FROM AllLineitem
-
 GO
 
 -----------------------* Email Configuration *-----------------------
@@ -2020,6 +2019,7 @@ BEGIN
   DECLARE @subject varchar(max) 
   DECLARE @output_desc varchar(1000)
   DECLARE @Result varchar(1000)
+  DECLARE @UrlString varchar(max)
   --DECLARE @IndicatorTitle nvarchar(1000)
 
   DECLARE @SubjectComparision varchar(500)
@@ -2033,7 +2033,7 @@ BEGIN
  
   
   BEGIN
-  DECLARE @AlertId int, @AlertDescription nvarchar(max), @Email  nvarchar(255),@Indicator nvarchar(50), @IndicatorComparision nvarchar(10),@IndicatorGoal int, @EntityTitle nvarchar(500),@DisplayDate DateTime, @ActualGoal float, @CurrentGoal float,@PlanName nvarchar(255)
+  DECLARE @AlertId int, @AlertDescription nvarchar(max), @Email  nvarchar(255),@Indicator nvarchar(50), @IndicatorComparision nvarchar(10),@IndicatorGoal int, @EntityTitle nvarchar(500),@DisplayDate DateTime, @ActualGoal float, @CurrentGoal float,@PlanName nvarchar(255),@Entity nvarchar(255),@PlanId int,@EntityId int
   			
   DECLARE Cur_Mail CURSOR FOR	
     SELECT  al.AlertId, al.Description, ar.UserEmail, 
@@ -2042,7 +2042,7 @@ BEGIN
 					when ar.Indicator = 'REVENUE' 
 					THEN 'REVENUE'
 					ELSE Stage.Title END AS
-					 Indicator, ar.IndicatorComparision,ar.IndicatorGoal, vw.EntityTitle,al.DisplayDate,al.ActualGoal,al.CurrentGoal, vw.PlanTitle
+					 Indicator, ar.IndicatorComparision,ar.IndicatorGoal, vw.EntityTitle,al.DisplayDate,al.ActualGoal,al.CurrentGoal, vw.PlanTitle,vw.Entity, vw.PlanId,vw.EntityId
 			   FROM  [dbo].Alerts al
 			   INNER JOIN dbo.[Alert_Rules] AS ar ON ar.RuleId = al.RuleId  and ar.UserId = al.UserId
 			   left JOIN dbo.Stage ON Stage.Code = ar.Indicator  and ar.ClientId = Stage.ClientId
@@ -2052,7 +2052,7 @@ BEGIN
     
   OPEN Cur_Mail
   
-        FETCH NEXT FROM Cur_Mail INTO  @AlertId, @AlertDescription, @Email, @Indicator, @IndicatorComparision, @IndicatorGoal, @EntityTitle, @DisplayDate,@ActualGoal,@CurrentGoal,@PlanName
+        FETCH NEXT FROM Cur_Mail INTO  @AlertId, @AlertDescription, @Email, @Indicator, @IndicatorComparision, @IndicatorGoal, @EntityTitle, @DisplayDate,@ActualGoal,@CurrentGoal,@PlanName,@Entity,@PlanId,@EntityId
         
         WHILE @@FETCH_STATUS=0
         BEGIN
@@ -2108,17 +2108,30 @@ BEGIN
 				  set @SubjectComparision = 'equal goal'
 				END
 		END
+
+	
+
+
         Set @subject = @EntityTitle + ' is performing ' + @SubjectComparision 
 
 		SET @body = @EntityTitle + '''s <b>' + @Indicator +' </b> is '+ @Comparision + ' ' + CONVERT(nvarchar(50),@IndicatorGoal) +'% of the goal as of <b>'+ CONVERT(VARCHAR(11),@DisplayDate,106)  + '</b><br><br>Item : ' +  @EntityTitle + '<br>Plan Name : '+ @PlanName 
 	    
-		if @ActualGoal is not null
-		set @body = @body +  '<br>Goal : '+ cast(Format(@ActualGoal, '##,##0') as varchar) 
+		IF @ActualGoal is not null
+		SET @body = @body +  '<br>Goal : '+ cast(Format(@ActualGoal, '##,##0') as varchar) 
 
-		if @CurrentGoal is not null
-		set @body = @body + '<br>Current : ' + cast(Format(@CurrentGoal, '##,##0') as varchar)
+		IF @CurrentGoal is not null
+		SET @body = @body + '<br>Current : ' + cast(Format(@CurrentGoal, '##,##0') as varchar)
 		 
-		set @body = @body + '<br><br><html><body> URL : <a href=' + @Url +'>'+@Url+'</a></body></html>' 
+		 IF @Entity <> 'Plan' 
+		 BEGIN
+		 SET @UrlString = @Url +'/home?currentPlanId='+convert(nvarchar(max), @planId)+'&plan'+@Entity+'Id='+convert(nvarchar(max),@EntityId)+'&activeMenu=Plan'
+		 END
+		 ELSE
+		 BEGIN
+		 SET @UrlString = @Url +'/home?currentPlanId='+convert(nvarchar(max), @planId)+'&activeMenu=Plan'
+		 End
+
+		set @body = @body + '<br><br><html><body> URL : <a href=' + @UrlString +'>'+@UrlString+'</a></body></html>' 
 
         
         EXEC @hr = sp_oamethod @imsg, 'configuration.fields.update', null
@@ -2160,12 +2173,13 @@ BEGIN
              
         EXEC @hr = sp_oadestroy @imsg
         
-        FETCH NEXT FROM Cur_Mail INTO  @AlertId, @AlertDescription, @Email, @Indicator, @IndicatorComparision, @IndicatorGoal, @EntityTitle, @DisplayDate, @ActualGoal, @CurrentGoal, @PlanName
+        FETCH NEXT FROM Cur_Mail INTO  @AlertId, @AlertDescription, @Email, @Indicator, @IndicatorComparision, @IndicatorGoal, @EntityTitle, @DisplayDate, @ActualGoal, @CurrentGoal, @PlanName,@Entity,@PlanId,@EntityId
         END
   CLOSE Cur_Mail
   DEALLOCATE Cur_Mail
   END
   END
+  
 Go
 
 /* End - Added by Dhvani Raval for Ticket #2534*/
