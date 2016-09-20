@@ -973,8 +973,6 @@
     <Content Include="Views\Shared\_Planhud.cshtml" />
     <Content Include="Views\Budget\Budget.cshtml" />
     <Content Include="Views\Plan\_HomeGrid_New.cshtml" />
-    <Content Include="Views\Home\Index1.cshtml" />
-    <Content Include="Views\Home\_HomeGrid_New.cshtml" />
     <Content Include="Views\Home\_HoneyComb.cshtml" />
     <Content Include="Views\Home\_PlanCalendar.cshtml" />
     <None Include="Service References\BDSService\BDSService.wsdl" />
