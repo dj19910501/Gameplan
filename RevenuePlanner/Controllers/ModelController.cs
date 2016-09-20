@@ -1300,7 +1300,7 @@ namespace RevenuePlanner.Controllers
                 clientid = Sessions.User.CID,
                 modelId = tacticType.ModelId, //// TFS Bug - 179 : Improper behavior when editing Tactic in model   Changed By : Nirav shah on 6 Feb 2014 Change : add modelId = p.ModelId,    
                 title = tacticType.Title,
-                Stage = (tacticType.StageId == null) ? "-":"TBW", //TODO: zz tacticType.Stage.Title, //// Modified by dharmraj for ticket #475, Old line : Stage = (p.StageId == null) ? "-" : p.Stage.Code
+                Stage = (tacticType.StageId == null) ? "-" : tacticType.Stage.Title, //// Modified by dharmraj for ticket #475, Old line : Stage = (p.StageId == null) ? "-" : p.Stage.Code
                 //// changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                 ProjectedStageValue = (tacticType.ProjectedStageValue == null) ? 0 : tacticType.ProjectedStageValue,
                 revenue = (tacticType.ProjectedRevenue == null) ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tacticType.ProjectedRevenue)),PlanExchangeRate), //Added by Rahul Shah for PL #2498.

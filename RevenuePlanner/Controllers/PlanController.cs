@@ -2650,7 +2650,7 @@ namespace RevenuePlanner.Controllers
                 revenue = tt.ProjectedRevenue == null ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tt.ProjectedRevenue)), PlanExchangeRate),
                 IsDeployedToIntegration = tt.IsDeployedToIntegration,
                 stageId = tt.StageId,
-                stageTitle = "Stage", //tt.Stage.Title, //TODO: stage object within tt is NULL zz
+                stageTitle = tt.Stage.Title, 
                 TacticTypeName = tt.Title,
                 projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue
             }, JsonRequestBehavior.AllowGet);
@@ -13016,10 +13016,8 @@ namespace RevenuePlanner.Controllers
             List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(mdl => mdl.ModelId).ToList());
 
             var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
-            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = null;
 
-            //List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
-            //TODO: this causes exceptions !!!
+            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
 
             List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
 
