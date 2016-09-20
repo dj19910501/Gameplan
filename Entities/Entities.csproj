@@ -208,9 +208,6 @@
     <Compile Include="Models\GetClientEntityList_Result.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\GetCollaboratorId1_Result.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\GetCollaboratorId_Result.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -448,9 +445,6 @@
     <Compile Include="Models\Plan_Campaign_Program_Tactic_Actual_MediaCode.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\User_CoulmnView.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Plan_Campaign_Program_Tactic_Budget.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -560,6 +554,9 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserSetting.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User_CoulmnView.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User_Filter.cs">

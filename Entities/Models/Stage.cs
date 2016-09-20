@@ -25,18 +25,18 @@ namespace RevenuePlanner.Models
     
         public int StageId { get; set; }
         public string Title { get; set; }
-        public int ClientId { get; set; }
         public string Description { get; set; }
         public Nullable<int> Level { get; set; }
         public string ColorCode { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public int CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public int ModifiedBy { get; set; }
         public string Code { get; set; }
         public string Funnel { get; set; }
         public string ConversionTitle { get; set; }
+        public int ClientId { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
     
         public virtual ICollection<BestInClass> BestInClasses { get; set; }
         public virtual ICollection<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }

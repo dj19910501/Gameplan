@@ -2183,7 +2183,17 @@ BEGIN
 Go
 
 /* End - Added by Dhvani Raval for Ticket #2534*/
-
+--Added by Manoj - Stage object in TacticType somehow didn’t get populated from data by EF 
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_TacticType_Stage')AND parent_object_id = OBJECT_ID(N'dbo.TacticType'))
+BEGIN
+	ALTER TABLE TacticType ADD FOREIGN KEY (StageId) REFERENCES Stage(StageId) 
+END
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_ImprovementTacticType_Metric_ImprovementTacticType')AND parent_object_id = OBJECT_ID(N'dbo.ImprovementTacticType_Metric'))
+BEGIN
+	ALTER TABLE ImprovementTacticType_Metric ADD FOREIGN KEY (ImprovementTacticTypeId) REFERENCES ImprovementTacticType(ImprovementTacticTypeId) 
+END
+GO
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version

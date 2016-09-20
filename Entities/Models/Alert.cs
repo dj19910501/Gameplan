@@ -22,6 +22,9 @@ namespace RevenuePlanner.Models
         public System.DateTime CreatedDate { get; set; }
         public System.DateTime DisplayDate { get; set; }
         public int UserId { get; set; }
+        public string IsEmailSent { get; set; }
+        public Nullable<double> CurrentGoal { get; set; }
+        public Nullable<double> ActualGoal { get; set; }
     
         public virtual Alert_Rules Alert_Rules { get; set; }
     }

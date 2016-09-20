@@ -16,12 +16,12 @@ namespace RevenuePlanner.Models
     {
         public int ViewId { get; set; }
         public string ViewName { get; set; }
-        public int CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
-        public int ModifyBy { get; set; }
         public Nullable<System.DateTime> ModifyDate { get; set; }
         public Nullable<bool> IsDefault { get; set; }
         public string GridAttribute { get; set; }
         public string BudgetAttribute { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifyBy { get; set; }
     }
 }

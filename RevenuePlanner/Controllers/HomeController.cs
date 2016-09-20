@@ -9171,7 +9171,7 @@ namespace RevenuePlanner.Controllers
                         ListOfPreviousIDs = string.Join(",", ids);
                     }
 
-                    objDbMrpEntities.DeleteLastViewedData(Sessions.User.ID.ToString(), ListOfPreviousIDs); //Sp to delete last viewed data before inserting new one.
+                    objDbMrpEntities.DeleteLastViewedData(Sessions.User.ID, ListOfPreviousIDs); //Sp to delete last viewed data before inserting new one.
                     objDbMrpEntities.SaveChanges();
                     //End
                 }

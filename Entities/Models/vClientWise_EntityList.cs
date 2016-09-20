@@ -20,5 +20,6 @@ namespace RevenuePlanner.Models
         public string Entity { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public int EntityOrder { get; set; }
+        public string PlanTitle { get; set; }
     }
 }

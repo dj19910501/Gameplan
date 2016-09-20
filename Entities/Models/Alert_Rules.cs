@@ -39,6 +39,7 @@ namespace RevenuePlanner.Models
         public int ClientId { get; set; }
         public int CreatedBy { get; set; }
         public int ModifiedBy { get; set; }
+        public string UserEmail { get; set; }
     
         public virtual ICollection<Alert> Alerts { get; set; }
     }

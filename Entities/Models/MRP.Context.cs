@@ -170,8 +170,8 @@ namespace RevenuePlanner.Models
         public DbSet<Logging> Loggings { get; set; }
         public DbSet<Versioning> Versionings { get; set; }
         public DbSet<vClientWise_EntityList> vClientWise_EntityList { get; set; }
-        public DbSet<User_CoulmnView> User_CoulmnView { get; set; }
         public DbSet<vClientWise_Tactic> vClientWise_Tactic { get; set; }
+        public DbSet<User_CoulmnView> User_CoulmnView { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {
@@ -265,20 +265,11 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DeleteBudget", budgetDetailIdParameter, clientIdParameter);
         }
     
-        public virtual ObjectResult<GetCollaboratorId_Result> GetCollaboratorId(Nullable<int> planId)
+        public virtual int DeleteLastViewedData(Nullable<int> userId, string previousIds)
         {
-            var planIdParameter = planId.HasValue ?
-                new ObjectParameter("PlanId", planId) :
-                new ObjectParameter("PlanId", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCollaboratorId_Result>("GetCollaboratorId", planIdParameter);
-        }
-    
-        public virtual int DeleteLastViewedData(string userId, string previousIds)
-        {
-            var userIdParameter = userId != null ?
+            var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(string));
+                new ObjectParameter("UserId", typeof(int));
     
             var previousIdsParameter = previousIds != null ?
                 new ObjectParameter("PreviousIds", previousIds) :
@@ -484,7 +475,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CopyOverAggregationPartial", dEBUGParameter);
         }
     
-        public virtual ObjectResult<CoRelationReportGraphResults_Result> CoRelationReportGraphResults(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<int> userId, Nullable<System.Guid> roleId)
+        public virtual ObjectResult<CoRelationReportGraphResults_Result> CoRelationReportGraphResults(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<System.Guid> userId, Nullable<System.Guid> roleId)
         {
             var reportGraphIDParameter = reportGraphID.HasValue ?
                 new ObjectParameter("ReportGraphID", reportGraphID) :
@@ -524,7 +515,7 @@ namespace RevenuePlanner.Models
     
             var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(int));
+                new ObjectParameter("UserId", typeof(System.Guid));
     
             var roleIdParameter = roleId.HasValue ?
                 new ObjectParameter("RoleId", roleId) :
@@ -896,11 +887,11 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetBudgetListAndLineItemBudgetList_Result>("GetBudgetListAndLineItemBudgetList", clientIdParameter, budgetIdParameter);
         }
     
-        public virtual ObjectResult<GetClientEntityList_Result> GetClientEntityList(string clientId)
+        public virtual ObjectResult<GetClientEntityList_Result> GetClientEntityList(Nullable<int> clientId)
         {
-            var clientIdParameter = clientId != null ?
+            var clientIdParameter = clientId.HasValue ?
                 new ObjectParameter("ClientId", clientId) :
-                new ObjectParameter("ClientId", typeof(string));
+                new ObjectParameter("ClientId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetClientEntityList_Result>("GetClientEntityList", clientIdParameter);
         }
@@ -918,7 +909,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetCustomDashboardsClientwise", userIdParameter, clientIdParameter);
         }
     
-        public virtual ObjectResult<GetCustomFieldEntityList_Result> GetCustomFieldEntityList(Nullable<int> customTypeId, string entityType, string clientId)
+        public virtual ObjectResult<GetCustomFieldEntityList_Result> GetCustomFieldEntityList(Nullable<int> customTypeId, string entityType, Nullable<int> clientId)
         {
             var customTypeIdParameter = customTypeId.HasValue ?
                 new ObjectParameter("CustomTypeId", customTypeId) :
@@ -928,9 +919,9 @@ namespace RevenuePlanner.Models
                 new ObjectParameter("EntityType", entityType) :
                 new ObjectParameter("EntityType", typeof(string));
     
-            var clientIdParameter = clientId != null ?
+            var clientIdParameter = clientId.HasValue ?
                 new ObjectParameter("ClientId", clientId) :
-                new ObjectParameter("ClientId", typeof(string));
+                new ObjectParameter("ClientId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCustomFieldEntityList_Result>("GetCustomFieldEntityList", customTypeIdParameter, entityTypeParameter, clientIdParameter);
         }
@@ -956,11 +947,11 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetDashboardContent", homepageIdParameter, dashboardIdParameter, dashboardPageIdParameter, userIdParameter);
         }
     
-        public virtual ObjectResult<GetDashboardContentData_Result> GetDashboardContentData(string userId, Nullable<int> dashboardID)
+        public virtual ObjectResult<GetDashboardContentData_Result> GetDashboardContentData(Nullable<int> userId, Nullable<int> dashboardID)
         {
-            var userIdParameter = userId != null ?
+            var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(string));
+                new ObjectParameter("UserId", typeof(int));
     
             var dashboardIDParameter = dashboardID.HasValue ?
                 new ObjectParameter("DashboardID", dashboardID) :
@@ -1059,7 +1050,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetHelpText", reportDashboardIDParameter, graphTypeParameter);
         }
     
-        public virtual int GetKeyDataDetails(Nullable<int> keyDataId, string dimensionTableName, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, Nullable<System.DateTime> compStartDate, Nullable<System.DateTime> compEndDate, string dateField, string filterValues, string viewByValue, Nullable<int> userId, Nullable<System.Guid> roleId)
+        public virtual int GetKeyDataDetails(Nullable<int> keyDataId, string dimensionTableName, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, Nullable<System.DateTime> compStartDate, Nullable<System.DateTime> compEndDate, string dateField, string filterValues, string viewByValue, Nullable<System.Guid> userId, Nullable<System.Guid> roleId)
         {
             var keyDataIdParameter = keyDataId.HasValue ?
                 new ObjectParameter("KeyDataId", keyDataId) :
@@ -1099,7 +1090,7 @@ namespace RevenuePlanner.Models
     
             var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(int));
+                new ObjectParameter("UserId", typeof(System.Guid));
     
             var roleIdParameter = roleId.HasValue ?
                 new ObjectParameter("RoleId", roleId) :
@@ -1356,7 +1347,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTacticTypeList_Result>("GetTacticTypeList", tacticIdsParameter);
         }
     
-        public virtual int GetTTestSignificance(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<int> userId, Nullable<System.Guid> roleId)
+        public virtual int GetTTestSignificance(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, Nullable<System.Guid> userId, Nullable<System.Guid> roleId)
         {
             var reportGraphIDParameter = reportGraphID.HasValue ?
                 new ObjectParameter("ReportGraphID", reportGraphID) :
@@ -1396,7 +1387,7 @@ namespace RevenuePlanner.Models
     
             var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(int));
+                new ObjectParameter("UserId", typeof(System.Guid));
     
             var roleIdParameter = roleId.HasValue ?
                 new ObjectParameter("RoleId", roleId) :
@@ -1423,7 +1414,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<IdentifyDimensions_Result>("[MRPEntities].[IdentifyDimensions](@ObjectId, @IsGraph, @String)", objectIdParameter, isGraphParameter, stringParameter);
         }
     
-        public virtual int ImportMarketingBudgetMonthly(string xMLData, Nullable<int> clientId, string userId, Nullable<long> budgetDetailId)
+        public virtual int ImportMarketingBudgetMonthly(string xMLData, Nullable<int> clientId, Nullable<int> userId, Nullable<long> budgetDetailId)
         {
             var xMLDataParameter = xMLData != null ?
                 new ObjectParameter("XMLData", xMLData) :
@@ -1433,9 +1424,9 @@ namespace RevenuePlanner.Models
                 new ObjectParameter("clientId", clientId) :
                 new ObjectParameter("clientId", typeof(int));
     
-            var userIdParameter = userId != null ?
+            var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(string));
+                new ObjectParameter("UserId", typeof(int));
     
             var budgetDetailIdParameter = budgetDetailId.HasValue ?
                 new ObjectParameter("BudgetDetailId", budgetDetailId) :
@@ -1444,7 +1435,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ImportMarketingBudgetMonthly", xMLDataParameter, clientIdParameter, userIdParameter, budgetDetailIdParameter);
         }
     
-        public virtual int ImportMarketingBudgetQuarter(string xMLData, Nullable<int> clientId, string userId, Nullable<long> budgetDetailId)
+        public virtual int ImportMarketingBudgetQuarter(string xMLData, Nullable<int> clientId, Nullable<int> userId, Nullable<long> budgetDetailId)
         {
             var xMLDataParameter = xMLData != null ?
                 new ObjectParameter("XMLData", xMLData) :
@@ -1454,9 +1445,9 @@ namespace RevenuePlanner.Models
                 new ObjectParameter("clientId", clientId) :
                 new ObjectParameter("clientId", typeof(int));
     
-            var userIdParameter = userId != null ?
+            var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(string));
+                new ObjectParameter("UserId", typeof(int));
     
             var budgetDetailIdParameter = budgetDetailId.HasValue ?
                 new ObjectParameter("BudgetDetailId", budgetDetailId) :
@@ -1542,15 +1533,15 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("NightlyRefreshDatabase");
         }
     
-        public virtual ObjectResult<Plan_Budget_Cost_Actual_Detail_Result> Plan_Budget_Cost_Actual_Detail(Nullable<int> planId, string userId, string selectedTab)
+        public virtual ObjectResult<Plan_Budget_Cost_Actual_Detail_Result> Plan_Budget_Cost_Actual_Detail(Nullable<int> planId, Nullable<int> userId, string selectedTab)
         {
             var planIdParameter = planId.HasValue ?
                 new ObjectParameter("PlanId", planId) :
                 new ObjectParameter("PlanId", typeof(int));
     
-            var userIdParameter = userId != null ?
+            var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(string));
+                new ObjectParameter("UserId", typeof(int));
     
             var selectedTabParameter = selectedTab != null ?
                 new ObjectParameter("SelectedTab", selectedTab) :
@@ -1619,7 +1610,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RebuildIndexes", dEBUGParameter);
         }
     
-        public virtual int ReportGraphResultsNew(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, string displayStatSignificance, Nullable<int> userId, Nullable<System.Guid> roleId)
+        public virtual int ReportGraphResultsNew(Nullable<int> reportGraphID, string dIMENSIONTABLENAME, Nullable<System.DateTime> sTARTDATE, Nullable<System.DateTime> eNDDATE, string dATEFIELD, string filterValues, string viewByValue, Nullable<int> subDashboardOtherDimensionTable, Nullable<int> subDashboardMainDimensionTable, string displayStatSignificance, Nullable<System.Guid> userId, Nullable<System.Guid> roleId)
         {
             var reportGraphIDParameter = reportGraphID.HasValue ?
                 new ObjectParameter("ReportGraphID", reportGraphID) :
@@ -1663,7 +1654,7 @@ namespace RevenuePlanner.Models
     
             var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(int));
+                new ObjectParameter("UserId", typeof(System.Guid));
     
             var roleIdParameter = roleId.HasValue ?
                 new ObjectParameter("RoleId", roleId) :
@@ -1786,7 +1777,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Sp_GetPlanBudgetDataQuarterly", planIdParameter, userIdParameter);
         }
     
-        public virtual int SP_Save_AlertRule(string clientId, Nullable<int> ruleId, string ruleSummary, Nullable<int> entityId, string entityType, string indicator, string indicatorComparision, Nullable<int> indicatorGoal, Nullable<int> completionGoal, string frequency, Nullable<byte> dayOfWeek, Nullable<byte> dateOfMonth, string userId, Nullable<int> createdBy, Nullable<int> modifiedBy, ObjectParameter isExists)
+        public virtual int SP_Save_AlertRule(string clientId, Nullable<int> ruleId, string ruleSummary, Nullable<int> entityId, string entityType, string indicator, string indicatorComparision, Nullable<int> indicatorGoal, Nullable<int> completionGoal, string frequency, Nullable<byte> dayOfWeek, Nullable<byte> dateOfMonth, Nullable<int> userId, string createdBy, string modifiedBy, string userEmail, ObjectParameter isExists)
         {
             var clientIdParameter = clientId != null ?
                 new ObjectParameter("ClientId", clientId) :
@@ -1836,19 +1827,23 @@ namespace RevenuePlanner.Models
                 new ObjectParameter("DateOfMonth", dateOfMonth) :
                 new ObjectParameter("DateOfMonth", typeof(byte));
     
-            var userIdParameter = userId != null ?
+            var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(string));
+                new ObjectParameter("UserId", typeof(int));
     
-            var createdByParameter = createdBy.HasValue ?
+            var createdByParameter = createdBy != null ?
                 new ObjectParameter("CreatedBy", createdBy) :
-                new ObjectParameter("CreatedBy", typeof(int));
+                new ObjectParameter("CreatedBy", typeof(string));
     
-            var modifiedByParameter = modifiedBy.HasValue ?
+            var modifiedByParameter = modifiedBy != null ?
                 new ObjectParameter("ModifiedBy", modifiedBy) :
-                new ObjectParameter("ModifiedBy", typeof(int));
+                new ObjectParameter("ModifiedBy", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_Save_AlertRule", clientIdParameter, ruleIdParameter, ruleSummaryParameter, entityIdParameter, entityTypeParameter, indicatorParameter, indicatorComparisionParameter, indicatorGoalParameter, completionGoalParameter, frequencyParameter, dayOfWeekParameter, dateOfMonthParameter, userIdParameter, createdByParameter, modifiedByParameter, isExists);
+            var userEmailParameter = userEmail != null ?
+                new ObjectParameter("UserEmail", userEmail) :
+                new ObjectParameter("UserEmail", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_Save_AlertRule", clientIdParameter, ruleIdParameter, ruleSummaryParameter, entityIdParameter, entityTypeParameter, indicatorParameter, indicatorComparisionParameter, indicatorGoalParameter, completionGoalParameter, frequencyParameter, dayOfWeekParameter, dateOfMonthParameter, userIdParameter, createdByParameter, modifiedByParameter, userEmailParameter, isExists);
         }
     
         public virtual int spGetMarketoData(string entityType, Nullable<int> id, Nullable<int> clientId, Nullable<int> sFDCTitleLengthLimit, Nullable<int> integrationInstanceLogId)
@@ -1923,7 +1918,7 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<string>("[MRPEntities].[SplitString](@Input, @Character)", inputParameter, characterParameter);
         }
     
-        public virtual ObjectResult<spViewByDropDownList_Result> spViewByDropDownList(string planId, string clientId)
+        public virtual ObjectResult<spViewByDropDownList_Result> spViewByDropDownList(string planId, string clientId, string userId)
         {
             var planIdParameter = planId != null ?
                 new ObjectParameter("PlanId", planId) :
@@ -1933,7 +1928,11 @@ namespace RevenuePlanner.Models
                 new ObjectParameter("ClientId", clientId) :
                 new ObjectParameter("ClientId", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spViewByDropDownList_Result>("spViewByDropDownList", planIdParameter, clientIdParameter);
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spViewByDropDownList_Result>("spViewByDropDownList", planIdParameter, clientIdParameter, userIdParameter);
         }
     
         public virtual int StatisticallyInferredAttribution(Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, string baseRateQuery, string cLOSED_WON, string cLOSED_STAGES, string sELECT_CAMPAIGN_COUNTS, string cAMPAIGN_TABLE, string cAMPAIGN_IDFIELD, string mIN_RESPONSES, string cAMPAIGN_WHERE, string cAMPAIGN_START, string fINAL_JOIN)
@@ -2137,21 +2136,30 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("WebApiGetReportRawData", idParameter, topOnlyParameter, viewByParameter, startDateParameter, endDateParameter, filterValuesParameter);
         }
     
-        public virtual int PullResponses(string dataSource, string clientID, string userID)
+        public virtual int PullResponses(string dataSource, Nullable<int> clientID, Nullable<int> userID)
         {
             var dataSourceParameter = dataSource != null ?
                 new ObjectParameter("DataSource", dataSource) :
                 new ObjectParameter("DataSource", typeof(string));
     
-            var clientIDParameter = clientID != null ?
+            var clientIDParameter = clientID.HasValue ?
                 new ObjectParameter("ClientID", clientID) :
-                new ObjectParameter("ClientID", typeof(string));
+                new ObjectParameter("ClientID", typeof(int));
     
-            var userIDParameter = userID != null ?
+            var userIDParameter = userID.HasValue ?
                 new ObjectParameter("UserID", userID) :
-                new ObjectParameter("UserID", typeof(string));
+                new ObjectParameter("UserID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PullResponses", dataSourceParameter, clientIDParameter, userIDParameter);
+        }
+    
+        public virtual ObjectResult<GetCollaboratorId_Result> GetCollaboratorId(Nullable<int> planId)
+        {
+            var planIdParameter = planId.HasValue ?
+                new ObjectParameter("PlanId", planId) :
+                new ObjectParameter("PlanId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCollaboratorId_Result>("GetCollaboratorId", planIdParameter);
         }
     }
 }

@@ -16,8 +16,8 @@ namespace RevenuePlanner.Models
     {
         public ImprovementTacticType()
         {
-            this.ImprovementTacticType_Metric = new HashSet<ImprovementTacticType_Metric>();
             this.Plan_Improvement_Campaign_Program_Tactic = new HashSet<Plan_Improvement_Campaign_Program_Tactic>();
+            this.ImprovementTacticType_Metric = new HashSet<ImprovementTacticType_Metric>();
         }
     
         public int ImprovementTacticTypeId { get; set; }
@@ -34,9 +34,9 @@ namespace RevenuePlanner.Models
         public int CreatedBy { get; set; }
         public int ModifiedBy { get; set; }
     
-        public virtual ICollection<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
-        public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
         public virtual ImprovementTacticType ImprovementTacticType1 { get; set; }
         public virtual ImprovementTacticType ImprovementTacticType2 { get; set; }
+        public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
+        public virtual ICollection<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
     }
 }

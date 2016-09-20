@@ -142,7 +142,6 @@
         <EntityTypeShape EntityType="MRPModel.CustomFieldDependency_Temp" Width="1.5" PointX="26.75" PointY="0.75" />
         <EntityTypeShape EntityType="MRPModel.DynamicDimension" Width="1.5" PointX="26.75" PointY="4.75" />
         <EntityTypeShape EntityType="MRPModel.Logging" Width="1.5" PointX="26.75" PointY="8.75" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_BKP_15Feb2015" Width="1.5" PointX="26.75" PointY="11.75" />
         <EntityTypeShape EntityType="MRPModel.Versioning" Width="1.5" PointX="26.75" PointY="19.75" />
         <EntityTypeShape EntityType="MRPModel.vClientWise_EntityList" Width="1.5" PointX="28.75" PointY="0.75" />
         <EntityTypeShape EntityType="MRPModel.vClientWise_Tactic" Width="1.5" PointX="28.75" PointY="3.75" />
@@ -284,6 +283,9 @@
         <AssociationConnector Association="MRPModel.FK_ReportTableRowExclude_ReportTable" />
         <AssociationConnector Association="MRPModel.FK_Tactic_MediaCodes_CustomFieldMapping_Tactic_MediaCodes" />
         <AssociationConnector Association="MRPModel.FK_TacticType_ModelId" />
+        <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" />
+        <AssociationConnector Association="MRPModel.FK_TacticType_Stage" />
+        <EntityTypeShape EntityType="MRPModel.User_CoulmnView" Width="1.5" PointX="5.375" PointY="28.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

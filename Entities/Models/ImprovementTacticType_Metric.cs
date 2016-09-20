@@ -21,7 +21,7 @@ namespace RevenuePlanner.Models
         public string StageType { get; set; }
         public int CreatedBy { get; set; }
     
-        public virtual ImprovementTacticType ImprovementTacticType { get; set; }
         public virtual Stage Stage { get; set; }
+        public virtual ImprovementTacticType ImprovementTacticType { get; set; }
     }
 }

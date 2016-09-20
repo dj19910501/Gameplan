@@ -20,7 +20,7 @@
           <Property Name="QueryText" Type="nvarchar(max)" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.AggregationQueries' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.AggregationQueries' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AggregationQueries">
           <Key>
             <PropertyRef Name="id" />
@@ -30,7 +30,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.AggregationQueries' does
           <Property Name="QueryToRun" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.AggregationStatus' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.AggregationStatus' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AggregationStatus">
           <Key>
             <PropertyRef Name="StatusCode" />
@@ -38,7 +38,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.AggregationStatus' does 
           <Property Name="StatusCode" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.AggregationSteps' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.AggregationSteps' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AggregationSteps">
           <Key>
             <PropertyRef Name="id" />
@@ -87,6 +87,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.AggregationSteps' does n
           <Property Name="ClientId" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="ModifiedBy" Type="int" Nullable="false" />
+          <Property Name="UserEmail" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Alerts">
           <Key>
@@ -100,9 +101,12 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.AggregationSteps' does n
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="DisplayDate" Type="datetime" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="IsEmailSent" Type="nvarchar" MaxLength="50" />
+          <Property Name="CurrentGoal" Type="float" />
+          <Property Name="ActualGoal" Type="float" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.AttrPositionConfig' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.AttrPositionConfig' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AttrPositionConfig">
           <Key>
             <PropertyRef Name="XValue" />
@@ -353,7 +357,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.AttrPositionConfig' does
           <Property Name="CreatedBy" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.CustomFieldDependency_Temp' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.CustomFieldDependency_Temp' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="CustomFieldDependency_Temp">
           <Key>
             <PropertyRef Name="ParentOptionId" />
@@ -527,7 +531,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.CustomFieldDependency_Te
           <Property Name="DashboardContentId" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.DynamicDimension' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.DynamicDimension' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="DynamicDimension">
           <Key>
             <PropertyRef Name="id" />
@@ -759,8 +763,8 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.DynamicDimension' does n
           <Property Name="CustomNamingPermission" Type="bit" Nullable="false" />
           <Property Name="IsFirstPullCW" Type="bit" Nullable="false" />
           <Property Name="ClientId" Type="int" Nullable="false" />
-          <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="ForceSyncUser" Type="int" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="ModifiedBy" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
@@ -1047,7 +1051,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.DynamicDimension' does n
           <Property Name="ModifiedBy" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Logging' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.Logging' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Logging">
           <Key>
             <PropertyRef Name="id" />
@@ -1351,8 +1355,8 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Logging' does not have a
           <Property Name="Actualvalue" Type="float" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="ModifiedBy" Type="int" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual_MediaCode">
           <Key>
@@ -1366,58 +1370,11 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Logging' does not have a
           <Property Name="Actualvalue" Type="float" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="ModifiedBy" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Plan_Campaign_Program_Tactic_BKP_15Feb2015' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="Plan_Campaign_Program_Tactic_BKP_15Feb2015">
-          <Key>
-            <PropertyRef Name="PlanTacticId" />
-            <PropertyRef Name="PlanProgramId" />
-            <PropertyRef Name="TacticTypeId" />
-            <PropertyRef Name="Title" />
-            <PropertyRef Name="StartDate" />
-            <PropertyRef Name="EndDate" />
-            <PropertyRef Name="Cost" />
-            <PropertyRef Name="TacticBudget" />
-            <PropertyRef Name="Status" />
-            <PropertyRef Name="CreatedDate" />
-            <PropertyRef Name="IsDeleted" />
-            <PropertyRef Name="IsDeployedToIntegration" />
-            <PropertyRef Name="StageId" />
-            <PropertyRef Name="CreatedBy" />
-            <PropertyRef Name="ModifiedBy" />
-          </Key>
-          <Property Name="PlanTacticId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="PlanProgramId" Type="int" Nullable="false" />
-          <Property Name="TacticTypeId" Type="int" Nullable="false" />
-          <Property Name="Title" Type="varchar" MaxLength="255" Nullable="false" />
-          <Property Name="Description" Type="varchar" MaxLength="4000" />
-          <Property Name="StartDate" Type="datetime" Nullable="false" />
-          <Property Name="EndDate" Type="datetime" Nullable="false" />
-          <Property Name="Cost" Type="float" Nullable="false" />
-          <Property Name="TacticBudget" Type="float" Nullable="false" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="IsDeleted" Type="bit" Nullable="false" />
-          <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
-          <Property Name="IntegrationInstanceTacticId" Type="nvarchar" MaxLength="50" />
-          <Property Name="LastSyncDate" Type="datetime" />
-          <Property Name="ProjectedStageValue" Type="float" />
-          <Property Name="StageId" Type="int" Nullable="false" />
-          <Property Name="TacticCustomName" Type="nvarchar" MaxLength="4000" />
-          <Property Name="IntegrationWorkFrontProjectID" Type="nvarchar" MaxLength="50" />
-          <Property Name="IntegrationInstanceEloquaId" Type="nvarchar" MaxLength="50" />
-          <Property Name="LinkedTacticId" Type="int" />
-          <Property Name="LinkedPlanId" Type="int" />
-          <Property Name="IsSyncSalesForce" Type="bit" />
-          <Property Name="IsSyncEloqua" Type="bit" />
-          <Property Name="IsSyncWorkFront" Type="bit" />
-          <Property Name="CreatedBy" Type="int" Nullable="false" />
-          <Property Name="ModifiedBy" Type="int" Nullable="false" />
-        </EntityType>
+warning 6002: The table/view 'Hive9QAPlan.dbo.Plan_Campaign_Program_Tactic_BKP_15Feb2015' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Plan_Campaign_Program_Tactic_Budget">
           <Key>
             <PropertyRef Name="PlanTacticBudgetId" />
@@ -1828,8 +1785,8 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Plan_Campaign_Program_Ta
           <Property Name="LastModifiedDate" Type="datetime" />
           <Property Name="IsDeleted" Type="bit" />
           <Property Name="MediaCode" Type="bigint" />
-          <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="LastModifiedBy" Type="int" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Tactic_MediaCodes_CustomFieldMapping">
           <Key>
@@ -1878,6 +1835,20 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Plan_Campaign_Program_Ta
           <Property Name="ModifiedBy" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="User_CoulmnView">
+          <Key>
+            <PropertyRef Name="ViewId" />
+          </Key>
+          <Property Name="ViewId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ViewName" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="ModifyDate" Type="datetime" />
+          <Property Name="IsDefault" Type="bit" />
+          <Property Name="GridAttribute" Type="xml" />
+          <Property Name="BudgetAttribute" Type="xml" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="ModifyBy" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="User_Filter">
           <Key>
             <PropertyRef Name="UserId" />
@@ -1886,8 +1857,8 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Plan_Campaign_Program_Ta
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="ModifiedBy" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="ModifiedBy" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="User_Notification">
           <Key>
@@ -1896,8 +1867,8 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Plan_Campaign_Program_Ta
           </Key>
           <Property Name="NotificationId" Type="int" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="User_Notification_Messages">
           <Key>
@@ -1912,9 +1883,9 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Plan_Campaign_Program_Ta
           <Property Name="IsRead" Type="bit" Nullable="false" />
           <Property Name="ReadDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="ClientID" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="RecipientId" Type="int" Nullable="false" />
+          <Property Name="ClientID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="User_Permission">
           <Key>
@@ -1949,7 +1920,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Plan_Campaign_Program_Ta
           <Property Name="UserId" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Versioning' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.Versioning' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Versioning">
           <Key>
             <PropertyRef Name="Id" />
@@ -1961,13 +1932,14 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.Versioning' does not hav
           <Property Name="Version" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_EntityList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.vClientWise_EntityList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vClientWise_EntityList">
           <Key>
             <PropertyRef Name="EntityId" />
             <PropertyRef Name="ClientId" />
             <PropertyRef Name="Entity" />
             <PropertyRef Name="CreatedDate" />
+            <PropertyRef Name="PlanTitle" />
             <PropertyRef Name="EntityOrder" />
           </Key>
           <Property Name="EntityId" Type="int" Nullable="false" />
@@ -1975,18 +1947,19 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_EntityList' 
           <Property Name="ClientId" Type="int" Nullable="false" />
           <Property Name="Entity" Type="varchar" MaxLength="9" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="PlanTitle" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="EntityOrder" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Hive9QAPlan.dbo.vClientWise_Tactic' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vClientWise_Tactic">
           <Key>
             <PropertyRef Name="PlanTacticId" />
             <PropertyRef Name="Title" />
             <PropertyRef Name="MediaCodeId" />
             <PropertyRef Name="TacticId" />
-            <PropertyRef Name="CreatedBy" />
             <PropertyRef Name="LastModifiedBy" />
+            <PropertyRef Name="CreatedBy" />
             <PropertyRef Name="ClientId" />
           </Key>
           <Property Name="PlanTacticId" Type="int" Nullable="false" />
@@ -1998,8 +1971,8 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <Property Name="LastModifiedDate" Type="datetime" />
           <Property Name="IsDeleted" Type="bit" />
           <Property Name="MediaCode" Type="bigint" />
-          <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="LastModifiedBy" Type="int" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" Nullable="false" />
           <Property Name="ClientId" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="BudgetID_FK">
@@ -2598,6 +2571,18 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Principal>
             <Dependent Role="ImprovementTacticType1">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ImprovementTacticType_Metric_ImprovementTacticType">
+          <End Role="ImprovementTacticType" Type="Self.ImprovementTacticType" Multiplicity="1" />
+          <End Role="ImprovementTacticType_Metric" Type="Self.ImprovementTacticType_Metric" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ImprovementTacticType">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Principal>
+            <Dependent Role="ImprovementTacticType_Metric">
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -3730,15 +3715,15 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_TacticType_ModelId">
-          <End Role="Model" Type="Self.Model" Multiplicity="1" />
+        <Association Name="FK_TacticType_Stage">
+          <End Role="Stage" Type="Self.Stage" Multiplicity="0..1" />
           <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
             </Principal>
             <Dependent Role="TacticType">
-              <PropertyRef Name="ModelId" />
+              <PropertyRef Name="StageId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3881,7 +3866,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <Parameter Name="ViewByValue" Type="nvarchar" Mode="In" />
           <Parameter Name="SubDashboardOtherDimensionTable" Type="int" Mode="In" />
           <Parameter Name="SubDashboardMainDimensionTable" Type="int" Mode="In" />
-          <Parameter Name="UserId" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
           <Parameter Name="RoleId" Type="uniqueidentifier" Mode="In" />
         </Function>
         <Function Name="CorrelationCalculation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -3922,7 +3907,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <Parameter Name="ClientId" Type="int" Mode="In" />
         </Function>
         <Function Name="DeleteLastViewedData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="UserId" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="UserId" Type="int" Mode="In" />
           <Parameter Name="PreviousIds" Type="nvarchar(max)" Mode="In" />
         </Function>
         <Function Name="DimensionInvalidFormulaTest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -4082,7 +4067,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <Parameter Name="BudgetId" Type="int" Mode="In" />
         </Function>
         <Function Name="GetClientEntityList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ClientId" Type="nvarchar" Mode="In" />
+          <Parameter Name="ClientId" Type="int" Mode="In" />
         </Function>
         <Function Name="GetCollaboratorId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PlanId" Type="int" Mode="In" />
@@ -4097,7 +4082,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
         <Function Name="GetCustomFieldEntityList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="CustomTypeId" Type="int" Mode="In" />
           <Parameter Name="EntityType" Type="nvarchar" Mode="In" />
-          <Parameter Name="ClientId" Type="nvarchar" Mode="In" />
+          <Parameter Name="ClientId" Type="int" Mode="In" />
         </Function>
         <Function Name="GetDashboardContent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="HomepageId" Type="int" Mode="In" />
@@ -4106,7 +4091,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <Parameter Name="UserId" Type="int" Mode="In" />
         </Function>
         <Function Name="GetDashboardContentData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="UserId" Type="varchar(max)" Mode="In" />
+          <Parameter Name="UserId" Type="int" Mode="In" />
           <Parameter Name="DashboardID" Type="int" Mode="In" />
         </Function>
         <Function Name="GetDatePart" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="nvarchar">
@@ -4218,7 +4203,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <Parameter Name="DateField" Type="nvarchar" Mode="In" />
           <Parameter Name="FilterValues" Type="nvarchar(max)" Mode="In" />
           <Parameter Name="ViewByValue" Type="nvarchar" Mode="In" />
-          <Parameter Name="UserId" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
           <Parameter Name="RoleId" Type="uniqueidentifier" Mode="In" />
         </Function>
         <Function Name="GetLineItemList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -4424,7 +4409,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <Parameter Name="ViewByValue" Type="nvarchar" Mode="In" />
           <Parameter Name="SubDashboardOtherDimensionTable" Type="int" Mode="In" />
           <Parameter Name="SubDashboardMainDimensionTable" Type="int" Mode="In" />
-          <Parameter Name="UserId" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
           <Parameter Name="RoleId" Type="uniqueidentifier" Mode="In" />
         </Function>
         <Function Name="GetWeight" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="float">
@@ -4448,13 +4433,13 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
         <Function Name="ImportMarketingBudgetMonthly" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="XMLData" Type="xml" Mode="In" />
           <Parameter Name="clientId" Type="int" Mode="In" />
-          <Parameter Name="UserId" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="UserId" Type="int" Mode="In" />
           <Parameter Name="BudgetDetailId" Type="bigint" Mode="In" />
         </Function>
         <Function Name="ImportMarketingBudgetQuarter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="XMLData" Type="xml" Mode="In" />
           <Parameter Name="clientId" Type="int" Mode="In" />
-          <Parameter Name="UserId" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="UserId" Type="int" Mode="In" />
           <Parameter Name="BudgetDetailId" Type="bigint" Mode="In" />
         </Function>
         <Function Name="InteractionBasedAttrCalc" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -4475,7 +4460,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
         </Function>
         <Function Name="Plan_Budget_Cost_Actual_Detail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PlanId" Type="int" Mode="In" />
-          <Parameter Name="UserId" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserId" Type="int" Mode="In" />
           <Parameter Name="SelectedTab" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="PlanIndicatorProjectedValue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="float">
@@ -4541,7 +4526,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <Parameter Name="SubDashboardOtherDimensionTable" Type="int" Mode="In" />
           <Parameter Name="SubDashboardMainDimensionTable" Type="int" Mode="In" />
           <Parameter Name="DisplayStatSignificance" Type="nvarchar" Mode="In" />
-          <Parameter Name="UserId" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
           <Parameter Name="RoleId" Type="uniqueidentifier" Mode="In" />
         </Function>
         <Function Name="RunAggregation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -4596,9 +4581,10 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <Parameter Name="Frequency" Type="nvarchar" Mode="In" />
           <Parameter Name="DayOfWeek" Type="tinyint" Mode="In" />
           <Parameter Name="DateOfMonth" Type="tinyint" Mode="In" />
-          <Parameter Name="UserId" Type="nvarchar" Mode="In" />
-          <Parameter Name="CreatedBy" Type="int" Mode="In" />
-          <Parameter Name="ModifiedBy" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="int" Mode="In" />
+          <Parameter Name="CreatedBy" Type="nvarchar" Mode="In" />
+          <Parameter Name="ModifiedBy" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserEmail" Type="nvarchar" Mode="In" />
           <Parameter Name="IsExists" Type="int" Mode="InOut" />
         </Function>
         <Function Name="spGetMarketoData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -4631,6 +4617,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
         <Function Name="spViewByDropDownList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PlanId" Type="nvarchar(max)" Mode="In" />
           <Parameter Name="ClientId" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserId" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="StatisticallyInferredAttribution" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="date" Mode="In" />
@@ -4708,8 +4695,8 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
         </Function>
         <Function Name="PullResponses" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="INT">
           <Parameter Name="DataSource" Type="nvarchar" Mode="In" />
-          <Parameter Name="ClientID" Type="nvarchar" Mode="In" />
-          <Parameter Name="UserID" Type="nvarchar" Mode="In" />
+          <Parameter Name="ClientID" Type="int" Mode="In" />
+          <Parameter Name="UserID" Type="int" Mode="In" />
         </Function>
         <EntityContainer Name="MRPModelStoreContainer">
           <EntitySet Name="AggregationProcessLog" EntityType="Self.AggregationProcessLog" Schema="dbo" store:Type="Tables" />
@@ -4838,6 +4825,7 @@ warning 6002: The table/view 'Hive9GameplanJuly2016.dbo.vClientWise_Tactic' does
           <EntitySet Name="Tactic_MediaCodes_CustomFieldMapping" EntityType="Self.Tactic_MediaCodes_CustomFieldMapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tactic_Share" EntityType="Self.Tactic_Share" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User_CoulmnView" EntityType="Self.User_CoulmnView" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification_Messages" EntityType="Self.User_Notification_Messages" Schema="dbo" store:Type="Tables" />
@@ -4911,38 +4899,6 @@ FROM [dbo].[DynamicDimension] AS [DynamicDimension]</DefiningQuery>
 [Logging].[Description] AS [Description]
 FROM [dbo].[Logging] AS [Logging]</DefiningQuery>
           </EntitySet>
-          <EntitySet Name="Plan_Campaign_Program_Tactic_BKP_15Feb2015" EntityType="Self.Plan_Campaign_Program_Tactic_BKP_15Feb2015" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[PlanTacticId] AS [PlanTacticId], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[PlanProgramId] AS [PlanProgramId], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[TacticTypeId] AS [TacticTypeId], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[Title] AS [Title], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[Description] AS [Description], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[StartDate] AS [StartDate], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[EndDate] AS [EndDate], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[Cost] AS [Cost], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[TacticBudget] AS [TacticBudget], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[Status] AS [Status], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[CreatedDate] AS [CreatedDate], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[ModifiedDate] AS [ModifiedDate], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[IsDeleted] AS [IsDeleted], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[IsDeployedToIntegration] AS [IsDeployedToIntegration], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[IntegrationInstanceTacticId] AS [IntegrationInstanceTacticId], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[LastSyncDate] AS [LastSyncDate], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[ProjectedStageValue] AS [ProjectedStageValue], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[StageId] AS [StageId], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[TacticCustomName] AS [TacticCustomName], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[IntegrationWorkFrontProjectID] AS [IntegrationWorkFrontProjectID], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[IntegrationInstanceEloquaId] AS [IntegrationInstanceEloquaId], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[LinkedTacticId] AS [LinkedTacticId], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[LinkedPlanId] AS [LinkedPlanId], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[IsSyncSalesForce] AS [IsSyncSalesForce], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[IsSyncEloqua] AS [IsSyncEloqua], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[IsSyncWorkFront] AS [IsSyncWorkFront], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[CreatedBy] AS [CreatedBy], 
-[Plan_Campaign_Program_Tactic_BKP_15Feb2015].[ModifiedBy] AS [ModifiedBy]
-FROM [dbo].[Plan_Campaign_Program_Tactic_BKP_15Feb2015] AS [Plan_Campaign_Program_Tactic_BKP_15Feb2015]</DefiningQuery>
-          </EntitySet>
           <EntitySet Name="Versioning" EntityType="Self.Versioning" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
 [Versioning].[Id] AS [Id], 
@@ -4958,6 +4914,7 @@ FROM [dbo].[Versioning] AS [Versioning]</DefiningQuery>
 [vClientWise_EntityList].[ClientId] AS [ClientId], 
 [vClientWise_EntityList].[Entity] AS [Entity], 
 [vClientWise_EntityList].[CreatedDate] AS [CreatedDate], 
+[vClientWise_EntityList].[PlanTitle] AS [PlanTitle], 
 [vClientWise_EntityList].[EntityOrder] AS [EntityOrder]
 FROM [dbo].[vClientWise_EntityList] AS [vClientWise_EntityList]</DefiningQuery>
           </EntitySet>
@@ -4972,8 +4929,8 @@ FROM [dbo].[vClientWise_EntityList] AS [vClientWise_EntityList]</DefiningQuery>
 [vClientWise_Tactic].[LastModifiedDate] AS [LastModifiedDate], 
 [vClientWise_Tactic].[IsDeleted] AS [IsDeleted], 
 [vClientWise_Tactic].[MediaCode] AS [MediaCode], 
-[vClientWise_Tactic].[CreatedBy] AS [CreatedBy], 
 [vClientWise_Tactic].[LastModifiedBy] AS [LastModifiedBy], 
+[vClientWise_Tactic].[CreatedBy] AS [CreatedBy], 
 [vClientWise_Tactic].[ClientId] AS [ClientId]
 FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           </EntitySet>
@@ -5176,6 +5133,10 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <AssociationSet Name="FK_ImprovementTacticType_ImprovementTacticType" Association="Self.FK_ImprovementTacticType_ImprovementTacticType">
             <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
             <End Role="ImprovementTacticType1" EntitySet="ImprovementTacticType" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ImprovementTacticType_Metric_ImprovementTacticType" Association="Self.FK_ImprovementTacticType_Metric_ImprovementTacticType">
+            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
+            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
           </AssociationSet>
           <AssociationSet Name="FK_ImprovementTacticType_Metric_Stage" Association="Self.FK_ImprovementTacticType_Metric_Stage">
             <End Role="Stage" EntitySet="Stage" />
@@ -5553,8 +5514,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="FK_TacticType_ModelId" Association="Self.FK_TacticType_ModelId">
-            <End Role="Model" EntitySet="Model" />
+          <AssociationSet Name="FK_TacticType_Stage" Association="Self.FK_TacticType_Stage">
+            <End Role="Stage" EntitySet="Stage" />
             <End Role="TacticType" EntitySet="TacticType" />
           </AssociationSet>
           <AssociationSet Name="FK_TacticType_TacticType_WorkFrontTemplateId" Association="Self.FK_TacticType_TacticType_WorkFrontTemplateId">
@@ -5606,11 +5567,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="BudgetDetailId" Mode="In" Type="Int32" />
             <Parameter Name="ClientId" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="GetCollaboratorId" ReturnType="Collection(MRPModel.GetCollaboratorId_Result)">
-          <Parameter Name="PlanId" Mode="In" Type="Int32" />
-          </FunctionImport>
           <FunctionImport Name="DeleteLastViewedData">
-            <Parameter Name="UserId" Mode="In" Type="String" />
+            <Parameter Name="UserId" Mode="In" Type="Int32" />
             <Parameter Name="PreviousIds" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="PublishModel">
@@ -5681,7 +5639,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="ViewByValue" Mode="In" Type="String" />
             <Parameter Name="SubDashboardOtherDimensionTable" Mode="In" Type="Int32" />
             <Parameter Name="SubDashboardMainDimensionTable" Mode="In" Type="Int32" />
-            <Parameter Name="UserId" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
             <Parameter Name="RoleId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="CorrelationCalculation">
@@ -5790,7 +5748,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="BudgetId" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="GetClientEntityList" ReturnType="Collection(MRPModel.GetClientEntityList_Result)">
-          <Parameter Name="ClientId" Mode="In" Type="String" />
+          <Parameter Name="ClientId" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="GetCustomDashboardsClientwise">
             <Parameter Name="UserId" Mode="In" Type="Int32" />
@@ -5799,7 +5757,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <FunctionImport Name="GetCustomFieldEntityList" ReturnType="Collection(MRPModel.GetCustomFieldEntityList_Result)">
             <Parameter Name="CustomTypeId" Mode="In" Type="Int32" />
             <Parameter Name="EntityType" Mode="In" Type="String" />
-            <Parameter Name="ClientId" Mode="In" Type="String" />
+            <Parameter Name="ClientId" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="GetDashboardContent">
             <Parameter Name="HomepageId" Mode="In" Type="Int32" />
@@ -5808,7 +5766,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="UserId" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="GetDashboardContentData" ReturnType="Collection(MRPModel.GetDashboardContentData_Result)">
-            <Parameter Name="UserId" Mode="In" Type="String" />
+            <Parameter Name="UserId" Mode="In" Type="Int32" />
             <Parameter Name="DashboardID" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="GetDimensions" IsComposable="true" ReturnType="Collection(MRPModel.GetDimensions_Result)">
@@ -5846,7 +5804,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="DateField" Mode="In" Type="String" />
             <Parameter Name="FilterValues" Mode="In" Type="String" />
             <Parameter Name="ViewByValue" Mode="In" Type="String" />
-            <Parameter Name="UserId" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
             <Parameter Name="RoleId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="GetLineItemList" ReturnType="Collection(MRPModel.GetLineItemList_Result)">
@@ -5928,7 +5886,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="ViewByValue" Mode="In" Type="String" />
             <Parameter Name="SubDashboardOtherDimensionTable" Mode="In" Type="Int32" />
             <Parameter Name="SubDashboardMainDimensionTable" Mode="In" Type="Int32" />
-            <Parameter Name="UserId" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
             <Parameter Name="RoleId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="IdentifyDimensions" IsComposable="true" ReturnType="Collection(MRPModel.IdentifyDimensions_Result)">
@@ -5939,13 +5897,13 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <FunctionImport Name="ImportMarketingBudgetMonthly">
             <Parameter Name="XMLData" Mode="In" Type="String" />
             <Parameter Name="clientId" Mode="In" Type="Int32" />
-            <Parameter Name="UserId" Mode="In" Type="String" />
+            <Parameter Name="UserId" Mode="In" Type="Int32" />
             <Parameter Name="BudgetDetailId" Mode="In" Type="Int64" />
           </FunctionImport>
           <FunctionImport Name="ImportMarketingBudgetQuarter">
             <Parameter Name="XMLData" Mode="In" Type="String" />
             <Parameter Name="clientId" Mode="In" Type="Int32" />
-            <Parameter Name="UserId" Mode="In" Type="String" />
+            <Parameter Name="UserId" Mode="In" Type="Int32" />
             <Parameter Name="BudgetDetailId" Mode="In" Type="Int64" />
           </FunctionImport>
           <FunctionImport Name="InteractionBasedAttrCalc">
@@ -5972,7 +5930,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <FunctionImport Name="NightlyRefreshDatabase" />
           <FunctionImport Name="Plan_Budget_Cost_Actual_Detail" ReturnType="Collection(MRPModel.Plan_Budget_Cost_Actual_Detail_Result)">
             <Parameter Name="PlanId" Mode="In" Type="Int32" />
-            <Parameter Name="UserId" Mode="In" Type="String" />
+            <Parameter Name="UserId" Mode="In" Type="Int32" />
             <Parameter Name="SelectedTab" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="PopulateDynamicColumns">
@@ -6005,7 +5963,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="SubDashboardOtherDimensionTable" Mode="In" Type="Int32" />
             <Parameter Name="SubDashboardMainDimensionTable" Mode="In" Type="Int32" />
             <Parameter Name="DisplayStatSignificance" Mode="In" Type="String" />
-            <Parameter Name="UserId" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
             <Parameter Name="RoleId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="RunAggregation">
@@ -6055,9 +6013,10 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="Frequency" Mode="In" Type="String" />
             <Parameter Name="DayOfWeek" Mode="In" Type="Byte" />
             <Parameter Name="DateOfMonth" Mode="In" Type="Byte" />
-            <Parameter Name="UserId" Mode="In" Type="String" />
-            <Parameter Name="CreatedBy" Mode="In" Type="Int32" />
-            <Parameter Name="ModifiedBy" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="In" Type="Int32" />
+            <Parameter Name="CreatedBy" Mode="In" Type="String" />
+            <Parameter Name="ModifiedBy" Mode="In" Type="String" />
+            <Parameter Name="UserEmail" Mode="In" Type="String" />
             <Parameter Name="IsExists" Mode="InOut" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="spGetMarketoData">
@@ -6083,6 +6042,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <FunctionImport Name="spViewByDropDownList" ReturnType="Collection(MRPModel.spViewByDropDownList_Result)">
             <Parameter Name="PlanId" Mode="In" Type="String" />
             <Parameter Name="ClientId" Mode="In" Type="String" />
+            <Parameter Name="UserId" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="StatisticallyInferredAttribution">
             <Parameter Name="StartDate" Mode="In" Type="DateTime" />
@@ -6142,8 +6102,8 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           </FunctionImport>
           <FunctionImport Name="PullResponses">
             <Parameter Name="DataSource" Mode="In" Type="String" />
-            <Parameter Name="ClientID" Mode="In" Type="String" />
-            <Parameter Name="UserID" Mode="In" Type="String" />
+            <Parameter Name="ClientID" Mode="In" Type="Int32" />
+            <Parameter Name="UserID" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="AggregationProcessLogs" EntityType="MRPModel.AggregationProcessLog" />
           <EntitySet Name="Alert_Rules" EntityType="MRPModel.Alert_Rules" />
@@ -6282,7 +6242,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySet Name="CustomFieldDependency_Temp" EntityType="MRPModel.CustomFieldDependency_Temp" />
           <EntitySet Name="DynamicDimensions" EntityType="MRPModel.DynamicDimension" />
           <EntitySet Name="Loggings" EntityType="MRPModel.Logging" />
-          <EntitySet Name="Plan_Campaign_Program_Tactic_BKP_15Feb2015" EntityType="MRPModel.Plan_Campaign_Program_Tactic_BKP_15Feb2015" />
           <EntitySet Name="Versionings" EntityType="MRPModel.Versioning" />
           <EntitySet Name="vClientWise_EntityList" EntityType="MRPModel.vClientWise_EntityList" />
           <EntitySet Name="vClientWise_Tactic" EntityType="MRPModel.vClientWise_Tactic" />
@@ -6882,25 +6841,19 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <End Role="Model" EntitySet="Models" />
             <End Role="TacticType" EntitySet="TacticTypes" />
           </AssociationSet>
+          <AssociationSet Name="FK_ImprovementTacticType_Metric_ImprovementTacticType" Association="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType">
+            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
+            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TacticType_Stage" Association="MRPModel.FK_TacticType_Stage">
+            <End Role="Stage" EntitySet="Stages" />
+            <End Role="TacticType" EntitySet="TacticTypes" />
+          </AssociationSet>
+          <EntitySet Name="User_CoulmnView" EntityType="MRPModel.User_CoulmnView" />
+          <FunctionImport Name="GetCollaboratorId" ReturnType="Collection(MRPModel.GetCollaboratorId_Result)">
+            <Parameter Name="PlanId" Mode="In" Type="Int32" />
+          </FunctionImport>
           </EntityContainer>
-        <ComplexType Name="GetCollaboratorId1_Result">
-          <Property Type="Int32" Name="PlanTacticCommentId" Nullable="false" />
-          <Property Type="Int32" Name="PlanTacticId" Nullable="true" />
-          <Property Type="String" Name="Comment" Nullable="false" MaxLength="4000" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="Int32" Name="PlanProgramId" Nullable="true" />
-          <Property Type="Int32" Name="PlanCampaignId" Nullable="true" />
-        </ComplexType>
-        <ComplexType Name="GetCollaboratorId_Result">
-          <Property Type="Int32" Name="PlanTacticCommentId" Nullable="false" />
-          <Property Type="Int32" Name="PlanTacticId" Nullable="true" />
-          <Property Type="String" Name="Comment" Nullable="false" MaxLength="4000" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="Int32" Name="PlanProgramId" Nullable="true" />
-          <Property Type="Int32" Name="PlanCampaignId" Nullable="true" />
-        </ComplexType>
         <EntityType Name="Dimension">
           <Key>
             <PropertyRef Name="id" />
@@ -7245,6 +7198,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="CreatedBy" Type="Int32" Nullable="false" />
           <Property Name="ModifiedBy" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Alerts" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert_Rules" ToRole="Alert" />
+          <Property Name="UserEmail" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Alert">
           <Key>
@@ -7259,6 +7213,9 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="DisplayDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Alert_Rules" Relationship="MRPModel.FK_Alerts_Alert_Rules" FromRole="Alert" ToRole="Alert_Rules" />
+          <Property Name="IsEmailSent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CurrentGoal" Type="Double" />
+          <Property Name="ActualGoal" Type="Double" />
         </EntityType>
         <EntityType Name="BestInClass">
           <Key>
@@ -7894,6 +7851,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="ImprovementTacticType1" Relationship="MRPModel.FK_ImprovementTacticType_ImprovementTacticType" FromRole="ImprovementTacticType" ToRole="ImprovementTacticType1" />
           <NavigationProperty Name="ImprovementTacticType2" Relationship="MRPModel.FK_ImprovementTacticType_ImprovementTacticType" FromRole="ImprovementTacticType1" ToRole="ImprovementTacticType" />
           <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" FromRole="ImprovementTacticType" ToRole="Plan_Improvement_Campaign_Program_Tactic" />
+          <NavigationProperty Name="ImprovementTacticType_Metric" Relationship="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" FromRole="ImprovementTacticType" ToRole="ImprovementTacticType_Metric" />
         </EntityType>
         <EntityType Name="ImprovementTacticType_Metric">
           <Key>
@@ -7908,6 +7866,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="StageType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="CreatedBy" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.FK_ImprovementTacticType_Metric_Stage" FromRole="ImprovementTacticType_Metric" ToRole="Stage" />
+          <NavigationProperty Name="ImprovementTacticType" Relationship="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" FromRole="ImprovementTacticType_Metric" ToRole="ImprovementTacticType" />
         </EntityType>
         <EntityType Name="IntegrationInstance">
           <Key>
@@ -9093,6 +9052,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="ImprovementTacticType_Metric" Relationship="MRPModel.FK_ImprovementTacticType_Metric_Stage" FromRole="Stage" ToRole="ImprovementTacticType_Metric" />
           <NavigationProperty Name="Model_Stage" Relationship="MRPModel.FK_Model_Category_Stage_Stage" FromRole="Stage" ToRole="Model_Stage" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" FromRole="Stage" ToRole="Plan_Campaign_Program_Tactic" />
+          <NavigationProperty Name="TacticTypes" Relationship="MRPModel.FK_TacticType_Stage" FromRole="Stage" ToRole="TacticType" />
         </EntityType>
         <EntityType Name="SyncFrequency">
           <Key>
@@ -9178,6 +9138,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="IntegrationWorkFrontTemplate" Relationship="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId" FromRole="TacticType" ToRole="IntegrationWorkFrontTemplate" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Model" Relationship="MRPModel.FK_TacticType_ModelId" FromRole="TacticType" ToRole="Model" />
+          <NavigationProperty Name="Stage" Relationship="MRPModel.FK_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -9345,53 +9306,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="Plan_Campaign_Program_Tactic_BKP_15Feb2015">
-          <Key>
-            <PropertyRef Name="PlanTacticId" />
-            <PropertyRef Name="PlanProgramId" />
-            <PropertyRef Name="TacticTypeId" />
-            <PropertyRef Name="Title" />
-            <PropertyRef Name="StartDate" />
-            <PropertyRef Name="EndDate" />
-            <PropertyRef Name="Cost" />
-            <PropertyRef Name="TacticBudget" />
-            <PropertyRef Name="Status" />
-            <PropertyRef Name="CreatedDate" />
-            <PropertyRef Name="IsDeleted" />
-            <PropertyRef Name="IsDeployedToIntegration" />
-            <PropertyRef Name="StageId" />
-            <PropertyRef Name="CreatedBy" />
-            <PropertyRef Name="ModifiedBy" />
-          </Key>
-          <Property Name="PlanTacticId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PlanProgramId" Type="Int32" Nullable="false" />
-          <Property Name="TacticTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Title" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="false" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Cost" Type="Double" Nullable="false" />
-          <Property Name="TacticBudget" Type="Double" Nullable="false" />
-          <Property Name="Status" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
-          <Property Name="IsDeployedToIntegration" Type="Boolean" Nullable="false" />
-          <Property Name="IntegrationInstanceTacticId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="LastSyncDate" Type="DateTime" Precision="3" />
-          <Property Name="ProjectedStageValue" Type="Double" />
-          <Property Name="StageId" Type="Int32" Nullable="false" />
-          <Property Name="TacticCustomName" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Name="IntegrationWorkFrontProjectID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="IntegrationInstanceEloquaId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="LinkedTacticId" Type="Int32" />
-          <Property Name="LinkedPlanId" Type="Int32" />
-          <Property Name="IsSyncSalesForce" Type="Boolean" />
-          <Property Name="IsSyncEloqua" Type="Boolean" />
-          <Property Name="IsSyncWorkFront" Type="Boolean" />
-          <Property Name="CreatedBy" Type="Int32" Nullable="false" />
-          <Property Name="ModifiedBy" Type="Int32" Nullable="false" />
-        </EntityType>
         <EntityType Name="Versioning">
           <Key>
             <PropertyRef Name="Id" />
@@ -9409,6 +9323,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <PropertyRef Name="Entity" />
             <PropertyRef Name="CreatedDate" />
             <PropertyRef Name="EntityOrder" />
+            <PropertyRef Name="PlanTitle" />
           </Key>
           <Property Name="EntityId" Type="Int32" Nullable="false" />
           <Property Name="EntityTitle" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
@@ -9416,6 +9331,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Name="Entity" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="false" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EntityOrder" Type="Int32" Nullable="false" />
+          <Property Name="PlanTitle" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="vClientWise_Tactic">
           <Key>
@@ -11228,6 +11144,53 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_ImprovementTacticType_Metric_ImprovementTacticType">
+          <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
+          <End Type="MRPModel.ImprovementTacticType_Metric" Role="ImprovementTacticType_Metric" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ImprovementTacticType">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Principal>
+            <Dependent Role="ImprovementTacticType_Metric">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TacticType_Stage">
+          <End Type="MRPModel.Stage" Role="Stage" Multiplicity="0..1" />
+          <End Type="MRPModel.TacticType" Role="TacticType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
+            </Principal>
+            <Dependent Role="TacticType">
+              <PropertyRef Name="StageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="User_CoulmnView">
+          <Key>
+            <PropertyRef Name="ViewId" />
+          </Key>
+          <Property Name="ViewId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ViewName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifyDate" Type="DateTime" Precision="3" />
+          <Property Name="IsDefault" Type="Boolean" />
+          <Property Name="GridAttribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="BudgetAttribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="Int32" Nullable="false" />
+          <Property Name="ModifyBy" Type="Int32" Nullable="false" />
+        </EntityType>
+        <ComplexType Name="GetCollaboratorId_Result">
+          <Property Type="Int32" Name="PlanTacticCommentId" Nullable="false" />
+          <Property Type="Int32" Name="PlanTacticId" Nullable="true" />
+          <Property Type="String" Name="Comment" Nullable="false" MaxLength="4000" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="PlanProgramId" Nullable="true" />
+          <Property Type="Int32" Name="PlanCampaignId" Nullable="true" />
+          <Property Type="Int32" Name="CreatedBy" Nullable="false" />
+        </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -11238,19 +11201,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <FunctionImportMapping FunctionImportName="ELMAH_GetErrorXml" FunctionName="MRPModel.Store.ELMAH_GetErrorXml" />
           <FunctionImportMapping FunctionImportName="ELMAH_LogError" FunctionName="MRPModel.Store.ELMAH_LogError" />
           <FunctionImportMapping FunctionImportName="DeleteBudget" FunctionName="MRPModel.Store.DeleteBudget" />
-          <FunctionImportMapping FunctionImportName="GetCollaboratorId" FunctionName="MRPModel.Store.GetCollaboratorId">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="MRPModel.GetCollaboratorId_Result">
-                <ScalarProperty Name="PlanTacticCommentId" ColumnName="PlanTacticCommentId" />
-                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
-                <ScalarProperty Name="Comment" ColumnName="Comment" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
-                <ScalarProperty Name="PlanCampaignId" ColumnName="PlanCampaignId" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="DeleteLastViewedData" FunctionName="MRPModel.Store.DeleteLastViewedData" />
           <FunctionImportMapping FunctionImportName="PublishModel" FunctionName="MRPModel.Store.PublishModel" />
           <FunctionImportMapping FunctionImportName="SaveuserBudgetPermission" FunctionName="MRPModel.Store.SaveuserBudgetPermission" />
@@ -11732,6 +11682,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="Alert_Rules">
             <EntityTypeMapping TypeName="MRPModel.Alert_Rules">
               <MappingFragment StoreEntitySet="Alert_Rules">
+                <ScalarProperty Name="UserEmail" ColumnName="UserEmail" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
@@ -11758,6 +11709,9 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="Alerts">
             <EntityTypeMapping TypeName="MRPModel.Alert">
               <MappingFragment StoreEntitySet="Alerts">
+                <ScalarProperty Name="ActualGoal" ColumnName="ActualGoal" />
+                <ScalarProperty Name="CurrentGoal" ColumnName="CurrentGoal" />
+                <ScalarProperty Name="IsEmailSent" ColumnName="IsEmailSent" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="DisplayDate" ColumnName="DisplayDate" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
@@ -13675,40 +13629,6 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Plan_Campaign_Program_Tactic_BKP_15Feb2015">
-            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic_BKP_15Feb2015">
-              <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic_BKP_15Feb2015">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="IsSyncWorkFront" ColumnName="IsSyncWorkFront" />
-                <ScalarProperty Name="IsSyncEloqua" ColumnName="IsSyncEloqua" />
-                <ScalarProperty Name="IsSyncSalesForce" ColumnName="IsSyncSalesForce" />
-                <ScalarProperty Name="LinkedPlanId" ColumnName="LinkedPlanId" />
-                <ScalarProperty Name="LinkedTacticId" ColumnName="LinkedTacticId" />
-                <ScalarProperty Name="IntegrationInstanceEloquaId" ColumnName="IntegrationInstanceEloquaId" />
-                <ScalarProperty Name="IntegrationWorkFrontProjectID" ColumnName="IntegrationWorkFrontProjectID" />
-                <ScalarProperty Name="TacticCustomName" ColumnName="TacticCustomName" />
-                <ScalarProperty Name="StageId" ColumnName="StageId" />
-                <ScalarProperty Name="ProjectedStageValue" ColumnName="ProjectedStageValue" />
-                <ScalarProperty Name="LastSyncDate" ColumnName="LastSyncDate" />
-                <ScalarProperty Name="IntegrationInstanceTacticId" ColumnName="IntegrationInstanceTacticId" />
-                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="TacticBudget" ColumnName="TacticBudget" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="TacticTypeId" ColumnName="TacticTypeId" />
-                <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
-                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Versionings">
             <EntityTypeMapping TypeName="MRPModel.Versioning">
               <MappingFragment StoreEntitySet="Versioning">
@@ -13722,6 +13642,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <EntitySetMapping Name="vClientWise_EntityList">
             <EntityTypeMapping TypeName="MRPModel.vClientWise_EntityList">
               <MappingFragment StoreEntitySet="vClientWise_EntityList">
+                <ScalarProperty Name="PlanTitle" ColumnName="PlanTitle" />
                 <ScalarProperty Name="EntityOrder" ColumnName="EntityOrder" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="Entity" ColumnName="Entity" />
@@ -13749,6 +13670,34 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="User_CoulmnView">
+            <EntityTypeMapping TypeName="MRPModel.User_CoulmnView">
+              <MappingFragment StoreEntitySet="User_CoulmnView">
+                <ScalarProperty Name="ModifyBy" ColumnName="ModifyBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="BudgetAttribute" ColumnName="BudgetAttribute" />
+                <ScalarProperty Name="GridAttribute" ColumnName="GridAttribute" />
+                <ScalarProperty Name="IsDefault" ColumnName="IsDefault" />
+                <ScalarProperty Name="ModifyDate" ColumnName="ModifyDate" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="ViewName" ColumnName="ViewName" />
+                <ScalarProperty Name="ViewId" ColumnName="ViewId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetCollaboratorId" FunctionName="MRPModel.Store.GetCollaboratorId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="MRPModel.GetCollaboratorId_Result">
+                <ScalarProperty Name="PlanTacticCommentId" ColumnName="PlanTacticCommentId" />
+                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
+                <ScalarProperty Name="PlanCampaignId" ColumnName="PlanCampaignId" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
