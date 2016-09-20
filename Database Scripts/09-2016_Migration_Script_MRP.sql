@@ -123,13 +123,13 @@ END
 GO
 
 ALTER PROCEDURE [dbo].[sp_GetCustomFieldList]
-@ClientId INT = 0
+@ClientId INT 
 AS
 BEGIN
 SET NOCOUNT ON;
 
 Declare @CustomfieldType int
-set @CustomfieldType=(select CustomFieldTypeId from CustomFieldType where Name='DropDownList')
+set @CustomfieldType=(select TOP 1 CustomFieldTypeId from CustomFieldType where Name='DropDownList')
 
 SELECT distinct CustomField.CustomFieldId,CustomField.Name,CustomField.IsRequired,case when  CustomField.EntityType='LineItem' then 'Line Item' else CustomField.EntityType end as EntityType,ISnull(CustomFieldDependency.ParentCustomFieldId,0) as ParentId ,CustomFieldType.Name as CustomFieldType,
 case when  CustomField.EntityType='Campaign' then 1
