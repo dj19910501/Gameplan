@@ -1673,6 +1673,504 @@ GO
 -- End By Nishant Sheth
 
 
+/* Start - Added by Dhvani Raval for Ticket #2534*/
+-----------------------* Add Columns in Tables *-----------------------
+--Add Column in Alert Rule Table
+IF Not EXISTS(SELECT * FROM sys.columns WHERE Name = N'UserEmail' AND Object_ID = Object_ID(N'Alert_Rules'))
+BEGIN
+  ALTER TABLE Alert_Rules  Add UserEmail NVARCHAR(255)
+END
+GO
+
+--Add Columns in Alert Table 
+IF Not EXISTS(SELECT * FROM sys.columns WHERE Name = N'IsEmailSent' AND Object_ID = Object_ID(N'Alerts'))
+BEGIN
+  ALTER TABLE Alerts  Add IsEmailSent NVARCHAR(50)
+END
+GO
+
+IF Not EXISTS(SELECT * FROM sys.columns WHERE Name = N'CurrentGoal' AND Object_ID = Object_ID(N'Alerts'))
+BEGIN
+  ALTER TABLE Alerts  Add CurrentGoal FLOAT
+END
+GO
+
+IF Not EXISTS(SELECT * FROM sys.columns WHERE Name = N'ActualGoal' AND Object_ID = Object_ID(N'Alerts'))
+BEGIN
+  ALTER TABLE Alerts  Add ActualGoal FLOAT
+END
+GO
+
+-----------------------*SP RunAlertRules *-----------------------
+
+IF EXISTS( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'RunAlertRules') AND type IN ( N'P', N'PC' ) )
+BEGIN
+	DROP PROCEDURE dbo.RunAlertRules
+END
+GO
+
+/****** Object:  StoredProcedure [dbo].[RunAlertRules]    Script Date: 9/17/2016 5:23:06 PM ******/
+CREATE PROCEDURE [dbo].[RunAlertRules]
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	BEGIN TRY
+		-- Constant variables
+		DECLARE @txtLessThan	NVARCHAR(20) = 'less than',
+				@txtGreaterThan NVARCHAR(20) = 'greater than',
+				@txtEqualTo		NVARCHAR(20) = 'equal to'
+
+		DECLARE @TacticsDataForRules			NVARCHAR(MAX) = '',
+				@UPDATEQUERYCOMMON				NVARCHAR(MAX) = '',
+				@UpdatePlanQuery				NVARCHAR(MAX) = '',
+				@UpdateProjectedValuesForPlan	NVARCHAR(MAX) = '',
+				@UpdateCampaignQuery			NVARCHAR(MAX) = '',
+				@UpdateProgramQuery				NVARCHAR(MAX) = '',
+				@UpdateTacticQuery				NVARCHAR(MAX) = '',
+				@UpdateLineItemQuery			NVARCHAR(MAX) = '',
+				@CalculatePercentGoalQuery		NVARCHAR(MAX) = '',
+				@INSERTALERTQUERYCOMMON			NVARCHAR(MAX) = '',
+				@InsertQueryForLT				NVARCHAR(MAX) = '',
+				@InsertQueryForGT				NVARCHAR(MAX) = '',
+				@InsertQueryForEQ				NVARCHAR(MAX) = '',
+				@CommonQueryToIgnoreDuplicate	NVARCHAR(MAX) = '',
+				@EmailBody	NVARCHAR(MAX) = '',
+				@EmailSubject	NVARCHAR(MAX) = ''
+				
+
+		-- Get projected and actual values of tactic belongs to plan/campaign/program
+		SET @TacticsDataForRules = 'DECLARE @TempEntityTable [TacticForRuleEntities];
+
+									-- Get entities from the rule which have reached the completion goal
+									INSERT INTO @TempEntityTable([RuleId],[EntityId],[EntityType],[Indicator],[IndicatorComparision],[IndicatorGoal],[CompletionGoal],
+																 [Frequency],[DayOfWeek],[DateOfMonth],[UserId],[ClientId],
+																 [EntityTitle],[StartDate],[EndDate],[PercentComplete]) 
+									SELECT Entity.* FROM dbo.GetEntitiesReachedCompletionGoal() Entity 
+									WHERE Entity.PercentComplete >= Entity.CompletionGoal
+
+									-- Table with projected and actual values of tactic belongs to plan/campaign/program
+									SELECT * INTO #TacticsDataForAllRuleEntities FROM dbo.[GetTacticsForAllRuleEntities](@TempEntityTable)
+									'
+		
+		-- Common query to update projected and actual values of indicators for entities
+		SET @UPDATEQUERYCOMMON =  ';	UPDATE A SET A.ProjectedStageValue = ISNULL(B.ProjectedStageValue,0), A.ActualStageValue = ISNULL(B.ActualStageValue,0)
+										FROM @TempEntityTable A INNER JOIN  
+										#TacticsDataForAllRuleEntities B
+										ON A.EntityId = B.EntityId AND A.EntityType = B.EntityType AND A.Indicator = B.Indicator
+										'
+		-- Update IndicatorTitle based on Indicator Code
+		DECLARE @UpdateIndicatorTitle NVARCHAR(MAX) = ' 
+														UPDATE A SET A.IndicatorTitle = dbo.GetIndicatorTitle(A.Indicator,B.ClientId,A.EntityType)
+														FROM @TempEntityTable A 
+														INNER JOIN vClientWise_EntityList B ON A.EntityId = B.EntityId AND A.EntityType = B.Entity
+														'
+
+		-- For plan update projected value using different calculation rest of PLANNEDCOST
+		SET @UpdateProjectedValuesForPlan = ';  UPDATE A SET A.ProjectedStageValue = ISNULL(B.ProjectedStageValue,0)
+												FROM @TempEntityTable A INNER JOIN
+												[dbo].[ProjectedValuesForPlans](@TempEntityTable) B ON A.EntityId = B.PlanId  
+												AND A.Indicator = B.Indicator AND A.EntityType = ''Plan''
+												AND A.Indicator != ''PLANNEDCOST''
+												'
+		-- Convert percent of goal from Projected and Actual values
+		SET @CalculatePercentGoalQuery = ' UPDATE @TempEntityTable SET CalculatedPercentGoal = 
+											CASE WHEN ProjectedStageValue = 0 AND ISNULL(ActualStageValue,0) = 0 THEN 0 
+												 WHEN (ProjectedStageValue = 0 AND ISNULL(ActualStageValue,0) != 0) THEN 100 
+												 ELSE ISNULL(ActualStageValue,0) * 100 / ProjectedStageValue END ;
+										   SELECT * FROM @TempEntityTable 
+										   '
+		-- Common query to create alerts
+		SET @INSERTALERTQUERYCOMMON = '	SELECT RuleId, ##DESCRIPTION## AS [Description], UserId,
+										(CASE WHEN Frequency = ''WEEKLY'' THEN
+											DATEADD(DAY,
+											CASE WHEN DATEDIFF(DAY,DATEPART(dw,GETDATE()),DayOfWeek+1) < 0 THEN
+												DATEDIFF(DAY,DATEPART(dw,GETDATE()),DayOfWeek + 1) + 7
+											ELSE 
+												DATEDIFF(DAY,DATEPART(dw,GETDATE()),DayOfWeek + 1) END
+											,GETDATE()) 
+										WHEN Frequency = ''MONTHLY'' THEN
+											CASE WHEN DATEDIFF(DAY,DATEPART(DAY,GETDATE()),DateOfMonth) < 0 THEN
+												DATEADD(MONTH,1,DATEADD(DAY,DATEDIFF(DAY,DATEPART(DAY,GETDATE()),DateOfMonth),GETDATE()))
+											ELSE 
+												DATEADD(DAY,DATEDIFF(DAY,DATEPART(DAY,GETDATE()),DateOfMonth),GETDATE())  END
+										ELSE GETDATE() END ) AS DisplayDate,  ProjectedStageValue , ActualStageValue
+										FROM @TempEntityTable '
+
+		-- For less than rule
+		DECLARE @LessThanWhere		NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal < IndicatorGoal AND IndicatorComparision = ''LT'' AND 
+															(ISNULL(ProjectedStageValue,0) != 0 OR ISNULL(ActualStageValue,0) != 0) '
+		-- For greater than rule
+		DECLARE @GreaterThanWhere	NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal > IndicatorGoal AND IndicatorComparision = ''GT'' AND 
+															(ISNULL(ProjectedStageValue,0) != 0 OR ISNULL(ActualStageValue,0) != 0) '
+		-- For equal to rule
+		DECLARE @EqualToWhere		NVARCHAR(MAX) = ' WHERE CalculatedPercentGoal = IndicatorGoal AND IndicatorComparision = ''EQ'' AND 
+															(ISNULL(ProjectedStageValue,0) != 0 OR ISNULL(ActualStageValue,0) != 0) '
+
+		SET @InsertQueryForLT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtLessThan +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @LessThanWhere
+		SET @InsertQueryForGT = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtGreaterThan +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @GreaterThanWhere
+		SET @InsertQueryForEQ = REPLACE(@INSERTALERTQUERYCOMMON, '##DESCRIPTION##', ' EntityTitle +''''''s ''+ IndicatorTitle +'' is ' + @txtEqualTo +' '' + CAST(IndicatorGoal AS NVARCHAR) + ''% of the goal'' ' ) + @EqualToWhere
+
+    
+
+		SET @CommonQueryToIgnoreDuplicate = '	MERGE INTO [dbo].Alerts AS T1
+												USING
+												(##INSERTQUERY##) AS T2
+												ON (T2.RuleId = T1.RuleId AND T2.Description = T1.Description AND T2.UserId = T1.UserId)
+												WHEN NOT MATCHED THEN  
+												INSERT ([RuleId],[Description],[UserId],[DisplayDate],[CurrentGoal],[ActualGoal])
+												VALUES ([RuleId],[Description],[UserId],[DisplayDate],[ActualStageValue],[ProjectedStageValue]);'
+ 
+		SET @InsertQueryForLT = REPLACE(@CommonQueryToIgnoreDuplicate, '##INSERTQUERY##', @InsertQueryForLT)
+		SET @InsertQueryForGT = REPLACE(@CommonQueryToIgnoreDuplicate, '##INSERTQUERY##', @InsertQueryForGT)
+		SET @InsertQueryForEQ = REPLACE(@CommonQueryToIgnoreDuplicate, '##INSERTQUERY##', @InsertQueryForEQ)
+		
+		EXEC (@TacticsDataForRules + @UPDATEQUERYCOMMON + @UpdateIndicatorTitle + @UpdateProjectedValuesForPlan + 
+				@CalculatePercentGoalQuery + @InsertQueryForLT + @InsertQueryForGT +@InsertQueryForEQ)
+		
+	END TRY
+	BEGIN CATCH
+		--Get the details of the error
+		 DECLARE   @ErMessage NVARCHAR(2048),
+				   @ErSeverity INT,
+				   @ErState INT
+ 
+		 SELECT @ErMessage = ERROR_MESSAGE(), @ErSeverity = ERROR_SEVERITY(), @ErState = ERROR_STATE()
+ 
+		 RAISERROR (@ErMessage, @ErSeverity, @ErState)
+	END CATCH 
+END
+GO
+
+
+
+
+-----------------------*SP SP_Save_AlertRule *-----------------------
+
+IF EXISTS( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'SP_Save_AlertRule') AND type IN ( N'P', N'PC' ) )
+BEGIN
+	DROP PROCEDURE [dbo].[SP_Save_AlertRule]
+END
+GO
+
+CREATE PROCEDURE [dbo].[SP_Save_AlertRule]
+
+	@ClientId NVARCHAR(255)  ,
+	@RuleId int,
+	@RuleSummary nvarchar(max),
+	@EntityId int,
+	@EntityType nvarchar(100),
+	@Indicator nvarchar(50),
+	@IndicatorComparision nvarchar(10),
+	@IndicatorGoal int,
+	@CompletionGoal int,
+	@Frequency nvarchar(50),
+	@DayOfWeek tinyint=null,
+	@DateOfMonth tinyint=null,
+	@UserId INT,
+	@CreatedBy NVARCHAR(255),
+	@ModifiedBy  NVARCHAR(255),
+	@UserEmail NVARCHAR(255),
+	@IsExists int Output
+
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	Declare @UniqueRule nvarchar(max)
+	Declare @FrequencyValue nvarchar(100)=null
+	if(@DayOfWeek is not null and @DateOfMonth is null)
+		set @FrequencyValue=@DayOfWeek
+	else if(@DayOfWeek is null and @DateOfMonth is not null)
+		set @FrequencyValue=@DateOfMonth
+
+	set @UniqueRule=CONVERT(nvarchar(15),@EntityId)+'_'+CONVERT(nvarchar(15),@Indicator)+'_'+CONVERT(nvarchar(15),@IndicatorComparision)+'_'+CONVERT(nvarchar(15),@IndicatorGoal)+'_'+CONVERT(nvarchar(15),@CompletionGoal)+'_'+CONVERT(nvarchar(15),@Frequency)
+	if(@FrequencyValue is not null)
+		set @UniqueRule=@UniqueRule+'_'+@FrequencyValue
+	
+	If(@RuleId!=0)
+	Begin --Update existing rule
+		If not exists (Select RuleId from Alert_Rules where ClientId=@ClientId and  RuleId!=@RuleId and UniqueRuleCode=@UniqueRule and UserId = @UserId)
+		Begin
+			Update Alert_Rules set EntityId=@EntityId,EntityType=@EntityType,Indicator=@Indicator,IndicatorComparision=@IndicatorComparision,IndicatorGoal=@IndicatorGoal,
+			CompletionGoal=@CompletionGoal,Frequency=@Frequency,DateOfMonth=@DateOfMonth,DayOfWeek=@DayOfWeek,ModifiedBy=@ModifiedBy,ModifiedDate=GETDATE(),
+			RuleSummary=@RuleSummary,LastProcessingDate=GETDATE(),UniqueRuleCode=@UniqueRule
+			where RuleId=@RuleId
+			set @IsExists=0
+		End
+		Else
+		set @IsExists=1
+	End
+	Else
+	Begin -- Isert new alert rule
+		If not exists (Select RuleId from Alert_Rules where ClientId=@ClientId and UniqueRuleCode=@UniqueRule and UserId = @UserId)
+		Begin
+			Insert into Alert_Rules (RuleSummary,EntityId,EntityType,Indicator,IndicatorComparision,IndicatorGoal,CompletionGoal,Frequency,DayOfWeek,DateOfMonth,LastProcessingDate,
+				UserId,ClientId,IsDisabled,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy,UniqueRuleCode,UserEmail)
+			values(@RuleSummary,@EntityId,@EntityType,@Indicator,@IndicatorComparision,@IndicatorGoal,@CompletionGoal,@Frequency,@DayOfWeek,@DateOfMonth,GETDATE(),
+				@UserId,@ClientId,0,GETDATE(),@CreatedBy,null,null,@UniqueRule,@UserEmail)
+			set @IsExists=0
+		End
+		Else
+		set @IsExists=1
+	End
+	
+END
+GO
+
+-----------------------*View vClientWise_EntityList *-----------------------
+
+IF EXISTS (SELECT 1 FROM sys.views WHERE OBJECT_ID=OBJECT_ID('vClientWise_EntityList'))
+BEGIN
+	DROP view vClientWise_EntityList
+END
+GO
+
+CREATE VIEW [dbo].[vClientWise_EntityList] AS
+WITH AllPlans AS(
+SELECT P.PlanId EntityId, P.Title EntityTitle, M.ClientId, 'Plan' Entity,P.CreatedDate,P.Title as PlanTitle, 1 EntityOrder 
+FROM [Plan] P 
+INNER JOIN Model M ON M.ModelId = P.ModelId AND P.IsDeleted = 0
+WHERE  M.IsDeleted = 0
+),
+AllCampaigns AS
+(
+       SELECT P.PlanCampaignId EntityId, P.Title EntityTitle,C.ClientId, 'Campaign' Entity,P.CreatedDate,C.PlanTitle as PlanTitle, 2 EntityOrder 
+       FROM Plan_Campaign P
+              INNER JOIN AllPlans C ON P.PlanId = C.EntityId 
+       WHERE P.IsDeleted = 0
+),
+AllProgram AS
+(
+       SELECT P.PlanProgramId EntityId, P.Title EntityTitle,C.ClientId, 'Program' Entity,P.CreatedDate, C.PlanTitle as PlanTitle,3 EntityOrder 
+       FROM Plan_Campaign_Program P
+              INNER JOIN AllCampaigns C ON P.PlanCampaignId = C.EntityId 
+       WHERE P.IsDeleted = 0
+),
+AllLinkedTactic as
+(
+SELECT P.LinkedTacticId 
+       FROM Plan_Campaign_Program_Tactic P
+              INNER JOIN AllProgram C ON P.PlanProgramId = C.EntityId 
+       WHERE P.IsDeleted = 0 and P.Status in ('In-Progress','Approved','Complete') and P.LinkedTacticId is not null
+	   and (DATEPART(year,P.EndDate)-DATEPART(year,P.StartDate))>0
+),
+AllTactic AS
+(
+       SELECT P.PlanTacticId EntityId, P.Title EntityTitle,C.ClientId, 'Tactic' Entity,P.CreatedDate,C.PlanTitle as PlanTitle,  4 EntityOrder 
+       FROM Plan_Campaign_Program_Tactic P
+              INNER JOIN AllProgram C ON P.PlanProgramId = C.EntityId 
+			  LEFT OUTER JOIN AllLinkedTactic L on P.PlanTacticId=L.LinkedTacticId
+       WHERE P.IsDeleted = 0 and P.Status in ('In-Progress','Approved','Complete') and L.LinkedTacticId is null
+),
+AllLineitem AS
+(
+       SELECT P.PlanLineItemId EntityId, P.Title EntityTitle, C.ClientId, 'Line Item' Entity,P.CreatedDate,C.PlanTitle as PlanTitle, 5 EntityOrder 
+       FROM Plan_Campaign_Program_Tactic_LineItem P
+              INNER JOIN AllTactic C ON P.PlanTacticId = C.EntityId 
+       WHERE P.IsDeleted = 0 and P.LineItemTypeId is not null
+)
+SELECT * FROM AllPlans
+UNION ALL 
+SELECT * FROM AllCampaigns
+UNION ALL 
+SELECT * FROM AllProgram
+UNION ALL 
+SELECT * FROM AllTactic
+UNION ALL 
+SELECT * FROM AllLineitem
+
+GO
+
+-----------------------* Email Configuration *-----------------------
+sp_configure 'show advanced options', 1;
+GO
+RECONFIGURE;
+GO
+sp_configure 'Ole Automation Procedures', 1;
+GO
+RECONFIGURE;
+GO
+
+
+-----------------------* SP sp_Send_Mail_For_Alerts *-----------------------
+IF EXISTS( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'sp_Send_Mail_For_Alerts') AND type IN ( N'P', N'PC' ) )
+BEGIN
+	DROP PROCEDURE dbo.sp_Send_Mail_For_Alerts
+END
+GO
+
+CREATE PROCEDURE [dbo].[sp_Send_Mail_For_Alerts]
+        @from Nvarchar(500),
+		@pwd Nvarchar(30),
+		@Url Nvarchar(max)
+	
+AS
+BEGIN
+
+  DECLARE @imsg int
+  DECLARE @hr int
+  DECLARE @source varchar(255)
+  DECLARE @description varchar(500)
+  DECLARE @bodytype varchar(10)
+  DECLARE @to varchar(500) 
+  DECLARE @Comparision varchar(500)
+  DECLARE @body varchar(max) 
+  DECLARE @subject varchar(max) 
+  DECLARE @output_desc varchar(1000)
+  DECLARE @Result varchar(1000)
+  --DECLARE @IndicatorTitle nvarchar(1000)
+
+  DECLARE @SubjectComparision varchar(500)
+  DECLARE @Query Nvarchar(max)
+   
+  SET @bodytype = 'htmlbody'
+
+
+	declare @temptable table (test nvarchar(50))
+	insert into @temptable EXEC(@query)
+ 
+  
+  BEGIN
+  DECLARE @AlertId int, @AlertDescription nvarchar(max), @Email  nvarchar(255),@Indicator nvarchar(50), @IndicatorComparision nvarchar(10),@IndicatorGoal int, @EntityTitle nvarchar(500),@DisplayDate DateTime, @ActualGoal float, @CurrentGoal float,@PlanName nvarchar(255)
+  			
+  DECLARE Cur_Mail CURSOR FOR	
+    SELECT  al.AlertId, al.Description, ar.UserEmail, 
+				CASE WHEN ar.Indicator = 'PLANNEDCOST' 
+					THEN 'PLANNED COST'
+					when ar.Indicator = 'REVENUE' 
+					THEN 'REVENUE'
+					ELSE Stage.Title END AS
+					 Indicator, ar.IndicatorComparision,ar.IndicatorGoal, vw.EntityTitle,al.DisplayDate,al.ActualGoal,al.CurrentGoal, vw.PlanTitle
+			   FROM  [dbo].Alerts al
+			   INNER JOIN dbo.[Alert_Rules] AS ar ON ar.RuleId = al.RuleId  and ar.UserId = al.UserId
+			   left JOIN dbo.Stage ON Stage.Code = ar.Indicator  and ar.ClientId = Stage.ClientId
+			   left JOIN dbo.vClientWise_EntityList as vw on  vw.EntityId = ar.EntityId 
+			   WHERE al.DisplayDate <= GETDATE() and (al.IsEmailSent Is null or  al.IsEmailSent <> 'Success')
+   
+    
+  OPEN Cur_Mail
+  
+        FETCH NEXT FROM Cur_Mail INTO  @AlertId, @AlertDescription, @Email, @Indicator, @IndicatorComparision, @IndicatorGoal, @EntityTitle, @DisplayDate,@ActualGoal,@CurrentGoal,@PlanName
+        
+        WHILE @@FETCH_STATUS=0
+        BEGIN
+        
+        Begin
+        EXEC @hr = sp_oacreate 'cdo.message', @imsg out
+        
+        --SendUsing Specifies Whether to send using port (2) or using pickup directory (1)
+        EXEC @hr = sp_oasetproperty @imsg,
+        'configuration.fields("http://schemas.microsoft.com/cdo/configuration/sendusing").value','2'
+        
+        --SMTP Server
+        EXEC @hr = sp_oasetproperty @imsg, 
+          'configuration.fields("http://schemas.microsoft.com/cdo/configuration/smtpserver").value','pod51022.outlook.com' 
+        
+        --UserName
+        EXEC @hr = sp_oasetproperty @imsg, 
+          'configuration.fields("http://schemas.microsoft.com/cdo/configuration/sendusername").value',@from
+        
+        --Password
+        EXEC @hr = sp_oasetproperty @imsg, 
+          'configuration.fields("http://schemas.microsoft.com/cdo/configuration/sendpassword").value',@pwd
+        
+        --UseSSL
+        EXEC @hr = sp_oasetproperty @imsg, 
+          'configuration.fields("http://schemas.microsoft.com/cdo/configuration/smtpusessl").value','True' 
+        
+        --PORT 
+        EXEC @hr = sp_oasetproperty @imsg, 
+          'configuration.fields("http://schemas.microsoft.com/cdo/configuration/smtpserverport").value','25' 
+        
+        --Requires Aunthentication None(0) / Basic(1)
+        EXEC @hr = sp_oasetproperty @imsg, 
+          'configuration.fields("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate").value','1' 	
+        
+        End
+      
+        IF @IndicatorComparision = 'GT'
+		BEGIN
+              set  @Comparision = '<b> greater than </b>'
+			  set @SubjectComparision = 'above goal'
+			  END
+        ELSE 	
+		BEGIN
+		      IF @IndicatorComparision = 'LT'
+			  	 BEGIN
+                  set @Comparision = '<b>  less than </b>' 
+				  set @SubjectComparision = 'below goal'
+				 END
+              ELSE 
+			     BEGIN
+                  set @Comparision = '<b> equal to </b>' 
+				  set @SubjectComparision = 'equal goal'
+				END
+		END
+        Set @subject = @EntityTitle + ' is performing ' + @SubjectComparision 
+
+		SET @body = @EntityTitle + '''s <b>' + @Indicator +' </b> is '+ @Comparision + ' ' + CONVERT(nvarchar(50),@IndicatorGoal) +'% of the goal as of <b>'+ CONVERT(VARCHAR(11),@DisplayDate,106)  + '</b><br><br>Item : ' +  @EntityTitle + '<br>Plan Name : '+ @PlanName 
+	    
+		if @ActualGoal is not null
+		set @body = @body +  '<br>Goal : '+ cast(Format(@ActualGoal, '##,##0') as varchar) 
+
+		if @CurrentGoal is not null
+		set @body = @body + '<br>Current : ' + cast(Format(@CurrentGoal, '##,##0') as varchar)
+		 
+		set @body = @body + '<br><br><html><body> URL : <a href=' + @Url +'>'+@Url+'</a></body></html>' 
+
+        
+        EXEC @hr = sp_oamethod @imsg, 'configuration.fields.update', null
+        EXEC @hr = sp_oasetproperty @imsg, 'to', @Email
+        EXEC @hr = sp_oasetproperty @imsg, 'from', @from
+        EXEC @hr = sp_oasetproperty @imsg, 'subject', @subject
+        EXEC @hr = sp_oasetproperty @imsg, @bodytype, @body
+        EXEC @hr = sp_oamethod @imsg, 'send',null        
+	
+
+        -- sample error handling.	
+        IF @hr <> 0   
+        	BEGIN
+			     		EXEC @hr = sp_oageterrorinfo null, out, @description out
+			    IF @hr = 0
+        		BEGIN					
+        			set @output_desc =  @description
+					update Alerts
+            		set IsEmailSent = 'Not Sent'
+        			where AlertId = @AlertId
+					print @description
+				End
+				ELSE
+				BEGIN
+        			set @output_desc =   ' sp_oageterrorinfo failed'
+					update Alerts
+            		set IsEmailSent = 'FAIL'
+        			where AlertId = @AlertId
+				END
+			END
+        ELSE
+        	BEGIN
+        		SET @output_desc = ' sp_oageterrorinfo failed'
+				update  Alerts
+        		set IsEmailSent = 'Success'
+        		where AlertId = @AlertId
+        	END
+
+             
+        EXEC @hr = sp_oadestroy @imsg
+        
+        FETCH NEXT FROM Cur_Mail INTO  @AlertId, @AlertDescription, @Email, @Indicator, @IndicatorComparision, @IndicatorGoal, @EntityTitle, @DisplayDate, @ActualGoal, @CurrentGoal, @PlanName
+        END
+  CLOSE Cur_Mail
+  DEALLOCATE Cur_Mail
+  END
+  END
+Go
+
+/* End - Added by Dhvani Raval for Ticket #2534*/
+
+
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
 -- ======================================================================================
