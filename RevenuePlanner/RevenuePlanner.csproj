@@ -699,7 +699,6 @@
     <Content Include="Scripts\js\highcharts-v2.js" />
     <Content Include="Scripts\js\Home\Grid_CalendarCommon.js" />
     <Content Include="Scripts\js\Home\HomeGrid.js" />
-    <Content Include="Scripts\js\Home\planCalendar.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js.map" />
