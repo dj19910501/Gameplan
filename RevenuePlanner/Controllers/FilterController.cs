@@ -64,7 +64,7 @@ namespace RevenuePlanner.Controllers
             List<Plan> currentPlan = new List<Plan>();
             Plan latestPlan = new Plan();
             string currentYear = DateTime.Now.Year.ToString();
-            List<int> modelIds = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.ClientId) && model.IsDeleted == false).Select(m => m.ModelId).ToList();
+            List<int> modelIds = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.CID) && model.IsDeleted == false).Select(m => m.ModelId).ToList();
             List<Plan> activePlan = objDbMrpEntities.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
             string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
 

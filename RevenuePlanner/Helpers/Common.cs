@@ -9953,7 +9953,7 @@ namespace RevenuePlanner.Helpers
             para[1] = new SqlParameter()
             {
                 ParameterName = "ClientId",
-                Value = Sessions.User.ClientId
+                Value = Sessions.User.CID
             };
          
             var CustomGoalValues = db.Database.SqlQuery<GoalValueModel>("spGetGoalValuesForPlan @PlanId,@ClientId", para).ToList();
