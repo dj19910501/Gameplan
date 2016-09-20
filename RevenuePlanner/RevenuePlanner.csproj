@@ -725,20 +725,6 @@
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Content\Common\MarketingBudgetImportSample.xls" />
-    <Content Include="Properties\DataSources\Integration.BDSService.AppConfiguration.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.ApplicationActivity.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.Client.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.ClientDatabase.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.Currency.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.CustomRestriction.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.Menu.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.PasswordResetRequest.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.Permission.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.Role.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.SecurityQuestion.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.User.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.UserApplicationPermission.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.UserHierarchy.datasource" />
     <None Include="Properties\PublishProfiles\zhang-local.pubxml" />
     <Content Include="Scripts\MultiCurrency.js" />
     <Content Include="Scripts\Planhud.js" />
@@ -986,7 +972,6 @@
     <Content Include="Views\Filter\Filters.cshtml" />
     <Content Include="Views\Shared\_Planhud.cshtml" />
     <Content Include="Views\Budget\Budget.cshtml" />
-    <Content Include="Views\Plan\Budget.cshtml" />
     <Content Include="Views\Plan\_HomeGrid_New.cshtml" />
     <Content Include="Views\Home\Index1.cshtml" />
     <Content Include="Views\Home\_HomeGrid_New.cshtml" />
@@ -1056,6 +1041,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="bin\" />
     <Folder Include="Filters\" />
+    <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
