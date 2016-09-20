@@ -882,8 +882,8 @@ span.info-icon {
         background-color: #ccc !important;
     }
 
-.shadow-scroll,
-.shadow-scroll-gantt { /*by bheru 1-11-2015 #1718*/
+.shadow-scroll
+/*.shadow-scroll-gantt*/ { /*by bheru 1-11-2015 #1718*/
     /*background: url(../images/shadow-sidebar-horizontal.png) repeat-x;*/
     background: background: rgba(253,253,253,1);
     background: -moz-linear-gradient(top, rgba(253,253,253,1) 0%, rgba(253,253,253,1) 10%, rgba(219,219,219,1) 100%);
@@ -2114,11 +2114,6 @@ span.link-blue:hover {
     box-shadow: 2px 5px 5px #a4a4a4, -3px -16px 4px -13px #262626 inset;
 }
 
-.dhx_gantt_duration_dec,
-.dhx_gantt_duration_inc,
-.dhx_gantt_duration_value {
-    padding-top: 2px !important;
-}
 
 .features-narratives-wrapper h2 {
     color: #fff;
@@ -2135,6 +2130,34 @@ span.link-blue:hover {
     margin-top: 6px;
 }
 
+
+    .unlink-icon.ROIPackage, .unlink-icon {
+        margin-right: 0;
+    }
+
+
+.content-panel-tab,
+.nl-form-small {
+    font-family: source_sans_prolight, Arial, sans-serif;
+}
+
+.tab-content {
+    overflow: visible !important;
+}
+
+/*.gantt_container *,
+:after,
+:before {
+    -webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}*/
+
+.dhx_gantt_duration_dec,
+.dhx_gantt_duration_inc,
+.dhx_gantt_duration_value {
+    padding-top: 2px !important;
+}
 .gantt_tree_content {
     font-family: inherit !important; /*source_sans_proregular ;*/ /* Edited for #2219 - Bhumika */
     color: #A8A8A8;
@@ -2147,29 +2170,9 @@ span.link-blue:hover {
 .gantt_file {
     width: 18px;
 }
-
-    .unlink-icon.ROIPackage, .unlink-icon {
-        margin-right: 0;
-    }
-
-
-.content-panel-tab,
-.nl-form-small {
-    font-family: source_sans_prolight, Arial, sans-serif;
-}
-
 .gantt_task_content {
     text-indent: 100%;
 }
-
-.gantt_container *,
-:after,
-:before {
-    -webkit-box-sizing: border-box !important;
-    -moz-box-sizing: border-box !important;
-    box-sizing: border-box !important;
-}
-
 #gantt_here {
     height: 100%;
 }
@@ -2181,9 +2184,8 @@ span.link-blue:hover {
 .gantt_container {
     height: auto;
 }
-
-.tab-content {
-    overflow: visible !important;
+.market-activity-main .gantt_container {
+    border: 2px solid #d4d4d4;
 }
 
 .gantt_ver_scroll {
@@ -3932,10 +3934,7 @@ span.link-blue {
         background-color: #D4D4D4;
     }
 
-.gantt-padding {
-    padding-top: 40px;
-    padding-left: 5px !important;
-}
+
 
 .pl20 {
     padding-left: 20px !important;
@@ -13646,13 +13645,7 @@ li.accordion-inner.close-list {
     border-bottom: 2px solid #d4d4d4;
 }
 
-.market-activity-main .gantt_grid {
-    border-right: 2px solid grey;
-}
 
-.market-activity-main .gantt_container {
-    border: 2px solid #d4d4d4;
-}
 
 .market-activity-main .gantt_task .gantt_task_scale .gantt_scale_cell,
 .market-activity-main .gantt_task_cell {
@@ -14966,9 +14959,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     }
 }
 
-.calendar-gant-table .gantt-padding {
-    padding-top: 15px;
-}
+
 
 
 #treeviewddl .hdrcell.filter input {
@@ -15361,7 +15352,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
     height: auto;
     padding-right: 0;
     padding-top: 4px;
-    width: 55%;
+    width: 85px;
     text-align: center;
 }
 
@@ -15433,7 +15424,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 
 .aler-list {
     margin-left: 20px;
-    margin-right: -20px;
+    margin-right: 3px;
 }
 
     .notify-list .fa, .aler-list .fa {
@@ -19084,3 +19075,8 @@ input.serach-input {
     margin-bottom: 10px;
     display: block;
 }
+/*.headerfix-wraper{display:none}*/
+#divPartial.partial_wrapper{width:1000px}
+.pop-body-wraper, .PopupDiv,#InspectTab{width:100% !important}
+#InspectTab li{width:19% !important}
+#modal-container-186470{padding:0}

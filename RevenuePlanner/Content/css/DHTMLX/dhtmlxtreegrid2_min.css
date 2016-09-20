@@ -2497,9 +2497,7 @@ div.dhx_modal_cover {
     border: 1px solid #d5d5d5;
     border-width: 0 1px 0 1px;
 }
-/* tkt 1948 */
-/* #gridbox{height: 60vh !important;} @media screen and (max-width:1300px){ #gridbox{height: 90vh !important;} }*/
-
+/* Extra css for design and Overwrite main css */
 .dhx_combo_select option:hover,
 .dhx_combo_select option:focus,
 .dhx_combo_select option:checked {

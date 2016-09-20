@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 /* CSS Document */
 @import url(font.css);
 *, *::after, *::before {
@@ -17,7 +17,7 @@ body {
 	font-weight: normal;
 	background: #fff;
 	-ms-overflow-style: scrollbar;
-	overflow: auto;
+	overflow: hidden !important;
 }
 .btn-Settings:after, .caret2, .cf:after, .cf:before, .improvement .gantt_task_drag:after {
 	content: "";
@@ -458,7 +458,7 @@ a:hover, a:focus {
 	height: auto;
 	padding-right: 0;
 	padding-top: 4px;
-	width: 55%;
+	width: 85px;
 	text-align: center;
 }
 .info-user .username {
@@ -519,7 +519,7 @@ a:hover, a:focus {
 }
 .aler-list {
 	margin-left: 20px;
-	margin-right: -20px;
+	margin-right: 3px;
 }
 .notify-list .fa, .aler-list .fa {
 	font-size: 26px;
@@ -612,7 +612,7 @@ a:hover, a:focus {
 	border-right: 1px solid #ccc;
 	bottom: 0;
 	top: 110px;
-	height: 84vh;
+	height: 82vh;
 	position: absolute;
 	/*overflow-x:hidden;*/
 	overflow-y: auto;
@@ -1046,8 +1046,8 @@ span.filter-count, span.filter-count > span {
 }
 .planheader-right {
 	float: right;
-	width: 52.5%;
-	max-width: 655px;
+	width: 635px;
+	/*max-width: 655px; 52.5%;*/
 	padding-right: 15px;
 }
 #planHeader .planheader-title {
@@ -1067,7 +1067,7 @@ span.filter-count, span.filter-count > span {
 	margin-left: -1px;
 	padding: 5px 10px 10px;
 	text-align: center;
-	width: 20%;
+	width: 126px;/*20%*/
 	box-sizing: content-box !important;
 }
 .white-chart.activity-distribute {
@@ -1390,6 +1390,21 @@ footer a {
 	margin: 0 5px;
 	text-decoration: underline;
 }
+/* ============ Grid & Calendar View ========== */
+.task-tbl .gantt_container{overflow-y:auto;overflow-x:hidden}
+.task-tbl{width: 100%; padding:0 15px 0 20px;margin:0}
+.task-tbl #divgridview, .task-tbl #GridGanttContent {
+    overflow:hidden !important;width: 100%;margin:0;height:59vh; 
+}
+.task-tbl  #divgridview #gridbox { min-height:98%;}
+.task-tbl  div.gridbox_dhx_skyblue.gridbox {
+    border: 1px solid #ccc;
+}
+.task-tbl div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+    width: 100% !important;
+}
+.task-tbl #gridbox.financeReportGrid div.objbox table tr td{text-align:center}
+.task-tbl .market-activity-main .btn-dropdwn{position: absolute; top: 40px; z-index: 11;}
 
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1550px) {
@@ -1410,16 +1425,19 @@ footer a {
 }
 }
 
-@media (max-width: 1527px) {
+/*@media (max-width: 1527px) {
 .full-width-header .white-chart {
 	width: 19.4%;
 }
 .white-chart.activity-distribute {
 	width: 25%;
 }
-}
+}*/
 
-@media (max-width: 1427px) {
+@media (max-width: 1499px) {
+.planheader-right {
+    width: 52.5%;
+}
 .full-width-header .white-chart {
 	width: 19.4%;
 }
