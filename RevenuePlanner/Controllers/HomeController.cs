@@ -7829,9 +7829,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="UserId">user id</param>
         /// <returns>returns json result with redirect url.</returns>
-        public ActionResult CheckUserId(int UserId)
+        public ActionResult CheckUserId(Guid UserId)
         {
-            if (Sessions.User.ID == UserId)
+            //This is the only area we will keep using GUID for user ID! zz Sep 20, 2016
+            if (Sessions.User.UserId == UserId)
             {
                 return Json(new { returnURL = "#" }, JsonRequestBehavior.AllowGet);
             }
