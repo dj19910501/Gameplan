@@ -127,6 +127,7 @@ namespace RevenuePlanner.Models
         public string ColType { get; set; }
         public string Width { get; set; }
         public string ColSorting { get; set; }
+        public string ColumnIds { get; set; }
         public List<string> AttachHeader { get; set; }
         public int LineItemId { get; set; }
         

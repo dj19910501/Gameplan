@@ -20069,7 +20069,14 @@ namespace RevenuePlanner.Controllers
             return value;
         }
 
-        public ActionResult GetBudgetedData_New()
+        /// <summary>
+        /// Set the model for planned and actuals
+        /// </summary>
+        /// <param name="PlanId"></param>
+        /// <param name="budgetTab"></param>
+        /// <param name="viewBy"></param>
+        /// <returns></returns>
+        public ActionResult GetBudgetedData_New(string PlanIds, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "")
         {
             List<BudgetDHTMLXGridDataModel> TestGridObj = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel objTest = new BudgetDHTMLXGridDataModel();
@@ -20083,7 +20090,7 @@ namespace RevenuePlanner.Controllers
             TestBudgetDataObj0.locked = null;
             TestBudgetDataObj0.style = null;
             TestBudgetDataObj0.type = null;
-            TestBudgetDataObj0.value = "20212";
+            TestBudgetDataObj0.value = "20212;plan";
             objTest.data.Add(TestBudgetDataObj0);
 
             Budgetdataobj TestBudgetDataObj1 = new Budgetdataobj();
@@ -20091,16 +20098,36 @@ namespace RevenuePlanner.Controllers
             TestBudgetDataObj1.locked = null;
             TestBudgetDataObj1.style = null;
             TestBudgetDataObj1.type = null;
-            TestBudgetDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;######2578&lt;/a&gt;";
+            TestBudgetDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gtPlan1&lt;/a&gt;";
             objTest.data.Add(TestBudgetDataObj1);
+
+            Budgetdataobj TestBudgetDataObjControl0 = new Budgetdataobj();
+            TestBudgetDataObjControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTest.data.Add(TestBudgetDataObjControl0);
 
             Budgetdataobj TestBudgetDataObj2 = new Budgetdataobj();
             TestBudgetDataObj2.actval = null;
-            TestBudgetDataObj2.locked = null;
+            TestBudgetDataObj2.locked = "0";
             TestBudgetDataObj2.style = null;
             TestBudgetDataObj2.type = null;
-            TestBudgetDataObj2.value = "&lt;div class=budgetingmaincolumn&gt; &lt;div id=planplan_20212 mainbudget =100 style = position:relative  class=&#39;planLevel clueallocatedCost topCorner&#39;&gt;10,500&lt;span mnth txt=10500 class=&#39;red-corner-budget clickme&#39; rel = #loadme style = cursor:pointer &gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;";
+            TestBudgetDataObj2.value = "&lt;div class=budgetingmaincolumn&gt; &lt;div id=planplan_20212 mainbudget =100 style = position:relative  class=&#39;planLevel clueallocatedCost topCorner&#39;&gt;10,500&lt;span mnth txt=10500 class=&#39;red-corner-budget clickme&#39; rel = #loadme style = &#39;cursor:pointer; display: block;&#39; &gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;";
             objTest.data.Add(TestBudgetDataObj2);
+
+            Budgetdataobj TestBudgetDataObj3 = new Budgetdataobj();
+            TestBudgetDataObj3.actval = null;
+            TestBudgetDataObj3.locked = "0";
+            TestBudgetDataObj3.style = null;
+            TestBudgetDataObj3.type = null;
+            TestBudgetDataObj3.value = "10,500";
+            objTest.data.Add(TestBudgetDataObj3);
+
+            Budgetdataobj TestBudgetDataObj4 = new Budgetdataobj();
+            TestBudgetDataObj4.actval = null;
+            TestBudgetDataObj4.locked = null;
+            TestBudgetDataObj4.style = null;
+            TestBudgetDataObj4.type = null;
+            TestBudgetDataObj4.value = "&lt;div class=budgetingmaincolumn&gt; &lt;div id=planplan_20212 mainbudget =100 style = position:relative  class=&#39;planLevel clueallocatedCost topCorner&#39;&gt;10,500&lt;span mnth txt=10500 class=&#39;red-corner-budget clickme&#39; rel = #loadme style = cursor:pointer; display: block; &gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;";
+            objTest.data.Add(TestBudgetDataObj4);
 
             for (int i = 3; i < 40; i++)
             {
@@ -20113,13 +20140,13 @@ namespace RevenuePlanner.Controllers
                 objTest.data.Add(TestBudgetDataObjTest);
             }
 
+            //Campain
             BudgetDHTMLXGridDataModel objTestCampaign = new BudgetDHTMLXGridDataModel();
             objTestCampaign.data = new List<Budgetdataobj>();
             objTestCampaign.bgColor = "#c6ebf3";
             objTestCampaign.id = "campaignc_27286";
             objTestCampaign.open = null;
             objTestCampaign.rows = new List<BudgetDHTMLXGridDataModel>();
-
 
             Budgetdataobj TestCampDataObj0 = new Budgetdataobj();
             TestCampDataObj0.actval = null;
@@ -20134,10 +20161,16 @@ namespace RevenuePlanner.Controllers
             TestCampDataObj1.locked = null;
             TestCampDataObj1.style = null;
             TestCampDataObj1.type = null;
-            TestCampDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;Camp_2578&lt;/a&gt;";
+            TestCampDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;Campaign1&lt;/a&gt;";
             objTestCampaign.data.Add(TestCampDataObj1);
 
+            Budgetdataobj objTestCampaignControl0 = new Budgetdataobj();
+            objTestCampaignControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Camp alt=27286 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=CampAdd taskId=27286 csvId=Camp_27286></div>";
+            objTestCampaign.data.Add(objTestCampaignControl0);
+
             objTestCampaign.data.Add(TestBudgetDataObj2);
+            objTestCampaign.data.Add(TestBudgetDataObj3);
+            objTestCampaign.data.Add(TestBudgetDataObj4);
 
             for (int i = 3; i < 40; i++)
             {
@@ -20150,6 +20183,7 @@ namespace RevenuePlanner.Controllers
                 objTestCampaign.data.Add(TestBudgetDataObjTest);
             }
 
+            //Program
             BudgetDHTMLXGridDataModel objTestProgram = new BudgetDHTMLXGridDataModel();
             objTestProgram.data = new List<Budgetdataobj>();
             objTestProgram.bgColor = "#dff0f8";
@@ -20170,10 +20204,16 @@ namespace RevenuePlanner.Controllers
             TestProgDataObj1.locked = null;
             TestProgDataObj1.style = null;
             TestProgDataObj1.type = null;
-            TestProgDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;prog_2578 27330&lt;/a&gt;";
+            TestProgDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;Program1&lt;/a&gt;";
             objTestProgram.data.Add(TestProgDataObj1);
 
+            Budgetdataobj objTestProgramControl0 = new Budgetdataobj();
+            objTestProgramControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestProgram.data.Add(objTestProgramControl0);
+
             objTestProgram.data.Add(TestBudgetDataObj2);
+            objTestProgram.data.Add(TestBudgetDataObj3);
+            objTestProgram.data.Add(TestBudgetDataObj4);
 
             for (int i = 3; i < 40; i++)
             {
@@ -20186,6 +20226,101 @@ namespace RevenuePlanner.Controllers
                 objTestProgram.data.Add(TestBudgetDataObjTest);
             }
 
+            //Tactic
+            BudgetDHTMLXGridDataModel objTestTactic = new BudgetDHTMLXGridDataModel();
+            objTestTactic.data = new List<Budgetdataobj>();
+            objTestTactic.bgColor = "#dff0f8";
+            objTestTactic.id = "Tacticcp_33878";
+            objTestTactic.open = null;
+            objTestTactic.rows = new List<BudgetDHTMLXGridDataModel>();
+
+            Budgetdataobj TestTacDataObj0 = new Budgetdataobj();
+            TestTacDataObj0.actval = null;
+            TestTacDataObj0.locked = null;
+            TestTacDataObj0.style = null;
+            TestTacDataObj0.type = null;
+            TestTacDataObj0.value = "33878";
+            objTestTactic.data.Add(TestTacDataObj0);
+
+            Budgetdataobj TestTacDataObj1 = new Budgetdataobj();
+            TestTacDataObj1.actval = null;
+            TestTacDataObj1.locked = null;
+            TestTacDataObj1.style = null;
+            TestTacDataObj1.type = null;
+            TestTacDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;Tac1&lt;/a&gt;";
+            objTestTactic.data.Add(TestTacDataObj1);
+
+            Budgetdataobj objTestTacticControl0 = new Budgetdataobj();
+            objTestTacticControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestTactic.data.Add(objTestTacticControl0);
+
+            objTestTactic.data.Add(TestBudgetDataObj2);
+            objTestTactic.data.Add(TestBudgetDataObj3);
+            objTestTactic.data.Add(TestBudgetDataObj4);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "0";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTestTactic.data.Add(TestBudgetDataObjTest);
+            }
+
+            //Link Item
+            //Tactic
+            BudgetDHTMLXGridDataModel objTestLinkItm = new BudgetDHTMLXGridDataModel();
+            objTestLinkItm.data = new List<Budgetdataobj>();
+            objTestLinkItm.bgColor = "#dff0f8";
+            objTestLinkItm.id = "Linkitemcp_33878";
+            objTestLinkItm.open = null;
+            objTestLinkItm.rows = new List<BudgetDHTMLXGridDataModel>();
+
+            Budgetdataobj TestLinkTacDataObj0 = new Budgetdataobj();
+            TestLinkTacDataObj0.actval = null;
+            TestLinkTacDataObj0.locked = null;
+            TestLinkTacDataObj0.style = null;
+            TestLinkTacDataObj0.type = null;
+            TestLinkTacDataObj0.value = "33878";
+            objTestLinkItm.data.Add(TestLinkTacDataObj0);
+
+            Budgetdataobj TestLinkTacDataObj1 = new Budgetdataobj();
+            TestLinkTacDataObj1.actval = null;
+            TestLinkTacDataObj1.locked = null;
+            TestLinkTacDataObj1.style = null;
+            TestLinkTacDataObj1.type = null;
+            TestLinkTacDataObj1.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;LinkTac1&lt;/a&gt;";
+            objTestLinkItm.data.Add(TestLinkTacDataObj1);
+
+            Budgetdataobj objTestLinkItmControl0 = new Budgetdataobj();
+            objTestLinkItmControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestLinkItm.data.Add(objTestLinkItmControl0);
+
+            objTestLinkItm.data.Add(TestBudgetDataObj2);
+            objTestLinkItm.data.Add(TestBudgetDataObj3);
+            objTestLinkItm.data.Add(TestBudgetDataObj4);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "0";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTestLinkItm.data.Add(TestBudgetDataObjTest);
+            }
+
+
+            //Overall
+            objTestTactic.rows = new List<BudgetDHTMLXGridDataModel>();
+            objTestTactic.rows.Add(objTestLinkItm);
+
+            objTestProgram.rows = new List<BudgetDHTMLXGridDataModel>();
+            objTestProgram.rows.Add(objTestTactic);
+
             objTestCampaign.rows = new List<BudgetDHTMLXGridDataModel>();
             objTestCampaign.rows.Add(objTestProgram);
 
@@ -20195,40 +20330,290 @@ namespace RevenuePlanner.Controllers
             TestGridObj = new List<BudgetDHTMLXGridDataModel>();
             TestGridObj.Add(objTest);
 
+
+
+            // Second Plan
+            BudgetDHTMLXGridDataModel objTest2 = new BudgetDHTMLXGridDataModel();
+            objTest2.data = new List<Budgetdataobj>();
+            objTest2.bgColor = "#e6e6e6";
+            objTest2.id = "planplan_20213";
+            objTest2.open = "1";
+
+            Budgetdataobj TestBudgetDataObj0_2 = new Budgetdataobj();
+            TestBudgetDataObj0_2.actval = null;
+            TestBudgetDataObj0_2.locked = null;
+            TestBudgetDataObj0_2.style = null;
+            TestBudgetDataObj0_2.type = "ro";
+            TestBudgetDataObj0_2.value = "20213;plan";
+            objTest2.data.Add(TestBudgetDataObj0_2);
+
+            Budgetdataobj TestBudgetDataObj1_2 = new Budgetdataobj();
+            TestBudgetDataObj1_2.actval = null;
+            TestBudgetDataObj1_2.locked = null;
+            TestBudgetDataObj1_2.style = null;
+            TestBudgetDataObj1_2.type = null;
+            TestBudgetDataObj1_2.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;Plan2&lt;/a&gt;";
+            objTest2.data.Add(TestBudgetDataObj1_2);
+
+            Budgetdataobj TestBudgetDataObjControl0_2 = new Budgetdataobj();
+            TestBudgetDataObjControl0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTest2.data.Add(TestBudgetDataObjControl0_2);
+
+            Budgetdataobj TestBudgetDataObj2_2 = new Budgetdataobj();
+            TestBudgetDataObj2_2.actval = null;
+            TestBudgetDataObj2_2.locked = "0";
+            TestBudgetDataObj2_2.style = null;
+            TestBudgetDataObj2_2.type = null;
+            TestBudgetDataObj2_2.value = "20,500";
+            objTest2.data.Add(TestBudgetDataObj2_2);
+
+            Budgetdataobj TestBudgetDataObj3_2 = new Budgetdataobj();
+            TestBudgetDataObj3_2.actval = null;
+            TestBudgetDataObj3_2.locked = "0";
+            TestBudgetDataObj3_2.style = null;
+            TestBudgetDataObj3_2.type = null;
+            TestBudgetDataObj3_2.value = "20,500";
+            objTest2.data.Add(TestBudgetDataObj3_2);
+
+            Budgetdataobj TestBudgetDataObj4_2 = new Budgetdataobj();
+            TestBudgetDataObj4_2.actval = null;
+            TestBudgetDataObj4_2.locked = null;
+            TestBudgetDataObj4_2.style = null;
+            TestBudgetDataObj4_2.type = null;
+            TestBudgetDataObj4_2.value = "20,500";
+            objTest2.data.Add(TestBudgetDataObj4_2);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "0";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTest2.data.Add(TestBudgetDataObjTest);
+            }
+
+            //Campain
+            BudgetDHTMLXGridDataModel objTestCampaign_2 = new BudgetDHTMLXGridDataModel();
+            objTestCampaign_2.data = new List<Budgetdataobj>();
+            objTestCampaign_2.bgColor = "#c6ebf3";
+            objTestCampaign_2.id = "campaignc_27287";
+            objTestCampaign_2.open = null;
+            objTestCampaign_2.rows = new List<BudgetDHTMLXGridDataModel>();
+
+            Budgetdataobj TestCampDataObj0_2 = new Budgetdataobj();
+            TestCampDataObj0_2.actval = null;
+            TestCampDataObj0_2.locked = null;
+            TestCampDataObj0_2.style = null;
+            TestCampDataObj0_2.type = null;
+            TestCampDataObj0_2.value = "27287";
+            objTestCampaign_2.data.Add(TestCampDataObj0_2);
+
+            Budgetdataobj TestCampDataObj1_2 = new Budgetdataobj();
+            TestCampDataObj1_2.actval = null;
+            TestCampDataObj1_2.locked = null;
+            TestCampDataObj1_2.style = null;
+            TestCampDataObj1_2.type = null;
+            TestCampDataObj1_2.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;Campaign2&lt;/a&gt;";
+            objTestCampaign_2.data.Add(TestCampDataObj1_2);
+
+            Budgetdataobj objTestCampaign_2Control0_2 = new Budgetdataobj();
+            objTestCampaign_2Control0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Camp alt=27286 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=CampAdd taskId=27286 csvId=Camp_27286></div>";
+            objTestCampaign_2.data.Add(objTestCampaign_2Control0_2);
+
+            objTestCampaign_2.data.Add(TestBudgetDataObj2_2);
+            objTestCampaign_2.data.Add(TestBudgetDataObj3_2);
+            objTestCampaign_2.data.Add(TestBudgetDataObj4_2);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "1";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTestCampaign_2.data.Add(TestBudgetDataObjTest);
+            }
+
+            //Program
+            BudgetDHTMLXGridDataModel objTestProgram_2 = new BudgetDHTMLXGridDataModel();
+            objTestProgram_2.data = new List<Budgetdataobj>();
+            objTestProgram_2.bgColor = "#dff0f8";
+            objTestProgram_2.id = "programcp_33879";
+            objTestProgram_2.open = null;
+            objTestProgram_2.rows = new List<BudgetDHTMLXGridDataModel>();
+
+            Budgetdataobj TestProgDataObj0_2 = new Budgetdataobj();
+            TestProgDataObj0_2.actval = null;
+            TestProgDataObj0_2.locked = null;
+            TestProgDataObj0_2.style = null;
+            TestProgDataObj0_2.type = null;
+            TestProgDataObj0_2.value = "33879";
+            objTestProgram_2.data.Add(TestProgDataObj0_2);
+
+            Budgetdataobj TestProgDataObj1_2 = new Budgetdataobj();
+            TestProgDataObj1_2.actval = null;
+            TestProgDataObj1_2.locked = null;
+            TestProgDataObj1_2.style = null;
+            TestProgDataObj1_2.type = null;
+            TestProgDataObj1_2.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;Program2&lt;/a&gt;";
+            objTestProgram_2.data.Add(TestProgDataObj1_2);
+
+            Budgetdataobj objTestProgram_2Control0_2 = new Budgetdataobj();
+            objTestProgram_2Control0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestProgram_2.data.Add(objTestProgram_2Control0_2);
+
+            objTestProgram_2.data.Add(TestBudgetDataObj2_2);
+            objTestProgram_2.data.Add(TestBudgetDataObj3_2);
+            objTestProgram_2.data.Add(TestBudgetDataObj4_2);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "0";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTestProgram_2.data.Add(TestBudgetDataObjTest);
+            }
+
+            //Tactic
+            BudgetDHTMLXGridDataModel objTestTactic_2 = new BudgetDHTMLXGridDataModel();
+            objTestTactic_2.data = new List<Budgetdataobj>();
+            objTestTactic_2.bgColor = "#dff0f8";
+            objTestTactic_2.id = "Tacticcp_33879";
+            objTestTactic_2.open = null;
+            objTestTactic_2.rows = new List<BudgetDHTMLXGridDataModel>();
+
+            Budgetdataobj TestTacDataObj0_2 = new Budgetdataobj();
+            TestTacDataObj0_2.actval = null;
+            TestTacDataObj0_2.locked = null;
+            TestTacDataObj0_2.style = null;
+            TestTacDataObj0_2.type = null;
+            TestTacDataObj0_2.value = "33879";
+            objTestTactic_2.data.Add(TestTacDataObj0_2);
+
+            Budgetdataobj TestTacDataObj1_2 = new Budgetdataobj();
+            TestTacDataObj1_2.actval = null;
+            TestTacDataObj1_2.locked = null;
+            TestTacDataObj1_2.style = null;
+            TestTacDataObj1_2.type = null;
+            TestTacDataObj1_2.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;Tac2&lt;/a&gt;";
+            objTestTactic_2.data.Add(TestTacDataObj1_2);
+
+            Budgetdataobj objTestTactic_2Control0_2 = new Budgetdataobj();
+            objTestTactic_2Control0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestTactic_2.data.Add(objTestTactic_2Control0_2);
+
+            objTestTactic_2.data.Add(TestBudgetDataObj2_2);
+            objTestTactic_2.data.Add(TestBudgetDataObj3_2);
+            objTestTactic_2.data.Add(TestBudgetDataObj4_2);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "0";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTestTactic_2.data.Add(TestBudgetDataObjTest);
+            }
+
+            //Link Item
+            //Tactic
+            BudgetDHTMLXGridDataModel objTestLinkItm_2 = new BudgetDHTMLXGridDataModel();
+            objTestLinkItm_2.data = new List<Budgetdataobj>();
+            objTestLinkItm_2.bgColor = "#dff0f8";
+            objTestLinkItm_2.id = "Linkitemcp_33879";
+            objTestLinkItm_2.open = null;
+            objTestLinkItm_2.rows = new List<BudgetDHTMLXGridDataModel>();
+
+            Budgetdataobj TestLinkTacDataObj0_2 = new Budgetdataobj();
+            TestLinkTacDataObj0_2.actval = null;
+            TestLinkTacDataObj0_2.locked = null;
+            TestLinkTacDataObj0_2.style = null;
+            TestLinkTacDataObj0_2.type = null;
+            TestLinkTacDataObj0_2.value = "33879";
+            objTestLinkItm_2.data.Add(TestLinkTacDataObj0_2);
+
+            Budgetdataobj TestLinkTacDataObj1_2 = new Budgetdataobj();
+            TestLinkTacDataObj1_2.actval = null;
+            TestLinkTacDataObj1_2.locked = null;
+            TestLinkTacDataObj1_2.style = null;
+            TestLinkTacDataObj1_2.type = null;
+            TestLinkTacDataObj1_2.value = "&lt;a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()&gt;LinkTac2&lt;/a&gt;";
+            objTestLinkItm_2.data.Add(TestLinkTacDataObj1_2);
+
+            Budgetdataobj objTestLinkItm_2Control0_2 = new Budgetdataobj();
+            objTestLinkItm_2Control0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestLinkItm_2.data.Add(objTestLinkItm_2Control0_2);
+
+            objTestLinkItm_2.data.Add(TestBudgetDataObj2_2);
+            objTestLinkItm_2.data.Add(TestBudgetDataObj3_2);
+            objTestLinkItm_2.data.Add(TestBudgetDataObj4_2);
+
+            for (int i = 3; i < 40; i++)
+            {
+                Budgetdataobj TestBudgetDataObjTest = new Budgetdataobj();
+                TestBudgetDataObjTest.actval = null;
+                TestBudgetDataObjTest.locked = "0";
+                TestBudgetDataObjTest.style = null;
+                TestBudgetDataObjTest.type = null;
+                TestBudgetDataObjTest.value = "0";
+                objTestLinkItm_2.data.Add(TestBudgetDataObjTest);
+            }
+
+
+            //Overall
+            objTestTactic_2.rows = new List<BudgetDHTMLXGridDataModel>();
+            objTestTactic_2.rows.Add(objTestLinkItm_2);
+
+            objTestProgram_2.rows = new List<BudgetDHTMLXGridDataModel>();
+            objTestProgram_2.rows.Add(objTestTactic_2);
+
+            objTestCampaign_2.rows = new List<BudgetDHTMLXGridDataModel>();
+            objTestCampaign_2.rows.Add(objTestProgram_2);
+
+            objTest2.rows = new List<BudgetDHTMLXGridDataModel>();
+            objTest2.rows.Add(objTestCampaign_2);
+
+            //TestGridObj = new List<BudgetDHTMLXGridDataModel>();
+            TestGridObj.Add(objTest2);
+
+
             List<BudgetModel> model = new List<BudgetModel>();
             BudgetDHTMLXGridModel objTestBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-            objTestBudgetDHTMLXGrid = GenerateHeaderString_New("months", objTestBudgetDHTMLXGrid, model, "1");
+            objTestBudgetDHTMLXGrid = GenerateHeaderString_New("months", objTestBudgetDHTMLXGrid);
             objTestBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
             objTestBudgetDHTMLXGrid.Grid.rows = TestGridObj;
             return PartialView("~/Views/Budget/Budget.cshtml", objTestBudgetDHTMLXGrid);
         }
 
-        public BudgetDHTMLXGridModel GenerateHeaderString_New(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<BudgetModel> model, string tab)
+        /// <summary>
+        /// Added By: Rushil Bhuptani.
+        /// Action to Generate Header String
+        /// </summary>
+        /// <param name="AllocatedBy"> AllocatedBy</param>
+        public BudgetDHTMLXGridModel GenerateHeaderString_New(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid)
         {
-            string setHeader = "", colType = "", width = "", colSorting = "";
-            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
-            if (tab == "1")
-            {
-                setHeader = "ActivityId,Task Name,Planned Cost";
-                colType = "ro,tree,ro";
-                width = "100,250,100";
-                colSorting = "na,na,na";
-            }
-            else
-            {
-                setHeader = "ActivityId,Task Name";
-                colType = "ro,tree";
-                width = "100,250";
-                colSorting = "na,na";
-            }
+            string setHeader = "", colType = "", width = "", colSorting = "", columnIds = "";
+            List<string> attachHeader = new List<string>();
+            setHeader = "ActivityId,,,,,";
+            columnIds = "ActivityId,TaskName,Buttons,ActualCost,PlannedCost,BudgetCost";
+            attachHeader.Add("ActivityId");
+            attachHeader.Add("Task Name");
+            attachHeader.Add("");
+            attachHeader.Add("Actual Cost");
+            attachHeader.Add("Planned Cost");
+            attachHeader.Add("Budget Cost");
 
-
-            //BudgetModel plan = model.SingleOrDefault(p => p.ActivityType == ActivityType.ActivityPlan);
-            //string activityId = plan.ActivityId;
-            //BudgetMonth obj = plan.Month;
-            //BudgetMonth parent = plan.ParentMonth;
-
-            //bool isEditable = model.Where(p => p.ActivityType == ActivityType.ActivityPlan.ToString()).Select(p => p.isEditable).FirstOrDefault();
+            colType = "ro,tree,ro,ed,ed,ed";
+            width = "100,250,50,100,100,100";
+            colSorting = "na,na,na,str,str,str";
 
             if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
@@ -20237,9 +20622,26 @@ namespace RevenuePlanner.Controllers
                 {
                     DateTime dt = new DateTime(2012, i, 1);
                     setHeader = setHeader + ",Q" + quarterCounter.ToString();
-                    colType = colType + ",ro";
+                    attachHeader.Add("Actuals");
+                    columnIds = columnIds + ",Q" + quarterCounter.ToString();
+                    colType = colType + ",ed";
                     width = width + ",100";
                     colSorting = colSorting + ",str";
+
+                    setHeader = setHeader + ",#cspan";
+                    attachHeader.Add("Planned");
+                    columnIds = columnIds + ",#cspan";
+                    colType = colType + ",ed";
+                    width = width + ",100";
+                    colSorting = colSorting + ",str";
+
+                    setHeader = setHeader + ",#cspan";
+                    attachHeader.Add("Budget");
+                    columnIds = columnIds + ",#cspan";
+                    colType = colType + ",ed";
+                    width = width + ",100";
+                    colSorting = colSorting + ",str";
+
                     quarterCounter++;
                 }
             }
@@ -20249,32 +20651,38 @@ namespace RevenuePlanner.Controllers
                 {
                     DateTime dt = new DateTime(2012, i, 1);
                     setHeader = setHeader + "," + dt.ToString("MMM").ToUpper();
+                    attachHeader.Add("Actuals");
+                    columnIds = columnIds + "," + dt.ToString("MMM").ToUpper();
                     colType = colType + ",ed";
                     width = width + ",100";
                     colSorting = colSorting + ",str";
 
-                    setHeader = setHeader + ",A" + dt.ToString("MMM").ToUpper();
+                    setHeader = setHeader + ",#cspan";
+                    columnIds = columnIds + ",#cspan";
+                    attachHeader.Add("Planned");
                     colType = colType + ",ed";
                     width = width + ",100";
                     colSorting = colSorting + ",str";
 
-                    setHeader = setHeader + ",C" + dt.ToString("MMM").ToUpper();
+                    setHeader = setHeader + ",#cspan";
+                    columnIds = columnIds + ",#cspan";
+                    attachHeader.Add("Budget");
                     colType = colType + ",ed";
                     width = width + ",100";
                     colSorting = colSorting + ",str";
                 }
             }
 
-            if (tab == "2")
-            {
-                setHeader = setHeader + ",Total";
-                colType = colType + ",ro";
-                width = width + ",100";
-                colSorting = colSorting + ",str";
-            }
+            setHeader = setHeader + ",";
+            columnIds = columnIds + ",Total";
+            attachHeader.Add("Total");
+            colType = colType + ",ro";
+            width = width + ",100";
+            colSorting = colSorting + ",str";
 
-            // Modified by Rushil Bhuptani on 06/03/2016 for #2214
             objBudgetDHTMLXGrid.SetHeader = setHeader + ",";
+            objBudgetDHTMLXGrid.ColumnIds = columnIds + ",";
+            objBudgetDHTMLXGrid.AttachHeader = attachHeader;
             objBudgetDHTMLXGrid.ColType = colType + ",ro";
             objBudgetDHTMLXGrid.Width = width + ",10";
             objBudgetDHTMLXGrid.ColSorting = colSorting + ",na";

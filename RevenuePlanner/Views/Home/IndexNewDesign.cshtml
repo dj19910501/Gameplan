@@ -155,8 +155,8 @@
 <script src="~/Scripts/js/Home/Grid_CalendarCommon.js"></script>
 <script src="~/Scripts/js/Home/HomeGrid.js"></script>
 
-    <script type="text/javascript">	 
-      
+    <script type="text/javascript">
+
     var urlContent = '@Url.Content("~/")';
     var urlServiceUnavailibility = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
     var secTactic = '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()';
@@ -175,7 +175,7 @@
     var campaignCloneType = '@Enums.DuplicationModule.Campaign';
     var programCloneType = '@Enums.DuplicationModule.Program';
     var tacticCloneType = '@Enums.DuplicationModule.Tactic';
-    var lineItemCloneType = '@Enums.DuplicationModule.LineItem';    
+    var lineItemCloneType = '@Enums.DuplicationModule.LineItem';
     var activeMenu = '@ViewBag.ActiveMenu.ToString()';
     var ActivityName = '@Enums.GlobalSearch.ActivityName.ToString().ToLower()';
     var ExternalName = '@Enums.GlobalSearch.ExternalName.ToString().ToLower()';
@@ -234,10 +234,10 @@
         $("#sidebar").toggleClass("slideLeft");
         $("#content_wraper").toggleClass("slideLeft");
     })
-   
-        $(document).ready(function () {
-            $(".selectBox select").selectbox();
-            $("#ddlTabViewBy").multiselect();
+
+    $(document).ready(function () {
+        $(".selectBox select").selectbox();
+        $("#ddlTabViewBy").multiselect();
 
         var strURL = '@Url.Content("~/Filter/Index/")';
         $.ajax({
@@ -271,8 +271,8 @@
                     var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
                     GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
                     GetMultiplePlanNames();
-                    GetGoalValues('@Url.Action("GetGoalValues", "Home")',planids);
-					GetFilterIds();
+                    GetGoalValues('@Url.Action("GetGoalValues", "Home")', planids);
+                    GetFilterIds();
                     if (isDisplayGridview) {
                         LoadPlanGrid();
                     }
@@ -318,7 +318,14 @@
         $("#GridGanttContent").hide();
         $("#divgridview").show();
         $('#divgridview').empty();
-        $('#divgridview').load('@Url.Action("GetBudgetedData_New", "Plan")');
+
+        filters = GetFilterIds();
+        var CheckedSelectedPlans = filters.PlanIDs.join(',');
+        var CheckedSelectedOwnerIds = filters.OwnerIds.join(',');
+        var CheckedSelectedTacticTypeids = filters.TacticTypeids.join(',');
+        var CheckedSelectedStatusIds = filters.StatusIds.join(',');
+        var CheckedSelectedCustomFiwldIds = filters.customFieldIds.join(',');
+        $('#divgridview').load('@Url.Action("GetBudgetedData_New", "Plan")' + '?PlanIds=' + CheckedSelectedPlans + '&OwnerIds=' + CheckedSelectedOwnerIds + '&TactictypeIds=' + CheckedSelectedTacticTypeids + '&StatusIds=' + CheckedSelectedStatusIds + '&CustomFieldIds=' + CheckedSelectedCustomFiwldIds);
     });
 
 

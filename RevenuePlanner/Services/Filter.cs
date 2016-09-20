@@ -283,39 +283,14 @@ namespace RevenuePlanner.Services
         public List<User> GetIndividualsByPlanId(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, Guid ApplicationId, int UserId)
         {
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-            if (ActiveMenu.Equals(Enums.ActiveMenu.Plan.ToString()))
+            var TacticUserList = tacticList.Distinct().ToList();
+            if (TacticUserList.Count > 0)
             {
-                var TacticUserList = tacticList.ToList();
-                if (TacticUserList.Count > 0)
-                {
-                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == UserId).ToList();
-                }
-                var useridslist = TacticUserList.Select(tactic => tactic.CreatedBy).Distinct().ToList();
-                string strContatedIndividualList = string.Join(",", useridslist.Select(tactic => tactic.ToString()));
-                var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, ApplicationId);
-                return individuals;
+                TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == UserId).ToList();
             }
-            else
-            {
-                List<string> status = Common.GetStatusListAfterApproved();
-                List<string> statusCD = new List<string>();
-                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-                var TacticUserList = tacticList.Distinct().ToList();
-                if (ViewBy.Equals(GanttTabs.Request.ToString()))
-                {
-                    TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status)).Distinct().ToList();
-                }
-                if (TacticUserList.Count > 0)
-                {
-                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == UserId).ToList();
-                }
-                var useridslist = TacticUserList.Select(tactic => tactic.CreatedBy).Distinct().ToList();
-                string strContatedIndividualList = string.Join(",", useridslist.Select(tactic => tactic.ToString()));
-                var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, ApplicationId);
-                return individuals;
-            }
+            var useridslist = TacticUserList.Select(tactic => tactic.CreatedBy).Distinct().ToList();
+            var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationIdEx(useridslist, ApplicationId);
+            return individuals;
         }
     }
 }

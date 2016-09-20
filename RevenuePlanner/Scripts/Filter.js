@@ -897,7 +897,7 @@ function SavePreset() {
         $('div[id=errorMessageMainSidebar]').each(function () {
             if ($(this).parent().is(':visible')) {
                 $(this).show();
-                $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
+                $(this).find("span[id=spanErrorMessageRole]").text($('#ProvidePresetName').val());
             }
         });
         $("#txtPresetName").val("");
@@ -1062,4 +1062,128 @@ function GetFilterIds() {
         filters.StatusIds.push($(this).attr('id').toString());
     });
     return filters;
+}
+
+function ApplyFilters() {
+    $.ajax({
+        url: $('#GetCacheValue').val(),
+        async: false,
+        data: {
+        },
+        success: function (result) {
+        }
+    });
+    UpdateResult();
+}
+
+var IsPlanChange = false;
+function SaveLastSetofViews(ViewName) {
+    filters.customFieldIds = [];
+    filters.TacticTypeids = [];
+    filters.StatusIds = [];
+    filters.OwnerIds = [];
+    filters.parentCustomFieldsIds = [];
+    $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+        filters.OwnerIds.push($(this).attr("id"));
+    });
+    $("#ulTacticType li input[type=checkbox]").each(function () {
+        var chkid = $(this).attr("id");
+        if ($(this).is(':checked')) {
+            filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+        }
+    });
+    $('#divCustomFieldsFilter').children().each(function () {
+        filters.parentCustomFieldsIds.push($(this).attr('id').split('-')[1])
+    });
+    $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+        if ($(this).attr('checked') == 'checked') {
+            var chkid = $(this).attr("id");
+            if (chkid != undefined && chkid != 'undefined') {
+                filters.customFieldIds.push(chkid);
+            }
+        }
+    });
+    filters.SelectedPlans = [];
+    $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+        if ($(this).attr('checked') == 'checked') {
+            var chkid = $(this).attr("id");
+            if (chkid != undefined && chkid != 'undefined') {
+                filters.SelectedPlans.push(chkid);
+            }
+        }
+    });
+    $("#ulStatus li input[type=checkbox]").each(function () {
+        var chkid = $(this).attr("id");
+        if ($(this).is(':checked')) {
+            filters.StatusIds.push(chkid);
+        }
+    });
+    filters.SelectedYears = [];
+    var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+    years = "";
+    $.each(listCheckbox, function () {
+        if ($(this).attr("checked")) {
+            years += $(this).attr('yearValue') + ",";
+        }
+    });
+    years = years.slice(0, -1);
+    if (years != null && years != "") {
+        filters.SelectedYears.push(years);
+    }
+    var Planid = filters.SelectedPlans;
+    var CustomFieldId = filters.customFieldIds;
+    var OwnerIds = filters.OwnerIds;
+    var TacticTypeids = filters.TacticTypeids;
+    var GetSelectedPlanNo = filters.SelectedPlans.length;
+    var StatusIds = filters.StatusIds;
+    var ParentCustomFieldsIds = filters.parentCustomFieldsIds;
+    if (filters.TacticTypeids.length != 0 && $("#ulTacticType li input[type=checkbox]").length == filters.TacticTypeids.length) {
+        TacticTypeids = 'All';
+    }
+    if (filters.OwnerIds.length != 0 && $("#ulSelectedOwner li input[type=checkbox]").length == filters.OwnerIds.length) {
+        OwnerIds = 'All';
+    }
+    $.ajax({
+        type: "POST",
+        cache: false,
+        async: false,
+        url: $('#SaveLastSetofViews').val(),
+        data: {
+            PlanId: Planid.toString(),
+            customFieldIds: CustomFieldId.toString(),
+            ownerIds: OwnerIds.toString(),
+            TacticTypeid: TacticTypeids.toString(),
+            StatusIds: filters.StatusIds.toString(),
+            ViewName: ViewName,
+            SelectedYears: filters.SelectedYears.toString(),
+            ParentCustomFieldsIds: filters.parentCustomFieldsIds.toString()
+
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data.isSuccess == true) {
+                if (data.ViewName != null && data.ViewName != "" && data.ViewName != undefined) {
+                    $("#content_SaveFilters").css("display", "none");
+                    $("#Filtersidebar").css("display", "block");
+                    $("#errorMessageMainSidebar").css("display", "none");
+                    $('div[id=successMessageSidebar]').each(function () {
+                        if ($(this).parent().is(':visible')) {
+                            $(this).show();
+                            $(this).find("span[id=spanSuccessMessageRole]").text($('#SavePresetSuccess').val());
+                        }
+                    });
+                    $("#txtPresetName").val('');
+                }
+            }
+            else {
+                $("#successMessageSidebar").css("display", "none");
+                $('div[id=errorMessageMainSidebar]').each(function () {
+                    if ($(this).parent().is(':visible')) {
+                        $(this).show();
+                        $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
+                    }
+                });
+            }
+        }
+    });
 }

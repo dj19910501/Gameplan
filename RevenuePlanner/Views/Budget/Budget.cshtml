@@ -80,6 +80,9 @@
     }
 </style>
 
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
+
 <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
 
 
@@ -93,9 +96,12 @@
         HomeGrid.setImagePath(imgpath);
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setHeader('@Model.SetHeader');
+        HomeGrid.attachHeader(JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader))'));
         HomeGrid.setColTypes('@Model.ColType');
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
+        HomeGrid.setColumnIds('@Model.ColumnIds');
+        HomeGrid.setColAlign("right,left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setEditable(true);
@@ -125,12 +131,129 @@
     }
 
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
-        if (stage == 0)
-        {
+        if (stage == 0) {
+
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
+
+        }
+        if (stage == 1) { }
+        if (stage == 2) {
+
+            var EntityId = HomeGrid.cells(rowId, 0).cell.innerText.split(';')[0];
+            var Section = HomeGrid.cells(rowId, 0).cell.innerText.split(';')[1];            
+            var Month = '';
+            var YearCost;
+            var MonthCost;
+            var Tab = HomeGrid.getColLabel(cellInd, 1);
+
+            if (Tab == 'Actuals' || Tab == 'Planned' || Tab == 'Budget') {
+                if (HomeGrid.getColLabel(cellInd) == "") {
+                    if (HomeGrid.getColLabel(cellInd - 1) == "") {
+                        Month = HomeGrid.getColLabel(cellInd - 2);
+                    }
+                    else {
+                        Month = HomeGrid.getColLabel(cellInd - 1);
+                    }
+                }
+                else {
+                    Month = HomeGrid.getColLabel(cellInd);
+                }
+            }
+            if (Tab == 'Actuals') {
+                var ActualCostColIndex = HomeGrid.getColIndexById("ActualCost");
+                YearCost = HomeGrid.cells(rowId, ActualCostColIndex).cell.innerText;
+                MonthCost = nValue;
+            }
+            else if (Tab == 'Planned') {
+                var PlannedCostColIndex = HomeGrid.getColIndexById("plannedcost");
+                YearCost = HomeGrid.cells(rowId, PlannedCostColIndex).cell.innerText;
+                MonthCost = nValue;
+            }
+            else if (Tab == 'Budget') {
+                var BudgetCostColIndex = HomeGrid.getColIndexById("BudgetCost");
+                YearCost = HomeGrid.cells(rowId, BudgetCostColIndex).cell.innerText;
+                MonthCost = nValue;
+            }
+            else if (Tab == 'Actual Cost') {
+                Tab = "Actuals";
+                MonthCost = '';
+                YearCost = nValue;
+            }
+            else if (Tab == 'Planned Cost') {
+                Tab = "Planned";
+                MonthCost = '';
+                YearCost = nValue;
+            }
+            else if (Tab == 'Budget Cost') {
+                Tab = "Budget";
+                MonthCost = '';
+                YearCost = nValue;
+            }
+            SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost);
         }
     }
-    
+
+    function SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost) {
+        var entityId = EntityId;
+        var section = Section;
+        var month = Month;
+        var tab = Tab;
+        var isquarter = false;
+        if ('@isquarter' == 'True') {
+            isquarter = true;
+        }
+        var inputArr = [];
+        if (MonthCost != null && MonthCost != '') {
+            inputArr.push({
+                key: 'CostYear',
+                Value: SetValueByExchangeRate(YearCost.replace(/,/g, ""))
+            });
+            inputArr.push({
+                key: 'CostMonth',
+                Value: SetValueByExchangeRate(MonthCost.replace(/,/g, ""))
+            });
+        }
+        else {
+            inputArr.push({
+                key: 'BudgetYear',
+                Value: SetValueByExchangeRate(YearCost.replace(/,/g, ""))
+            });
+        }
+
+        var jsonInputs = JSON.stringify(inputArr);
+        var URL;
+        if (Tab == 'Budget') {
+            URL = '@Url.Content("~/Plan/SaveBudgetCell/")';
+        }
+        else {
+            URL = '@Url.Content("~/Plan/SavePlannedCell/")';
+        }
+        $.ajax({
+            type: 'POST',
+            url: URL,
+            dataType: "json",
+            data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
+            success: function (data) {
+
+                if (data.isSuccess == true) {
+                    section = section.toLowerCase();
+                    $("#hdnBudgetingIsSave").val("true");
+                    if (tab == 'Actuals' || tab == 'Budget') {
+                        $("#hdnBudgetingExpandId").val(section + entityId);
+                    }
+                    else {
+                        var sectionIntializer = section == "tactic" ? "cpt" : section == "program" ? "cp" : section == "campaign" ? "c" : "";
+                        $("#hdnBudgetingExpandId").val(section + sectionIntializer + '_' + entityId);
+                    }
+                }
+                else {
+                    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                    $('#errorMessageDuplicatePlan').slideDown(700);
+
+                }
+            }
+        });
+    }
 </script>
