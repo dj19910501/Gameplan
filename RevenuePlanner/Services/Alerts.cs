@@ -318,6 +318,7 @@ namespace RevenuePlanner.Services
                     command.Parameters.AddWithValue("@UserId", UserId);
                     command.Parameters.AddWithValue("@CreatedBy", UserId);
                     command.Parameters.AddWithValue("@ModifiedBy", UserId);
+                    command.Parameters.AddWithValue("@UserEmail", Sessions.User.Email.ToString());//*Added User Email Column for ticket - 2534*/
                     command.Parameters.AddWithValue("@IsExists", IsExists).Direction = ParameterDirection.Output;
 
                     SqlDataAdapter adp = new SqlDataAdapter(command);
