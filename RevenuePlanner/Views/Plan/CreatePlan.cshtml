@@ -345,12 +345,12 @@
             if (!isError) {
                 $("#GoalValue").val(ReplaceCC($("#GoalValue").val()));
                 $("#txtBudget").val(ReplaceCC($("#txtBudget").val()));
-                var uId = $(window).attr('name');
+                //var uId = $(window).attr('name');
                 var isUpdate = $('#PlanId').val();
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Plan/SavePlanDefination")',
-                    data: $("form[name=SavePlanForm]").serialize() + '&UserId=' + uId + '&IsPlanChange=' + '@IsPlanChange',  //Modified BY komal Rawal for #2072 to check  if plan is changed in Plan defination
+                    data: $("form[name=SavePlanForm]").serialize() + '&UserId=' + @Sessions.User.ID + '&IsPlanChange=' + '@IsPlanChange',  //Modified BY komal Rawal for #2072 to check  if plan is changed in Plan defination
                     success: function (data) {
 
                         if (data != 'undefined') {
