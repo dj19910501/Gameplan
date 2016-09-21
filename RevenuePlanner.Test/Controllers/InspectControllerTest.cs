@@ -1192,7 +1192,7 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             InspectController controller = new InspectController();
-            Guid UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).UserId;
+            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
             int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
                             Select(tac => tac.PlanTacticId).FirstOrDefault();
 
