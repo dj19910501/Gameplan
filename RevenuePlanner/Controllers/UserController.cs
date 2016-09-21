@@ -448,7 +448,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                    objUser.ID = form.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                    objUser.MID = form.ManagerId;     
 
                     //// Create User with default Permissions.
                     //int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.ID);
@@ -777,7 +777,8 @@ namespace RevenuePlanner.Controllers
                 .ToArray();
             foreach (var error in errors)
             {
-                if (error.Key == "Password" || error.Key == "ConfirmPassword" || error.Key == "Email")
+                if (error.Key == "Password" || error.Key == "ConfirmPassword" || error.Key == "Email" || error.Key == "NewManagerId")
+                    //why managerID = 0 causes invalid state ? TODO: zz
                 {
                     ModelState.Remove(error.Key);
                 }
