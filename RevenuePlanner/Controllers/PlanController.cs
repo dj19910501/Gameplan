@@ -14224,14 +14224,6 @@ namespace RevenuePlanner.Controllers
                 List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
                 //// Owner filter criteria.
                 List<int> filterOwner = ownerIds.Count() == 0 ? new List<int>() : ownerIds;
-                // Add By Nishant Sheth
-                // Desc :: To resolve the select and deselct all owner issues
-                //if (planselectedowner == null)
-                //{
-                //    filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
-                //}
-                // End By Nishant Sheth
-                //Modified by komal rawal for #1283
                 //TacticType filter criteria
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
                 //TacticType filter criteria
@@ -18007,19 +17999,25 @@ namespace RevenuePlanner.Controllers
             return TacticType;
         }
 
-        public string GetOwnerName(string Userint)
+        /// <summary>
+        /// This takes a string userID since the ID may come from a string field for general usage (including int user ID) 
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <returns></returns>
+        public string GetOwnerName(string userID)
         {
             var OwnerName = "";
             try
             {
-                if (Userint != "")
+                if (userID != "")
                 {
+                    var intuserId = Convert.ToInt32(userID);
                     if (lstUserDetails == null || lstUserDetails.Count == 0)
                     {
                         lstUserDetails = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
                     }
 
-                    var userName = lstUserDetails.Where(user => user.UserId.ToString() == Userint).Select(user => new
+                    var userName = lstUserDetails.Where(user => user.ID == intuserId).Select(user => new
                     {
                         FirstName = user.FirstName,
                         Lastname = user.LastName
@@ -18048,19 +18046,20 @@ namespace RevenuePlanner.Controllers
 
         }
 
-        public string GetOwnerNameCSV(string Userint, List<User> lstUserDetailsData)
+        public string GetOwnerNameCSV(string userId /* even though the data type may not be an int, let's use userId to reflect he fact it takes a user ID*/
+                                        , List<User> lstUserDetailsData)
         {
             var OwnerName = "";
             try
             {
-                if (Userint != "")
+                if (userId != string.Empty)
                 {
                     if (lstUserDetailsData == null || lstUserDetailsData.Count == 0)
                     {
                         lstUserDetailsData = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
                     }
 
-                    var userName = lstUserDetailsData.Where(user => user.UserId.ToString().ToUpper() == Userint.ToUpper()).Select(user => new
+                    var userName = lstUserDetailsData.Where(user => user.ID == Convert.ToInt32(userId)).Select(user => new
                     {
                         FirstName = user.FirstName,
                         Lastname = user.LastName

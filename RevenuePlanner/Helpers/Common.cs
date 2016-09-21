@@ -9138,7 +9138,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ClientId"></param>
         /// <param name="DashboardID"></param>
         /// <returns></returns>
-        public static List<Custom_Dashboard> GetSpDashboarData(string UserId, int DashboardID = 0)
+        public static List<Custom_Dashboard> GetSpDashboarData(int UserId, int DashboardID = 0)
         {
             var DashboardList = new List<Custom_Dashboard>();
             StoredProcedure objSp = new StoredProcedure();
@@ -9683,7 +9683,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ClientId"></param>
         /// <param name="DashboardID"></param>
         /// <returns></returns>
-        public DataSet GetDashboarContentData(string UserId, int DashboardID = 0)
+        public DataSet GetDashboarContentData(int UserId, int DashboardID = 0)
         {
             DataTable datatable = new DataTable();
             DataSet dataset = new DataSet();

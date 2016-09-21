@@ -228,7 +228,7 @@ namespace RevenuePlanner.Services
                 try
                 {
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@UserId", UserId.ToString());
+                    command.Parameters.AddWithValue("@UserId", UserId);
                     command.Parameters.AddWithValue("@Type", Type.ToLower());
 
                     SqlDataAdapter adp = new SqlDataAdapter(command);

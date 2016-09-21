@@ -60,7 +60,7 @@ namespace RevenuePlanner.Models
     }
     public class OwnerModel
     {
-        public string OwnerId { get; set; }
+        public int OwnerId { get; set; }
         public string Title { get; set; }
     }
 

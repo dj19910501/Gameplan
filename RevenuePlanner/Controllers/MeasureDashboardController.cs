@@ -103,7 +103,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                     ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                     ViewBag.ApiUrl = ApiUrl;
-                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID.ToString());
+                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID);
                     ViewBag.DashboardAccess = true;
 
                     return View("Index", model);
@@ -114,7 +114,7 @@ namespace RevenuePlanner.Controllers
                     ViewBag.AuthorizedReportAPIUserName = string.Empty;
                     ViewBag.AuthorizedReportAPIPassword = string.Empty;
                     ViewBag.ApiUrl = string.Empty;
-                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID.ToString());
+                    ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID);
                     ViewBag.DashboardAccess = false;
                     Custom_Dashboard model = new Custom_Dashboard();
                     return View("Index", model);

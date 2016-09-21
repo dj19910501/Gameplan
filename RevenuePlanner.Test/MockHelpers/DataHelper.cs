@@ -430,7 +430,7 @@ namespace RevenuePlanner.Test.MockHelpers
         {
             int planId = DataHelper.GetPlanId();
             var UserId = Sessions.User.ID;
-            var DashboardId = Common.GetSpDashboarData(Convert.ToString(UserId)).Select(a => a.Id).FirstOrDefault();
+            var DashboardId = Common.GetSpDashboarData(UserId).Select(a => a.Id).FirstOrDefault();
             return Convert.ToString(DashboardId);
         }
         #endregion

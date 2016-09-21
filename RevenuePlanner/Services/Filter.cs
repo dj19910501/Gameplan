@@ -231,7 +231,7 @@ namespace RevenuePlanner.Services
                 }
                 var LoggedInUser = new OwnerModel
                 {
-                    OwnerId = UserId.ToString(),
+                    OwnerId = UserId,
                     Title = Convert.ToString(FirstName + " " + LastName),
                 };
 
@@ -261,7 +261,7 @@ namespace RevenuePlanner.Services
             var lstOwners = GetIndividualsByPlanId(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, ApplicationId, UserId);
             List<OwnerModel> lstAllowedOwners = lstOwners.Select(owner => new OwnerModel
             {
-                OwnerId = Convert.ToString(owner.UserId),
+                OwnerId = owner.ID,
                 Title = owner.FirstName + " " + owner.LastName,
             }).Distinct().OrderBy(owner => owner.Title).ToList();
 

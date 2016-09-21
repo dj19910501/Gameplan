@@ -112,20 +112,6 @@ namespace RevenuePlanner.Controllers
                     //}
                 }
             }
-            ////Start Manoj PL #490 Date:27May2014
-            //System.Collections.Generic.List<LoginSession> a = (System.Collections.Generic.List<LoginSession>)filterContext.HttpContext.Application["CurrentSession"];
-            //if (a != null)
-            //{
-            //    if (string.Compare(entity.Trim(), "login", true) != 0)
-            //    {
-            //        if (a.Find(l => l.SessionId == Session.SessionID && l.UserId != Sessions.User.UserId.ToString()) != null)
-            //        {
-            //            TempData["ErrorMessage"] = "Another user already logged-in with the same session";
-            //            filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { action = "Index", Controller = "Login" }));
-            //        }
-            //    }
-            //}
-            ////End Manoj PL #490 Date:27May2014
             base.OnActionExecuting(filterContext);//Call the method of base class
         }
 

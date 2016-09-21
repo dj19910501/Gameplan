@@ -7620,7 +7620,7 @@ namespace RevenuePlanner.Controllers
             //var lstOwners = GetIndividualsByPlanId(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, otherownerids);
             List<OwnerModel> lstAllowedOwners = lstOwners.Select(owner => new OwnerModel
             {
-                OwnerId = Convert.ToString(owner.ID),
+                OwnerId = owner.ID,
                 Title = owner.FirstName + " " + owner.LastName,
             }).Distinct().OrderBy(owner => owner.Title).ToList();
 
@@ -7731,7 +7731,7 @@ namespace RevenuePlanner.Controllers
                 //Added by Nishant to bring the owner name in the list even if they dont own any tactic
                 var LoggedInUser = new OwnerModel
                 {
-                    OwnerId = Sessions.User.ID.ToString(),
+                    OwnerId = Sessions.User.ID,
                     Title = Convert.ToString(Sessions.User.FirstName + " " + Sessions.User.LastName),
                 };
                 await Task.Delay(1);
@@ -7829,10 +7829,9 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="UserId">user id</param>
         /// <returns>returns json result with redirect url.</returns>
-        public ActionResult CheckUserId(Guid UserId)
+        public ActionResult CheckUserId(int UserId)
         {
-            //This is the only area we will keep using GUID for user ID! zz Sep 20, 2016
-            if (Sessions.User.UserId == UserId)
+            if (Sessions.User.ID == UserId)
             {
                 return Json(new { returnURL = "#" }, JsonRequestBehavior.AllowGet);
             }

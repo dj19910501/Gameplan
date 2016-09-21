@@ -549,7 +549,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
             //End Added by Mitesh Vaishnav for PL ticket #846
 
-            ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID.ToString());// Add By Nishant Sheth // #2262 : display menu for report's dashboard
+            ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID);// Add By Nishant Sheth // #2262 : display menu for report's dashboard
 
             var UserMeasureAppCode = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).Any();
             string ReportDBConnString = string.Empty;
@@ -2353,11 +2353,11 @@ namespace RevenuePlanner.Controllers
                 }
                 ////
                 //Modified regarding #2484 save notifications by komal rawal on 16-08-2016
-                if (individuals.Count != 0)
+                if (individuals.Count > 0)
                 {
                     ViewBag.EmailIds = individuals.Select(member => new
                     {
-                        UserId = member.UserId.ToString(),
+                        UserId = member.ID,
                         Email = member.Email
                     }).ToList();
                 }

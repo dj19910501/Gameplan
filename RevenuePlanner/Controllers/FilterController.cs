@@ -589,7 +589,7 @@ namespace RevenuePlanner.Controllers
             {
                 var LoggedInUser = new OwnerModel
                 {
-                    OwnerId = Sessions.User.ID.ToString(),
+                    OwnerId = Sessions.User.ID,
                     Title = Convert.ToString(Sessions.User.FirstName + " " + Sessions.User.LastName),
                 };
                 List<OwnerModel> lstOwner = objCommonFilter.GetOwnerListForFilter(Sessions.User.ID, Sessions.User.ID, Sessions.User.FirstName, Sessions.User.LastName, Sessions.ApplicationId, PlanId, ViewBy, ActiveMenu);
