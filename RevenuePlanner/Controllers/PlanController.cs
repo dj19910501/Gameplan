@@ -15540,20 +15540,17 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
         #region method to generate grid header
-        public List<PlanHead> GenerateJsonHeaderForLineItemListing(List<TacticTypeModel> TacticTypeList)
+        public List<PlanHead> GenerateJsonHeaderForLineItemListing()
         {
             // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
             List<PlanHead> headobjlist = new List<PlanHead>();
             PlanHead headobj = new PlanHead();
             List<PlanOptions> lstOwner = new List<PlanOptions>();
-            List<PlanOptions> lstTacticType = new List<PlanOptions>();
             try
             {
 
-                if (TacticTypeList != null && TacticTypeList.Count > 0)
-                    lstTacticType = TacticTypeList.Select(tacttype => new PlanOptions { id = tacttype.TacticTypeId.ToString(), value = HttpUtility.HtmlDecode(tacttype.Title) }).ToList();
-
-                List<User> lstUsers = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ToList();
+                // Modified by Arpita Soni for Ticket #2650
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
                 lstUsers = lstUsers.Where(i => i.IsDeleted == false).ToList();
                 List<int> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.CID, lstUsers);
 
@@ -15561,13 +15558,13 @@ namespace RevenuePlanner.Controllers
 
                 if (lstClientUsers.Count() > 0)
                 {
-                    string strUserList = string.Join(",", lstClientUsers);
-                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId);   //PL #1532 Grid View & Tactic Pop-up: Displaying Users which are not in Gameplan - Dashrath Prajapati                
+                    // Modified by Arpita Soni for Ticket #2650
+                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, Sessions.ApplicationId);   //PL #1532 Grid View & Tactic Pop-up: Displaying Users which are not in Gameplan - Dashrath Prajapati                
 
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.UserId.ToString(), value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
+                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.ID.ToString(), value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
                     }
                 }
                 // First Column Activity Type
@@ -15638,7 +15635,7 @@ namespace RevenuePlanner.Controllers
                 headobj.sort = "sort_TacticType";
                 headobj.width = 150;
                 headobj.value = "Type";
-                headobj.options = lstTacticType;
+                //headobj.options = "";
                 headobjlist.Add(headobj);
 
                 // Eighth Column : Owner
@@ -16603,6 +16600,11 @@ namespace RevenuePlanner.Controllers
                                     {
                                         objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
                                     }
+                                    foreach (var tcost in tacticostslist)
+                                    {
+                                        db.Entry(tcost).State = EntityState.Modified;
+                                    }
+                                    db.SaveChanges();
                                 }
                             }
                             else

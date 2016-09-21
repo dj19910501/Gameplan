@@ -321,9 +321,6 @@ else
             
             return false; // block defaults
         });
-        LineItemGrid.attachEvent("onSubGridLoaded",function(subgrid){
-            alert();
-        })
         LineItemGrid.init();
         LineItemGrid.enableAutoHeight(true);
         LineItemGrid.parse(GridDataLineItemGrid, "json");

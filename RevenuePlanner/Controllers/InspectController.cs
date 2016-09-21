@@ -6433,13 +6433,18 @@ namespace RevenuePlanner.Controllers
             PlanController objPlanController = new PlanController();
             Plangrid objplangrid = new Plangrid();
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            // Modified by Arpita Soni for Ticket #2650
+            Dictionary<int, BudgetDHTMLXGridModel> lstChildPlanMainDHTMLXGrid = new Dictionary<int, BudgetDHTMLXGridModel>();
+            BudgetDHTMLXGridModel childPlanMainDHTMLXGrid = new BudgetDHTMLXGridModel();
             PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
+                // Modified by Arpita Soni for Ticket #2650
                 // Generate Json Header
-                objPlanMainDHTMLXGrid.head = objPlanController.GenerateJsonHeader("", 0, null, "");
+                objPlanMainDHTMLXGrid.head = objPlanController.GenerateJsonHeaderForLineItemListing();
 
                 Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId.Equals(tacticId) && _tactic.IsDeleted.Equals(false)).FirstOrDefault();
+                ViewBag.AllocatedBy = objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
                 // Add Condition by nishant sheth
                 // Desc :: To resolve test case when tactic object is null
                 if (objTactic != null)
@@ -6453,6 +6458,7 @@ namespace RevenuePlanner.Controllers
 
                     string lockedstateone = "1";
                     string bgcolorLineItem = "#ffffff";
+                    string formatThousand = "#,#0.##";
 
                     string stylecolorblack = "color:#000";
                     string stylecolorgray = "color:#999"; // Add By Nishant Sheth #1987
@@ -6466,10 +6472,16 @@ namespace RevenuePlanner.Controllers
 
                         if (finalLineitem != null && finalLineitem.Count > 0)
                         {
+                            // Modified by Arpita Soni for Ticket #2650
+                            double TacticCost = 0;
+                            TacticCost = objTactic.Cost;
+                            double TotalLineItemCost = finalLineitem.Where(lt => lt.LineItemType != null).Sum(x => x.Cost);
+                            double otherLineItemCost = objCurrency.GetValueByExchangeRate(TacticCost - TotalLineItemCost, PlanExchangeRate);
                             var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
                             {
                                 index = index,
-                                Cost = objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
+                                //Cost = taskdata.LineItemType == null ? (objTactic.Cost - TotalLineItemCost) : objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
+                                Cost = taskdata.LineItemType == null ? otherLineItemCost : objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
                                 lineitemtype = taskdata.LineItemTypeId,
                                 PlanLineItemId = taskdata.PlanLineItemId,
                                 title = taskdata.Title,
@@ -6480,8 +6492,17 @@ namespace RevenuePlanner.Controllers
                             });
 
                             #region LineItems
+                            // Modified by Arpita Soni for Ticket #2650
+                            // Child grids for each line items
+                            List<BudgetDHTMLXGridModel> allocatedCost = objPlanController.GetCostAllocationLineItemInspectPopup(tacticId);
+                            if (allocatedCost != null && allocatedCost.Count > 0)
+                            {
+                                allocatedCost.ForEach(x => lstChildPlanMainDHTMLXGrid.Add(x.LineItemId, x));
+                            }
+                            
                             foreach (var lineitem in lstLineItemTaskData)
                             {
+
                                 cellTextColor = lineitem.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
 
                                 lineitemrowsobj = new PlanDHTMLXGridDataModel();
@@ -6492,6 +6513,12 @@ namespace RevenuePlanner.Controllers
 
                                 lineitemdataobj.value = "LineItem";
                                 lineitemdataobjlist.Add(lineitemdataobj);
+                                
+                                // Added by Arpita Soni for Ticket #2612 on 09/08/2016
+                                // To implement sub grid of cost allocation in inspect popup
+                                lineitemdataobj = new Plandataobj();
+                                lineitemdataobj.type = "sub_row_grid";
+                                lineitemdataobjlist.Add(lineitemdataobj);
 
                                 lineitemdataobj = new Plandataobj();
                                 lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.title);
@@ -6500,7 +6527,7 @@ namespace RevenuePlanner.Controllers
                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                 lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Line1 onclick=javascript:OpenLineItemGridPopup(this,event) alt=" + tacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
+                                lineitemdataobj.value = "<div class=grid_Search id=LP title='View'></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Line1 title='Add'onclick=javascript:OpenLineItemGridPopup(this,event) alt=" + tacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                 lineitemdataobj = new Plandataobj();
@@ -6508,7 +6535,7 @@ namespace RevenuePlanner.Controllers
                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                 lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = lineitem.Cost.ToString();
+                                lineitemdataobj.value = objCurrency.GetValueByExchangeRate(lineitem.Cost, PlanExchangeRate).ToString(formatThousand);
                                 lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
                                 lineitemdataobj.type = "edn";
                                 lineitemdataobj.style = cellTextColor;
@@ -6545,6 +6572,8 @@ namespace RevenuePlanner.Controllers
                                             && litemtype.IsDeleted == false).
                                             Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
                     TempData["lineItemTypes"] = lstLineItemType;
+
+                    objplangrid.lstChildPlanDHTMLXGrid = lstChildPlanMainDHTMLXGrid;
                 }
             }
             catch (Exception objException)
@@ -7148,7 +7177,7 @@ namespace RevenuePlanner.Controllers
 
                                 if (tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
                                 {
-                                    var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
+                                    double tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
                                     double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != lineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + form.Cost;
                                     if (tacticlineitemcostmonth > tacticmonthcost)
                                     {
@@ -7518,18 +7547,46 @@ namespace RevenuePlanner.Controllers
                                             db.Entry(objlineitemCost).State = EntityState.Added;
                                         }
 
-
+                                        bool isQuarter = false;
+                                        if (objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())
+                                        {
+                                            isQuarter = true;
+                                        }
                                         List<Plan_Campaign_Program_Tactic_Cost> tacticostslist = objTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                                         double tacticost = objTactic.Plan_Campaign_Program_Tactic_Cost.Select(tactic => tactic.Value).Sum();
 
                                         if (tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
                                         {
-                                            var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
-                                            double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != form.PlanLineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + form.Cost;
-                                            if (tacticlineitemcostmonth > tacticmonthcost)
+                                            if (!isQuarter)
                                             {
-                                                tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
-                                                objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                                double tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
+                                                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != form.PlanLineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + diffcost;
+                                                if (tacticlineitemcostmonth > tacticmonthcost)
+                                                {
+                                                    tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
+                                                    objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                for (int quarterno = 1; quarterno <= 12; quarterno += 3)
+                                                {
+                                                    List<string> QuarterList = new List<string>();
+                                                    for (int J = 0; J < 3; J++)
+                                                    {
+                                                        QuarterList.Add(PeriodChar + (quarterno + J).ToString());
+                                                    }
+                                                    if (QuarterList.Contains(PeriodChar + startmonth))
+                                                    {
+                                                        double tacticmonthcost = tacticostslist.Where(pcptc => QuarterList.Contains(pcptc.Period)).Sum(p => p.Value);
+                                                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => QuarterList.Contains(lineitem.Period)).Sum(lineitem => lineitem.Value);
+                                                        if (tacticlineitemcostmonth > tacticmonthcost)
+                                                        {
+                                                            tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
+                                                            objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                         else
