@@ -49,7 +49,7 @@ namespace RevenuePlanner.Services
         /// <param name="StatusIds"></param>
         /// <param name="customFieldIds"></param>
         /// <returns></returns>
-        public List<GridDefaultModel> GetGridDefaultData(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
+        public List<GridDefaultModel> GetGridDefaultData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
         {
             List<GridDefaultModel> EntityList = new List<GridDefaultModel>();
             DataTable datatable = new DataTable();
@@ -76,7 +76,7 @@ namespace RevenuePlanner.Services
                 para[2] = new SqlParameter
                 {
                     ParameterName = "OwnerIds",
-                    Value = string.Join(",", ownerIds)
+                    Value = ownerIds
                 };
 
                 para[3] = new SqlParameter
@@ -104,7 +104,7 @@ namespace RevenuePlanner.Services
 
         #region Mtehod to get grid customfield and it's entity value
 
-        public GridCustomColumnData GetGridCustomFieldData(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
+        public GridCustomColumnData GetGridCustomFieldData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
         {
 
             GridCustomColumnData EntityList = new GridCustomColumnData();
@@ -197,7 +197,7 @@ namespace RevenuePlanner.Services
         /// <param name="PlanCurrencySymbol"></param>
         /// <param name="PlanExchangeRate"></param>
         /// <returns></returns>
-        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate)
+        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate)
         {
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             //Get list of entities for plan grid
@@ -280,7 +280,7 @@ namespace RevenuePlanner.Services
         /// <param name="StatusIds"></param>
         /// <param name="customFieldIds"></param>
         /// <returns></returns>
-        public GridCustomColumnData GridCustomFieldData(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
+        public GridCustomColumnData GridCustomFieldData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
         {
             GridCustomColumnData data = new GridCustomColumnData();
             try

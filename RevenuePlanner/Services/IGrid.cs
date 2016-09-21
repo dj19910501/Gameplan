@@ -11,6 +11,6 @@ namespace RevenuePlanner.Services
     {
         // Add By Nishant Sheth
         // Get plan grid data
-        PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate);
+        PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate);
     }
 }
