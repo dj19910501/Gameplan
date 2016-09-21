@@ -11854,7 +11854,7 @@ namespace RevenuePlanner.Controllers
                         coltype = "coro";
                         viewoptionlist = item.Option.Select(a => new PlanOptions
                        {
-                           id = Convert.ToString(a.CustomFieldOptionId),
+                           id = a.CustomFieldOptionId,
                            value = a.CustomFieldOptionValue
                        }).ToList();
 
@@ -12110,7 +12110,7 @@ namespace RevenuePlanner.Controllers
                             if (Cust.Option != null && Cust.Option.Count > 0)
                                 viewoptionlist = Cust.Option.Select(a => new PlanOptions
                                 {
-                                    id = Convert.ToString(a.CustomFieldOptionId),
+                                    id = a.CustomFieldOptionId,
                                     value = a.CustomFieldOptionValue
                                 }).ToList();
                         }

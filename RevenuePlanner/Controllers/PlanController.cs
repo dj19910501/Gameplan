@@ -15331,7 +15331,7 @@ namespace RevenuePlanner.Controllers
             {
 
                 if (TacticTypeList != null && TacticTypeList.Count > 0)
-                    lstTacticType = TacticTypeList.Select(tacttype => new PlanOptions { id = tacttype.TacticTypeId.ToString(), value = HttpUtility.HtmlDecode(tacttype.Title) }).ToList();
+                    lstTacticType = TacticTypeList.Select(tacttype => new PlanOptions { id = tacttype.TacticTypeId, value = HttpUtility.HtmlDecode(tacttype.Title) }).ToList();
 
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
                 lstUsers = lstUsers.Where(i => i.IsDeleted == false).ToList();
@@ -15346,7 +15346,7 @@ namespace RevenuePlanner.Controllers
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.ID.ToString(), value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
+                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.ID, value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
                     }
                 }
                 // First Column Activity Type
@@ -15567,7 +15567,7 @@ namespace RevenuePlanner.Controllers
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.ID.ToString(), value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
+                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.ID, value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
                     }
                 }
                 // First Column Activity Type

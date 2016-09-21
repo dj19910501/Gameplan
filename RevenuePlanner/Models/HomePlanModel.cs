@@ -493,7 +493,7 @@ namespace RevenuePlanner.Models
     }
     public class PlanOptions
     {
-        public string id { get; set; }
+        public int id { get; set; } //generid id field including user ID but all are integers - zz
         public string value { get; set; }
     }
     // Add By Nishant Sheth 
