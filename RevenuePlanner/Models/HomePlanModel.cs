@@ -55,7 +55,7 @@ namespace RevenuePlanner.Models
         public int TacticTypeId { get; set; }
         public string Title { get; set; }
         public int Number { get; set; }
-		// Added by Arpita Soni for Ticket #2354 on 07/19/2016
+        // Added by Arpita Soni for Ticket #2354 on 07/19/2016
         public string AssetType { get; set; }
     }
     public class OwnerModel
@@ -154,7 +154,7 @@ namespace RevenuePlanner.Models
 
         public string StageTitle { get; set; }
 
-        public int? StageLevel { get; set; } 
+        public int? StageLevel { get; set; }
 
         public double? ProjectedStageValue { get; set; }
 
@@ -188,9 +188,9 @@ namespace RevenuePlanner.Models
         public int? WorkFrontRequestAssignee { get; set; }
         public string WorkFrontTacticApprovalBehavior { get; set; }
         public Nullable<int> LinkedTacticId { get; set; } //Added by Rahul Shah on 12/04/2016 for PL #2038
-        public string CampaignfolderValue{get;set;}
-        public string programType{get;set;}
-        public string Channel{get;set;}
+        public string CampaignfolderValue { get; set; }
+        public string programType { get; set; }
+        public string Channel { get; set; }
         public string ROIType { get; set; }
     }
 
@@ -236,12 +236,12 @@ namespace RevenuePlanner.Models
 
         public double ROIActual { get; set; }
 
-		public bool IsActual { get; set; }
+        public bool IsActual { get; set; }
 
         public int StageId { get; set; }
 
         public int PlanLineItemId { get; set; }
-		
+
     }
 
     public class ActivityChart
@@ -257,7 +257,7 @@ namespace RevenuePlanner.Models
         public DateTime MinStartDate { get; set; }
         public int ImprovePlanId { get; set; }
         public Plan_Improvement_Campaign_Program_Tactic ImprovementTactic { get; set; }
-        public int CreatedBy { get; set; } 
+        public int CreatedBy { get; set; }
     }
 
     public class CustomFields
@@ -279,11 +279,11 @@ namespace RevenuePlanner.Models
         public string StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public double Duration { get; set; }
-        public double PlanProgrss { get; set; } 
+        public double PlanProgrss { get; set; }
         public double CampaignProgress { get; set; }
         public double ProgramProgress { get; set; }
         public List<int> lstCustomEntityId { get; set; }
-        public int CreatedBy { get; set; } 
+        public int CreatedBy { get; set; }
         public DateTime PlanStartDate { get; set; }
         public DateTime PlanEndDate { get; set; }
         public bool LinkTacticPermission { get; set; }
@@ -338,7 +338,7 @@ namespace RevenuePlanner.Models
         public string color { get; set; }
         public int planid { get; set; }
         public int CreatedBy { get; set; }
-        public string Status{ get; set; }
+        public string Status { get; set; }
     }
     public class Plan_Tactic
     {
@@ -360,7 +360,7 @@ namespace RevenuePlanner.Models
         public string Title { get; set; }
         public int? CustomFieldOptionId { get; set; }
     }
-    public partial class   lastSeen
+    public partial class lastSeen
     {
         public int Id { get; set; }
         public string ViewName { get; set; }
@@ -369,7 +369,7 @@ namespace RevenuePlanner.Models
         public int Userid { get; set; }
         public System.DateTime LastModifiedDate { get; set; }
     }
-	public class PlanMainDHTMLXGrid
+    public class PlanMainDHTMLXGrid
     {
         public List<PlanDHTMLXGridDataModel> rows { get; set; }
         public List<PlanHead> head { get; set; }
@@ -399,7 +399,7 @@ namespace RevenuePlanner.Models
         public string Status { get; set; }
         public Nullable<DateTime> StartDate { get; set; }
         public Nullable<DateTime> EndDate { get; set; }
-        public Guid CreatedBy { get; set; }
+        public Int32 CreatedBy { get; set; }
         public string AltId { get; set; }
         public string TaskId { get; set; }
         public string ParentTaskId { get; set; }
@@ -424,6 +424,14 @@ namespace RevenuePlanner.Models
     }
 
     // Add By Nishant Sheth
+    // Get custom fields values for entities in pivoted 
+    public class CustomfieldPivotData
+    {
+        public Nullable<Int64> EntityId { get; set; }
+        public List<Plandataobj> CustomFieldData { get; set; }
+    }
+
+    // Add By Nishant Sheth
     // Get list of custom fields
     public class GridCustomFields
     {
@@ -439,10 +447,9 @@ namespace RevenuePlanner.Models
     // Get list of Entity custom field values
     public class GridCustomFieldEntityValues
     {
-        public Int64 EntityId { get; set; }
+        public Nullable<Int64> EntityId { get; set; }
         public string EntityType { get; set; }
         public Nullable<int> CustomFieldId { get; set; }
-        public Nullable<int> CustomFieldEntityId { get; set; }
         public string Value { get; set; }
     }
 
@@ -488,7 +495,7 @@ namespace RevenuePlanner.Models
     {
         public string id { get; set; }
         public string value { get; set; }
-    }	  
+    }
     // Add By Nishant Sheth 
     // #1765 - to add list of monthly period.
     public class listMonthDynamic
@@ -522,7 +529,7 @@ namespace RevenuePlanner.Models
         public int ParentId { get; set; }
         public string Name { get; set; }
         public string RowId { get; set; }
-    } 
+    }
     #endregion
     public class Preset
     {

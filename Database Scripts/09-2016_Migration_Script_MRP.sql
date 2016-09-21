@@ -1279,6 +1279,7 @@ BEGIN
 END
 GO
 
+
 -- =============================================
 -- Author:		Nishant Sheth
 -- Create date: 16-Sep-2016
@@ -1286,7 +1287,10 @@ GO
 -- =============================================
 ALTER PROCEDURE [dbo].[GridCustomFieldData]
 	@PlanId	 NVARCHAR(MAX)=''
-	,@ClientId INT = 0
+	,@ClientId int = 0
+	,@OwnerIds NVARCHAR(MAX) = ''
+	,@TacticTypeIds varchar(max)=''
+	,@StatusIds varchar(max)=''
 AS
 BEGIN
 
@@ -1301,27 +1305,40 @@ SET NOCOUNT ON;
 			FROM CustomField 
 				WHERE ClientId=@ClientId
 					AND IsDeleted=0
-					AND EntityType NOT IN('Budget','MediaCode')
+					AND EntityType IN('Campaign','Program','Tactic','Lineitem')
 
-	SELECT Hireachy.EntityId,Hireachy.EntityType,C.CustomFieldId,C.CustomFieldEntityId,C.Value
-		 FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
-			CROSS APPLY (SELECT C.CustomFieldId
-								,C.EntityType
-								,CE.CustomFieldEntityId
-								,Ce.Value
-							 FROM CustomField C
-							 CROSS APPLY(SELECT CE.CustomFieldEntityId
-												,CE.CustomFieldId
-												,CE.Value FROM CustomField_Entity CE
-											WHERE C.CustomFieldId = CE.CustomFieldId
-													AND Hireachy.EntityId = CE.EntityId
-										)CE
-								WHERE C.ClientId=@ClientId
-									AND C.IsDeleted=0
-									AND C.EntityType NOT IN('Budget','MediaCode')
-									AND C.EntityType = Hireachy.EntityType) C
+	SELECT 
+	A.EntityId
+	,MAX(A.EntityType) EntityType
+	,A.CustomFieldId
+	,MAX(A.Value) AS Value
+	FROM (
+	SELECT CE.CustomFieldId,Hireachy.EntityId
+	,(SELECT SUBSTRING((	
+						SELECT ',' + CAST(R.Value AS VARCHAR) FROM CustomField_Entity R
+						WHERE R.EntityId = CE.EntityId
+						AND R.CustomFieldId = CE.CustomFieldId
+						FOR XML PATH('')), 2,900000
+						)) AS Value,
+						Hireachy.EntityType
+					--FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
+					FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds) Hireachy 
+					CROSS APPLY (SELECT C.CustomFieldId FROM CustomField C
+						WHERE Hireachy.EntityType = C.EntityType AND C.ClientId = @ClientId
+						AND C.IsDeleted=0) C
+					CROSS APPLY(SELECT CE.EntityId,CE.CustomFieldId FROM CustomField_Entity CE
+						WHERE C.CustomFieldId = CE.CustomFieldId
+						AND Hireachy.EntityId = CE.EntityId)CE
+					UNION ALL
+					SELECT C.CustomFieldId,NULL,NULL,NULL FROM CustomField C
+					WHERE C.ClientId = @ClientId
+					AND C.IsDeleted = 0
+					AND C.EntityType IN('Campaign','Program','Tactic','Lineitem')
+		) A
+		GROUP BY A.CustomFieldId,A.EntityId
 
 END
+
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridData]') AND type in (N'P', N'PC'))
@@ -1335,7 +1352,7 @@ GO
 -- Create date: 09-Sep-2016
 -- Description:	Get home grid data with custom field 19910781.11
 -- =============================================
-ALTER PROCEDURE GetGridData
+ALTER PROCEDURE [dbo].[GetGridData]
 	-- Add the parameters for the stored procedure here
 	@PlanId NVARCHAR(MAX) = ''
 	,@ClientId INT = 0
@@ -1392,12 +1409,12 @@ BEGIN
 						WHERE ROI.AnchorTacticID = R.AnchorTacticID
 						FOR XML PATH('')), 2,900000
 					))AS PackageTacticIds
-				FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
+				--FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
+				FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds) Hireachy 
 	OUTER APPLY (SELECT M.AverageDealSize FROM Model M WITH (NOLOCK)
 					WHERE M.IsDeleted = 0
 							AND Hireachy.ModelId = M.ModelId
 							) M
-				--FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds) Hireachy 
 	OUTER APPLY (SELECT Tactic.PlanTacticId,
 						Tactic.TacticTypeId,
 						Tactic.Cost,

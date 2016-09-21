@@ -9,7 +9,9 @@ using System.Data.Common;
 using System.Data.Entity.Infrastructure;
 using System.Data.Objects;
 using System.Data.SqlClient;
+using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Web;
 
@@ -17,19 +19,37 @@ namespace RevenuePlanner.Services
 {
     public class Grid : IGrid
     {
+        #region Declartion
         private MRPEntities objDbMrpEntities;
         List<Plandataobj> plandataobjlistCreateItem = new List<Plandataobj>();
-        Dictionary<string, Plandataobj> EntitydataobjCreateItem = new Dictionary<string, Plandataobj>();
+        List<Plandataobj> EntitydataobjCreateItem = new List<Plandataobj>();
+        List<CustomfieldPivotData> EntityCustomDataValues = new List<CustomfieldPivotData>();
+        List<Plandataobj> EmptyCustomValues;
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
         HomeGridProperties objHomeGridProp = new HomeGridProperties();
+        #endregion
 
+        // Constructor
         public Grid()
         {
             objDbMrpEntities = new MRPEntities();
         }
 
+        #region Plan Grid Methods
+
         #region Method to get grid default data
-        public List<GridDefaultModel> GetGridDefaultData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// call stored procedure to get list of entities for plan home grid
+        /// </summary>
+        /// <param name="PlanIds"></param>
+        /// <param name="ClientId"></param>
+        /// <param name="ownerIds"></param>
+        /// <param name="TacticTypeid"></param>
+        /// <param name="StatusIds"></param>
+        /// <param name="customFieldIds"></param>
+        /// <returns></returns>
+        public List<GridDefaultModel> GetGridDefaultData(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
         {
             List<GridDefaultModel> EntityList = new List<GridDefaultModel>();
             DataTable datatable = new DataTable();
@@ -56,7 +76,7 @@ namespace RevenuePlanner.Services
                 para[2] = new SqlParameter
                 {
                     ParameterName = "OwnerIds",
-                    Value = ownerIds
+                    Value = string.Join(",", ownerIds)
                 };
 
                 para[3] = new SqlParameter
@@ -83,7 +103,8 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region Mtehod to get grid customfield and it's entity value
-        public GridCustomColumnData GetGridCustomFieldData(string PlanIds, int ClientId)
+
+        public GridCustomColumnData GetGridCustomFieldData(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
         {
 
             GridCustomColumnData EntityList = new GridCustomColumnData();
@@ -107,12 +128,34 @@ namespace RevenuePlanner.Services
 
                 DbParameter paraClientId = cmd.CreateParameter();
                 paraClientId.ParameterName = "ClientId";
-                paraClientId.DbType = DbType.Guid;
+                paraClientId.DbType = DbType.Int32;
                 paraClientId.Direction = ParameterDirection.Input;
                 paraClientId.Value = ClientId;
 
+                DbParameter paraOwnerIds = cmd.CreateParameter();
+                paraOwnerIds.ParameterName = "OwnerIds";
+                paraOwnerIds.DbType = DbType.String;
+                paraOwnerIds.Direction = ParameterDirection.Input;
+                paraOwnerIds.Value = string.Join(",", ownerIds);
+
+                DbParameter paraTacticTypeIds = cmd.CreateParameter();
+                paraTacticTypeIds.ParameterName = "TacticTypeIds";
+                paraTacticTypeIds.DbType = DbType.String;
+                paraTacticTypeIds.Direction = ParameterDirection.Input;
+                paraTacticTypeIds.Value = TacticTypeid;
+
+                DbParameter paraStatusIds = cmd.CreateParameter();
+                paraStatusIds.ParameterName = "StatusIds";
+                paraStatusIds.DbType = DbType.String;
+                paraStatusIds.Direction = ParameterDirection.Input;
+                paraStatusIds.Value = StatusIds;
+
                 cmd.Parameters.Add(paraPlanId);
                 cmd.Parameters.Add(paraClientId);
+                cmd.Parameters.Add(paraOwnerIds);
+                cmd.Parameters.Add(paraTacticTypeIds);
+                cmd.Parameters.Add(paraStatusIds);
+
                 // Run the sproc  
                 var reader = cmd.ExecuteReader();
 
@@ -121,7 +164,7 @@ namespace RevenuePlanner.Services
                     .ObjectContext
                     .Translate<GridCustomFields>(reader).ToList();
 
-                // Move to second result set and read Posts 
+                // Move to second result set and read Posts // Get Custom fields value
                 reader.NextResult();
                 var CustomFieldEntityValues = ((IObjectContextAdapter)objDbMrpEntities)
                     .ObjectContext
@@ -141,37 +184,43 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region Get Model for Grid Data
-        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate)
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Get plan grid data with default and custom fields columns 
+        /// </summary>
+        /// <param name="PlanIds"></param>
+        /// <param name="ClientId"></param>
+        /// <param name="ownerIds"></param>
+        /// <param name="TacticTypeid"></param>
+        /// <param name="StatusIds"></param>
+        /// <param name="customFieldIds"></param>
+        /// <param name="PlanCurrencySymbol"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <returns></returns>
+        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate)
         {
-
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
-
+            //Get list of entities for plan grid
             var GridHireachyData = GetGridDefaultData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds);
 
-            var ModelId = GridHireachyData.Select(a => a.ModelId).Distinct().ToList();
-
-            //List<TacticTypeModel> TacticTypeList = objDbMrpEntities.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) &&
-            //                                                                           tactype.IsDeployedToModel &&
-            //                                                                           ModelId.Contains(tactype.ModelId)).
-            //                                          Select(tacttype => new TacticTypeModel
-            //                                          {
-            //                                              TacticTypeId = tacttype.TacticTypeId,
-            //                                              Title = tacttype.Title,
-            //                                              AssetType = tacttype.AssetType
-            //                                          }).ToList().OrderBy(tactype => tactype.Title).ToList();
-
+            // Get MQL title label
             List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == ClientId && stage.IsDeleted == false)
                 .Select(stage => stage).ToList();
             string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
 
+            // Genrate header methods for default columns
             var ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle);
 
-            var ListOfCustomData = GridCustomFieldData(PlanIds, ClientId);
+            // Get List of customfields and it's entity's values
+            var ListOfCustomData = GridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds);
+
+            // Merge header of plan grid with custom fields
             GridCustomHead(ListOfCustomData.CustomFields, ref ListOfDefaultColumnHeader);
 
-
+            // Round up the Revnue and mql value for Progam/Campaign/Plan
             RoundupRevnueMqlforHireachyData(ref GridHireachyData);
 
+            // Genrate Hireachy of Plan grid
             var griditems = GetTopLevelRowsGrid(GridHireachyData, null)
                      .Select(row => CreateItemGrid(GridHireachyData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate))
                      .ToList();
@@ -181,6 +230,12 @@ namespace RevenuePlanner.Services
             return objPlanMainDHTMLXGrid;
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Set background color for differnt entities
+        /// </summary>
+        /// <param name="EntityType"></param>
+        /// <returns></returns>
         public string GridBackgroundColor(string EntityType)
         {
             try
@@ -214,12 +269,43 @@ namespace RevenuePlanner.Services
             return string.Empty;
         }
 
-        public GridCustomColumnData GridCustomFieldData(string PlanIds, int ClientId)
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Get list of custom fields values for each entities
+        /// </summary>
+        /// <param name="PlanIds"></param>
+        /// <param name="ClientId"></param>
+        /// <param name="ownerIds"></param>
+        /// <param name="TacticTypeid"></param>
+        /// <param name="StatusIds"></param>
+        /// <param name="customFieldIds"></param>
+        /// <returns></returns>
+        public GridCustomColumnData GridCustomFieldData(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
         {
             GridCustomColumnData data = new GridCustomColumnData();
             try
             {
-                data = GetGridCustomFieldData(PlanIds, ClientId);
+                // Call the method of stored procedure that return list of custom field and it's entities values
+                data = GetGridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds);
+
+                // Pivoting the customfields entities values
+                EntityCustomDataValues = data.CustomFieldValues.ToPivotList(item => item.CustomFieldId,
+                         item => item.EntityId,
+                            items => items.Max(a => a.Value))
+                            .ToList();
+
+                List<Plandataobj> lstCustomPlanData = new List<Plandataobj>();
+                // Create empty list for where there is no any custom fields value on entity
+                foreach (var objCustomField in data.CustomFields)
+                {
+                    lstCustomPlanData.Add(new Plandataobj
+                        {
+                            value = string.Empty,
+                            locked = objHomeGridProp.lockedstateone,
+                            style = objHomeGridProp.stylecolorblack
+                        });
+                }
+                EmptyCustomValues = lstCustomPlanData;
             }
             catch (Exception ex)
             {
@@ -228,6 +314,12 @@ namespace RevenuePlanner.Services
             return data;
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Create header of custom fields for plan grid
+        /// </summary>
+        /// <param name="lstCustomFields"></param>
+        /// <param name="ListHead"></param>
         public void GridCustomHead(List<GridCustomFields> lstCustomFields, ref List<PlanHead> ListHead)
         {
             try
@@ -251,6 +343,12 @@ namespace RevenuePlanner.Services
 
         }
 
+        /// <summary>
+        /// Add by Nishant Sheth
+        /// set open/close entity state for respective entity
+        /// </summary>
+        /// <param name="EntityType"></param>
+        /// <returns></returns>
         public string GridEntityOpenState(string EntityType)
         {
             try
@@ -278,10 +376,16 @@ namespace RevenuePlanner.Services
         }
         #endregion
 
-        #region method to generate grid header
+        #region Method to generate grid header
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Create Plan Grid header for default columns
+        /// </summary>
+        /// <param name="MQLTitle"></param>
+        /// <param name="IsNotLineItemListing"></param>
+        /// <returns></returns>
         public List<PlanHead> GenerateJsonHeader(string MQLTitle, bool IsNotLineItemListing = true)
         {
-            // Modified by Arpita Soni for Ticket #2237 on 06/09/2016
             List<PlanHead> headobjlist = new List<PlanHead>();
             PlanHead headobj = new PlanHead();
             List<PlanOptions> lstOwner = new List<PlanOptions>();
@@ -291,7 +395,6 @@ namespace RevenuePlanner.Services
 
                 // First Column Activity Type
                 headobj.type = "ro";
-                //headobj.align = "center";
                 headobj.id = "activitytype";
                 headobj.sort = "na";
                 headobj.width = 0;
@@ -302,7 +405,6 @@ namespace RevenuePlanner.Services
                 {
                     // First Column Activity Type
                     headobj.type = "sub_row_grid";
-                    //headobj.align = "center";
                     headobj.id = "subgridicon";
                     headobj.sort = "na";
                     headobj.width = 30;
@@ -320,7 +422,6 @@ namespace RevenuePlanner.Services
                 headobj.value = "Task Name";
                 headobjlist.Add(headobj);
 
-                // Modified by Arpita Soni to resolve issue in Ticket #2237 due to #2270/#2271
                 if (IsNotLineItemListing)
                 {
                     // Third Column : Empty
@@ -329,7 +430,7 @@ namespace RevenuePlanner.Services
                     headobj.align = "center";
                     headobj.id = "add";
                     headobj.sort = "na";
-                    headobj.width = 85; //modified by Rahul shah on 04/12/2015-to increase width for honeycomb feature
+                    headobj.width = 85;
                     headobj.value = "";
                     headobjlist.Add(headobj);
                 }
@@ -341,14 +442,14 @@ namespace RevenuePlanner.Services
                     headobj.align = "center";
                     headobj.id = "add";
                     headobj.sort = "na";
-                    headobj.width = 45; // decreased width of column in case of line item grid
+                    headobj.width = 45;
                     headobj.value = "";
                     headobjlist.Add(headobj);
                 }
+
                 // Fourth Column : Id
                 headobj = new PlanHead();
                 headobj.type = "ro";
-                //headobj.align = "center";
                 headobj.id = "id";
                 headobj.sort = "na";
                 headobj.width = 0;
@@ -377,6 +478,7 @@ namespace RevenuePlanner.Services
                     headobj.value = "End Date";
                     headobjlist.Add(headobj);
                 }
+
                 // Seventh Column: Planned Cost
                 headobj = new PlanHead();
                 headobj.type = "ron";
@@ -387,7 +489,6 @@ namespace RevenuePlanner.Services
                 headobj.value = "Planned Cost";
                 headobjlist.Add(headobj);
 
-                // Added by Arpita Soni for Ticket #2354 on 07/12/2016
                 if (IsNotLineItemListing)
                 {
                     headobj = new PlanHead();
@@ -396,7 +497,7 @@ namespace RevenuePlanner.Services
                     headobj.id = "roitactictype";
                     headobj.sort = "str";
                     headobj.width = 150;
-                    headobj.value = "Tactic Category"; //Modified By Komal for #2448 on 01-08-2016
+                    headobj.value = "Tactic Category";
                     headobjlist.Add(headobj);
                 }
 
@@ -443,6 +544,7 @@ namespace RevenuePlanner.Services
                     headobj.width = 150;
                     headobj.value = MQLTitle;
                     headobjlist.Add(headobj);
+
                     // Twelveth Column : Revenue
                     headobj = new PlanHead();
                     headobj.type = "ron";
@@ -452,11 +554,11 @@ namespace RevenuePlanner.Services
                     headobj.width = 150;
                     headobj.value = "Revenue";
                     headobjlist.Add(headobj);
+
                     //Add External Name Column as a last column of gridview
                     //Thirteenth Column : Empty
                     headobj = new PlanHead();
                     headobj.type = "ro";
-                    //headobj.align = "left";
                     headobj.id = "machinename";
                     headobj.sort = "str";
                     headobj.width = 0;
@@ -468,16 +570,20 @@ namespace RevenuePlanner.Services
             catch (Exception objException)
             {
                 ErrorSignal.FromCurrentContext().Raise(objException);
-
             }
             return headobjlist;
         }
         #endregion
 
         #region Calculate Revenue Mql for hireachy
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Calculate Revenue and MQL value for Program,Campaign, and Plan based on Tactic values
+        /// </summary>
+        /// <param name="DataList"></param>
         public void RoundupRevnueMqlforHireachyData(ref List<GridDefaultModel> DataList)
         {
-
+            // Reverse the list from Plan -> Lineitem to Lineitem -> Plan
             var ListofParentIds = DataList
                 .Select(a => new
                 {
@@ -487,6 +593,7 @@ namespace RevenuePlanner.Services
             .Reverse()
             .ToList();
 
+            //Rounup the values from child to parent
             foreach (var ParentDetail in ListofParentIds)
             {
                 if (ParentDetail.EntityType.ToLower() != Convert.ToString(Enums.EntityType.Lineitem).ToLower())
@@ -512,6 +619,13 @@ namespace RevenuePlanner.Services
         #endregion
 
         #region Hireachy Methods
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Get first row of plan grid
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="minParentId"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         IEnumerable<GridDefaultModel> GetTopLevelRowsGrid(List<GridDefaultModel> DataList, string minParentId)
         {
@@ -526,6 +640,13 @@ namespace RevenuePlanner.Services
             }
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Get Childs records of parent entity
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         IEnumerable<GridDefaultModel> GetChildrenGrid(List<GridDefaultModel> DataList, string parentId)
         {
@@ -540,58 +661,89 @@ namespace RevenuePlanner.Services
             }
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Genrate items for hireachy 
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="Row"></param>
+        /// <param name="CustomFieldData"></param>
+        /// <param name="PlanCurrencySymbol"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         PlanDHTMLXGridDataModel CreateItemGrid(List<GridDefaultModel> DataList, GridDefaultModel Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
         {
-            //var id = Row.UniqueId;
-
             Planuserdatagrid objUserData = new Planuserdatagrid();
             List<PlanDHTMLXGridDataModel> children = new List<PlanDHTMLXGridDataModel>();
             try
             {
-                List<row_attrs> rows_attrData = new List<row_attrs>();
-
+                // Get entity childs records
                 var lstChildren = GetChildrenGrid(DataList, Row.UniqueId);
 
+                // Call recursive if any other child entity
                 children = lstChildren
                 .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate)).ToList();
-                EntitydataobjCreateItem = new Dictionary<string, Plandataobj>();
-                EntitydataobjCreateItem = GridDataRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate);
+
+                EntitydataobjCreateItem = new List<Plandataobj>();
+
+                // Get list of custom field values for particular entity based on pivoted entities list
+                List<Plandataobj> lstCustomfieldData = EntityCustomDataValues.Where(a => a.EntityId == Row.EntityId)
+                                           .Select(a => a.CustomFieldData).FirstOrDefault();
+
+                if (lstCustomfieldData == null)
+                {
+                    lstCustomfieldData = EmptyCustomValues;
+                }
+
+                // Set the values of row
+                EntitydataobjCreateItem = GridDataRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData);
 
             }
             catch (Exception ex)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
-            return new PlanDHTMLXGridDataModel { id = Row.UniqueId, data = EntitydataobjCreateItem.Select(a => a.Value).ToList(), rows = children, bgColor = GridBackgroundColor(Row.EntityType), open = GridEntityOpenState(Row.EntityType), userdata = GridUserData(DataList, Row.EntityType, Row.UniqueId, Row) };
+            return new PlanDHTMLXGridDataModel { id = Row.UniqueId, data = EntitydataobjCreateItem.Select(a => a).ToList(), rows = children, bgColor = GridBackgroundColor(Row.EntityType), open = GridEntityOpenState(Row.EntityType), userdata = GridUserData(DataList, Row.EntityType, Row.UniqueId, Row) };
         }
         #endregion
 
         #region Create Data object for Grid
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Set the grid rows for entities
+        /// </summary>
+        /// <param name="Row"></param>
+        /// <param name="EntitydataobjCreateItem"></param>
+        /// <param name="CustomFieldData"></param>
+        /// <param name="PlanCurrencySymbol"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <param name="objCustomfieldData"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Dictionary<string, Plandataobj> GridDataRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
+        public List<Plandataobj> GridDataRow(GridDefaultModel Row, ref List<Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<Plandataobj> objCustomfieldData)
         {
             try
             {
                 if (Row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Plan).ToLower())
                 {
-                    return GridPlanRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate);
+                    return GridPlanRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, objCustomfieldData);
                 }
                 else if (Row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Campaign).ToLower())
                 {
-                    return GridCampaignRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate);
+                    return GridCampaignRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, objCustomfieldData);
                 }
                 else if (Row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Program).ToLower())
                 {
-                    return GridProgramRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate);
+                    return GridProgramRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, objCustomfieldData);
                 }
                 else if (Row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower())
                 {
-                    return GridTacticRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate);
+                    return GridTacticRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, objCustomfieldData);
                 }
                 else if (Row.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Lineitem).ToLower())
                 {
-                    return GridLineItemRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate);
+                    return GridLineItemRow(Row, ref EntitydataobjCreateItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, objCustomfieldData);
                 }
             }
             catch (Exception ex)
@@ -601,8 +753,19 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Set grid rows for plan entites
+        /// </summary>
+        /// <param name="Row"></param>
+        /// <param name="EntitydataobjCreateItem"></param>
+        /// <param name="CustomFieldData"></param>
+        /// <param name="PlanCurrencySymbol"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <param name="objCustomfieldData"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Dictionary<string, Plandataobj> GridPlanRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
+        public List<Plandataobj> GridPlanRow(GridDefaultModel Row, ref List<Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<Plandataobj> objCustomfieldData)
         {
             try
             {
@@ -615,13 +778,13 @@ namespace RevenuePlanner.Services
                 #region Set Default Columns Values
 
                 // Add Plan Entity Type
-                EntitydataobjCreateItem.Add("EntityType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Row.EntityType
                 });
 
                 // Add Plan Entity Title
-                EntitydataobjCreateItem.Add("EntityTitle", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = HttpUtility.HtmlEncode(Row.EntityTitle),
                     locked = IsPlanEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -629,19 +792,19 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan Add Row
-                EntitydataobjCreateItem.Add("AddRow", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = "<div class=grid_Search id=Plan title=View ></div>" + (IsPlanEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId + " per=" + IsPlanEditable.ToString().ToLower() + " title=Add></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=PlanAdd dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + "" + "' altId=" + Row.EntityId + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>"
                 });
 
                 // Add Plan Entity Id
-                EntitydataobjCreateItem.Add("EntityId", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.EntityId)
                 });
 
                 // Add Plan StartDate
-                EntitydataobjCreateItem.Add("StartDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.StartDate),
                     locked = objHomeGridProp.lockedstateone,
@@ -649,7 +812,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan EndDate
-                EntitydataobjCreateItem.Add("EndDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.EndDate),
                     locked = objHomeGridProp.lockedstateone,
@@ -660,7 +823,7 @@ namespace RevenuePlanner.Services
                 double PlannedCost = 0;
                 double.TryParse(Convert.ToString(Row.PlannedCost), out PlannedCost);
                 string Cost = Convert.ToString(objCurrency.GetValueByExchangeRate(PlannedCost, PlanExchangeRate));
-                EntitydataobjCreateItem.Add("PlanCost", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Cost,
                     actval = Cost,
@@ -668,7 +831,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Category
-                EntitydataobjCreateItem.Add("TacticCategory", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     type = objHomeGridProp.typero,
@@ -676,7 +839,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Type
-                EntitydataobjCreateItem.Add("TacticType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     type = objHomeGridProp.typero,
@@ -684,7 +847,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Owner
-                EntitydataobjCreateItem.Add("CreatedBy", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.CreatedBy),
                     style = cellTextColor,
@@ -692,7 +855,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Target Stage Goal
-                EntitydataobjCreateItem.Add("TargetStage", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     type = objHomeGridProp.typero,
@@ -700,7 +863,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Mql
-                EntitydataobjCreateItem.Add("Mql", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(ConvertNumberToRoundFormate(Convert.ToDouble(Row.MQL))),
                     actval = Convert.ToString(Convert.ToDouble(Row.MQL)),
@@ -708,7 +871,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Revenue
-                EntitydataobjCreateItem.Add("Revenue", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = PlanCurrencySymbol + ConvertNumberToRoundFormate(Convert.ToDouble(Row.Revenue)),
                     actval = Convert.ToString(Convert.ToDouble(Row.Revenue)),
@@ -716,7 +879,7 @@ namespace RevenuePlanner.Services
                 });
 
                 //Add External Name Column as a last column of gridview
-                EntitydataobjCreateItem.Add("ExternalName", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = string.Empty,
                     locked = IsPlanEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -725,15 +888,7 @@ namespace RevenuePlanner.Services
                 #endregion
 
                 #region Set Customfield Columns Values
-                foreach (var Customfield in CustomFieldData.CustomFields)
-                {
-                    EntitydataobjCreateItem.Add("custom_" + Customfield.CustomFieldId, new Plandataobj
-                    {
-                        value = string.Empty,
-                        locked = objHomeGridProp.lockedstateone,
-                        style = cellTextColor
-                    });
-                }
+                EntitydataobjCreateItem.AddRange(objCustomfieldData);
                 #endregion
             }
             catch (Exception ex)
@@ -743,8 +898,19 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Set grid rows for campaign entites
+        /// </summary>
+        /// <param name="Row"></param>
+        /// <param name="EntitydataobjCreateItem"></param>
+        /// <param name="CustomFieldData"></param>
+        /// <param name="PlanCurrencySymbol"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <param name="objCustomfieldData"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Dictionary<string, Plandataobj> GridCampaignRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
+        public List<Plandataobj> GridCampaignRow(GridDefaultModel Row, ref List<Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<Plandataobj> objCustomfieldData)
         {
             try
             {
@@ -753,13 +919,13 @@ namespace RevenuePlanner.Services
                 cellTextColor = IsEditable ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
                 #region Set Default Columns Values
                 // Add Plan Entity Type
-                EntitydataobjCreateItem.Add("EntityType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Row.EntityType
                 });
 
                 // Add Plan Entity Title
-                EntitydataobjCreateItem.Add("EntityTitle", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = HttpUtility.HtmlEncode(Row.EntityTitle),
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -767,20 +933,20 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan Add Row
-                EntitydataobjCreateItem.Add("AddRow", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     //value = "<div class=grid_Search id=CP title=View></div>" + (IsEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) id=Campaign alt=" + Row.ParentEntityId + "_" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + " title=Add> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' altId=" + Row.ParentEntityId + "_" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + "' taskId= " + Row.EntityId + " csvId=" + Row.EntityType + "_" + Row.EntityId + "></div>"
                     value = "<div class=grid_Search id=CP title=View></div>" + (IsEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) id=Campaign alt=" + Row.AltId + " per=" + IsEditable.ToString().ToLower() + " title=Add> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' altId=" + Row.AltId + " per=" + IsEditable.ToString().ToLower() + "' taskId= " + Row.EntityId + " csvId=Campaign_" + Row.EntityId + "></div>"
                 });
 
                 // Add Plan Entity Id
-                EntitydataobjCreateItem.Add("EntityId", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.EntityId)
                 });
 
                 // Add Plan StartDate
-                EntitydataobjCreateItem.Add("StartDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToDateTime(Row.StartDate).ToString("MM/dd/yyyy"),
                     locked = objHomeGridProp.lockedstateone,
@@ -788,7 +954,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan EndDate
-                EntitydataobjCreateItem.Add("EndDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToDateTime(Row.EndDate).ToString("MM/dd/yyyy"),
                     locked = objHomeGridProp.lockedstateone,
@@ -799,7 +965,7 @@ namespace RevenuePlanner.Services
                 double PlannedCost = 0;
                 double.TryParse(Convert.ToString(Row.PlannedCost), out PlannedCost);
                 string Cost = Convert.ToString(objCurrency.GetValueByExchangeRate(PlannedCost, PlanExchangeRate));
-                EntitydataobjCreateItem.Add("PlanCost", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Cost,
                     actval = Cost,
@@ -807,7 +973,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Category
-                EntitydataobjCreateItem.Add("TacticCategory", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     type = objHomeGridProp.typero,
@@ -815,7 +981,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Type
-                EntitydataobjCreateItem.Add("TacticType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     type = objHomeGridProp.typero,
@@ -823,7 +989,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Owner
-                EntitydataobjCreateItem.Add("CreatedBy", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.CreatedBy),
                     style = cellTextColor,
@@ -831,7 +997,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Target Stage Goal
-                EntitydataobjCreateItem.Add("TargetStage", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     type = objHomeGridProp.typero,
@@ -839,7 +1005,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Mql
-                EntitydataobjCreateItem.Add("Mql", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(ConvertNumberToRoundFormate(Convert.ToDouble(Row.MQL))),
                     actval = Convert.ToString(Convert.ToDouble(Row.MQL)),
@@ -847,7 +1013,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Revenue
-                EntitydataobjCreateItem.Add("Revenue", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = PlanCurrencySymbol + ConvertNumberToRoundFormate(Convert.ToDouble(Row.Revenue)),
                     actval = Convert.ToString(Convert.ToDouble(Row.Revenue)),
@@ -855,7 +1021,7 @@ namespace RevenuePlanner.Services
                 });
 
                 //Add External Name Column as a last column of gridview
-                EntitydataobjCreateItem.Add("ExternalName", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = string.Empty,
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -864,29 +1030,7 @@ namespace RevenuePlanner.Services
                 #endregion
 
                 #region Set Customfield Columns Values
-                foreach (var Customfield in CustomFieldData.CustomFields)
-                {
-                    string EntityValue = string.Empty;
-                    var CustomValue = CustomFieldData.CustomFieldValues.Where(cust =>
-                                            Row.EntityId == cust.EntityId
-                                            && Row.EntityType.ToLower() == Customfield.EntityType.ToLower()
-                                            && Customfield.CustomFieldId == cust.CustomFieldId)
-                                            .Select(val => val.Value).ToList();
-                    if (CustomValue != null)
-                    {
-                        if (CustomValue.Count > 0)
-                        {
-                            EntityValue = string.Join(",", CustomValue);
-                        }
-                    }
-
-                    EntitydataobjCreateItem.Add("custom_" + Customfield.CustomFieldId, new Plandataobj
-                    {
-                        value = EntityValue,
-                        locked = objHomeGridProp.lockedstateone,
-                        style = cellTextColor
-                    });
-                }
+                EntitydataobjCreateItem.AddRange(objCustomfieldData);
                 #endregion
 
             }
@@ -897,8 +1041,19 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Set grid rows for program entites
+        /// </summary>
+        /// <param name="Row"></param>
+        /// <param name="EntitydataobjCreateItem"></param>
+        /// <param name="CustomFieldData"></param>
+        /// <param name="PlanCurrencySymbol"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <param name="objCustomfieldData"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Dictionary<string, Plandataobj> GridProgramRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
+        public List<Plandataobj> GridProgramRow(GridDefaultModel Row, ref List<Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<Plandataobj> objCustomfieldData)
         {
             try
             {
@@ -908,13 +1063,13 @@ namespace RevenuePlanner.Services
 
                 #region Set Default Columns Values
                 // Add Plan Entity Type
-                EntitydataobjCreateItem.Add("EntityType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Row.EntityType
                 });
 
                 // Add Plan Entity Title
-                EntitydataobjCreateItem.Add("EntityTitle", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = HttpUtility.HtmlEncode(Row.EntityTitle),
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -922,20 +1077,20 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan Add Row
-                EntitydataobjCreateItem.Add("AddRow", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     //value = "<div class=grid_Search id=Plan title=View ></div>" + (IsEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + " title=Add></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=PlanAdd dhtmlxrowid='" + Row.EntityId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + "" + "' altId=" + Row.EntityId + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>"
                     value = "<div class=grid_Search id=PP title=View></div>" + (IsEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Row.AltId + " per=" + IsEditable.ToString().ToLower() + " title=Add></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this);  title = 'Add to Honeycomb' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "'  altId=_" + Row.AltId + " per=" + IsEditable.ToString().ToLower() + "'  taskId= " + Row.EntityId + " csvId=Program_" + Row.EntityId + "></div>"
                 });
 
                 // Add Plan Entity Id
-                EntitydataobjCreateItem.Add("EntityId", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.EntityId)
                 });
 
                 // Add Plan StartDate
-                EntitydataobjCreateItem.Add("StartDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToDateTime(Row.StartDate).ToString("MM/dd/yyyy"),
                     locked = objHomeGridProp.lockedstateone,
@@ -943,7 +1098,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan EndDate
-                EntitydataobjCreateItem.Add("EndDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToDateTime(Row.EndDate).ToString("MM/dd/yyyy"),
                     locked = objHomeGridProp.lockedstateone,
@@ -954,7 +1109,7 @@ namespace RevenuePlanner.Services
                 double PlannedCost = 0;
                 double.TryParse(Convert.ToString(Row.PlannedCost), out PlannedCost);
                 string Cost = Convert.ToString(objCurrency.GetValueByExchangeRate(PlannedCost, PlanExchangeRate));
-                EntitydataobjCreateItem.Add("PlanCost", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Cost,
                     actval = Cost,
@@ -962,7 +1117,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Category
-                EntitydataobjCreateItem.Add("TacticCategory", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     type = objHomeGridProp.typero,
@@ -970,7 +1125,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Type
-                EntitydataobjCreateItem.Add("TacticType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     type = objHomeGridProp.typero,
@@ -978,7 +1133,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Owner
-                EntitydataobjCreateItem.Add("CreatedBy", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.CreatedBy),
                     style = cellTextColor,
@@ -986,7 +1141,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Target Stage Goal
-                EntitydataobjCreateItem.Add("TargetStage", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     type = objHomeGridProp.typero,
@@ -994,7 +1149,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Mql
-                EntitydataobjCreateItem.Add("Mql", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(ConvertNumberToRoundFormate(Convert.ToDouble(Row.MQL))),
                     actval = Convert.ToString(Convert.ToDouble(Row.MQL)),
@@ -1002,7 +1157,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Revenue
-                EntitydataobjCreateItem.Add("Revenue", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = PlanCurrencySymbol + ConvertNumberToRoundFormate(Convert.ToDouble(Row.Revenue)),
                     actval = Convert.ToString(Convert.ToDouble(Row.Revenue)),
@@ -1010,7 +1165,7 @@ namespace RevenuePlanner.Services
                 });
 
                 //Add External Name Column as a last column of gridview
-                EntitydataobjCreateItem.Add("ExternalName", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = string.Empty,
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -1019,29 +1174,7 @@ namespace RevenuePlanner.Services
                 #endregion
 
                 #region Set Customfield Columns Values
-                foreach (var Customfield in CustomFieldData.CustomFields)
-                {
-                    string EntityValue = string.Empty;
-                    var CustomValue = CustomFieldData.CustomFieldValues.Where(cust =>
-                                            Row.EntityId == cust.EntityId
-                                            && Row.EntityType.ToLower() == Customfield.EntityType.ToLower()
-                                            && Customfield.CustomFieldId == cust.CustomFieldId)
-                                            .Select(val => val.Value).ToList();
-                    if (CustomValue != null)
-                    {
-                        if (CustomValue.Count > 0)
-                        {
-                            EntityValue = string.Join(",", CustomValue);
-                        }
-                    }
-
-                    EntitydataobjCreateItem.Add("custom_" + Customfield.CustomFieldId, new Plandataobj
-                    {
-                        value = EntityValue,
-                        locked = objHomeGridProp.lockedstateone,
-                        style = cellTextColor
-                    });
-                }
+                EntitydataobjCreateItem.AddRange(objCustomfieldData);
                 #endregion
             }
             catch (Exception ex)
@@ -1051,8 +1184,19 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Set grid rows for tactic entites
+        /// </summary>
+        /// <param name="Row"></param>
+        /// <param name="EntitydataobjCreateItem"></param>
+        /// <param name="CustomFieldData"></param>
+        /// <param name="PlanCurrencySymbol"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <param name="objCustomfieldData"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Dictionary<string, Plandataobj> GridTacticRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
+        public List<Plandataobj> GridTacticRow(GridDefaultModel Row, ref List<Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<Plandataobj> objCustomfieldData)
         {
             try
             {
@@ -1062,13 +1206,13 @@ namespace RevenuePlanner.Services
 
                 #region Set Default Columns Values
                 // Add Plan Entity Type
-                EntitydataobjCreateItem.Add("EntityType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Row.EntityType
                 });
 
                 // Add Plan Entity Title
-                EntitydataobjCreateItem.Add("EntityTitle", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = ((Row.AnchorTacticID == Row.EntityId) ?
                               "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id=pkgIcon onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids=" + Convert.ToString(Row.PackageTacticIds) + "><i class='fa fa-object-group'></i></div>" : "")
@@ -1078,7 +1222,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan Add Row
-                EntitydataobjCreateItem.Add("AddRow", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     //value = "<div class=grid_Search id=Plan title=View ></div>" + (IsEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + " title=Add></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=PlanAdd dhtmlxrowid='" + Row.EntityId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + "" + "' altId=" + Row.EntityId + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>",
                     value = "<div class=grid_Search id=TP title=View></div>" + (IsEditable ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Row.ParentEntityId + "_" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + "  LinkTacticper ='" + false + "' LinkedTacticId = '" + 0 + "' tacticaddId='" + Row.EntityId + "' title=Add></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb'  pcptid = " + Row.TaskId + " anchortacticid='" + 0 + "' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "'  roitactictype='" + Row.AssetType + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode + "'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' altId=__" + Row.ParentEntityId + "_" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>",
@@ -1087,13 +1231,13 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan Entity Id
-                EntitydataobjCreateItem.Add("EntityId", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.EntityId)
                 });
 
                 // Add Plan StartDate
-                EntitydataobjCreateItem.Add("StartDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToDateTime(Row.StartDate).ToString("MM/dd/yyyy"),
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -1101,7 +1245,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan EndDate
-                EntitydataobjCreateItem.Add("EndDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToDateTime(Row.EndDate).ToString("MM/dd/yyyy"),
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -1112,7 +1256,7 @@ namespace RevenuePlanner.Services
                 double PlannedCost = 0;
                 double.TryParse(Convert.ToString(Row.PlannedCost), out PlannedCost);
                 string Cost = Convert.ToString(objCurrency.GetValueByExchangeRate(PlannedCost, PlanExchangeRate));
-                EntitydataobjCreateItem.Add("PlanCost", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Cost,
                     actval = Cost,
@@ -1122,7 +1266,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Category
-                EntitydataobjCreateItem.Add("TacticCategory", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Row.AssetType,
                     locked = objHomeGridProp.lockedstateone,
@@ -1130,7 +1274,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Type
-                EntitydataobjCreateItem.Add("TacticType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.TacticTypeId),
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -1138,7 +1282,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Owner
-                EntitydataobjCreateItem.Add("CreatedBy", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.CreatedBy),
                     style = cellTextColor,
@@ -1146,7 +1290,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Target Stage Goal
-                EntitydataobjCreateItem.Add("TargetStage", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = (Math.Round(Convert.ToDouble(Row.ProjectedStageValue)) > 0 ? Math.Round(Convert.ToDouble(Row.ProjectedStageValue)).ToString("#,#") : "0") + " " + Row.ProjectedStage,
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -1155,7 +1299,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Mql
-                EntitydataobjCreateItem.Add("Mql", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(ConvertNumberToRoundFormate(Convert.ToDouble(Row.MQL))),
                     actval = Convert.ToString(Convert.ToDouble(Row.MQL)),
@@ -1163,7 +1307,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Revenue
-                EntitydataobjCreateItem.Add("Revenue", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = PlanCurrencySymbol + ConvertNumberToRoundFormate(Convert.ToDouble(Row.Revenue)),
                     actval = Convert.ToString(Convert.ToDouble(Row.Revenue)),
@@ -1171,7 +1315,7 @@ namespace RevenuePlanner.Services
                 });
 
                 //Add External Name Column as a last column of gridview
-                EntitydataobjCreateItem.Add("ExternalName", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = HttpUtility.HtmlEncode(Row.MachineName),
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -1180,29 +1324,62 @@ namespace RevenuePlanner.Services
                 #endregion
 
                 #region Set Customfield Columns Values
-                foreach (var Customfield in CustomFieldData.CustomFields)
-                {
-                    string EntityValue = string.Empty;
-                    var CustomValue = CustomFieldData.CustomFieldValues.Where(cust =>
-                                            Row.EntityId == cust.EntityId
-                                            && Row.EntityType.ToLower() == Customfield.EntityType.ToLower()
-                                            && Customfield.CustomFieldId == cust.CustomFieldId)
-                                            .Select(val => val.Value).ToList();
-                    if (CustomValue != null)
-                    {
-                        if (CustomValue.Count > 0)
-                        {
-                            EntityValue = string.Join(",", CustomValue);
-                        }
-                    }
+                //Nullable<Int64> EntityId = Row.EntityId;
+                //if (CustomFieldData.CustomFieldValues.Where(a => a.EntityId == Row.EntityId).Any())
+                //{
+                //    var lstCustomFieldData = (from objCustomField in CustomFieldData.CustomFields
+                //                              join objCustomFieldValue in CustomFieldData.CustomFieldValues
+                //                                  on objCustomField.CustomFieldId equals objCustomFieldValue.CustomFieldId
+                //                                  into cust
+                //                              from customval in cust.DefaultIfEmpty()
+                //                              where objCustomField.EntityType.ToLower() == Row.EntityType.ToLower() &&
+                //                               (customval != null ? customval.EntityId == EntityId : customval == null)
+                //                              select new Plandataobj
+                //                              {
+                //                                  value = (customval != null ? customval.Value : string.Empty),
+                //                                  locked = objHomeGridProp.lockedstateone,
+                //                                  style = cellTextColor
+                //                              }).ToList();
 
-                    EntitydataobjCreateItem.Add("custom_" + Customfield.CustomFieldId, new Plandataobj
-                    {
-                        value = EntityValue,
-                        locked = objHomeGridProp.lockedstateone,
-                        style = cellTextColor
-                    });
-                }
+                //    EntitydataobjCreateItem.AddRange(lstCustomFieldData);
+                //}
+                //else
+                //{
+                //    var lstCustomFieldData = (from objCustomField in CustomFieldData.CustomFields
+                //                              select new Plandataobj
+                //                              {
+                //                                  value = string.Empty,
+                //                                  locked = objHomeGridProp.lockedstateone,
+                //                                  style = cellTextColor
+                //                              }).ToList();
+
+                //    EntitydataobjCreateItem.AddRange(lstCustomFieldData);
+                //}
+
+                EntitydataobjCreateItem.AddRange(objCustomfieldData);
+                //foreach (var Customfield in CustomFieldData.CustomFields)
+                //{
+                //    string EntityValue = string.Empty;
+                //    var CustomValue = CustomFieldData.CustomFieldValues.Where(cust =>
+                //                            Row.EntityId == cust.EntityId
+                //                            && Row.EntityType.ToLower() == Customfield.EntityType.ToLower()
+                //                            && Customfield.CustomFieldId == cust.CustomFieldId)
+                //                            .Select(val => val.Value).ToList();
+                //    if (CustomValue != null)
+                //    {
+                //        if (CustomValue.Count > 0)
+                //        {
+                //            EntityValue = string.Join(",", CustomValue);
+                //        }
+                //    }
+
+                //    EntitydataobjCreateItem.Add("custom_" + Customfield.CustomFieldId, new Plandataobj
+                //    {
+                //        value = EntityValue,
+                //        locked = objHomeGridProp.lockedstateone,
+                //        style = cellTextColor
+                //    });
+                //}
                 #endregion
             }
             catch (Exception ex)
@@ -1212,8 +1389,19 @@ namespace RevenuePlanner.Services
             return EntitydataobjCreateItem;
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Set grid rows for lineitem entites
+        /// </summary>
+        /// <param name="Row"></param>
+        /// <param name="EntitydataobjCreateItem"></param>
+        /// <param name="CustomFieldData"></param>
+        /// <param name="PlanCurrencySymbol"></param>
+        /// <param name="PlanExchangeRate"></param>
+        /// <param name="objCustomfieldData"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Dictionary<string, Plandataobj> GridLineItemRow(GridDefaultModel Row, ref Dictionary<string, Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
+        public List<Plandataobj> GridLineItemRow(GridDefaultModel Row, ref List<Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<Plandataobj> objCustomfieldData)
         {
             try
             {
@@ -1223,13 +1411,13 @@ namespace RevenuePlanner.Services
 
                 #region Set Default Columns Values
                 // Add Plan Entity Type
-                EntitydataobjCreateItem.Add("EntityType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Row.EntityType
                 });
 
                 // Add Plan Entity Title
-                EntitydataobjCreateItem.Add("EntityTitle", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = HttpUtility.HtmlEncode(Row.EntityTitle),
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -1237,7 +1425,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan Add Row
-                EntitydataobjCreateItem.Add("AddRow", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     //value = "<div class=grid_Search id=" + Row.EntityType + " title=View ></div>" + (IsEditable ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=" + Row.EntityType + " alt=" + Row.EntityId + " per=" + IsEditable.ToString().ToLower() + " title=Add></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=PlanAdd dhtmlxrowid='" + Row.EntityId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + "" + "' altId=" + Row.EntityId + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>",
                     value = "<div class=grid_Search id=LP title=View></div>" + (IsEditable ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + Row.ParentEntityId + "_" + Row.EntityId + " lt=" + ((Row.LineItemType == null) ? 0 : Row.LineItemTypeId) + " dt=" + HttpUtility.HtmlEncode(Row.EntityTitle) + " per=" + IsEditable.ToString().ToLower() + " title=Add></div>" : ""),
@@ -1246,19 +1434,19 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Plan Entity Id
-                EntitydataobjCreateItem.Add("EntityId", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.EntityId)
                 });
 
                 // Add Plan StartDate
-                EntitydataobjCreateItem.Add("StartDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     locked = objHomeGridProp.lockedstateone
                 });
 
                 // Add Plan EndDate
-                EntitydataobjCreateItem.Add("EndDate", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     locked = objHomeGridProp.lockedstateone
                 });
@@ -1267,7 +1455,7 @@ namespace RevenuePlanner.Services
                 double PlannedCost = 0;
                 double.TryParse(Convert.ToString(Row.PlannedCost), out PlannedCost);
                 string Cost = Convert.ToString(objCurrency.GetValueByExchangeRate(PlannedCost, PlanExchangeRate));
-                EntitydataobjCreateItem.Add("PlanCost", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Cost,
                     actval = Cost,
@@ -1277,7 +1465,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Category
-                EntitydataobjCreateItem.Add("TacticCategory", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     style = cellTextColor,
@@ -1285,7 +1473,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Tactic Type
-                EntitydataobjCreateItem.Add("TacticType", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = !string.IsNullOrEmpty(Row.LineItemType) ? Convert.ToString(Row.LineItemType) : string.Empty,
                     locked = objHomeGridProp.lockedstateone,
@@ -1293,7 +1481,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Owner
-                EntitydataobjCreateItem.Add("CreatedBy", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = Convert.ToString(Row.CreatedBy),
                     style = cellTextColor,
@@ -1301,7 +1489,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Target Stage Goal
-                EntitydataobjCreateItem.Add("TargetStage", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     style = cellTextColor,
@@ -1309,7 +1497,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Mql
-                EntitydataobjCreateItem.Add("Mql", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     style = cellTextColor,
@@ -1317,7 +1505,7 @@ namespace RevenuePlanner.Services
                 });
 
                 // Add Revenue
-                EntitydataobjCreateItem.Add("Revenue", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = objHomeGridProp.doubledesh,
                     style = cellTextColor,
@@ -1325,7 +1513,7 @@ namespace RevenuePlanner.Services
                 });
 
                 //Add External Name Column as a last column of gridview
-                EntitydataobjCreateItem.Add("ExternalName", new Plandataobj
+                EntitydataobjCreateItem.Add(new Plandataobj
                 {
                     value = string.Empty,
                     locked = IsEditable ? objHomeGridProp.lockedstatezero : objHomeGridProp.lockedstateone,
@@ -1334,29 +1522,7 @@ namespace RevenuePlanner.Services
                 #endregion
 
                 #region Set Customfield Columns Values
-                foreach (var Customfield in CustomFieldData.CustomFields)
-                {
-                    string EntityValue = string.Empty;
-                    var CustomValue = CustomFieldData.CustomFieldValues.Where(cust =>
-                                            Row.EntityId == cust.EntityId
-                                            && Row.EntityType.ToLower() == Customfield.EntityType.ToLower()
-                                            && Customfield.CustomFieldId == cust.CustomFieldId)
-                                            .Select(val => val.Value).ToList();
-                    if (CustomValue != null)
-                    {
-                        if (CustomValue.Count > 0)
-                        {
-                            EntityValue = string.Join(",", CustomValue);
-                        }
-                    }
-
-                    EntitydataobjCreateItem.Add("custom_" + Customfield.CustomFieldId, new Plandataobj
-                    {
-                        value = EntityValue,
-                        locked = objHomeGridProp.lockedstateone,
-                        style = cellTextColor
-                    });
-                }
+                EntitydataobjCreateItem.AddRange(objCustomfieldData);
                 #endregion
             }
             catch (Exception ex)
@@ -1371,7 +1537,7 @@ namespace RevenuePlanner.Services
         #region Method to convert number in k, m formate
 
         /// <summary>
-        /// Added By devanshi gandhi/ Bhavesh Dobariya to hadle format at server side and avoide at client side - Change made to improve performance of grid view
+        /// Mehtod for convert number to formated string
         /// </summary>
         /// <param name="num"></param>
         /// <returns></returns>
@@ -1396,12 +1562,18 @@ namespace RevenuePlanner.Services
                 return num < 1 ? (num.ToString().Contains(".") ? num.ToString("#,#0.00") : num.ToString("#,#")) : num.ToString("#,#");
             else
                 return "0";
-
-
         }
         #endregion
 
         #region Grid user data
+        /// <summary>
+        /// Set the user data for entities
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="EntityType"></param>
+        /// <param name="UniqueId"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Planuserdatagrid GridUserData(List<GridDefaultModel> DataList, string EntityType, string UniqueId, GridDefaultModel Row)
         {
@@ -1432,6 +1604,14 @@ namespace RevenuePlanner.Services
             return objUserData;
         }
 
+        /// <summary>
+        /// Set the user data for Campaign entities
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="EntityType"></param>
+        /// <param name="UniqueId"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Planuserdatagrid CampaignUserData(List<GridDefaultModel> DataList, ref Planuserdatagrid objUserData, string UniqueId)
         {
@@ -1443,22 +1623,28 @@ namespace RevenuePlanner.Services
                                         prg.UniqueId,
                                         prg.StartDate,
                                         prg.EndDate
-                                    });
-
-                var TacticDetail = (from objPrg in ProgramDetail
-                                    join objData in DataList
-                                        on objPrg.UniqueId equals objData.ParentUniqueId
-                                    select new
-                                    {
-                                        objData.StartDate,
-                                        objData.EndDate
                                     }).ToList();
 
-                objUserData.psdate = ProgramDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
-                objUserData.pedate = ProgramDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
+                if (ProgramDetail.Count > 0)
+                {
+                    objUserData.psdate = ProgramDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
+                    objUserData.pedate = ProgramDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
 
-                objUserData.tsdate = TacticDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
-                objUserData.tedate = TacticDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
+                    var TacticDetail = (from objPrg in ProgramDetail
+                                        join objData in DataList
+                                            on objPrg.UniqueId equals objData.ParentUniqueId
+                                        select new
+                                        {
+                                            objData.StartDate,
+                                            objData.EndDate
+                                        }).ToList();
+
+                    if (TacticDetail.Count > 0)
+                    {
+                        objUserData.tsdate = TacticDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
+                        objUserData.tedate = TacticDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -1467,6 +1653,14 @@ namespace RevenuePlanner.Services
             return objUserData;
         }
 
+        /// <summary>
+        /// Set the user data for Program entities
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="EntityType"></param>
+        /// <param name="UniqueId"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Planuserdatagrid ProgramUserData(List<GridDefaultModel> DataList, ref Planuserdatagrid objUserData, string UniqueId)
         {
@@ -1477,10 +1671,12 @@ namespace RevenuePlanner.Services
                                     {
                                         tac.StartDate,
                                         tac.EndDate
-                                    });
-
-                objUserData.tsdate = TacticDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
-                objUserData.tedate = TacticDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
+                                    }).ToList();
+                if (TacticDetail.Count > 0)
+                {
+                    objUserData.tsdate = TacticDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
+                    objUserData.tedate = TacticDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
+                }
             }
             catch (Exception ex)
             {
@@ -1489,6 +1685,14 @@ namespace RevenuePlanner.Services
             return objUserData;
         }
 
+        /// <summary>
+        /// Set the user data for Tactic entities
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="EntityType"></param>
+        /// <param name="UniqueId"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Planuserdatagrid TacticUserData(GridDefaultModel Row, ref Planuserdatagrid objUserData)
         {
@@ -1504,6 +1708,14 @@ namespace RevenuePlanner.Services
             return objUserData;
         }
 
+        /// <summary>
+        /// Set the user data for Lineitem entities
+        /// </summary>
+        /// <param name="DataList"></param>
+        /// <param name="EntityType"></param>
+        /// <param name="UniqueId"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Planuserdatagrid LineItemUserData(GridDefaultModel Row, ref Planuserdatagrid objUserData)
         {
@@ -1519,5 +1731,102 @@ namespace RevenuePlanner.Services
             return objUserData;
         }
         #endregion
+
+        #endregion
+
     }
+
+    #region Pivot Custom fields list for each entities
+    public static class PivotList
+    {
+        public static HomeGridProperties objHomeGrid = new HomeGridProperties();
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Pivot list for custom field entities values
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TColumn"></typeparam>
+        /// <typeparam name="TRow"></typeparam>
+        /// <typeparam name="TData"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="columnSelector"></param>
+        /// <param name="rowSelector"></param>
+        /// <param name="dataSelector"></param>
+        /// <returns></returns>
+        public static List<CustomfieldPivotData> ToPivotList<T, TColumn, TRow, TData>(
+        this IEnumerable<T> source,
+        Func<T, TColumn> columnSelector,
+        Expression<Func<T, TRow>> rowSelector,
+        Func<IEnumerable<T>, TData> dataSelector
+            )
+        {
+
+            var arr = new List<CustomfieldPivotData>();
+            var cols = new List<string>();
+            String rowName = ((MemberExpression)rowSelector.Body).Member.Name;
+            var columns = source.Select(columnSelector).Distinct();
+
+            cols = (new[] { rowName }).Concat(columns.Select(x => x.ToString())).ToList();
+            var abc = columns.Select(x => x.ToString()).ToList().Take(1);
+
+            var rows = source.GroupBy(rowSelector.Compile())
+                             .Select(rowGroup => new
+                             {
+                                 Key = rowGroup.Key,
+                                 Values = columns.GroupJoin(
+                                     rowGroup,
+                                     c => c,
+                                     r => columnSelector(r),
+                                     (c, columnGroup) => dataSelector(columnGroup))
+                             }).ToList();
+
+
+            foreach (var row in rows)
+            {
+                var items = row.Values.Cast<object>().ToList();
+                items.Insert(0, row.Key);
+                var obj = GetAnonymousObject(cols, items);
+                arr.Add(obj);
+            }
+            return arr.ToList();
+        }
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// get values for pivoting entites
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        private static dynamic GetAnonymousObject(IEnumerable<string> columns, IEnumerable<object> values)
+        {
+            CustomfieldPivotData objCustomPivotData = new CustomfieldPivotData();
+            List<Plandataobj> lstCustomFieldData = new List<Plandataobj>();
+            int i;
+            for (i = 0; i < columns.Count(); i++)
+            {
+                if (i == 0)
+                {
+                    objCustomPivotData.EntityId = !string.IsNullOrEmpty(Convert.ToString(values.ElementAt<object>(i))) ?
+                        int.Parse(Convert.ToString(values.ElementAt<object>(i)))
+                        : 0;
+                }
+                else
+                {
+                    lstCustomFieldData.Add(
+                        new Plandataobj
+                        {
+                            locked = objHomeGrid.lockedstateone,
+                            value = Convert.ToString(values.ElementAt<object>(i)),
+                            style = objHomeGrid.stylecolorblack
+                        });
+                }
+            }
+            objCustomPivotData.CustomFieldData = lstCustomFieldData;
+            return objCustomPivotData;
+        }
+
+    }
+    #endregion
+
 }

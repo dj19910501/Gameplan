@@ -9,8 +9,8 @@ namespace RevenuePlanner.Services
 {
     public interface IGrid
     {
-        //List<GridDefaultModel> GetGridDefaultData(string PlanIds, Guid ClientId);
-        //GridCustomColumnData GetGridCustomFieldData(string PlanIds, Guid ClientId);
-        PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate);
+        // Add By Nishant Sheth
+        // Get plan grid data
+        PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, List<int> ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate);
     }
 }
