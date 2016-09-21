@@ -585,7 +585,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-
+           
             ViewBag.MeasureConnStr = ReportDBConnString;
             ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
             ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
@@ -652,7 +652,7 @@ namespace RevenuePlanner.Controllers
                 //Added By Komal Rawal
                 if (OwnerIDs != string.Empty)
                 {
-                    string [] arrOwnerIds = OwnerIDs.Split(',');
+                    string[] arrOwnerIds = OwnerIDs.Split(',');
                     lstOwnerIds = arrOwnerIds.ToList().Select(a => Convert.ToInt32(a)).ToList();
 
                     if (lstOwnerIds.Count > 0)
@@ -2761,6 +2761,16 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetReportBudgetData(string Year, string AllocatedBy, string Tab, string SortingId)
         {
+            //Insertation start #2416 21/09/2016 kausha AllocatedBy veriable will be set as per session value if session's view by is not null.  
+            if (!string.IsNullOrEmpty(Sessions.ViewByValue))
+            {
+                if (Sessions.ViewByValue.ToUpper() == Convert.ToString(Enums.viewByOption.Q))
+                    AllocatedBy = Enums.PlanAllocatedBy.quarters.ToString();
+                if (Sessions.ViewByValue.ToUpper() == Convert.ToString(Enums.viewByOption.M))
+                    AllocatedBy = Enums.PlanAllocatedBy.months.ToString();             
+            }
+            //Insertation end #2416 21/09/2016 kausha 
+
             PlanExchangeRate = Sessions.PlanExchangeRate;
             string ListYear = Year.Split(',').Min(); // TODO :: needd to remove this when we implement multi year support
             Year = ListYear;
@@ -4739,22 +4749,22 @@ namespace RevenuePlanner.Controllers
             {
 
                 lstCustomFieldEntities = (from objCustomField in db.CustomFields
-                                           where ListOfCustomFieldID.Contains(objCustomField.CustomFieldId)
-                                           && objCustomField.ClientId == Sessions.User.CID
-                                            && objCustomField.IsDeleted == false
-                                           join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
-                                           where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
-                                           select objCustomfieldEntity).ToList();
+                                          where ListOfCustomFieldID.Contains(objCustomField.CustomFieldId)
+                                          && objCustomField.ClientId == Sessions.User.CID
+                                           && objCustomField.IsDeleted == false
+                                          join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
+                                          where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
+                                          select objCustomfieldEntity).ToList();
 
             }
             else
             {
                 lstCustomFieldEntities = (from objCustomField in db.CustomFields
-                                           where objCustomField.ClientId == Sessions.User.CID
-                                            && objCustomField.IsDeleted == false
-                                           join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
-                                           where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
-                                           select objCustomfieldEntity).ToList();
+                                          where objCustomField.ClientId == Sessions.User.CID
+                                           && objCustomField.IsDeleted == false
+                                          join objCustomfieldEntity in db.CustomField_Entity on objCustomField.CustomFieldId equals objCustomfieldEntity.CustomFieldId
+                                          where ListofEntityId.Contains(objCustomfieldEntity.EntityId)
+                                          select objCustomfieldEntity).ToList();
             }
 
             int PlanTacticId = 0;
@@ -12163,7 +12173,7 @@ namespace RevenuePlanner.Controllers
 
                     }
                     // End By Nishant Sheth 
-                #endregion
+                    #endregion
                 }
                 else
                 {
@@ -12199,7 +12209,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-        #endregion
+                #endregion
 
                 #region "Add all list to Master Model"
                 objSubDataTableModel.PerformanceList = PerformanceList;
