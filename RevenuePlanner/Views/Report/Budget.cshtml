@@ -1,4 +1,19 @@
 ﻿@using RevenuePlanner.Helpers
+@{    
+    //Insertation start #2416 21/09/2016 kausha selectedViewBy veriable is used to manage session's viewby value in to dropdown.
+    string selectedViewBy = Enums.PlanAllocatedBy.quarters.ToString();
+    if (!string.IsNullOrEmpty(Sessions.ViewByValue))
+    {
+        if (Sessions.ViewByValue.ToUpper() == Convert.ToString(Enums.viewByOption.Q))
+        { selectedViewBy = Convert.ToString(Enums.PlanAllocatedBy.quarters); }
+
+        if (Sessions.ViewByValue.ToUpper() == Convert.ToString(Enums.viewByOption.M))
+        { selectedViewBy = Convert.ToString(Enums.PlanAllocatedBy.months); }
+
+
+    }
+    //Insertation end #2416 .
+}
 <div class="budgetReport">
     <div style="margin-left: 18px; margin-right: 20px; margin-bottom: 10px; width: 97%; float: left;">
         <div class="title-header source-sans-proregular bold budget-title">
@@ -8,7 +23,8 @@
                     @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.ReportTabType.Plan.ToString()), new { @class = "ddlStyleReport hide" })
                
                 <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
-                    @Html.DropDownList("ddlAllocateViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport hide" })
+                  
+                    @Html.DropDownList("ddlAllocateViewBy",new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", selectedViewBy), new { @class = "ddlStyleReport hide" })
                </span>
             </div>
             <h2>Budget Summary</h2>
@@ -141,6 +157,7 @@
             LoadBudgetData();
         });
         $("#ddlAllocateViewBy").change(function () {
+            UpdateViewBy("ddlAllocateViewBy");
             AllocatedBy = $('#ddlAllocateViewBy').val();
             SortingId = '';
             LoadBudgetData();
