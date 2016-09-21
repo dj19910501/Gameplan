@@ -3,21 +3,22 @@
 @using RevenuePlanner.Helpers
 @{
     var countrows = Model.PlanDHTMLXGrid.rows.Count;
-    List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);   
+    List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);
 
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
-<style>   
+<style>
     .manageviewicon .fa {
         color: #fff;
         margin-left: 10px;
     }
+
     div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa {
         color: #F8710E;
     }
 </style>
-<div id="gridbox" style="background-color:white;width:100%;" ></div>
+<div id="gridbox" style="background-color:white;width:100%;"></div>
 <div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
 <div class="row-fluid calc-height">
     <div class="span12">
@@ -124,14 +125,21 @@
         HomeGrid.setNumberFormat(""+CurrencySybmol+"0,000", 6, ".", ",");
         HomeGrid.attachEvent("onBeforeSorting",function(ind,grid)
         {
+            debugger;
             if(IsManageviewClick)
             {
                 IsManageviewClick=false;
                 return false;
             }
+            else if(IsManageDropdown){
+                 return false;
+            }
             else
                 return true;
+
         });
+
+
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
         HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
@@ -189,7 +197,7 @@
                 var customcolId = HomeGrid.getColumnId(i).toString();
                 if(customcolId.indexOf("custom_")>=0)
                 {
-                   customcolId =customcolId.replace("custom_","");
+                    customcolId =customcolId.replace("custom_","");
                 }
                 if(ColWidth != 0)
                 {

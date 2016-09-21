@@ -15325,6 +15325,8 @@ namespace RevenuePlanner.Controllers
             List<PlanOptions> lstOwner = new List<PlanOptions>();
             List<PlanOptions> lstTacticType = new List<PlanOptions>();
             string manageviewicon = "<a href='javascript:void(0)' onclick='OpenCreateNew(true)' class='manageviewicon' title='Open Column Management'><i class='fa fa-edit' aria-hidden='true'></i></a>";
+            //For Ticket 2596 -For Search in  grid
+            string divSearch = "<div class='search-wrap'><div id='exp-serach'> <div class='input-group '><div class='input-group-btn'><button id='searchCriteria' onclick='OpenDropdown(true)' type='button' class='btn btn-blue dropdown-toggle' data-toggle='dropdown' value='ActivityName'>A</button><div class='dropdown-menu'><ul role='menu' aria-labelledby='dropdownMenu'><li><a tabindex='-1' href='#'>ActivityName</a></li><li><a tabindex='-1' href='#'>ExternalName</a></li></ul></div></div><input id='txtGlobalSearch' type='text' class='form-control' aria-label='Text input with dropdown button' placeholder='ActivityName'></div> <span class='ExpIcon' id='ExpSearch' data-toggle='tooltip' title='Search'><i class='fa fa-search'></i></span></div></div>";
             try
             {
 
@@ -15363,7 +15365,8 @@ namespace RevenuePlanner.Controllers
                 headobj.id = "taskname";
                 headobj.sort = "str";
                 headobj.width = 330;
-                headobj.value = "Task Name" + manageviewicon;
+               // headobj.value = "Task Name" + manageviewicon;
+                headobj.value = divSearch; 
                 headobjlist.Add(headobj);
 
                 // Third Column : Empty
