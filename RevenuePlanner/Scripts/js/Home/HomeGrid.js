@@ -1339,9 +1339,7 @@ function ExportToExcel(isHoneyComb) {
     if (gridname.toLowerCase() == "home") {
         var rowIdArray = [];
         if (isHoneyComb) {
-            HomeGrid.forEachRow(function (id) {
-                //alert();
-                // exportGrid.setCellExcellType(id, 6, "ro");
+            HomeGrid.forEachRow(function (id) {             
                 var d = HomeGrid.cells(id, 2).getValue();
                 if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
                     HomeGrid.setRowHidden(id, true);
@@ -1353,6 +1351,7 @@ function ExportToExcel(isHoneyComb) {
         HomeGrid.expandAll();
         HomeGrid.setColumnHidden(2, true);
         HomeGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
+        HomeGrid.collapseAll();
         HomeGrid.loadOpenStates();
         HomeGrid.setColumnHidden(2, false);
         if (rowIdArray != undefined) {
@@ -1390,19 +1389,9 @@ function ExportToExcel(isHoneyComb) {
                     exportGrid.attachHeader(attachHeader);
                 exportGrid.setColumnHidden(2, true);
                 exportGrid.setColumnHidden(0, true);
-            }
-            //if (gridname.toLowerCase() == 'home') {
-            //    exportGrid.setColumnHidden(2, true);
-            //}
-        }
-
-        //exportGrid.setColumnHidden(GridHiddenId, true);
-        //exportGrid.setColumnHidden(ActivitypeHidden, true);
-        //exportGrid.setColumnHidden(MachineNameHidden, true);
-        //exportGrid.enableColumnMove(true);
-
+            }          
+        }     
         exportGrid.init();
-
         setTimeout(function () {
             exportGrid.setSizes();
         }, 200);
@@ -1411,27 +1400,7 @@ function ExportToExcel(isHoneyComb) {
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         exportGrid.parse(GridDataHomeGrid, "json");
-
-        // exportGrid.setColumnHidden(2, true);
-        exportGrid.expandAll();
-
-        //mygrid.setCellExcellType(ids_array[i], 6, "ro");
-        //$.each(movedColumnArray, function (key, value) {
-        //    exportGrid.moveColumn(key, value)
-        //    alert(value[0] + "," + value[1]);
-        //});
-        //var rowIdArray = [];
-        //if (isHoneyComb) {
-        //    HomeGrid.forEachRow(function (id) {
-        //        //alert();
-        //        // exportGrid.setCellExcellType(id, 6, "ro");
-        //        var d = HomeGrid.cells(id, 2).getValue();
-        //        if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
-        //            exportGrid.setRowHidden(id, true);
-        //            rowIdArray.push(id);
-        //        }
-        //    });
-        //}
+        exportGrid.expandAll();        
         exportGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
     }
     //end
