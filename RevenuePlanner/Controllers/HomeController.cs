@@ -661,7 +661,7 @@ namespace RevenuePlanner.Controllers
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.ID);
                 var objPlan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId == currentPlanId);
 
-                if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) 
+                if (objPlan.CreatedBy == Sessions.User.ID) 
                 {
                     IsPlanEditable = true;
                 }

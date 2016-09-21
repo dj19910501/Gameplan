@@ -370,14 +370,14 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
-        public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission, string LoginId = "")
+        public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission, int LoginId = 0)
         {
             try
             {
                 // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-                if (!string.IsNullOrEmpty(LoginId))
+                if (LoginId != 0)
                 {
-                    if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
+                    if (Sessions.User.ID != LoginId)
                     {
                         TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                         return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
@@ -426,12 +426,12 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return status flag value.</returns>
         [HttpPost]
-        public JsonResult CopyRole(string copyroledesc, Guid originalroleid, string LoginId = "")
+        public JsonResult CopyRole(string copyroledesc, Guid originalroleid, int LoginId = 0)
         {
             // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-            if (!string.IsNullOrEmpty(LoginId))
+            if (LoginId != 0)
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
+                if (Sessions.User.ID != LoginId)
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);

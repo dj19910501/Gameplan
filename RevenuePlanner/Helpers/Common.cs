@@ -5625,21 +5625,21 @@ namespace RevenuePlanner.Helpers
             //Get all subordinates of current user
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
-            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            lstUserHierarchy = objBDSService.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
             var lstSubOrdinates = lstUserHierarchy.Where(u => u.MID == Sessions.User.ID)
                                                         .ToList()
                                                         .Select(u => u.UID)
                                                         .ToList();
-            var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UserId == Sessions.User.UserId).ManagerId;
-            if (ManagerId != null)
+            var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UID == Sessions.User.ID).MID;
+            if (ManagerId != 0)
             {
-                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId)
+                var lstPeersId = lstUserHierarchy.Where(u => u.MID == ManagerId)
                                                         .ToList()
-                                                        .Select(u => u.UserId)
+                                                        .Select(u => u.UID)
                                                         .ToList();
                 if (lstPeersId.Count > 0)
                 {
-                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
+                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.MID))
                                                             .ToList()
                                                             .Select(u => u.UID)
                                                             .ToList();
@@ -5667,10 +5667,10 @@ namespace RevenuePlanner.Helpers
             //// Get all subordinates of current user
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
-            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            lstUserHierarchy = objBDSService.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
             List<int> lstSubordinatesId = new List<int>();
             //// Get list of subordinates of current logged in user
-            List<int> lstSubOrdinates = lstUserHierarchy.Where(user => user.ManagerId == Sessions.User.UserId)
+            List<int> lstSubOrdinates = lstUserHierarchy.Where(user => user.MID == Sessions.User.ID)
                                                          .Select(user => user.UID).Distinct().ToList();    // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
 
             while (lstSubOrdinates.Count > 0)
@@ -5795,7 +5795,7 @@ namespace RevenuePlanner.Helpers
         {
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
-            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            lstUserHierarchy = objBDSService.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
             List<int> lstUserId = new List<int>();
 
             List<int> lstSubordinates = lstUserHierarchy.Where(u => u.MID == userId)
@@ -5824,7 +5824,7 @@ namespace RevenuePlanner.Helpers
         {
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
-            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            lstUserHierarchy = objBDSService.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
 
             var lstSubordinates = lstUserHierarchy.Where(u => u.MID == userId)
                                                           .ToList()
@@ -9517,7 +9517,7 @@ namespace RevenuePlanner.Helpers
 
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PlanTacticId", LineItemId);
-                command.Parameters.AddWithValue("@UserId", Sessions.User.UserId.ToString());
+                command.Parameters.AddWithValue("@UserId", Sessions.User.ID);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
                 adp.Fill(dtPlanHirarchy);

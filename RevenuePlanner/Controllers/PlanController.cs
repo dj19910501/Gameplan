@@ -13356,7 +13356,7 @@ namespace RevenuePlanner.Controllers
                     {
                         gridjsonlistplanobj = new PlanDHTMLXGridDataModel();
 
-                        if (planitem.CreatedBy.Equals(Sessions.User.UserId))
+                        if (planitem.CreatedBy == Sessions.User.ID)
                         {
                             IsPlanEditable = true;
                         }
@@ -13392,7 +13392,7 @@ namespace RevenuePlanner.Controllers
 
                         if (IsPlanCreateAll == false)
                         {
-                            if (planitem.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(planitem.CreatedBy))
+                            if (planitem.CreatedBy == Sessions.User.ID || lstSubordinatesIds.Contains(planitem.CreatedBy))
                                 IsPlanCreateAll = true;
                             else
                                 IsPlanCreateAll = false;
@@ -13518,9 +13518,9 @@ namespace RevenuePlanner.Controllers
                                 Title = taskdata.Title,
                                 StartDate = taskdata.StartDate,
                                 EndDate = taskdata.EndDate,
-                                IsCampEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? true : false,
+                                IsCampEditable = (taskdata.CreatedBy == Sessions.User.ID) == true ? true : false,
                                 CreatedBy = GetUserName(taskdata.CreatedBy),
-                                IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy == Sessions.User.ID || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                 CreatedByID = taskdata.CreatedBy,
                                 tacticids = TacticfilterList.Where(t => t.Plan_Campaign_Program.PlanCampaignId == taskdata.PlanCampaignId).Any()
                             });
@@ -13704,8 +13704,8 @@ namespace RevenuePlanner.Controllers
                                             StartDate = taskdata.StartDate,
                                             EndDate = taskdata.EndDate,
                                             CreatedBy = GetUserName(taskdata.CreatedBy),
-                                            IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
-                                            IsProgEditable = taskdata.CreatedBy.Equals(Sessions.User.UserId),
+                                            IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy == Sessions.User.ID || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                            IsProgEditable = taskdata.CreatedBy == Sessions.User.ID,
                                             CreatedByID = taskdata.CreatedBy,
                                             tacticids = !IsFiltered ? true : TacticfilterList.Where(t => t.PlanProgramId == taskdata.PlanProgramId).Any()
 
@@ -13885,9 +13885,9 @@ namespace RevenuePlanner.Controllers
                                                         CreatedBy = GetUserName(taskdata.CreatedBy),
                                                         tactictypeid = taskdata.TacticTypeId,
                                                         projectedstagevalue = taskdata.ProjectedStageValue == null ? 0 : taskdata.ProjectedStageValue,
-                                                        IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                                        IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy == Sessions.User.ID || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                                         ProjectStage = taskdata.Stage.Title,
-                                                        IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "0",
+                                                        IstactEditable = (taskdata.CreatedBy == Sessions.User.ID) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "0",
                                                         IsRequiredfalse = false,//CheckTacticRequiredfieldFinal(taskdata,DependencyListFinal, customfieldlist)//// Commented by Bhavesh:  To False required flag display in grid view Date: 05/11/2015 Ticket : #1550
                                                         LinkTacticId = taskdata.LinkedTacticId,
                                                         LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(taskdata.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault(),
@@ -14030,8 +14030,8 @@ namespace RevenuePlanner.Controllers
                                                                 Typeid = taskdata.LineItemTypeId,
                                                                 Type = taskdata.LineItemTypeId != null ? taskdata.LineItemType.Title : "",
                                                                 CreatedBy = taskdata.CreatedBy,
-                                                                IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
-                                                                IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || (tactic.IstactEditable == "0")) == true ? "0" : "1"//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
+                                                                IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy == Sessions.User.ID || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                                                IstactEditable = (taskdata.CreatedBy == Sessions.User.ID || (tactic.IstactEditable == "0")) == true ? "0" : "1"//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
                                                             });
 
                                                             List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();

@@ -69,7 +69,7 @@
                         foreach (var item in Model.Userpermission)
                         {
                         <tr class="userrow">
-                            <td title="@item.id" class="selectrec" style="display: none">@Html.DisplayFor(model => item.id)</td>
+                            <td title="@item.UserId" class="selectrec" style="display: none">@Html.DisplayFor(model => item.UserId)</td>
                             <td id="IsOwner" title="Owner" class="selectrec" style="display: none">@item.IsOwner</td>
                             <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
                             <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
@@ -79,13 +79,13 @@
                                      <td class="userDelete" >
                                           
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.id" checked="checked" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserId" checked="checked" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.id"  name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserId"  name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
                                     </p>
                                          <p>
-                                             <input type="radio" id="None_@item.id" name="@item.id" par="2"><label for="None_@item.id">None</label>
+                                             <input type="radio" id="None_@item.UserId" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
                                          </p>
                                     <a href="#">
                                         @*<span title="Delete Member" class="x-icon hide pull-right"></span>*@
@@ -96,13 +96,14 @@
                               {
                                  <td class="userDelete" >
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.id"  name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserId"  name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.id" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserId" checked="checked" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserId" checked="checked" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
                                     </p>
                                      <p>
-                                         <input type="radio" id="None_@item.id" name="@item.id" par="2"><label for="None_@item.id">None</label>
+                                         <input type="radio" id="None_@item.UserId" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
                                      </p>
                                     <a href="#">
                                        @* <span title="Delete Member" class="x-icon hide pull-right"></span>*@
@@ -114,13 +115,13 @@
                               {
                                 <td class="userDelete">
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.id" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserId" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.id" name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserId" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="None_@item.id" checked="checked" name="@item.id" par="2"><label for="None_@item.id">None</label>
+                                        <input type="radio" id="None_@item.UserId" checked="checked" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
                                     </p>
                                     <a href="#">
                                         @* <span title="Delete Member" class="x-icon hide pull-right"></span>*@
@@ -138,7 +139,7 @@
                         {
                         <tr class="userrow">
                           
-                            <td title="UserID" class="selectrec" style="display: none">@Html.DisplayFor(model => item.id)</td>
+                            <td title="UserID" class="selectrec" style="display: none">@Html.DisplayFor(model => item.UserId)</td>
                             <td title="CreatedBy" class="selectrec" style="display: none">@Html.DisplayFor(model => item.createdby)</td>
                             <td id="IsOwner" title="Owner" class="selectrec" style="display: none">@item.IsOwner</td>
                             <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
@@ -149,15 +150,15 @@
                             {
                                 <td class="userDelete" style="border-right:none">
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.id" class="redinput" checked="checked" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserId" class="redinput" checked="checked" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.id" class="redinput" name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserId" class="redinput" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="None_@item.id" name="@item.id" par="2"><label for="None_@item.id">None</label>
+                                        <input type="radio" id="None_@item.UserId" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
                                     </p>
-                                    <a href="#" onclick="DeleteUsers('@item.id','@item.budgetID','@item.FirstName','@item.LastName');">
+                                    <a href="#" onclick="DeleteUsers('@item.UserId','@item.budgetID','@item.FirstName','@item.LastName');">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
                                     </a>
                                 </td>
@@ -167,15 +168,15 @@
                                 
                                 <td class="userDelete" style="border-right:none">
                                     <p>
-                                        <input type="radio" id="vew-edit_@item.id"  name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
+                                        <input type="radio" id="vew-edit_@item.UserId"  name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only_@item.id" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
+                                        <input type="radio" id="view-only_@item.UserId" checked="checked" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="None_@item.id"  name="@item.id" par="2"><label for="None_@item.id">None</label>
+                                        <input type="radio" id="None_@item.UserId"  name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
                                     </p>
-                                    <a href="#" onclick="DeleteUsers('@item.id','@item.budgetID','@item.FirstName','@item.LastName');">
+                                    <a href="#" onclick="DeleteUsers('@item.UserId','@item.budgetID','@item.FirstName','@item.LastName');">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
                                     </a>
 
@@ -186,15 +187,15 @@
                             {
                             <td class="userDelete">
                                 <p>
-                                    <input type="radio" id="vew-edit_@item.id" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
+                                    <input type="radio" id="vew-edit_@item.UserId" name="@item.UserId" par="0"><label for="vew-edit_@item.UserId">View/Edit</label>
                                 </p>
                                 <p>
-                                    <input type="radio" id="view-only_@item.id" name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
+                                    <input type="radio" id="view-only_@item.UserId" name="@item.UserId" par="1"><label for="view-only_@item.UserId">View Only</label>
                                 </p>
                                 <p>
-                                    <input type="radio" id="None_@item.id" checked="checked" name="@item.id" par="2"><label for="None_@item.id">None</label>
+                                    <input type="radio" id="None_@item.UserId" checked="checked" name="@item.UserId" par="2"><label for="None_@item.UserId">None</label>
                                 </p>
-                                <a href="#" onclick="DeleteUsers('@item.id','@item.budgetID','@item.FirstName','@item.LastName');">
+                                <a href="#" onclick="DeleteUsers('@item.UserId','@item.budgetID','@item.FirstName','@item.LastName');">
                                     <span title="Delete Member" class="x-icon hide pull-right"></span>
                                 </a>
 

@@ -273,7 +273,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
             Sessions.User.ID= DataHelper.GetUserId(PlanId);
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            var objUser = objBDSServiceClient.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);            
+            var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(Sessions.User.ID, Sessions.ApplicationId);            
             if (objUser != null)
             {
                 string Email = objUser.Email;
@@ -584,7 +584,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = PlanId;
             Sessions.User.ID= DataHelper.GetUserId(PlanId);
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            var objUser = objBDSServiceClient.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
+            var objUser = objBDSServiceClient.GetTeamMemberDetailsEx(Sessions.User.ID, Sessions.ApplicationId);
             if (objUser != null)
             {
                 int userId = objUser.ID;

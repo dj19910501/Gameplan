@@ -178,8 +178,8 @@ GO
 ALTER PROCEDURE  [dbo].[spViewByDropDownList] 
 	-- Add the parameters for the stored procedure here
 	@PlanId NVARCHAR(max),
-	@ClientId NVARCHAR(50),
-	@UserId NVARCHAR(50)=null
+	@ClientId INT,
+	@UserId INT=0
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -230,7 +230,7 @@ GO
 CREATE PROCEDURE [dbo].[LineItem_Cost_Allocation]
 ( 
 	@PlanTacticId INT,
-	@UserId NVARCHAR(36)
+	@UserId INT
 )
 AS
 BEGIN
@@ -1855,7 +1855,7 @@ GO
 
 CREATE PROCEDURE [dbo].[SP_Save_AlertRule]
 
-	@ClientId NVARCHAR(255)  ,
+	@ClientId INT,
 	@RuleId int,
 	@RuleSummary nvarchar(max),
 	@EntityId int,
@@ -1868,8 +1868,8 @@ CREATE PROCEDURE [dbo].[SP_Save_AlertRule]
 	@DayOfWeek tinyint=null,
 	@DateOfMonth tinyint=null,
 	@UserId INT,
-	@CreatedBy NVARCHAR(255),
-	@ModifiedBy  NVARCHAR(255),
+	@CreatedBy INT,
+	@ModifiedBy  INT,
 	@UserEmail NVARCHAR(255),
 	@IsExists int Output
 

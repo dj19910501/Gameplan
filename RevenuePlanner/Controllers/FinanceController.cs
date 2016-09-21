@@ -47,6 +47,7 @@ namespace RevenuePlanner.Controllers
             lstUserDetail.Add(new User
             {
                 UserId = Sessions.User.UserId,
+                ID = Sessions.User.ID,
                 FirstName = Sessions.User.FirstName,
                 LastName = Sessions.User.LastName,
                 JobTitle = Sessions.User.JobTitle
@@ -1378,12 +1379,12 @@ namespace RevenuePlanner.Controllers
             UserPermission user = new UserPermission();
             // Add By Nishant Sheth
             // Desc : To avoid multiple service trip and db trip
-            var BDSuserList = objBDSServiceClient.GetMultipleTeamMemberDetails(String.Join(",", UserList.Select(a => a.UserId).ToList()).ToString(), Sessions.ApplicationId);
+            var BDSuserList = objBDSServiceClient.GetMultipleTeamMemberDetailsEx(UserList.Select(x => x.UserId).ToList(), Sessions.ApplicationId);
             for (int i = 0; i < BDSuserList.Count; i++)
             {
                 user = new UserPermission();
                 user.budgetID = BudgetId;
-                user.id = BDSuserList[i].UserId.ToString();
+                user.UserId = BDSuserList[i].ID;
                 user.FirstName = BDSuserList[i].FirstName;
                 user.LastName = BDSuserList[i].LastName;
                 user.Role = BDSuserList[i].RoleTitle;
@@ -1398,7 +1399,7 @@ namespace RevenuePlanner.Controllers
             }
 
             objFinanceModel.Userpermission = _user.OrderBy(i => i.FirstName, new AlphaNumericComparer()).ToList();
-            var index = _user.FindIndex(x => x.id == Sessions.User.ID.ToString());
+            var index = _user.FindIndex(x => x.UserId == Sessions.User.ID);
             if (index != -1)
             {
                 var item = _user[index];
@@ -1462,10 +1463,10 @@ namespace RevenuePlanner.Controllers
                 {
                     lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
 
-                    Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || user.JobTitle.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                    Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || user.JobTitle.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, ID = user.ID, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
 
                     string[] keepList = UserIds.Split(',');
-                    Getvalue = Getvalue.Where(i => !keepList.Contains(i.UserId.ToString())).ToList();
+                    Getvalue = Getvalue.Where(i => !keepList.Contains(i.ID.ToString())).ToList();
                 }
                 else
                 {
@@ -1677,7 +1678,7 @@ namespace RevenuePlanner.Controllers
                 UserPermission user = new UserPermission();
                 objUser = objBDSServiceClient.GetTeamMemberDetailsEx(UserList[i].UserId, Sessions.ApplicationId);
                 user.budgetID = BudgetId;
-                user.id = objUser.UserId.ToString();
+                user.UserId = objUser.ID;
                 user.FirstName = objUser.FirstName;
                 user.LastName = objUser.LastName;
                 user.Role = objUser.RoleTitle;

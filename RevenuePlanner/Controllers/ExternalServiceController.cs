@@ -102,7 +102,7 @@ namespace RevenuePlanner.Controllers
 
             List<BDSService.User> lstUser = null;
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            lstUser = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ToList();
+            lstUser = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ToList();
             List<IntegrationInstanceListing> returnList = new List<IntegrationInstanceListing>();
             IntegrationInstanceListing objInst = null;
             string strForceSyncUser;

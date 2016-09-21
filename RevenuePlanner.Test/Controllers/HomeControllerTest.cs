@@ -1789,8 +1789,7 @@ namespace RevenuePlanner.Test.Controllers
 
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            int UserId = Sessions.User.ID;
-            var result = objHomeController.CheckUserId(UserId) as JsonResult;
+            var result = objHomeController.CheckUserId(Sessions.User.UserId) as JsonResult;
             var serializedData = new RouteValueDictionary(result.Data);
             var resultvalue = serializedData["returnURL"];
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
@@ -1820,7 +1819,6 @@ namespace RevenuePlanner.Test.Controllers
 
             int PlanId = DataHelper.GetPlanId();
             Sessions.PlanId = PlanId;
-            string UserId = Sessions.User.UserId.ToString();
             string ActiveMenu = Enums.ActiveMenu.Home.ToString();
             string viewBy = Enums.EntityType.Tactic.ToString();
             var result = objHomeController.GetOwnerListForFilter(PlanId.ToString(), viewBy, ActiveMenu) as Task<JsonResult>;           
