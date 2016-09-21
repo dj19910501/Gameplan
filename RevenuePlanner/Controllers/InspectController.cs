@@ -519,12 +519,12 @@ namespace RevenuePlanner.Controllers
             List<int> userListId = new List<int>();
             userListId = (from tc in tacticComment select tc.CreatedBy).ToList<int>();
             userListId.Add(_inspectmodel.OwnerId);
-            string userList = string.Join(",", userListId.Select(s => s.ToString()).ToArray());
             List<User> userName = new List<User>();
 
             try
             {
-                userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
+                // Change method for GUID to INT data type for UserId and ClientId
+                userName = objBDSUserRepository.GetMultipleTeamMemberDetailsEx(userListId, Sessions.ApplicationId);
             }
             catch (Exception e)
             {
@@ -1916,12 +1916,12 @@ namespace RevenuePlanner.Controllers
             List<int> userListId = new List<int>();
             userListId = (from ta in tacticComment select ta.CreatedBy).ToList<int>();
             userListId.Add(im.OwnerId);
-            string userList = string.Join(",", userListId.Select(s => s.ToString()).ToArray());
             List<User> userName = new List<User>();
 
             try
             {
-                userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
+                // Change method for GUID to INT data type for UserId and ClientId
+                userName = objBDSUserRepository.GetMultipleTeamMemberDetailsEx(userListId, Sessions.ApplicationId);
             }
             catch (Exception e)
             {
@@ -2246,12 +2246,12 @@ namespace RevenuePlanner.Controllers
             List<int> userListId = new List<int>();
             userListId = (from ta in tacticComment select ta.CreatedBy).ToList<int>();
             userListId.Add(_inspectmodel.OwnerId);
-            string userList = string.Join(",", userListId.Select(userid => userid.ToString()).ToArray());
             List<User> userName = new List<User>();
 
             try
             {
-                userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
+                // Change method for GUID to INT data type for UserId and ClientId
+                userName = objBDSUserRepository.GetMultipleTeamMemberDetailsEx(userListId, Sessions.ApplicationId);
             }
             catch (Exception e)
             {

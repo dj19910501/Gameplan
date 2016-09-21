@@ -125,9 +125,9 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("save budget details.\n");
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string BudgetId = "359";
-            string BudgetDetailName = "Test";
-            string ParentId = "1138";
+            string BudgetId = Convert.ToString(DataHelper.GetBudgetDetailId());
+            string BudgetDetailName = "Test" + DateTime.Now;
+            string ParentId = Convert.ToString(DataHelper.GetBudgetDetailParentId(int.Parse(BudgetId)));
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail(BudgetId, BudgetDetailName, ParentId, "Yearly", true) as PartialViewResult;
@@ -661,7 +661,7 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetParentBudget() as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNotNull(result.Data);            
+            Assert.IsNotNull(result.Data);
 
         }
         #endregion
@@ -734,7 +734,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objFinanceController.EditBudgetGridData(budgetId, IsQuaterly, string.Empty) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
-            
+
         }
         #endregion
 
@@ -756,7 +756,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objFinanceController.EditBudgetGridData(0, "", "") as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
-            
+
         }
         #endregion
 
@@ -835,7 +835,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
 
-           
+
         }
 
         #endregion
@@ -917,7 +917,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objFinanceController.UpdateBudgetGridData(budgetId, IsQuaterly, nValue, "", ColumnName, Period, ParentRowId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
-            
+
         }
 
         #endregion
@@ -1098,7 +1098,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objFinanceController.UpdateBudgetDetail(budgetId, BudgetDetailId, ParentId, mainTimeFrame, "", OwnerId, BudgetDetailName) as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
-            
+
         }
         #endregion
 
@@ -1141,7 +1141,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objFinanceController.UpdateBudgetDetail(null, null, null, null) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
             Assert.IsNull(result);
-            
+
         }
         #endregion
 
@@ -1173,12 +1173,12 @@ namespace RevenuePlanner.Test.Controllers
 
             List<Budget_DetailAmount> BudgetDetailAmount = db.Budget_DetailAmount.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in db.Plan_Campaign_Program_Tactic_LineItem_Cost
-                                                                                     //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                 //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
                                                                                  where LineItemids.Contains(Cost.PlanLineItemId)
                                                                                  select Cost).ToList();
 
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in db.Plan_Campaign_Program_Tactic_LineItem_Actual
-                                                                                         //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
+                                                                                     //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
                                                                                      join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
                                                                                      join Tactic in db.Plan_Campaign_Program_Tactic on TacticLineItem.PlanTacticId equals Tactic.PlanTacticId
                                                                                      where LineItemids.Contains(Actual.PlanLineItemId)
@@ -1195,7 +1195,7 @@ namespace RevenuePlanner.Test.Controllers
             obj = objFinanceController.GetAmountValue(IsQuaterly, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value Budget:  " + obj.Budget);
             Assert.IsNotNull(obj.Budget);
-           
+
 
         }
         #endregion
@@ -1250,12 +1250,12 @@ namespace RevenuePlanner.Test.Controllers
 
             List<Budget_DetailAmount> BudgetDetailAmount = db.Budget_DetailAmount.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in db.Plan_Campaign_Program_Tactic_LineItem_Cost
-                                                                                     //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                 //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
                                                                                  where LineItemids.Contains(Cost.PlanLineItemId)
                                                                                  select Cost).ToList();
 
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in db.Plan_Campaign_Program_Tactic_LineItem_Actual
-                                                                                         //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
+                                                                                     //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
                                                                                      join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
                                                                                      join Tactic in db.Plan_Campaign_Program_Tactic on TacticLineItem.PlanTacticId equals Tactic.PlanTacticId
                                                                                      where LineItemids.Contains(Actual.PlanLineItemId)
@@ -1341,7 +1341,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objFinanceController.Delete(0, 0, null) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value  result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
-           
+
         }
         #endregion
 
@@ -1363,7 +1363,7 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = objFinanceController.GetuserRecord(0) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value  result.Data:  " + result.Data);
-            Assert.IsNotNull(result.Data);            
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -1407,7 +1407,7 @@ namespace RevenuePlanner.Test.Controllers
 
             var result = objFinanceController.DrpFilterByBudget(0, null, null) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNotNull(result.Data); 
+            Assert.IsNotNull(result.Data);
         }
         #endregion
 
@@ -1425,7 +1425,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
             //// Call CreateNewBudget
-            FinanceController objFinanceController = new FinanceController();           
+            FinanceController objFinanceController = new FinanceController();
 
             var result = objFinanceController.GetColumns(0) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value  result.Data :  " + result.Data);
@@ -1453,7 +1453,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objFinanceController.DeleteBudgetForecastData(null) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
-            
+
         }
         #endregion
 
@@ -1498,7 +1498,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = objFinanceController.GetParentLineItemList(0) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
-            
+
         }
         #endregion
 
@@ -1570,7 +1570,7 @@ namespace RevenuePlanner.Test.Controllers
             var result = controller.ExcelFileUpload() as ActionResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
             Assert.IsNotNull(result);
-          
+
         }
         #endregion
 

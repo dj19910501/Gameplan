@@ -120,6 +120,17 @@ namespace RevenuePlanner.Test.MockHelpers
         }
 
         /// <summary>
+        /// Get Budget parent id with pass BudgetDetailId
+        /// </summary>
+        /// <param name="BudgetDetailId"></param>
+        /// <returns></returns>
+        public static int? GetBudgetDetailParentId(int BudgetDetailId)
+        {
+            return db.Budget_Detail.Where(p => p.IsDeleted == false
+                && p.Id == BudgetDetailId).Select(p => p.ParentId).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Get Year
         /// </summary>
         /// <returns></returns>
@@ -160,7 +171,7 @@ namespace RevenuePlanner.Test.MockHelpers
 
         public static Plan_Campaign_Program_Tactic GetPlanTacticForPackage(int clientId)
         {
-            var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == clientId && 
+            var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == clientId &&
                                                                   a.IsDeleted == false &&
                                                                   a.Plan_Campaign_Program.Plan_Campaign.Plan.IsDeleted == false &&
                                                                   a.Plan_Campaign_Program.Plan_Campaign.IsDeleted == false &&
@@ -400,15 +411,16 @@ namespace RevenuePlanner.Test.MockHelpers
             int ClientId = 0;
             if (PlanId > 0)
             {
-               ClientId = (from i in db.Models
-                                join t in db.Plans on i.ModelId equals t.ModelId
-                                where i.IsDeleted == false && t.IsDeleted == false && t.PlanId == PlanId
-                                select i.ClientId).FirstOrDefault();
+                ClientId = (from i in db.Models
+                            join t in db.Plans on i.ModelId equals t.ModelId
+                            where i.IsDeleted == false && t.IsDeleted == false && t.PlanId == PlanId
+                            select i.ClientId).FirstOrDefault();
             }
-            else {
-               ClientId = (from i in db.Models                                
-                                where i.IsDeleted == false
-                                select i.ClientId).FirstOrDefault();
+            else
+            {
+                ClientId = (from i in db.Models
+                            where i.IsDeleted == false
+                            select i.ClientId).FirstOrDefault();
             }
             return ClientId;
         }
@@ -417,8 +429,8 @@ namespace RevenuePlanner.Test.MockHelpers
         public static string GetDashboardId()
         {
             int planId = DataHelper.GetPlanId();
-            var ClientId = Sessions.User.UserId;
-            var DashboardId = Common.GetSpDashboarData(ClientId.ToString()).Select(a => a.Id).FirstOrDefault();
+            var UserId = Sessions.User.ID;
+            var DashboardId = Common.GetSpDashboarData(Convert.ToString(UserId)).Select(a => a.Id).FirstOrDefault();
             return Convert.ToString(DashboardId);
         }
         #endregion
@@ -434,7 +446,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// </summary>
         /// <returns>returns an deleted PlanId </returns>
         public static int GetDeletedPlanId()
-        {            
+        {
             return db.Plans.Where(p => p.IsDeleted == true && p.CreatedBy != 0).Select(p => p.PlanId).FirstOrDefault();
         }
         /// <summary>
@@ -444,17 +456,18 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <param name="PlanId">PlanId</param>
         /// <param name="ModelId">ModelId</param>
         /// <returns>returns an ClientId for given PlanId or ModelId</returns>
-        public static int GetUserId(int PlanId = 0 , int ModelId = 0)
+        public static int GetUserId(int PlanId = 0, int ModelId = 0)
         {
             int UserId = 0;
             if (PlanId > 0)
             {
                 UserId = db.Plans.Where(pl => pl.PlanId == PlanId && pl.CreatedBy != 0).Select(pl => pl.CreatedBy).FirstOrDefault();
             }
-            else {
+            else
+            {
                 UserId = db.Models.Where(pl => pl.ModelId == ModelId && pl.CreatedBy != 0).Select(pl => pl.CreatedBy).FirstOrDefault();
             }
-            
+
             return UserId;
         }
         /// <summary>
@@ -501,7 +514,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <returns>returns an Deleted ModelId </returns>
         public static int GetDeletedModelId()
         {
-            
+
             return db.Models.Where(m => m.IsDeleted == true).Select(m => m.ModelId).FirstOrDefault();
         }
 
@@ -578,7 +591,7 @@ namespace RevenuePlanner.Test.MockHelpers
         /// <returns>returns an Improvement TacticType id for given ClientId</returns>
         public static int GetImprovementTacticTypeId(int clientId)
         {
-            return  db.ImprovementTacticTypes.Where(pl => pl.ClientId == clientId && pl.IsDeleted == false).Select(pl => pl.ImprovementTacticTypeId).FirstOrDefault();            
+            return db.ImprovementTacticTypes.Where(pl => pl.ClientId == clientId && pl.IsDeleted == false).Select(pl => pl.ImprovementTacticTypeId).FirstOrDefault();
         }
         /// <summary>
         /// Get deleted Improvement Tactic Type id for the given ClientId
@@ -601,12 +614,12 @@ namespace RevenuePlanner.Test.MockHelpers
         {
             return db.ImprovementTacticTypes.Where(pl => pl.ClientId == clientId && pl.IsDeleted == false).Select(pl => pl).FirstOrDefault();
         }
-       
+
         //added by devanshi to get Alertrule Id
         public static int GetAlertruleId(int userId)
         {
             int ruleId = 0;
-            var rules= db.Alert_Rules.Where(a=>a.UserId== userId ).Select(a => a).FirstOrDefault();
+            var rules = db.Alert_Rules.Where(a => a.UserId == userId).Select(a => a).FirstOrDefault();
             if (rules != null)
                 ruleId = rules.RuleId;
             return ruleId;
