@@ -1454,25 +1454,22 @@ namespace RevenuePlanner.Controllers
         /// <returns>User list</returns>
         public JsonResult getData(string term, string UserIds)
         {
-            List<BDSService.User> lstUserDetail = new List<BDSService.User>();
-            List<User> Getvalue = new List<User>();
+            List<User> lstUserDetail = new List<User>();
+            List<UserModel> Getvalue = new List<UserModel>();  //keep in mind this is front end abd we should NOT use db user model 
             if (TempData["Userlist"] != null)
             {
-                lstUserDetail = TempData["Userlist"] as List<BDSService.User>;
+                lstUserDetail = TempData["Userlist"] as List<User>;
                 if (lstUserDetail.Count > 0)
                 {
                     lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
 
-                    Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || user.JobTitle.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, ID = user.ID, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                    Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || user.JobTitle.ToLower().Contains(term.ToLower())).Select(user => new UserModel{ UserId = user.ID, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
 
                     string[] keepList = UserIds.Split(',');
-                    Getvalue = Getvalue.Where(i => !keepList.Contains(i.ID.ToString())).ToList();
+                    Getvalue = Getvalue.Where(i => !keepList.Contains(i.UserId.ToString())).ToList();
                 }
-                else
-                {
-                    Getvalue = new List<User>();
-                }
-                TempData["Userlist"] = lstUserDetail;
+
+                TempData["Userlist"] = lstUserDetail; //why?
             }
 
             return Json(Getvalue, JsonRequestBehavior.AllowGet);
@@ -1530,7 +1527,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ID">contains user's id</param>
         /// <returns>if sucess then return true else false</returns>
         [HttpPost]
-        public JsonResult SaveDetail(List<UserBudgetPermission> UserData, string ParentID, string[] CreatedBy, string ChildItems)
+        public JsonResult SaveDetail(List<UserBudgetPermission> UserData, string ParentID, int[] CreatedBy, string ChildItems)
         {
             //Modified by Komal Rawal for #2242 change child item permission on change of parent item
             if (UserData != null)

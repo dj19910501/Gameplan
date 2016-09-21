@@ -1,7 +1,7 @@
 ﻿@using RevenuePlanner.Helpers;
 @model RevenuePlanner.Models.FinanceModel
 @{
-    
+
     string GridRowID = ViewBag.GridRowID;
 }
 @section nlFormContent{
@@ -328,17 +328,17 @@
                             for (var i = 0; i < data.length; i++) {
                                 var html = "";
                                 if (data[i].Permission == 0) {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" checked="checked" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=2 /><label for="None_' + data[i].id + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" checked="checked" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
                                 }
                                 else if (data[i].Permission == 1) {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=2 /><label for="None_' + data[i].id + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
                                 }
                                 else
                                 {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p><p> <input type="radio"  class="redinput"  checked="checked" id="None_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=2 /><label for="None_' + data[i].id + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput"  checked="checked" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
                                 }
-                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
-                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].UserId + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].UserId + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
                             }
                             $("#tableNoData").hide();
                             $(".user-table").show();
@@ -354,18 +354,18 @@
                             for (var i = 0; i < data.length; i++) {
                                 var html = "";
                                 if (data[i].Permission == 0) {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" checked="checked" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=2 /><label for="None_' + data[i].id + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" checked="checked" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
                                 }
                                 else if (data[i].Permission == 1) {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=2 /><label for="None_' + data[i].id + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
                                 }
                                 else
                                 {
-                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput"  id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p><p> <input type="radio"  class="redinput" checked="checked" id="None_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=2 /><label for="None_' + data[i].id + '">None</label></p>';
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].UserId + '" name="permission' + "_" + data[i].UserId + '"  par=0><label for="vew-edit_' + data[i].UserId + '">View/Edit</label></p><p> <input type="radio" class="redinput"  id="view-only_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=1 /><label for="view-only_' + data[i].UserId + '">View Only</label></p><p> <input type="radio"  class="redinput" checked="checked" id="None_' + data[i].UserId + '"  name="permission' + "_" + data[i].UserId + '" par=2 /><label for="None_' + data[i].UserId + '">None</label></p>';
 
                                 }
-                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
-                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"></a></td></tr>');
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].UserId + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td id="IsOwner" title="Owner" class="selectrec" style="display: none">' + data[i].IsOwner + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].UserId + '")"></a></td></tr>');
                             }
                             $("#DivFilterPer").show();
                             $(".user-list").hide();
@@ -462,7 +462,7 @@
                                         $("#NoSearch").hide();
                                         myApp.hidePleaseWait();
                                         response($.map(data, function (item) {
-
+                                            debugger;
                                             return { label: item.UserId, value: item.DisplayName, title: item.JobTitle };
                                         }))
                                     }
