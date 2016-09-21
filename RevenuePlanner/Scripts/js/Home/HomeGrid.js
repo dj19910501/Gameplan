@@ -1333,3 +1333,107 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
         }
     }
 }
+//insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
+function ExportToExcel(isHoneyComb) {
+    //start  
+    if (gridname.toLowerCase() == "home") {
+        var rowIdArray = [];
+        if (isHoneyComb) {
+            HomeGrid.forEachRow(function (id) {
+                //alert();
+                // exportGrid.setCellExcellType(id, 6, "ro");
+                var d = HomeGrid.cells(id, 2).getValue();
+                if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
+                    HomeGrid.setRowHidden(id, true);
+                    rowIdArray.push(id);
+                }
+            });
+        }
+        HomeGrid.saveOpenStates();
+        HomeGrid.expandAll();
+        HomeGrid.setColumnHidden(2, true);
+        HomeGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
+        HomeGrid.loadOpenStates();
+        HomeGrid.setColumnHidden(2, false);
+        if (rowIdArray != undefined) {
+            $.each(rowIdArray, function (key) {
+                HomeGrid.setRowHidden(rowIdArray[key], false);
+            });
+        }
+
+    }
+    else if (gridname.toLowerCase() == "budget") {
+        var exportGrid = new dhtmlXGridObject('gridExport');
+        var JsonExportModel = exportgridData;
+        exportGrid.setImagePath(imgPath);
+        exportGrid.setImageSize(1, 1);
+        exportGrid.setColAlign("right,left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
+        exportGrid.enableAutoHeight(true);
+        exportGrid.enableAutoWidth(false);
+        exportGrid.setColumnIds(ColumnIds);
+        exportGrid.attachEvent("onBeforeCMove", function (a, b) {
+            return true;
+            //return confirm("Allow move column " + a + " to position " + b);
+        });
+
+        if (gridname != undefined) {
+            if (gridname.toLowerCase() == 'budget') {
+                if (gridheader != undefined)
+                    exportGrid.setHeader(gridheader);
+                if (colType != undefined)
+                    exportGrid.setColTypes(colType);
+                if (colSorting != undefined)
+                    exportGrid.setColSorting(colSorting);
+                if (budgetWidth != undefined)
+                    exportGrid.setInitWidths(budgetWidth);
+                if (attachHeader != undefined)
+                    exportGrid.attachHeader(attachHeader);
+                exportGrid.setColumnHidden(2, true);
+                exportGrid.setColumnHidden(0, true);
+            }
+            //if (gridname.toLowerCase() == 'home') {
+            //    exportGrid.setColumnHidden(2, true);
+            //}
+        }
+
+        //exportGrid.setColumnHidden(GridHiddenId, true);
+        //exportGrid.setColumnHidden(ActivitypeHidden, true);
+        //exportGrid.setColumnHidden(MachineNameHidden, true);
+        //exportGrid.enableColumnMove(true);
+
+        exportGrid.init();
+
+        setTimeout(function () {
+            exportGrid.setSizes();
+        }, 200);
+
+        var mainGridData = JsonExportModel;
+        mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+        exportGrid.parse(GridDataHomeGrid, "json");
+
+        // exportGrid.setColumnHidden(2, true);
+        exportGrid.expandAll();
+
+        //mygrid.setCellExcellType(ids_array[i], 6, "ro");
+        //$.each(movedColumnArray, function (key, value) {
+        //    exportGrid.moveColumn(key, value)
+        //    alert(value[0] + "," + value[1]);
+        //});
+        //var rowIdArray = [];
+        //if (isHoneyComb) {
+        //    HomeGrid.forEachRow(function (id) {
+        //        //alert();
+        //        // exportGrid.setCellExcellType(id, 6, "ro");
+        //        var d = HomeGrid.cells(id, 2).getValue();
+        //        if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
+        //            exportGrid.setRowHidden(id, true);
+        //            rowIdArray.push(id);
+        //        }
+        //    });
+        //}
+        exportGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
+    }
+    //end
+
+}

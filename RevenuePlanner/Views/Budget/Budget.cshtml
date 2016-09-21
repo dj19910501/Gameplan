@@ -88,13 +88,31 @@
 
 <script type="text/javascript">
     var HomeGrid;
+    gridname = "budget";
+    //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
+    var gridheader;
+    var colType;
+    var budgetWidth;
+    var colSorting;
+    var ColumnIds;
+    var attachHeader;
+    //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
     var eventidonedit = 0;
     $(document).ready(function () {
         var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
+        exportgridData = JsonModel;
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
         HomeGrid.setImageSize(1, 1);
+        //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
+        gridheader = '@Model.SetHeader';
+        ColumnIds = '@Model.ColumnIds';
+         colType = '@Model.ColType';
+         colSorting = '@Model.ColSorting';
+        budgetWidth = '@Model.Width';
+        attachHeader = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader))');
+        //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
         HomeGrid.setHeader('@Model.SetHeader');
         HomeGrid.attachHeader(JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader))'));
         HomeGrid.setColTypes('@Model.ColType');
@@ -142,7 +160,7 @@
         if (stage == 2) {
 
             var EntityId = HomeGrid.cells(rowId, 0).cell.innerText.split(';')[0];
-            var Section = HomeGrid.cells(rowId, 0).cell.innerText.split(';')[1];            
+            var Section = HomeGrid.cells(rowId, 0).cell.innerText.split(';')[1];
             var Month = '';
             var YearCost;
             var MonthCost;

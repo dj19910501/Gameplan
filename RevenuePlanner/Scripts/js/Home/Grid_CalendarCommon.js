@@ -1,5 +1,9 @@
 ﻿//To Load PlanGrid
 //Start
+//insertation start by kausha 21/09/2016 #2638/2592 Export to excel
+var exportgridData;
+var gridname;
+//insertation end by kausha 21/09/2016 #2638/2592 Export to excel
 function LoadPlanGrid() {
     $.ajax({
         url: urlContent + 'Plan/LoadHomeGrid_NewDesign/',
