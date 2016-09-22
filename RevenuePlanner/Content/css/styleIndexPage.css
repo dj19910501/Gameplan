@@ -611,13 +611,13 @@ a:hover, a:focus {
 	width: 280px;
 	border-right: 1px solid #ccc;
 	bottom: 0;
-	top: 110px;
-	height: 82vh;
+    top:0;
+	padding-top: 120px;
+	height: 100%;
 	position: absolute;
 	/*overflow-x:hidden;*/
 	overflow-y: auto;
 	transition: width 0.1s ease-in-out 0.1s;
-	padding-top: 8px;
 	background: #f0f0f0;
 }
 #content_wraper {
@@ -642,9 +642,11 @@ a:hover, a:focus {
 }
 footer {
 	bottom: 0;
-	width: 100%;
+	width: calc(100% - 281px);
 	text-align: center;
 	position: fixed;
+    right:0;
+
 }
 /* =============== Sidebar Style ================== */
 .row-fluid .sidebar, .row-fluid .sidebar .sidebar-section {
@@ -1376,13 +1378,13 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa {
 /*============= Footer Css ===================== */
 
 footer > span {
-	background: #e6e6e6 none repeat scroll 0 0;
-	border-top: 1px solid #ccc;
+	background: transparent none repeat scroll 0 0;
+    border-top:none;
 	color: #3e3f37;
 	display: inline-block;
 	float: right;
 	font-size: 12px;
-	padding: 10px 0;
+	padding: 8px 0;
 	width: 100%;
 }
 footer a {
@@ -1405,6 +1407,8 @@ footer a {
 }
 .task-tbl #gridbox.financeReportGrid div.objbox table tr td{text-align:center}
 .task-tbl .market-activity-main .btn-dropdwn{position: absolute; top: 40px; z-index: 11;}
+/*.task-tbl .gantt_task{padding-left:1px}*/
+.task-tbl .gantt_grid{margin-left:1px}
 
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1550px) {

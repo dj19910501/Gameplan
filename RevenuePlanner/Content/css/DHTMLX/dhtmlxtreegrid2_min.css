@@ -2497,7 +2497,7 @@ div.dhx_modal_cover {
     border: 1px solid #d5d5d5;
     border-width: 0 1px 0 1px;
 }
-/* Extra css for design and Overwrite main css */
+/* ============= Extra css for design and Overwrite main css ================== */
 .dhx_combo_select option:hover,
 .dhx_combo_select option:focus,
 .dhx_combo_select option:checked {
@@ -2507,5 +2507,5 @@ div.dhx_modal_cover {
 /* #2370 Media code*/
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td,
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
-    background-color: #b5deff;
+    background-color: #f4f4f4; border-bottom:1px solid #d4d4d4;border-top:1px solid #d4d4d4;border-right:1px solid #d4d4d4;
 }
