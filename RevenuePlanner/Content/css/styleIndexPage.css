@@ -1410,10 +1410,103 @@ footer a {
 /*.task-tbl .gantt_task{padding-left:1px}*/
 .task-tbl .gantt_grid{margin-left:1px}
 
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{text-align: center;}
+
+/* ============== Search box CSS ================ */
+#divgridview .xhdr{ height: 37px !important; }
+#exp-serach{
+    position: absolute;
+    height: 37px;
+    margin-top: 1px;
+    width:320px
+}
+.input-group-btn {
+	float: left;
+}
+.input-group-btn .dropdown-menu ul {
+	margin: 0;
+	list-style: outside none;
+}
+.input-group-btn .dropdown-menu {
+	background-color: #fff;
+	border: 1px solid #dbded7;
+	border-radius: 5px;
+	float: left;
+	min-width: 140px;
+	padding: 5px 0;
+}
+.input-group-btn  .dropdown-menu a {
+	display: block;
+	padding: 0 10px; color:inherit; font-size:12px
+}
+.input-group-btn  .dropdown-menu a:hover {
+	background: #f5f5f5;
+}
+
+.ExpIcon{
+    background: transparent none repeat scroll 0 0;
+    color: #9c9fa0;
+    cursor: pointer;
+    display: inline-block;
+    float: right;
+    font-size: 16px;
+    margin: 0;
+    padding: 7px 0 0;
+    position: static;
+    text-align: center;
+    width: 35px;
+	-webkit-font-smoothing: antialiased;
+}
+
+.input-group-btn  .fa {
+	font-size: 14px;
+	color: #3e3f37;
+}
+
+#searchCriteria {
+	margin-bottom: 0;
+	box-shadow: none;
+	border-radius: 0;
+	padding: 0;
+	width: 45px;
+	height: 38px !important;
+}
+.open #searchCriteria {
+	background: #89CEDE;
+}
+#searchCriteria span {
+	color: #fff;
+}
+#searchCriteria::after {
+	content: "\f0d7";
+	font-family: fontawesome;
+	padding-left: 3px;
+	width: 35px;
+}
+#txtGlobalSearch {
+	border: 0 none;
+	border-radius: 0;
+	height: 38px;
+	margin: 0;
+	background: transparent;
+	outline: 0 !important;
+	display: inline;
+	box-shadow: none;
+	width: 72%;
+	font-size: 12px;
+    float:left;
+}
+.Exp-serach {
+	height: 37px;
+}
+
+
+
 /************************************************ Responsive css start here **********************************************************/
-@media (max-width: 1550px) {
-#sidebar {
-	height: 82vh;
+@media (max-width: 1600px) {
+.task-tbl #divgridview, 
+.task-tbl #GridGanttContent {
+    height: 55vh; 
 }
 }
 
@@ -1497,6 +1590,7 @@ footer a {
 }
 
 @media (max-width: 1279px) {
+body{overflow:auto}
 .container-fluid {
 	min-width: 1280px !important;
 }
@@ -1540,3 +1634,8 @@ footer a {
 	padding: 0 0 0 5px;
 }
 }
+
+
+/* ============== new feature Searchbox style #2269 start ============== */
+
+h2.title-simple{margin-top:0}

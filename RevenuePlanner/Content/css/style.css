@@ -15035,20 +15035,9 @@ tbody.column2 {
 	height: auto;
 }
 /* Added for #2547 bhumika 30/08/2016 */
-/*.instruction {
+.instruction {
 	color: #aaa;
 	font-size: 12px;
 	margin-bottom: 10px;
 	display: block;
-}*/
-/*.headerfix-wraper{display:none}*/
-/*#divPartial.partial_wrapper {
-	width: 1000px
 }
-.pop-body-wraper, .PopupDiv, #InspectTab {
-	width: 100% !important
-}
-
-#modal-container-186470 {
-	padding: 0
-}*/
