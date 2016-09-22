@@ -1969,7 +1969,7 @@ namespace RevenuePlanner.Test.Controllers
             controller.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), controller);
             string Title = TaskData.Title.ToString();
             int EntityId = TaskData.PlanTacticId;
-            int PlanId = DataHelper.GetPlanId();
+            int PlanId = TaskData.Plan_Campaign_Program.Plan_Campaign.PlanId;
             Sessions.PlanId = PlanId;
             string CampaignId = TaskData.Plan_Campaign_Program.PlanCampaignId.ToString();
             var result = controller.Clone(Enums.EntityType.Tactic.ToString(), EntityId, Title) as JsonResult;

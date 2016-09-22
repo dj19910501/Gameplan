@@ -265,12 +265,13 @@ namespace RevenuePlanner.Test.Helper
             string clonetype = Enums.EntityType.Tactic.ToString();
 
             //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId).Select(pl => pl.PlanId).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId && pl.IsDeleted == false).Select(pl => pl.PlanId).Take(5).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.PlanTacticId).ToList();
+            int ParentEntityId = db.Plan_Campaign_Program_Tactic.Where(tt => tt.PlanTacticId == tactic.FirstOrDefault()).Select(tt => tt.PlanProgramId).FirstOrDefault();
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
-            int _clone = Clonehelper.CloneToOtherPlan(null, clonetype, Convert.ToInt32(entityId.Split('_')[1]), Convert.ToInt32(entityId.Split('_')[0]), 0, false);
+            int _clone = Clonehelper.CloneToOtherPlan(null, clonetype, Convert.ToInt32(entityId.Split('_')[1]), Convert.ToInt32(entityId.Split('_')[0]), ParentEntityId, false);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value clone:  " + _clone);
-            Assert.AreEqual(0, _clone);
+            Assert.AreNotEqual(0, _clone);
         }
 
         /// <summary>
@@ -323,13 +324,14 @@ namespace RevenuePlanner.Test.Helper
             int UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ID;
             //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
             //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId && pl.IsDeleted == false).Select(pl => pl.PlanId).Take(1).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId) && id.IsDeleted == false).Select(tactictype => tactictype.TacticTypeId).ToList();
+            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId && pl.IsDeleted == false).Select(pl => pl.PlanId).Take(5).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.PlanTacticId).ToList();
+            int ParentEntityId = db.Plan_Campaign_Program_Tactic.Where(tt => tt.PlanTacticId == tactic.FirstOrDefault()).Select(tt => tt.PlanProgramId).FirstOrDefault();
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
 
-            int _clone = Clonehelper.CloneTacticToOtherPlan(Convert.ToInt32(entityId.Split('_')[0]), UserId, Convert.ToInt32(entityId.Split('_')[1]), 0, string.Empty, false, null);
+            int _clone = Clonehelper.CloneTacticToOtherPlan(Convert.ToInt32(entityId.Split('_')[0]), UserId, Convert.ToInt32(entityId.Split('_')[1]), ParentEntityId, string.Empty, false, null);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value clone:  " + _clone);
-            Assert.AreEqual(0, _clone);
+            Assert.AreNotEqual(0, _clone);
         }
 
         /// <summary>
@@ -432,12 +434,13 @@ namespace RevenuePlanner.Test.Helper
             int UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ID;
             //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
             //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId).Select(pl => pl.PlanId).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId && pl.IsDeleted == false).Select(pl => pl.PlanId).Take(5).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.PlanTacticId).ToList();
+            int ParentEntityId = db.Plan_Campaign_Program_Tactic.Where(tt => tt.PlanTacticId == tactic.FirstOrDefault()).Select(tt => tt.PlanProgramId).FirstOrDefault();
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
-            int _clone = Clonehelper.LinkToOtherPlan(null, string.Empty, Convert.ToInt32(entityId.Split('_')[1]), Convert.ToInt32(entityId.Split('_')[0]), 0, false);
+            int _clone = Clonehelper.LinkToOtherPlan(null, string.Empty, Convert.ToInt32(entityId.Split('_')[1]), Convert.ToInt32(entityId.Split('_')[0]), ParentEntityId, false);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value clone:  " + _clone);
-            Assert.AreEqual(0, _clone);
+            Assert.AreNotEqual(0, _clone);
         }
 
         /// <summary>
@@ -508,13 +511,14 @@ namespace RevenuePlanner.Test.Helper
             int UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ID;
             //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
             //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId).Select(pl => pl.PlanId).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId && pl.IsDeleted == false).Select(pl => pl.PlanId).Take(5).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.PlanTacticId).ToList();
+            int ParentEntityId = db.Plan_Campaign_Program_Tactic.Where(tt => tt.PlanTacticId == tactic.FirstOrDefault()).Select(tt => tt.PlanProgramId).FirstOrDefault();            
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();
 
-            int _clone = Clonehelper.LinkTacticToOtherPlan(Convert.ToInt32(entityId.Split('_')[0]), UserId, Convert.ToInt32(entityId.Split('_')[1]), 0, string.Empty, false, null);
+            int _clone = Clonehelper.LinkTacticToOtherPlan(Convert.ToInt32(entityId.Split('_')[0]), UserId, Convert.ToInt32(entityId.Split('_')[1]), ParentEntityId, string.Empty, false, null);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value clone:  " + _clone);
-            Assert.AreEqual(0, _clone);
+            Assert.AreNotEqual(0, _clone);
         }
     }
 }

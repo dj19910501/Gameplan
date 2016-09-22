@@ -678,7 +678,7 @@ namespace RevenuePlanner.Helpers
                 {
                     var LineItemCustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == Lineitem.PlanLineItemId && a.CustomField.EntityType == entityTypeLineItem).ToList();
                     //int clonedTacticId = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
-                    var clonedPlanLineItemId = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.LineItemTypeId == null).FirstOrDefault().PlanLineItemId;
+                    var clonedPlanLineItemId = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.LineItemTypeId == null).Select(a => a.PlanLineItemId).FirstOrDefault();
                     if (Lineitem.LineItemTypeId != null)
                     {
                         clonedPlanLineItemId = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Title == Lineitem.Title).FirstOrDefault().PlanLineItemId;
