@@ -38,7 +38,12 @@
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
         width: 100%!important;
     }        
-    
+        .ui-tooltip{position:absolute !important; background:#fff; color:#666666; border:1px solid  #666666; font-size:11px;padding:0 2px;
+                 -webkit-box-shadow: 3px 3px 5px 0px rgba(107,107,107,1);
+                 -moz-box-shadow: 3px 3px 5px 0px rgba(107,107,107,1);
+                 box-shadow: 3px 3px 5px 0px rgba(107,107,107,1);}
+     .ui-helper-hidden-accessible{ display:none;}
+
 </style>
 <div id="gridbox" style="width:100%; background-color:white;"></div>
 @Html.Hidden("hdnBudgetId", BudgetId, new { id = "hdnBudgetId", name = "hdnBudgetId", value = BudgetId })
@@ -63,6 +68,19 @@
     BudgetDetails = {
         Name: []
     };
+
+    function SetTooltip() {
+        $(".grid_Delete").tooltip({
+            'toggle': 'hover',
+            'container': 'body',
+            'placement': 'bottom'
+        });
+        $(".finance_grid_add").tooltip({
+            'toggle': 'hover',
+            'container': 'body',
+            'placement': 'bottom'
+        });
+    }
     $(document).ready(function () {
         GetListOfBudgetName();
         ShowHideControls('MainGrid');
@@ -278,6 +296,7 @@
 
         //Enable single click to trigger edit - zz
         myTreeGrid.enableEditEvents(true, false, true);
+        SetTooltip();
     });
     function CheckboxClick(checkbox) {
         var controlid = $(checkbox).attr('id');

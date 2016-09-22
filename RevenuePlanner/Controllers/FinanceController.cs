@@ -916,7 +916,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (Permission == "Edit")
                         {
-                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' title='Delete' title='Delete' class='grid_Delete'></div>";
                         }
                         else
                         {
@@ -979,7 +979,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (Permission == "Edit")
                         {
-                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' title='Delete' title='Delete' class='grid_Delete'></div>";
                         }
                         else
                         {
@@ -1060,7 +1060,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (Permission == "Edit")
                         {
-                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' title='Delete' class='grid_Delete'></div>";
                             strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                         }
                         else if (Permission == "None")
@@ -1074,7 +1074,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' title='Delete' class='grid_Delete'></div>";
                         strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                     }
                 }
@@ -1082,7 +1082,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (Permission == "Edit")
                     {
-                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "'  LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "'  LICount='" + lineItemCount + "' onclick='CheckboxClick(this)' title='Delete' class='grid_Delete'></div>";
                         strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
                     }
                     else if (Permission == "None")
@@ -2710,7 +2710,7 @@ namespace RevenuePlanner.Controllers
                             var LineItemBudhgetListValue = LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList();
                             objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmountValue, PlanDetailAmountValue, ActualDetailAmountValue, LineItemBudhgetListValue);
 
-                            string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' LICount='" + PlanLineItemsId.Count() + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "") : "");
+                            string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' LICount='" + PlanLineItemsId.Count() + "' onclick='CheckboxClick(this)'  title='Delete' class='grid_Delete'></div>" : "") : "");
 
                             Dictionary<string, object> variables = new Dictionary<string, object>();
 
@@ -2837,7 +2837,7 @@ namespace RevenuePlanner.Controllers
                         var LineItemBudhgetListValue = LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList();
                         objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmountValue, PlanDetailAmountValue, ActualDetailAmountValue, LineItemBudhgetListValue);
 
-                        string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' LICount='" + PlanLineItemsId.Count() + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "") : "");
+                        string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' LICount='" + PlanLineItemsId.Count() + "' onclick='CheckboxClick(this)' title='Delete' class='grid_Delete'></div>" : "") : "");
                         Dictionary<string, object> variables = new Dictionary<string, object>();
 
                         DataRow row = dataTableMain.NewRow();
@@ -3215,7 +3215,7 @@ namespace RevenuePlanner.Controllers
                         //Added by Komal Rawal for #2346 on 02-08-2016
                         if (addRow != string.Empty)
                         {
-                            addRow = "<div id='dv" + id + "' row-id='" + id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (parentid != 0 ? parentid.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + id + "' row-id='" + id + "' Name='" + HttpUtility.HtmlEncode(name) + "' LICount='" + lineitemcount + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                            addRow = "<div id='dv" + id + "' row-id='" + id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (parentid != 0 ? parentid.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + id + "' row-id='" + id + "' Name='" + HttpUtility.HtmlEncode(name) + "' LICount='" + lineitemcount + "' onclick='CheckboxClick(this)' title='Delete' title='Delete' class='grid_Delete'></div>";
                         }
                     }
                     strLineItemLink = lineitemcount.ToString();

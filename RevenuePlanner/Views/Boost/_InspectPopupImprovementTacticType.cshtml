@@ -85,11 +85,11 @@
                         <p class="clear-section">Deployed to Integration</p>
                         @if (Model.IsDeployedToIntegration)
                         {
-                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Deployed to Integration" maxlength="18" readonly />
+                            <input id="t_integration_status" name="t_status" type="text" title="Active" class="icon-check-blue" placeholder="Deployed to Integration" maxlength="18" readonly />
                         }
                         else
                         {
-                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Deployed to Integration" maxlength="18" readonly />
+                            <input id="t_integration_status" name="t_status" type="text" title="Inactive" class="icon-check-gray"  placeholder="Not Deployed to Integration" maxlength="18" readonly />
                         }
                     </div>
                 </div>
@@ -161,6 +161,7 @@
     </div>
 }
 <script type="text/javascript">
+  
 
     $(document).ready(function () {
         $("#successMessage").slideUp(10);
@@ -169,21 +170,26 @@
 
         $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); //Modified by Rahul Shah for PL #2501 to apply multi currency on boost screen
 
+    
         $('.close-form', this.$panel).click(function (e) {
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
         });
+
+ 
 
         $("#frm_tactics #t_integration_status").click(function () {
             if ($(this).hasClass("icon-check-blue")) {
                 $(this).val("Not Deployed to Integration");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
+                $(this).attr('title', 'Inactive');
             }
             else {
                 $(this).val("Deployed to Integration");
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
+                $(this).attr('title', 'Active');
             }
         });
 
@@ -191,10 +197,12 @@
         if (status != "True") {
             $("#frm_tactics #t_status").val("Not Active");
             $("#frm_tactics #t_status").addClass("icon-check-gray");
+            $("#frm_tactics #t_status").attr('title', 'Not Active');
         }
         else {
             $("#frm_tactics #t_status").val("Active");
             $("#frm_tactics #t_status").addClass("icon-check-blue");
+            $("#frm_tactics #t_status").attr('title', 'Active');
         }
 
         $("#frm_tactics #t_status").click(function () {
@@ -202,10 +210,12 @@
                 $(this).val("Not Active");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
+                $(this).attr('title', 'Not active');
             } else {
                 $(this).val("Active");
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
+                $(this).attr('title', 'Active');
             }
         });
 

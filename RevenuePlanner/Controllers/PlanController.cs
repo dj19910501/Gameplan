@@ -14539,7 +14539,7 @@ namespace RevenuePlanner.Controllers
                         //#1780
                         //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=add_Remove_Entity onclick=javascript:AddRemoveEntity(this) id=PlanAdd altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() +"></div>";
                         //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName='" + (HttpUtility.HtmlEncode(planitem.Title).Replace("'", "&#39;")) + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>";
-                        plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "> <i class='fa fa-plus-circle'></i> </div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd dhtmlxrowid='" + gridjsonlistplanobj.id + "' TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName='" + (HttpUtility.HtmlEncode(planitem.Title).Replace("'", "&#39;")) + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "' taskId=" + planitem.PlanId + " csvId=Plan_" + planitem.PlanId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
+                        plandataobj.value = "<div class=grid_Search title='View' id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title='Add'  id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "> <i class='fa fa-plus-circle'></i> </div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb'  id=PlanAdd dhtmlxrowid='" + gridjsonlistplanobj.id + "' TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName='" + (HttpUtility.HtmlEncode(planitem.Title).Replace("'", "&#39;")) + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "' taskId=" + planitem.PlanId + " csvId=Plan_" + planitem.PlanId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
@@ -14719,7 +14719,7 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobj = new Plandataobj();
                                     //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") +  "<div class=add_Remove_Entity id=CampaignAdd onclick=javascript:AddRemoveEntity(this) altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                     //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + GetOwnerName(Campaignitem.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Campaignitem.Title).Replace("'", "&#39;")) + "' altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                    campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> <i class='fa fa-plus-circle'></i> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) dhtmlxrowid='" + campaignrowsobj.id + "' TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + GetOwnerName(Campaignitem.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Campaignitem.Title).Replace("'", "&#39;")) + "' altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "' taskId= " + Campaignitem.PlanCampaignId + " csvId=Campaign_" + Campaignitem.PlanCampaignId + "></div>";//Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
+                                    campaigndataobj.value = "<div class=grid_Search title='Add' id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title='Add' id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> <i class='fa fa-plus-circle'></i> </div>" : "") + "<div class=honeycombbox-icon-gantt  title = 'Add to Honeycomb' id=CampaignAdd onclick=javascript:AddRemoveEntity(this) dhtmlxrowid='" + campaignrowsobj.id + "' TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + GetOwnerName(Campaignitem.CreatedBy) + "' TaskName='" + (HttpUtility.HtmlEncode(Campaignitem.Title).Replace("'", "&#39;")) + "' altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "' taskId= " + Campaignitem.PlanCampaignId + " csvId=Campaign_" + Campaignitem.PlanCampaignId + "></div>";//Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId
                                     campaigndataobjlist.Add(campaigndataobj);
 
                                     campaigndataobj = new Plandataobj();
@@ -14888,7 +14888,7 @@ namespace RevenuePlanner.Controllers
                                                 programdataobj = new Plandataobj();
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=ProgramAdd onclick=javascript:AddRemoveEntity(this); altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "> <i class='fa fa-plus-circle'></i> </div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); dhtmlxrowid='" + programrowsobj.id + "' TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "'  taskId= " + Programitem.PlanProgramId + " csvId=Program_" + Programitem.PlanProgramId + "></div>";  //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                                                              
+                                                programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "> <i class='fa fa-plus-circle'></i> </div>" : "") + " <div class=honeycombbox-icon-gantt  title = 'Add to Honeycomb' id=ProgramAdd onclick=javascript:AddRemoveEntity(this); dhtmlxrowid='" + programrowsobj.id + "' TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName='" + (HttpUtility.HtmlEncode(Programitem.Title).Replace("'", "&#39;")) + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "'  taskId= " + Programitem.PlanProgramId + " csvId=Program_" + Programitem.PlanProgramId + "></div>";  //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                                                              
                                                 programdataobjlist.Add(programdataobj);
 
                                                 programdataobj = new Plandataobj();
@@ -15053,7 +15053,7 @@ namespace RevenuePlanner.Controllers
                                                         // Modified by Arpita Soni for Ticket #2354 on 07/12/2016
                                                         tacticdataobj = new Plandataobj();
                                                         //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "'> <i class='fa fa-plus-circle'></i> </div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) pcptid = L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "_T" + tactic.PlanTacticId + " anchortacticid='" + tactic.AnchorTacticId + "' dhtmlxrowid='" + tacticrowsobj.id + "'  roitactictype='" + tactic.ROITacticType + "' TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + " csvId=Tactic_" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                        tacticdataobj.value = "<div class=grid_Search id=TP title='Add'></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add title='Add'  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "'> <i class='fa fa-plus-circle'></i> </div>" : "") + " <div class=honeycombbox-icon-gantt title = 'Add to Honeycomb' id=TacticAdd onclick=javascript:AddRemoveEntity(this) pcptid = L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "_T" + tactic.PlanTacticId + " anchortacticid='" + tactic.AnchorTacticId + "' dhtmlxrowid='" + tacticrowsobj.id + "'  roitactictype='" + tactic.ROITacticType + "' TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + " csvId=Tactic_" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticdataobj = new Plandataobj();
@@ -15174,7 +15174,7 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                                                 lineitemdataobj = new Plandataobj();
-                                                                lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "> <i class='fa fa-plus-circle'></i> </div>" : "");
+                                                                lineitemdataobj.value = "<div class=grid_Search title='Add'id=LP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add title='Add'  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "> <i class='fa fa-plus-circle'></i> </div>" : "");
                                                                 lineitemdataobjlist.Add(lineitemdataobj);
 
                                                                 lineitemdataobj = new Plandataobj();
@@ -20106,7 +20106,7 @@ namespace RevenuePlanner.Controllers
             objTest.data.Add(TestBudgetDataObj1);
 
             Budgetdataobj TestBudgetDataObjControl0 = new Budgetdataobj();
-            TestBudgetDataObjControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            TestBudgetDataObjControl0.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
             objTest.data.Add(TestBudgetDataObjControl0);
 
             Budgetdataobj TestBudgetDataObj2 = new Budgetdataobj();
@@ -20169,7 +20169,7 @@ namespace RevenuePlanner.Controllers
             objTestCampaign.data.Add(TestCampDataObj1);
 
             Budgetdataobj objTestCampaignControl0 = new Budgetdataobj();
-            objTestCampaignControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Camp alt=27286 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=CampAdd taskId=27286 csvId=Camp_27286></div>";
+            objTestCampaignControl0.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Camp alt=27286 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=CampAdd taskId=27286 csvId=Camp_27286></div>";
             objTestCampaign.data.Add(objTestCampaignControl0);
 
             objTestCampaign.data.Add(TestBudgetDataObj2);
@@ -20212,7 +20212,7 @@ namespace RevenuePlanner.Controllers
             objTestProgram.data.Add(TestProgDataObj1);
 
             Budgetdataobj objTestProgramControl0 = new Budgetdataobj();
-            objTestProgramControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestProgramControl0.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
             objTestProgram.data.Add(objTestProgramControl0);
 
             objTestProgram.data.Add(TestBudgetDataObj2);
@@ -20255,7 +20255,7 @@ namespace RevenuePlanner.Controllers
             objTestTactic.data.Add(TestTacDataObj1);
 
             Budgetdataobj objTestTacticControl0 = new Budgetdataobj();
-            objTestTacticControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestTacticControl0.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
             objTestTactic.data.Add(objTestTacticControl0);
 
             objTestTactic.data.Add(TestBudgetDataObj2);
@@ -20299,7 +20299,7 @@ namespace RevenuePlanner.Controllers
             objTestLinkItm.data.Add(TestLinkTacDataObj1);
 
             Budgetdataobj objTestLinkItmControl0 = new Budgetdataobj();
-            objTestLinkItmControl0.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestLinkItmControl0.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
             objTestLinkItm.data.Add(objTestLinkItmControl0);
 
             objTestLinkItm.data.Add(TestBudgetDataObj2);
@@ -20360,7 +20360,7 @@ namespace RevenuePlanner.Controllers
             objTest2.data.Add(TestBudgetDataObj1_2);
 
             Budgetdataobj TestBudgetDataObjControl0_2 = new Budgetdataobj();
-            TestBudgetDataObjControl0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            TestBudgetDataObjControl0_2.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
             objTest2.data.Add(TestBudgetDataObjControl0_2);
 
             Budgetdataobj TestBudgetDataObj2_2 = new Budgetdataobj();
@@ -20423,7 +20423,7 @@ namespace RevenuePlanner.Controllers
             objTestCampaign_2.data.Add(TestCampDataObj1_2);
 
             Budgetdataobj objTestCampaign_2Control0_2 = new Budgetdataobj();
-            objTestCampaign_2Control0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Camp alt=27286 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=CampAdd taskId=27286 csvId=Camp_27286></div>";
+            objTestCampaign_2Control0_2.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Camp alt=27286 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' id=CampAdd taskId=27286 csvId=Camp_27286></div>";
             objTestCampaign_2.data.Add(objTestCampaign_2Control0_2);
 
             objTestCampaign_2.data.Add(TestBudgetDataObj2_2);
@@ -20466,7 +20466,7 @@ namespace RevenuePlanner.Controllers
             objTestProgram_2.data.Add(TestProgDataObj1_2);
 
             Budgetdataobj objTestProgram_2Control0_2 = new Budgetdataobj();
-            objTestProgram_2Control0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestProgram_2Control0_2.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
             objTestProgram_2.data.Add(objTestProgram_2Control0_2);
 
             objTestProgram_2.data.Add(TestBudgetDataObj2_2);
@@ -20509,7 +20509,7 @@ namespace RevenuePlanner.Controllers
             objTestTactic_2.data.Add(TestTacDataObj1_2);
 
             Budgetdataobj objTestTactic_2Control0_2 = new Budgetdataobj();
-            objTestTactic_2Control0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestTactic_2Control0_2.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
             objTestTactic_2.data.Add(objTestTactic_2Control0_2);
 
             objTestTactic_2.data.Add(TestBudgetDataObj2_2);
@@ -20553,7 +20553,7 @@ namespace RevenuePlanner.Controllers
             objTestLinkItm_2.data.Add(TestLinkTacDataObj1_2);
 
             Budgetdataobj objTestLinkItm_2Control0_2 = new Budgetdataobj();
-            objTestLinkItm_2Control0_2.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
+            objTestLinkItm_2Control0_2.value = "<div class=grid_add title='Add' onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=20212 per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=20212 csvId=Plan_20212></div>";
             objTestLinkItm_2.data.Add(objTestLinkItm_2Control0_2);
 
             objTestLinkItm_2.data.Add(TestBudgetDataObj2_2);

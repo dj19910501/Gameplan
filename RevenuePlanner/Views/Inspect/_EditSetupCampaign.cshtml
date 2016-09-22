@@ -487,6 +487,7 @@
             $(this).addClass("icon-check-gray");
             $(this).removeClass("icon-check-blue");
             $("#hdnIsDeployedToIntegration").val(false);
+            $(this).attr('title', 'Inactive');
         }
         else {
             $(this).val("Sync to integration");
@@ -494,6 +495,7 @@
             $(this).addClass("icon-check-blue");
             $(this).removeClass("icon-check-gray");
             $("#hdnIsDeployedToIntegration").val(true);
+            $(this).attr('title', 'Active');
         }
 
     });

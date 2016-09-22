@@ -142,8 +142,15 @@
     </div>
 
     <script type="text/javascript">
-
+  
         $(document).ready(function () {
+
+            if ($('#importActuals').val() == 'Active') {
+                $('#importActuals').attr('title', 'Active');
+            }
+            else {
+                $('#importActuals').attr('title', 'Inactive');
+            }
             var IsPermission = '@ViewBag.IntegrationPermission';
             var InstanceType = null;
             if (IsPermission != null && IsPermission != '') {
@@ -264,11 +271,13 @@
                 $('#IsActive').val(false);
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
+                $(this).attr("title", "Inactive");
             } else {
                 $(this).val("Active");
                 $('#IsActive').val(true);
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
+                $(this).attr("title", "Active");
             }
             if (InstanceType != null && InstanceType != InstanceMarketo) {
                 if ($('#IsImportActuals').val().toString().toLowerCase() == "false") {
@@ -276,8 +285,10 @@
                     $('#IsImportActuals').val(false);
                     $(this).addClass("icon-check-gray");
                     $(this).removeClass("icon-check-blue");
+                    $(this).attr("title", "Inactive");
                 } else {
                     $(this).val("Active");
+                    $(this).attr("title", "Active");
                     $('#IsImportActuals').val(true);
                     $(this).addClass("icon-check-blue");
                     $(this).removeClass("icon-check-gray");
@@ -285,7 +296,7 @@
             }
 
             $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-
+            SetTooltip();
         });
 
         // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
@@ -360,11 +371,13 @@
                 $('#IsImportActuals').val(false);
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
+                $(this).attr("title", "Inactive");
             } else {
                 $(this).val("Active");
                 $('#IsImportActuals').val(true);
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
+                $(this).attr("title","Active");
             }
         });
 

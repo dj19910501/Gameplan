@@ -162,10 +162,12 @@
 
         if ($(this).hasClass('circle-check-icon-integration-blue')) {
             $(this).removeClass('circle-check-icon-integration-blue');
+            $(this).attr('title', 'Inactive');
             SaveDeployedToIntegrationStatus(impTacticTypeId, false);
         }
         else {
             $(this).addClass('circle-check-icon-integration-blue');
+            $(this).attr('title', 'Active');
             SaveDeployedToIntegrationStatus(impTacticTypeId, true);
         }
 
@@ -179,10 +181,12 @@
 
         if ($(this).hasClass('circle-check-icon-blue')) {
             $(this).removeClass('circle-check-icon-blue');
+            $(this).attr('title', 'Inactive');
             SaveDeployeStatus(impTacticTypeId, false);
         }
         else {
             $(this).addClass('circle-check-icon-blue');
+            $(this).attr('title', 'Active');
             SaveDeployeStatus(impTacticTypeId, true);
         }
 

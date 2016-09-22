@@ -99,6 +99,7 @@
         string divrulid = "divrule" + ruleId;
         string groupid = "group-" + ruleId;
         bool isdisable = alertrule.IsDisable == true ? false : true;
+        string alertTitle = alertrule.IsDisable == true ? "Off" : "On";
         string Alertsummary = alertrule.EntityName + " ";
         <div class="accordion-group" id="group-@ruleId">
             <div class="accordion-heading clearfix">
@@ -111,7 +112,7 @@
                     <a class="alert-copy" onclick="CopyAlertRule('@collapsid',@ruleId);" title="Copy" ><i class="fa fa-clone" aria-hidden="true"></i></a>
                     <div  class="pull-right alert-rule-check">
                         Alert On 
-                        <input id="chkOnOff" class="chkbxfilter" type="checkbox" checked="@isdisable"  onchange="OnOffAlert(this);" ruleid="@ruleId">
+                        <input id="chkOnOff" class="chkbxfilter" type="checkbox" checked="@isdisable"  onchange="OnOffAlert(this);"  title ="@alertTitle" ruleid="@ruleId">
                 </div> 
                 </div>
             </div>
@@ -307,13 +308,15 @@
     });
     function OnOffAlert(e)
     {
+
         var OnOff = e.checked;
         var result = true;
         var ruleid = $(e).attr("ruleid");
         if (!e.checked) {
             result = confirm("Are you sure you want to turn off this alert rule?");
-        }
+                   }
         if (result) {
+            $(e).attr("title", 'Off');
             $.ajax({
                 type: 'POST',
                 url: '@Url.Action("DisableAlertRule", "User")',
@@ -334,6 +337,7 @@
         }
         else {
             $(e).attr('checked', !e.checked);
+            $(e).attr("title", 'On');
         }
         return false;
     }
