@@ -2094,7 +2094,36 @@ namespace RevenuePlanner.Test.Controllers
 
         }
         #endregion
+        #region Save Budget Allocation.
+        /// <summary>
+        /// To get budget allocated data
+        /// <author>Mitesh Vaishnav</author>
+        /// <createddate>22Sept2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Budget_Allocation()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Save Budget Allocation.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController objPlanController = new PlanController();
+            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objPlanController.Url = new UrlHelper(
+            new RequestContext(
+            objPlanController.HttpContext, new RouteData()
+            ),
+            routes
+            );
+            int PlanId = DataHelper.GetPlanId();
+           var result=   objPlanController.GetBudgetData(PlanId.ToString(), string.Empty, string.Empty, string.Empty, string.Empty) as PartialViewResult;
+           
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+            Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
 
+        }
+        #endregion
 
     }
 }

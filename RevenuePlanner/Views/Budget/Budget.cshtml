@@ -114,7 +114,7 @@
         attachHeader = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader))');
         //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
         HomeGrid.setHeader('@Model.SetHeader');
-        HomeGrid.attachHeader(JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader))'));
+           HomeGrid.attachHeader(JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader))'));
         HomeGrid.setColTypes('@Model.ColType');
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
@@ -136,7 +136,7 @@
 
         HomeGrid.parse(GridDataHomeGrid, "json");
         HomeGrid.setColumnHidden(0, true);
-        HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
+       // HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
 
         LoadAfterParsing();
     });
@@ -158,9 +158,9 @@
         }
         if (stage == 1) { }
         if (stage == 2) {
-
-            var EntityId = HomeGrid.cells(rowId, 0).cell.innerText.split(';')[0];
-            var Section = HomeGrid.cells(rowId, 0).cell.innerText.split(';')[1];
+            var EntityIdWithSection = HomeGrid.cells(rowId, 0).cell.innerText.split(';');
+            var EntityId = EntityIdWithSection[0];
+            var Section = EntityIdWithSection[1];
             var Month = '';
             var YearCost;
             var MonthCost;

@@ -19,12 +19,65 @@ namespace RevenuePlanner.Models
         public double Oct { get; set; } //Q4
         public double Nov { get; set; }
         public double Dec { get; set; }
+
+        public double CJan { get; set; } //Q1
+        public double CFeb { get; set; }
+        public double CMar { get; set; }
+        public double CApr { get; set; } //Q2
+        public double CMay { get; set; }
+        public double CJun { get; set; }
+        public double CJul { get; set; } //Q3
+        public double CAug { get; set; }
+        public double CSep { get; set; }
+        public double COct { get; set; } //Q4
+        public double CNov { get; set; }
+        public double CDec { get; set; }
+
+        public double AJan { get; set; } //Q1
+        public double AFeb { get; set; }
+        public double AMar { get; set; }
+        public double AApr { get; set; } //Q2
+        public double AMay { get; set; }
+        public double AJun { get; set; }
+        public double AJul { get; set; } //Q3
+        public double AAug { get; set; }
+        public double ASep { get; set; }
+        public double AOct { get; set; } //Q4
+        public double ANov { get; set; }
+        public double ADec { get; set; }
+
     }
     public class ViewByModel
     {
         public string Text { get; set; }
         public string Value { get; set; }
     }
+    public class PlanBudgetModel
+    {
+        public string Id { get; set; }
+        public string ActivityId { get; set; }
+        public string ActivityName { get; set; }
+        public string ActivityType { get; set; }
+        public string ParentActivityId { get; set; }
+        public bool IsOwner { get; set; }
+        public int CreatedBy { get; set; }
+        public BudgetMonth MonthValues { get; set; }
+        public double TotalAllocatedBudget { get; set; }
+        public double YearlyBudget { get; set; }
+        public double TotalAllocatedCost { get; set; }
+        public double TotalActuals { get; set; }
+        public bool isBudgetEditable { get; set; }
+        public bool isCostEditable { get; set; }
+        public bool isActualEditable { get; set; }
+        public List<CustomField_Entity> CustomFieldEntities { get; set; }
+        public string CustomFieldType { get; set; }
+        public int? LineItemTypeId { get; set; }
+        public int Weightage { get; set; }
+        public bool isAfterApproved { get; set; }
+        public string colorCode { get;set; }
+
+    }
+
     public class BudgetModel
     {
         public string Id { get; set; }

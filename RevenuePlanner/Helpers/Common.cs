@@ -9217,7 +9217,28 @@ namespace RevenuePlanner.Helpers
         #endregion
 
 
+        //Added by Mitesh Vaishnav
+        //Function passed value if its convertable then return otherwise return 0
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Double ParseDoubleValue(string val)
+        {
+            Double OutVal = 0;
+            Double.TryParse(val, out OutVal);
+            return OutVal;
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int? ParseIntValue(string val)
+        {
+            if (val == string.Empty)
+            {
+                return null;
+            }
+            else
+            {
+                return Convert.ToInt16(val);
+            }
+        }
 
 
 
@@ -9490,6 +9511,44 @@ namespace RevenuePlanner.Helpers
             }
 
             return dtPlanHirarchy;
+        }
+        /// <summary>
+        /// Added by Mitesh Vaishnav reg. PL ticket 2616
+        /// This function returns datatable which contains details reg. plan, campaign, program, tactic and line item's budget data including all tabs budget,planned and actuals
+        /// </summary>
+        /// <param name="PlanIds">Comma seperated plan ids for which budget hierarchy will be return</param>
+        /// <param name="OwnerIds">ownerids filter which will apply on budget hierarchy only for tactic</param>
+        /// <param name="TacticTypeids">tactic type id filter which will apply on budget hierarchy only for tactic</param>
+        /// <param name="StatusIds">Status Id filter which will apply on budget hierarchy only for tactic</param>
+        /// <returns></returns>
+        public DataTable GetBudget(string PlanIds,string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        {
+            DataTable dtPlanBudgetHirarchy = new DataTable();
+
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("GetPlanBudget", Connection);
+
+            using (command)
+            {
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@PlanId", PlanIds);
+                command.Parameters.AddWithValue("@ownerIds", OwnerIds);
+                command.Parameters.AddWithValue("@tactictypeIds", TacticTypeids);
+                command.Parameters.AddWithValue("@statusIds", StatusIds);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dtPlanBudgetHirarchy);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+
+            return dtPlanBudgetHirarchy;
         }
 
         /// <summary>

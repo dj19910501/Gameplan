@@ -269,12 +269,14 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="Services\Alerts.cs" />
+    <Compile Include="Services\Budget.cs" />
     <Compile Include="Services\ColumnView.cs" />
     <Compile Include="Services\Currency.cs" />
     <Compile Include="Services\Filter.cs" />
     <Compile Include="Services\Finance.cs" />
     <Compile Include="Services\Grid.cs" />
     <Compile Include="Services\IAlerts.cs" />
+    <Compile Include="Services\IBudget.cs" />
     <Compile Include="Services\IColumnView.cs" />
     <Compile Include="Services\ICurrency.cs" />
     <Compile Include="Services\IFilter.cs" />

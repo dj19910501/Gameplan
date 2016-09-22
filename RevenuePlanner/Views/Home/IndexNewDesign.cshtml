@@ -359,7 +359,7 @@
         var CheckedSelectedTacticTypeids = filters.TacticTypeids.join(',');
         var CheckedSelectedStatusIds = filters.StatusIds.join(',');
         var CheckedSelectedCustomFiwldIds = filters.customFieldIds.join(',');
-        $('#divgridview').load('@Url.Action("GetBudgetedData_New", "Plan")');
+        $('#divgridview').load('@Url.Action("GetBudgetData", "Plan")' + '?PlanIds=' + CheckedSelectedPlans + '&OwnerIds=' + CheckedSelectedOwnerIds + '&TactictypeIds=' + CheckedSelectedTacticTypeids + '&StatusIds=' + CheckedSelectedStatusIds + '&CustomFieldIds=' + CheckedSelectedCustomFiwldIds);
     });
 
         //For Ticket 2596 -For stop sorting on dropdownclick
