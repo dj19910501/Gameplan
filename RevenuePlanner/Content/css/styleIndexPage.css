@@ -1418,7 +1418,9 @@ footer a {
     position: absolute;
     height: 37px;
     margin-top: 1px;
-    width:320px
+    width:320px;
+    background: #fff none repeat scroll 0 0;
+    z-index:22;
 }
 .input-group-btn {
 	float: left;
