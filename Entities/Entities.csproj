@@ -124,9 +124,6 @@
     <Compile Include="Models\CustomFieldDependency.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CustomFieldDependency_Temp.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\CustomFieldOption.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -530,6 +527,9 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Setting.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\spGetPlanCalendarData_Result.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\spViewByDropDownList_Result.cs">

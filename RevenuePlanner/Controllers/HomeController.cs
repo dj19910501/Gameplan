@@ -10297,7 +10297,7 @@ namespace RevenuePlanner.Controllers
                     string tacticType = Enums.EntityType.Tactic.ToString().ToUpper();
                     string[] filteredCustomFields = string.IsNullOrWhiteSpace(fltrCustomfields) ? null : fltrCustomfields.Split(',');
                     List<calendarDataModel> tacData = allData.Where(tac => tac.type.ToUpper() == tacticType).ToList();
-                    List<int> lstTacticIds = tacData.Select(tactic => tactic.PlanTacticId).ToList(); 
+                    List<int> lstTacticIds = tacData.Select(tactic => tactic.PlanTacticId.Value).ToList(); 
                     #endregion
 
                     resultData = allData.Where(tac => tac.type.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
@@ -10312,11 +10312,11 @@ namespace RevenuePlanner.Controllers
                         };
 
                         lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
-                        tacData = tacData.Where(tactic => lstTacticIds.Contains(tactic.PlanTacticId)).ToList();
+                        tacData = tacData.Where(tactic => lstTacticIds.Contains(tactic.PlanTacticId.Value)).ToList();
                     }
                     //// get Allowed Entity Ids
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
-                    tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                    tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId.Value)).ToList();
                     resultData.AddRange(tacData);
                 }
             }

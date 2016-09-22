@@ -139,7 +139,6 @@
         <EntityTypeShape EntityType="MRPModel.AggregationStatu" Width="1.5" PointX="2.75" PointY="16.75" />
         <EntityTypeShape EntityType="MRPModel.AggregationStep" Width="1.5" PointX="24.75" PointY="19.75" />
         <EntityTypeShape EntityType="MRPModel.AttrPositionConfig" Width="1.5" PointX="24.75" PointY="23.75" />
-        <EntityTypeShape EntityType="MRPModel.CustomFieldDependency_Temp" Width="1.5" PointX="26.75" PointY="0.75" />
         <EntityTypeShape EntityType="MRPModel.DynamicDimension" Width="1.5" PointX="26.75" PointY="4.75" />
         <EntityTypeShape EntityType="MRPModel.Logging" Width="1.5" PointX="26.75" PointY="8.75" />
         <EntityTypeShape EntityType="MRPModel.Versioning" Width="1.5" PointX="26.75" PointY="19.75" />
@@ -286,6 +285,7 @@
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" />
         <AssociationConnector Association="MRPModel.FK_TacticType_Stage" />
         <EntityTypeShape EntityType="MRPModel.User_CoulmnView" Width="1.5" PointX="5.375" PointY="28.75" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance1" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -552,35 +552,35 @@ namespace RevenuePlanner.Models
         public string text { get; set; }
         public string machineName { get; set; }
         public string start_date { get; set; }
-        public DateTime endDate { get; set; }
+        public DateTime? endDate { get; set; }
         public double duration { get; set; }
         public double progress { get; set; }
-        public bool open { get; set; }
-        public bool isSubmitted { get; set; }
-        public bool isDeclined { get; set; }
-        public double projectedStageValue { get; set; }
-        public double mqls { get; set; }
-        public double cost { get; set; }
-        public double cws { get; set; }
+        public bool? open { get; set; }
+        public bool? isSubmitted { get; set; }
+        public bool? isDeclined { get; set; }
+        public double? projectedStageValue { get; set; }
+        public double? mqls { get; set; }
+        public double? cost { get; set; }
+        public double? cws { get; set; }
         public string parent { get; set; }
         public string color { get; set; }
         public string colorcode { get; set; }
-        public int PlanTacticId { get; set; }
-        public int PlanProgramId { get; set; }
-        public int PlanCampaignId { get; set; }
+        public int? PlanTacticId { get; set; }
+        public int? PlanProgramId { get; set; }
+        public int? PlanCampaignId { get; set; }
         public string Status { get; set; }
-        public int TacticTypeId { get; set; }
+        public int? TacticTypeId { get; set; }
         public string TacticType { get; set; }
-        public int CreatedBy { get; set; }
-        public bool LinkTacticPermission { get; set; }
+        public int? CreatedBy { get; set; }
+        public bool? LinkTacticPermission { get; set; }
         public int? LinkedTacticId { get; set; }
         public string LinkedPlanName { get; set; }
         public string type { get; set; }
         public string ROITacticType { get; set; }
         public string OwnerName { get; set; }
-        public int IsAnchorTacticId { get; set; }
+        public int? IsAnchorTacticId { get; set; }
         public string CalendarHoneycombpackageIDs { get; set; }
-        public bool Permission { get; set; }
-        public int PlanId { get; set; }
+        public bool? Permission { get; set; }
+        public long? PlanId { get; set; }
     }
 }

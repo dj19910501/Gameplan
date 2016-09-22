@@ -165,7 +165,6 @@ namespace RevenuePlanner.Models
         public DbSet<AggregationStatu> AggregationStatus { get; set; }
         public DbSet<AggregationStep> AggregationSteps { get; set; }
         public DbSet<AttrPositionConfig> AttrPositionConfigs { get; set; }
-        public DbSet<CustomFieldDependency_Temp> CustomFieldDependency_Temp { get; set; }
         public DbSet<DynamicDimension> DynamicDimensions { get; set; }
         public DbSet<Logging> Loggings { get; set; }
         public DbSet<Versioning> Versionings { get; set; }
@@ -1777,11 +1776,11 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Sp_GetPlanBudgetDataQuarterly", planIdParameter, userIdParameter);
         }
     
-        public virtual int SP_Save_AlertRule(string clientId, Nullable<int> ruleId, string ruleSummary, Nullable<int> entityId, string entityType, string indicator, string indicatorComparision, Nullable<int> indicatorGoal, Nullable<int> completionGoal, string frequency, Nullable<byte> dayOfWeek, Nullable<byte> dateOfMonth, Nullable<int> userId, string createdBy, string modifiedBy, string userEmail, ObjectParameter isExists)
+        public virtual int SP_Save_AlertRule(Nullable<int> clientId, Nullable<int> ruleId, string ruleSummary, Nullable<int> entityId, string entityType, string indicator, string indicatorComparision, Nullable<int> indicatorGoal, Nullable<int> completionGoal, string frequency, Nullable<byte> dayOfWeek, Nullable<byte> dateOfMonth, Nullable<int> userId, Nullable<int> createdBy, Nullable<int> modifiedBy, string userEmail, ObjectParameter isExists)
         {
-            var clientIdParameter = clientId != null ?
+            var clientIdParameter = clientId.HasValue ?
                 new ObjectParameter("ClientId", clientId) :
-                new ObjectParameter("ClientId", typeof(string));
+                new ObjectParameter("ClientId", typeof(int));
     
             var ruleIdParameter = ruleId.HasValue ?
                 new ObjectParameter("RuleId", ruleId) :
@@ -1831,13 +1830,13 @@ namespace RevenuePlanner.Models
                 new ObjectParameter("UserId", userId) :
                 new ObjectParameter("UserId", typeof(int));
     
-            var createdByParameter = createdBy != null ?
+            var createdByParameter = createdBy.HasValue ?
                 new ObjectParameter("CreatedBy", createdBy) :
-                new ObjectParameter("CreatedBy", typeof(string));
+                new ObjectParameter("CreatedBy", typeof(int));
     
-            var modifiedByParameter = modifiedBy != null ?
+            var modifiedByParameter = modifiedBy.HasValue ?
                 new ObjectParameter("ModifiedBy", modifiedBy) :
-                new ObjectParameter("ModifiedBy", typeof(string));
+                new ObjectParameter("ModifiedBy", typeof(int));
     
             var userEmailParameter = userEmail != null ?
                 new ObjectParameter("UserEmail", userEmail) :
@@ -1918,19 +1917,19 @@ namespace RevenuePlanner.Models
             return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<string>("[MRPEntities].[SplitString](@Input, @Character)", inputParameter, characterParameter);
         }
     
-        public virtual ObjectResult<spViewByDropDownList_Result> spViewByDropDownList(string planId, string clientId, string userId)
+        public virtual ObjectResult<spViewByDropDownList_Result> spViewByDropDownList(string planId, Nullable<int> clientId, Nullable<int> userId)
         {
             var planIdParameter = planId != null ?
                 new ObjectParameter("PlanId", planId) :
                 new ObjectParameter("PlanId", typeof(string));
     
-            var clientIdParameter = clientId != null ?
+            var clientIdParameter = clientId.HasValue ?
                 new ObjectParameter("ClientId", clientId) :
-                new ObjectParameter("ClientId", typeof(string));
+                new ObjectParameter("ClientId", typeof(int));
     
-            var userIdParameter = userId != null ?
+            var userIdParameter = userId.HasValue ?
                 new ObjectParameter("UserId", userId) :
-                new ObjectParameter("UserId", typeof(string));
+                new ObjectParameter("UserId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spViewByDropDownList_Result>("spViewByDropDownList", planIdParameter, clientIdParameter, userIdParameter);
         }
@@ -2160,6 +2159,35 @@ namespace RevenuePlanner.Models
                 new ObjectParameter("PlanId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCollaboratorId_Result>("GetCollaboratorId", planIdParameter);
+        }
+    
+        public virtual ObjectResult<spGetPlanCalendarData_Result> spGetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string timeframe, string planYear)
+        {
+            var planIdsParameter = planIds != null ?
+                new ObjectParameter("planIds", planIds) :
+                new ObjectParameter("planIds", typeof(string));
+    
+            var ownerIdsParameter = ownerIds != null ?
+                new ObjectParameter("ownerIds", ownerIds) :
+                new ObjectParameter("ownerIds", typeof(string));
+    
+            var tactictypeIdsParameter = tactictypeIds != null ?
+                new ObjectParameter("tactictypeIds", tactictypeIds) :
+                new ObjectParameter("tactictypeIds", typeof(string));
+    
+            var statusIdsParameter = statusIds != null ?
+                new ObjectParameter("statusIds", statusIds) :
+                new ObjectParameter("statusIds", typeof(string));
+    
+            var timeframeParameter = timeframe != null ?
+                new ObjectParameter("timeframe", timeframe) :
+                new ObjectParameter("timeframe", typeof(string));
+    
+            var planYearParameter = planYear != null ?
+                new ObjectParameter("planYear", planYear) :
+                new ObjectParameter("planYear", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spGetPlanCalendarData_Result>("spGetPlanCalendarData", planIdsParameter, ownerIdsParameter, tactictypeIdsParameter, statusIdsParameter, timeframeParameter, planYearParameter);
         }
     }
 }
