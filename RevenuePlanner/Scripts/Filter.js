@@ -945,6 +945,9 @@ function UpdatePlan() {
     GetTacticTypelist(planids, false);
     GetOwnerListForFilter(planids, false);
     UpdateResult();
+    GetMultiplePlanNames();
+    GetGoalValues(urlContent + 'Home/GetGoalValues', filters.PlanIDs);
+
 }
 
 var isFiltered = false;
@@ -952,7 +955,8 @@ var IsUpdate = false;
 var SavePresetValue = false;
 function UpdateResult() {
     IsUpdate = true;
-    isRequest = false;
+    isRequest = false; 
+    GetFilterIds();
     //if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
     if ($('#IsGridView').val().toLowerCase() == "true") {
         filters.customFieldIds = [];
@@ -1002,17 +1006,8 @@ function UpdateResult() {
         var OwnerIds = filters.OwnerIds;
         var TacticTypeids = filters.TacticTypeids;
         var StatusIds = filters.StatusIds;
-
-        // Need to Code for Header & Main Section
-        //$("#CalenderView").hide();
-        //$("#divgridview").show();
-        //if (isBoostAuthorized) $("#ImprovementGrid").show();
-        //LoadPlanGrid();
-        ////Modified By Komal Rawal for #1447 - to Change the header data according to the filter selected.
-        //GetHealderDataPer(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId);// Modified By Nishant Sheth Desc header value wrong with plan tab
-        //GetNumberOfActivityPerMonByPlanIdPer(SelectedPlanIds, Currenttime, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, GridId); //Modified BY Komal rawal for #1929 proper Hud chart and count
-        ////End
-
+        LoadPlanGrid();
+        GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs', urlContent + 'Home/GetActivityDistributionchart', secHome, SelectedTimeFrameOption)        
         $("#totalEntity").text(ExportSelectedIds.TaskID.length);
 
     }

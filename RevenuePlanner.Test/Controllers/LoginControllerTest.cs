@@ -16,6 +16,12 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class LoginControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
+
         #region Create Login View
         /// <summary>
         /// To Create Login View.
@@ -233,7 +239,7 @@ namespace RevenuePlanner.Test.Controllers
                 var serializedData = new RouteValueDictionary(result.Model);
                 var resultvalue = serializedData["UserId"];
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value resultvalue:  " + resultvalue.ToString());
-                Assert.AreEqual(objUser.UserId.ToString(), resultvalue.ToString());               
+                Assert.AreEqual(objUser.ID.ToString(), resultvalue.ToString());               
             }
         }
         #endregion

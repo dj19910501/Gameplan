@@ -1,9 +1,9 @@
-﻿@model RevenuePlanner.Models.Plangrid
+﻿@model RevenuePlanner.Models.PlanMainDHTMLXGrid
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
 @{
-    var countrows = Model.PlanDHTMLXGrid.rows.Count;
-    List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);
+    var countrows = Model.rows.Count;
+    //List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);   
 
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
@@ -46,9 +46,9 @@
     var HomeGrid;
     gridname="home";
     //Add  new
-    var hdnYear= @ViewBag.Year;
-    var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
-    var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');
+    //var hdnYear= @ViewBag.Year;
+    @*var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
+    var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');*@
     var IslineItemDelete = false;
     var isCopyTacticHomeGrid = 0;
     var isEditTacticHomeGrid = 0;
@@ -112,10 +112,8 @@
     });
 
     var GridDataHomeGrid;
-    var JsonModelData = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
-    BindHomeGrid(JsonModelData);
     function BindHomeGrid() {
-        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
+        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model)';
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
@@ -145,7 +143,7 @@
         HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
-
+        
         HomeGrid.attachEvent("onDistributedEnd", function () {
             HomeGrid.loadOpenStates();
             LoadAfterParsing();
@@ -166,6 +164,7 @@
                 $(window).scrollTop(scrolltop - 100);
             }
         });
+        
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);
         var mainGridData = JsonModel;
@@ -225,6 +224,7 @@
             }
         });
         //End
+        HomeGrid.splitAt(4);
         HomeGrid.collapseAll();
         var cookie = document.cookie;
         if(cookie.indexOf("gridOpengridbox") > -1){

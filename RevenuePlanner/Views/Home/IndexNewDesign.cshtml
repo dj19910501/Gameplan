@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "IndexNewDesign";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Title = ViewBag.ActiveMenu;
+    //ViewBag.Title = ViewBag.ActiveMenu;
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
     string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
@@ -183,13 +183,24 @@
     var programCloneType = '@Enums.DuplicationModule.Program';
     var tacticCloneType = '@Enums.DuplicationModule.Tactic';
     var lineItemCloneType = '@Enums.DuplicationModule.LineItem';    
-    var activeMenu = '@ViewBag.ActiveMenu.ToString()';
     var ActivityName = '@Enums.GlobalSearch.ActivityName.ToString().ToLower()';
     var ExternalName = '@Enums.GlobalSearch.ExternalName.ToString().ToLower()';
     var AssetTypeAsset = '@Enums.AssetType.Asset.ToString()';
-    var IsManageviewClick = false;
-    var IsManageDropdown = false;
+    var ROIPackage = '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]'
     var ValidateForEmptyField = '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField'
+    var PackageUpdated = '@RevenuePlanner.Helpers.Common.objCached.PackageUpdated'
+    var PackageCreated = '@RevenuePlanner.Helpers.Common.objCached.PackageCreated'
+    var OnlyTacticsToCreatePackage = '@RevenuePlanner.Helpers.Common.objCached.OnlyTacticsToCreatePackage'
+    var SinglePlanTacticForPackage = '@RevenuePlanner.Helpers.Common.objCached.SinglePlanTacticForPackage'
+    var AtLeastOneAssetValidation = '@RevenuePlanner.Helpers.Common.objCached.AtLeastOneAssetValidation'
+    var MoreThanOneAssetValidation = '@RevenuePlanner.Helpers.Common.objCached.MoreThanOneAssetValidation'
+
+    var DeselectAssetFromPackage = '@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage'
+    var UnpackageSuccessful = '@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful'
+
+    var activeMenu = '@ViewBag.ActiveMenu.ToString()';
+    var IsManageviewClick = false;
+
     var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
     var ExportSelectedIds = {
         TaskID: [],
@@ -260,27 +271,26 @@
             success: function (data) {
                 if (data != 'undefined' && data != null) {
                     $('#divFilter').html(data);
-                    var planids = [];
-                    $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+                    //var planids = [];
+                    //$('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
 
-                        if ($(this).attr('checked') == 'checked') {
-                            var chkid = $(this).attr("id");
-                            var Value = $(this).attr("planTitle");
-                            if (chkid != undefined && chkid != 'undefined') {
-                                planids.push(chkid);
-                            }
-                        }
-                    });
-
-                    GetTacticTypelist(planids);
-                    GetOwnerListForFilter(planids);
+                    //    if ($(this).attr('checked') == 'checked') {
+                    //        var chkid = $(this).attr("id");
+                    //        var Value = $(this).attr("planTitle");
+                    //        if (chkid != undefined && chkid != 'undefined') {
+                    //            planids.push(chkid);
+                    //        }
+                    //    }
+                    //});
+                    GetFilterIds();
+                    GetTacticTypelist(filters.PlanIDs);
+                    GetOwnerListForFilter(filters.PlanIDs);
                     GetLastSetofViews($('#FilterPresetName').val());
-                    BindUpcomingActivites(planids, '@Url.Content("~/Home/BindUpcomingActivitesValues/")');
-                    var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
+                    BindUpcomingActivites(filters.PlanIDs, '@Url.Content("~/Home/BindUpcomingActivitesValues/")');
+                    SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
                     GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
                     GetMultiplePlanNames();
-                    GetGoalValues('@Url.Action("GetGoalValues", "Home")',planids);
-					GetFilterIds();
+                    GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
                     if (isDisplayGridview) {
                         LoadPlanGrid();
                     }

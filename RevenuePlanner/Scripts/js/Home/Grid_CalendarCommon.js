@@ -6,9 +6,9 @@ var gridname;
 //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
 function LoadPlanGrid() {
     $.ajax({
-        url: urlContent + 'Plan/LoadHomeGrid_NewDesign/',
+        url: urlContent + 'Plan/GetHomeGridData/',
         data: {
-            planId: filters.PlanIDs.toString(),
+            planIds: filters.PlanIDs.toString(),
             ownerIds: filters.OwnerIds.toString(),
             TacticTypeid: filters.TacticTypeids.toString(),
             StatusIds: filters.StatusIds.toString(),

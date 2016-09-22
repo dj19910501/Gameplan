@@ -462,26 +462,6 @@ function SetColumUpdatedValue(CellInd, diff) {
         HomeGrid.cells(tactid, CellInd).setAttribute("actval", newTactVal);
     }
 }
-x = 0;
-
-$('#useless').click(function () {
-    HomeGrid.sortRows(1, 'str', 'asc');
-    $("#spanscroll").text(x += 1);
-    return true;
-});
-
-document.addEventListener("DOMContentLoaded", function (event) {
-    console.log("DOM fully loaded and parsed");
-
-    $("#useless").click();
-});
-
-$(document).scroll(function () {
-    if (pageIsScroll == false) {
-        pageIsScroll = true;
-    }
-});
-//end
 
 ///Export Functionality
 ///Start
@@ -540,28 +520,28 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
     UpdateColumn = HomeGrid.getColLabel(Colind, 0);
     if (stage == 0) {
-        if (Colind == TypeColIndex) {
-            if (updatetype == "line") {
-                var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
-                if (actval == "") {
-                    return false;
-                }
-                var combo = HomeGrid.getCombo(cellInd);
-                var lineitemtype = lineitemtype;
-                combo.clear();
-                $.each(lineitemtype, function (i, item) {
-                    combo.put(item.LineItemTypeId, item.Title);
-                });
-            }
-            else {
-                var combo = HomeGrid.getCombo(cellInd);
-                var tacticTypelist = tacticTypelist;
-                combo.clear();
-                $.each(tacticTypelist, function (i, item) {
-                    combo.put(item.TacticTypeId, item.Title);
-                });
-            }
-        }
+        //if (Colind == TypeColIndex) {
+        //    if (updatetype == "line") {
+        //        var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+        //        if (actval == "") {
+        //            return false;
+        //        }
+        //        var combo = HomeGrid.getCombo(cellInd);
+        //        var lineitemtype = lineitemtype;
+        //        combo.clear();
+        //        $.each(lineitemtype, function (i, item) {
+        //            combo.put(item.LineItemTypeId, item.Title);
+        //        });
+        //    }
+        //    else {
+        //        var combo = HomeGrid.getCombo(cellInd);
+        //        var tacticTypelist = tacticTypelist;
+        //        combo.clear();
+        //        $.each(tacticTypelist, function (i, item) {
+        //            combo.put(item.TacticTypeId, item.Title);
+        //        });
+        //    }
+        //}
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
             return false;
