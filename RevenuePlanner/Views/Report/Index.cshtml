@@ -791,7 +791,7 @@
 
                                     $.each(OwnerDimensionList, function () {
                                         var OwnerValue = this;
-                                        if (OwnerValue.Value == OwnerItem.OwnerId.toUpperCase())
+                                        if (OwnerValue.Value == OwnerItem.OwnerId)
                                         {
                                             DimensionOwnerId = '@OwnerDimensionId' + '_' + OwnerValue.Id;
                                         }
