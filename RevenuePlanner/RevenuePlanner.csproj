@@ -697,6 +697,7 @@
     <Content Include="Scripts\js\highcharts-funnel.js" />
     <Content Include="Scripts\js\highcharts-more.js" />
     <Content Include="Scripts\js\highcharts-v2.js" />
+    <Content Include="Scripts\js\Home\Calendar.js" />
     <Content Include="Scripts\js\Home\Grid_CalendarCommon.js" />
     <Content Include="Scripts\js\Home\HomeGrid.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.js" />

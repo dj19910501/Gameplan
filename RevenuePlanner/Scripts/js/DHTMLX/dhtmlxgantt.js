@@ -690,7 +690,11 @@ gantt._render_grid_item = function (item) {
                     value = "<div class='gantt_tree_content'>" + value + "</div>";
                 }
             }
-        } else {
+        }
+        else if (col.name == "colorcode") {
+            value = item.colorcode;
+        }
+        else {
             if (col.template)
                 value = col.template(item);
             else

@@ -10236,18 +10236,98 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region"Plan Calendar related functions"
+        /// <summary>
+        /// Created by: Viral
+        /// Created On: 09/19/2016
+        /// Desc: Return Calendar PartialView 
+        /// </summary>
+        /// <returns> Calendar PartialView Result</returns>
         public PartialViewResult LoadPlanCalendar()
         {
-            try
-            {
                 return PartialView("_PlanCalendar");
             }
-            catch (Exception)
+        /// <summary>
+        /// Created by: Viral
+        /// Created On: 09/19/2016
+        /// Desc: Get Calendar Model data to bind Calendar 
+        /// </summary>
+        /// <returns> Return Calendar Json Result</returns>
+        public JsonResult GetCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe)
+        {
+            #region "Declare local variables"
+            string planYear = "";
+            Services.IGrid objGrid = new Services.Grid();
+            List<calendarDataModel> resultData = new List<calendarDataModel>(); 
+        #endregion
+
+            try
             {
-                throw;
+                resultData = objGrid.GetPlanCalendarData(planIds, ownerIds, tactictypeIds, statusIds, timeframe, planYear); // Get Calendar data through SP.
+
+                if (resultData != null && resultData.Count > 0 && !string.IsNullOrEmpty(customFieldIds))
+                    resultData = FilterCustomField(resultData, customFieldIds); // Get filtered tactics based on customfield selection under Filter.
+
+                resultData = objGrid.SetOwnerNameAndPermission(resultData); // Set Owner Name and permission for each required entity.
             }
+            catch (Exception ex)
+            {
+               ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            var jsonResult = Json(new { data = resultData }, JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
+        }
+        /// <summary>
+        /// Created by: Viral
+        /// Created On: 09/19/2016
+        /// Desc: Filter Calendar Model data based on custom field selected under filter screen. 
+        /// </summary>
+        /// <returns> Return List<calendarDataModel> dataset</returns>
+        public List<calendarDataModel> FilterCustomField(List<calendarDataModel> allData, string fltrCustomfields)
+        {
+            List<calendarDataModel> resultData = new List<calendarDataModel>();
+            try
+            {
+                if (allData != null && allData.Count > 0)
+                {
+                    #region "Declare & Initialize local Variables"
+                    List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                    List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                    string tacticType = Enums.EntityType.Tactic.ToString().ToUpper();
+                    string[] filteredCustomFields = string.IsNullOrWhiteSpace(fltrCustomfields) ? null : fltrCustomfields.Split(',');
+                    List<calendarDataModel> tacData = allData.Where(tac => tac.type.ToUpper() == tacticType).ToList();
+                    List<int> lstTacticIds = tacData.Select(tactic => tactic.PlanTacticId).ToList(); 
+                    #endregion
+
+                    resultData = allData.Where(tac => tac.type.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
+                    if (filteredCustomFields != null)
+                    {
+                        //  filteredCustomFields.ForEach(customField =>
+                        foreach (string customField in filteredCustomFields)
+                        {
+                            string[] splittedCustomField = customField.Split('_');
+                            lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                            lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                        };
+
+                        lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                        tacData = tacData.Where(tactic => lstTacticIds.Contains(tactic.PlanTacticId)).ToList();
+                    }
+                    //// get Allowed Entity Ids
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
+                    tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                    resultData.AddRange(tacData);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return resultData;
         }
         #endregion
+
         public void GetCacheValue()
         {
 

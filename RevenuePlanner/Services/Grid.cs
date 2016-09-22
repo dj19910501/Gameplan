@@ -1734,6 +1734,163 @@ namespace RevenuePlanner.Services
 
         #endregion
 
+
+        #region "Calendar Related Functions"
+        /// Createdy By: Viral
+        /// Created On: 09/19/2016
+        // Desc: Return List of Plan, Campaign, Program, Tactic
+        public List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string timeframe, string planYear)
+        {
+            #region "Declare Variables"
+            List<calendarDataModel> lstResultData = new List<calendarDataModel>();
+            DataTable dt = new DataTable();
+            DataSet dataset = new DataSet();
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+            #endregion
+
+            command = new SqlCommand("spGetPlanCalendarData", Connection);
+
+            #region "Get Data"
+            using (command)
+            {
+                #region "Initialize Command Parameters"
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@planIds", planIds);
+                command.Parameters.AddWithValue("@ownerIds", ownerIds);
+                command.Parameters.AddWithValue("@tactictypeIds", tactictypeIds);
+                command.Parameters.AddWithValue("@statusIds", statusIds);
+                command.Parameters.AddWithValue("@timeframe", timeframe);
+                command.Parameters.AddWithValue("@planYear", planYear);
+                #endregion
+
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dataset);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                dt = dataset.Tables[0];
+
+            }
+
+            lstResultData = GetCalendarListFromDataTable(dt);   // Convert DataTable to list type of calendardatamModel.
+
+            #endregion
+            return lstResultData;
+        }
+
+        /// Createdy By: Viral
+        /// Created On: 09/19/2016
+        // Desc: Convert DataTable to List in calendardatamModel
+        public List<calendarDataModel> GetCalendarListFromDataTable(DataTable dt)
+        {
+            calendarDataModel obj;
+            List<calendarDataModel> lstResultData = new List<calendarDataModel>();
+            #region "Set Data from Table to List"
+            foreach (DataRow dr in dt.Rows)
+            {
+                obj = new calendarDataModel();
+                obj.id = Convert.ToString(dr["id"]);
+                obj.text = Convert.ToString(dr["text"]);
+                obj.machineName = Convert.ToString(dr["machineName"]);
+                obj.start_date = Convert.ToString(dr["start_date"]);
+                obj.endDate = dr["endDate"] != null ? Convert.ToDateTime(dr["endDate"].ToString()) : new DateTime();
+                obj.duration = dr["duration"] != null && dr["duration"].ToString() != string.Empty ? Convert.ToDouble(dr["duration"].ToString()) : 0;
+                obj.progress = dr["progress"] != null && dr["progress"].ToString() != string.Empty ? Convert.ToDouble(dr["progress"].ToString()) : 0;
+                obj.open = dr["open"] != null && dr["open"].ToString() != string.Empty && dr["open"].ToString().ToUpper() != "False" ? Convert.ToBoolean(dr["open"].ToString()) : false;
+                obj.isSubmitted = dr["isSubmitted"] != null && dr["isSubmitted"].ToString() != string.Empty && dr["isSubmitted"].ToString().ToUpper() != "False" ? Convert.ToBoolean(dr["isSubmitted"].ToString()) : false;
+                obj.isDeclined = dr["isDeclined"] != null && dr["isDeclined"].ToString() != string.Empty && dr["isDeclined"].ToString().ToUpper() != "False" ? Convert.ToBoolean(dr["isDeclined"].ToString()) : false;
+                obj.projectedStageValue = dr["projectedStageValue"] != null && dr["projectedStageValue"].ToString() != string.Empty ? Convert.ToDouble(dr["projectedStageValue"].ToString()) : 0;
+                obj.mqls = dr["mqls"] != null && dr["mqls"].ToString() != string.Empty ? Convert.ToDouble(dr["mqls"].ToString()) : 0;
+                obj.cost = dr["cost"] != null && dr["cost"].ToString() != string.Empty ? Convert.ToDouble(dr["cost"].ToString()) : 0;
+                obj.cws = dr["cws"] != null && dr["cws"].ToString() != string.Empty ? Convert.ToDouble(dr["cws"].ToString()) : 0;
+                obj.parent = Convert.ToString(dr["parent"]);
+                obj.color = Convert.ToString(dr["color"]);
+                obj.colorcode = Convert.ToString(dr["colorcode"]);
+                obj.PlanTacticId = dr["PlanTacticId"] != null && dr["PlanTacticId"].ToString() != string.Empty ? Convert.ToInt32(dr["PlanTacticId"].ToString()) : 0;
+                obj.PlanProgramId = dr["PlanProgramId"] != null && dr["PlanProgramId"].ToString() != string.Empty ? Convert.ToInt32(dr["PlanProgramId"].ToString()) : 0;
+                obj.PlanCampaignId = dr["PlanCampaignId"] != null && dr["PlanCampaignId"].ToString() != string.Empty ? Convert.ToInt32(dr["PlanCampaignId"].ToString()) : 0;
+                obj.Status = Convert.ToString(dr["Status"]);
+                obj.TacticTypeId = dr["TacticTypeId"] != null && dr["TacticTypeId"].ToString() != string.Empty ? Convert.ToInt32(dr["TacticTypeId"].ToString()) : 0;
+                obj.TacticType = Convert.ToString(dr["TacticType"]);
+                obj.CreatedBy = dr["CreatedBy"] != null && dr["CreatedBy"].ToString() != string.Empty ? Convert.ToInt32(dr["CreatedBy"].ToString()) : 0;
+                obj.LinkTacticPermission = dr["LinkTacticPermission"] != null && dr["LinkTacticPermission"].ToString() != string.Empty && dr["LinkTacticPermission"].ToString().ToUpper() != "False" ? Convert.ToBoolean(dr["LinkTacticPermission"].ToString()) : false;
+                if (dr["LinkedTacticId"] != DBNull.Value)
+                    obj.LinkedTacticId = Convert.ToInt32(dr["LinkedTacticId"]);//dr["LinkedTacticId"] != null && dr["LinkedTacticId"].ToString() != string.Empty ? Convert.ToInt32(dr["LinkedTacticId"].ToString()) : 0;
+                obj.LinkedPlanName = Convert.ToString(dr["LinkedPlanName"]);
+                obj.type = Convert.ToString(dr["type"]);
+                obj.ROITacticType = Convert.ToString(dr["ROITacticType"]);
+                obj.OwnerName = string.Empty;
+                obj.IsAnchorTacticId = dr["IsAnchorTacticId"] != null && dr["IsAnchorTacticId"].ToString() != string.Empty ? Convert.ToInt32(dr["IsAnchorTacticId"].ToString()) : 0;
+                obj.CalendarHoneycombpackageIDs = Convert.ToString(dr["CalendarHoneycombpackageIDs"]);
+                obj.Permission = false;
+                obj.PlanId = dr["PlanId"] != null && dr["PlanId"].ToString() != string.Empty ? Convert.ToInt32(dr["PlanId"].ToString()) : 0;
+
+                lstResultData.Add(obj);
+            }
+            #endregion
+
+            return lstResultData;
+        }
+
+        /// Createdy By: Viral
+        /// Created On: 09/19/2016
+        // Desc: Set Owner Name and Permission of entity
+        public List<calendarDataModel> SetOwnerNameAndPermission(List<calendarDataModel> lstCalendarDataModel)
+        {
+            try
+            {
+                #region "Get OwnerName"
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                Dictionary<int, User> lstUsersData = new Dictionary<int, BDSService.User>();
+                objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ForEach(u => lstUsersData.Add(u.ID, u));
+                #endregion
+
+                #region "Get SubOrdinates"
+                List<int> lstSubordinatesIds = new List<int>();
+                bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                var IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                if (IsTacticAllowForSubordinates)
+                {
+                    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);   // Get all subordinates based on UserId.
+                }
+                #endregion
+
+                #region "Set Owner Name & Permission"
+                KeyValuePair<int, User> usr;
+                foreach (calendarDataModel data in lstCalendarDataModel)
+                {
+                    #region "Set Owner Name"
+                    usr = lstUsersData.Where(u => u.Key == data.CreatedBy).FirstOrDefault();
+                    if (usr.Value != null)
+                        data.OwnerName = string.Format("{0} {1}", Convert.ToString(usr.Value.FirstName), Convert.ToString(usr.Value.LastName));
+                    #endregion
+
+                    #region "Set Permission"
+                    if (IsPlanCreateAllAuthorized == false)     // check whether user has plan create permission or not
+                    {
+                        if ((data.CreatedBy.Equals(Sessions.User.ID) || lstSubordinatesIds.Contains(data.CreatedBy)))
+                            data.Permission = true;
+                        else
+                            data.Permission = false;
+                    }
+                    else
+                        data.Permission = true;
+                    #endregion
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return lstCalendarDataModel;
+        }
+
+        #endregion
     }
 
     #region Pivot Custom fields list for each entities

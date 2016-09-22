@@ -1018,7 +1018,7 @@ function UpdateResult() {
     }
     else {
         //Need to Implement
-        //UpdateCalenderView();
+        BindPlanCalendar();
     }
     //}
     //else {
