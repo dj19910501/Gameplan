@@ -56,5 +56,6 @@ namespace RevenuePlanner.Models
         public virtual Model Model2 { get; set; }
         public virtual ICollection<Plan> Plans { get; set; }
         public virtual ICollection<TacticType> TacticTypes { get; set; }
+        public virtual IntegrationInstance IntegrationInstance11 { get; set; }
     }
 }
