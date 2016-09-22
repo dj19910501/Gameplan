@@ -260,8 +260,8 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.ID = DataHelper.GetUserId(PlanId);
             ResetPasswordModel form = new ResetPasswordModel();
             form.UserId = Sessions.User.ID;
-            form.NewPassword = "test1234";
-            form.ConfirmNewPassword = "test1234";
+            form.NewPassword = "Dev@indusa1";
+            form.ConfirmNewPassword = "Dev@indusa1";
             var result = objLoginController.ResetPassword(form) as ViewResult;
             var serializedData = new RouteValueDictionary(result.Model);
             var resultvalue = serializedData["UserId"];
@@ -291,7 +291,7 @@ namespace RevenuePlanner.Test.Controllers
             int PlanId = DataHelper.GetPlanId();
             Sessions.User.CID = DataHelper.GetClientId(PlanId);
             Sessions.User.ID = DataHelper.GetUserId(PlanId);
-            string currentPassword = "Test1234";
+            string currentPassword = "Dev@indusa1";
             var result = objLoginController.CheckCurrentPassword(currentPassword, Sessions.User.ID) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "  : Pass \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
