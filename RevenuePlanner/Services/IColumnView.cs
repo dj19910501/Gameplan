@@ -11,6 +11,6 @@ namespace RevenuePlanner.Services
     {
         int SaveColumnView(int UserId, string ViewName, List<AttributeDetail> AttributeDetail, bool Isgrid = true);
         DataTable GetCustomFieldList(int ClientId);
-        List<ColumnViewEntity> GetCutomefieldModel(int ClientId, bool Isgrid, out bool IsSelectall);
+        List<ColumnViewEntity> GetCustomfieldModel(int ClientId, bool Isgrid, out bool IsSelectall, int UserId);
     }
 }

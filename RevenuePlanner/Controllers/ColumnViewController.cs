@@ -1,47 +1,29 @@
 ﻿using Elmah;
-using Newtonsoft.Json;
-using RestSharp.Serializers;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using RevenuePlanner.Services;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace RevenuePlanner.Controllers
 {
-    public class ColumnViewController : Controller
+    [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
+    public class ColumnViewController : CommonController
     {
-        //
         // GET: /ColumnView/
         IColumnView objcolumnView = new ColumnView();
-        public ActionResult Index()
-        {
-            return View();
-        }
         #region column Management Add custom fields in plan grid
         #region method to bind attributes for user selection #2590
         public ActionResult GetAttributeList_ColumnView(bool IsGrid = true)
         {
             List<ColumnViewEntity> allattributeList = new List<ColumnViewEntity>();
-
             bool IsSelectall = false;
-            string attributexml = string.Empty;
-            List<CustomAttribute> BasicFields = new List<CustomAttribute>();
             try
             {
-
-
                 ViewBag.IsGrid = IsGrid;
-                allattributeList = objcolumnView.GetCutomefieldModel(Sessions.User.CID, IsGrid, out IsSelectall);
+                allattributeList = objcolumnView.GetCustomfieldModel(Sessions.User.CID, IsGrid, out IsSelectall, Sessions.User.ID);
                 ViewBag.IsSelectAll = IsSelectall;
-
-
             }
             catch (Exception objException)
             {
@@ -60,20 +42,11 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-
-
-
                 int viewId = objcolumnView.SaveColumnView(Sessions.User.ID, ViewName, AttributeDetail, Isgrid);
-
                 if (viewId > 0)
                 {
-
                     return Json(new { Success = true }, JsonRequestBehavior.AllowGet);
-
                 }
-
-
-
                 return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
 
             }

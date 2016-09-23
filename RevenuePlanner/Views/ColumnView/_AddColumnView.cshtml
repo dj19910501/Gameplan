@@ -3,16 +3,8 @@
 @if (Model != null && Model.Count() > 0)
 {
     <div class="addview-wrap">
-        @*<div class="addview-title margin-bottom-20">
-                <label>1. Name of View.</label>
-                <input type="text" id="txtViewName" class="margin-left10" />
-            </div>
-            <div class="addview-title margin-bottom-20">
-                <label>1. Select columns to appear in View.</label>
-            </div>*@
         @foreach (var entity in Model)
         {
-
             <div class="category" entitytpe="@entity.EntityType.ToString()">
                 <div class="category-title clearfix">
                     @if (entity.AttributeList != null && entity.AttributeList.Count() > 0)
@@ -21,7 +13,7 @@
 
                         title = entity.EntityType.ToString() + " Attributes";
                         <span class="entity-check">
-                            <input type="checkbox" id="" name="" value="@entity.EntityType.ToString()" class="checkAlldiv" /><span class="all-check">All</span>
+                            <input type="checkbox" value="@entity.EntityType.ToString()" class="checkAlldiv" /><span class="all-check">All</span>
                         </span>
                         <span class="entity-type">@title</span>
                         <div class="category-title-right">
@@ -31,14 +23,11 @@
                     else
                     {
                         <span class="entity-check">
-                            <input type="checkbox" id="" name="" value="@entity.EntityType.ToString()" class="checkAlldiv" checked="@entity.EntityIsChecked"/>
+                            <input type="checkbox" value="@entity.EntityType.ToString()" class="checkAlldiv" checked="@entity.EntityIsChecked"/>
                         </span>
                         <span class="entity-type">@entity.EntityType.ToString()</span>
-
                     }
                 </div>
-
-
                 @if (entity.AttributeList != null && entity.AttributeList.Count() > 0)
                 {
                     <div class="chkAttributes category-block clearfix">
@@ -72,12 +61,31 @@
 
 <script type="text/javascript">
     var Isgrid = '@ViewBag.IsGrid';
-   
+    $(document).ready(function () {
+        var Isselectall = '@ViewBag.IsSelectAll';
+        if (Isselectall.toLowerCase() == 'true') {
+            $(".addview-wrap").find("input:checkbox").attr("checked", "checked");
+        }
+        if (Isgrid.toLocaleLowerCase() == "true") {
+            $(".chkAttributes").each(function () {
+                var currentdivcheckbox = $(this).find("input:checkbox");
+                if ($(currentdivcheckbox).length == $(this).find(".attr-checkbox:checked").length) {
+                    $(this).closest(".category").find(".checkAlldiv").attr("checked", "checked");
+                } else {
+                    $(this).closest(".category").find(".checkAlldiv").removeAttr("checked");
+                }
+            });
+        }
+
+        $("#errorMessage1").css("display", "none");
+        $("#spanMessageError1").empty();
+        $("#successMessage1").css("display", "none");
+        $("#spanMessageSuccess1").empty();
+    });
     $(".category-title-right").click(function () {
         $(this).toggleClass("show-fa");
         $(this).closest(".category").find(".category-block").slideToggle("slow");
     });
-
     $(".checkAlldiv").click(function () {
         if ($(this).is(':checked')) {
             $(this).closest(".category").find(".chkAttributes").find('input:checkbox').attr('checked', 'checked');
@@ -113,17 +121,7 @@
         $(".addview-wrap").find("input:checkbox").removeAttr("checked");
     });
     $("#btnSaveColumnView").click(function () {
-        //var viewname = $("#txtViewName").val();
         _ColumnView = [];
-        @*if (CheckHtmlTag(viewname) == false) {
-                $("#errorMessage1").css("display", "block");
-                $("#spanMessageError1").empty();
-                $("#spanMessageError1").text("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
-                $("#successMessage1").css("display", "none");
-                return false;
-            }
-            $('#txtViewName').removeClass("error");*@
-
         if (Isgrid.toLowerCase() == "true") {
             $.each($(".category"), function () {
                 var entitytype = $(this).attr("entitytpe");
@@ -132,7 +130,8 @@
                     if ($(this).is(':checked')) {
                         _ColumnView.push({
                             AttributeType: entitytype.toString(),
-                            AttributeId: $(this).val().toString()
+                            AttributeId: $(this).val().toString(),
+                            ColumnOrder: " "
                         });
                     }
                 });
@@ -145,7 +144,8 @@
                 if ($(checkbox).is(':checked')) {
                     _ColumnView.push({
                         AttributeType: entitytype.toString(),
-                        AttributeId: $(checkbox).val().toString()
+                        AttributeId: $(checkbox).val().toString(),
+                        ColumnOrder: " "
                     });
                 }
             });
@@ -163,9 +163,6 @@
                 success: function (data) {
                     if (data.Success != null && data.Success == true) {
                         $('#CreateNewView').hide();
-                        //if (data.ViewById != null) {
-                        //    BindViewSelections(data.ViewById, '');
-                        //}
                     }
                     if (data.Success != null && data.Success == false && data.ErrorMessage != null) {
                         $("#errorMessage1").css("display", "block");
@@ -187,27 +184,5 @@
     });
     $(".closemessage").click(function () {
         $(this).parent().closest('div').css("display", "none");
-
-    });
-    $(document).ready(function () {
-        var Isselectall = '@ViewBag.IsSelectAll';
-        if (Isselectall.toLowerCase() == 'true') {
-            $(".addview-wrap").find("input:checkbox").attr("checked", "checked");
-        }
-        if (Isgrid.toLocaleLowerCase() == "true") {
-            $(".chkAttributes").each(function () {
-                var currentdivcheckbox = $(this).find("input:checkbox");
-                if ($(currentdivcheckbox).length == $(this).find(".attr-checkbox:checked").length) {
-                    $(this).closest(".category").find(".checkAlldiv").attr("checked", "checked");
-                } else {
-                    $(this).closest(".category").find(".checkAlldiv").removeAttr("checked");
-                }
-            });
-        }
-
-        $("#errorMessage1").css("display", "none");
-        $("#spanMessageError1").empty();
-        $("#successMessage1").css("display", "none");
-        $("#spanMessageSuccess1").empty();
     });
 </script>
