@@ -219,7 +219,7 @@
     }
     function CheckDataInconsistency() {
         if ('@Sessions.IsDisplayDataInconsistencyMsg' == 'True') {
-            var IsSessionClient = readCookie('DataClientId' + '@Sessions.User.ClientId.ToString().ToLower()');
+            var IsSessionClient = readCookie('DataClientId' + '@Sessions.User.CID.ToString().ToLower()');
             if (IsSessionClient != null) {
                 alert('@Common.objCached.DataInconsistency');
                 var retvalue = '@RevenuePlanner.Helpers.Common.SetSessionVariable()';
