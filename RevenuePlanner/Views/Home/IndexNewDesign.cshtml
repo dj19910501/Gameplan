@@ -247,6 +247,12 @@
         SelectedYears: []
 
     };
+   
+        //for Hidding tooltip -ticket 2414
+    var $doc = $(document);
+    $doc.click(function () {
+        $(".tooltip").hide();
+    });
 
     $("#ddlTabViewBy").multiselect({
         multiple: false,
@@ -269,7 +275,8 @@
         $("#content_wraper").toggleClass("slideLeft");
     })
    
-        $(document).ready(function () {
+    $(document).ready(function () {
+
             $(".selectBox select").selectbox();
             $("#ddlTabViewBy").multiselect();
 

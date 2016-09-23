@@ -365,7 +365,7 @@
                         <!--Modified by Akashdeep Kadia on 29th Mar 2016 internal bug-->
                         <div class="span2 pull-left integration-review-imglink margin-right20">
                             <a href=@item.Value onclick="window.open(this.href); return false;">
-                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="link_popup pull-right margin-bottom10" title="Eloqua"></div>
                                 <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
                                 <div class="inte-id-txt" title=@tacticEloquaInstance>@tacticEloquaInstance</div>
                             </a>
@@ -382,7 +382,7 @@
 
                         <div class="span2 pull-left integration-review-imglink margin-right20">
                             <a href=@item.Value onclick="window.open(this.href); return false;">
-                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="link_popup pull-right margin-bottom10" title="Salesforce"></div>
                                 <div class="salesforce-img margin-top10"></div>
                                 <div class="inte-id-txt" title=@tacticIntegrationInstance>@tacticIntegrationInstance</div>
                             </a>
@@ -397,7 +397,7 @@
                     <div id="workFrontSection" class="span12 margin-left20 integration-SF-Eloqua-WF margin-top20" integrationtype="@item.Key" toggle-id="workfrontIntegrationToggle" style="width:98%">
                         <div class="span2 pull-left integration-review-imglink margin-right20">
                             <a href=@item.Value onclick="window.open(this.href); return false;">
-                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="link_popup pull-right margin-bottom10" title="Workfront"></div>
                                 <div class="workfront-img margin-top23"></div>
                                 <div class="inte-id-txt" title=@tacticIntegrationProjMgmtInstance>@tacticIntegrationProjMgmtInstance</div>
                             </a>
@@ -458,16 +458,15 @@
 
                         <div class="span2 pull-left integration-review-imglink margin-right20">
                             <a href=@item.Value onclick="window.open(this.href); return false;">
-                                <div class="link_popup pull-right margin-bottom10"></div>
+                                <div class="link_popup pull-right margin-bottom10" title="Marketo"></div>
                                 <div class="marketo-img margin-top10"></div>
 
                                 <div class="inte-id-txt" title=@tacticMarketoInstance>@tacticMarketoInstance</div>
 
-
                             </a>
                         </div>
                         <div class="span1 margin-top16">
-                            <input id="marketoIntegrationToggle" type="checkbox" onchange="CheckboxChange(this);">
+                            <input id="marketoIntegrationToggle" type="checkbox"  onchange="CheckboxChange(this);">
                         </div>
                     </div>
 
