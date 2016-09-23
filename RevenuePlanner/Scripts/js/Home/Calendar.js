@@ -98,9 +98,9 @@ function SetGanttData(resultdata) {
         gantt.config.scale_unit = "month";
         gantt.config.step = 12;
         gantt.config.date_scale = " %Y";
-
+        gantt.config.row_height = 25;
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false, hide: true }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
+        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         //// Getting quarter
@@ -151,8 +151,9 @@ function SetGanttData(resultdata) {
         gantt.config.scale_unit = "month";
         gantt.config.step = 12;
         gantt.config.date_scale = " %Y";
+        gantt.config.row_height = 25;
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false, hide: true }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
+        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
@@ -212,7 +213,8 @@ function SetGanttData(resultdata) {
         gantt.config.step = 1;
         gantt.config.date_scale = "%Y";
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false, hide: true }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
+        gantt.config.row_height = 25;
+        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
@@ -246,9 +248,10 @@ function SetGanttData(resultdata) {
         gantt.config.scale_unit = "year";
         gantt.config.step = 1;
         gantt.config.date_scale = "%Y";
+        gantt.config.row_height = 25;
         gantt.config.scale_height = 60;
         //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
-        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false, hide: true }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
+        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         //gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date();

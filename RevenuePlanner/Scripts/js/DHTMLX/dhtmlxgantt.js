@@ -692,7 +692,7 @@ gantt._render_grid_item = function (item) {
             }
         }
         else if (col.name == "colorcode") {
-            value = item.colorcode;
+            value = "<div class='color-cell' style='background-color: #" + item.colorcode + ";'></div>";
         }
         else {
             if (col.template)
