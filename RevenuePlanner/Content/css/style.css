@@ -1060,7 +1060,7 @@ span.requests-logo-icon {
 	padding-top: 0;
 	background: #89CEDE none repeat scroll 0 0; /* Edited for #2312- Komal */
 	transition: background 0.2s ease-out;
-	box-shadow: 0 2px 1px rgba(0, 0, 0, 0.25);
+	box-shadow: none; /*0 2px 1px rgba(0, 0, 0, 0.25)*/
 }
 .btn.btn-blue:focus {
 	background: #89CEDE none repeat scroll 0 0;
@@ -10613,9 +10613,7 @@ li.accordion-inner.close-list {
 	font-weight: 600;
 }
 .market-activity-main .gantt_grid_data .gantt_cell {
-	padding-left: 12px;
 	border-right: 1px solid #d4d4d4;
-	padding-right: 12px;
 	overflow: hidden;
 }
 .market-activity-main .gantt_row, .market-activity-main .gantt_task_row {
@@ -10670,6 +10668,23 @@ li.accordion-inner.close-list {
 .marketing-activitity-wrapper .gantt_grid_scale,  .marketing-activitity-wrapper .gantt_last_cell,  .marketing-activitity-wrapper .market-activity-main .gantt_last_cell {
 	border-right: 1px solid #888 !important;
 }
+/*  ================== Claendar New Style =================== */
+#GridGanttContent .gantt_grid_data .gantt_row .gantt_cell:first-child{position:relative; padding:0} 
+.market-activity-main .gantt_grid_scale .gantt_grid_head_cell{padding-left: 6px; padding-right: 6px;}
+.market-activity-main .gantt_grid_scale .gantt_grid_head_cell {
+    padding-left: 0;
+    padding-right: 0;
+}
+#GridGanttContent .color-cell{display: block; height: 100%; width: 100%; position:absolute; left:0; right:0; top:0; bottom:0; margin:0 auto;}
+#GridGanttContent .market-activity-main .gantt_tree_content{color:#000; font-size:14px; font-weight:normal; font-family:"ProximaNova-Regular",Helvetica,Arial,sans-serif}
+#GridGanttContent .market-activity-main .gantt_add{
+    margin-top: 1px;
+}
+#GridGanttContent .calender-view-honeycomb {margin-top: 2px;}
+
+/* =================== */
+
+
 .ui-multiselect-menu {
 	max-width: none;
 	padding-bottom: 0; /* Change for this id #multipleselect_ddlColumnSet, #multipleselect_ddlMainGridTimeFrame */
@@ -13392,6 +13407,8 @@ input.serach-input {
 .category-title-right.show-fa:after {
 	content: "\f104";
 }
+ .manageviewicon .fa{color:#ccc}
+ /*div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa{color:#F8710E}*/
 
 /* ********************  new styles  - End ******************** */
 
@@ -15040,4 +15057,91 @@ tbody.column2 {
 	font-size: 12px;
 	margin-bottom: 10px;
 	display: block;
+}
+
+/* ============== Inspection Window new style ================= */ 
+#modal-container-186470 {
+	padding: 0;  background:rgba(255, 255, 255, 0.2) none repeat scroll 0 0;
+}
+.headerfix-wraper {
+    background-color: #f2f2f2;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0;
+    position:relative;
+    z-index:0;
+}
+.partial_wrapper.new-wrapper {
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #ccc;
+    height: 510px;
+    left: auto;
+    margin: auto;
+    overflow: auto;
+    overflow-x:hidden;
+    position: absolute;
+    right: 15px;
+    top: 29%;
+    width: 1070px;
+    z-index: 99999;
+    padding-bottom:15px;
+}
+.pop-body-wraper {
+    float: left;
+    height: auto !important;
+    margin: 0 auto;
+    min-width: 800px;
+    overflow: visible;
+    width: 100%;
+}
+.pop-body-wraper .PopupDiv {
+    width: 1050px;
+    margin:0 auto;
+}
+.pop-body-wraper, .PopupDiv {
+	width: 100% !important
+}
+
+.pop-body-wraper > form, .PopupDiv > form {
+    margin:8px 0;
+}
+.headerfix-wraper .headefix h2.title-simple {
+    display: table;
+    margin: 0;
+    width: 100%;
+}
+.modal-popup-title {
+    border-bottom: 1px solid #ccc;
+    margin: 0;
+    padding-bottom: 8px;
+}
+.modal-popup-title h2 {margin: 0 0 0 4%;}
+
+h2.title-simple .Save-icon-white.btn-blue, 
+h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
+
+.modal-popup-title h2 input{
+    color: #4d4d4d;
+    display: block;
+    font-family: "source_sans_prolight",Arial,"sans-serif";
+    font-size: 22px !important;
+    height: 25px !important;
+    line-height: normal;
+    margin-bottom: 0;
+    width: 95%;
+}
+.modal-popup-summary .nl-form {
+    font-size: 22px !important;
+    line-height: 20px;
+}
+.modal-popup-summary .nl-form .modal-status {
+    padding: 0;
+}
+.inspect-column-parent{padding:0 8px !important}
+.headefix .close-x-big-icon {
+    background-size: 21px auto !important;
+    border: 0 none;
+    outline: 0 none !important;
+    position: absolute;
+    right: -37px;
+    top: -6px;
 }

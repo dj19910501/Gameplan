@@ -73,7 +73,7 @@ a:hover, a:focus {
 	padding-top: 0;
 	background: #89CEDE none repeat scroll 0 0; /* Edited for #2312- Komal */
 	transition: background 0.2s ease-out;
-	box-shadow: 0 2px 1px rgba(0, 0, 0, 0.25);
+	box-shadow: none;
 }
 #sidebar .btn-blue {
 	width: 100%;
@@ -1508,7 +1508,7 @@ footer a {
 @media (max-width: 1600px) {
 .task-tbl #divgridview, 
 .task-tbl #GridGanttContent {
-    height: 55vh; 
+    height: 54vh; 
 }
 }
 
@@ -1640,4 +1640,3 @@ body{overflow:auto}
 
 /* ============== new feature Searchbox style #2269 start ============== */
 
-h2.title-simple{margin-top:0}
