@@ -48,9 +48,68 @@ $(document).mouseup(function (e) {
 $(".grid_ver_scroll").scroll(function () {
     $('#popupType').css('display', 'none');
 });
+
+///Get GridColumn Index and Hide Column
+function GridHideColumn() {  
+    TaskNameColIndex = HomeGrid.getColIndexById("taskname");
+    PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
+    AssetTypeColIndex = HomeGrid.getColIndexById("roitactictype");
+    TypeColIndex = HomeGrid.getColIndexById("tactictype");
+    OwnerColIndex = HomeGrid.getColIndexById("owner");
+    TargetStageGoalColIndex = HomeGrid.getColIndexById("inq");
+    MQLColIndex = HomeGrid.getColIndexById("mql");
+    RevenueColIndex = HomeGrid.getColIndexById("revenue");
+    GridHiddenId = HomeGrid.getColIndexById('id');
+    ActivitypeHidden = HomeGrid.getColIndexById('activitytype');
+    MachineNameHidden = HomeGrid.getColIndexById('machinename');
+    HomeGrid.setColumnHidden(GridHiddenId, true);
+    HomeGrid.setColumnHidden(ActivitypeHidden, true);
+    HomeGrid.setColumnHidden(MachineNameHidden, true);
+    HomeGrid.setColumnMinWidth("300", TaskNameColIndex);
+}
+///
+
+////Move column functionality
+function MoveColumn() {
+    HomeGrid.attachEvent("onAfterCMove", function (cInd, posInd) {
+        var ColumnCount = HomeGrid.getColumnCount();
+        var ColumnDetail = [];
+        for (var i = 0; i < ColumnCount; i++) {
+            var ColWidth = HomeGrid.getColWidth(i);
+            var customcolId = HomeGrid.getColumnId(i).toString();
+            if (customcolId.indexOf("custom_") >= 0) {
+                customcolId = customcolId.replace("custom_", "");
+            }
+            if (ColWidth != 0) {
+                ColumnDetail.push({
+                    AttributeId: customcolId,
+                    AttributeType: " ",
+                    ColumnOrder: parseInt(i)
+                });
+            }
+        }
+        if (ColumnDetail != null && ColumnDetail.length > 0 && ColumnDetail != undefined) {
+            ColumnDetail = JSON.stringify(ColumnDetail);
+
+            $.ajax({
+                url: urlContent + 'ColumnView/SaveColumnView', // we are calling json method
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: "{'AttributeDetail':" + (ColumnDetail) + "}",
+                success: function (data) {
+                }
+            });
+        }
+    });
+}
+///End
+
 //Related to Honeycomb
 //Start
+//// Add RemoveEntity Function to add/remove data into Array on click of honeycomb icon for Plangrid/Budget Grid
 function AddRemoveEntity(item) {
+    $(".popover").removeClass('in').addClass('out');
     if ($(item).attr('id') == 'PlanAdd') {
         if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
             var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
@@ -499,7 +558,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     var UpdateVal;
     var Colind = this.cell.cellIndex;
     var lineItemFlag = 0;
-
+    $(".popover").removeClass('in').addClass('out'); //Close Honey comb popup on edit cell. to display edited data in honeycomb
     if (stage == 0) {
         var newvalue = HomeGrid.cells(rowId, cellInd).getValue();
         if (newvalue.indexOf("</div>") > -1) {
@@ -520,6 +579,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
     UpdateColumn = HomeGrid.getColLabel(Colind, 0);
     if (stage == 0) {
+        ///TODO : Uncomment After bunding Tactic/Line Item type Drop-down list
         //if (Colind == TypeColIndex) {
         //    if (updatetype == "line") {
         //        var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
@@ -590,14 +650,14 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             var oldAssetType = HomeGrid.cells(rowId, AssetTypeColIndex).getValue();
             if (UpdateColumn == "" || UpdateColumn == null)
                 UpdateColumn = HomeGrid.getColLabel(Colind, 0);
-            //if(UpdateColumn == "Task Name"){
-            //    if (CheckHtmlTag(nValue) == false) {
-            //        alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
-            //        return false;
-            //    }
+            if(UpdateColumn == "Task Name"){
+                if (CheckHtmlTag(nValue) == false) {
+                    alert(TitleContainHTMLString);
+                    return false;
+                }
 
-            //    updatePlanNameDrp(TaskID,NewValue);
-            //}
+                updatePlanNameDrp(TaskID,NewValue);
+            }
             if (cellInd == 1) {
                 $("div[taskId='" + TaskID + "']").attr('taskname', NewValue);
             }
@@ -614,14 +674,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             var idindex = HomeGrid.getColIndexById('id');
             var costindex = HomeGrid.getColIndexById('plannedcost');
             var stageindex = HomeGrid.getColIndexById('inq');
-
             Id = HomeGrid.cells(rowId, idindex).getValue();
-
             if (UpdateColumn == "Start Date") {
-
                 var startyear = new Date(HomeGrid.cells("plan." + rowId.split(".")[1], sdateindex).getValue()).getFullYear();
                 var edate = HomeGrid.cells(rowId, edateindex).getValue();
-                if (!CheckDateYear(nValue, hdnYear, StartDateCurrentYear)) return false; //Modified by Rahul Shah on 30/11/2015 for PL #1764.
+                if (!CheckDateYear(nValue, hdnYear, StartDateCurrentYear)) return false; 
                 if (!validateDateCompare(nValue, edate, DateComapreValidation)) return false;
 
                 if (updatetype == "prog") {
@@ -679,7 +736,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             if (UpdateColumn == "Type" && updatetype == "tact") {
                 var tacticTypeId = nValue;
                 var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');
-                var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticType))');
+                //var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticType))'); ///TODO : Uncomment After bunding Tactic/Line Item type Drop-down list
                 var newAssetType = arrTacTypes.filter(function (v) {
                     return v.TacticTypeId == tacticTypeId;
                 });
@@ -697,7 +754,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         }
                     }
                 }
-                if ('@Sessions.IsMediaCodePermission.ToString().ToLower()' == 'true' && newAssetType != null && newAssetType != "" && oldAssetType != newAssetType && newAssetType.toLowerCase() == AssetTypeAsset.ToLower()) {
+                if (IsMediaCodePermission == 'true' && newAssetType != null && newAssetType != "" && oldAssetType != newAssetType && newAssetType.toLowerCase() == AssetTypeAsset.ToLower()) {
                     var retValue = confirm('Media code associated to this tactic will be deleted. Do you wish to continue?');
                     if (!retValue) {
                         return false;
@@ -1313,6 +1370,7 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
         }
     }
 }
+
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
 function ExportToExcel(isHoneyComb) {
     //start  

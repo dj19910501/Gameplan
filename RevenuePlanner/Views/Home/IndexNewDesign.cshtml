@@ -58,20 +58,20 @@
                 </a>
             </div>
             <div class="ix-icon-block margin-left8 ">
-                <a class="new-btn-plan-left P-icon-active" href="#">
+                <a id="ImportBtn" class="new-btn-plan-left P-icon-active" href="#" style="display:none">
                     <i class="fa fa-sign-in"></i><span>Import</span>
                 </a>
                 <a href="#" id="" class="new-btn-plan-right dropdown-toggle " data-toggle="dropdown">
                     <i class="fa fa-external-link"></i><span>Export</span>
                 </a>
                 <ul id="" class="dropdown-menu export-dd">
-                    <li title=""><a href="#" id="ExporXls" onclick="ExportToExcel()">.xls</a></li>
-                    <li title=""><a href="#">PDF</a></li>
+                    <li title=""><a href="#" id="ExportXls" onclick="ExportToExcel()">.xls</a></li>
+                    <li title=""><a href="#" id="ExportPDf" style="display:none">PDF</a></li>
                 </ul>
             </div>
 
             <!-- -->
-            <div id="divupcomingact" class="viewby-wrap margin-left9">
+            <div id="divupcomingact" class="viewby-wrap margin-left9" style="display:none">
                 <label id="lblUpcoming_Activies1" for="Time_Frame:">Time Frame:</label>
                 <span style="width: 100px;" id="ddlUpComingActivitesSelectBox" class="selectBox">
                     <select name="ddlUpComingActivites" id="ddlUpComingActivites" class="hide" sb="85765995" style="display: none;"></select>
@@ -179,6 +179,9 @@
         var imgPath = "";
         imgPath = '@Url.Content("~/codebase/imgs/")';
         //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
+    ///Assign Enum and Server Side value to Variable
+    var RequestedModule = '@RequestedModule';
+    var CalledFromBudget = '@CalledFromBudget';
     var urlContent = '@Url.Content("~/")';
     var urlServiceUnavailibility = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
     var secTactic = '@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()';
@@ -201,19 +204,18 @@
     var ActivityName = '@Enums.GlobalSearch.ActivityName.ToString().ToLower()';
     var ExternalName = '@Enums.GlobalSearch.ExternalName.ToString().ToLower()';
     var AssetTypeAsset = '@Enums.AssetType.Asset.ToString()';
-    var ROIPackage = '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]'
-    var ValidateForEmptyField = '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField'
-    var PackageUpdated = '@RevenuePlanner.Helpers.Common.objCached.PackageUpdated'
-    var PackageCreated = '@RevenuePlanner.Helpers.Common.objCached.PackageCreated'
-    var OnlyTacticsToCreatePackage = '@RevenuePlanner.Helpers.Common.objCached.OnlyTacticsToCreatePackage'
-    var SinglePlanTacticForPackage = '@RevenuePlanner.Helpers.Common.objCached.SinglePlanTacticForPackage'
-    var AtLeastOneAssetValidation = '@RevenuePlanner.Helpers.Common.objCached.AtLeastOneAssetValidation'
-    var MoreThanOneAssetValidation = '@RevenuePlanner.Helpers.Common.objCached.MoreThanOneAssetValidation'
-
-    var DeselectAssetFromPackage = '@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage'
-    var UnpackageSuccessful = '@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful'
-
+    var ROIPackage = '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]';
+    var ValidateForEmptyField = '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField';
+    var PackageUpdated = '@RevenuePlanner.Helpers.Common.objCached.PackageUpdated';
+    var PackageCreated = '@RevenuePlanner.Helpers.Common.objCached.PackageCreated';
+    var OnlyTacticsToCreatePackage = '@RevenuePlanner.Helpers.Common.objCached.OnlyTacticsToCreatePackage';
+    var SinglePlanTacticForPackage = '@RevenuePlanner.Helpers.Common.objCached.SinglePlanTacticForPackage';
+    var AtLeastOneAssetValidation = '@RevenuePlanner.Helpers.Common.objCached.AtLeastOneAssetValidation';
+    var MoreThanOneAssetValidation = '@RevenuePlanner.Helpers.Common.objCached.MoreThanOneAssetValidation';
+    var DeselectAssetFromPackage = '@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage';
+    var UnpackageSuccessful = '@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful';
     var activeMenu = '@ViewBag.ActiveMenu.ToString()';
+    ///////
     var IsManageviewClick = false;
 
     var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
@@ -247,7 +249,7 @@
         SelectedYears: []
 
     };
-   
+    var isDataModified = false;
         //for Hidding tooltip -ticket 2414
     var $doc = $(document);
     $doc.click(function () {
@@ -293,17 +295,6 @@
             success: function (data) {
                 if (data != 'undefined' && data != null) {
                     $('#divFilter').html(data);
-                    //var planids = [];
-                    //$('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
-
-                    //    if ($(this).attr('checked') == 'checked') {
-                    //        var chkid = $(this).attr("id");
-                    //        var Value = $(this).attr("planTitle");
-                    //        if (chkid != undefined && chkid != 'undefined') {
-                    //            planids.push(chkid);
-                    //        }
-                    //    }
-                    //});
                     GetFilterIds();
                     GetTacticTypelist(filters.PlanIDs);
                     GetOwnerListForFilter(filters.PlanIDs);
@@ -319,61 +310,12 @@
                 }
             }
         });
-    })
-
-    
-
-    $('#btngridcalendar').click(function () {
-        $('#btnbudget').removeClass('P-icon-active');
-        if ($(this).hasClass('P-icon-active')) {
-            if ($('#IsGridView').val().toLowerCase() == "false") {
-                $("#GridGanttContent").hide();
-                $("#divgridview").show();
-                $('#divgridview').empty();
-                LoadPlanGrid();
-                $('#IsGridView').val('true');
-            } else {
-                $('#IsGridView').val('false');
-                $("#divgridview").hide();
-                $("#GridGanttContent").show();
-                BindPlanCalendar();
-            }
-        }
-        else {
-            $('#btngridcalendar').addClass('P-icon-active');
-            if ($('#IsGridView').val().toLowerCase() == "true") {
-                $("#GridGanttContent").hide();
-                $("#divgridview").show();
-                $('#divgridview').empty();
-                LoadPlanGrid();
-            } else {
-                $("#divgridview").hide();
-                $("#GridGanttContent").show();
-                BindPlanCalendar();
-            }
-        }
-    });
-
-    $('#btnbudget').click(function () {
-        $('#btngridcalendar').removeClass('P-icon-active');
-        $('#btnbudget').addClass('P-icon-active');
-        $("#GridGanttContent").hide();
-        $("#divgridview").show();
-        $('#divgridview').empty();
-        filters = GetFilterIds();
-        var CheckedSelectedPlans = filters.PlanIDs.join(',');
-        var CheckedSelectedOwnerIds = filters.OwnerIds.join(',');
-        var CheckedSelectedTacticTypeids = filters.TacticTypeids.join(',');
-        var CheckedSelectedStatusIds = filters.StatusIds.join(',');
-        var CheckedSelectedCustomFiwldIds = filters.customFieldIds.join(',');
-        $('#divgridview').load('@Url.Action("GetBudgetData", "Plan")' + '?PlanIds=' + CheckedSelectedPlans + '&OwnerIds=' + CheckedSelectedOwnerIds + '&TactictypeIds=' + CheckedSelectedTacticTypeids + '&StatusIds=' + CheckedSelectedStatusIds + '&CustomFieldIds=' + CheckedSelectedCustomFiwldIds);
     });
 
         //For Ticket 2596 -For stop sorting on dropdownclick
         function  OpenDropdown() {
                IsManageDropdown = true;
         }
-            
 
     function OpenCreateNew(IsGridView) {
         $.ajax({

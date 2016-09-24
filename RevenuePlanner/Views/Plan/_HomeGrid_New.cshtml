@@ -8,16 +8,6 @@
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
-<style>
-    .manageviewicon .fa {
-        color: #fff;
-        margin-left: 10px;
-    }
-
-    div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa {
-        color: #F8710E;
-    }
-</style>
 <div id="gridbox" style="background-color:white;width:100%;"></div>
 <div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
 <div class="row-fluid calc-height">
@@ -39,25 +29,22 @@
     </div>
 </div>
 
-@*<input type="button" id="useless" value="Click" name="useless" style="display:none;" />*@
-@*<p style="display:none;">Scrolled <span id="spanscroll">0</span> times.</p>*@
 <script src="~/Scripts/js/Home/HomeGrid.js"></script>
 <script type="text/javascript">
     var HomeGrid;
-    gridname="home";
-    //Add  new
-    //var hdnYear= @ViewBag.Year;
-    @*var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
-    var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');*@
+    gridname = "home";
+
+    @*var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); //ToDo : Made required changes to bind Tactic Type Dropdown list on edit tactic type.
+    var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');*@ //ToDo : Made required changes to bind Line Item Type Dropdown list on edit Line Item type.
     var IslineItemDelete = false;
     var isCopyTacticHomeGrid = 0;
     var isEditTacticHomeGrid = 0;
+    var colStartDate = 0;
+
     var GridHiddenId = 0;
     var ActivitypeHidden = 0;
     var MachineNameHidden = 0;
-    //end
-
-    var plannedCostColId='plannedcost';
+    var plannedCostColId = 'plannedcost';
     var TaskNameColIndex = 0;
     var PlannedCostColIndex = 0;
     var AssetTypeColIndex = 0;
@@ -66,26 +53,23 @@
     var TargetStageGoalColIndex = 0;
     var MQLColIndex = 0;
     var RevenueColIndex = 0;
+
+    ///Assign Enum and Server Side value to Variable
     var StartDateCurrentYear = '@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear';
-    var EndDateCurrentYear =  '@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear';
+    var EndDateCurrentYear = '@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear';
     var DateComapreValidation = '@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation';
     var TacticStartDateCompareWithParentStartDate = '@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate';
     var ProgramStartDateCompareWithParentStartDate = '@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate';
     var TacticEndDateCompareWithParentEndDate = '@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate';
     var ProgramEndDateCompareWithParentEndDate = '@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate';
+    var TitleContainHTMLString  = '@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString';
+    var IsMediaCodePermission = '@Sessions.IsMediaCodePermission.ToString().ToLower()'
+    //var hdnYear = @ViewBag.Year; //ToDo : Made required changes to bind Plan year for Start/End Date validation on PlanGrid.
+    ///////
 
     $(document).ready(function () {
-        $("#BudgetIcon").show();
-        $("#BtnTabIcons").addClass("bdrRadius");
-        $('.nav').addClass('no-bottom-border');
         BindHomeGrid();
-        $("input[name='useless']").click(doIt);
-        function doIt() {
-            return true;
-        }
-        $("#useless").click();
-        window.focus();
-        pageIsScroll = false;
+        $('.nav').addClass('no-bottom-border');
         $('.task-tbl div.gridbox').css('height', $(window).height() - 450);
         if ($('.honeycombbox-icon-gantt-Active').length == 0) {
             $(".honeycombbox").hide();
@@ -94,7 +78,7 @@
             $("#totalEntity").text(ExportSelectedIds.TaskID.length);
             $(".honeycombbox").show();
         }
-        HomeGrid.enableEditEvents(true,false,true);
+        HomeGrid.enableEditEvents(true, false, true);
         SetTooltip();
         $('#cancel-button_Movetactic').on("click", function () {
             $('#divMovetacticPopup').modal("hide");
@@ -120,42 +104,32 @@
         HomeGrid.enableDragAndDrop(true);
         HomeGrid.enableAutoHeight(false);
         HomeGrid.enableAutoWidth(false);
-        HomeGrid.setNumberFormat(""+CurrencySybmol+"0,000", 6, ".", ",");
-        HomeGrid.attachEvent("onBeforeSorting",function(ind,grid)
-        {
-         
-            if(IsManageviewClick)
-            {
-                IsManageviewClick=false;
+        HomeGrid.setNumberFormat("" + CurrencySybmol + "0,000", 6, ".", ",");
+        HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
+            if (IsManageviewClick) {
+                IsManageviewClick = false;
                 return false;
-            }
-            else if(IsManageDropdown){
-                 return false;
             }
             else
                 return true;
-
         });
-
-
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
         HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
-        
+        GridHideColumn();
         HomeGrid.attachEvent("onDistributedEnd", function () {
             HomeGrid.loadOpenStates();
             LoadAfterParsing();
-            if(HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '')
-            {
+            if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
                 HomeGrid.showRow(HomeGrid.getRowId(state0));
                 HomeGrid.openItem(HomeGrid.getRowId(state0));
             }
-            if(!IslineItemDelete){
+            if (!IslineItemDelete) {
                 if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
-                    HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
-                    HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(),3)[0][0]);
+                    HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(), GridHiddenId)[0][0]);
+                    HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(), GridHiddenId)[0][0]);
                 }
             }
 
@@ -164,70 +138,19 @@
                 $(window).scrollTop(scrolltop - 100);
             }
         });
-        
+
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);
         var mainGridData = JsonModel;
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         HomeGrid.parse(GridDataHomeGrid, "json");
-        TaskNameColIndex = HomeGrid.getColIndexById("taskname");
-        PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
-        AssetTypeColIndex = HomeGrid.getColIndexById("roitactictype");
-        TypeColIndex = HomeGrid.getColIndexById("tactictype");
-        OwnerColIndex = HomeGrid.getColIndexById("owner");
-        TargetStageGoalColIndex = HomeGrid.getColIndexById("inq");
-        MQLColIndex = HomeGrid.getColIndexById("mql");
-        RevenueColIndex = HomeGrid.getColIndexById("revenue");
-        GridHiddenId = HomeGrid.getColIndexById('id');
-        ActivitypeHidden = HomeGrid.getColIndexById('activitytype');
-        MachineNameHidden = HomeGrid.getColIndexById('machinename');
-        HomeGrid.setColumnHidden(GridHiddenId,true);
-        HomeGrid.setColumnHidden(ActivitypeHidden,true);
-        HomeGrid.setColumnHidden(MachineNameHidden,true);
-
-        //Added by Komal Rawal for #2603
-        HomeGrid.attachEvent("onAfterCMove", function(cInd,posInd){
-            var ColumnCount = HomeGrid.getColumnCount();
-            var ColumnDetail  = [];
-            for (var i = 0; i < ColumnCount; i++)
-            {
-                var ColWidth = HomeGrid.getColWidth(i);
-                var customcolId = HomeGrid.getColumnId(i).toString();
-                if(customcolId.indexOf("custom_")>=0)
-                {
-                    customcolId =customcolId.replace("custom_","");
-                }
-                if(ColWidth != 0)
-                {
-                    ColumnDetail.push({
-                        AttributeId   : customcolId,
-                        AttributeType : " ",
-                        ColumnOrder   : parseInt(i)
-                    });
-                }
-            }
-
-            if(ColumnDetail != null && ColumnDetail.length > 0 && ColumnDetail != undefined)
-            {
-                ColumnDetail = JSON.stringify(ColumnDetail);
-
-                $.ajax({
-                    url: '@Url.Action("SaveColumnView", "ColumnView")', // we are calling json method
-                    type: 'post',
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    data: "{'AttributeDetail':" + (ColumnDetail) + "}",
-                    success: function (data) {
-                    }
-                });
-            }
-        });
-        //End
-        HomeGrid.splitAt(4);
+        colStartDate = HomeGrid.getColIndexById('startdate');
+        MoveColumn();
+        HomeGrid.splitAt(colStartDate);
         HomeGrid.collapseAll();
         var cookie = document.cookie;
-        if(cookie.indexOf("gridOpengridbox") > -1){
+        if (cookie.indexOf("gridOpengridbox") > -1) {
             var cookies = cookie.split(';');
             for (var i = 0; i < cookies.length; i++) {
                 if (cookies[i] == "gridOpengridbox") {
@@ -238,34 +161,27 @@
                 }
             }
         }
-        else{
+        else {
             document.cookie = "gridOpengridbox=plan.1";
         }
         setTimeout(function () {
-            HomeGrid.loadOpenStates();},1000);
+            HomeGrid.loadOpenStates();
+        }, 1000);
         LoadAfterParsing();
 
-        if(parseInt('@countrows')>0)
-        {
-            $('#lblMarkringActivitiestitle').hide();
+        if (parseInt('@countrows') > 0) {
             $("#gridbox").show();
             $("#goalwrapper").show();
-            $(".pull-right.toggle-status.source-sans-proregular").show();
             $("#NodatawithfilterGrid").hide();
 
-        }else{
-            $('#lblMarkringActivitiestitle').hide();
+        } else {
             $("#gridbox").hide();
             $("#goalwrapper").hide();
-            $(".pull-right.toggle-status.source-sans-proregular").hide();
-            $("#improvements").hide();
             $("#NodatawithfilterGrid").show();
         }
-        if($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null)
-        {
-            GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ",""));
+        if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+            GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
         }
     }
-
 
 </script>

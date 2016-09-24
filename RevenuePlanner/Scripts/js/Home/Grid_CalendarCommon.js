@@ -1,9 +1,61 @@
-﻿//To Load PlanGrid
+﻿///Manage Calendar/PlanGrid/Budget Icon Click
+$('#btngridcalendar').click(function () {
+    $('#ImportBtn').hide();
+    $('#btnbudget').removeClass('P-icon-active');
+    if ($(this).hasClass('P-icon-active')) {
+        if ($('#IsGridView').val().toLowerCase() == "false") {           
+            LoadPlanGrid();
+            $('#IsGridView').val('true');
+        } else {
+            $('#IsGridView').val('false');            
+            BindPlanCalendar();
+        }
+    }
+    else {
+        $('#btngridcalendar').addClass('P-icon-active');
+        if ($('#IsGridView').val().toLowerCase() == "true") {            
+            LoadPlanGrid();
+        } else {
+            BindPlanCalendar();
+        }
+    }
+    ///Show/Hide According to Criteria
+    if ($('#IsGridView').val().toLowerCase() == "true") {
+        $("#GridGanttContent").hide();
+        $('#divupcomingact').show();
+        $("#divgridview").show();
+        $('.export-dd').find('#ExportXls').show();
+        $('.export-dd').find('#ExportPDf').hide();
+    }
+    else {
+        $('.export-dd').find('#ExportXls').hide();
+        $('.export-dd').find('#ExportPDf').show();
+        $('#divupcomingact').hide();
+        $("#GridGanttContent").show();
+        $("#divgridview").hide();
+    }
+});
+
+$('#btnbudget').click(function () {
+    $('#divupcomingact').show();
+    $('#btngridcalendar').removeClass('P-icon-active');
+    $('#btnbudget').addClass('P-icon-active');
+    $("#GridGanttContent").hide();
+    $("#divgridview").show();
+    $('#divgridview').empty();
+    $('#ImportBtn').show();
+    $('.export-dd').find('#ExportXls').show();
+    $('.export-dd').find('#ExportPDf').hide();    
+    $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString());
+});
+///////////////////
+//To Load PlanGrid
 //Start
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
 var exportgridData;
 var gridname;
 //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
+//Function To Call HomeGrid Data for Selected Plan
 function LoadPlanGrid() {
     $.ajax({
         url: urlContent + 'Plan/GetHomeGridData/',
@@ -39,19 +91,19 @@ function DisplayEditablePopup(id, type) {
     isEditTactic = id;
     isDataModified = false;
     if (type == "Plan") {
-        ShowModels(inspectEdit, secPlan, id, 0, '@RequestedModule');
+        ShowModels(inspectEdit, secPlan, id, 0, RequestedModule);
     }
     else if (type == "CP") {
-        ShowModels(inspectEdit, secCampaign, id, 0, '@RequestedModule');
+        ShowModels(inspectEdit, secCampaign, id, 0, RequestedModule);
     }
     else if (type == "PP") {
-        ShowModels(inspectEdit, secProgram, id, 0, '@RequestedModule');
+        ShowModels(inspectEdit, secProgram, id, 0, RequestedModule);
     }
     else if (type == "TP") {
-        ShowModels(inspectEdit, secTactic, id, 0, '@RequestedModule');
+        ShowModels(inspectEdit, secTactic, id, 0, RequestedModule);
     }
     else if (type == "LP") {
-        ShowModels(inspectEdit, secLineItem, id, 0, '@RequestedModule');
+        ShowModels(inspectEdit, secLineItem, id, 0, RequestedModule);
     }
 }
 
@@ -368,7 +420,7 @@ function DisplayPopUpMenu(obj, e) {
     $('#NewCampaign').click(function () {
         isCopyTactic = PlanId;
         var planId = PlanId;
-        ShowModels(inspectAdd, secCampaign, 0, planId, '@RequestedModule');
+        ShowModels(inspectAdd, secCampaign, 0, planId, RequestedModule);
         $('.taskpopup').css('display', 'none');
     });
 
@@ -388,8 +440,8 @@ function DisplayPopUpMenu(obj, e) {
                 CloneType: campaignCloneType,
                 Id: idPlanCamaign,
                 title: Title,
-                CalledFromBudget: '@CalledFromBudget',
-                RequsetedModule: '@RequestedModule',
+                CalledFromBudget: CalledFromBudget,
+                RequsetedModule: RequestedModule,
                 planId: PlanId
             },
             success: function (data) {
@@ -425,14 +477,14 @@ function DisplayPopUpMenu(obj, e) {
             bodyscrollpos = $(window).scrollTop();
         }
         isCopyTactic = CampaignId;
-        ShowModels(inspectAdd, secProgram, 0, CampaignId, '@RequestedModule');
+        ShowModels(inspectAdd, secProgram, 0, CampaignId, RequestedModule);
         $('.taskpopup').css('display', 'none');
     });
 
     //New Program
     $('#NewProgram').click(function () {
         isCopyTactic = CampaignId;
-        ShowModels(inspectAdd, secProgram, 0, CampaignId, '@RequestedModule');
+        ShowModels(inspectAdd, secProgram, 0, CampaignId, RequestedModule);
         $('.taskpopup').css('display', 'none');
     });
 
@@ -452,8 +504,8 @@ function DisplayPopUpMenu(obj, e) {
                 CloneType: programCloneType,
                 Id: idPlanProgram,
                 title: Title,
-                CalledFromBudget: '@CalledFromBudget',
-                RequsetedModule: '@RequestedModule'
+                CalledFromBudget: CalledFromBudget,
+                RequsetedModule: RequestedModule
             },
             success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
@@ -491,7 +543,7 @@ function DisplayPopUpMenu(obj, e) {
             bodyscrollpos = $(window).scrollTop();
         }
         isCopyTactic = ProgramId;
-        ShowModels(inspectAdd, secTactic, 0, ProgramId, '@RequestedModule');
+        ShowModels(inspectAdd, secTactic, 0, ProgramId, RequestedModule);
         $("#errorMessage").css("display", "none");
         $("#successMessage").css("display", "none");
         $('.taskpopup').css('display', 'none');
@@ -506,7 +558,7 @@ function DisplayPopUpMenu(obj, e) {
             bodyscrollpos = $(window).scrollTop();
         }
         isCopyTactic = ProgramId;
-        ShowModels(inspectAdd, secTactic, 0, ProgramId, '@RequestedModule');
+        ShowModels(inspectAdd, secTactic, 0, ProgramId, RequestedModule);
         $("#errorMessage").css("display", "none");
         $("#successMessage").css("display", "none");
         $('.taskpopup').css('display', 'none');
@@ -531,8 +583,8 @@ function DisplayPopUpMenu(obj, e) {
                 CloneType: tacticCloneType,
                 Id: idPlanTactic,
                 title: Title,
-                CalledFromBudget: '@CalledFromBudget',
-                RequsetedModule: '@RequestedModule'
+                CalledFromBudget: CalledFromBudget,
+                RequsetedModule: RequestedModule
             },
             success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
@@ -567,7 +619,7 @@ function DisplayPopUpMenu(obj, e) {
     //Child Line Item
     $('#ChildLineItem').click(function () {
         isCopyTactic = TacticId;
-        ShowModels(inspectAdd, secLineItem, 0, TacticId, '@RequestedModule');
+        ShowModels(inspectAdd, secLineItem, 0, TacticId, RequestedModule);
         $('.taskpopup').css('display', 'none');
     });
 
@@ -577,7 +629,7 @@ function DisplayPopUpMenu(obj, e) {
         isCopyTactic = TacticId;
         isDataModified = false;
         var planId = PlanId;
-        ShowModels(inspectAdd, secLineItem, 0, TacticId, '@RequestedModule');
+        ShowModels(inspectAdd, secLineItem, 0, TacticId, RequestedModule);
         $('.taskpopup').css('display', 'none');
     });
 
@@ -597,8 +649,8 @@ function DisplayPopUpMenu(obj, e) {
                 CloneType: lineItemCloneType,
                 Id: idPlanLineItem,
                 title: Title,
-                CalledFromBudget: '@CalledFromBudget',
-                RequsetedModule: '@RequestedModule'
+                CalledFromBudget: CalledFromBudget,
+                RequsetedModule: RequestedModule
             },
             success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
@@ -1137,7 +1189,7 @@ function OpentCopyPopuponProceed(obj) {
     var entityId = $(obj).attr('entityId');
     var popuptype = $(obj).attr('popupType');
     var planTacticId = entityId.split('_')[1];
-    loadInspectPopup(planTacticId, secTactic, "Setup", inspectEdit, 0, '@RequestedModule');
+    loadInspectPopup(planTacticId, secTactic, "Setup", inspectEdit, 0, RequestedModule);
     $("#dvCopyEntity").empty();
     var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
     $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype + "&RedirectType=" + redirectType); // section parameter added to open share tactic popup
@@ -1268,84 +1320,10 @@ function RemoveAllMediaCodeData() {
 
 //Common Functions
 //Start
-function RefershPlanHeaderCalc() {
-    var Currenttime = $('#ddlUpComingActivites').val();
-    var SelectedPlanIds = [];
-    var SelectedOwners = [];
-    var SelectedCF = [];
-    var SelectedTacticType = [];
-    var SelectedStatus = [];
-    $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
-        if ($(this).attr('checked') == 'checked') {
-            var chkid = $(this).attr("id");
-            if (chkid != undefined && chkid != 'undefined') {
-                SelectedPlanIds.push(chkid);
-            }
-        }
-    });
-
-    if (SelectedPlanIds.length == 0 || SelectedPlanIds == null) {
-        SelectedPlanIds = $('#hdnSelectedPlanIds').val()
-    }
-
-    $("#ulSelectedOwner li input:checkbox:checked").map(function () {
-        SelectedOwners.push($(this).attr("id"));
-    });
-
-    $("#ulTacticType li input[type=checkbox]:checked").each(function () {
-
-        var chkid = $(this).attr("id");
-        SelectedTacticType.push(chkid.replace("CbTT", ""));
-
-    });
-
-    $('#divCustomFieldsFilter').find("input[type=checkbox]:checked").each(function () {
-        var chkid = $(this).attr("id");
-        if (chkid != undefined && chkid != 'undefined') {
-            SelectedCF.push(chkid);
-        }
-    });
-    var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;;
-    $("#divCustomFieldsFilter").find("div.accordion").each(function () {
-        if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
-            AllCounter = $(this).find("input[type=checkbox]").length;
-            CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-            UncheckedCounter = AllCounter - CheckedCounter;
-            if (AllCounter == UncheckedCounter) {
-                var Id = $(this).attr("id");
-                if (Id.indexOf("-") >= 0) {
-                    Id = Id.split('-')[1];
-                    var CustomId = Id + "_null";
-                    SelectedCF.push(CustomId);
-
-                }
-            }
-            else if (AllCounter == CheckedCounter) {
-                id = this.id;
-                if (id != null && id != "" && id.indexOf("-") > -1) {
-                    id = this.id.split("-")[1];
-                }
-                var i = 0, customfieldid;
-                for (i = 0; i < SelectedCF.length; i++) {
-                    if (SelectedCF[i].indexOf("_") > -1) {
-                        customfieldid = SelectedCF[i].split("_")[0];
-                        if (id == customfieldid) {
-                            SelectedCF.splice(i, 1);
-                            i--;
-                        }
-                    }
-                }
-            }
-        }
-    });
-    $("#ulStatus li input[type=checkbox]:checked").each(function () {
-        var chkid = $(this).attr("id");
-        SelectedStatus.push(chkid);
-    });
-
-    if ($('#IsGridView').val().toLowerCase() == "true") {
+function RefershPlanHeaderCalc() {   
+    //if ($('#IsGridView').val().toLowerCase() == "true") {
         GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, SelectedTimeFrameOption);
-    }
+    //}
 
 }
 //End
