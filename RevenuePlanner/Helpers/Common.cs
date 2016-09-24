@@ -9240,6 +9240,57 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        /// <summary>
+        /// Added By: Nandish Shah.
+        /// Action to get Owner Name
+        /// </summary>
+        public static string GetOwnerName(string Userint)
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            var OwnerName = string.Empty;
+            try
+            {
+                if (!string.IsNullOrEmpty(Userint))
+                {
+                    List<User> lstUserDetails = new List<User>();
+                    if (lstUserDetails == null || lstUserDetails.Count == 0)
+                    {
+                        lstUserDetails = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID);
+                    }
+                    string userName = lstUserDetails.Where(user => user.ID.ToString() == Userint).Select(user => user.FirstName + " " +  user.LastName).FirstOrDefault();
+                    if (!string.IsNullOrEmpty(userName))
+                    {
+                        OwnerName = userName;
+                    }
+                }
+                return OwnerName;
+            }
+            catch (Exception e)
+            {
+                if (e is System.Data.EntityException || e is System.Data.SqlClient.SqlException)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                }
+            }
+            return OwnerName.ToString();
+        }
+
+        /// <summary>
+        /// Added By: Nandish Shah.
+        /// Action to get all UserNames and TacticType
+        /// </summary>
+        public static string GettactictypeName(int TacticTypeID)
+        {
+            MRPEntities objDbMrpEntities = new MRPEntities();
+            List<TacticType> TacticTypeListForHC = new List<TacticType>();
+            TacticTypeListForHC = objDbMrpEntities.TacticTypes.Where(tt => tt.IsDeleted == false).Select(tt => tt).ToList();
+            if (TacticTypeListForHC.Count == 0 || TacticTypeListForHC == null)
+            {
+                TacticTypeListForHC = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt).ToList();
+            }
+            return TacticTypeListForHC.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
+        }
+
 
 
     }

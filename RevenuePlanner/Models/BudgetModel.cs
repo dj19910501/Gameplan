@@ -74,7 +74,11 @@ namespace RevenuePlanner.Models
         public int? LineItemTypeId { get; set; }
         public int Weightage { get; set; }
         public bool isAfterApproved { get; set; }
-        public string colorCode { get;set; }
+        public string ColorCode { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int LinkTacticId { get; set; }
+        public int TacticTypeId { get; set; }
         public string MachineName { get; set; }
         public double UnallocatedBudget { get; set; }
 

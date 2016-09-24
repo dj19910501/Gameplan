@@ -24,7 +24,7 @@ namespace RevenuePlanner.Services
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
         public const string FixHeader = "ActivityId,Type,machinename,,,,,";
-        public const string FixColumnIds = "ActivityId,Type,machinename,taskname,Buttons,Budget,Planned,Actual";
+        public const string FixColumnIds = "ActivityId,Type,machinename,taskname,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string FixColType = "ro,ro,ro,tree,ro,ed,ed,ed";
         public const string FixcolWidth = "100,100,100,250,100,100,100,100";
         public const string FixColsorting = "na,na,na,na,na,na,na,na";
@@ -70,7 +70,7 @@ namespace RevenuePlanner.Services
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
             objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, model);
 
-            objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy);//create model to bind data in grid as per DHTMLx grid format.
+            objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy, UserID);//create model to bind data in grid as per DHTMLx grid format.
 
             List<ColumnViewEntity> userManagedColumns = objColumnView.GetCustomfieldModel(ClientId, isPlangrid, out isSelectAll,UserID);
             string hiddenTab = string.Empty;
@@ -96,7 +96,7 @@ namespace RevenuePlanner.Services
                 ActivityType = Convert.ToString( row["ActivityType"]),
                 ParentActivityId = Convert.ToString( row["ParentActivityId"]),
                 YearlyBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Budget"])), PlanExchangeRate),
-                TotalAllocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationBudget"])), PlanExchangeRate),
+                TotalAllocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnallocatedBudget"])), PlanExchangeRate),
                 TotalActuals = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationActual"])), PlanExchangeRate),
                 TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["TotalAllocationCost"])), PlanExchangeRate),
                 IsOwner = Convert.ToBoolean(row["IsOwner"]),
@@ -104,6 +104,12 @@ namespace RevenuePlanner.Services
                 LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
                 isAfterApproved = Convert.ToBoolean(row["IsAfterApproved"]),
                 MachineName = Convert.ToString(row["MachineName"]),
+                ColorCode = Convert.ToString(row["ColorCode"]),
+                StartDate = Convert.ToDateTime(row["StartDate"]),
+                EndDate = Convert.ToDateTime(row["EndDate"]),
+                LinkTacticId = Convert.ToInt32(row["LinkTacticId"]),
+                TacticTypeId = Convert.ToInt32(Convert.ToString(row["TacticTypeId"])),
+
                 MonthValues = new BudgetMonth()
                 {
                     //Budget Month Allocation
@@ -151,9 +157,11 @@ namespace RevenuePlanner.Services
             }).ToList();
             return model;
         }
-        public List<Budgetdataobj> SetBudgetDhtmlxFormattedValues(List<Budgetdataobj> BudgetDataObjList,List<PlanBudgetModel> model,PlanBudgetModel Entity,string EntityType,string AllocatedBy)
+
+        public List<Budgetdataobj> SetBudgetDhtmlxFormattedValues(List<Budgetdataobj> BudgetDataObjList, List<PlanBudgetModel> model, PlanBudgetModel Entity, string EntityType, string AllocatedBy, string DhtmlxGridRowId, string EntityColor, bool IsAddEntityRights, string pcptid = "")  // pcptid = Plan-Campaign-Program-Tactic-Id
         {
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
+            string doubledesh = "--";
 
             BudgetDataObj.value = Entity.Id + ";" + Convert.ToString(EntityType);
             BudgetDataObjList.Add(BudgetDataObj);
@@ -173,7 +181,30 @@ namespace RevenuePlanner.Services
 
             Budgetdataobj iconsData = new Budgetdataobj();
             //Set icon of magnifying glass and honey comb for plan entity with respective ids
-            iconsData.value = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Entity.ActivityId + " per=true></div> <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd taskId=" + Entity.ActivityId + " csvId=" + Entity.ActivityId.ToString() + "></div>";
+            if (EntityType == ActivityType.ActivityPlan)
+            {
+                iconsData.value = "<div class=grid_Search id=Plan title=View ></div>" + (IsAddEntityRights ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Entity.ActivityId + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ><i class=&#39;fa fa-plus-circle&#39;> </i></div>" : "") + " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  id=PlanAdd dhtmlxrowid=" + DhtmlxGridRowId + " TacticType= " + doubledesh + " OwnerName= " + Common.GetOwnerName(Convert.ToString(Entity.CreatedBy)) + " TaskName=" + (HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;")) + " altId=" + Entity.ActivityId + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ColorCode=" + EntityColor + " taskId=" + Entity.ActivityId + " csvId=Plan_" + Entity.ActivityId + " ></div>";
+            }
+            else if (EntityType == ActivityType.ActivityCampaign)
+            {
+                iconsData.value = "<div class=grid_Search id=CP title=View ></div>" + (IsAddEntityRights ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Campaign alt=" + Entity.ParentActivityId + "_" + Entity.ActivityId + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ><i class=&#39;fa fa-plus-circle&#39;> </i></div>" : "") + " <div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this)  dhtmlxrowid=" + DhtmlxGridRowId + " TacticType= " + doubledesh + " OwnerName= " + Common.GetOwnerName(Convert.ToString(Entity.CreatedBy)) + " TaskName=" + (HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;")) + " altId=" + Entity.ParentActivityId + "_" + Entity.ActivityId + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ColorCode=" + EntityColor + " taskId= " + Entity.ActivityId + " csvId=Campaign_" + Entity.ActivityId + "></div>";
+            }
+            else if (EntityType == ActivityType.ActivityProgram)
+            {
+                iconsData.value = "<div class=grid_Search id=PP title=View ></div>" + (IsAddEntityRights ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Entity.ParentActivityId + "_" + Entity.ActivityId + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ><i class=&#39;fa fa-plus-circle&#39;> </i></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this)  dhtmlxrowid=" + DhtmlxGridRowId + " TacticType= " + doubledesh + " OwnerName= " + Common.GetOwnerName(Convert.ToString(Entity.CreatedBy)) + " TaskName=" + (HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;")) + " altId=_" + Entity.ParentActivityId + "_" + Entity.ActivityId + " ColorCode=" + EntityColor + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Entity.ActivityId + " csvId=Program_" + Entity.ActivityId + " ></div>";
+            }
+            else if (EntityType == ActivityType.ActivityTactic)
+            {
+                //LinkTactic Permission based on Entity Year
+                bool LinkTacticPermission = ((Entity.EndDate.Year - Entity.StartDate.Year) > 0) ? true : false;
+                string LinkedTacticId = Entity.LinkTacticId == 0 ? "null" : Entity.LinkTacticId.ToString();
+
+                iconsData.value = "<div class=grid_Search id=TP title=View ></div>" + (IsAddEntityRights ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Entity.ParentActivityId + "_" + Entity.ActivityId + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " LinkTacticper =" + LinkTacticPermission + " LinkedTacticId = " + LinkedTacticId + " tacticaddId=" + Entity.ActivityId + "><i class=&#39;fa fa-plus-circle&#39;> </i></div>" : "") + " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  id=PlanAdd pcptid = " + pcptid + " dhtmlxrowid=" + DhtmlxGridRowId + " TacticType= " + Common.GettactictypeName(Entity.TacticTypeId) + " OwnerName= " + Common.GetOwnerName(Convert.ToString(Entity.CreatedBy)) + " TaskName=" + (HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;")) + " altId=__" + Entity.ParentActivityId + "_" + Entity.ActivityId + " ColorCode=" + EntityColor + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Entity.ActivityId + " csvId=Tactic_" + Entity.ActivityId + " ></div>";
+            }
+            else if (EntityType == ActivityType.ActivityLineItem)
+            {
+                iconsData.value = "<div class=grid_Search id=LP title=View ></div>" + (IsAddEntityRights ? "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + Entity.ParentActivityId + "_" + Entity.ActivityId + " lt=" + ((Entity.LineItemTypeId == null) ? 0 : Entity.LineItemTypeId) + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " dt=" + HttpUtility.HtmlEncode(Entity.ActivityName) + " ><i class=&#39;fa fa-plus-circle&#39;> </i></div>" : "");
+            }
             BudgetDataObjList.Add(iconsData);
 
             //Set Total Actual,Total Budget and Total planned cost for plan entity
@@ -184,7 +215,8 @@ namespace RevenuePlanner.Services
                     BudgetDataObjList, AllocatedBy, Entity.ActivityId);
             return BudgetDataObjList;
         }
-        public BudgetDHTMLXGridModel CreateDhtmlxFormattedBudgetData(BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string AllocatedBy)
+        
+        public BudgetDHTMLXGridModel CreateDhtmlxFormattedBudgetData(BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string AllocatedBy, int UserID)
         {
 
             List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
@@ -192,15 +224,46 @@ namespace RevenuePlanner.Services
 
             List<Budgetdataobj> BudgetDataObjList ;
             Budgetdataobj BudgetDataObj;
+
+            Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            string TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
+            string ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
+            string CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
+            string PlanColor = ColorCodelist[Enums.EntityType.Plan.ToString().ToLower()];
+
+            bool IsPlanCreateAll = false;
+            bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+            List<int> lstSubordinatesIds = new List<int>();
+
+            if (IsPlanCreateAllAuthorized)
+            {
+                IsPlanCreateAll = true;
+            }
+
+            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            if (IsTacticAllowForSubordinates)
+            {
+                lstSubordinatesIds = Common.GetAllSubordinates(UserID);
+            }
+
             //Set plan entity in the dhtmlx formated model at top level of the hierarchy using loop
             foreach (PlanBudgetModel bm in model.Where(p => p.ActivityType == ActivityType.ActivityPlan).OrderBy(p => p.ActivityName))
             {
+
+                if (IsPlanCreateAll == false)
+                {
+                    if (bm.CreatedBy == UserID || lstSubordinatesIds.Contains(bm.CreatedBy))
+                        IsPlanCreateAll = true;
+                    else
+                        IsPlanCreateAll = false;
+                }
+
                 gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
                 gridjsonlistPlanObj.id = ActivityType.ActivityPlan + HttpUtility.HtmlEncode(bm.ActivityId);
                 gridjsonlistPlanObj.open = Open;
 
                 BudgetDataObjList = new List<Budgetdataobj>();
-                BudgetDataObjList=   SetBudgetDhtmlxFormattedValues(BudgetDataObjList,model,bm,ActivityType.ActivityPlan,AllocatedBy);
+                BudgetDataObjList = SetBudgetDhtmlxFormattedValues(BudgetDataObjList, model, bm, ActivityType.ActivityPlan, AllocatedBy, gridjsonlistPlanObj.id, PlanColor, IsPlanCreateAll);
                 gridjsonlistPlanObj.data = BudgetDataObjList;
                 
                 List<BudgetDHTMLXGridDataModel> CampaignRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -215,8 +278,10 @@ namespace RevenuePlanner.Services
                     CampaignRowsObj.id = ActivityType.ActivityCampaign + HttpUtility.HtmlEncode(bmc.ActivityId);
                     CampaignRowsObj.open = null;
 
+                    bool IsCampCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmc.CreatedBy == UserID || lstSubordinatesIds.Contains(bmc.CreatedBy)) ? true : false : true;
+
                     List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
-                    CampaignDataObjList = SetBudgetDhtmlxFormattedValues(CampaignDataObjList, model, bmc, ActivityType.ActivityCampaign, AllocatedBy);
+                    CampaignDataObjList = SetBudgetDhtmlxFormattedValues(CampaignDataObjList, model, bmc, ActivityType.ActivityCampaign, AllocatedBy, CampaignRowsObj.id, CampaignColor, IsCampCreateAll);
 
                     CampaignRowsObj.data = CampaignDataObjList;
                     List<BudgetDHTMLXGridDataModel> ProgramRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -232,8 +297,10 @@ namespace RevenuePlanner.Services
                         ProgramRowsObj.id = ActivityType.ActivityProgram + HttpUtility.HtmlEncode(bmp.ActivityId);
                         ProgramRowsObj.open = null;
 
+                        bool IsProgCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmp.CreatedBy == UserID || lstSubordinatesIds.Contains(bmp.CreatedBy)) ? true : false : true;
+
                         List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
-                        ProgramDataObjList = SetBudgetDhtmlxFormattedValues(ProgramDataObjList, model, bmp, ActivityType.ActivityProgram, AllocatedBy);
+                        ProgramDataObjList = SetBudgetDhtmlxFormattedValues(ProgramDataObjList, model, bmp, ActivityType.ActivityProgram, AllocatedBy, ProgramRowsObj.id, ProgramColor, IsProgCreateAll);
                         ProgramRowsObj.data = ProgramDataObjList;
 
                         List<BudgetDHTMLXGridDataModel> TacticRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -249,8 +316,10 @@ namespace RevenuePlanner.Services
                             TacticRowsObj.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(bmt.ActivityId);
                             TacticRowsObj.open = null;
 
+                            bool IsTacCreateAll = IsPlanCreateAll == false ? (bmt.CreatedBy == UserID || lstSubordinatesIds.Contains(bmt.CreatedBy)) ? true : false : true;
+
                             List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
-                            TacticDataObjList = SetBudgetDhtmlxFormattedValues(TacticDataObjList, model, bmt, ActivityType.ActivityTactic, AllocatedBy);
+                            TacticDataObjList = SetBudgetDhtmlxFormattedValues(TacticDataObjList, model, bmt, ActivityType.ActivityTactic, AllocatedBy, TacticRowsObj.id, TacticColor, IsTacCreateAll, "L" + bm.ActivityId + "_C" + bmc.ActivityId + "_P" + bmp.ActivityId + "_T" + bmt.ActivityId);
 
                             TacticRowsObj.data = TacticDataObjList;
                             List<BudgetDHTMLXGridDataModel> LineRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -265,8 +334,14 @@ namespace RevenuePlanner.Services
                                 LineRowsObj = new BudgetDHTMLXGridDataModel();
                                 LineRowsObj.id = ActivityType.ActivityLineItem + HttpUtility.HtmlEncode(bml.ActivityId);
                                 LineRowsObj.open = null;
+
+                                bool IsLinItmCreateAll = IsPlanCreateAll == false ? (bml.CreatedBy == UserID || lstSubordinatesIds.Contains(bml.CreatedBy)) ? true : false : true;
+
                                 List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
-                                LineDataObjList = SetBudgetDhtmlxFormattedValues(LineDataObjList, model, bml, ActivityType.ActivityLineItem, AllocatedBy);
+                                LineDataObjList = SetBudgetDhtmlxFormattedValues(LineDataObjList, model, bml, ActivityType.ActivityLineItem, AllocatedBy, LineRowsObj.id, "", IsLinItmCreateAll);
+
+                                LineRowsObj.data = LineDataObjList;
+                                LineRowsObjList.Add(LineRowsObj);
                             }
                             //set lineitem row data as child to respective tactic
                             TacticRowsObj.rows = LineRowsObjList;

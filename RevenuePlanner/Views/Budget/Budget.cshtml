@@ -11,92 +11,20 @@
     //    isquarter = true;
     //}
 }
-
- @*<script src="~/Scripts/jquery.cluetip.js"></script>*@
-<style>
-    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
-        text-align: center;
-        padding-left: 0px !important;
-    }
-
-    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
-        width: 100% !important;
-    }
-
-        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr tr {
-            color: black;
-        }
-
-    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
-        width: 100% !important;
-    }
-
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr {
-            color: black;
-        }
-
-            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.treegrid_cell {
-                text-align: left !important;
-            }
-
-            div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div {
-                text-align: center;
-            }
-
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar.budgetError {
-            background: #ff1e26 none repeat scroll 0 0;
-        }
-
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px .progressBar {
-            background: #3fa9f5 none repeat scroll 0 0;
-            bottom: 0;
-            height: 2px !important;
-            left: 0;
-            margin: 0;
-            max-width: 100%;
-            padding: 0;
-            position: absolute;
-        }
-
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td div.budgetError, span.budgetError {
-            color: #ff1e26;
-        }
-
-    #gridbox.gridbox_dhx_skyblue.gridbox div.objbox table.row20px tr td {
-        position: relative;
-    }
-
-    .dhxgrid_sort_asc, .dhxgrid_sort_desc {
-        background-repeat: no-repeat;
-        height: 26px;
-        top: 44px !important;
-        width: 15px;
-    }
-
-    /*Added by Rushil Bhuptani on 26/05/2016 for #2191*/
-    .clickmeAnchor {
-        color: #000 !important;
-        cursor: pointer;
-    }
-</style>
-
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
 
 <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
 
-
 <script type="text/javascript">
     var HomeGrid;
     gridname = "budget";
-    //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
     var gridheader;
     var colType;
     var budgetWidth;
     var colSorting;
     var ColumnIds;
     var attachHeader;
-    //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
     var eventidonedit = 0;
     $(document).ready(function () {
         var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
@@ -105,13 +33,11 @@
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
         HomeGrid.setImageSize(1, 1);
-        //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
         gridheader = '@Model.SetHeader';
         ColumnIds = '@Model.ColumnIds';
          colType = '@Model.ColType';
          colSorting = '@Model.ColSorting';
         budgetWidth = '@Model.Width';
-        //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
         HomeGrid.setHeader('@Model.SetHeader');
         attachHeader = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader)';
         attachHeader = $('<div/>').html(attachHeader.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
@@ -121,7 +47,6 @@
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
         HomeGrid.setColumnIds('@Model.ColumnIds');
-        HomeGrid.setColAlign("right,left,left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setEditable(true);
@@ -137,7 +62,18 @@
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         
         HomeGrid.parse(GridDataHomeGrid, "json");
-        // HomeGrid.setInitWidths(data.initwidth);
+
+        HomeGrid.attachEvent("onOpenEnd", function (id, state) {
+            $(".grid_Search").off("click");
+            $(".grid_Search").click(function (e) {
+                inspectCloseFocus = $(this).position().top;
+                var EntityIdWithSection = $(this).parent().parent().find('td:first').html().split(';');
+                var id = EntityIdWithSection[0];
+                var type = $(this).attr('id');
+                gridSearchFlag = 1;
+                DisplayEditablePopup(id, type);
+            });
+        });
         var machineNameindex = HomeGrid.getColIndexById("machineName");
         var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
         var colTypeIndex = HomeGrid.getColIndexById("Type");
@@ -154,14 +90,14 @@
                 for (var j=0;j<HomeGrid.getColumnsNum();j++)
                 {
                     var ColumnId = HomeGrid.getColumnId(j);
-                    if (ColumnId==sTab) 
+                    var YearlyTab = sTab + "Cost";
+                    if (ColumnId == sTab || ColumnId == YearlyTab)
                     {
                         HomeGrid.setColumnHidden(j, true);
                     }
                 }
             }
         }
-       // HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
         LoadAfterParsing();
     });
 
@@ -173,15 +109,15 @@
     }
 
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
-        if (stage == 0) {
+        if (stage == 0) { // Stage == 0 Means Click on Cell
 
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
 
         }
-        if (stage == 1) { }
-        if (stage == 2) {
+        //if (stage == 1) { } // Stage == 1 - Means Perform Event on Cell -  Keydown, etc. This is currently not used but if required we can use this flag.
+        if (stage == 2) { // Stage == 2 - Means perform focus out event
             var EntityIdWithSection = HomeGrid.cells(rowId, 0).cell.innerText.split(';');
             var EntityId = EntityIdWithSection[0];
             var Section = EntityIdWithSection[1];
@@ -190,7 +126,7 @@
             var MonthCost;
             var Tab = HomeGrid.getColLabel(cellInd, 1);
 
-            if (Tab == 'Actuals' || Tab == 'Planned' || Tab == 'Budget') {
+            if (Tab.toLowerCase() == 'actual' || Tab.toLowerCase() == 'planned' || Tab.toLowerCase() == 'budget') {
                 if (HomeGrid.getColLabel(cellInd) == "") {
                     if (HomeGrid.getColLabel(cellInd - 1) == "") {
                         Month = HomeGrid.getColLabel(cellInd - 2);
@@ -203,32 +139,32 @@
                     Month = HomeGrid.getColLabel(cellInd);
                 }
             }
-            if (Tab == 'Actuals') {
+            if (Tab.toLowerCase() == 'actual') {
                 var ActualCostColIndex = HomeGrid.getColIndexById("ActualCost");
                 YearCost = HomeGrid.cells(rowId, ActualCostColIndex).cell.innerText;
                 MonthCost = nValue;
             }
-            else if (Tab == 'Planned') {
+            else if (Tab.toLowerCase() == 'planned') {
                 var PlannedCostColIndex = HomeGrid.getColIndexById("plannedcost");
                 YearCost = HomeGrid.cells(rowId, PlannedCostColIndex).cell.innerText;
                 MonthCost = nValue;
             }
-            else if (Tab == 'Budget') {
+            else if (Tab.toLowerCase() == 'budget') {
                 var BudgetCostColIndex = HomeGrid.getColIndexById("BudgetCost");
                 YearCost = HomeGrid.cells(rowId, BudgetCostColIndex).cell.innerText;
                 MonthCost = nValue;
             }
-            else if (Tab == 'Actual Cost') {
-                Tab = "Actuals";
+            else if (Tab.toLowerCase() == 'total actual') {
+                Tab = "Actual";
                 MonthCost = '';
                 YearCost = nValue;
             }
-            else if (Tab == 'Planned Cost') {
+            else if (Tab.toLowerCase() == 'planned cost') {
                 Tab = "Planned";
                 MonthCost = '';
                 YearCost = nValue;
             }
-            else if (Tab == 'Budget Cost') {
+            else if (Tab.toLowerCase() == 'total budget') {
                 Tab = "Budget";
                 MonthCost = '';
                 YearCost = nValue;
@@ -243,7 +179,7 @@
         var month = Month;
         var tab = Tab;
         var isquarter = false;
-        if ('@isquarter' == 'True') {
+        if ('@isquarter'.toLowerCase() == 'true') {
             isquarter = true;
         }
         var inputArr = [];
@@ -266,7 +202,7 @@
 
         var jsonInputs = JSON.stringify(inputArr);
         var URL;
-        if (Tab == 'Budget') {
+        if (Tab.toLowerCase() == 'budget') {
             URL = '@Url.Content("~/Plan/SaveBudgetCell/")';
         }
         else {
@@ -282,7 +218,7 @@
                 if (data.isSuccess == true) {
                     section = section.toLowerCase();
                     $("#hdnBudgetingIsSave").val("true");
-                    if (tab == 'Actuals' || tab == 'Budget') {
+                    if (tab.toLowerCase() == 'actual' || tab.toLowerCase() == 'budget') {
                         $("#hdnBudgetingExpandId").val(section + entityId);
                     }
                     else {
@@ -298,4 +234,15 @@
             }
         });
     }
+
+    $(".grid_Search").off("click");
+    $(".grid_Search").click(function (e) {
+        inspectCloseFocus = $(this).position().top;
+        var EntityIdWithSection = $(this).parent().parent().find('td:first').html().split(';');
+        var id = EntityIdWithSection[0];
+        var type = $(this).attr('id');
+        gridSearchFlag = 1;
+        DisplayEditablePopup(id, type);
+    });
+  
 </script>
