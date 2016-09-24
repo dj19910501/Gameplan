@@ -21,7 +21,7 @@ var showTacticStatus = false;
 
 var scrollstate = 0;
 var bodyscrollpos = 0;
-var isCopyTactic = 0;
+
 var type = 'Tactic';    //TODO: Set Fix value. //Need to talk 
 
 function BindPlanCalendar() {

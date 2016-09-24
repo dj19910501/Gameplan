@@ -1,6 +1,6 @@
 ﻿@using RevenuePlanner.Helpers
 @{
-    ViewBag.Title = "IndexNewDesign";
+    ViewBag.Title = ViewBag.ActiveMenu;
     Layout = "~/Views/Shared/_Layout.cshtml";
     //ViewBag.Title = ViewBag.ActiveMenu;
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
@@ -250,6 +250,8 @@
 
     };
     var isDataModified = false;
+    var isCopyTactic = 0;
+    var isEditTactic = 0;
         //for Hidding tooltip -ticket 2414
     var $doc = $(document);
     $doc.click(function () {

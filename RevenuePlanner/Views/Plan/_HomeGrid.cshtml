@@ -118,7 +118,6 @@
         HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
-        GridHideColumn();
         HomeGrid.attachEvent("onDistributedEnd", function () {
             HomeGrid.loadOpenStates();
             LoadAfterParsing();
@@ -146,8 +145,9 @@
         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         HomeGrid.parse(GridDataHomeGrid, "json");
         colStartDate = HomeGrid.getColIndexById('startdate');
-        MoveColumn();
         HomeGrid.splitAt(colStartDate);
+        GridHideColumn();  ///Calling Hide column function              
+        MoveColumn(); ///Calling Move column function       
         HomeGrid.collapseAll();
         var cookie = document.cookie;
         if (cookie.indexOf("gridOpengridbox") > -1) {

@@ -1,4 +1,7 @@
-﻿///Manage Calendar/PlanGrid/Budget Icon Click
+﻿var isCopyTacticHomeGrid = 0;
+var isEditTacticHomeGrid = 0;
+
+///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
     $('#ImportBtn').hide();
     $('#btnbudget').removeClass('P-icon-active');
@@ -48,9 +51,7 @@ $('#btnbudget').click(function () {
     $('.export-dd').find('#ExportPDf').hide();    
     $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString());
 });
-///////////////////
-//To Load PlanGrid
-//Start
+
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
 var exportgridData;
 var gridname;
@@ -1327,4 +1328,57 @@ function RefershPlanHeaderCalc() {
 
 }
 //End
+///Function for After Link to reload the Grid/Calendar data with New Link Icon 
+function ConfirmLinkTactic() {
+    $("#modal-container-186470").addClass("transition-close");
+    $("#modal-container-186470").removeClass("transition_y");
+    addDefaultModalPopupBackgroungColor();
+    $('body').removeClass('bodyOverflow');
+    if ($('#IsGridView').val().toLowerCase() == "true") {
+        if (isDataModified) {
+            if (gridSearchFlag == 1) {
+                isCopyTacticHomeGrid = isCopyTactic;
+                isEditTacticHomeGrid = isEditTactic;
+                LoadPlanGrid();
+                gridSearchFlag = 0;
+            }
+        }
+        if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
+            $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
+        }
 
+        $(".gantt_last_cell").dblclick(function (e) {
+            e.stopPropagation();
+        });
+        var $doc = $(document);
+        $doc.click(function () {
+            $('#popupType').css('display', 'none');
+        });
+
+        $(document).mouseup(function (e) {
+            $('#popupType').css("display", "none");
+        });
+        $(".gantt_ver_scroll").scroll(function () {
+            $('#popupType').css('display', 'none');
+        });
+        return true;
+
+    }
+    else {
+        if (isDataModified) {
+            BindPlanCalendar(); 
+        }
+        else {
+            gantt.refreshData();
+        }
+    }
+
+    $(".datepicker.dropdown-menu").each(function () {
+        $(this).remove();
+    });
+   
+    $("div[id^='LinkIcon']").each(function () {
+        bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+    });
+};
+////End
