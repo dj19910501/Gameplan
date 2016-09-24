@@ -121,7 +121,7 @@
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
         HomeGrid.setColumnIds('@Model.ColumnIds');
-        HomeGrid.setColAlign("right,left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
+        HomeGrid.setColAlign("right,left,left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setEditable(true);
@@ -140,8 +140,10 @@
         // HomeGrid.setInitWidths(data.initwidth);
         var machineNameindex = HomeGrid.getColIndexById("machineName");
         var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
+        var colTypeIndex = HomeGrid.getColIndexById("Type");
         HomeGrid.setColumnHidden(ActivityIdindex, true);
         HomeGrid.setColumnHidden(machineNameindex, true);
+        HomeGrid.setColumnHidden(colTypeIndex, true);
         var ColumnsToView = '@Model.HiddenTab';
         var selectedTab = ColumnsToView.split(',');
         for (var i = 0; i < selectedTab.length; i++)

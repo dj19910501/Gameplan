@@ -1406,7 +1406,7 @@ function ExportToExcel(isHoneyComb) {
         var JsonExportModel = exportgridData;
         exportGrid.setImagePath(imgPath);
         exportGrid.setImageSize(1, 1);
-        exportGrid.setColAlign("right,left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
+        exportGrid.setColAlign("right,left,left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
         exportGrid.enableAutoHeight(true);
         exportGrid.enableAutoWidth(false);
         exportGrid.setColumnIds(ColumnIds);      

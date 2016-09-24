@@ -23,11 +23,11 @@ namespace RevenuePlanner.Services
         private const string Open = "1";
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
-        public const string FixHeader = "ActivityId,machineName,,,,,";
-        public const string FixColumnIds = "ActivityId,machineName,TaskName,Buttons,Budget,Planned,Actual";
-        public const string FixColType = "ro,ro,tree,ro,ed,ed,ed";
-        public const string FixcolWidth = "100,100,250,100,100,100,100";
-        public const string FixColsorting = "na,na,na,na,na,na,na";
+        public const string FixHeader = "ActivityId,Type,machineName,,,,,";
+        public const string FixColumnIds = "ActivityId,Type,machineName,TaskName,Buttons,Budget,Planned,Actual";
+        public const string FixColType = "ro,ro,ro,tree,ro,ed,ed,ed";
+        public const string FixcolWidth = "100,100,100,250,100,100,100,100";
+        public const string FixColsorting = "na,na,na,na,na,na,na,na";
         public const string QuarterPrefix = "Q";
         public const string DhtmlxColSpan = "#cspan";
         public const string ColBudget = "Budget";
@@ -96,7 +96,7 @@ namespace RevenuePlanner.Services
                 ActivityType = Convert.ToString( row["ActivityType"]),
                 ParentActivityId = Convert.ToString( row["ParentActivityId"]),
                 YearlyBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Budget"])), PlanExchangeRate),
-                TotalAllocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["TotalAllocationBudget"])), PlanExchangeRate),
+                TotalAllocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationBudget"])), PlanExchangeRate),
                 TotalActuals = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationActual"])), PlanExchangeRate),
                 TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["TotalAllocationCost"])), PlanExchangeRate),
                 IsOwner = Convert.ToBoolean(row["IsOwner"]),
@@ -159,7 +159,10 @@ namespace RevenuePlanner.Services
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
+            BudgetDataObj.value = Entity.ActivityType;
+            BudgetDataObjList.Add(BudgetDataObj);
 
+            BudgetDataObj = new Budgetdataobj();
             BudgetDataObj.value = Entity.MachineName;
             BudgetDataObjList.Add(BudgetDataObj);
 
@@ -298,6 +301,7 @@ namespace RevenuePlanner.Services
             width = FixcolWidth;
             colSorting = FixColsorting;
             attachHeader.Add("ActivityId");
+            attachHeader.Add("Type");
             attachHeader.Add("Machine Name"+manageviewicon);
             attachHeader.Add("Task Name");
             attachHeader.Add("");
