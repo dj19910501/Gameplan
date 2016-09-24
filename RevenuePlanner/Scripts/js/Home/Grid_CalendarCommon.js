@@ -3,6 +3,9 @@ var isEditTacticHomeGrid = 0;
 
 ///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
+    $('#exp-serach').css('display', 'none'); // To hide dropdown before grid is loaded  ticket - 2596
+    $('#txtGlobalSearch').val('');// On grid change searchbox should be empty 
+    IsBudgetGrid = false;// To maintain the flag for search ticket - 2596
     $('#ImportBtn').hide();
     $('#btnbudget').removeClass('P-icon-active');
     if ($(this).hasClass('P-icon-active')) {
@@ -40,6 +43,10 @@ $('#btngridcalendar').click(function () {
 });
 
 $('#btnbudget').click(function () {
+    $('#exp-serach').css('display', 'none'); // To hide dropdown before grid is loaded  ticket - 2596
+    $('#txtGlobalSearch').val('');// On grid change searchbox should be empty 
+    IsBudgetGrid = true; // To maintain the flag for search ticket - 2596
+    $('#IsGridView').val('false');
     $('#divupcomingact').show();
     $('#btngridcalendar').removeClass('P-icon-active');
     $('#btnbudget').addClass('P-icon-active');
@@ -50,6 +57,7 @@ $('#btnbudget').click(function () {
     $('.export-dd').find('#ExportXls').show();
     $('.export-dd').find('#ExportPDf').hide();    
     $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString());
+    $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
 });
 
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
@@ -74,12 +82,11 @@ function LoadPlanGrid() {
 '<br/></div>';
             gridhtml += result;
             $("#divgridview").html('');
-            $("#divgridview").html(gridhtml);
-
+            $("#divgridview").html(gridhtml);          
             $("div[id^='LinkIcon']").each(function () {
-
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
+            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
         }
     });
 }
@@ -1203,74 +1210,74 @@ function OpentCopyPopuponProceed(obj) {
 //Global Search Related Functions.
 //Start
 var SearchTextforcal = ""
-function GlobalSearch() {
-    if (isCopyTactic > 0) {
-        $('#txtGlobalSearch').val("");
-        $('#ExpClose').css('display', 'none');
-        $('#ExpSearch').css('display', 'block');
-        isCopyTactic = 0;
-    }
-    if ($('#divPlanButton').children().hasClass("request-btn-active") || $('#RequestTab').children().hasClass("request-btn-active")) {
-        gantt.refreshData();
-        function contains(haystack, needle) {
-            var a = (haystack || "").toLowerCase(),
-                b = (needle || "").toLowerCase();
+//function GlobalSearch() {
+//    if (isCopyTactic > 0) {
+//        $('#txtGlobalSearch').val("");
+//        $('#ExpClose').css('display', 'none');
+//        $('#ExpSearch').css('display', 'block');
+//        isCopyTactic = 0;
+//    }
+//    if ($('#divPlanButton').children().hasClass("request-btn-active") || $('#RequestTab').children().hasClass("request-btn-active")) {
+//        gantt.refreshData();
+//        function contains(haystack, needle) {
+//            var a = (haystack || "").toLowerCase(),
+//                b = (needle || "").toLowerCase();
 
-            return !!(a.indexOf(b) > -1);
+//            return !!(a.indexOf(b) > -1);
 
-        }
-        function hasValue(parent, value, searchcriteria) {
-            if (value == "") {
-                return true;
-            }
-            if (searchcriteria == ExternalName) {
-                if (contains(htmlDecode(gantt.getTask(parent).machineName), value))
-                    return true;
-            }
-            if (searchcriteria == ActivityName) {
-                if (contains(htmlDecode(gantt.getTask(parent).text), value))
-                    return true;
-            }
+//        }
+//        function hasValue(parent, value, searchcriteria) {
+//            if (value == "") {
+//                return true;
+//            }
+//            if (searchcriteria == ExternalName) {
+//                if (contains(htmlDecode(gantt.getTask(parent).machineName), value))
+//                    return true;
+//            }
+//            if (searchcriteria == ActivityName) {
+//                if (contains(htmlDecode(gantt.getTask(parent).text), value))
+//                    return true;
+//            }
 
-            var child = gantt.getChildren(parent);
-            for (var i = 0; i < child.length; i++) {
-                if (hasValue(child[i], value, searchcriteria))
-                    return true;
-            }
-            return false;
-        }
-        gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
-            if (hasValue(id, $('#txtGlobalSearch').val().trim(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
-                return true;
-            } else {
-                return false;
-            }
-        });
-        if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
+//            var child = gantt.getChildren(parent);
+//            for (var i = 0; i < child.length; i++) {
+//                if (hasValue(child[i], value, searchcriteria))
+//                    return true;
+//            }
+//            return false;
+//        }
+//        gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
+//            if (hasValue(id, $('#txtGlobalSearch').val().trim(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        });
+//        if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
 
-            if ($('#txtGlobalSearch').val().length > 0) {
-                SearchTextforcal = $('#txtGlobalSearch').val().trim();
-                $('#txtGlobalSearch').val("");
-                GlobalSearch();
-                $('#txtGlobalSearch').val(SearchTextforcal);
-                $('#SuccessMsg').css('display', 'none');
-                $("#spanMsgSuccess").empty();
-                $("#errorMsg").css("display", "block");
-                $("#spanMsgError").empty();
-                $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
-            }
-        }
-        else {
-            $("#errorMsg").css("display", "none");
-            $("#spanMsgError").empty();
-        }
-    }
-    else if ($('#divPlanEditButtonHome').children().hasClass("request-btn-active")) {
-        var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
-        var SearchText = $('#txtGlobalSearch').val();
-        GlobalSearchonGrid(SearchText, SearchDDLValue);
-    }
-}
+//            if ($('#txtGlobalSearch').val().length > 0) {
+//                SearchTextforcal = $('#txtGlobalSearch').val().trim();
+//                $('#txtGlobalSearch').val("");
+//                GlobalSearch();
+//                $('#txtGlobalSearch').val(SearchTextforcal);
+//                $('#SuccessMsg').css('display', 'none');
+//                $("#spanMsgSuccess").empty();
+//                $("#errorMsg").css("display", "block");
+//                $("#spanMsgError").empty();
+//                $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+//            }
+//        }
+//        else {
+//            $("#errorMsg").css("display", "none");
+//            $("#spanMsgError").empty();
+//        }
+//    }
+//    else if ($('#divPlanEditButtonHome').children().hasClass("request-btn-active")) {
+//        var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
+//        var SearchText = $('#txtGlobalSearch').val();
+//        GlobalSearchonGrid(SearchText, SearchDDLValue);
+//    }
+//}
 
 function GlobalSearchonGrid(node, columnName) {
     var colindex = 0;
@@ -1382,3 +1389,103 @@ function ConfirmLinkTactic() {
     });
 };
 ////End
+
+// Start Code for ticket - 2596
+//function OpenDropdown() {
+//    debugger;
+//    IsManageDropdown = true; // handle sorting in task name column in grid 
+//}
+
+//set value of dropdown in search criteria
+$(".dropdown-menu li a").click(function () {  
+
+    $("#txtGlobalSearch").val("");
+    $("#searchCriteria").text($(this).text()[0]);
+    $("#searchCriteria").val($(this).text());
+    $("#txtGlobalSearch").attr('Placeholder', $(this).text())
+});
+
+//On search button click
+$('#ExpSearch').click(function () {
+
+    if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
+        GlobalSearch();
+    }
+});
+
+//Handle enter key in search textbox
+$('#txtGlobalSearch').on('keypress', function (event) {
+    
+    if (event.which === 13) {
+        $('#ExpSearch').click();
+    }
+});
+
+function GlobalSearch() {
+
+    if ($('#IsGridView').val() == 'True' || IsBudgetGrid) {
+
+        var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
+        var SearchText = $('#txtGlobalSearch').val();
+        GlobalSearchonGrid(SearchText, SearchDDLValue);
+    }
+    else {
+
+        gantt.refreshData();
+        gantt.render();
+        function contains(haystack, needle) {
+            var a = (haystack || "").toLowerCase(),
+                b = (needle || "").toLowerCase();
+
+            return !!(a.indexOf(b) > -1);
+        }
+        function hasValue(parent, value, searchcriteria) {
+
+            if (value == "") {
+                return true;
+            }
+            if (searchcriteria == glblsrchExternalName) {
+                if (contains(htmlDecode(gantt.getTask(parent).machineName), value))
+                    return true;
+            }
+            if (searchcriteria == glblsrchActivityName) {
+                if (contains(htmlDecode(gantt.getTask(parent).text), value))
+                    return true;
+            }
+
+            var child = gantt.getChildren(parent);
+            for (var i = 0; i < child.length; i++) {
+                if (hasValue(child[i], value, searchcriteria))
+                    return true;
+            }
+            return false;
+            gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
+
+                if (hasValue(id, $('#txtGlobalSearch').val().trim(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
+
+                if ($('#txtGlobalSearch').val().length > 0) {
+                    SearchTextforcal = $('#txtGlobalSearch').val().trim();
+                    $('#txtGlobalSearch').val("");
+                    GlobalSearch();
+                    $('#txtGlobalSearch').val(SearchTextforcal);
+                    $('#SuccessMsg').css('display', 'none');
+                    $("#spanMsgSuccess").empty();
+                    $("#errorMsg").css("display", "block");
+                    $("#spanMsgError").empty();
+                    $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+                }
+            }
+            gantt.eachTask(function (task) {
+                task.$open = true;
+            });
+            gantt.render(); // To expand in gantt
+
+        }
+    }
+}

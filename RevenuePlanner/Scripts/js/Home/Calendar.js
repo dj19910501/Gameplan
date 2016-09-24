@@ -34,6 +34,7 @@ function BindPlanCalendar() {
                 $('#GridGanttContent').html(data);
             }
             GetCalendarDataInJsonFormat();
+
         }
     });
 }
@@ -55,6 +56,7 @@ function GetCalendarDataInJsonFormat() {
         success: function (data) {
             ConfigureGanttwithdefaultSettings();    // Configure Calendar with default configuration.
             SetGanttData(data.data);            // Render Calendar.
+            $('#exp-serach').css('display', 'block');
         }
     });
 }

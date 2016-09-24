@@ -23,8 +23,8 @@ namespace RevenuePlanner.Services
         private const string Open = "1";
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
-        public const string FixHeader = "ActivityId,Type,machineName,,,,,";
-        public const string FixColumnIds = "ActivityId,Type,machineName,TaskName,Buttons,Budget,Planned,Actual";
+        public const string FixHeader = "ActivityId,Type,machinename,,,,,";
+        public const string FixColumnIds = "ActivityId,Type,machinename,taskname,Buttons,Budget,Planned,Actual";
         public const string FixColType = "ro,ro,ro,tree,ro,ed,ed,ed";
         public const string FixcolWidth = "100,100,100,250,100,100,100,100";
         public const string FixColsorting = "na,na,na,na,na,na,na,na";
