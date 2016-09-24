@@ -28,7 +28,7 @@ function BindPlanCalendar() {
     var strURL = urlContent + 'Home/LoadPlanCalendar/';
     $.ajax({
         url: strURL,
-        type: 'GET',
+        type: 'POST',
         success: function (data) {
             if (data != 'undefined' && data != null) {
                 $('#GridGanttContent').html(data);
@@ -44,7 +44,7 @@ function GetCalendarDataInJsonFormat() {
 
     $.ajax({
         url: strURL,
-        type: 'GET',
+        type: 'POST',
         data: {
             planIds: filters.PlanIDs.toString(),
             ownerIds: filters.OwnerIds.toString(),
@@ -428,7 +428,7 @@ function ShowModel(taskId, isShowInspect) {
         planLineItemId = $("#hdnShowInspectForPlanLineItemId").val();
     }
     //// Checking whether current task is tactic or not.
-    if (typeof planTacticId != 'undefined' && planTacticId != 0) {
+    if (typeof planTacticId != 'undefined' && planTacticId != 0 && planTacticId != null && planTacticId != '') {
         modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
         $('.modal-backdrop').addClass('modalFull-backdrop');
         $('.modal-backdrop').attr("style", "display:none !important;");
@@ -439,7 +439,7 @@ function ShowModel(taskId, isShowInspect) {
     }
 
         //// Checking whether current task is tactic or not.
-    else if (typeof planProgramId != 'undefined' && planProgramId != 0) {
+    else if (typeof planProgramId != 'undefined' && planProgramId != 0 && planProgramId != null && planProgramId != '') {
         modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
         $('.modal-backdrop').addClass('modalFull-backdrop');
         $('.modal-backdrop').attr("style", "display:none !important;");
@@ -449,7 +449,7 @@ function ShowModel(taskId, isShowInspect) {
         loadInspectPopup(planProgramId, secProgram, "Setup", inspectEdit, 0, inspectRequestIndex);//Modified by Komal rawal For #1325 - To get the default mode as read only
     }
         //// Checking whether current task is tactic or not.
-    else if (typeof planCampaignId != 'undefined' && planCampaignId != 0) {
+    else if (typeof planCampaignId != 'undefined' && planCampaignId != 0 && planCampaignId != null && planCampaignId != '') {
         modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
         $('.modal-backdrop').addClass('modalFull-backdrop');
         $('.modal-backdrop').attr("style", "display:none !important;");
@@ -459,7 +459,7 @@ function ShowModel(taskId, isShowInspect) {
         loadInspectPopup(planCampaignId, secCampaign, "Setup", inspectEdit, 0, inspectRequestIndex); //Modified by Komal rawal For #1324 - To get the default mode as read only
     }
         //// Checking whether current task is tactic or not.
-    else if (typeof planLineItemId != 'undefined' && planLineItemId != 0) {
+    else if (typeof planLineItemId != 'undefined' && planLineItemId != 0 && planLineItemId != null && planLineItemId != '') {
         modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
         $('.modal-backdrop').addClass('modalFull-backdrop');
         $('.modal-backdrop').attr("style", "display:none !important;");
@@ -468,7 +468,7 @@ function ShowModel(taskId, isShowInspect) {
         $("#modal-container-186470").modal('show');
         loadInspectPopup(planLineItemId, secLineItem, "Setup", inspectEdit, 0, inspectRequestIndex);
     }
-    else if (typeof planId != 'undefined' && planId != 0) {
+    else if (typeof planId != 'undefined' && planId != 0 && planId != null && planId != '') {
         modalFullPosition();
         $('.modal-backdrop').addClass('modalFull-backdrop');
         $('.modal-backdrop').attr("style", "display:none !important;");
