@@ -13,7 +13,7 @@ GO
 -- Desc :: Update Plan model id and tactic's tactic type id with new publish version of model 
 CREATE PROCEDURE [dbo].[PublishModel]
 @NewModelId int = 0 
-,@UserId uniqueidentifier=''
+,@UserId INT= 0
 AS
 SET NOCOUNT ON;
 
@@ -40,9 +40,12 @@ DECLARE  @TacticTypeIds NVARCHAR(MAX)=''
 SELECT @TacticTypeIds = FilterValues From Plan_UserSavedViews WHERE Userid=@UserId AND FilterName='TacticType'
 
 DECLARE   @FilterValues NVARCHAR(MAX)
-SELECT    @FilterValues = COALESCE(@FilterValues + ',', '') + CAST(TacticTypeId AS NVARCHAR) FROM TacticType 
+IF (@TacticTypeIds != 'All')
+Begin
+SELECT @FilterValues = COALESCE(@FilterValues + ',', '') + CAST(TacticTypeId AS NVARCHAR) FROM TacticType 
 WHERE PreviousTacticTypeId IN(SELECT val FROM dbo.comma_split(@TacticTypeIds,','))
 AND ModelId=@NewModelId
+End
 
 IF @FilterValues <>'' 
 BEGIN
