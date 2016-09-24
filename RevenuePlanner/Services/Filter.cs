@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using RevenuePlanner.Models;
 using Elmah;
 using RevenuePlanner.BDSService;
+using System.Text;
 
 namespace RevenuePlanner.Services
 {
@@ -291,6 +292,264 @@ namespace RevenuePlanner.Services
             var useridslist = TacticUserList.Select(tactic => tactic.CreatedBy).Distinct().ToList();
             var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationIdEx(useridslist, ApplicationId);
             return individuals;
+        }
+
+        /// <summary>
+        /// Get List of PlanId
+        /// Modified By Nandish Shah PL Ticket#2611
+        /// </summary>
+        /// <param name="UserId">planId</param>
+        /// <returns>returns List of PlanId</returns>
+        public List<int> GetPlanIds(string planId)
+        {
+            List<int> planIds = new List<int>();
+            if (!string.IsNullOrWhiteSpace(planId))
+            {
+                planIds = planId.Split(',').Select(plan => int.Parse(plan)).ToList();
+            }
+            List<Plan> ListofPlans = objDbMrpEntities.Plans.Where(p => planIds.Contains(p.PlanId)).ToList();
+            planIds = ListofPlans.Select(plan => plan.PlanId).ToList();
+            return planIds;
+        }
+
+        /// <summary>
+        /// Save Las Set of Views
+        /// Modified By Nandish Shah PL Ticket#2611
+        /// </summary>
+        /// <param name="planId">planId</param>
+        /// <param name="ViewName">ViewName</param>
+        /// <param name="ownerIds">ownerIds</param>
+        /// <param name="TacticTypeid">TacticTypeid</param>
+        /// <param name="StatusIds">StatusIds</param>
+        /// <param name="SelectedYears">SelectedYears</param>
+        /// <param name="customFieldIds">customFieldIds</param>
+        /// <param name="ParentCustomFieldsIds">ParentCustomFieldsIds</param>
+        /// <param name="planIds">planIds</param>
+        /// <param name="prevCustomFieldList">prevCustomFieldList</param>
+        /// <param name="UserId">UserId</param>
+        /// <returns>returns List of PlanId</returns>
+        public List<Plan_UserSavedViews> SaveLasSetofViews(string planId, string ViewName, string ownerIds, string TacticTypeid, string StatusIds, string SelectedYears, string customFieldIds, string ParentCustomFieldsIds, List<int> planIds, List<Plan_UserSavedViews> prevCustomFieldList, int UserId)
+        {
+            List<Plan_UserSavedViews> NewCustomFieldData = new List<Plan_UserSavedViews>();
+            #region "Save filter values to Plan_UserSavedViews"
+            NewCustomFieldData = SaveFilterValues(planId, ViewName, ownerIds, TacticTypeid, StatusIds, SelectedYears, planIds, UserId);
+
+            string[] filterValues = { };
+            string[] filteredCustomFields = { }; //Array of Combination Custom Field Ids and Custom Field Option Ids
+            string PrefixCustom = "CF_"; // String for prefix of Custom Field Id
+            StringBuilder FilterName = new StringBuilder(); // String builder to store Existing Filter Values
+            string Previousval = string.Empty; // Custom Filed Value without Prefix
+            string PreviousValue = string.Empty; // Custom Filed Value with Prefix
+            string CustomOptionvalue = string.Empty; // Custom Option Value
+
+            Plan_UserSavedViews ExistingFieldlist = new Plan_UserSavedViews();
+            if (!string.IsNullOrEmpty(customFieldIds))
+            {
+                if (string.IsNullOrWhiteSpace(customFieldIds))
+                {
+                    filteredCustomFields = null;
+                }
+                else
+                {
+                    filteredCustomFields = customFieldIds.Split(',');
+                }
+                if (filteredCustomFields != null)
+                {
+                    SaveCustomFilterValues(ViewName, NewCustomFieldData, ref filterValues, filteredCustomFields, PrefixCustom, FilterName, ref Previousval, ref PreviousValue, ref CustomOptionvalue, ref ExistingFieldlist, UserId);
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(ParentCustomFieldsIds))
+                {
+                    filteredCustomFields = null;
+                }
+                else
+                {
+                    filteredCustomFields = ParentCustomFieldsIds.Split(',');
+                }
+                if (filteredCustomFields != null)
+                {
+                    Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+                    foreach (string customField in filteredCustomFields)
+                    {
+                        string FilterNameWithPrefix = PrefixCustom + customField;
+                        NewCustomFieldData.Add(InsertLastViewedUserData("", ViewName, FilterNameWithPrefix, UserId));
+                    }
+                }
+            }
+            if (StatusIds == "Report")
+            {
+                List<Plan_UserSavedViews> statulist = prevCustomFieldList.Where(a => a.FilterName == Enums.FilterLabel.Status.ToString()).ToList();
+                prevCustomFieldList = prevCustomFieldList.Except(statulist).ToList();
+            }
+            if (ViewName != null)
+            {
+                objDbMrpEntities.SaveChanges();
+            }
+            else
+            {
+                bool isCheckinPrev = prevCustomFieldList.Select(a => a.FilterValues).Except(NewCustomFieldData.Select(b => b.FilterValues)).Any();
+                bool isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
+                if (isCheckinPrev || isCheckinNew)
+                {
+                    List<int> ids = prevCustomFieldList.Select(t => t.Id).ToList();
+                    string ListOfPreviousIDs = null;
+                    if (ids.Count > 0)
+                    {
+                        ListOfPreviousIDs = string.Join(",", ids);
+                    }
+
+                    objDbMrpEntities.DeleteLastViewedData(UserId, ListOfPreviousIDs); //Sp to delete last viewed data before inserting new one.
+                    objDbMrpEntities.SaveChanges();
+                }
+                else
+                {
+                    if (prevCustomFieldList.Count == 0)
+                    {
+                        objDbMrpEntities.SaveChanges();
+                    }
+                }
+            }
+            return objDbMrpEntities.Plan_UserSavedViews.Where(custmfield => custmfield.Userid == UserId).ToList();            
+            #endregion
+        }
+
+        /// <summary>
+        /// Save Custom Filter Values
+        /// Modified By Nandish Shah PL Ticket#2611
+        /// </summary>
+        /// <param name="ViewName">ViewName</param>
+        /// <param name="NewCustomFieldData">NewCustomFieldData</param>
+        /// <param name="filterValues">filterValues</param>
+        /// <param name="filteredCustomFields">filteredCustomFields</param>
+        /// <param name="PrefixCustom">PrefixCustom</param>
+        /// <param name="FilterName">FilterName</param>
+        /// <param name="Previousval">Previousval</param>
+        /// <param name="PreviousValue">PreviousValue</param>
+        /// <param name="CustomOptionvalue">CustomOptionvalue</param>
+        /// <param name="ExistingFieldlist">ExistingFieldlist</param>
+        /// <param name="UserId">UserId</param>
+        /// <returns>Save Custom Filter Values</returns>
+        private void SaveCustomFilterValues(string ViewName, List<Plan_UserSavedViews> NewCustomFieldData, ref string[] filterValues, string[] filteredCustomFields, string PrefixCustom, StringBuilder FilterName, ref string Previousval, ref string PreviousValue, ref string CustomOptionvalue, ref Plan_UserSavedViews ExistingFieldlist, int UserId)
+        {
+            Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+            //TODO :: Need to Check
+            //List<Plan_UserSavedViews> listLineitem = Common.PlanUserSavedViews;
+            List<Plan_UserSavedViews> listLineitem = new List<Plan_UserSavedViews>();
+            foreach (string customField in filteredCustomFields)
+            {
+                filterValues = customField.Split('_');
+                if (filterValues.Count() > 1)
+                {
+                    CustomOptionvalue = filterValues[1];
+                }
+                bool IsFilterAddinDb = false;
+                if (filterValues != null && filterValues.Count() > 0)
+                {
+                    if (filterValues[0] != null)
+                    {
+                        PreviousValue = PrefixCustom + Convert.ToString(filterValues[0]);
+                    }
+                    
+                    string PrevVal = PreviousValue;
+                    ExistingFieldlist = listLineitem.Where(w => w.FilterName.Equals(PrevVal)).FirstOrDefault();
+                    if (FilterName == null)
+                    {
+                        if (ExistingFieldlist != null)
+                        {
+                            FilterName.Append(ExistingFieldlist.FilterValues);
+                        }
+                        else
+                        {
+                            FilterName.Append("");
+                        }
+                    }
+                    else
+                    {
+                        FilterName.Append("");
+                    }
+                    if (FilterName != null && Convert.ToString(FilterName) == PreviousValue && !string.IsNullOrEmpty(CustomOptionvalue))
+                    {
+                        Previousval += ',' + CustomOptionvalue;
+                        objFilterValues.FilterValues = Previousval;
+                    }
+                    else
+                    {
+                        string FilterNameWithPrefix = PrefixCustom + filterValues[0];
+                        FilterName.Length = 0;
+                        FilterName.Append(PrefixCustom + Convert.ToString(filterValues[0]));
+                        Previousval = "";
+                        Previousval = CustomOptionvalue;
+                        NewCustomFieldData.Add(InsertLastViewedUserData(CustomOptionvalue, ViewName, FilterNameWithPrefix, UserId));
+                        IsFilterAddinDb = true;
+                    }
+
+                }
+                if (!IsFilterAddinDb)
+                {
+                    NewCustomFieldData.Add(objFilterValues);
+                }                
+            }
+        }
+
+        /// <summary>
+        /// Save Filter Values
+        /// Modified By Nandish Shah PL Ticket#2611
+        /// </summary>
+        /// <param name="planId">planId</param>
+        /// <param name="ViewName">ViewName</param>
+        /// <param name="ownerIds">ownerIds</param>
+        /// <param name="TacticTypeid">TacticTypeid</param>
+        /// <param name="StatusIds">StatusIds</param>
+        /// <param name="SelectedYears">SelectedYears</param>
+        /// <param name="planIds">planIds</param>
+        /// <param name="UserId">UserId</param>
+        /// <returns>Returns List of Saved Views</returns>
+        private List<Plan_UserSavedViews> SaveFilterValues(string planId, string ViewName, string ownerIds, string TacticTypeid, string StatusIds, string SelectedYears, List<int> planIds, int UserId)
+        {
+            List<Plan_UserSavedViews> NewCustomFieldData = new List<Plan_UserSavedViews>();
+            if (planIds.Count != 0)
+            {
+                NewCustomFieldData.Add(InsertLastViewedUserData(planId, ViewName, Enums.FilterLabel.Plan.ToString(), UserId));
+            }
+            NewCustomFieldData.Add(InsertLastViewedUserData(ownerIds, ViewName, Enums.FilterLabel.Owner.ToString(), UserId));
+            NewCustomFieldData.Add(InsertLastViewedUserData(TacticTypeid, ViewName, Enums.FilterLabel.TacticType.ToString(), UserId));
+            if (StatusIds != "Report")
+            {
+                NewCustomFieldData.Add(InsertLastViewedUserData(StatusIds, ViewName, Enums.FilterLabel.Status.ToString(), UserId));
+            }
+            if (SelectedYears != null && SelectedYears != "")
+            {
+                NewCustomFieldData.Add(InsertLastViewedUserData(SelectedYears, ViewName, Enums.FilterLabel.Year.ToString(), UserId));
+            }
+            return NewCustomFieldData;
+        }
+
+        /// <summary>
+        /// Added By: Nandish Shah.
+        /// Desc : Function to insert data into Plan_UserSaved Views table for filters in left pane.
+        /// </summary>
+        /// <param name="Ids">Ids</param>
+        /// <param name="ViewName">ViewName</param>
+        /// <param name="FilterName">FilterName</param>
+        /// <param name="UserId">UserId</param>
+        /// <param name="NewCustomFieldData">NewCustomFieldData</param>
+        private Plan_UserSavedViews InsertLastViewedUserData(string Ids, string ViewName, string FilterName, int UserId)
+        {
+            Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+            objFilterValues.ViewName = null;
+            if (ViewName != null && ViewName != "")
+            {
+                objFilterValues.ViewName = ViewName;
+            }
+            objFilterValues.FilterName = FilterName;
+            objFilterValues.FilterValues = Ids;
+            objFilterValues.Userid = UserId;
+            objFilterValues.LastModifiedDate = DateTime.Now;
+            objFilterValues.IsDefaultPreset = false;
+            objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
+            return objFilterValues;
         }
     }
 }

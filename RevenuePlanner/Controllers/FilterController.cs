@@ -34,29 +34,6 @@ namespace RevenuePlanner.Controllers
             bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
 
-            //if (currentPlanId.Count() > 0)
-            //{
-            //    var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-            //    var objPlan = objDbMrpEntities.Plans.FirstOrDefault(_plan => (currentPlanId.Contains(_plan.PlanId)));
-
-            //    if (objPlan.CreatedBy.Equals(Sessions.User.UserId))
-            //    {
-            //        IsPlanEditable = true;
-            //    }
-            //    else if (IsPlanEditAllAuthorized)
-            //    {
-            //        IsPlanEditable = true;
-            //    }
-            //    else if (IsPlanEditSubordinatesAuthorized)
-            //    {
-            //        if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
-            //        {
-            //            IsPlanEditable = true;
-            //        }
-            //    }
-            //    Plan Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(currentPlanId));
-            //    //isPublished = Plan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
-            //}
             ViewBag.ActiveMenu = activeMenu;
             ViewBag.IsPlanEditable = IsPlanEditable;
             ViewBag.IsPublished = isPublished;
@@ -67,7 +44,7 @@ namespace RevenuePlanner.Controllers
             string currentYear = DateTime.Now.Year.ToString();
             List<int> modelIds = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.CID) && model.IsDeleted == false).Select(m => m.ModelId).ToList();
             List<Plan> activePlan = objDbMrpEntities.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
-            string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+            //string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
 
             if (activePlan.Count() > 0)
             {
@@ -90,39 +67,40 @@ namespace RevenuePlanner.Controllers
                         currentPlanId = currentPlan.Select(s => s.PlanId).ToList();
                     }
                 }
-                else if (!Common.IsPlanPublished(Sessions.PlanId))
-                {
-                    if (Sessions.PublishedPlanId == 0)
-                    {
-                        fiterActivePlan = new List<Plan>();
-                        fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
-                        if (fiterActivePlan != null && fiterActivePlan.Any())
-                        {
-                            currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).ToList();
-                        }
-                        else
-                        {
-                            currentPlan[0] = latestPlan;
-                        }
-                    }
-                    else
-                    {
-                        currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PublishedPlanId)).OrderBy(plan => plan.Title).ToList();
-                        if (currentPlan == null)
-                        {
-                            currentPlan[0] = latestPlan;
-                        }
-                    }
-                }
+                //else if (!Common.IsPlanPublished(Sessions.PlanId))
+                //{
+                //    if (Sessions.PublishedPlanId == 0)
+                //    {
+                //        fiterActivePlan = new List<Plan>();
+                //        fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
+                //        if (fiterActivePlan != null && fiterActivePlan.Any())
+                //        {
+                //            currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).ToList();
+                //        }
+                //        else
+                //        {
+                //            currentPlan[0] = latestPlan;
+                //        }
+                //    }
+                //    else
+                //    {
+                //        currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PublishedPlanId)).OrderBy(plan => plan.Title).ToList();
+                //        if (currentPlan == null)
+                //        {
+                //            currentPlan[0] = latestPlan;
+                //        }
+                //    }
+                //}
                 else
                 {
-                    if (Sessions.PlanId == 0)
+                    if (Sessions.PlanPlanIds == null || Sessions.PlanPlanIds.Count() == 0)
                     {
                         fiterActivePlan = new List<Plan>();
-                        fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
+                        //fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
+                        fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear).ToList();
                         if (fiterActivePlan != null && fiterActivePlan.Any())
                         {
-                            currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).ToList();
+                            currentPlan.Add(fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault());
                         }
                         else
                         {
@@ -132,7 +110,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PlanId)).ToList();
+                        currentPlan = activePlan.Where(plan => Sessions.PlanPlanIds.Contains(plan.PlanId)).ToList();
                         if (currentPlan == null)
                         {
                             currentPlan[0] = latestPlan;
@@ -164,9 +142,9 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            var Label = Enums.FilterLabel.Plan.ToString();
-            var FilterName = Sessions.FilterPresetName;
-            var SetOFLastViews = new List<Plan_UserSavedViews>();
+            string Label = Enums.FilterLabel.Plan.ToString();
+            string FilterName = Sessions.FilterPresetName;
+            List<Plan_UserSavedViews> SetOFLastViews = new List<Plan_UserSavedViews>();
             if (Sessions.PlanUserSavedViews == null)
             {
                 SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
@@ -182,15 +160,15 @@ namespace RevenuePlanner.Controllers
                     SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
                 }
             }
-            var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.ID).ToList();
+            List<Plan_UserSavedViews> SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.ID).ToList();
             Common.PlanUserSavedViews = SetOFLastViews;
-            var LastSetOfPlanSelected = new List<string>();
-            var LastSetOfYearSelected = new List<string>();
-            var Yearlabel = Enums.FilterLabel.Year.ToString();
+            List<string> LastSetOfPlanSelected = new List<string>();
+            List<string> LastSetOfYearSelected = new List<string>();
+            string Yearlabel = Enums.FilterLabel.Year.ToString();
 
-            var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.ID).ToList();
-            var FinalSetOfPlanSelected = "";
-            var FinalSetOfYearsSelected = "";
+            List<Plan_UserSavedViews> SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.ID).ToList();
+            string FinalSetOfPlanSelected = "";
+            string FinalSetOfYearsSelected = "";
             if (FilterName != null && FilterName != "")
             {
                 FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == FilterName).Select(View => View.FilterValues).FirstOrDefault();
@@ -219,9 +197,9 @@ namespace RevenuePlanner.Controllers
                 LastSetOfYearSelected = FinalSetOfYearsSelected.Split(',').ToList();
             }
 
-            activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
+            activePlan = activePlan.Where(plan => plan.IsDeleted == false).ToList();
             //var SelectedYear = activePlan.Where(plan => plan.PlanId == currentPlan.PlanId).Select(plan => plan.Year).ToList();
-            var SelectedYear = activePlan.Where(plan => currentPlan.Select(s => s.PlanId).ToArray().Contains(plan.PlanId)).Select(plan => plan.Year).ToList();
+            List<string> SelectedYear = activePlan.Where(plan => currentPlan.Select(s => s.PlanId).ToArray().Contains(plan.PlanId)).Select(plan => plan.Year).ToList();
 
             if (LastSetOfYearSelected.Count > 0)
             {
@@ -240,7 +218,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            var uniqueplanids = activePlan.Select(p => p.PlanId).Distinct().ToList();
+            List<int> uniqueplanids = activePlan.Select(p => p.PlanId).Distinct().ToList();
 
             var CampPlans = objDbMrpEntities.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId))
                 .Select(camp => new
@@ -253,15 +231,15 @@ namespace RevenuePlanner.Controllers
                 })
                 .ToList();
 
-            var CampPlanIds = CampPlans.Where(camp => SelectedYear.Contains(camp.StartDate.Year.ToString()) || SelectedYear.Contains(camp.EndDate.Year.ToString()))
+            List<int> CampPlanIds = CampPlans.Where(camp => SelectedYear.Contains(camp.StartDate.Year.ToString()) || SelectedYear.Contains(camp.EndDate.Year.ToString()))
                 .Select(camp => camp.PlanId).Distinct().ToList();
 
-            var PlanIds = activePlan.Where(plan => SelectedYear.Contains(plan.Year))
+            List<int> PlanIds = activePlan.Where(plan => SelectedYear.Contains(plan.Year))
              .Select(plan => plan.PlanId).Distinct().ToList();
 
-            var allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
+            List<int> allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
 
-            var YearWiseListOfPlans = activePlan.Where(list => allPlanIds.Contains(list.PlanId)).ToList();
+            List<Plan> YearWiseListOfPlans = activePlan.Where(list => allPlanIds.Contains(list.PlanId)).ToList();
 
             planmodel.lstPlan = YearWiseListOfPlans.Select(plan => new PlanListModel
             {
@@ -275,12 +253,12 @@ namespace RevenuePlanner.Controllers
             var StartYears = CampPlans.Select(camp => camp.StartYear)
          .Distinct().ToList();
 
-            var EndYears = CampPlans.Select(camp => camp.EndYear)
+            List<int> EndYears = CampPlans.Select(camp => camp.EndYear)
                 .Distinct().ToList();
 
-            var PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
+            List<int> PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
 
-            var yearlist = PlanYears;
+            List<int> yearlist = PlanYears;
             SelectListItem objYear = new SelectListItem();
             foreach (int years in yearlist)
             {
@@ -615,21 +593,16 @@ namespace RevenuePlanner.Controllers
         {
             Sessions.PlanUserSavedViews = null;
             List<int> planIds = new List<int>();
-            if (!string.IsNullOrWhiteSpace(planId))
-            {
-                planIds = planId.Split(',').Select(plan => int.Parse(plan)).ToList();
-            }
-            List<Plan> ListofPlans = objDbMrpEntities.Plans.Where(p => planIds.Contains(p.PlanId)).ToList();
-            string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-            planIds = ListofPlans.Where(plan => plan.Status.Equals(planPublishedStatus)).Select(plan => plan.PlanId).ToList();
-            List<Plan_UserSavedViews> NewCustomFieldData = new List<Plan_UserSavedViews>();
-            List<string> tempFilterValues = new List<string>();
+            planIds = objCommonFilter.GetPlanIds(planId);
+
             #region "Remove previous records by userid"
+            //Need to Check
             var prevCustomFieldList = Common.PlanUserSavedViews;
-            if (ViewName != null && ViewName != "")
+            //List<Plan_UserSavedViews> prevCustomFieldList = new List<Plan_UserSavedViews>();
+            if (!string.IsNullOrEmpty(ViewName))
             {
-                var ViewNames = prevCustomFieldList.Where(custmfield => custmfield.ViewName != null).Select(name => name.ViewName).ToList();
-                if (ViewNames.Contains(ViewName))
+                bool IsViewNames = prevCustomFieldList.Where(custmfield => custmfield.ViewName == ViewName).Select(name => name.ViewName).Any();
+                if (IsViewNames)
                 {
                     return Json(new { isSuccess = false, msg = "Given Preset name already exists" }, JsonRequestBehavior.AllowGet);
                 }
@@ -640,195 +613,14 @@ namespace RevenuePlanner.Controllers
             }
             #endregion
 
-            #region "Save filter values to Plan_UserSavedViews"
-            if (planIds.Count != 0)
-            {
-                InsertLastViewedUserData(planId, ViewName, Enums.FilterLabel.Plan.ToString(), NewCustomFieldData);
-            }
-            InsertLastViewedUserData(ownerIds, ViewName, Enums.FilterLabel.Owner.ToString(), NewCustomFieldData);
-            InsertLastViewedUserData(TacticTypeid, ViewName, Enums.FilterLabel.TacticType.ToString(), NewCustomFieldData);
-            if (StatusIds != "AddActual" && StatusIds != "Report")
-            {
-                InsertLastViewedUserData(StatusIds, ViewName, Enums.FilterLabel.Status.ToString(), NewCustomFieldData);
-            }
-            if (SelectedYears != null && SelectedYears != "")
-            {
-                InsertLastViewedUserData(SelectedYears, ViewName, Enums.FilterLabel.Year.ToString(), NewCustomFieldData);
-            }
-            string[] filterValues = { };
-            string[] filteredCustomFields = { };
-            string PrefixCustom = "CF_";
-            string FilterNameTemp = "";
-            string Previousval = "";
-            var PreviousValue = "";
-            string CustomOptionvalue = string.Empty;
-            var ExistingFieldlist = new Plan_UserSavedViews();
-            if (customFieldIds != "")
-            {
-                if (string.IsNullOrWhiteSpace(customFieldIds))
-                {
-                    filteredCustomFields = null;
-                }
-                else
-                {
-                    filteredCustomFields = customFieldIds.Split(',');
-                }
-                if (filteredCustomFields != null)
-                {
-                    Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                    List<Plan_UserSavedViews> listLineitem = Common.PlanUserSavedViews;
-                    Plan_UserSavedViews objLineitem = new Plan_UserSavedViews();
-                    foreach (string customField in filteredCustomFields)
-                    {
-                        filterValues = customField.Split('_');
-                        if (filterValues.Count() > 1)
-                        {
-                            CustomOptionvalue = filterValues[1];
-                        }
-                        if (filterValues.Count() > 0)
-                        {
-                            PreviousValue = PrefixCustom + filterValues[0].ToString();
-                            ExistingFieldlist = listLineitem.Where(pcpobjw => pcpobjw.FilterName.Equals(PreviousValue)).FirstOrDefault();
-                            if (string.IsNullOrEmpty(FilterNameTemp))
-                            {
-                                if (ExistingFieldlist != null)
-                                {
-                                    FilterNameTemp += ExistingFieldlist.FilterValues;
-                                }
-                                else
-                                {
-                                    FilterNameTemp += "";
-                                }
-                            }
-                            else
-                            {
-                                FilterNameTemp += "";
-                            }
-                            if (FilterNameTemp == PreviousValue && !string.IsNullOrEmpty(CustomOptionvalue))
-                            {
-                                Previousval += ',' + CustomOptionvalue;
-                                objFilterValues.FilterValues = Previousval;
-                            }
-                            else
-                            {
-                                objFilterValues = new Plan_UserSavedViews();
-                                objFilterValues.ViewName = null;
-                                if (ViewName != null && ViewName != "")
-                                {
-                                    objFilterValues.ViewName = ViewName;
-                                }
-                                objFilterValues.FilterName = PrefixCustom + filterValues[0];
-                                objFilterValues.FilterValues = CustomOptionvalue;
-                                objFilterValues.Userid = Sessions.User.ID;
-                                objFilterValues.LastModifiedDate = DateTime.Now;
-                                objFilterValues.IsDefaultPreset = false;
-                                FilterNameTemp = "";
-                                FilterNameTemp += PrefixCustom + filterValues[0].ToString();
-                                Previousval = "";
-                                Previousval = CustomOptionvalue;
-                                objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
-                            }
+            List<Plan_UserSavedViews> NewCustomFieldData = new List<Plan_UserSavedViews>();
+            NewCustomFieldData = objCommonFilter.SaveLasSetofViews(planId, ViewName, ownerIds, TacticTypeid, StatusIds, SelectedYears, customFieldIds, ParentCustomFieldsIds, planIds, prevCustomFieldList, Sessions.User.ID);
 
-                        }
-                        NewCustomFieldData.Add(objFilterValues);
-                    }
-
-
-                }
-            }
-            else
-            {
-                if (string.IsNullOrWhiteSpace(ParentCustomFieldsIds))
-                {
-                    filteredCustomFields = null;
-                }
-                else
-                {
-                    filteredCustomFields = ParentCustomFieldsIds.Split(',');
-                }
-                if (filteredCustomFields != null)
-                {
-                    Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                    foreach (string customField in filteredCustomFields)
-                    {
-                        objFilterValues = new Plan_UserSavedViews();
-                        objFilterValues.ViewName = null;
-                        if (ViewName != null && ViewName != "")
-                        {
-                            objFilterValues.ViewName = ViewName;
-                        }
-                        objFilterValues.FilterName = PrefixCustom + customField;
-                        objFilterValues.FilterValues = "";
-                        objFilterValues.Userid = Sessions.User.ID;
-                        objFilterValues.LastModifiedDate = DateTime.Now;
-                        objFilterValues.IsDefaultPreset = false;
-                        objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
-                        NewCustomFieldData.Add(objFilterValues);
-                    }
-                }
-            }
-            if (StatusIds == "Report" || StatusIds == "AddActual")
-            {
-                var statulist = prevCustomFieldList.Where(a => a.FilterName == Enums.FilterLabel.Status.ToString());
-                prevCustomFieldList = prevCustomFieldList.Except(statulist).ToList();
-            }
-            if (ViewName != null)
-            {
-                objDbMrpEntities.SaveChanges();
-            }
-            else
-            {
-                var isCheckinPrev = prevCustomFieldList.Select(a => a.FilterValues).Except(NewCustomFieldData.Select(b => b.FilterValues)).Any();
-                var isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
-                if (isCheckinPrev == true || isCheckinNew == true)
-                {
-                    var ids = prevCustomFieldList.Select(t => t.Id).ToList();
-                    string ListOfPreviousIDs = null;
-                    if (ids.Count > 0)
-                    {
-                        ListOfPreviousIDs = string.Join(",", ids);
-                    }
-
-                    objDbMrpEntities.DeleteLastViewedData(Sessions.User.ID, ListOfPreviousIDs); //Sp to delete last viewed data before inserting new one.
-                    objDbMrpEntities.SaveChanges();
-                }
-                else
-                {
-                    if (prevCustomFieldList.Count == 0)
-                    {
-                        objDbMrpEntities.SaveChanges();
-                    }
-                }
-            }
+            Sessions.PlanUserSavedViews = NewCustomFieldData;
+            // TODO :: Need To Check
             Common.PlanUserSavedViews = objDbMrpEntities.Plan_UserSavedViews.Where(custmfield => custmfield.Userid == Sessions.User.ID).ToList();
-            #endregion
-            Sessions.PlanUserSavedViews = Common.PlanUserSavedViews;
-            return Json(new { isSuccess = true, ViewName = ViewName }, JsonRequestBehavior.AllowGet);
-        }
 
-        /// <summary>
-        /// Added By: Nandish Shah.
-        /// Desc : Function to insert data into Plan_UserSaved Views table for filters in left pane.
-        /// </summary>
-        /// <param name="Ids">Ids</param>
-        /// <param name="ViewName">ViewName</param>
-        /// <param name="FilterName">FilterName</param>
-        /// <param name="NewCustomFieldData">NewCustomFieldData</param>
-        private void InsertLastViewedUserData(string Ids, string ViewName, string FilterName, List<Plan_UserSavedViews> NewCustomFieldData)
-        {
-            Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-            objFilterValues.ViewName = null;
-            if (ViewName != null && ViewName != "")
-            {
-                objFilterValues.ViewName = ViewName;
-            }
-            objFilterValues.FilterName = FilterName;
-            objFilterValues.FilterValues = Ids;
-            objFilterValues.Userid = Sessions.User.ID;
-            objFilterValues.LastModifiedDate = DateTime.Now;
-            objFilterValues.IsDefaultPreset = false;
-            NewCustomFieldData.Add(objFilterValues);
-            objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
+            return Json(new { isSuccess = true, ViewName = ViewName }, JsonRequestBehavior.AllowGet);
         }
     }
 }
