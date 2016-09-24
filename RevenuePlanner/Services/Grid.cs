@@ -324,6 +324,7 @@ namespace RevenuePlanner.Services
         {
             try
             {
+                string manageviewicon = "<a href='javascript:void(0)' onclick='OpenCreateNew(true)' class='manageviewicon' title='Open Column Management'><i class='fa fa-edit' aria-hidden='true'></i></a>";
                 PlanHead headobj = new PlanHead();
                 foreach (var CustomField in lstCustomFields)
                 {
@@ -332,7 +333,7 @@ namespace RevenuePlanner.Services
                     headobj.id = "custom_" + CustomField.CustomFieldId;
                     headobj.sort = "str";
                     headobj.width = 150;
-                    headobj.value = CustomField.CustomFieldName;
+                    headobj.value = CustomField.CustomFieldName + manageviewicon;
                     ListHead.Add(headobj);
                 }
             }
@@ -390,6 +391,7 @@ namespace RevenuePlanner.Services
             PlanHead headobj = new PlanHead();
             List<PlanOptions> lstOwner = new List<PlanOptions>();
             List<PlanOptions> lstTacticType = new List<PlanOptions>();
+            string manageviewicon = "<a href='javascript:void(0)' onclick='OpenCreateNew(true)' class='manageviewicon' title='Open Column Management'><i class='fa fa-edit' aria-hidden='true'></i></a>";
             try
             {
 
@@ -465,7 +467,7 @@ namespace RevenuePlanner.Services
                     headobj.id = "startdate";
                     headobj.sort = "date";
                     headobj.width = 110;
-                    headobj.value = "Start Date";
+                    headobj.value = "Start Date" + manageviewicon;
                     headobjlist.Add(headobj);
 
                     // Sixth Column : End Date
@@ -475,7 +477,7 @@ namespace RevenuePlanner.Services
                     headobj.id = "enddate";
                     headobj.sort = "date";
                     headobj.width = 100;
-                    headobj.value = "End Date";
+                    headobj.value = "End Date" + manageviewicon;
                     headobjlist.Add(headobj);
                 }
 
@@ -486,7 +488,7 @@ namespace RevenuePlanner.Services
                 headobj.id = "plannedcost";
                 headobj.sort = "int";
                 headobj.width = 160;
-                headobj.value = "Planned Cost";
+                headobj.value = "Planned Cost" + manageviewicon;
                 headobjlist.Add(headobj);
 
                 if (IsNotLineItemListing)
@@ -497,7 +499,7 @@ namespace RevenuePlanner.Services
                     headobj.id = "roitactictype";
                     headobj.sort = "str";
                     headobj.width = 150;
-                    headobj.value = "Tactic Category";
+                    headobj.value = "Tactic Category" + manageviewicon;
                     headobjlist.Add(headobj);
                 }
 
@@ -508,7 +510,7 @@ namespace RevenuePlanner.Services
                 headobj.id = "tactictype";
                 headobj.sort = "sort_TacticType";
                 headobj.width = 150;
-                headobj.value = "Type";
+                headobj.value = "Type" + manageviewicon;
                 headobj.options = lstTacticType;
                 headobjlist.Add(headobj);
 
@@ -519,7 +521,7 @@ namespace RevenuePlanner.Services
                 headobj.id = "owner";
                 headobj.sort = "sort_Owner";
                 headobj.width = 115;
-                headobj.value = "Owner";
+                headobj.value = "Owner" + manageviewicon;
                 headobj.options = lstOwner;
                 headobjlist.Add(headobj);
 
@@ -532,7 +534,7 @@ namespace RevenuePlanner.Services
                     headobj.id = "inq";
                     headobj.sort = "int";
                     headobj.width = 150;
-                    headobj.value = "Target Stage Goal";
+                    headobj.value = "Target Stage Goal" + manageviewicon;
                     headobjlist.Add(headobj);
 
                     // Eleventh Column: MQl
@@ -542,7 +544,7 @@ namespace RevenuePlanner.Services
                     headobj.id = "mql";
                     headobj.sort = "int";
                     headobj.width = 150;
-                    headobj.value = MQLTitle;
+                    headobj.value = MQLTitle + manageviewicon;
                     headobjlist.Add(headobj);
 
                     // Twelveth Column : Revenue
@@ -552,7 +554,7 @@ namespace RevenuePlanner.Services
                     headobj.id = "revenue";
                     headobj.sort = "int";
                     headobj.width = 150;
-                    headobj.value = "Revenue";
+                    headobj.value = "Revenue" + manageviewicon;
                     headobjlist.Add(headobj);
 
                     //Add External Name Column as a last column of gridview

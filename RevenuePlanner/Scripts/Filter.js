@@ -1007,7 +1007,6 @@ function UpdateResult() {
         var TacticTypeids = filters.TacticTypeids;
         var StatusIds = filters.StatusIds;
         LoadPlanGrid();
-        GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs', urlContent + 'Home/GetActivityDistributionchart', secHome, SelectedTimeFrameOption)        
         $("#totalEntity").text(ExportSelectedIds.TaskID.length);
 
     }
@@ -1015,10 +1014,7 @@ function UpdateResult() {
         //Need to Implement
         BindPlanCalendar();
     }
-    //}
-    //else {
-    //    UpdateCalenderView();
-    //}
+    GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs', urlContent + 'Home/GetActivityDistributionchart', secHome, SelectedTimeFrameOption)
     UpdateSelectedFilters();
     if (SavePresetValue == false) {
         SaveLastSetofViews();
