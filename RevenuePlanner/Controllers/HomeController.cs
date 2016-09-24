@@ -9717,6 +9717,7 @@ namespace RevenuePlanner.Controllers
         /// Desc: Return Calendar PartialView 
         /// </summary>
         /// <returns> Calendar PartialView Result</returns>
+        [HttpPost]
         public PartialViewResult LoadPlanCalendar()
         {
                 return PartialView("_PlanCalendar");
@@ -9727,6 +9728,7 @@ namespace RevenuePlanner.Controllers
         /// Desc: Get Calendar Model data to bind Calendar 
         /// </summary>
         /// <returns> Return Calendar Json Result</returns>
+        [HttpPost]
         public JsonResult GetCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe)
         {
             #region "Declare local variables"
