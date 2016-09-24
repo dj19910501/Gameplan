@@ -75,6 +75,8 @@ namespace RevenuePlanner.Models
         public int Weightage { get; set; }
         public bool isAfterApproved { get; set; }
         public string colorCode { get;set; }
+        public string MachineName { get; set; }
+        public double UnallocatedBudget { get; set; }
 
     }
 
@@ -183,6 +185,7 @@ namespace RevenuePlanner.Models
         public string ColumnIds { get; set; }
         public List<string> AttachHeader { get; set; }
         public int LineItemId { get; set; }
+        public string HiddenTab { get; set; }
         
         public BudgetDHTMLXGrid Grid { get; set; }
     }

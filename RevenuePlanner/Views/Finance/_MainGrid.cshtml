@@ -549,7 +549,6 @@
     }
 
     function OnEditCell(stage, id, index, newVal, oldVal) {
-        debugger;
         var selectOwnerIndex = myTreeGrid.getColIndexById('owner');
         if (stage == 0) {
             ValidOldValue = myTreeGrid.cells(id, index).getValue();

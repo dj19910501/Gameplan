@@ -111,10 +111,12 @@
          colType = '@Model.ColType';
          colSorting = '@Model.ColSorting';
         budgetWidth = '@Model.Width';
-        attachHeader = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader))');
         //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
         HomeGrid.setHeader('@Model.SetHeader');
-           HomeGrid.attachHeader(JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader))'));
+        attachHeader = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader)';
+        attachHeader = $('<div/>').html(attachHeader.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        attachHeader = (attachHeader.toString().replace(/&amp;/g, '&'));
+        HomeGrid.attachHeader(JSON.parse(attachHeader));
         HomeGrid.setColTypes('@Model.ColType');
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
@@ -133,11 +135,31 @@
         var mainGridData = JsonModel;
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-
+        
         HomeGrid.parse(GridDataHomeGrid, "json");
-        HomeGrid.setColumnHidden(0, true);
+        // HomeGrid.setInitWidths(data.initwidth);
+        var machineNameindex = HomeGrid.getColIndexById("machineName");
+        var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
+        HomeGrid.setColumnHidden(ActivityIdindex, true);
+        HomeGrid.setColumnHidden(machineNameindex, true);
+        var ColumnsToView = '@Model.HiddenTab';
+        var selectedTab = ColumnsToView.split(',');
+        for (var i = 0; i < selectedTab.length; i++)
+        {
+            var sTab = selectedTab[i];
+            if (sTab!='' && sTab!=null)
+            {
+                for (var j=0;j<HomeGrid.getColumnsNum();j++)
+                {
+                    var ColumnId = HomeGrid.getColumnId(j);
+                    if (ColumnId==sTab) 
+                    {
+                        HomeGrid.setColumnHidden(j, true);
+                    }
+                }
+            }
+        }
        // HomeGrid.setColumnHidden(HomeGrid.getColumnsNum() - 1, true);
-
         LoadAfterParsing();
     });
 

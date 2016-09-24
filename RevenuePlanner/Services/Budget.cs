@@ -13,20 +13,21 @@ namespace RevenuePlanner.Services
     {
         private MRPEntities objDbMrpEntities;
         private StoredProcedure objSp;
+        private IColumnView objColumnView;
         public Budget()
         {
             objDbMrpEntities = new MRPEntities();
             objSp = new StoredProcedure();
+            objColumnView = new ColumnView();
         }
-        
         private const string Open = "1";
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
-        public const string FixHeader = "ActivityId,,,,,";
-        public const string FixColumnIds = "ActivityId,TaskName,Buttons,Total Budget,PlannedCost,Total Actual";
-        public const string FixColType = "ro,tree,ro,ed,ed,ed";
-        public const string FixcolWidth = "100,250,50,100,100,100";
-        public const string FixColsorting = "na,na,na,na,na,na";
+        public const string FixHeader = "ActivityId,machineName,,,,,";
+        public const string FixColumnIds = "ActivityId,machineName,TaskName,Buttons,Budget,Planned,Actual";
+        public const string FixColType = "ro,ro,tree,ro,ed,ed,ed";
+        public const string FixcolWidth = "100,100,250,100,100,100,100";
+        public const string FixColsorting = "na,na,na,na,na,na,na";
         public const string QuarterPrefix = "Q";
         public const string DhtmlxColSpan = "#cspan";
         public const string ColBudget = "Budget";
@@ -34,17 +35,21 @@ namespace RevenuePlanner.Services
         public const string ColPlanned = "Planned";
 
 
-        public BudgetDHTMLXGridModel GetBudget(string PlanIds, double PlanExchangeRate, Enums.ViewBy viewBy = Enums.ViewBy.Campaign, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public BudgetDHTMLXGridModel GetBudget(int ClientId, int UserID, string PlanIds, double PlanExchangeRate, Enums.ViewBy viewBy = Enums.ViewBy.Campaign, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
         {
             DataTable dt = objSp.GetBudget(PlanIds, OwnerIds, TacticTypeids, StatusIds); //Get budget data for budget,planned cost and actual using store proc. GetplanBudget
 
             List<PlanBudgetModel> model = CreateBudgetDataModel(dt, PlanExchangeRate); //Convert datatable with budget data to PlanBudgetModel model
 
-            model = SetCustomFieldRestriction(model);//Set customfield permission for budget cells. budget cell will editable or not.
+            model = SetCustomFieldRestriction(model,UserID,ClientId);//Set customfield permission for budget cells. budget cell will editable or not.
             int ViewByID = (int)viewBy;
              //Set actual for quarters
             string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
-           
+
+            //get number of tab views for user in column management
+            bool isPlangrid=false;
+            bool isSelectAll = false;
+            
             model = ManageLineItems(model);//Manage lineitems unallocated cost values in other line item
 
             #region "Calculate Monthly Budget from Bottom to Top for Hierarchy level like: LineItem > Tactic > Program > Campaign > CustomField(if filtered) > Plan"
@@ -66,6 +71,16 @@ namespace RevenuePlanner.Services
             objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, model);
 
             objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy);//create model to bind data in grid as per DHTMLx grid format.
+
+            List<ColumnViewEntity> userManagedColumns = objColumnView.GetCustomfieldModel(ClientId, isPlangrid, out isSelectAll,UserID);
+            string hiddenTab = string.Empty;
+            foreach(ColumnViewEntity item in userManagedColumns.Where(u=>!u.EntityIsChecked).ToList())
+            {
+                hiddenTab = hiddenTab + item.EntityType + ',';
+            }
+            objBudgetDHTMLXGrid.HiddenTab = hiddenTab;
+            
+           
             return objBudgetDHTMLXGrid;
         }
 
@@ -88,6 +103,7 @@ namespace RevenuePlanner.Services
                 CreatedBy = int.Parse(row["CreatedBy"].ToString()),
                 LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
                 isAfterApproved = Convert.ToBoolean(row["IsAfterApproved"]),
+                MachineName = Convert.ToString(row["MachineName"]),
                 MonthValues = new BudgetMonth()
                 {
                     //Budget Month Allocation
@@ -140,6 +156,11 @@ namespace RevenuePlanner.Services
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
 
             BudgetDataObj.value = Entity.Id + ";" + Convert.ToString(EntityType);
+            BudgetDataObjList.Add(BudgetDataObj);
+
+            BudgetDataObj = new Budgetdataobj();
+
+            BudgetDataObj.value = Entity.MachineName;
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
@@ -268,6 +289,7 @@ namespace RevenuePlanner.Services
         private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model)
         {
             string setHeader = string.Empty, colType = string.Empty, width = string.Empty, colSorting = string.Empty, columnIds = string.Empty;
+            string manageviewicon = "<a href=javascript:void(0) onclick=OpenCreateNew(false) class=manageviewicon><i class='fa fa-edit'></i></a>";
             List<string> attachHeader = new List<string>();
              
             setHeader = FixHeader;
@@ -276,11 +298,12 @@ namespace RevenuePlanner.Services
             width = FixcolWidth;
             colSorting = FixColsorting;
             attachHeader.Add("ActivityId");
+            attachHeader.Add("Machine Name"+manageviewicon);
             attachHeader.Add("Task Name");
             attachHeader.Add("");
-            attachHeader.Add("Total Budget");
-            attachHeader.Add("PlannedCost");
-            attachHeader.Add("Total Actual");
+            attachHeader.Add("Total Budget"+manageviewicon);
+            attachHeader.Add("Planned Cost"+manageviewicon);
+            attachHeader.Add("Total Actual"+manageviewicon);
             
             if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
@@ -289,13 +312,13 @@ namespace RevenuePlanner.Services
                 {
                     DateTime dt = new DateTime(2012, i, 1);
 
-                    setHeader = setHeader + ",Q" + quarterCounter.ToString() + ",#cspan,#cspan";//CQ" + quarterCounter.ToString() + ",AQ" + quarterCounter.ToString();
-                    attachHeader.Add(ColBudget);
-                    attachHeader.Add(ColPlanned);
-                    attachHeader.Add(ColActual);
+                    setHeader = setHeader + ",Q" + quarterCounter.ToString() + ",#cspan,#cspan";
+                    attachHeader.Add(ColBudget + manageviewicon);
+                    attachHeader.Add(ColPlanned + manageviewicon);
+                    attachHeader.Add(ColActual + manageviewicon);
 
 
-                    columnIds = columnIds + ",Q" + quarterCounter.ToString() + ",#cspan,#cspan";//CQ" + quarterCounter.ToString() + ",AQ" + quarterCounter.ToString();
+                    columnIds = columnIds + ",Q" + quarterCounter.ToString() + ",#cspan,#cspan";
                     colType = colType + ",ed,ed,ed";
                     width = width + ",100,100,100";
                     colSorting = colSorting + ",str,str,str";
@@ -309,11 +332,11 @@ namespace RevenuePlanner.Services
                 {
                     DateTime dt = new DateTime(2012, i, 1);
 
-                    setHeader = setHeader + "," + dt.ToString("MMM").ToUpper() + ",#cspan,#cspan";//C" + dt.ToString("MMM").ToUpper() + ",A" + dt.ToString("MMM").ToUpper();
-                    columnIds = columnIds + "," + dt.ToString("MMM").ToUpper() + ",#cspan,#cspan";//C" + dt.ToString("MMM").ToUpper() + ",A" + dt.ToString("MMM").ToUpper();
-                    attachHeader.Add(ColBudget);
-                    attachHeader.Add(ColPlanned);
-                    attachHeader.Add(ColActual);
+                    setHeader = setHeader + "," + dt.ToString("MMM").ToUpper() + ",#cspan,#cspan";
+                    columnIds = columnIds + "," + "Budget,Planned,Actual";
+                    attachHeader.Add(ColBudget + manageviewicon);
+                    attachHeader.Add(ColPlanned + manageviewicon);
+                    attachHeader.Add(ColActual + manageviewicon);
                     colType = colType + ",ed,ed,ed";
                     width = width + ",100,100,100";
                     colSorting = colSorting + ",str,str,str";
@@ -583,7 +606,7 @@ namespace RevenuePlanner.Services
             return BudgetDataObjList;
         }
                   
-        public List<PlanBudgetModel> SetCustomFieldRestriction(List<PlanBudgetModel> BudgetModel)
+        public List<PlanBudgetModel> SetCustomFieldRestriction(List<PlanBudgetModel> BudgetModel,int UserId,int ClientId)
         {
             List<int> lstSubordinatesIds = new List<int>();
 
@@ -591,7 +614,7 @@ namespace RevenuePlanner.Services
             bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             if (IsTacticAllowForSubordinates)
             {
-                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);
+                lstSubordinatesIds = Common.GetAllSubordinates(UserId);
             }
             //Custom field type dropdown list
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
@@ -600,10 +623,10 @@ namespace RevenuePlanner.Services
             //flag will be use to set if custom field is display for filter or not
             bool isDisplayForFilter = false;
 
-            bool IsCustomFeildExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), Sessions.User.CID);
+            bool IsCustomFeildExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), ClientId);
             
             //Get list tactic's custom field
-            List<CustomField> customfieldlist = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.CID && customfield.EntityType.Equals(EntityTypeTactic) && customfield.IsDeleted.Equals(false)).ToList();
+            List<CustomField> customfieldlist = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == ClientId && customfield.EntityType.Equals(EntityTypeTactic) && customfield.IsDeleted.Equals(false)).ToList();
             //Check custom field whic are not set to display for filter and is required are exist
             bool CustomFieldexists = customfieldlist.Where(customfield => customfield.IsRequired && !isDisplayForFilter).Any();
             //get dropdown type of custom fields ids
@@ -618,7 +641,7 @@ namespace RevenuePlanner.Services
             //Get tactic custom fields list
             List<CustomField_Entity> lstAllTacticCustomFieldEntities = Entities.Where(customFieldEntity => customfieldids.Contains(customFieldEntity.CustomFieldId))
                                                                                                 .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); 
-            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.ID, true);
+            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId, true);
             foreach (PlanBudgetModel item in BudgetModel)
             {
                 //Set permission for editing cell for respective entities
@@ -626,7 +649,7 @@ namespace RevenuePlanner.Services
                 {
                     //chek user's plan edit permsion or user is owner
                     bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                    if (item.CreatedBy == Sessions.User.ID || IsPlanEditAllAuthorized)
+                    if (item.CreatedBy == UserId || IsPlanEditAllAuthorized)
                     {
                         item.isBudgetEditable = true;
                     }
@@ -638,14 +661,14 @@ namespace RevenuePlanner.Services
                 else if (item.ActivityType == ActivityType.ActivityCampaign)
                 {
                     //chek user is subordinate or user is owner
-                    if (item.CreatedBy == Sessions.User.ID || lstSubordinatesIds.Contains(item.CreatedBy))
+                    if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                        //to find tactic level permission ,first get program list and then get respective tactic list of program which will be used to get editable tactic list
                         List<string> modelprogramid = BudgetModel.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList();
                         planTacticIds = BudgetModel.Where(m => m.ActivityType == ActivityType.ActivityTactic && modelprogramid.Contains(m.ParentActivityId)).Select(m => Convert.ToInt32(m.ActivityId)).ToList();
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.ID, Sessions.User.CID, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isBudgetEditable = true;
@@ -659,13 +682,13 @@ namespace RevenuePlanner.Services
                 else if (item.ActivityType == ActivityType.ActivityProgram)
                 {
                     //chek user is subordinate or user is owner
-                    if (item.CreatedBy == Sessions.User.ID || lstSubordinatesIds.Contains(item.CreatedBy))
+                    if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         //to find tactic level permission , get respective tactic list of program which will be used to get editable tactic list
                         planTacticIds = BudgetModel.Where(m => m.ActivityType == ActivityType.ActivityTactic && m.ParentActivityId == item.ActivityId).Select(m => Convert.ToInt32(m.ActivityId)).ToList();
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.ID, Sessions.User.CID, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isBudgetEditable = true;
@@ -679,13 +702,13 @@ namespace RevenuePlanner.Services
                 else if (item.ActivityType == ActivityType.ActivityTactic)
                 {
                     //chek user is subordinate or user is owner
-                    if (item.CreatedBy == Sessions.User.ID || lstSubordinatesIds.Contains(item.CreatedBy))
+                    if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.ActivityId));
                         //Check tactic is editable or not
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.ID, Sessions.User.CID, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isBudgetEditable = true;
@@ -707,12 +730,12 @@ namespace RevenuePlanner.Services
                     }
 
                     //chek user is subordinate or user is owner of line item or user is owner of tactic
-                    if (item.CreatedBy == Sessions.User.ID || tacticOwner == Sessions.User.ID || lstSubordinatesIds.Contains(tacticOwner))
+                    if (item.CreatedBy == UserId || tacticOwner == UserId || lstSubordinatesIds.Contains(tacticOwner))
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.ParentActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.ID, Sessions.User.CID, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isActualEditable = true;

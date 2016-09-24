@@ -10,7 +10,7 @@ namespace RevenuePlanner.Services
 {
     public interface IBudget
     {
-        BudgetDHTMLXGridModel GetBudget(string PlanIds, double PlanExchangeRate, Enums.ViewBy viewBy, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "");
-        List<PlanBudgetModel> SetCustomFieldRestriction(List<PlanBudgetModel> BudgetModel);
+        BudgetDHTMLXGridModel GetBudget(int ClientId, int UserID, string PlanIds, double PlanExchangeRate, Enums.ViewBy viewBy, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "");
+        List<PlanBudgetModel> SetCustomFieldRestriction(List<PlanBudgetModel> BudgetModel, int UserId, int ClientId);
     }
 }

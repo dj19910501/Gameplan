@@ -18989,8 +18989,9 @@ namespace RevenuePlanner.Controllers
         public ActionResult GetBudgetData(string PlanIds, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "")
         {
             IBudget Iobj = new RevenuePlanner.Services.Budget();
-
-            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, string.Empty, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds); //objSp.GetBudget(PlanId.ToString(), string.Empty, string.Empty, string.Empty);
+            int UserID = Sessions.User.ID;
+            int ClientId = Sessions.User.CID;
+            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, string.Empty, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds); //objSp.GetBudget(PlanId.ToString(), string.Empty, string.Empty, string.Empty);
             return PartialView("~/Views/Budget/Budget.cshtml", budgetModel);
            
         }
