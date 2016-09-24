@@ -800,7 +800,6 @@
     <Content Include="Content\Common\grid sample.xls" />
     <None Include="Properties\PublishProfiles\MRP-Dev.pubxml" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Home\Index_Old.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
@@ -923,7 +922,6 @@
     <Content Include="Views\Plan\CreatePlan.cshtml" />
     <Content Include="Views\Report\_ReportCardSection.cshtml" />
     <Content Include="Views\Report\_ConversionToPlan.cshtml" />
-    <Content Include="Views\Plan\_HomeGrid_Old.cshtml" />
     <Content Include="Views\Plan\_GridImprovement.cshtml" />
     <Content Include="Views\Finance\Index.cshtml" />
     <Content Include="Views\Finance\_EditBudget.cshtml" />
