@@ -587,32 +587,48 @@ DECLARE @tmp TABLE
 (
 			EntityId		BIGINT,
 			ParentEntityId	BIGINT,
-			EntityType NVARCHAR(50)
+			EntityType NVARCHAR(50),
+			StartDate DATETIME,
+			EndDate DATETIME,
+			ColorCode NVARCHAR(50)
 )
 
 INSERT INTO @tmp
 --SELECT * FROM fnGetFilterEntityHierarchy( @PlanId,@ownerIds,@tactictypeIds,@statusIds)
-SELECT EntityId,ParentEntityId,EntityType FROM fnGetEntitieHirarchyByPlanId(@PlanId)
+SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode FROM fnGetEntitieHirarchyByPlanId(@PlanId)
 
-SELECT ActivityId
+SELECT		Id
+			,ActivityId
 			,ActivityType
 			,Title
 			,ParentActivityId
+			,StartDate
+			,EndDate
+			,ColorCode
+			,0 LinkTacticId
+			,0 TacticTypeId
+			,NULL MachineName
 			,CreatedBy
+			,NULL LineItemTypeId
+			,0 IsAfterApproved
 			,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
 			,Budget
 			,[Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
-			,(ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalAllocationBudget
-			,NULL [CostY1], NULL [CostY2], NULL [CostY3], NULL [CostY4],NULL [CostY5], NULL [CostY6], NULL [CostY7], NULL [CostY8],NULL [CostY9], NULL [CostY1NULL], NULL [CostY11], NULL [CostY12]
+			,Budget - (ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalUnallocatedBudget
+			,NULL [CostY1], NULL [CostY2], NULL [CostY3], NULL [CostY4],NULL [CostY5], NULL [CostY6], NULL [CostY7], NULL [CostY8],NULL [CostY9], NULL [CostY10], NULL [CostY11], NULL [CostY12]
 			,0 TotalAllocationCost
-			,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY1NULL], NULL [ActualY11], NULL [ActualY12]
+			,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY10], NULL [ActualY11], NULL [ActualY12]
 			,0 TotalAllocationActual
 		FROM 
 				(SELECT 
-					P.PlanId ActivityId
+					P.PlanId Id
+					,H.EntityId ActivityId
 					,P.Title
-					,'Plan' as ActivityType
+					,'plan' as ActivityType
 					,H.ParentEntityId ParentActivityId
+					,ISNULL(H.StartDate, GETDATE()) AS StartDate
+					,ISNULL(H.EndDate, GETDATE()) AS EndDate
+					,H.ColorCode
 					,P.CreatedBy
 					, Budget
 					,PB.Value
@@ -629,25 +645,38 @@ SELECT ActivityId
 				)PLNMain
 UNION ALL
 SELECT 
+		Id,
 		ActivityId
 		,ActivityType
 		,Title
 		,ParentActivityId
+		,StartDate
+		,EndDate
+		,ColorCode
+		,0 LinkTacticId
+		,0 TacticTypeId
+		,NULL MachineName
 		,CreatedBy
+		,NULL LineItemTypeId
+		,0 IsAfterApproved
 		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
 		,Budget
 		,[Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
-		,(ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalAllocationBudget
-		,NULL [CostY1], NULL [CostY2], NULL [CostY3], NULL [CostY4],NULL [CostY5], NULL [CostY6], NULL [CostY7], NULL [CostY8],NULL [CostY9], NULL [CostY1NULL], NULL [CostY11], NULL [CostY12]
+		,Budget - (ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalUnallocatedBudget
+		,NULL [CostY1], NULL [CostY2], NULL [CostY3], NULL [CostY4],NULL [CostY5], NULL [CostY6], NULL [CostY7], NULL [CostY8],NULL [CostY9], NULL [CostY10], NULL [CostY11], NULL [CostY12]
 		,0 TotalAllocationCost
-		,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY1NULL], NULL [ActualY11], NULL [ActualY12]
+		,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY10], NULL [ActualY11], NULL [ActualY12]
 		,0 TotalAllocationActual
 	 FROM
 			(SELECT 
-				PC.PlanCampaignId ActivityId
+				PC.PlanCampaignId Id	
+				,H.EntityId ActivityId
 				,PC.Title
 				,'campaign' as ActivityType
 				,H.ParentEntityId ParentActivityId
+				,ISNULL(H.StartDate, GETDATE()) AS StartDate
+				,ISNULL(H.EndDate, GETDATE()) AS EndDate
+				,H.ColorCode
 				,PC.CreatedBy
 				,CampaignBudget Budget
 				,PCB.Value
@@ -664,25 +693,38 @@ SELECT
 			)CampaignMain
 UNION ALL
 	SELECT 
+		Id,
 		ActivityId
 		,ActivityType
 		,Title
 		,ParentActivityId
+		,StartDate
+		,EndDate
+		,ColorCode
+		,0 LinkTacticId
+		,0 TacticTypeId
+		,NULL MachineName
 		,CreatedBy
+		,NULL LineItemTypeId
+		,0 IsAfterApproved
 		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
 		,Budget
 		,[Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
-		,(ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalAllocationBudget
-		,NULL [CostY1], NULL [CostY2], NULL [CostY3], NULL [CostY4],NULL [CostY5], NULL [CostY6], NULL [CostY7], NULL [CostY8],NULL [CostY9], NULL [CostY1NULL], NULL [CostY11], NULL [CostY12]
+		,Budget - (ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalUnallocatedBudget
+		,NULL [CostY1], NULL [CostY2], NULL [CostY3], NULL [CostY4],NULL [CostY5], NULL [CostY6], NULL [CostY7], NULL [CostY8],NULL [CostY9], NULL [CostY10], NULL [CostY11], NULL [CostY12]
 		,0 TotalAllocationCost
-		,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY1NULL], NULL [ActualY11], NULL [ActualY12]
+		,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY10], NULL [ActualY11], NULL [ActualY12]
 		,0 TotalAllocationActuals
 	 FROM
 			(SELECT 
-				PCP.PlanProgramId ActivityId
+				PCP.PlanProgramId Id
+				,H.EntityId ActivityId
 				,PCP.Title
 				,'program' as ActivityType
-				,PCP.PlanCampaignId ParentActivityId
+				,H.ParentEntityId ParentActivityId
+				,ISNULL(H.StartDate, GETDATE()) AS StartDate
+				,ISNULL(H.EndDate, GETDATE()) AS EndDate
+				,H.ColorCode
 				,PCP.CreatedBy
 				,PCP.ProgramBudget Budget
 				,PCPB.Value
@@ -699,27 +741,44 @@ UNION ALL
 			)ProgramMain
 UNION ALL
 	SELECT 
+		Id,
 		ActivityId
 		,ActivityType
 		,Title
 		,ParentActivityId
+		,StartDate
+		,EndDate
+		,ColorCode
+		,ISNULL(LinkedTacticId, 0) LinkTacticId
+		,ISNULL(TacticTypeId, 0) TacticTypeId
+		,TacticCustomName MachineName
 		,CreatedBy
+		,NULL LineItemTypeId
 		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
+		,IsAfterApproved
 		,Budget
 		,[Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
-		,(ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalAllocationBudget
+		,Budget - (ISNULL([Y1],0)+ ISNULL([Y2],0)+ISNULL( [Y3],0)+ ISNULL( [Y4],0)+ISNULL( [Y5],0) +ISNULL( [Y6],0) +ISNULL( [Y7],0) +ISNULL( [Y8],0) +ISNULL( [Y9],0) +ISNULL( [Y10],0) +ISNULL( [Y11],0) +ISNULL( [Y12],0)) TotalUnallocatedBudget
 		,[CostY1], [CostY2], [CostY3], [CostY4],[CostY5], [CostY6], [CostY7], [CostY8],[CostY9], [CostY10], [CostY11], [CostY12]
 		,(ISNULL([CostY1],0)+ ISNULL([CostY2],0)+ISNULL( [CostY3],0)+ ISNULL( [CostY4],0)+ISNULL( [CostY5],0) +ISNULL( [CostY6],0) +ISNULL( [CostY7],0) +ISNULL( [CostY8],0) +ISNULL( [CostY9],0) +ISNULL( [CostY10],0) +ISNULL( [CostY11],0) +ISNULL( [CostY12],0)) TotalAllocationCost
 		,[ActualY1], [ActualY2], [ActualY3], [ActualY4],[ActualY5], [ActualY6], [ActualY7], [ActualY8],[ActualY9], [ActualY10], [ActualY11], [ActualY12]
 		,(ISNULL([ActualY1],0)+ ISNULL([ActualY2],0)+ISNULL( [ActualY3],0)+ ISNULL( [ActualY4],0)+ISNULL( [ActualY5],0) +ISNULL( [ActualY6],0) +ISNULL( [ActualY7],0) +ISNULL( [ActualY8],0) +ISNULL( [ActualY9],0) +ISNULL( [ActualY10],0) +ISNULL( [ActualY11],0) +ISNULL( [ActualY12],0)) TotalAllocationActuals
 	 FROM
-			(SELECT 
-				PCPT.PlanTacticId ActivityId
+			(SELECT
+				PCPT.PlanTacticId Id 
+				,H.EntityId ActivityId
 				,PCPT.Title
 				,'tactic' as ActivityType
-				,PCPT.PlanProgramId ParentActivityId
+				,H.ParentEntityId ParentActivityId
+				,ISNULL(H.StartDate, GETDATE()) AS StartDate
+				,ISNULL(H.EndDate, GETDATE()) AS EndDate
+				,H.ColorCode
+				,PCPT.LinkedTacticId
+				,PCPT.TacticTypeId
+				,PCPT.TacticCustomName 
 				,PCPT.CreatedBy
 				,PCPT.TacticBudget Budget
+				,CASE WHEN PCPT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 				,PCPTB.Value
 				,PCPTB.Period
 				,PCPTC.Value as CValue
@@ -751,32 +810,47 @@ UNION ALL
 
 UNION ALL
 	SELECT 
+		Id,
 		ActivityId
 		,ActivityType
 		,Title
 		,ParentActivityId
+		,StartDate
+		,EndDate
+		,ColorCode
+		,0 LinkTacticId
+		,0 TacticTypeId
+		,NULL MachineName
 		,CreatedBy
+		,LineItemTypeId
+		,IsAfterApproved
 		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
 		,0 Budget
 		,0 [Y1],0 [Y2],0 [Y3],0 [Y4],0 [Y5],0 [Y6],0 [Y7],0 [Y8],0 [Y9],0 [Y10],0 [Y11],0 [Y12]
-		,0 TotalAllocationBudget
+		,0 TotalUnallocatedBudget
 		,[CostY1], [CostY2], [CostY3], [CostY4],[CostY5], [CostY6], [CostY7], [CostY8],[CostY9], [CostY10], [CostY11], [CostY12]
 		,(ISNULL([CostY1],0)+ ISNULL([CostY2],0)+ISNULL( [CostY3],0)+ ISNULL( [CostY4],0)+ISNULL( [CostY5],0) +ISNULL( [CostY6],0) +ISNULL( [CostY7],0) +ISNULL( [CostY8],0) +ISNULL( [CostY9],0) +ISNULL( [CostY10],0) +ISNULL( [CostY11],0) +ISNULL( [CostY12],0)) TotalAllocationCost
 		,[ActualY1], [ActualY2], [ActualY3], [ActualY4],[ActualY5], [ActualY6], [ActualY7], [ActualY8],[ActualY9], [ActualY10], [ActualY11], [ActualY12]
 		,(ISNULL([ActualY1],0)+ ISNULL([ActualY2],0)+ISNULL( [ActualY3],0)+ ISNULL( [ActualY4],0)+ISNULL( [ActualY5],0) +ISNULL( [ActualY6],0) +ISNULL( [ActualY7],0) +ISNULL( [ActualY8],0) +ISNULL( [ActualY9],0) +ISNULL( [ActualY10],0) +ISNULL( [ActualY11],0) +ISNULL( [ActualY12],0)) TotalAllocationActuals
 	 FROM
-		 (SELECT 
-					PCPTL.PlanLineItemId ActivityId
+		 (SELECT	PCPTL.PlanLineItemId Id
+					,H.EntityId ActivityId
 					,PCPTL.Title
 					,'lineitem' as ActivityType
-					,PCPTL.PlanTacticId ParentActivityId
+					,H.ParentEntityId ParentActivityId
+					,ISNULL(H.StartDate, GETDATE()) AS StartDate
+					,ISNULL(H.EndDate, GETDATE()) AS EndDate
+					,H.ColorCode
 					,PCPTL.CreatedBy
+					,PCPTL.LineItemTypeId LineItemTypeId
+					,CASE WHEN PCPT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
 					,PCPTLC.Value as CValue
 					,'Cost'+PCPTLC.Period as CPeriod
 					,PCPTLA.Value as AValue
 					,'A'+PCPTLA.Period as APeriod
 				FROM @tmp H
 					INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON H.EntityId=PCPTL.PlanLineItemId 
+					INNER JOIN Plan_Campaign_Program_Tactic PCPT ON PCPTL.PlanTacticId=PCPT.PlanTacticId
 					LEFT JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PCPTLC ON PCPTL.PlanLineItemId=PCPTLC.PlanLineItemId
 					LEFT JOIN Plan_Campaign_Program_Tactic_LineItem_Actual PCPTLA ON PCPTL.PlanLineItemId=PCPTLA.PlanLineItemId
 				WHERE H.EntityType='LineItem'
@@ -1537,12 +1611,23 @@ END
 GO
 
 -- Indexes
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_LineItemType_LineItemTypeId' AND object_id = OBJECT_ID('LineItemType'))
+BEGIN
+	CREATE NONCLUSTERED INDEX [IX_LineItemType_LineItemTypeId] ON [dbo].[LineItemType]
+	(
+		[IsDeleted] ASC,
+		[LineItemTypeId] ASC
+	)
+	INCLUDE ([Title]) WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END 
+GO
+
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='IX_Campaign_Plan' AND object_id = OBJECT_ID('Plan_Campaign'))
 BEGIN
-	DROP INDEX [IX_Campaign_Plan] ON [dbo].[Plan_Campaign]
-
 	CREATE NONCLUSTERED INDEX [IX_Campaign_Plan] ON [dbo].[Plan_Campaign]
 	(
 		[PlanId] ASC
@@ -1551,12 +1636,10 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='IX_Program_Campaign' AND object_id = OBJECT_ID('Plan_Campaign_Program'))
 BEGIN
-	DROP INDEX [IX_Program_Campaign] ON [dbo].[Plan_Campaign_Program]
-
 	
 	CREATE NONCLUSTERED INDEX [IX_Program_Campaign] ON [dbo].[Plan_Campaign_Program]
 	(
@@ -1567,12 +1650,11 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='IX_Program_Campaign_Tactic' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic'))
 BEGIN
-	DROP INDEX [IX_Program_Campaign_Tactic] ON [dbo].[Plan_Campaign_Program_Tactic]
-
+	
 	CREATE NONCLUSTERED INDEX [IX_Program_Campaign_Tactic] ON [dbo].[Plan_Campaign_Program_Tactic]
 	(
 		[PlanProgramId] ASC
@@ -1581,12 +1663,11 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='IX_Program_Campaign_Tactic_TacticType' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic'))
 BEGIN
-	DROP INDEX [IX_Program_Campaign_Tactic_TacticType] ON [dbo].[Plan_Campaign_Program_Tactic]
-
+	
 	CREATE NONCLUSTERED INDEX [IX_Program_Campaign_Tactic_TacticType] ON [dbo].[Plan_Campaign_Program_Tactic]
 	(
 		[TacticTypeId] ASC
@@ -1595,12 +1676,11 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='IX_Program_Campaign_Tactic_LineItem' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic_LineItem'))
 BEGIN
-	DROP INDEX [IX_Program_Campaign_Tactic_LineItem] ON [dbo].[Plan_Campaign_Program_Tactic_LineItem]
-
+	
 	CREATE NONCLUSTERED INDEX [IX_Program_Campaign_Tactic_LineItem] ON [dbo].[Plan_Campaign_Program_Tactic_LineItem]
 	(
 		[PlanTacticId] ASC
@@ -1609,12 +1689,10 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='IX_Program_Campaign_Tactic_LineItem_LineItemType' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic_LineItem'))
 BEGIN
-	DROP INDEX [IX_Program_Campaign_Tactic_LineItem_LineItemType] ON [dbo].[Plan_Campaign_Program_Tactic_LineItem]
-
 	CREATE NONCLUSTERED INDEX [IX_Program_Campaign_Tactic_LineItem_LineItemType] ON [dbo].[Plan_Campaign_Program_Tactic_LineItem]
 	(
 		[LineItemTypeId] ASC
@@ -1623,12 +1701,11 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='IX_CustomField_Entity_EntityId' AND object_id = OBJECT_ID('CustomField_Entity'))
 BEGIN
-	DROP INDEX [IX_CustomField_Entity_EntityId] ON [dbo].[CustomField_Entity]
-
+	
 	CREATE NONCLUSTERED INDEX [IX_CustomField_Entity_EntityId] ON [dbo].[CustomField_Entity]
 	(
 		[EntityId] ASC,
@@ -1639,12 +1716,11 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='_dta_index_Plan_Campaign_32_2101582525__K2_K17_K1' AND object_id = OBJECT_ID('Plan_Campaign'))
 BEGIN
-	DROP INDEX [_dta_index_Plan_Campaign_32_2101582525__K2_K17_K1] ON [dbo].[Plan_Campaign]
-
+	
 	CREATE NONCLUSTERED INDEX [_dta_index_Plan_Campaign_32_2101582525__K2_K17_K1] ON [dbo].[Plan_Campaign]
 	(
 		[PlanId] ASC,
@@ -1654,26 +1730,12 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
-FROM sys.indexes 
-WHERE name='_dta_index_Plan_Campaign_Program_32_2133582639__K2_K17_K1' AND object_id = OBJECT_ID('Plan_Campaign_Program'))
-BEGIN
-	DROP INDEX [_dta_index_Plan_Campaign_Program_32_2133582639__K2_K17_K1] ON [dbo].[Plan_Campaign_Program]
-	CREATE NONCLUSTERED INDEX [_dta_index_Plan_Campaign_Program_32_2133582639__K2_K17_K1] ON [dbo].[Plan_Campaign_Program]
-	(
-		[PlanCampaignId] ASC,
-		[IsDeleted] ASC,
-		[PlanProgramId] ASC
-	)WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
-END
-GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
-WHERE name='_dta_index_Plan_Campaign_Program_32_2133582639__K2_K17_K1' AND object_id = OBJECT_ID('Plan_Campaign_Program'))
+WHERE name='IX_PlanCampaignProgram_PlanCampaignId_PlanProgramId' AND object_id = OBJECT_ID('Plan_Campaign_Program'))
 BEGIN
-	DROP INDEX [_dta_index_Plan_Campaign_Program_32_2133582639__K17_K2_K1] ON [dbo].[Plan_Campaign_Program]
-	CREATE NONCLUSTERED INDEX [_dta_index_Plan_Campaign_Program_32_2133582639__K17_K2_K1] ON [dbo].[Plan_Campaign_Program]
+	CREATE NONCLUSTERED INDEX [IX_PlanCampaignProgram_PlanCampaignId_PlanProgramId] ON [dbo].[Plan_Campaign_Program]
 	(
 		[IsDeleted] ASC,
 		[PlanCampaignId] ASC,
@@ -1682,11 +1744,10 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='_dta_index_Plan_Campaign_Program_Tactic_32_56387270__K15_K2_K1_8' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic'))
 BEGIN
-	DROP INDEX [_dta_index_Plan_Campaign_Program_Tactic_32_56387270__K15_K2_K1_8] ON [dbo].[Plan_Campaign_Program_Tactic]
 	CREATE NONCLUSTERED INDEX [_dta_index_Plan_Campaign_Program_Tactic_32_56387270__K15_K2_K1_8] ON [dbo].[Plan_Campaign_Program_Tactic]
 	(
 		[IsDeleted] ASC,
@@ -1697,11 +1758,10 @@ BEGIN
 END
 GO
 
-IF EXISTS(SELECT * 
+IF NOT EXISTS(SELECT * 
 FROM sys.indexes 
 WHERE name='_dta_index_Model_Stage_32_1330103779__K13_K4_K3_K1_5' AND object_id = OBJECT_ID('Model_Stage'))
 BEGIN
-	DROP INDEX [_dta_index_Model_Stage_32_1330103779__K13_K4_K3_K1_5] ON [dbo].[Model_Stage]
 	CREATE NONCLUSTERED INDEX [_dta_index_Model_Stage_32_1330103779__K13_K4_K3_K1_5] ON [dbo].[Model_Stage]
 	(
 		[ModelId] ASC,
@@ -1713,7 +1773,132 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_PlanCampaign_PlanId_PlanCampaignId' AND object_id = OBJECT_ID('Plan_Campaign'))
+BEGIN
+	CREATE NONCLUSTERED INDEX [IX_PlanCampaign_PlanId_PlanCampaignId] ON [dbo].[Plan_Campaign]
+	(
+		[PlanId] ASC,
+		[IsDeleted] ASC,
+		[PlanCampaignId] ASC
+	)WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END
+
+IF NOT EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_PlanCampaignProgramTactic_PlanProgramId_IsDeleted' AND object_id = OBJECT_ID('Plan_Campaign_Program_Tactic'))
+BEGIN
+	CREATE NONCLUSTERED INDEX [IX_PlanCampaignProgramTactic_PlanProgramId_IsDeleted] ON [dbo].[Plan_Campaign_Program_Tactic]
+	(
+		[PlanProgramId] ASC,
+		[IsDeleted] ASC
+	)
+	INCLUDE ( 	[Cost]) WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END
+GO
+
+IF NOT EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_CustomField_ClientId_EntityType_CustomFieldId' AND object_id = OBJECT_ID('CustomField'))
+BEGIN
+	CREATE NONCLUSTERED INDEX [IX_CustomField_ClientId_EntityType_CustomFieldId] ON [dbo].[CustomField]
+	(
+		[ClientId] ASC,
+		[EntityType] ASC,
+		[IsDeleted] ASC,
+		[CustomFieldId] ASC
+	)WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END 
+GO
+
+IF NOT EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_CustomField_ClientId_EntityType_IncludeColumns' AND object_id = OBJECT_ID('CustomField'))
+BEGIN
+	CREATE NONCLUSTERED INDEX [IX_CustomField_ClientId_EntityType_IncludeColumns] ON [dbo].[CustomField]
+	(
+		[ClientId] ASC,
+		[EntityType] ASC,
+		[IsDeleted] ASC
+	)
+	INCLUDE ( 	[CustomFieldId],
+		[Name],
+		[CustomFieldTypeId],
+		[IsRequired],
+		[AbbreviationForMulti]) WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END
+GO
+
+
+IF NOT EXISTS(SELECT * 
+FROM sys.indexes 
+WHERE name='IX_CustomfieldEntity_EntityId_CustomFielId' AND object_id = OBJECT_ID('CustomField_Entity'))
+BEGIN
+	CREATE NONCLUSTERED INDEX [IX_CustomfieldEntity_EntityId_CustomFielId] ON [dbo].[CustomField_Entity]
+	(
+		[EntityId] ASC,
+		[CustomFieldId] ASC
+	)
+	INCLUDE ([Value]) WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
+END 
+GO
+
 -- STATISTICS
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_1838629593_1_17_6')
+BEGIN
+	CREATE STATISTICS [_dta_stat_1838629593_1_17_6] ON [dbo].[CustomField]([CustomFieldId], [ClientId], [EntityType])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_1838629593_1_6')
+BEGIN
+	CREATE STATISTICS [_dta_stat_1838629593_1_6] ON [dbo].[CustomField]([CustomFieldId], [EntityType])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_1838629593_8_17')
+BEGIN
+	CREATE STATISTICS [_dta_stat_1838629593_8_17] ON [dbo].[CustomField]([IsDeleted], [ClientId])
+END 
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_1838629593_8_6')
+BEGIN
+	CREATE STATISTICS [_dta_stat_1838629593_8_6] ON [dbo].[CustomField]([IsDeleted], [EntityType])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_1166627199_1_3')
+BEGIN
+	CREATE STATISTICS [_dta_stat_1166627199_1_3] ON [dbo].[Plan_Campaign_Program_Tactic_LineItem]([PlanLineItemId], [LineItemTypeId])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_581577110_7_15_12')
+BEGIN
+	CREATE STATISTICS [_dta_stat_581577110_7_15_12] ON [dbo].[Stage]([IsDeleted], [ClientId], [Code])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_581577110_7_1')
+BEGIN
+	CREATE STATISTICS [_dta_stat_581577110_7_1] ON [dbo].[Stage]([IsDeleted], [StageId])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_645577338_17_1')
+BEGIN
+	CREATE STATISTICS [_dta_stat_645577338_17_1] ON [dbo].[TacticType]([IsDeleted], [TacticTypeId])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_117575457_1_9')
+BEGIN
+	CREATE STATISTICS [_dta_stat_117575457_1_9] ON [dbo].[Model]([ModelId], [IsDeleted])
+END 
+
 IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_2101582525_17_1')
 BEGIN
 	CREATE STATISTICS [_dta_stat_2101582525_17_1] ON [dbo].[Plan_Campaign]([IsDeleted], [PlanCampaignId])
@@ -1732,10 +1917,40 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_437576597_1_2')
+BEGIN	
+	CREATE STATISTICS [_dta_stat_437576597_1_2] ON [dbo].[Plan_Campaign_Program]([PlanProgramId], [PlanCampaignId])
+END
+GO
+
 IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_56387270_15_1')
 BEGIN	
 	CREATE STATISTICS [_dta_stat_56387270_15_1] ON [dbo].[Plan_Campaign_Program_Tactic]([IsDeleted], [PlanTacticId])
 END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_469576711_3_1_46')
+BEGIN	
+	CREATE STATISTICS [_dta_stat_469576711_3_1_46] ON [dbo].[Plan_Campaign_Program_Tactic]([TacticTypeId], [PlanTacticId], [CreatedBy])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_469576711_1_46')
+BEGIN	
+	CREATE STATISTICS [_dta_stat_469576711_1_46] ON [dbo].[Plan_Campaign_Program_Tactic]([PlanTacticId], [CreatedBy])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_469576711_3_46_18')
+BEGIN	
+	CREATE STATISTICS [_dta_stat_469576711_3_46_18] ON [dbo].[Plan_Campaign_Program_Tactic]([TacticTypeId], [CreatedBy], [Status])
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_469576711_46_18_1_3')
+BEGIN	
+	CREATE STATISTICS [_dta_stat_469576711_46_18_1_3] ON [dbo].[Plan_Campaign_Program_Tactic]([CreatedBy], [Status], [PlanTacticId], [TacticTypeId])
+END	
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.stats WHERE name='_dta_stat_56387270_1_2_15')
@@ -2506,7 +2721,6 @@ BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[spGetPlanCalendarData] AS' 
 END
 GO
-
 ALTER PROCEDURE [dbo].[spGetPlanCalendarData]
 	@planIds varchar(max),
 	@ownerIds varchar(max),
@@ -3178,7 +3392,6 @@ BEGIN
 
 	--Exec spGetPlanCalendarData '20220','41F64F4B-531E-4CAA-8F5F-328E36D9B202','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','thisyear','','',''
 END
-
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPlanBudget]') AND type in (N'P', N'PC'))
@@ -3191,7 +3404,7 @@ GO
 -- Create date: 09/08/2016
 -- Description:	This store proc. return data for budget tab for repective plan, campaign, program and tactic
 -- =============================================
-ALTER PROCEDURE [dbo].[GetPlanBudget]--[GetPlanBudget] '20212,20203,19569'
+ALTER PROCEDURE [dbo].[GetPlanBudget]
 	(
 	@PlanId NVARCHAR(MAX),
 	@ownerIds nvarchar(max)='',
@@ -3206,18 +3419,27 @@ DECLARE @tmp TABLE
 (
 			EntityId		BIGINT,
 			ParentEntityId	BIGINT,
-			EntityType NVARCHAR(50)
+			EntityType NVARCHAR(50),
+			StartDate DATETIME,
+			EndDate DATETIME,
+			ColorCode NVARCHAR(50)
 )
 
 INSERT INTO @tmp
 --SELECT * FROM fnGetFilterEntityHierarchy( @PlanId,@ownerIds,@tactictypeIds,@statusIds)
-SELECT EntityId,ParentEntityId,EntityType FROM fnGetEntitieHirarchyByPlanId(@PlanId)
+SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode FROM fnGetEntitieHirarchyByPlanId(@PlanId)
 
 SELECT		Id
 			,ActivityId
 			,ActivityType
 			,Title
 			,ParentActivityId
+			,StartDate
+			,EndDate
+			,ColorCode
+			,0 LinkTacticId
+			,0 TacticTypeId
+			,NULL MachineName
 			,CreatedBy
 			,NULL LineItemTypeId
 			,0 IsAfterApproved
@@ -3236,6 +3458,9 @@ SELECT		Id
 					,P.Title
 					,'plan' as ActivityType
 					,H.ParentEntityId ParentActivityId
+					,ISNULL(H.StartDate, GETDATE()) AS StartDate
+					,ISNULL(H.EndDate, GETDATE()) AS EndDate
+					,H.ColorCode
 					,P.CreatedBy
 					, Budget
 					,PB.Value
@@ -3257,6 +3482,12 @@ SELECT
 		,ActivityType
 		,Title
 		,ParentActivityId
+		,StartDate
+		,EndDate
+		,ColorCode
+		,0 LinkTacticId
+		,0 TacticTypeId
+		,NULL MachineName
 		,CreatedBy
 		,NULL LineItemTypeId
 		,0 IsAfterApproved
@@ -3275,6 +3506,9 @@ SELECT
 				,PC.Title
 				,'campaign' as ActivityType
 				,H.ParentEntityId ParentActivityId
+				,ISNULL(H.StartDate, GETDATE()) AS StartDate
+				,ISNULL(H.EndDate, GETDATE()) AS EndDate
+				,H.ColorCode
 				,PC.CreatedBy
 				,CampaignBudget Budget
 				,PCB.Value
@@ -3296,6 +3530,12 @@ UNION ALL
 		,ActivityType
 		,Title
 		,ParentActivityId
+		,StartDate
+		,EndDate
+		,ColorCode
+		,0 LinkTacticId
+		,0 TacticTypeId
+		,NULL MachineName
 		,CreatedBy
 		,NULL LineItemTypeId
 		,0 IsAfterApproved
@@ -3314,6 +3554,9 @@ UNION ALL
 				,PCP.Title
 				,'program' as ActivityType
 				,H.ParentEntityId ParentActivityId
+				,ISNULL(H.StartDate, GETDATE()) AS StartDate
+				,ISNULL(H.EndDate, GETDATE()) AS EndDate
+				,H.ColorCode
 				,PCP.CreatedBy
 				,PCP.ProgramBudget Budget
 				,PCPB.Value
@@ -3335,6 +3578,12 @@ UNION ALL
 		,ActivityType
 		,Title
 		,ParentActivityId
+		,StartDate
+		,EndDate
+		,ColorCode
+		,ISNULL(LinkedTacticId, 0) LinkTacticId
+		,ISNULL(TacticTypeId, 0) TacticTypeId
+		,TacticCustomName MachineName
 		,CreatedBy
 		,NULL LineItemTypeId
 		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
@@ -3353,6 +3602,12 @@ UNION ALL
 				,PCPT.Title
 				,'tactic' as ActivityType
 				,H.ParentEntityId ParentActivityId
+				,ISNULL(H.StartDate, GETDATE()) AS StartDate
+				,ISNULL(H.EndDate, GETDATE()) AS EndDate
+				,H.ColorCode
+				,PCPT.LinkedTacticId
+				,PCPT.TacticTypeId
+				,PCPT.TacticCustomName 
 				,PCPT.CreatedBy
 				,PCPT.TacticBudget Budget
 				,CASE WHEN PCPT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
@@ -3392,6 +3647,12 @@ UNION ALL
 		,ActivityType
 		,Title
 		,ParentActivityId
+		,StartDate
+		,EndDate
+		,ColorCode
+		,0 LinkTacticId
+		,0 TacticTypeId
+		,NULL MachineName
 		,CreatedBy
 		,LineItemTypeId
 		,IsAfterApproved
@@ -3409,6 +3670,9 @@ UNION ALL
 					,PCPTL.Title
 					,'lineitem' as ActivityType
 					,H.ParentEntityId ParentActivityId
+					,ISNULL(H.StartDate, GETDATE()) AS StartDate
+					,ISNULL(H.EndDate, GETDATE()) AS EndDate
+					,H.ColorCode
 					,PCPTL.CreatedBy
 					,PCPTL.LineItemTypeId LineItemTypeId
 					,CASE WHEN PCPT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
@@ -3444,7 +3708,6 @@ BEGIN
 	DROP PROCEDURE dbo.sp_Send_Mail_For_Alerts
 END
 GO
-
 
 CREATE PROCEDURE [dbo].[sp_Send_Mail_For_Alerts]
         @from Nvarchar(500),
