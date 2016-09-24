@@ -241,7 +241,7 @@ namespace RevenuePlanner.Controllers
             string year = Convert.ToString(DateTime.Now.Year);
             //int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).FirstOrDefault().PlanId;
             int planid = 0;
-            var checkcurrentplan = tblPlan.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault();
+            Plan checkcurrentplan = tblPlan.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault();
             if (checkcurrentplan != null)
             {
                 planid = tblPlan.OrderBy(p => p.Title).FirstOrDefault().PlanId; // Change By Nishant Sheth for select first plan
@@ -252,14 +252,14 @@ namespace RevenuePlanner.Controllers
             }
 
             //Modified By Komal Rawal include year filter in default view
-            var LastSetOfPlanSelected = new List<string>();
-            var LastSetOfYearSelected = new List<string>();
-            var Label = Enums.FilterLabel.Plan.ToString();
-            var Yearlabel = Enums.FilterLabel.Year.ToString();
-            var FilterName = Sessions.FilterPresetName;
-            //var SetOFLastViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.ID).ToList();
+            List<string> LastSetOfPlanSelected = new List<string>();
+            List<string> LastSetOfYearSelected = new List<string>();
+            string  Label = Enums.FilterLabel.Plan.ToString();
+            string Yearlabel = Enums.FilterLabel.Year.ToString();
+            string FilterName = Sessions.FilterPresetName;
+
             //Added By komal Rawal for #1959 to handle last viewed data in session
-            var SetOFLastViews = new List<Plan_UserSavedViews>();
+            List<Plan_UserSavedViews> SetOFLastViews = new List<Plan_UserSavedViews>();
             if (Common.PlanUserSavedViews == null)
             {
                 Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(listview => listview.Userid == Sessions.User.ID).ToList();
@@ -282,10 +282,10 @@ namespace RevenuePlanner.Controllers
                 }
             }
             //End
-            var SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.ID).ToList();
-            var SetofLastYearsSelected = SetOFLastViews.Where(listview => listview.FilterName == Yearlabel && listview.Userid == Sessions.User.ID).ToList();
-            var FinalSetOfPlanSelected = "";
-            var FinalSetOfYearsSelected = "";
+            List<Plan_UserSavedViews> SetOfPlanSelected = SetOFLastViews.Where(listview => listview.FilterName == Label && listview.Userid == Sessions.User.ID).ToList();
+            List<Plan_UserSavedViews> SetofLastYearsSelected = SetOFLastViews.Where(listview => listview.FilterName == Yearlabel && listview.Userid == Sessions.User.ID).ToList();
+            string FinalSetOfPlanSelected = "";
+            string FinalSetOfYearsSelected = "";
             if (FilterName != null && FilterName != "")
             {
                 FinalSetOfPlanSelected = SetOfPlanSelected.Where(listview => listview.ViewName == FilterName).Select(listview => listview.FilterValues).FirstOrDefault();
@@ -354,8 +354,6 @@ namespace RevenuePlanner.Controllers
             obj.Text = Enums.ViewByAllocated.Quarterly.ToString();
             obj.Value = Enums.PlanAllocatedBy.quarters.ToString();
             lstViewByAllocated.Add(obj);
-            //lstViewByAllocated.Add(new SelectListItem { Text = Enums.ViewByAllocated.Monthly.ToString(), Value = Enums.PlanAllocatedBy.months.ToString() });
-            //lstViewByAllocated.Add(new SelectListItem { Text = Enums.ViewByAllocated.Quarterly.ToString(), Value = Enums.PlanAllocatedBy.quarters.ToString() });
             lstViewByAllocated = lstViewByAllocated.Where(sort => !string.IsNullOrEmpty(sort.Text)).ToList();
             String viewby = string.Empty;
             if (!string.IsNullOrEmpty(Sessions.ViewByValue))
@@ -373,7 +371,6 @@ namespace RevenuePlanner.Controllers
             {
                 var selectedViewBy = lstViewByAllocated.Where(x => x.Value == viewby).First();
                 selectedViewBy.Selected = true;
-                //  ViewBag.SelectedTimeFrame = viewby;
 
             }
             //insertation end
@@ -433,7 +430,7 @@ namespace RevenuePlanner.Controllers
 
             // Start - Added by Arpita Soni for Ticket #1148 on 02/02/2015
             // to make default selected plan from session planId
-            var selectedYear = tblPlan.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Year).FirstOrDefault();
+            string selectedYear = tblPlan.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Year).FirstOrDefault();
             if (selectedYear == null)
             {
                 selectedYear = tblPlan.Where(plan => plan.PlanId == planid).Select(plan => plan.Year).FirstOrDefault();
@@ -460,13 +457,10 @@ namespace RevenuePlanner.Controllers
             }
             //Add  By Nishant Sheth
             // Desc :: #1821 - Get list of plan base on start Date and end date
-            //DateTime startDate = new DateTime(Convert.ToInt32(selectedYear), 1, 1);
-            //DateTime endDate = new DateTime(Convert.ToInt32(selectedYear), 12, 31);
-            // Common.GetReportStartEndDate(selectedYear, ref startDate1, ref endDate1, ref startDate2, ref endDate2);
 
-            var DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
+            List<Plan> DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
                 && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.CID && plan.IsActive == true).ToList();
-            var uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
+            List<int> uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
             // Modified By Nishant Sheth 
             // Desc #1842 :: as per code review changes
             // Client Id condition added by Bhavesh Date: 07-jan-2016, Ticket #1805,#1842
@@ -480,44 +474,34 @@ namespace RevenuePlanner.Controllers
                     EndDate = camp.EndDate
                 })
                 .ToList();
-            // Removed by Bhavseh. We already update parent date while updating of child entity date so we can get year from parent.
-            var PlanIds = DataPlanList.Where(plan => SelectedYearList.Contains(plan.Year))
+
+            List<int> PlanIds = DataPlanList.Where(plan => SelectedYearList.Contains(plan.Year))
                 .Select(plan => plan.PlanId).Distinct().ToList();
 
-            var CampPlanIds = CampPlans.Where(camp => SelectedYearList.Contains(camp.StartDate.Year.ToString()) || SelectedYearList.Contains(camp.EndDate.Year.ToString()))
+            List<int> CampPlanIds = CampPlans.Where(camp => SelectedYearList.Contains(camp.StartDate.Year.ToString()) || SelectedYearList.Contains(camp.EndDate.Year.ToString()))
                 .Select(camp => camp.PlanId).Distinct().ToList();
 
-            //var CampPlanIds = CampPlans.Where(camp => (!(camp.StartDate >= endDate1 || camp.EndDate <= startDate1)))
-            //    .Select(camp => camp.PlanId).Distinct().ToList();
-
-            var allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
-            var StartYears = CampPlans.Select(camp => camp.StartYear)
+            List<int> allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
+            List<int> StartYears = CampPlans.Select(camp => camp.StartYear)
                 .Distinct().ToList();
 
-            var EndYears = CampPlans.Select(camp => camp.EndYear)
+            List<int> EndYears = CampPlans.Select(camp => camp.EndYear)
                 .Distinct().ToList();
 
-            var PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
+            List<int> PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
 
-            var lstPlan = tblPlan.Where(plan => allPlanIds.Contains(plan.PlanId)).ToList(); // Modify BY Nishant Sheth #1821
+            List<Plan> lstPlan = tblPlan.Where(plan => allPlanIds.Contains(plan.PlanId)).ToList(); // Modify BY Nishant Sheth #1821
             if (lstPlan.Count == 0)
             {
                 TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
                 return RedirectToAction("PlanSelector", "Plan");
             }
-            //List<SelectListItem> lstPlanList = new List<SelectListItem>();
-            string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
-            string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
-
-            //lstPlanList = lstPlan.Where(plan => plan.Year == selectedYear).Select(plan => new SelectListItem { Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (plan.PlanId == Sessions.PlanId ? true : false) }).ToList();
+           
             ViewBag.SelectedYear = selectedYear;//@N set selected year for report year list
             // End - Added by Arpita Soni for Ticket #1148 on 02/02/2015
 
-            var yearlist = PlanYears;// Modify BY Nishant Sheth #1821
+            List<int> yearlist = PlanYears;// Modify BY Nishant Sheth #1821
             SelectListItem objYear = new SelectListItem();
-
-
-
 
             foreach (int years in yearlist)
             {
@@ -534,24 +518,20 @@ namespace RevenuePlanner.Controllers
             //End
 
 
-            // activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
             ViewBag.ViewPlan = lstPlan.OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList().Select(plan => new PlanListModel
             {
                 PlanId = plan.PlanId,
-                Title = HttpUtility.HtmlDecode(plan.Year + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy)),
+                Title = HttpUtility.HtmlDecode(plan.Year + " " + plan.Title),
                 Checked = LastSetOfPlanSelected.Count.Equals(0) ? plan.PlanId == Sessions.PlanId ? "checked" : "" : LastSetOfPlanSelected.Contains(plan.PlanId.ToString()) ? "checked" : "",
 
             }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();//@N Left Panel Plan List
 
-            //
-
-            //ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+          
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
             //End Added by Mitesh Vaishnav for PL ticket #846
 
             ViewBag.DashboardList = Common.GetSpDashboarData(Sessions.User.ID);// Add By Nishant Sheth // #2262 : display menu for report's dashboard
 
-            var UserMeasureAppCode = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ApplicationId).Any();
             string ReportDBConnString = string.Empty;
             string AuthorizedReportAPIUserName = string.Empty;
             string AuthorizedReportAPIPassword = string.Empty;
@@ -2656,24 +2636,6 @@ namespace RevenuePlanner.Controllers
             lstViewByAllocated = lstViewByAllocated.Where(modal => !string.IsNullOrEmpty(modal.Text)).ToList();
             ViewBag.ViewByAllocated = lstViewByAllocated;
 
-            // Comment By Bhavesh. Not require
-            ////// Set Year list.
-            //List<SelectListItem> lstYear = new List<SelectListItem>();
-            //var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.CID).ToList();
-            //var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
-            //// Remove FY from Year Ticekt #1805 By Bhavesh on Date 07-jan-2016
-            //yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = year, Value = year }));
-
-
-            //string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
-            //string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
-
-            //List<SelectListItem> lstPlanList = new List<SelectListItem>();
-
-            //lstPlanList = lstPlan.Where(plan => plan.Year == currentYear).OrderBy(plan => plan.Title, new AlphaNumericComparer()).Select(plan => new SelectListItem { Text = currentYear + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (Sessions.ReportPlanIds.Contains(plan.PlanId) ? true : false) }).ToList();
-            //ViewBag.ViewPlan = lstPlanList.Where(plan => !string.IsNullOrEmpty(plan.Text)).ToList();
-            //ViewBag.ViewYear = lstYear.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
-            //ViewBag.SelectedYear = currentYear;
 
             return PartialView("Budget");
         }
@@ -2686,8 +2648,6 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetBudgetPlanBasedOnYear(string Year, string activemenu)
         {
-            string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
-            string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
             // Add By Nishant Sheth
             // Desc :: #1842 For select multiple years base on #1821
             string[] ListYears = Year.Split(',');
@@ -2735,7 +2695,7 @@ namespace RevenuePlanner.Controllers
                 {
                     planList = DataPlanList.Where(plan => allPlanIds.Contains(plan.PlanId)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList().Select(plan => new SelectListItem
                     {
-                        Text = plan.Year + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy),
+                        Text = plan.Year + " " + plan.Title ,
                         Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy
                     }).ToList();
                 }

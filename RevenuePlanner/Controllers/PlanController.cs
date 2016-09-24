@@ -308,7 +308,7 @@ namespace RevenuePlanner.Controllers
                 objPlanModel.objplanhomemodelheader = Common.GetPlanHeaderValue(id);
 
                 TempData["goalTypeList"] = GoalTypeList;
-                TempData["allocatedByList"] = Common.GetAllocatedByList(); // Modified by Sohel Pathan on 05/08/2014
+              // TempData["allocatedByList"] = Common.GetAllocatedByList(); // Modified by Sohel Pathan on 05/08/2014
             }
             catch (Exception e)
             {
@@ -683,7 +683,7 @@ namespace RevenuePlanner.Controllers
                         {
                             plan.GoalValue = 0;
                         }
-                        plan.AllocatedBy = objPlanModel.AllocatedBy;
+                        plan.AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
                         //plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
                         plan.Budget = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(objPlanModel.Budget).Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, "")), PlanExchangeRate);
                         plan.ModelId = objPlanModel.ModelId;
@@ -733,7 +733,7 @@ namespace RevenuePlanner.Controllers
                         {
                             plan.GoalValue = 0;
                         }
-                        plan.AllocatedBy = objPlanModel.AllocatedBy;
+                        plan.AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
                         plan.Description = objPlanModel.Description;
                         //plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
                         plan.Budget = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(objPlanModel.Budget).Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, "")), PlanExchangeRate);

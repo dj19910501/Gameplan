@@ -134,18 +134,7 @@
                             <span id="revenueSign">@Sessions.PlanCurrencySymbol</span>
                             @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat", isedit = isPlanEdit })
                             and a budget of
-                            @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>" + Sessions.PlanCurrencySymbol + "800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit })
-                            allocated by
-                            @{
-                                if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
-                                {
-                                    @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue hide", placeholder = @Model.AllocatedBy })
-                                }
-                                else
-                                {
-                                    <span id="spanAllocatedBy">@Model.AllocatedBy</span>
-                                }
-                                <span id="spanZeroBudget" class="source-sans-prosemibold" style="display: none;">none</span>  }.
+                            @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>" + Sessions.PlanCurrencySymbol + "800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit }).
                             <div class="nl-overlay"></div>
                         </div>
                         <div id="divPlanDefinationDisabled">
@@ -159,9 +148,7 @@
                             goal of
                             <span id="disabledGoalValue" class="source-sans-proregular letter-space"></span>
                             and a budget of
-                            <span id="disabledBudgetValue" class="source-sans-proregular"></span>
-                            allocated by
-                            <span id="disabledAllocatedBy" class="source-sans-proregular"></span>.
+                            <span id="disabledBudgetValue" class="source-sans-proregular"></span>.
                         </div>
                         <div id="divBudgetSummary">
                             Based on my goal, this plan will require
