@@ -1,4 +1,5 @@
-﻿using RevenuePlanner.Helpers;
+﻿using Elmah;
+using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,16 @@ namespace RevenuePlanner.Services
         private const string Open = "1";
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
-        public const string FixHeader = "ActivityId,Type,machinename,,,,,";
+        public const string FixHeader = "ActivityId,Type,machinename,,,,,";	
+        public const string EndColumnsHeader = ",Unallocated Budget";
         public const string FixColumnIds = "ActivityId,Type,machinename,taskname,Buttons,BudgetCost,PlannedCost,ActualCost";
+        public const string EndColumnIds = ",Budget";
         public const string FixColType = "ro,ro,ro,tree,ro,ed,ed,ed";
-        public const string FixcolWidth = "100,100,100,250,100,100,100,100";
-        public const string FixColsorting = "na,na,na,na,na,na,na,na";
+        public const string EndColType = ",ro";
+        public const string FixcolWidth = "100,100,100,250,100,100,100,100"; 
+        public const string EndcolWidth = ",100";
+        public const string FixColsorting = "na,na,na,na,na,na,na,na";	
+        public const string EndColsorting = ",na";
         public const string QuarterPrefix = "Q";
         public const string DhtmlxColSpan = "#cspan";
         public const string ColBudget = "Budget";
@@ -40,6 +46,10 @@ namespace RevenuePlanner.Services
             DataTable dt = objSp.GetBudget(PlanIds, OwnerIds, TacticTypeids, StatusIds); //Get budget data for budget,planned cost and actual using store proc. GetplanBudget
 
             List<PlanBudgetModel> model = CreateBudgetDataModel(dt, PlanExchangeRate); //Convert datatable with budget data to PlanBudgetModel model
+            List<int> CustomFieldFilteredTacticIds = FilterCustomField(model, CustomFieldId);
+
+            //filter budget model by custom field filter list
+            model.RemoveAll(a => string.Compare(a.ActivityType, ActivityType.ActivityTactic, true) == 0 && CustomFieldFilteredTacticIds.Contains(Convert.ToInt32(a.Id)));
 
             model = SetCustomFieldRestriction(model,UserID,ClientId);//Set customfield permission for budget cells. budget cell will editable or not.
             int ViewByID = (int)viewBy;
@@ -84,6 +94,45 @@ namespace RevenuePlanner.Services
             return objBudgetDHTMLXGrid;
         }
 
+        public List<int> FilterCustomField(List<PlanBudgetModel> BudgetModel, string CustomFieldFilter)
+        {
+            List<int> lstTacticIds = new List<int>();
+            try
+            {
+                if (BudgetModel != null && BudgetModel.Count > 0)
+                {
+                    
+                    #region "Declare & Initialize local Variables"
+                    List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                    List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                    string tacticType = Enums.EntityType.Tactic.ToString().ToUpper();
+                    string[] filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldFilter) ? null : CustomFieldFilter.Split(',');
+                    List<PlanBudgetModel> tacData = BudgetModel.Where(tac => string.Compare(tac.ActivityType,tacticType,true)==0).ToList();
+                    lstTacticIds = tacData.Select(tactic => Convert.ToInt32(tactic.Id)).ToList();
+                    #endregion
+
+                   // resultData = allData.Where(tac => tac.type.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
+                    if (filteredCustomFields != null)
+                    {
+                        //  filteredCustomFields.ForEach(customField =>
+                        foreach (string customField in filteredCustomFields)
+                        {
+                            string[] splittedCustomField = customField.Split('_');
+                            lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                            lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                        };
+
+                        lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return lstTacticIds;
+        }
+
         public List<PlanBudgetModel> CreateBudgetDataModel(DataTable DtBudget, double PlanExchangeRate)
         {
             List<PlanBudgetModel> model = new List<PlanBudgetModel>();
@@ -96,7 +145,7 @@ namespace RevenuePlanner.Services
                 ActivityType = Convert.ToString( row["ActivityType"]),
                 ParentActivityId = Convert.ToString( row["ParentActivityId"]),
                 YearlyBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Budget"])), PlanExchangeRate),
-                TotalAllocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnallocatedBudget"])), PlanExchangeRate),
+                TotalUnallocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnallocatedBudget"])), PlanExchangeRate),
                 TotalActuals = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationActual"])), PlanExchangeRate),
                 TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["TotalAllocationCost"])), PlanExchangeRate),
                 IsOwner = Convert.ToBoolean(row["IsOwner"]),
@@ -213,6 +262,12 @@ namespace RevenuePlanner.Services
             //Set monthly/quarterly allocation of budget,actuals and planned for plan
             BudgetDataObjList = CampaignMonth(model,EntityType, Entity.ParentActivityId,
                     BudgetDataObjList, AllocatedBy, Entity.ActivityId);
+
+            BudgetDataObj = new Budgetdataobj();
+            //Add unAllocated budget into dhtmlx model
+            BudgetDataObj.value =Convert.ToString( Entity.UnallocatedBudget);
+            BudgetDataObjList.Add(BudgetDataObj);
+
             return BudgetDataObjList;
         }
         
@@ -421,11 +476,13 @@ namespace RevenuePlanner.Services
                     colSorting = colSorting + ",str,str,str";
                 }
             }
-            objBudgetDHTMLXGrid.SetHeader = setHeader;
-            objBudgetDHTMLXGrid.ColType = colType;
-            objBudgetDHTMLXGrid.Width = width;
-            objBudgetDHTMLXGrid.ColSorting = colSorting;
-            objBudgetDHTMLXGrid.ColumnIds = columnIds;
+            objBudgetDHTMLXGrid.SetHeader = setHeader+EndColumnsHeader;
+            objBudgetDHTMLXGrid.ColType = colType+EndColType;
+            objBudgetDHTMLXGrid.Width = width+EndcolWidth;
+            objBudgetDHTMLXGrid.ColSorting = colSorting+EndColsorting;
+            objBudgetDHTMLXGrid.ColumnIds = columnIds+EndColumnIds;
+            attachHeader.Add("Unallocated Budget");
+
             objBudgetDHTMLXGrid.AttachHeader = attachHeader;
             return objBudgetDHTMLXGrid;
         }
@@ -439,25 +496,17 @@ namespace RevenuePlanner.Services
                 Budgetdataobj objTotalBudget = new Budgetdataobj();
                 Budgetdataobj objTotalCost = new Budgetdataobj();
                 Budgetdataobj objTotalActual = new Budgetdataobj();
-                double childTotalAllocated = 0.0; //Child Total of respective entities
-                if (activityType == ActivityType.ActivityPlan)
+                //entity type line item has no budget so we set '---' value for line item
+                if (Entity.ActivityType==ActivityType.ActivityLineItem)
                 {
-                    childTotalAllocated = model.Where(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == Entity.ActivityId).Select(p => p.TotalAllocatedBudget).Sum();
+                    objTotalBudget.value = "---";//Set values for Total budget
+                    objTotalBudget.locked = CellLocked;
                 }
-                else if (activityType == ActivityType.ActivityCampaign)
+                else
                 {
-                    childTotalAllocated = model.Where(p => p.ActivityType == ActivityType.ActivityPlan && p.ParentActivityId == Entity.ActivityId).Select(p => p.TotalAllocatedBudget).Sum();
-                }
-                else if (activityType == ActivityType.ActivityProgram)
-                {
-                    childTotalAllocated = model.Where(c => c.ActivityType == ActivityType.ActivityTactic && c.ParentActivityId == Entity.ActivityId).Select(c => c.TotalAllocatedBudget).Sum();
-                }
-                else if (activityType == ActivityType.ActivityTactic)
-                {
-                    childTotalAllocated = model.Where(c => c.ActivityType == ActivityType.ActivityLineItem && c.ParentActivityId == Entity.ActivityId).Select(c => c.TotalAllocatedBudget).Sum();
-                }
-                objTotalBudget.value = Convert.ToString(childTotalAllocated);//Set values for Total budget
+                objTotalBudget.value = Convert.ToString(Entity.YearlyBudget);//Set values for Total budget
                 objTotalBudget.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                }
 
                 objTotalActual.value = Convert.ToString( Entity.TotalActuals);//Set values for Total actual
                 objTotalActual.locked = CellLocked;

@@ -62,7 +62,7 @@ namespace RevenuePlanner.Models
         public bool IsOwner { get; set; }
         public int CreatedBy { get; set; }
         public BudgetMonth MonthValues { get; set; }
-        public double TotalAllocatedBudget { get; set; }
+        public double TotalUnallocatedBudget { get; set; }
         public double YearlyBudget { get; set; }
         public double TotalAllocatedCost { get; set; }
         public double TotalActuals { get; set; }
