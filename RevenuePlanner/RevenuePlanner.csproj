@@ -800,7 +800,7 @@
     <Content Include="Content\Common\grid sample.xls" />
     <None Include="Properties\PublishProfiles\MRP-Dev.pubxml" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Index_Old.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
@@ -923,7 +923,7 @@
     <Content Include="Views\Plan\CreatePlan.cshtml" />
     <Content Include="Views\Report\_ReportCardSection.cshtml" />
     <Content Include="Views\Report\_ConversionToPlan.cshtml" />
-    <Content Include="Views\Plan\_HomeGrid.cshtml" />
+    <Content Include="Views\Plan\_HomeGrid_Old.cshtml" />
     <Content Include="Views\Plan\_GridImprovement.cshtml" />
     <Content Include="Views\Finance\Index.cshtml" />
     <Content Include="Views\Finance\_EditBudget.cshtml" />
@@ -954,7 +954,7 @@
     <Content Include="Views\Currency\_PlanCurrencyGrid.cshtml" />
     <Content Include="Views\Currency\_ReportCurrencyGrid.cshtml" />
     <Content Include="Views\Currency\_currencyMenu.cshtml" />
-    <Content Include="Views\Home\IndexNewDesign.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\SideFilters.cshtml" />
     <Content Include="Views\ColumnView\_AddColumnView.cshtml" />
     <Content Include="Views\Home\Index - Copy.cshtml" />
@@ -975,7 +975,7 @@
     <Content Include="Views\Filter\Filters.cshtml" />
     <Content Include="Views\Shared\_Planhud.cshtml" />
     <Content Include="Views\Budget\Budget.cshtml" />
-    <Content Include="Views\Plan\_HomeGrid_New.cshtml" />
+    <Content Include="Views\Plan\_HomeGrid.cshtml" />
     <Content Include="Views\Home\_HoneyComb.cshtml" />
     <Content Include="Views\Home\_PlanCalendar.cshtml" />
     <None Include="Service References\BDSService\BDSService.wsdl" />
