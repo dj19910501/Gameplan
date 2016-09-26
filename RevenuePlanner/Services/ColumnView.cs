@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Xml.Linq;
@@ -150,9 +151,9 @@ namespace RevenuePlanner.Services
                         //adding custom fields of all entities.
                         List<CustomAttribute> columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new CustomAttribute
                         {
-                            EntityType = Convert.ToString(row["EntityType"]),
+                            EntityType = Convert.ToString(row["EntityType"]).Trim(),
                             CustomFieldId = Convert.ToString(row["CustomFieldId"]),
-                            CutomfieldName = Convert.ToString(row["Name"]),
+                            CutomfieldName = Convert.ToString(row["Name"]).Trim(),
                             ParentID = Convert.ToInt32(row["ParentId"])
 
                         }).ToList();
@@ -172,19 +173,29 @@ namespace RevenuePlanner.Services
                         CustomAttribute mqlfield = new CustomAttribute
                         {
                             EntityType = "Common",
-                            CustomFieldId = Enums.PlanGoalType.MQL.ToString().ToLower(),
+                            CustomFieldId = Convert.ToString(Enums.PlanGoalType.MQL).ToLower(),
                             CutomfieldName = MQLTitle,
                             ParentID = 0
                         };
                         BasicFields.Add(mqlfield);
+
+                        CustomAttribute revenuefield = new CustomAttribute
+                         {
+                             EntityType = "Common",
+                             CustomFieldId = Convert.ToString(Enums.PlanGoalType.Revenue).ToLower(),
+                             CutomfieldName = Convert.ToString(Enums.PlanGoalType.Revenue),
+                             ParentID = 0
+                         };
+                        BasicFields.Add(revenuefield);
+
                         BasicFields.AddRange(columnattribute);
                     }
-
+                 
                     //adding all attributes to single list.
-                    allattributeList = BasicFields.GroupBy(a => new { EntityType = a.EntityType }).Select(a => new ColumnViewEntity
+                    allattributeList = BasicFields.GroupBy(a => a.EntityType, StringComparer.OrdinalIgnoreCase).Select(a => new ColumnViewEntity
                     {
-                        EntityType = a.Key.EntityType,
-                        AttributeList = BasicFields.Where(atr => atr.EntityType == a.Key.EntityType).Select(atr => new ColumnViewAttribute
+                        EntityType = new CultureInfo("en-US").TextInfo.ToTitleCase(a.Key),
+                        AttributeList = BasicFields.Where(atr => atr.EntityType.ToLower() == a.Key.ToLower()).Select(atr => new ColumnViewAttribute
                         {
                             CustomFieldId = atr.CustomFieldId,
                             CutomfieldName = atr.CutomfieldName,

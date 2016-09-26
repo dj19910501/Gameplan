@@ -59,7 +59,7 @@ Left join CustomFieldOption on CustomField.CustomFieldId = CustomFieldOption.Cus
 CustomField.IsDeleted=0 and (CustomField.CustomFieldTypeId <> @CustomfieldType or (CustomFieldOptionId IS NOT NULL AND CustomField.CustomFieldTypeId=@CustomfieldType ))
 and ClientId= CASE WHEN @ClientId IS NULL THEN ClientId ELSE @ClientId END and CustomField.EntityType in('Campaign','Program','Tactic','LineItem')
 group by CustomField.CustomFieldId,CustomField.Name,CustomField.IsRequired,CustomField.EntityType,CustomFieldDependency.ParentCustomFieldId,CustomFieldType.Name
-order by entityorder
+order by entityorder,CustomField.Name
 
 END
 

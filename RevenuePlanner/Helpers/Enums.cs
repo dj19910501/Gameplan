@@ -1595,8 +1595,7 @@ namespace RevenuePlanner.Helpers
            {"roitactictype","Tactic Category"},
            {"tactictype","Type"},
            {"owner","Owner"},
-           {"inq","Target Stage Goal"},
-           {"revenue","Revenue"}
+           {"inq","Target Stage Goal"}
        };
         //end
     }

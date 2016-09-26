@@ -7,7 +7,6 @@
 
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
 <div id="gridbox" style="background-color:white;width:100%;"></div>
 <div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
 <div class="row-fluid calc-height">
@@ -37,8 +36,7 @@
     @*var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); //ToDo : Made required changes to bind Tactic Type Dropdown list on edit tactic type.
     var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');*@ //ToDo : Made required changes to bind Line Item Type Dropdown list on edit Line Item type.
     var IslineItemDelete = false;
-    var isCopyTacticHomeGrid = 0;
-    var isEditTacticHomeGrid = 0;
+
     var colStartDate = 0;
 
     var GridHiddenId = 0;

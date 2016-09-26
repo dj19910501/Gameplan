@@ -23,7 +23,7 @@
                     else
                     {
                         <span class="entity-check">
-                            <input type="checkbox" value="@entity.EntityType.ToString()" class="checkAlldiv" checked="@entity.EntityIsChecked"/>
+                            <input type="checkbox" value="@entity.EntityType.ToString()" class="checkAlldiv" checked="@entity.EntityIsChecked" />
                         </span>
                         <span class="entity-type">@entity.EntityType.ToString()</span>
                     }
@@ -100,20 +100,34 @@
     $(".attr-checkbox").click(function () {
         var currentdivcheckbox = $(this).closest(".chkAttributes").find("input:checkbox");
         var attributeid = $(this).val();
+        CheckDependendCheckbox(this);
+
         if ($(currentdivcheckbox).length == $(this).closest(".chkAttributes").find(".attr-checkbox:checked").length) {
             $(this).closest(".category").find(".checkAlldiv").attr("checked", "checked");
         } else {
             $(this).closest(".category").find(".checkAlldiv").removeAttr("checked");
         }
-        if ($(this).is(':checked')) {
-            $("input:checkbox[parentid=" + attributeid + "]").attr("checked", "checked");
-        }
-        else {
-            $("input:checkbox[parentid=" + attributeid + "]").removeAttr("checked");
-
-        }
 
     });
+   
+    function CheckDependendCheckbox(e) {
+        var attributeid = $(e).val();
+
+        $("input:checkbox[parentid=" + attributeid + "]").each(function () {
+            if ($(e).is(':checked')) {
+                $(this).attr("checked", "checked");
+            }
+            else {
+                $(this).removeAttr("checked");
+            }
+            var parentid = $(this).val();
+            var childcount = $("input:checkbox[parentid=" + parentid + "]").length;
+            if (childcount != undefined && childcount > 0) {
+                CheckDependendCheckbox(this);
+            }
+        });
+
+    }
     $(".selectAllAttribute").click(function () {
         $(".addview-wrap").find("input:checkbox").attr("checked", "checked");
     });
@@ -176,7 +190,7 @@
         else {
             $("#errorMessage1").css("display", "block");
             $("#spanMessageError1").empty();
-            $("#spanMessageError1").text("Please select at least basic attributes");
+            $("#spanMessageError1").text("Please select at least common attributes");
             $("#successMessage1").css("display", "none");
             $(".modal-body").scrollTop(0);
         }
