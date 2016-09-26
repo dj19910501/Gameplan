@@ -1400,6 +1400,17 @@ footer a {
 	text-decoration: underline;
 }
 /* ============ Grid & Calendar View ========== */
+.task-tbl {position:relative}
+.changeView{
+    height: 25px;
+    padding: 3px;
+    position: absolute;
+    right: 8px;
+    top: -12px;
+    width: 25px;
+    z-index: 1;
+}
+.changeView .fa{  color: #3e3f37;font-size: 22px;}
 .task-tbl .gantt_container{overflow-y:auto;overflow-x:hidden}
 .task-tbl{width: 100%; padding:0 15px 0 20px;margin:0}
 .task-tbl #divgridview, .task-tbl #GridGanttContent {
@@ -1606,11 +1617,11 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
     right: 3px;
     top: 265px;  
     display: inline-block;
-    font: normal normal normal 14px/1 FontAwesome;
-    font-size: 20px;
+    font: normal normal normal 22px/1 FontAwesome;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     z-index:3000;
+    color: #3e3f37;
 }
 .partial_wrapper.new-wrapper .headefix .close-x-big-icon:after{
     content: "\f057";
