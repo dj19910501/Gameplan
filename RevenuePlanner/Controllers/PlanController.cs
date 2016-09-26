@@ -65,6 +65,7 @@ namespace RevenuePlanner.Controllers
         CacheObject objCache = new CacheObject(); // Add By Nishant Sheth // Desc:: For get values from cache
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+        IImportData objcommonimportData = new Services.ImportData(); //service to use import methods
         #endregion
         #region variable for load plan grid
         double totalmqlCSV = 0;
@@ -17380,11 +17381,140 @@ namespace RevenuePlanner.Controllers
         /// Import excel file data and update database with imported data.
         /// </summary>
         [HttpPost]
+        //public ActionResult ExcelFileUpload()
+        //{
+        //    DataSet ds = new DataSet();
+        //    DataTable dt = new DataTable();
+        //    PlanExchangeRate = Sessions.PlanExchangeRate;
+        //    try
+        //    {
+        //        if (Request.Files[0].ContentLength > 0)
+        //        {
+        //            string fileExtension =
+        //                System.IO.Path.GetExtension(Request.Files[0].FileName);
+
+        //            if (fileExtension == ".xls" || fileExtension == ".xlsx")
+        //            {
+        //                string fileLocation = Server.MapPath("~/Content/") + Request.Files[0].FileName;
+        //                if (System.IO.File.Exists(fileLocation))
+        //                {
+        //                    GC.Collect();
+        //                    //GC.WaitForPendingFinalizers(); 
+        //                    System.IO.File.Delete(fileLocation);
+        //                }
+        //                Request.Files[0].SaveAs(fileLocation);
+        //                string excelConnectionString = string.Empty;
+
+        //                if (fileExtension == ".xls")
+        //                {
+        //                    excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+        //                                            fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
+        //                    IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
+        //                    excelReader.IsFirstRowAsColumnNames = true;
+        //                    //ds = GetXLS(excelConnectionString);
+        //                    ds = excelReader.AsDataSet();
+        //                    if (ds == null)
+        //                    {
+        //                        return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+        //                    }
+        //                    dt = ds.Tables[0];
+        //                }
+        //                else if (fileExtension == ".xlsx")
+        //                {
+        //                    dt = GetXLSX(fileLocation);
+        //                    if (dt == null)
+        //                    {
+        //                        return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+        //                    }
+
+        //                }
+
+        //                if (dt.Rows.Count == 0 || dt.Rows[0][0] == DBNull.Value)
+        //                {
+        //                    return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+        //                }
+
+        //                if (Convert.ToInt32(dt.Rows[0][0]) != Sessions.PlanId)
+        //                {
+        //                    return Json(new { msg = "error", error = "Data getting uploaded does not relate to specific plan." }, JsonRequestBehavior.AllowGet);
+        //                }
+
+        //                foreach (DataRow row in dt.Rows)
+        //                {
+        //                    if (string.IsNullOrEmpty(row["ActivityId"].ToString().Trim()))
+        //                    {
+        //                        return Json(new { msg = "error", error = "ActivityId must have a proper value." }, JsonRequestBehavior.AllowGet);
+        //                    }
+        //                }
+
+        //                StoredProcedure objSp = new StoredProcedure();
+
+        //                dt.Columns.RemoveAt(dt.Columns.Count - 1);
+        //                if (dt.Rows[dt.Rows.Count - 1][0].ToString().Trim() ==
+        //                    "This document was made with dhtmlx library. http://dhtmlx.com")
+        //                {
+        //                    dt.Rows.RemoveAt(dt.Rows.Count - 1);
+        //                }
+
+        //                for (int i = 0; i < dt.Columns.Count; i++)
+        //                {
+        //                    //insertation start 20/08/2016 #2504 Multi-Currency: used SetValueByExchangeRate method to update cell value
+        //                    RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+        //                    for (int j = 0; j < dt.Rows.Count; j++)
+        //                    {
+        //                        if (i > 1 && dt.Rows[j][i].ToString().Trim() != "")
+        //                        {
+        //                            dt.Rows[j][i] = dt.Rows[j][i].ToString().Replace(",", "").Replace("---", "");
+        //                            if (!string.IsNullOrEmpty(Convert.ToString(dt.Rows[j][i])))
+        //                            {
+        //                                double value = 0;
+        //                                double.TryParse(Convert.ToString(dt.Rows[j][i]), out value);
+        //                                dt.Rows[j][i] = Convert.ToString(objCurrency.SetValueByExchangeRate(value, PlanExchangeRate));
+
+        //                            }
+        //                        }
+        //                    }
+        //                    //insertation End 20/08/2016 #2504 Multi-Currency: used SetValueByExchangeRate method to update cell value
+        //                }
+        //                dt.AcceptChanges();
+
+        //                bool isMonthly = dt.Columns.Count > 7;
+
+        //                var dataResponse = objSp.GetPlanBudgetList(dt, isMonthly, Sessions.User.ID);
+
+        //                if (dataResponse == null)
+        //                {
+        //                    return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+        //                }
+
+        //                // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
+        //                if (dataResponse.Tables[0].Rows.Count > 0)
+        //                {
+        //                    return Json(new { conflict = true, message = "Tactics that were not part of exported file were not added or updated." }, JsonRequestBehavior.AllowGet);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (ex.Message.Contains("process"))
+        //        {
+        //            return Json(new { msg = "error", error = "File is being used by another process." }, JsonRequestBehavior.AllowGet);
+        //        }
+        //        else
+        //        {
+        //            return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+        //        }
+        //    }
+
+        //    return Json(new { conflict = false, message = "File imported successfully." }, JsonRequestBehavior.AllowGet); ;
+
+
+        //}
         public ActionResult ExcelFileUpload()
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
-            PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
                 if (Request.Files[0].ContentLength > 0)
@@ -17398,19 +17528,16 @@ namespace RevenuePlanner.Controllers
                         if (System.IO.File.Exists(fileLocation))
                         {
                             GC.Collect();
-                            //GC.WaitForPendingFinalizers(); 
                             System.IO.File.Delete(fileLocation);
                         }
                         Request.Files[0].SaveAs(fileLocation);
                         string excelConnectionString = string.Empty;
-
                         if (fileExtension == ".xls")
                         {
                             excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
                                                     fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
                             IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
                             excelReader.IsFirstRowAsColumnNames = true;
-                            //ds = GetXLS(excelConnectionString);
                             ds = excelReader.AsDataSet();
                             if (ds == null)
                             {
@@ -17418,6 +17545,7 @@ namespace RevenuePlanner.Controllers
                             }
                             dt = ds.Tables[0];
                         }
+
                         else if (fileExtension == ".xlsx")
                         {
                             dt = GetXLSX(fileLocation);
@@ -17425,19 +17553,11 @@ namespace RevenuePlanner.Controllers
                             {
                                 return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                             }
-
                         }
-
                         if (dt.Rows.Count == 0 || dt.Rows[0][0] == DBNull.Value)
                         {
                             return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                         }
-
-                        if (Convert.ToInt32(dt.Rows[0][0]) != Sessions.PlanId)
-                        {
-                            return Json(new { msg = "error", error = "Data getting uploaded does not relate to specific plan." }, JsonRequestBehavior.AllowGet);
-                        }
-
                         foreach (DataRow row in dt.Rows)
                         {
                             if (string.IsNullOrEmpty(row["ActivityId"].ToString().Trim()))
@@ -17445,40 +17565,18 @@ namespace RevenuePlanner.Controllers
                                 return Json(new { msg = "error", error = "ActivityId must have a proper value." }, JsonRequestBehavior.AllowGet);
                             }
                         }
-
+                        DataTable dtImport = dt;
                         StoredProcedure objSp = new StoredProcedure();
-
-                        dt.Columns.RemoveAt(dt.Columns.Count - 1);
-                        if (dt.Rows[dt.Rows.Count - 1][0].ToString().Trim() ==
-                            "This document was made with dhtmlx library. http://dhtmlx.com")
-                        {
-                            dt.Rows.RemoveAt(dt.Rows.Count - 1);
-                        }
-
-                        for (int i = 0; i < dt.Columns.Count; i++)
-                        {
-                            //insertation start 20/08/2016 #2504 Multi-Currency: used SetValueByExchangeRate method to update cell value
-                            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
-                            for (int j = 0; j < dt.Rows.Count; j++)
-                            {
-                                if (i > 1 && dt.Rows[j][i].ToString().Trim() != "")
-                                {
-                                    dt.Rows[j][i] = dt.Rows[j][i].ToString().Replace(",", "").Replace("---", "");
-                                    if (!string.IsNullOrEmpty(Convert.ToString(dt.Rows[j][i])))
-                                    {
-                                        double value = 0;
-                                        double.TryParse(Convert.ToString(dt.Rows[j][i]), out value);
-                                        dt.Rows[j][i] = Convert.ToString(objCurrency.SetValueByExchangeRate(value, PlanExchangeRate));
-
-                                    }
-                                }
-                            }
-                            //insertation End 20/08/2016 #2504 Multi-Currency: used SetValueByExchangeRate method to update cell value
-                        }
-                        dt.AcceptChanges();
-
-                        bool isMonthly = dt.Columns.Count > 7;
-
+                        //Check data is uploaded monthly or quarterly
+                        bool isMonthly = false;
+                        string[] columnNames = dtImport.Columns.Cast<DataColumn>()
+                               .Select(x => x.ColumnName)
+                               .ToArray();
+                        if (columnNames.Where(w => w.ToLower().Contains("jan")).Any())
+                            isMonthly = true;
+                        //Following is method using which we can specify import data as per type.
+                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dtImport, "budget", isMonthly);                     
+                        //bool isMonthly = dtBudget.Columns.Count > 8;
                         var dataResponse = objSp.GetPlanBudgetList(dt, isMonthly, Sessions.User.ID);
 
                         if (dataResponse == null)
@@ -17489,7 +17587,7 @@ namespace RevenuePlanner.Controllers
                         // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
                         if (dataResponse.Tables[0].Rows.Count > 0)
                         {
-                            return Json(new { conflict = true, message = "Tactics that were not part of exported file were not added or updated." }, JsonRequestBehavior.AllowGet);
+                            return Json(new { conflict = true, message = "Data that were not part of exported file were not added or updated." }, JsonRequestBehavior.AllowGet);
                         }
                     }
                 }
@@ -17508,9 +17606,7 @@ namespace RevenuePlanner.Controllers
 
             return Json(new { conflict = false, message = "File imported successfully." }, JsonRequestBehavior.AllowGet); ;
 
-
         }
-
         /// <summary>
         /// Added by Rushil Bhuptani on 16/06/2016 for ticket #2227
         /// Method that store xls file data in dataset.

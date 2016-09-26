@@ -13,9 +13,40 @@
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
-
+@*Added Following js and css for fileuload control*@
+<script src="@Url.Content("~/Scripts/js/fileinput.js")"></script>
+@Styles.Render("~/Content/css/GetCSSBudget")
 <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
+@*Insertation start for #2623 popup for import multiple plan*@
+<div id="ImportModal" class="modal hide fade import-popover">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4> Import Data  </h4>
+    </div>
+    <div class="modal-body">
+        <ul>
+            @*
+                updation start 14/09/2016 #2543 kausha (current plan data will be downlded as per export and label is changed)
+            *@
+            @*<li><strong>Download file format  <a href="~/Content/Common/grid sample.xls" onclick="return ExportToExcel(); ">here</a></strong></li>*@
+            <li><strong>Download file  <a onclick="return ExportToExcel();">here</a></strong></li>
 
+            <li>
+                <strong>Make any necessary changes</strong><br />
+                <span>Note: Any additional rows or columns added will not appear after imported</span>
+            </li>
+            <li>
+                <strong>Import the file</strong><br />
+                <span>Note:The file format must match the file format of sample file.</span>
+            </li>
+        </ul>
+        <input id="input-43" name="input43[]" type="file" class="file-loading select-file">
+        <div id="errorBlock" class="help-block file-error-message"></div>
+    </div>
+
+
+</div>
+@*Insertation end for #2623 popup for import multiple plan*@
 <script type="text/javascript">
     var HomeGrid;
     gridname = "budget";
@@ -244,5 +275,8 @@
         gridSearchFlag = 1;
         DisplayEditablePopup(id, type);
     });
-  
+    function showModal() {
+        LoadFileInputModelBox();
+        $('#ImportModal').modal('show');
+    }
 </script>

@@ -282,6 +282,8 @@
     <Compile Include="Services\IFilter.cs" />
     <Compile Include="Services\IFinance.cs" />
     <Compile Include="Services\IGrid.cs" />
+    <Compile Include="Services\IImportData.cs" />
+    <Compile Include="Services\ImportData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.SqlServer.sql" />

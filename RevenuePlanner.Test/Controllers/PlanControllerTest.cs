@@ -2087,6 +2087,24 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
+        #region "Import data for plan budget"
+        /// <summary>
+        /// To Check to import data for plan budget
+        /// <author>Kausha Somaiya</author>
+        /// <createdDate>26Sep2016</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void Excel_FileUpload()
+        {
+            Console.WriteLine("Import data for plan budget.\n");          
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();           
+            var result = controller.ExcelFileUpload() as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+        }
+        #endregion
+
     }
 }
 

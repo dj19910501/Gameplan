@@ -1489,3 +1489,59 @@ function GlobalSearch() {
         }
     }
 }
+//insertation start Added following method for open pop up to import file.
+function LoadFileInputModelBox() {
+
+
+    $('.fileinput-upload-button').hide();
+    // Added by Rushil Bhuptani on 22/06/2016 for #2227 to clear file input on modal hide.
+    $('#ImportModal').on('hidden.bs.modal', function () {
+        $('#input-43').fileinput('clear');
+    });
+    $('#input-43').on('fileclear', function (event) {
+        $('.fileinput-upload-button').hide();
+    });
+
+    // Added by Rushil Bhuptani on 14/06/2016 for #2227 for initializing file input plugin
+
+    $("#input-43").fileinput({
+        type: 'POST',
+        showPreview: false,
+        uploadUrl: urlContent + 'Plan/ExcelFileUpload/',
+        allowedFileExtensions: ["xls", "xlsx"],
+        msgInvalidFileExtension: 'Incorrect file format. Please export the file and use that file to upload your changes',
+        elErrorContainer: "#errorBlock"
+
+    });
+
+    // Added by Rushil Bhuptani on 16/06/2016 for #2227 for showing progress bar while importing file.
+    //$('#input-43').on('filepreupload', function (event, data, previewId, index) {
+    //    myApp.showPleaseWait();
+    //});
+
+    // Added by Rushil Bhuptani on 15/06/2016 for #2227 to refresh grid data after file is uploaded.
+    $('#input-43').on('fileuploaded', function (event, data, previewId, index) {
+
+        // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
+        if (data.response.conflict == true) {
+            ShowMessage(false, data.response.message);          
+        }
+        else if (data.response.conflict == false) {
+            ShowMessage(false, data.response.message);
+        }
+        $('#ImportModal').modal('hide');
+        $('#btnbudget').click();
+        $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString());
+        
+    });
+
+    $('#input-43').on('fileloaded', function (event, file, previewId, index, reader) {
+        $('.fileinput-upload-button').show();
+    });
+    $('#input-43').on('fileuploaderror', function (event, data, msg) {
+        $('.fileinput-upload-button').hide();
+    });
+}
+//Following function will be called on click of import bitton to opn pop up for import an excel
+
+///End
