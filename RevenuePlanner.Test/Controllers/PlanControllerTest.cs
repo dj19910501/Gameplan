@@ -1119,27 +1119,6 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region "Get Budget Data For Plan Budget Tab"
-        ///<summary>
-        /// To Check to Get Budget Data For Plan Budget Tab
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Budget_Data()
-        {
-            Console.WriteLine("Get Budget Data For Plan Budget Tab.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int EntityId = DataHelper.GetPlanId();
-
-            var result = controller.GetBudgetedData(EntityId, Enums.BudgetTab.Planned, Enums.ViewBy.Campaign) as PartialViewResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
-            Assert.IsNotNull(result.ViewName);
-        }
-        #endregion
-
         #region "Get Budget Plan List"
         ///<summary>
         /// To Check to Get Budget Plan List.
@@ -1155,27 +1134,6 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
 
             var result = controller.BudgetPlanList() as PartialViewResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
-            Assert.IsNotNull(result.ViewName);
-        }
-        #endregion
-
-        #region "Get Allocated Budget Data For Plan Budget Tab"
-        ///<summary>
-        /// To Check to Get Allocated Budget Data For Plan Budget Tab
-        /// <author>Rahul Shah</author>
-        /// <createdDate>30Jun2016</createdDate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Allocated_Budget_Data()
-        {
-            Console.WriteLine("Get Allocated Budget Data For Plan Budget Tab.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            int EntityId = DataHelper.GetPlanId();
-
-            var result = controller.GetAllocatedBugetData(EntityId) as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
         }

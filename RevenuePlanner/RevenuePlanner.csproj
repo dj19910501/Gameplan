@@ -232,6 +232,7 @@
     <Compile Include="Helpers\JavaScriptException.cs" />
     <Compile Include="Helpers\Message.cs" />
     <Compile Include="Helpers\Sessions.cs" />
+    <Compile Include="Helpers\StoreProcedure.cs" />
     <Compile Include="Models\AudiencePlanModel.cs" />
     <Compile Include="Models\BaselineModel.cs" />
     <Compile Include="Models\BoostModel.cs" />

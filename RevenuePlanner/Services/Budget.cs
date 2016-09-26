@@ -15,24 +15,26 @@ namespace RevenuePlanner.Services
         private MRPEntities objDbMrpEntities;
         private StoredProcedure objSp;
         private IColumnView objColumnView;
+        RevenuePlanner.Services.ICurrency objCurrency;
         public Budget()
         {
             objDbMrpEntities = new MRPEntities();
             objSp = new StoredProcedure();
             objColumnView = new ColumnView();
+            objCurrency = new RevenuePlanner.Services.Currency();
         }
         private const string Open = "1";
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
-        public const string FixHeader = "ActivityId,Type,machinename,,,,,";	
+        public const string FixHeader = "ActivityId,Type,machinename,,,,,";
         public const string EndColumnsHeader = ",Unallocated Budget";
         public const string FixColumnIds = "ActivityId,Type,machinename,taskname,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",Budget";
         public const string FixColType = "ro,ro,ro,tree,ro,ed,ed,ed";
         public const string EndColType = ",ro";
-        public const string FixcolWidth = "100,100,100,250,100,100,100,100"; 
+        public const string FixcolWidth = "100,100,100,250,100,100,100,100";
         public const string EndcolWidth = ",100";
-        public const string FixColsorting = "na,na,na,na,na,na,na,na";	
+        public const string FixColsorting = "na,na,na,na,na,na,na,na";
         public const string EndColsorting = ",na";
         public const string QuarterPrefix = "Q";
         public const string DhtmlxColSpan = "#cspan";
@@ -51,15 +53,15 @@ namespace RevenuePlanner.Services
             //filter budget model by custom field filter list
             model.RemoveAll(a => string.Compare(a.ActivityType, ActivityType.ActivityTactic, true) == 0 && CustomFieldFilteredTacticIds.Contains(Convert.ToInt32(a.Id)));
 
-            model = SetCustomFieldRestriction(model,UserID,ClientId);//Set customfield permission for budget cells. budget cell will editable or not.
+            model = SetCustomFieldRestriction(model, UserID, ClientId);//Set customfield permission for budget cells. budget cell will editable or not.
             int ViewByID = (int)viewBy;
-             //Set actual for quarters
-            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+            //Set actual for quarters
+            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
 
             //get number of tab views for user in column management
-            bool isPlangrid=false;
+            bool isPlangrid = false;
             bool isSelectAll = false;
-            
+
             model = ManageLineItems(model);//Manage lineitems unallocated cost values in other line item
 
             #region "Calculate Monthly Budget from Bottom to Top for Hierarchy level like: LineItem > Tactic > Program > Campaign > CustomField(if filtered) > Plan"
@@ -72,25 +74,33 @@ namespace RevenuePlanner.Services
             model = CalculateBottomUp(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram, ViewByID);//// Calculate monthly Campaign budget from it's child budget i.e Program
 
             model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, ViewByID);//// Calculate monthly Plan budget from it's child budget i.e Campaign
-            
+
             #endregion
 
-             model = SetLineItemCostByWeightage(model, ViewByID);//// Set LineItem monthly budget cost by it's parent tactic weightage.
+            model = SetLineItemCostByWeightage(model, ViewByID);//// Set LineItem monthly budget cost by it's parent tactic weightage.
 
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
             objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, model);
 
             objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy, UserID);//create model to bind data in grid as per DHTMLx grid format.
 
-            List<ColumnViewEntity> userManagedColumns = objColumnView.GetCustomfieldModel(ClientId, isPlangrid, out isSelectAll,UserID);
+            List<ColumnViewEntity> userManagedColumns = objColumnView.GetCustomfieldModel(ClientId, isPlangrid, out isSelectAll, UserID);
             string hiddenTab = string.Empty;
-            foreach(ColumnViewEntity item in userManagedColumns.Where(u=>!u.EntityIsChecked).ToList())
+            if (!userManagedColumns.Where(u => u.EntityIsChecked).Any())
+            {
+                var PlannedColumn = userManagedColumns.Where(u => u.EntityType == Enums.Budgetcolumn.Planned.ToString()).FirstOrDefault();
+                if (PlannedColumn!=null)
+                {
+                    PlannedColumn.EntityIsChecked = true;
+                }
+            }
+            foreach (ColumnViewEntity item in userManagedColumns.Where(u => !u.EntityIsChecked).ToList())
             {
                 hiddenTab = hiddenTab + item.EntityType + ',';
             }
             objBudgetDHTMLXGrid.HiddenTab = hiddenTab;
-            
-           
+
+
             return objBudgetDHTMLXGrid;
         }
 
@@ -101,17 +111,17 @@ namespace RevenuePlanner.Services
             {
                 if (BudgetModel != null && BudgetModel.Count > 0)
                 {
-                    
+
                     #region "Declare & Initialize local Variables"
                     List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
                     List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                     string tacticType = Enums.EntityType.Tactic.ToString().ToUpper();
                     string[] filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldFilter) ? null : CustomFieldFilter.Split(',');
-                    List<PlanBudgetModel> tacData = BudgetModel.Where(tac => string.Compare(tac.ActivityType,tacticType,true)==0).ToList();
+                    List<PlanBudgetModel> tacData = BudgetModel.Where(tac => string.Compare(tac.ActivityType, tacticType, true) == 0).ToList();
                     lstTacticIds = tacData.Select(tactic => Convert.ToInt32(tactic.Id)).ToList();
                     #endregion
 
-                   // resultData = allData.Where(tac => tac.type.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
+                    // resultData = allData.Where(tac => tac.type.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
                     if (filteredCustomFields != null)
                     {
                         //  filteredCustomFields.ForEach(customField =>
@@ -136,79 +146,82 @@ namespace RevenuePlanner.Services
         public List<PlanBudgetModel> CreateBudgetDataModel(DataTable DtBudget, double PlanExchangeRate)
         {
             List<PlanBudgetModel> model = new List<PlanBudgetModel>();
-            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
-            model = DtBudget.AsEnumerable().Select(row => new PlanBudgetModel
+            if (DtBudget != null)
             {
-                Id = row["Id"].ToString(),
-                ActivityId = Convert.ToString( row["ActivityId"]),
-                ActivityName = Convert.ToString( row["Title"]),
-                ActivityType = Convert.ToString( row["ActivityType"]),
-                ParentActivityId = Convert.ToString( row["ParentActivityId"]),
-                YearlyBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Budget"])), PlanExchangeRate),
-                TotalUnallocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnallocatedBudget"])), PlanExchangeRate),
-                TotalActuals = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationActual"])), PlanExchangeRate),
-                TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["TotalAllocationCost"])), PlanExchangeRate),
-                IsOwner = Convert.ToBoolean(row["IsOwner"]),
-                CreatedBy = int.Parse(row["CreatedBy"].ToString()),
-                LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
-                isAfterApproved = Convert.ToBoolean(row["IsAfterApproved"]),
-                MachineName = Convert.ToString(row["MachineName"]),
-                ColorCode = Convert.ToString(row["ColorCode"]),
-                StartDate = Convert.ToDateTime(row["StartDate"]),
-                EndDate = Convert.ToDateTime(row["EndDate"]),
-                LinkTacticId = Convert.ToInt32(row["LinkTacticId"]),
-                TacticTypeId = Convert.ToInt32(Convert.ToString(row["TacticTypeId"])),
-
-                MonthValues = new BudgetMonth()
+                model = DtBudget.AsEnumerable().Select(row => new PlanBudgetModel
                 {
-                    //Budget Month Allocation
-                    Feb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y2"])), PlanExchangeRate),
-                    Jan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y1"])), PlanExchangeRate),
-                    Mar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y3"])), PlanExchangeRate),
-                    Apr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y4"])), PlanExchangeRate),
-                    May = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y5"])), PlanExchangeRate),
-                    Jun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y6"])), PlanExchangeRate),
-                    Jul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y7"])), PlanExchangeRate),
-                    Aug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y8"])), PlanExchangeRate),
-                    Sep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y9"])), PlanExchangeRate),
-                    Oct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y10"])), PlanExchangeRate),
-                    Nov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y11"])), PlanExchangeRate),
-                    Dec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["Y12"])), PlanExchangeRate),
+                    Id = Convert.ToString(row["Id"]),
+                    ActivityId = Convert.ToString(row["ActivityId"]),
+                    ActivityName = Convert.ToString(row["Title"]),
+                    ActivityType = Convert.ToString(row["ActivityType"]),
+                    ParentActivityId = Convert.ToString(row["ParentActivityId"]),
+                    YearlyBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Budget"])), PlanExchangeRate),
+                    TotalUnallocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnallocatedBudget"])), PlanExchangeRate),
+                    TotalActuals = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationActual"])), PlanExchangeRate),
+                    TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationCost"])), PlanExchangeRate),
+                    IsOwner = Convert.ToBoolean(row["IsOwner"]),
+                    CreatedBy = int.Parse(row["CreatedBy"].ToString()),
+                    LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
+                    isAfterApproved = Convert.ToBoolean(row["IsAfterApproved"]),
+                    MachineName = Convert.ToString(row["MachineName"]),
+                    ColorCode = Convert.ToString(row["ColorCode"]),
+                    StartDate = Convert.ToDateTime(row["StartDate"]),
+                    EndDate = Convert.ToDateTime(row["EndDate"]),
+                    LinkTacticId = Convert.ToInt32(row["LinkTacticId"]),
+                    TacticTypeId = Convert.ToInt32(Convert.ToString(row["TacticTypeId"])),
 
-                    //Cost Month Allocation
-                    CFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY2"])), PlanExchangeRate),
-                    CJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY1"])), PlanExchangeRate),
-                    CMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY3"])), PlanExchangeRate),
-                    CApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY4"])), PlanExchangeRate),
-                    CMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY5"])), PlanExchangeRate),
-                    CJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY6"])), PlanExchangeRate),
-                    CJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY7"])), PlanExchangeRate),
-                    CAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY8"])), PlanExchangeRate),
-                    CSep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY9"])), PlanExchangeRate),
-                    COct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY10"])), PlanExchangeRate),
-                    CNov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY11"])), PlanExchangeRate),
-                    CDec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["CostY12"])), PlanExchangeRate),
+                    MonthValues = new BudgetMonth()
+                    {
+                        //Budget Month Allocation
+                        Feb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y2"])), PlanExchangeRate),
+                        Jan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y1"])), PlanExchangeRate),
+                        Mar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y3"])), PlanExchangeRate),
+                        Apr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y4"])), PlanExchangeRate),
+                        May = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y5"])), PlanExchangeRate),
+                        Jun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y6"])), PlanExchangeRate),
+                        Jul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y7"])), PlanExchangeRate),
+                        Aug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y8"])), PlanExchangeRate),
+                        Sep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y9"])), PlanExchangeRate),
+                        Oct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y10"])), PlanExchangeRate),
+                        Nov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y11"])), PlanExchangeRate),
+                        Dec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y12"])), PlanExchangeRate),
 
-                    //Actuals Month Allocation
-                    AFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["ActualY2"])), PlanExchangeRate),
-                    AJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["ActualY1"])), PlanExchangeRate),
-                    AMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY3"])), PlanExchangeRate),
-                    AApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY4"])), PlanExchangeRate),
-                    AMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY5"])), PlanExchangeRate),
-                    AJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY6"])), PlanExchangeRate),
-                    AJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY7"])), PlanExchangeRate),
-                    AAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY8"])), PlanExchangeRate),
-                    ASep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY9"])), PlanExchangeRate),
-                    AOct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY10"])), PlanExchangeRate),
-                    ANov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["ActualY11"])), PlanExchangeRate),
-                    ADec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString( row["ActualY12"])), PlanExchangeRate)
-                }
-            }).ToList();
+                        //Cost Month Allocation
+                        CFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY2"])), PlanExchangeRate),
+                        CJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY1"])), PlanExchangeRate),
+                        CMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY3"])), PlanExchangeRate),
+                        CApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY4"])), PlanExchangeRate),
+                        CMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY5"])), PlanExchangeRate),
+                        CJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY6"])), PlanExchangeRate),
+                        CJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY7"])), PlanExchangeRate),
+                        CAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY8"])), PlanExchangeRate),
+                        CSep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY9"])), PlanExchangeRate),
+                        COct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY10"])), PlanExchangeRate),
+                        CNov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY11"])), PlanExchangeRate),
+                        CDec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY12"])), PlanExchangeRate),
+
+                        //Actuals Month Allocation
+                        AFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY2"])), PlanExchangeRate),
+                        AJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY1"])), PlanExchangeRate),
+                        AMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY3"])), PlanExchangeRate),
+                        AApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY4"])), PlanExchangeRate),
+                        AMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY5"])), PlanExchangeRate),
+                        AJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY6"])), PlanExchangeRate),
+                        AJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY7"])), PlanExchangeRate),
+                        AAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY8"])), PlanExchangeRate),
+                        ASep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY9"])), PlanExchangeRate),
+                        AOct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY10"])), PlanExchangeRate),
+                        ANov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY11"])), PlanExchangeRate),
+                        ADec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY12"])), PlanExchangeRate)
+                    }
+                }).ToList();
+            }
             return model;
         }
 
-        public List<Budgetdataobj> SetBudgetDhtmlxFormattedValues(List<Budgetdataobj> BudgetDataObjList, List<PlanBudgetModel> model, PlanBudgetModel Entity, string EntityType, string AllocatedBy, string DhtmlxGridRowId, string EntityColor, bool IsAddEntityRights, string pcptid = "")  // pcptid = Plan-Campaign-Program-Tactic-Id
+        public List<Budgetdataobj> SetBudgetDhtmlxFormattedValues(List<PlanBudgetModel> model, PlanBudgetModel Entity, string EntityType, string AllocatedBy, string DhtmlxGridRowId, string EntityColor, bool IsAddEntityRights, string pcptid = "")  // pcptid = Plan-Campaign-Program-Tactic-Id
         {
+            List<Budgetdataobj> BudgetDataObjList = new List<Budgetdataobj>();
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             string doubledesh = "--";
 
@@ -257,28 +270,27 @@ namespace RevenuePlanner.Services
             BudgetDataObjList.Add(iconsData);
 
             //Set Total Actual,Total Budget and Total planned cost for plan entity
-            BudgetDataObjList = CampaignBudgetSummary(model,EntityType, Entity.ParentActivityId,
+            BudgetDataObjList = CampaignBudgetSummary(model, EntityType, Entity.ParentActivityId,
                   BudgetDataObjList, AllocatedBy, Entity.ActivityId);
             //Set monthly/quarterly allocation of budget,actuals and planned for plan
-            BudgetDataObjList = CampaignMonth(model,EntityType, Entity.ParentActivityId,
+            BudgetDataObjList = CampaignMonth(model, EntityType, Entity.ParentActivityId,
                     BudgetDataObjList, AllocatedBy, Entity.ActivityId);
 
             BudgetDataObj = new Budgetdataobj();
             //Add unAllocated budget into dhtmlx model
-            BudgetDataObj.value =Convert.ToString( Entity.UnallocatedBudget);
+            BudgetDataObj.value = Convert.ToString(Entity.UnallocatedBudget);
             BudgetDataObjList.Add(BudgetDataObj);
 
             return BudgetDataObjList;
         }
-        
+
         public BudgetDHTMLXGridModel CreateDhtmlxFormattedBudgetData(BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string AllocatedBy, int UserID)
         {
 
             List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
 
-            List<Budgetdataobj> BudgetDataObjList ;
-            Budgetdataobj BudgetDataObj;
+            List<Budgetdataobj> BudgetDataObjList;
 
             Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
             string TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
@@ -317,10 +329,9 @@ namespace RevenuePlanner.Services
                 gridjsonlistPlanObj.id = ActivityType.ActivityPlan + HttpUtility.HtmlEncode(bm.ActivityId);
                 gridjsonlistPlanObj.open = Open;
 
-                BudgetDataObjList = new List<Budgetdataobj>();
-                BudgetDataObjList = SetBudgetDhtmlxFormattedValues(BudgetDataObjList, model, bm, ActivityType.ActivityPlan, AllocatedBy, gridjsonlistPlanObj.id, PlanColor, IsPlanCreateAll);
+                BudgetDataObjList = SetBudgetDhtmlxFormattedValues(model, bm, ActivityType.ActivityPlan, AllocatedBy, gridjsonlistPlanObj.id, PlanColor, IsPlanCreateAll);
                 gridjsonlistPlanObj.data = BudgetDataObjList;
-                
+
                 List<BudgetDHTMLXGridDataModel> CampaignRowsObjList = new List<BudgetDHTMLXGridDataModel>();
                 BudgetDHTMLXGridDataModel CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                 foreach (
@@ -335,8 +346,7 @@ namespace RevenuePlanner.Services
 
                     bool IsCampCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmc.CreatedBy == UserID || lstSubordinatesIds.Contains(bmc.CreatedBy)) ? true : false : true;
 
-                    List<Budgetdataobj> CampaignDataObjList = new List<Budgetdataobj>();
-                    CampaignDataObjList = SetBudgetDhtmlxFormattedValues(CampaignDataObjList, model, bmc, ActivityType.ActivityCampaign, AllocatedBy, CampaignRowsObj.id, CampaignColor, IsCampCreateAll);
+                    List<Budgetdataobj> CampaignDataObjList = SetBudgetDhtmlxFormattedValues(model, bmc, ActivityType.ActivityCampaign, AllocatedBy, CampaignRowsObj.id, CampaignColor, IsCampCreateAll);
 
                     CampaignRowsObj.data = CampaignDataObjList;
                     List<BudgetDHTMLXGridDataModel> ProgramRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -354,8 +364,7 @@ namespace RevenuePlanner.Services
 
                         bool IsProgCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmp.CreatedBy == UserID || lstSubordinatesIds.Contains(bmp.CreatedBy)) ? true : false : true;
 
-                        List<Budgetdataobj> ProgramDataObjList = new List<Budgetdataobj>();
-                        ProgramDataObjList = SetBudgetDhtmlxFormattedValues(ProgramDataObjList, model, bmp, ActivityType.ActivityProgram, AllocatedBy, ProgramRowsObj.id, ProgramColor, IsProgCreateAll);
+                        List<Budgetdataobj> ProgramDataObjList = SetBudgetDhtmlxFormattedValues(model, bmp, ActivityType.ActivityProgram, AllocatedBy, ProgramRowsObj.id, ProgramColor, IsProgCreateAll);
                         ProgramRowsObj.data = ProgramDataObjList;
 
                         List<BudgetDHTMLXGridDataModel> TacticRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -373,8 +382,7 @@ namespace RevenuePlanner.Services
 
                             bool IsTacCreateAll = IsPlanCreateAll == false ? (bmt.CreatedBy == UserID || lstSubordinatesIds.Contains(bmt.CreatedBy)) ? true : false : true;
 
-                            List<Budgetdataobj> TacticDataObjList = new List<Budgetdataobj>();
-                            TacticDataObjList = SetBudgetDhtmlxFormattedValues(TacticDataObjList, model, bmt, ActivityType.ActivityTactic, AllocatedBy, TacticRowsObj.id, TacticColor, IsTacCreateAll, "L" + bm.ActivityId + "_C" + bmc.ActivityId + "_P" + bmp.ActivityId + "_T" + bmt.ActivityId);
+                            List<Budgetdataobj> TacticDataObjList = SetBudgetDhtmlxFormattedValues(model, bmt, ActivityType.ActivityTactic, AllocatedBy, TacticRowsObj.id, TacticColor, IsTacCreateAll, "L" + bm.ActivityId + "_C" + bmc.ActivityId + "_P" + bmp.ActivityId + "_T" + bmt.ActivityId);
 
                             TacticRowsObj.data = TacticDataObjList;
                             List<BudgetDHTMLXGridDataModel> LineRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -392,8 +400,7 @@ namespace RevenuePlanner.Services
 
                                 bool IsLinItmCreateAll = IsPlanCreateAll == false ? (bml.CreatedBy == UserID || lstSubordinatesIds.Contains(bml.CreatedBy)) ? true : false : true;
 
-                                List<Budgetdataobj> LineDataObjList = new List<Budgetdataobj>();
-                                LineDataObjList = SetBudgetDhtmlxFormattedValues(LineDataObjList, model, bml, ActivityType.ActivityLineItem, AllocatedBy, LineRowsObj.id, "", IsLinItmCreateAll);
+                                List<Budgetdataobj> LineDataObjList = SetBudgetDhtmlxFormattedValues(model, bml, ActivityType.ActivityLineItem, AllocatedBy, LineRowsObj.id, "", IsLinItmCreateAll);
 
                                 LineRowsObj.data = LineDataObjList;
                                 LineRowsObjList.Add(LineRowsObj);
@@ -424,7 +431,7 @@ namespace RevenuePlanner.Services
             string setHeader = string.Empty, colType = string.Empty, width = string.Empty, colSorting = string.Empty, columnIds = string.Empty;
             string manageviewicon = "<a href=javascript:void(0) onclick=OpenCreateNew(false) class=manageviewicon><i class='fa fa-edit'></i></a>";
             List<string> attachHeader = new List<string>();
-             
+
             setHeader = FixHeader;
             columnIds = FixColumnIds;
             colType = FixColType;
@@ -432,13 +439,13 @@ namespace RevenuePlanner.Services
             colSorting = FixColsorting;
             attachHeader.Add("ActivityId");
             attachHeader.Add("Type");
-            attachHeader.Add("Machine Name"+manageviewicon);
+            attachHeader.Add("Machine Name" + manageviewicon);
             attachHeader.Add("Task Name");
             attachHeader.Add("");
-            attachHeader.Add("Total Budget"+manageviewicon);
-            attachHeader.Add("Planned Cost"+manageviewicon);
-            attachHeader.Add("Total Actual"+manageviewicon);
-            
+            attachHeader.Add("Total Budget" + manageviewicon);
+            attachHeader.Add("Planned Cost" + manageviewicon);
+            attachHeader.Add("Total Actual" + manageviewicon);
+
             if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
                 int quarterCounter = 1;
@@ -456,7 +463,7 @@ namespace RevenuePlanner.Services
                     colType = colType + ",ed,ed,ed";
                     width = width + ",100,100,100";
                     colSorting = colSorting + ",str,str,str";
-                    
+
                     quarterCounter++;
                 }
             }
@@ -476,11 +483,11 @@ namespace RevenuePlanner.Services
                     colSorting = colSorting + ",str,str,str";
                 }
             }
-            objBudgetDHTMLXGrid.SetHeader = setHeader+EndColumnsHeader;
-            objBudgetDHTMLXGrid.ColType = colType+EndColType;
-            objBudgetDHTMLXGrid.Width = width+EndcolWidth;
-            objBudgetDHTMLXGrid.ColSorting = colSorting+EndColsorting;
-            objBudgetDHTMLXGrid.ColumnIds = columnIds+EndColumnIds;
+            objBudgetDHTMLXGrid.SetHeader = setHeader + EndColumnsHeader;
+            objBudgetDHTMLXGrid.ColType = colType + EndColType;
+            objBudgetDHTMLXGrid.Width = width + EndcolWidth;
+            objBudgetDHTMLXGrid.ColSorting = colSorting + EndColsorting;
+            objBudgetDHTMLXGrid.ColumnIds = columnIds + EndColumnIds;
             attachHeader.Add("Unallocated Budget");
 
             objBudgetDHTMLXGrid.AttachHeader = attachHeader;
@@ -497,18 +504,18 @@ namespace RevenuePlanner.Services
                 Budgetdataobj objTotalCost = new Budgetdataobj();
                 Budgetdataobj objTotalActual = new Budgetdataobj();
                 //entity type line item has no budget so we set '---' value for line item
-                if (Entity.ActivityType==ActivityType.ActivityLineItem)
+                if (Entity.ActivityType == ActivityType.ActivityLineItem)
                 {
                     objTotalBudget.value = "---";//Set values for Total budget
                     objTotalBudget.locked = CellLocked;
                 }
                 else
                 {
-                objTotalBudget.value = Convert.ToString(Entity.YearlyBudget);//Set values for Total budget
-                objTotalBudget.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                    objTotalBudget.value = Convert.ToString(Entity.YearlyBudget);//Set values for Total budget
+                    objTotalBudget.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
                 }
 
-                objTotalActual.value = Convert.ToString( Entity.TotalActuals);//Set values for Total actual
+                objTotalActual.value = Convert.ToString(Entity.TotalActuals);//Set values for Total actual
                 objTotalActual.locked = CellLocked;
 
                 bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && Entity.LineItemTypeId == null;
@@ -528,213 +535,222 @@ namespace RevenuePlanner.Services
             PlanBudgetModel Entity = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
             bool isTactic = activityType == Helpers.ActivityType.ActivityTactic ? true : false;
             bool isLineItem = activityType == Helpers.ActivityType.ActivityLineItem ? true : false;
-            if (allocatedBy != "quarters")  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
+            if (string.Compare(allocatedBy, "quarters", true) != 0)
             {
-
-                for (int i = 1; i <= 12; i++)
-                {
-                    Budgetdataobj objBudgetMonth = new Budgetdataobj();
-                    Budgetdataobj objCostMonth = new Budgetdataobj();
-                    Budgetdataobj objActualMonth = new Budgetdataobj();
-                    if (i == 1)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Jan.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CJan.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AJan.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 2)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Feb.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CFeb.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AFeb.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 3)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Mar.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CMar.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AMar.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 4)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Apr.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CApr.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AApr.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 5)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.May.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CMay.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AMay.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 6)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Jun.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CJun.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AJun.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 7)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Jul.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CJul.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AJul.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 8)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Aug.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CAug.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AAug.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 9)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Sep.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CSep.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.ASep.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 10)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Oct.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.COct.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AOct.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 11)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Nov.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CNov.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.ANov.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 12)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Dec.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CDec.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.ADec.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    BudgetDataObjList.Add(objBudgetMonth);
-                    BudgetDataObjList.Add(objCostMonth);
-                    BudgetDataObjList.Add(objActualMonth);
-                }
+                BudgetDataObjList = CampignMonthlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList);
             }
             else
             {
-                for (int i = 1; i <= 11; i += 3)
-                {
-                    Budgetdataobj objBudgetMonth = new Budgetdataobj();
-                    Budgetdataobj objCostMonth = new Budgetdataobj();
-                    Budgetdataobj objActualMonth = new Budgetdataobj();
-                    if (i == 1)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Jan.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CJan.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AJan.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 4)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Apr.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CApr.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AApr.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 7)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Jul.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.CJul.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AJul.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    else if (i == 10)
-                    {
-                        objBudgetMonth.value = Entity.MonthValues.Oct.ToString();
-                        objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-
-                        objCostMonth.value = Entity.MonthValues.COct.ToString();
-                        objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-
-                        objActualMonth.value = Entity.MonthValues.AOct.ToString();
-                        objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                    }
-                    BudgetDataObjList.Add(objBudgetMonth);
-                    BudgetDataObjList.Add(objCostMonth);
-                    BudgetDataObjList.Add(objActualMonth);
-                }
-
-
+                BudgetDataObjList = CampignQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList);
             }
             return BudgetDataObjList;
         }
-                  
-        public List<PlanBudgetModel> SetCustomFieldRestriction(List<PlanBudgetModel> BudgetModel,int UserId,int ClientId)
+
+        private List<Budgetdataobj> CampignMonthlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList)
+        {
+            for (int i = 1; i <= 12; i++)
+            {
+                Budgetdataobj objBudgetMonth = new Budgetdataobj();
+                Budgetdataobj objCostMonth = new Budgetdataobj();
+                Budgetdataobj objActualMonth = new Budgetdataobj();
+                if (i == 1)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Jan.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CJan.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AJan.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 2)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Feb.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CFeb.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AFeb.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 3)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Mar.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CMar.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AMar.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 4)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Apr.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CApr.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AApr.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 5)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.May.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CMay.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AMay.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 6)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Jun.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CJun.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AJun.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 7)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Jul.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CJul.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AJul.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 8)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Aug.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CAug.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AAug.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 9)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Sep.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CSep.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.ASep.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 10)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Oct.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.COct.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AOct.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 11)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Nov.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CNov.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.ANov.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 12)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Dec.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CDec.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.ADec.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                BudgetDataObjList.Add(objBudgetMonth);
+                BudgetDataObjList.Add(objCostMonth);
+                BudgetDataObjList.Add(objActualMonth);
+            }
+            return BudgetDataObjList;
+        }
+
+        private List<Budgetdataobj> CampignQuarterlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList)
+        {
+            for (int i = 1; i <= 11; i += 3)
+            {
+                Budgetdataobj objBudgetMonth = new Budgetdataobj();
+                Budgetdataobj objCostMonth = new Budgetdataobj();
+                Budgetdataobj objActualMonth = new Budgetdataobj();
+                if (i == 1)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Jan.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CJan.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AJan.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 4)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Apr.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CApr.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AApr.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 7)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Jul.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.CJul.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AJul.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                else if (i == 10)
+                {
+                    objBudgetMonth.value = Entity.MonthValues.Oct.ToString();
+                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+
+                    objCostMonth.value = Entity.MonthValues.COct.ToString();
+                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+
+                    objActualMonth.value = Entity.MonthValues.AOct.ToString();
+                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                }
+                BudgetDataObjList.Add(objBudgetMonth);
+                BudgetDataObjList.Add(objCostMonth);
+                BudgetDataObjList.Add(objActualMonth);
+            }
+            return BudgetDataObjList;
+        }
+
+        public List<PlanBudgetModel> SetCustomFieldRestriction(List<PlanBudgetModel> BudgetModel, int UserId, int ClientId)
         {
             List<int> lstSubordinatesIds = new List<int>();
 
@@ -752,7 +768,7 @@ namespace RevenuePlanner.Services
             bool isDisplayForFilter = false;
 
             bool IsCustomFeildExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), ClientId);
-            
+
             //Get list tactic's custom field
             List<CustomField> customfieldlist = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == ClientId && customfield.EntityType.Equals(EntityTypeTactic) && customfield.IsDeleted.Equals(false)).ToList();
             //Check custom field whic are not set to display for filter and is required are exist
@@ -760,15 +776,15 @@ namespace RevenuePlanner.Services
             //get dropdown type of custom fields ids
             List<int> customfieldids = customfieldlist.Where(customfield => customfield.CustomFieldType.Name == DropDownList && (isDisplayForFilter ? customfield.IsDisplayForFilter : true)).Select(customfield => customfield.CustomFieldId).ToList();
             //Get tactics only for budget model
-            List<string> tacIds = BudgetModel.Where(t =>  t.ActivityType.ToUpper() == EntityTypeTactic.ToUpper()).Select(t => t.ActivityId).ToList();
-            
+            List<string> tacIds = BudgetModel.Where(t => t.ActivityType.ToUpper() == EntityTypeTactic.ToUpper()).Select(t => t.ActivityId).ToList();
+
             //get tactic ids from tactic list
             List<int> intList = tacIds.ConvertAll(s => Int32.Parse(s));
             List<CustomField_Entity> Entities = objDbMrpEntities.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).ToList();
 
             //Get tactic custom fields list
             List<CustomField_Entity> lstAllTacticCustomFieldEntities = Entities.Where(customFieldEntity => customfieldids.Contains(customFieldEntity.CustomFieldId))
-                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); 
+                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
             List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId, true);
             foreach (PlanBudgetModel item in BudgetModel)
             {
@@ -793,7 +809,7 @@ namespace RevenuePlanner.Services
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
-                       //to find tactic level permission ,first get program list and then get respective tactic list of program which will be used to get editable tactic list
+                        //to find tactic level permission ,first get program list and then get respective tactic list of program which will be used to get editable tactic list
                         List<string> modelprogramid = BudgetModel.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList();
                         planTacticIds = BudgetModel.Where(m => m.ActivityType == ActivityType.ActivityTactic && modelprogramid.Contains(m.ParentActivityId)).Select(m => Convert.ToInt32(m.ActivityId)).ToList();
                         lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
@@ -840,7 +856,7 @@ namespace RevenuePlanner.Services
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isBudgetEditable = true;
-                            item. isCostEditable = true;
+                            item.isCostEditable = true;
                         }
                         else
                         {
@@ -880,7 +896,7 @@ namespace RevenuePlanner.Services
             }
             return BudgetModel;
         }
-               
+
         private List<PlanBudgetModel> ManageLineItems(List<PlanBudgetModel> model)
         {
             foreach (PlanBudgetModel l in model.Where(l => l.ActivityType == ActivityType.ActivityTactic))
@@ -941,100 +957,43 @@ namespace RevenuePlanner.Services
         //This function sum up the total of planned and actuals cell of budget to child to parent
         private List<PlanBudgetModel> CalculateBottomUp(List<PlanBudgetModel> model, string ParentActivityType, string ChildActivityType, int ViewBy)
         {
-            int _ViewById = ViewBy ;
+            int _ViewById = ViewBy;
             int weightage = 100;
 
             if (ParentActivityType == ActivityType.ActivityTactic)
             {
-                List<PlanBudgetModel> LineCheck;
                 foreach (PlanBudgetModel l in model.Where(_mdl => _mdl.ActivityType == ParentActivityType))
                 {
-                    LineCheck = new List<PlanBudgetModel>();
-                    LineCheck = model.Where(lines => lines.ParentActivityId == l.ActivityId && lines.ActivityType == ActivityType.ActivityLineItem).ToList();
-                    if (LineCheck.Count() > 0)
-                    {
-                        //// check if ViewBy is Campaign selected then set weightage value to 100;
-                        if (_ViewById > 0)
-                            weightage = l.Weightage;
+                    //// check if ViewBy is Campaign selected then set weightage value to 100;
+                    if (_ViewById > 0)
+                        weightage = l.Weightage;
 
-                        BudgetMonth parent = new BudgetMonth();
-                        parent.AJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJan * weightage) / 100) ?? 0;
-                        parent.AFeb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AFeb * weightage) / 100) ?? 0;
-                        parent.AMar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AMar * weightage) / 100) ?? 0;
-                        parent.AApr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AApr * weightage) / 100) ?? 0;
-                        parent.AMay = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AMay * weightage) / 100) ?? 0;
-                        parent.AJun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJun * weightage) / 100) ?? 0;
-                        parent.AJul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJul * weightage) / 100) ?? 0;
-                        parent.AAug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AAug * weightage) / 100) ?? 0;
-                        parent.ASep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ASep * weightage) / 100) ?? 0;
-                        parent.AOct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AOct * weightage) / 100) ?? 0;
-                        parent.ANov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ANov * weightage) / 100) ?? 0;
-                        parent.ADec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ADec * weightage) / 100) ?? 0;
+                    BudgetMonth parent = new BudgetMonth();
+                    parent.AJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJan * weightage) / 100) ?? 0;
+                    parent.AFeb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AFeb * weightage) / 100) ?? 0;
+                    parent.AMar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AMar * weightage) / 100) ?? 0;
+                    parent.AApr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AApr * weightage) / 100) ?? 0;
+                    parent.AMay = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AMay * weightage) / 100) ?? 0;
+                    parent.AJun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJun * weightage) / 100) ?? 0;
+                    parent.AJul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJul * weightage) / 100) ?? 0;
+                    parent.AAug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AAug * weightage) / 100) ?? 0;
+                    parent.ASep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ASep * weightage) / 100) ?? 0;
+                    parent.AOct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AOct * weightage) / 100) ?? 0;
+                    parent.ANov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ANov * weightage) / 100) ?? 0;
+                    parent.ADec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ADec * weightage) / 100) ?? 0;
 
-                        parent.CJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJan * weightage) / 100) ?? 0;
-                        parent.CFeb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CFeb * weightage) / 100) ?? 0;
-                        parent.CMar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CMar * weightage) / 100) ?? 0;
-                        parent.CApr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CApr * weightage) / 100) ?? 0;
-                        parent.CMay = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CMay * weightage) / 100) ?? 0;
-                        parent.CJun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJun * weightage) / 100) ?? 0;
-                        parent.CJul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJul * weightage) / 100) ?? 0;
-                        parent.CAug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CAug * weightage) / 100) ?? 0;
-                        parent.CSep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CSep * weightage) / 100) ?? 0;
-                        parent.COct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.COct * weightage) / 100) ?? 0;
-                        parent.CNov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CNov * weightage) / 100) ?? 0;
-                        parent.CDec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CDec * weightage) / 100) ?? 0;
-
-                        parent.Jan = l.MonthValues.Jan;
-                        parent.Feb = l.MonthValues.Feb;
-                        parent.Mar = l.MonthValues.Mar;
-                        parent.Apr = l.MonthValues.Apr;
-                        parent.May = l.MonthValues.May;
-                        parent.Jun = l.MonthValues.Jun;
-                        parent.Jul = l.MonthValues.Jul;
-                        parent.Aug = l.MonthValues.Aug;
-                        parent.Sep = l.MonthValues.Sep;
-                        parent.Oct = l.MonthValues.Oct;
-                        parent.Nov = l.MonthValues.Nov;
-                        parent.Dec = l.MonthValues.Dec;
-
-                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthValues = parent;
-                    }
-                    model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().TotalAllocatedCost = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalAllocatedCost) ?? 0;
-                    model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().TotalActuals = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalActuals) ?? 0;
-                }
-            }
-            else
-            {
-                BudgetMonth parent;
-                foreach (PlanBudgetModel l in model.Where(l => l.ActivityType == ParentActivityType))
-                {
-                    parent = new BudgetMonth();
-                    
-                    parent.AJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.AJan) ?? 0;
-                    parent.AFeb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.AFeb) ?? 0;
-                    parent.AMar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.AMar) ?? 0;
-                    parent.AApr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.AApr) ?? 0;
-                    parent.AMay = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.AMay) ?? 0;
-                    parent.AJun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.AJun) ?? 0;
-                    parent.AJul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.AJul) ?? 0;
-                    parent.AAug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.AAug) ?? 0;
-                    parent.ASep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.ASep) ?? 0;
-                    parent.AOct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.AOct) ?? 0;
-                    parent.ANov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.ANov) ?? 0;
-                    parent.ADec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.ADec) ?? 0;
-
-                    parent.CJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CJan) ?? 0;
-                    parent.CFeb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CFeb) ?? 0;
-                    parent.CMar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CMar) ?? 0;
-                    parent.CApr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CApr) ?? 0;
-                    parent.CMay = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CMay) ?? 0;
-                    parent.CJun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CJun) ?? 0;
-                    parent.CJul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CJul) ?? 0;
-                    parent.CAug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CAug) ?? 0;
-                    parent.CSep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CSep) ?? 0;
-                    parent.COct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.COct) ?? 0;
-                    parent.CNov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CNov) ?? 0;
-                    parent.CDec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthValues.CDec) ?? 0;
+                    parent.CJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJan * weightage) / 100) ?? 0;
+                    parent.CFeb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CFeb * weightage) / 100) ?? 0;
+                    parent.CMar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CMar * weightage) / 100) ?? 0;
+                    parent.CApr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CApr * weightage) / 100) ?? 0;
+                    parent.CMay = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CMay * weightage) / 100) ?? 0;
+                    parent.CJun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJun * weightage) / 100) ?? 0;
+                    parent.CJul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJul * weightage) / 100) ?? 0;
+                    parent.CAug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CAug * weightage) / 100) ?? 0;
+                    parent.CSep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CSep * weightage) / 100) ?? 0;
+                    parent.COct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.COct * weightage) / 100) ?? 0;
+                    parent.CNov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CNov * weightage) / 100) ?? 0;
+                    parent.CDec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CDec * weightage) / 100) ?? 0;
 
                     parent.Jan = l.MonthValues.Jan;
                     parent.Feb = l.MonthValues.Feb;
@@ -1049,12 +1008,12 @@ namespace RevenuePlanner.Services
                     parent.Nov = l.MonthValues.Nov;
                     parent.Dec = l.MonthValues.Dec;
 
+                    model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthValues = parent;
                     model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().TotalAllocatedCost = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalAllocatedCost) ?? 0;
                     model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().TotalActuals = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalActuals) ?? 0;
-                    
-                    model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().MonthValues = parent;
                 }
             }
+
             return model;
         }
         //This function apply weightage to budget cell values
