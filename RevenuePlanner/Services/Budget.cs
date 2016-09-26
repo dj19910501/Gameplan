@@ -27,7 +27,7 @@ namespace RevenuePlanner.Services
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
         public const string FixHeader = "ActivityId,Type,machinename,,,,,";
-        public const string EndColumnsHeader = ",Unallocated Budget";
+        public const string EndColumnsHeader = ",";
         public const string FixColumnIds = "ActivityId,Type,machinename,taskname,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",Budget";
         public const string FixColType = "ro,ro,ro,tree,ro,ed,ed,ed";
@@ -51,8 +51,10 @@ namespace RevenuePlanner.Services
             List<int> CustomFieldFilteredTacticIds = FilterCustomField(model, CustomFieldId);
 
             //filter budget model by custom field filter list
-            model.RemoveAll(a => string.Compare(a.ActivityType, ActivityType.ActivityTactic, true) == 0 && CustomFieldFilteredTacticIds.Contains(Convert.ToInt32(a.Id)));
-
+            if (CustomFieldFilteredTacticIds != null && CustomFieldFilteredTacticIds.Count > 0)
+            {
+                model.RemoveAll(a => string.Compare(a.ActivityType, ActivityType.ActivityTactic, true) == 0 && !CustomFieldFilteredTacticIds.Contains(Convert.ToInt32(a.Id)));
+            }
             model = SetCustomFieldRestriction(model, UserID, ClientId);//Set customfield permission for budget cells. budget cell will editable or not.
             int ViewByID = (int)viewBy;
             //Set actual for quarters
@@ -555,134 +557,134 @@ namespace RevenuePlanner.Services
                 Budgetdataobj objActualMonth = new Budgetdataobj();
                 if (i == 1)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Jan.ToString();
+                    objBudgetMonth.value = Convert.ToString( Entity.MonthValues.Jan);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CJan.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AJan.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 2)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Feb.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Feb);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CFeb.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CFeb);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AFeb.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AFeb);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 3)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Mar.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Mar);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CMar.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CMar);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AMar.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AMar);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 4)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Apr.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Apr);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CApr.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CApr);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AApr.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AApr);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 5)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.May.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.May);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CMay.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CMay);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AMay.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AMay);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 6)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Jun.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jun);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CJun.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CJun);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AJun.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AJun);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 7)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Jul.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jul);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CJul.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CJul);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AJul.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AJul);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 8)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Aug.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Aug);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CAug.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CAug);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AAug.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AAug);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 9)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Sep.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Sep);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CSep.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CSep);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.ASep.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.ASep);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 10)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Oct.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Oct);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.COct.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.COct);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AOct.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AOct);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 11)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Nov.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Nov);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CNov.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CNov);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.ANov.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.ANov);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 12)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Dec.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Dec);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CDec.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CDec);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.ADec.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.ADec);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 BudgetDataObjList.Add(objBudgetMonth);
@@ -701,46 +703,46 @@ namespace RevenuePlanner.Services
                 Budgetdataobj objActualMonth = new Budgetdataobj();
                 if (i == 1)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Jan.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jan+Entity.MonthValues.Feb+Entity.MonthValues.Mar);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CJan.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan + Entity.MonthValues.CFeb + Entity.MonthValues.CMar);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AJan.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan + Entity.MonthValues.AFeb + Entity.MonthValues.AMar);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 4)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Apr.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Apr+Entity.MonthValues.May+Entity.MonthValues.Jun);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CApr.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CApr + Entity.MonthValues.CMay + Entity.MonthValues.CJun);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AApr.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AApr + Entity.MonthValues.AMay + Entity.MonthValues.AJun);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 7)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Jul.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jul+Entity.MonthValues.Aug+Entity.MonthValues.Sep);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.CJul.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CJul + Entity.MonthValues.CAug + Entity.MonthValues.CSep);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AJul.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AJul + Entity.MonthValues.AAug + Entity.MonthValues.ASep);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 else if (i == 10)
                 {
-                    objBudgetMonth.value = Entity.MonthValues.Oct.ToString();
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Oct+Entity.MonthValues.Nov+Entity.MonthValues.Dec);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
 
-                    objCostMonth.value = Entity.MonthValues.COct.ToString();
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.COct + Entity.MonthValues.CNov + Entity.MonthValues.CDec);
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
 
-                    objActualMonth.value = Entity.MonthValues.AOct.ToString();
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AOct + Entity.MonthValues.ANov + Entity.MonthValues.ADec);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
                 BudgetDataObjList.Add(objBudgetMonth);
@@ -761,9 +763,9 @@ namespace RevenuePlanner.Services
                 lstSubordinatesIds = Common.GetAllSubordinates(UserId);
             }
             //Custom field type dropdown list
-            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+            string DropDownList = Convert.ToString( Enums.CustomFieldType.DropDownList);
             //Custom field type text box
-            string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+            string EntityTypeTactic = Convert.ToString(Enums.EntityType.Tactic);
             //flag will be use to set if custom field is display for filter or not
             bool isDisplayForFilter = false;
 
