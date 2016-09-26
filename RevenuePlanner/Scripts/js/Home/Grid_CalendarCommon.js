@@ -3,6 +3,7 @@ var isEditTacticHomeGrid = 0;
 
 ///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
+    $('#divgridview').removeClass('budget-grid');
     $('#exp-serach').css('display', 'none'); // To hide dropdown before grid is loaded  ticket - 2596
     $('#txtGlobalSearch').val('');// On grid change searchbox should be empty 
     IsBudgetGrid = false;// To maintain the flag for search ticket - 2596

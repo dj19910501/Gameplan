@@ -58,6 +58,7 @@
     var attachHeader;
     var eventidonedit = 0;
     $(document).ready(function () {
+        $('#divgridview').addClass('budget-grid');
         var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
         exportgridData = JsonModel;
         HomeGrid = new dhtmlXGridObject('gridbox');

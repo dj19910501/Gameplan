@@ -1420,7 +1420,7 @@ footer a {
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{text-align: center;}
 
 /* ============== Search box CSS ================ */
-#divgridview .xhdr{ height: 37px !important; }
+/*#divgridview .xhdr{ height: 37px !important; }*/
 #exp-serach{
     position: absolute;
     height: 37px;
