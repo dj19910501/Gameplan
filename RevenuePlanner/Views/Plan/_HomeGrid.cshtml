@@ -37,12 +37,11 @@
     var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');*@ //ToDo : Made required changes to bind Line Item Type Dropdown list on edit Line Item type.
     var IslineItemDelete = false;
 
-    var colStartDate = 0;
+    var colSplitId = 0;
 
     var GridHiddenId = 0;
     var ActivitypeHidden = 0;
     var MachineNameHidden = 0;
-    var plannedCostColId = 'plannedcost';
     var TaskNameColIndex = 0;
     var PlannedCostColIndex = 0;
     var AssetTypeColIndex = 0;
@@ -142,8 +141,8 @@
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         HomeGrid.parse(GridDataHomeGrid, "json");
-        colStartDate = HomeGrid.getColIndexById('startdate');
-        HomeGrid.splitAt(colStartDate);
+        colSplitId = HomeGrid.getColIndexById(AddId);
+        HomeGrid.splitAt(colSplitId);
         GridHideColumn();  ///Calling Hide column function              
         MoveColumn(); ///Calling Move column function       
         HomeGrid.collapseAll();

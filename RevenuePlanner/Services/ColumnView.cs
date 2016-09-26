@@ -173,7 +173,7 @@ namespace RevenuePlanner.Services
                         CustomAttribute mqlfield = new CustomAttribute
                         {
                             EntityType = "Common",
-                            CustomFieldId = Convert.ToString(Enums.PlanGoalType.MQL).ToLower(),
+                            CustomFieldId = Convert.ToString(Enums.PlanGoalType.MQL),
                             CutomfieldName = MQLTitle,
                             ParentID = 0
                         };

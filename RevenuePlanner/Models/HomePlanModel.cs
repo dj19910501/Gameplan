@@ -386,6 +386,30 @@ namespace RevenuePlanner.Models
     }
 
     // Add By Nishant Sheth
+    // Class for get dynamic column values of grid data
+    public class PlanGridColumnData
+    {
+        public Int64 EntityId { get; set; }
+        public Int32 Owner { get; set; }
+        public string AltId { get; set; }
+        public string ColorCode { get; set; }
+        public string TaskId { get; set; }
+        public string UniqueId { get; set; }
+        public string ParentUniqueId { get; set; }
+        public string EntityType { get; set; }
+        public Nullable<Int64> ParentEntityId { get; set; }
+        public string AssetType { get; set; }
+        public string TacticType { get; set; }
+        public Nullable<DateTime> StartDate { get; set; }
+        public Nullable<DateTime> EndDate { get; set; }
+        public string EntityTitle { get; set; }
+        public Nullable<Int32> LineItemTypeId { get; set; }
+        public string LineItemType { get; set; }
+        public List<Plandataobj> lstdata { get; set; }
+        //public Plandataobj objdata { get; set; }
+    }
+
+    // Add By Nishant Sheth
     // class for get grid default/common data
     public class GridDefaultModel
     {
@@ -399,7 +423,7 @@ namespace RevenuePlanner.Models
         public string Status { get; set; }
         public Nullable<DateTime> StartDate { get; set; }
         public Nullable<DateTime> EndDate { get; set; }
-        public Int32 CreatedBy { get; set; }
+        public Int32 Owner { get; set; }
         public string AltId { get; set; }
         public string TaskId { get; set; }
         public string ParentTaskId { get; set; }
@@ -412,6 +436,7 @@ namespace RevenuePlanner.Models
         public string LineItemType { get; set; }
         public Nullable<double> PlannedCost { get; set; }
         public Nullable<double> ProjectedStageValue { get; set; }
+        public string TargetStageGoal { get; set; }
         public string ProjectedStage { get; set; }
         public Nullable<Int64> MQL { get; set; }
         public Nullable<decimal> Revenue { get; set; }
@@ -427,7 +452,8 @@ namespace RevenuePlanner.Models
     // Get custom fields values for entities in pivoted 
     public class CustomfieldPivotData
     {
-        public Nullable<Int64> EntityId { get; set; }
+        public string UniqueId { get; set; }
+        public string EntityType { get; set; }
         public List<Plandataobj> CustomFieldData { get; set; }
     }
 
@@ -441,6 +467,7 @@ namespace RevenuePlanner.Models
         public bool IsRequired { get; set; }
         public string EntityType { get; set; }
         public string AbbreviationForMulti { get; set; }
+        public string CustomFieldType { get; set; }
     }
 
     // Add By Nishant Sheth
@@ -451,6 +478,7 @@ namespace RevenuePlanner.Models
         public string EntityType { get; set; }
         public Nullable<int> CustomFieldId { get; set; }
         public string Value { get; set; }
+        public string UniqueId { get; set; }
     }
 
     // Add By Nishant Sheth

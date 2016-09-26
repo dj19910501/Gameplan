@@ -50,18 +50,18 @@ $(".grid_ver_scroll").scroll(function () {
 });
 
 ///Get GridColumn Index and Hide Column
-function GridHideColumn() {  
-    TaskNameColIndex = HomeGrid.getColIndexById("taskname");
-    PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
-    AssetTypeColIndex = HomeGrid.getColIndexById("roitactictype");
-    TypeColIndex = HomeGrid.getColIndexById("tactictype");
-    OwnerColIndex = HomeGrid.getColIndexById("owner");
-    TargetStageGoalColIndex = HomeGrid.getColIndexById("inq");
-    MQLColIndex = HomeGrid.getColIndexById("mql");
-    RevenueColIndex = HomeGrid.getColIndexById("revenue");
+function GridHideColumn() {
+    TaskNameColIndex = HomeGrid.getColIndexById(TaskNameId);
+    PlannedCostColIndex = HomeGrid.getColIndexById(PlannedCostId);
+    AssetTypeColIndex = HomeGrid.getColIndexById(AssetTypeId);
+    TypeColIndex = HomeGrid.getColIndexById(TacticTypeId);
+    OwnerColIndex = HomeGrid.getColIndexById(OwnerId);
+    TargetStageGoalColIndex = HomeGrid.getColIndexById(TargetStageGoalId);
+    MQLColIndex = HomeGrid.getColIndexById(MQLId);
+    RevenueColIndex = HomeGrid.getColIndexById(RevenueId);
     GridHiddenId = HomeGrid.getColIndexById('id');
-    ActivitypeHidden = HomeGrid.getColIndexById('activitytype');
-    MachineNameHidden = HomeGrid.getColIndexById('machinename');
+    ActivitypeHidden = HomeGrid.getColIndexById(ActivityTypeId);
+    MachineNameHidden = HomeGrid.getColIndexById(MachineNameId);
     HomeGrid.setColumnHidden(GridHiddenId, true);
     HomeGrid.setColumnHidden(ActivitypeHidden, true);
     HomeGrid.setColumnHidden(MachineNameHidden, true);
@@ -74,16 +74,22 @@ function MoveColumn() {
     HomeGrid.attachEvent("onAfterCMove", function (cInd, posInd) {
         var ColumnCount = HomeGrid.getColumnCount();
         var ColumnDetail = [];
+        var AttrType = 'Common';
         for (var i = 0; i < ColumnCount; i++) {
             var ColWidth = HomeGrid.getColWidth(i);
             var customcolId = HomeGrid.getColumnId(i).toString();
             if (customcolId.indexOf("custom_") >= 0) {
-                customcolId = customcolId.replace("custom_", "");
+                var CustomColDetail = customcolId.split(':');
+                if (CustomColDetail != null)
+                    if (Array.isArray(CustomColDetail)) {
+                        customcolId = CustomColDetail[0].replace("custom_", "");
+                        AttrType = CustomColDetail[1];
+                    }
             }
             if (ColWidth != 0) {
                 ColumnDetail.push({
                     AttributeId: customcolId,
-                    AttributeType: " ",
+                    AttributeType: AttrType,
                     ColumnOrder: parseInt(i)
                 });
             }
@@ -650,13 +656,13 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             var oldAssetType = HomeGrid.cells(rowId, AssetTypeColIndex).getValue();
             if (UpdateColumn == "" || UpdateColumn == null)
                 UpdateColumn = HomeGrid.getColLabel(Colind, 0);
-            if(UpdateColumn == "Task Name"){
+            if (UpdateColumn == "Task Name") {
                 if (CheckHtmlTag(nValue) == false) {
                     alert(TitleContainHTMLString);
                     return false;
                 }
 
-                updatePlanNameDrp(TaskID,NewValue);
+                updatePlanNameDrp(TaskID, NewValue);
             }
             if (cellInd == 1) {
                 $("div[taskId='" + TaskID + "']").attr('taskname', NewValue);
@@ -669,16 +675,16 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 }
 
             }
-            var sdateindex = HomeGrid.getColIndexById('startdate');
-            var edateindex = HomeGrid.getColIndexById('enddate');
+            var sdateindex = HomeGrid.getColIndexById(StartDateId);
+            var edateindex = HomeGrid.getColIndexById(EndDateId);
             var idindex = HomeGrid.getColIndexById('id');
-            var costindex = HomeGrid.getColIndexById('plannedcost');
-            var stageindex = HomeGrid.getColIndexById('inq');
+            var costindex = HomeGrid.getColIndexById(PlannedCostId);
+            var stageindex = HomeGrid.getColIndexById(TargetStageGoalId);
             Id = HomeGrid.cells(rowId, idindex).getValue();
             if (UpdateColumn == "Start Date") {
                 var startyear = new Date(HomeGrid.cells("plan." + rowId.split(".")[1], sdateindex).getValue()).getFullYear();
                 var edate = HomeGrid.cells(rowId, edateindex).getValue();
-                if (!CheckDateYear(nValue, hdnYear, StartDateCurrentYear)) return false; 
+                if (!CheckDateYear(nValue, hdnYear, StartDateCurrentYear)) return false;
                 if (!validateDateCompare(nValue, edate, DateComapreValidation)) return false;
 
                 if (updatetype == "prog") {
@@ -1185,11 +1191,11 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                         if (states.TacticCost != null && states.TacticCost != 'undefined') {
                             tacCost = states.TacticCost;
                         }
-                        PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
+                        PlannedCostColIndex = HomeGrid.getColIndexById(PlannedCostId);
                         var oldPlanCost = HomeGrid.cells(rowid, PlannedCostColIndex).getValue();
                         HomeGrid.cells(rowid, PlannedCostColIndex).setValue(tacCost);
                         var TotalchildRowIds = HomeGrid.getAllSubItems(rowid);
-                        PlannedCostColIndex = HomeGrid.getColIndexById(plannedCostColId);
+                        PlannedCostColIndex = HomeGrid.getColIndexById(PlannedCostId);
                         if (tacCost < states.lineItemCost) {
                             HomeGrid.cells(rowid, PlannedCostColIndex).setValue((oldPlanCost));
                         }

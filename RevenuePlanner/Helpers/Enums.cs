@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using RevenuePlanner.Models;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 
 /*
  *  Author: Maninder Singh Wadhva
@@ -11,6 +14,24 @@ namespace RevenuePlanner.Helpers
 {
     public class Enums
     {
+        public static string GetEnumDescription(Enum value)
+        {
+            FieldInfo fi = value.GetType().GetField(Convert.ToString(value));
+
+            DescriptionAttribute[] attributes =
+                (DescriptionAttribute[])fi.GetCustomAttributes(
+                typeof(DescriptionAttribute),
+                false);
+
+            if (attributes != null &&
+                attributes.Length > 0)
+                return attributes[0].Description;
+            else
+                return Convert.ToString(value);
+        }
+
+        public static string ColumnManagmentIcon = GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon);
+
         #region Plan
         /// <summary>
         /// Enum for tactic.
@@ -604,7 +625,7 @@ namespace RevenuePlanner.Helpers
             Plan,
             Model,
             Report,
-            
+
         }
 
         public enum ChangeLog_Actions
@@ -677,6 +698,215 @@ namespace RevenuePlanner.Helpers
             {PlanHeader_Label.Cost.ToString(), "Cost"},
             {PlanHeader_Label.Budget.ToString(), "Budget"}
         };
+        #endregion
+
+        #region Home Grid View Default And Hidden Columns
+        // Below enums for set header columns icons
+        public enum HomeGrid_Header_Icons
+        {
+            // below value for column managment icon
+            [Description("<a href='javascript:void(0)' onclick='OpenCreateNew(true)' class='manageviewicon' title='Open Column Management'><i class='fa fa-edit' aria-hidden='true'></i></a>")]
+            columnmanagementicon,
+        }
+
+        // Below Enumns list use when user have not any specific columns view for home grid
+        public enum HomeGrid_Default_Hidden_Columns
+        {
+            // Hidden Columns
+            [Description("Activity Type")]
+            ActivityType,
+            ColourCode,
+            [Description("id")]
+            id,
+            [Description("Machine Name")]
+            MachineName,
+
+            // Default Columns
+            TaskName,
+            Add,
+            [Description("Start Date")]
+            StartDate,
+            [Description("End Date")]
+            EndDate,
+            [Description("Planned Cost")]
+            PlannedCost,
+            [Description("Tactic Category")]
+            AssetType,
+            [Description("Type")]
+            TacticType,
+            [Description("Owner")]
+            Owner,
+            [Description("Target Stage Goal")]
+            TargetStageGoal,
+            MQL,
+            [Description("Revenue")]
+            Revenue
+        }
+        // Below dictionary list use when user have not any specific columns view and as default columns for home grid and set it's dhtmlx grid header properties
+        public static Dictionary<string, PlanHead> lstHomeGrid_Default_Columns = new Dictionary<string, PlanHead>()
+        {
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate),new PlanHead
+                {
+                    type = "dhxCalendar",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate),
+                    sort = "date",
+                    width = 110,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.StartDate) + ColumnManagmentIcon
+                }
+            },
+             {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate),new PlanHead
+                {
+                    type = "dhxCalendar",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate),
+                    sort = "date",
+                    width = 100,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.EndDate) + ColumnManagmentIcon
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost),new PlanHead
+                {
+                    type = "ron",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost),
+                    sort = "int",
+                    width = 160,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost) + ColumnManagmentIcon
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.AssetType),new PlanHead
+                {
+                    type = "ro",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.AssetType),
+                    sort = "str",
+                    width = 150,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.AssetType) + ColumnManagmentIcon
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType),new PlanHead
+                {
+                    type = "coro",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType),
+                    sort = "sort_TacticType",
+                    width = 150,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.TacticType) + ColumnManagmentIcon
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Owner),new PlanHead
+                {
+                    type = "coro",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Owner),
+                    sort = "sort_Owner",
+                    width = 115,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Owner) + ColumnManagmentIcon
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal),new PlanHead
+                {
+                    type = "ron",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal),
+                    sort = "int",
+                    width = 150,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal) + ColumnManagmentIcon
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL),new PlanHead
+                {
+                    type = "ron",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL),
+                    sort = "int",
+                    width = 150,
+                    value = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL) // Here we not set ColumnManagmentIcon because MQl Title will be diffrent for clients it will be set when list get
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue),new PlanHead
+                {
+                    type = "ron",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue),
+                    sort = "int",
+                    width = 150,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Revenue) + ColumnManagmentIcon
+                }
+            },
+        };
+
+        // Below dictionary list defaulty for every user. it's user have is any sepecifc view or not.
+        public static Dictionary<string, PlanHead> lstHomeGrid_Hidden_And_Default_Columns = new Dictionary<string, PlanHead>()
+        {
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType),new PlanHead
+                {
+                    type = "ro",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType),
+                    sort = "na",
+                    width = 0,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.ActivityType)
+                }
+            },
+             {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode),new PlanHead
+                {
+                    type = "ro",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode),
+                    sort = "na",
+                    width = 10,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.ColourCode)
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),new PlanHead
+                {
+                    type = "ro",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),
+                    sort = "na",
+                    width = 0,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.id)
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName),new PlanHead
+                {
+                    type = "ro",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName),
+                    sort = "na",
+                    width = 0,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.MachineName)
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName),new PlanHead
+                {
+                    type = "tree",
+                    align = "left",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName),
+                    sort = "str",
+                    width = 330,
+                    value = string.Empty
+                }
+            },
+            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add),new PlanHead
+                {
+                    type = "ro",
+                    align = "center",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add),
+                    sort = "na",
+                    width = 85,
+                    value = string.Empty
+                }
+            }
+        };
+
+        public enum HomeGridColumnAttributeType
+        {
+            Common,
+            Campaign,
+            Program,
+            Tactic,
+            [Description("Line Item")]
+            LineItem
+        }
         #endregion
 
         #region Quarter
@@ -1552,7 +1782,7 @@ namespace RevenuePlanner.Helpers
         };
         public enum GoalNum
         {
-           
+
             TwentyFive = 25,
             Fifty = 50,
             Seventyfive = 75,
@@ -1589,13 +1819,14 @@ namespace RevenuePlanner.Helpers
         public static Dictionary<string, string> CommonGrid_Column = new Dictionary<string, string>()
        {
           // {"taskname","Task Name"},
-           {"startdate","Start Date"},
-           {"enddate","End Date"},
-           {"plannedcost","Planned Cost"},
-           {"roitactictype","Tactic Category"},
-           {"tactictype","Type"},
-           {"owner","Owner"},
-           {"inq","Target Stage Goal"}
+           {"StartDate","Start Date"},
+           {"EndDate","End Date"},
+           {"PlannedCost","Planned Cost"},
+           {"AssetType","Tactic Category"},
+           {"TacticType","Type"},
+           {"Owner","Owner"},
+           {"TargetStageGoal","Target Stage Goal"},
+           {"Revenue","Revenue"}
        };
         //end
     }
@@ -1674,6 +1905,6 @@ namespace RevenuePlanner.Helpers
         public const string Plan = "Plan";
     }
 
-    
+
 
 }

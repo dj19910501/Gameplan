@@ -42,9 +42,11 @@ namespace RevenuePlanner.Controllers
         private MRPEntities db = new MRPEntities();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         IBudget IBudgetObj;
+        IGrid objGrid;
         public PlanController()
         {
-            IBudgetObj= new RevenuePlanner.Services.Budget();
+            IBudgetObj = new RevenuePlanner.Services.Budget();
+            objGrid = new Grid();
         }
 
 
@@ -301,7 +303,7 @@ namespace RevenuePlanner.Controllers
                 objPlanModel.objplanhomemodelheader = Common.GetPlanHeaderValue(id);
 
                 TempData["goalTypeList"] = GoalTypeList;
-              // TempData["allocatedByList"] = Common.GetAllocatedByList(); // Modified by Sohel Pathan on 05/08/2014
+                // TempData["allocatedByList"] = Common.GetAllocatedByList(); // Modified by Sohel Pathan on 05/08/2014
             }
             catch (Exception e)
             {
@@ -378,7 +380,7 @@ namespace RevenuePlanner.Controllers
                         plan.GoalType = objPlanModel.GoalType;
                         if (objPlanModel.GoalValue != null)
                         {
-                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));                          
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
                             if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                             {
                                 plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
@@ -2643,7 +2645,7 @@ namespace RevenuePlanner.Controllers
                 revenue = tt.ProjectedRevenue == null ? 0 : objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(tt.ProjectedRevenue)), PlanExchangeRate),
                 IsDeployedToIntegration = tt.IsDeployedToIntegration,
                 stageId = tt.StageId,
-                stageTitle = tt.Stage.Title, 
+                stageTitle = tt.Stage.Title,
                 TacticTypeName = tt.Title,
                 projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue
             }, JsonRequestBehavior.AllowGet);
@@ -6136,8 +6138,8 @@ namespace RevenuePlanner.Controllers
                                     {
                                         tacticlineitemcostmonth = tacticlineitemcostmonth + monthlycost;
                                     }
-                                        tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = tacticlineitemcostmonth;
-                                        objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+                                    tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = tacticlineitemcostmonth;
+                                    objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
                                     //}
                                 }
                                 else
@@ -6879,7 +6881,7 @@ namespace RevenuePlanner.Controllers
                             YearlyCost = totalLineitemCost;
                             string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
                             return Json(new { isSuccess = false, errormsg = strReduceTacticPlannedCostMessage });
-                        
+
                         }
 
                         if (!pcpobj.Plan_Campaign_Program_Tactic_Cost.Any())
@@ -7299,7 +7301,7 @@ namespace RevenuePlanner.Controllers
 
         }
 
-        
+
 
         /// <summary>
         /// Get the plan list for the selected business unit
@@ -8626,8 +8628,7 @@ namespace RevenuePlanner.Controllers
             try
             {
 
-                IGrid objGrid = new Grid();
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate);
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID);
 
             }
             catch (Exception objException)
@@ -8762,7 +8763,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        
+
 
         #region method to bind customfield options
         public void GetCustomfieldDropdownOption()
@@ -9671,7 +9672,7 @@ namespace RevenuePlanner.Controllers
                                 objlineitemCost.CreatedDate = DateTime.Now;
                                 db.Entry(objlineitemCost).State = EntityState.Added;
                             }
-                            
+
                             if (ObjLinkedTactic != null)
                             {
                                 var LinekedPLanTacticId = ObjLinkedTactic.PlanTacticId;
@@ -9680,7 +9681,7 @@ namespace RevenuePlanner.Controllers
                             }
                             List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItemsrc = tblTacticLineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId
                                 ).ToList();
-                            
+
 
                             List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCostsrc = tblTacticLineItemsrc.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
                             var lineitemidlistsrc = objtotalLineitemCostsrc.Select(lineitem => lineitem.PlanLineItemId).ToList();
@@ -9980,7 +9981,7 @@ namespace RevenuePlanner.Controllers
                         //Desc: To Enable edit owner feature from Lineitem popup
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                         {
-                        linkedLineItem.CreatedBy = Convert.ToInt32(UpdateVal);
+                            linkedLineItem.CreatedBy = Convert.ToInt32(UpdateVal);
                         }
                         //ENd
                         db.Entry(linkedLineItem).State = EntityState.Modified;
@@ -9994,7 +9995,7 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                            SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, oldOwnerId, Convert.ToInt32(UpdateVal), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString(),UpdateColumn);
+                            SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, oldOwnerId, Convert.ToInt32(UpdateVal), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString(), UpdateColumn);
                     }
                     //// Calculate TotalLineItemCost.
                     double totalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
@@ -10010,7 +10011,7 @@ namespace RevenuePlanner.Controllers
                         LinkedtotalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                     }
 
-                    if ((objOtherLineItem == null) && (objTactic.Cost > totalLineitemCost) )
+                    if ((objOtherLineItem == null) && (objTactic.Cost > totalLineitemCost))
                     {
                         Plan_Campaign_Program_Tactic_LineItem objLinkedNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
                         if (LinkedTacticId != null && linkedLineItemId > 0)
@@ -10577,8 +10578,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 //Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL); ////Added by Rahul Shah on 03/09/2015 fo PL Ticket #1521
                                 //Changes made regarding #2484 save notifications by komal rawal on 16-08-2016
-                                    Common.InsertChangeLog(PlanID, null, ChangeID, Title, ComponentType, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", NewOwnerID);
-                                }
+                                Common.InsertChangeLog(PlanID, null, ChangeID, Title, ComponentType, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", NewOwnerID);
+                            }
                         }
 
 
@@ -13126,7 +13127,7 @@ namespace RevenuePlanner.Controllers
                         if (columnNames.Where(w => w.ToLower().Contains("jan")).Any())
                             isMonthly = true;
                         //Following is method using which we can specify import data as per type.
-                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dtImport, "budget", isMonthly);                     
+                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dtImport, "budget", isMonthly);
                         //bool isMonthly = dtBudget.Columns.Count > 8;
                         var dataResponse = objSp.GetPlanBudgetList(dt, isMonthly, Sessions.User.ID);
 
@@ -13297,9 +13298,9 @@ namespace RevenuePlanner.Controllers
             int ClientId = Sessions.User.CID;
             BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, string.Empty, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds); //objSp.GetBudget(PlanId.ToString(), string.Empty, string.Empty, string.Empty);
             return PartialView("~/Views/Budget/Budget.cshtml", budgetModel);
-           
+
         }
 
-       
+
     }
 }

@@ -1036,6 +1036,7 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="Views\Plan\_PlanGridVariable.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

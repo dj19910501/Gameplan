@@ -269,13 +269,24 @@ RETURNS @Entities TABLE (
 			[Status]		NVARCHAR(15), 
 			StartDate		DATETIME, 
 			EndDate			DATETIME, 
-			CreatedBy		INT
+			CreatedBy		INT,
+			AltId			NVARCHAR(500),
+			TaskId			NVARCHAR(500),
+			ParentTaskId	NVARCHAR(500),
+			PlanId			BIGINT,
+			ModelId			BIGINT
 		)
 AS
 BEGIN
 
 	;WITH FilteredPlan AS(
-		SELECT ''Plan'' EntityType,''P_'' + CAST(P.PlanId AS NVARCHAR(10)) UniqueId,P.PlanId EntityId, P.Title EntityTitle,NULL ParentEntityId,NULL ParentUniqueId, P.Status, NULL StartDate, NULL EndDate,P.CreatedBy FROM [Plan] P 
+		SELECT ''Plan'' EntityType,''P_'' + CAST(P.PlanId AS NVARCHAR(10)) UniqueId,P.PlanId EntityId, P.Title EntityTitle,NULL ParentEntityId,NULL ParentUniqueId, P.Status, NULL StartDate, NULL EndDate,P.CreatedBy 
+		,CAST(P.PlanId AS NVARCHAR(50)) AS AltId
+		,''L''+CAST(P.PlanId AS NVARCHAR(50)) AS TaskId
+		,NULL AS ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM [Plan] P 
 			--INNER JOIN Model M ON M.ModelId = P.ModelId AND M.ClientId = @ClientId
 		WHERE P.IsDeleted = 0 
 			AND (
@@ -284,22 +295,46 @@ BEGIN
 				)
 	),
 	Campaigns AS (
-		SELECT ''Campaign'' EntityType,''P_C_'' + CAST(C.PlanCampaignId AS NVARCHAR(10)) UniqueId,C.PlanCampaignId EntityId, C.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, C.Status, C.StartDate StartDate, C.EndDate EndDate,C.CreatedBy FROM Plan_Campaign C
+		SELECT ''Campaign'' EntityType,''P_C_'' + CAST(C.PlanCampaignId AS NVARCHAR(10)) UniqueId,C.PlanCampaignId EntityId, C.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, C.Status, C.StartDate StartDate, C.EndDate EndDate,C.CreatedBy 
+		,CAST(C.PlanId AS NVARCHAR(500))+''_''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+''_C''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS TaskId
+		,''L''+CAST(C.PlanId  AS NVARCHAR(500)) AS ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM Plan_Campaign C
 			INNER JOIN FilteredPlan P ON P.EntityId = C.PlanId 
 		WHERE C.IsDeleted = 0 
 	),
 	Programs AS (
-		SELECT ''Program'' EntityType,''P_C_P_'' + CAST(P.PlanProgramId AS NVARCHAR(10)) UniqueId,P.PlanProgramId EntityId, P.Title EntityTitle, C.EntityId ParentEntityId,C.UniqueId ParentUniqueId, P.Status, P.StartDate StartDate, P.EndDate EndDate,P.CreatedBy FROM Plan_Campaign_Program P
+		SELECT ''Program'' EntityType,''P_C_P_'' + CAST(P.PlanProgramId AS NVARCHAR(10)) UniqueId,P.PlanProgramId EntityId, P.Title EntityTitle, C.EntityId ParentEntityId,C.UniqueId ParentUniqueId, P.Status, P.StartDate StartDate, P.EndDate EndDate,P.CreatedBy 
+		,CAST(P.PlanCampaignId AS NVARCHAR(500))+''_''+CAST(P.PlanProgramId AS NVARCHAR(50)) As AltId
+		,CAST(C.TaskId AS NVARCHAR(500))+''_P''+CAST(P.PlanProgramId AS NVARCHAR(50)) As TaskId
+		,CAST(C.ParentTaskId AS NVARCHAR(500))+''_C''+CAST(P.PlanCampaignId AS NVARCHAR(50)) As ParentTaskId
+		,C.PlanId
+		,C.ModelId
+		FROM Plan_Campaign_Program P
 			INNER JOIN Campaigns C ON C.EntityId = P.PlanCampaignId
 		WHERE P.IsDeleted = 0 
 	),
 	Tactics AS (
-		SELECT ''Tactic'' EntityType,''P_C_P_T_'' + CAST(T.PlanTacticId AS NVARCHAR(10)) UniqueId,T.PlanTacticId EntityId, T.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, T.Status, T.StartDate StartDate, T.EndDate EndDate,T.CreatedBy FROM Plan_Campaign_Program_Tactic T
+		SELECT ''Tactic'' EntityType,''P_C_P_T_'' + CAST(T.PlanTacticId AS NVARCHAR(10)) UniqueId,T.PlanTacticId EntityId, T.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, T.Status, T.StartDate StartDate, T.EndDate EndDate,T.CreatedBy 
+		,CAST(T.PlanProgramId AS NVARCHAR(500))+''_''+CAST(T.PlanTacticId AS NVARCHAR(50)) As AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+''_T''+CAST(T.PlanTacticId AS NVARCHAR(50)) As TaskId
+		,CAST(P.ParentTaskId AS NVARCHAR(500))+''_P''+CAST(T.PlanProgramId AS NVARCHAR(50)) As ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM Plan_Campaign_Program_Tactic T
 			INNER JOIN Programs P ON P.EntityId = T.PlanProgramId
 		WHERE T.IsDeleted = 0 
 	),
 	LineItems AS (
-		SELECT ''LineItem'' EntityType,''P_C_P_T_L_'' + CAST(L.PlanLineItemId AS NVARCHAR(10)) UniqueId,L.PlanLineItemId EntityId, L.Title EntityTitle, T.EntityId ParentEntityId,T.UniqueId ParentUniqueId, NULL Status, L.StartDate StartDate, L.EndDate EndDate,L.CreatedBy FROM Plan_Campaign_Program_Tactic_LineItem L
+		SELECT ''LineItem'' EntityType,''P_C_P_T_L_'' + CAST(L.PlanLineItemId AS NVARCHAR(10)) UniqueId,L.PlanLineItemId EntityId, L.Title EntityTitle, T.EntityId ParentEntityId,T.UniqueId ParentUniqueId, NULL Status, L.StartDate StartDate, L.EndDate EndDate,L.CreatedBy 
+		,CAST(L.PlanTacticId AS NVARCHAR(500))+''_''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As AltId
+		,CAST(T.TaskId AS NVARCHAR(500))+''_X''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As TaskId
+		,CAST(T.ParentTaskId AS NVARCHAR(500))+''_T''+CAST(L.PlanTacticId AS NVARCHAR(50)) As ParentTaskId
+		,T.PlanId
+		,T.ModelId
+		FROM Plan_Campaign_Program_Tactic_LineItem L
 			INNER JOIN Tactics T ON T.EntityId = L.PlanTacticId
 		WHERE L.IsDeleted = 0 
 	),
@@ -310,13 +345,114 @@ BEGIN
 		SELECT * FROM Tactics UNION ALL
 		SELECT * FROM LineItems
 	)
-	INSERT INTO @Entities (UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy)
-	SELECT E.UniqueId, E.EntityId,E.EntityTitle, E.ParentEntityId,E.ParentUniqueId,E.EntityType, C.ColorCode,E.Status,E.StartDate,E.EndDate,E.CreatedBy FROM AllEntities E
+	INSERT INTO @Entities (UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)
+	SELECT E.UniqueId, E.EntityId,E.EntityTitle, E.ParentEntityId,E.ParentUniqueId,E.EntityType, C.ColorCode,E.Status,E.StartDate,E.EndDate,E.CreatedBy,E.AltId,E.TaskId,E.ParentTaskId,E.PlanId,E.ModelId FROM AllEntities E
 	LEFT JOIN EntityTypeColor C ON C.EntityType = E.EntityType
 
 	RETURN
 END
 
+' 
+END
+ELSE 
+BEGIN
+execute dbo.sp_executesql @statement = N'--This function will return all the enties with hirarchy
+--Multiple plan ids can be passed saperated by comma
+--If we pass null then it will retuen all plans hirarchy data
+ALTER FUNCTION [dbo].[fnGetEntitieHirarchyByPlanId] ( @PlanIds NVARCHAR(MAX))
+RETURNS @Entities TABLE (
+			UniqueId		NVARCHAR(30), 
+			EntityId		BIGINT,
+			EntityTitle		NVARCHAR(1000),
+			ParentEntityId	BIGINT, 
+			ParentUniqueId	NVARCHAR(30),
+			EntityType		NVARCHAR(15), 
+			ColorCode		NVARCHAR(7),
+			[Status]		NVARCHAR(15), 
+			StartDate		DATETIME, 
+			EndDate			DATETIME, 
+			CreatedBy		INT,
+			AltId			NVARCHAR(500),
+			TaskId			NVARCHAR(500),
+			ParentTaskId	NVARCHAR(500),
+			PlanId			BIGINT,
+			ModelId			BIGINT
+		)
+AS
+BEGIN
+
+	;WITH FilteredPlan AS(
+		SELECT ''Plan'' EntityType,''P_'' + CAST(P.PlanId AS NVARCHAR(10)) UniqueId,P.PlanId EntityId, P.Title EntityTitle,NULL ParentEntityId,NULL ParentUniqueId, P.Status, NULL StartDate, NULL EndDate,P.CreatedBy 
+		,CAST(P.PlanId AS NVARCHAR(50)) AS AltId
+		,''L''+CAST(P.PlanId AS NVARCHAR(50)) AS TaskId
+		,NULL AS ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM [Plan] P 
+			--INNER JOIN Model M ON M.ModelId = P.ModelId AND M.ClientId = @ClientId
+		WHERE P.IsDeleted = 0 
+			AND (
+					@PlanIds IS NULL 
+					OR P.PlanId IN (SELECT DISTINCT dimension FROM dbo.fnSplitString(@PlanIds,'',''))
+				)
+	),
+	Campaigns AS (
+		SELECT ''Campaign'' EntityType,''P_C_'' + CAST(C.PlanCampaignId AS NVARCHAR(10)) UniqueId,C.PlanCampaignId EntityId, C.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, C.Status, C.StartDate StartDate, C.EndDate EndDate,C.CreatedBy 
+		,CAST(C.PlanId AS NVARCHAR(500))+''_''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+''_C''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS TaskId
+		,''L''+CAST(C.PlanId  AS NVARCHAR(500)) AS ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM Plan_Campaign C
+			INNER JOIN FilteredPlan P ON P.EntityId = C.PlanId 
+		WHERE C.IsDeleted = 0 
+	),
+	Programs AS (
+		SELECT ''Program'' EntityType,''P_C_P_'' + CAST(P.PlanProgramId AS NVARCHAR(10)) UniqueId,P.PlanProgramId EntityId, P.Title EntityTitle, C.EntityId ParentEntityId,C.UniqueId ParentUniqueId, P.Status, P.StartDate StartDate, P.EndDate EndDate,P.CreatedBy 
+		,CAST(P.PlanCampaignId AS NVARCHAR(500))+''_''+CAST(P.PlanProgramId AS NVARCHAR(50)) As AltId
+		,CAST(C.TaskId AS NVARCHAR(500))+''_P''+CAST(P.PlanProgramId AS NVARCHAR(50)) As TaskId
+		,CAST(C.ParentTaskId AS NVARCHAR(500))+''_C''+CAST(P.PlanCampaignId AS NVARCHAR(50)) As ParentTaskId
+		,C.PlanId
+		,C.ModelId
+		FROM Plan_Campaign_Program P
+			INNER JOIN Campaigns C ON C.EntityId = P.PlanCampaignId
+		WHERE P.IsDeleted = 0 
+	),
+	Tactics AS (
+		SELECT ''Tactic'' EntityType,''P_C_P_T_'' + CAST(T.PlanTacticId AS NVARCHAR(10)) UniqueId,T.PlanTacticId EntityId, T.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, T.Status, T.StartDate StartDate, T.EndDate EndDate,T.CreatedBy 
+		,CAST(T.PlanProgramId AS NVARCHAR(500))+''_''+CAST(T.PlanTacticId AS NVARCHAR(50)) As AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+''_T''+CAST(T.PlanTacticId AS NVARCHAR(50)) As TaskId
+		,CAST(P.ParentTaskId AS NVARCHAR(500))+''_P''+CAST(T.PlanProgramId AS NVARCHAR(50)) As ParentTaskId
+		,P.PlanId
+		,P.ModelId
+		FROM Plan_Campaign_Program_Tactic T
+			INNER JOIN Programs P ON P.EntityId = T.PlanProgramId
+		WHERE T.IsDeleted = 0 
+	),
+	LineItems AS (
+		SELECT ''LineItem'' EntityType,''P_C_P_T_L_'' + CAST(L.PlanLineItemId AS NVARCHAR(10)) UniqueId,L.PlanLineItemId EntityId, L.Title EntityTitle, T.EntityId ParentEntityId,T.UniqueId ParentUniqueId, NULL Status, L.StartDate StartDate, L.EndDate EndDate,L.CreatedBy 
+		,CAST(L.PlanTacticId AS NVARCHAR(500))+''_''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As AltId
+		,CAST(T.TaskId AS NVARCHAR(500))+''_X''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As TaskId
+		,CAST(T.ParentTaskId AS NVARCHAR(500))+''_T''+CAST(L.PlanTacticId AS NVARCHAR(50)) As ParentTaskId
+		,T.PlanId
+		,T.ModelId
+		FROM Plan_Campaign_Program_Tactic_LineItem L
+			INNER JOIN Tactics T ON T.EntityId = L.PlanTacticId
+		WHERE L.IsDeleted = 0 
+	),
+	AllEntities AS (    
+		SELECT * FROM FilteredPlan UNION ALL
+		SELECT * FROM Campaigns UNION ALL
+		SELECT * FROM Programs UNION ALL
+		SELECT * FROM Tactics UNION ALL
+		SELECT * FROM LineItems
+	)
+	INSERT INTO @Entities (UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)
+	SELECT E.UniqueId, E.EntityId,E.EntityTitle, E.ParentEntityId,E.ParentUniqueId,E.EntityType, C.ColorCode,E.Status,E.StartDate,E.EndDate,E.CreatedBy,E.AltId,E.TaskId,E.ParentTaskId,E.PlanId,E.ModelId FROM AllEntities E
+	LEFT JOIN EntityTypeColor C ON C.EntityType = E.EntityType
+
+	RETURN
+END
 
 ' 
 END
@@ -1439,13 +1575,13 @@ BEGIN
 SET NOCOUNT ON;
 
 	SELECT CustomFieldId
-			,Name AS 'CustomFieldName' 
-			,CustomFieldTypeId 
-			,IsRequired
-			,EntityType
-			,AbbreviationForMulti
-			FROM CustomField 
-				WHERE ClientId=@ClientId
+			,C.Name AS 'CustomFieldName' 
+			,C.CustomFieldTypeId 
+			,C.IsRequired
+			,C.EntityType
+			,C.AbbreviationForMulti
+			FROM CustomField  C
+			WHERE ClientId=@ClientId
 					AND IsDeleted=0
 					AND EntityType IN('Campaign','Program','Tactic','Lineitem')
 
@@ -1454,6 +1590,7 @@ SET NOCOUNT ON;
 	,MAX(A.EntityType) EntityType
 	,A.CustomFieldId
 	,MAX(A.Value) AS Value
+	,MAX(A.UniqueId) AS UniqueId
 	FROM (
 	SELECT CE.CustomFieldId,Hireachy.EntityId
 	,(SELECT SUBSTRING((	
@@ -1463,16 +1600,24 @@ SET NOCOUNT ON;
 						FOR XML PATH('')), 2,900000
 						)) AS Value,
 						Hireachy.EntityType
+						,C.CustomFieldType	
+						,C.EntityType +'_'+CAST(CE.EntityId AS VARCHAR) AS 'UniqueId'
 					--FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
 					FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds) Hireachy 
-					CROSS APPLY (SELECT C.CustomFieldId FROM CustomField C
+					CROSS APPLY (SELECT C.CustomFieldId
+										,C.EntityType
+										,CT.CustomFieldType FROM CustomField C
+							CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT
+								WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId)CT
 						WHERE Hireachy.EntityType = C.EntityType AND C.ClientId = @ClientId
 						AND C.IsDeleted=0) C
 					CROSS APPLY(SELECT CE.EntityId,CE.CustomFieldId FROM CustomField_Entity CE
 						WHERE C.CustomFieldId = CE.CustomFieldId
 						AND Hireachy.EntityId = CE.EntityId)CE
 					UNION ALL
-					SELECT C.CustomFieldId,NULL,NULL,NULL FROM CustomField C
+					SELECT C.CustomFieldId,NULL,NULL,NULL,CT.CustomFieldType,NULL FROM CustomField C
+					CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT
+						WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId)CT
 					WHERE C.ClientId = @ClientId
 					AND C.IsDeleted = 0
 					AND C.EntityType IN('Campaign','Program','Tactic','Lineitem')
@@ -1520,7 +1665,22 @@ BEGIN
 					AND Stage.IsDeleted=0
 						AND Stage.Code='CW'
 
-	SELECT Hireachy.*,
+	SELECT Hireachy.UniqueId,
+				Hireachy.EntityId,		
+				Hireachy.EntityTitle,		
+				Hireachy.ParentEntityId	,
+				Hireachy.ParentUniqueId	,
+				Hireachy.EntityType	,	
+				Hireachy.ColorCode,		
+				Hireachy.[Status],		
+				Hireachy.StartDate,		
+				Hireachy.EndDate,			
+				Hireachy.CreatedBy AS 'Owner',
+				Hireachy.AltId,			
+				Hireachy.TaskId,			
+				Hireachy.ParentTaskId,	
+				Hireachy.PlanId	,		
+				Hireachy.ModelId,			
 				TacticType.AssetType,
 				TacticType.Title AS TacticType,
 				Tactic.TacticTypeId,
@@ -1539,6 +1699,7 @@ BEGIN
 					END AS PlannedCost
 				,Tactic.ProjectedStageValue 
 				,Stage.Title AS 'ProjectedStage'
+				,NULL AS 'TargetStageGoal'
 				,MQL.Value as MQL
 				,Revenue.Value as Revenue
 				,Tactic.TacticCustomName AS 'MachineName'
