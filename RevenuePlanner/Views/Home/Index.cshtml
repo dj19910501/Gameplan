@@ -297,7 +297,7 @@
             success: function (data) {
                 if (data != 'undefined' && data != null) {
                     $('#divFilter').html(data);
-                    GetFilterIds();
+                    filters.PlanIDs = GetPlanIds();
                     GetTacticTypelist(filters.PlanIDs);
                     GetOwnerListForFilter(filters.PlanIDs);
                     GetLastSetofViews($('#FilterPresetName').val());

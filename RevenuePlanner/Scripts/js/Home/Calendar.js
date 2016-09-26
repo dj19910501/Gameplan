@@ -41,7 +41,7 @@ function BindPlanCalendar() {
 
 function GetCalendarDataInJsonFormat() {
     var strURL = urlContent + 'Home/GetCalendarData/';
-
+    filters = GetFilterIds();
     $.ajax({
         url: strURL,
         type: 'POST',

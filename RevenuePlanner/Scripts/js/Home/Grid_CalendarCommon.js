@@ -66,6 +66,7 @@ var gridname;
 //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
 //Function To Call HomeGrid Data for Selected Plan
 function LoadPlanGrid() {
+    filters = GetFilterIds();
     $.ajax({
         url: urlContent + 'Plan/GetHomeGridData/',
         data: {

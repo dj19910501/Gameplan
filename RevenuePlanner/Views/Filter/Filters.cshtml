@@ -3,8 +3,6 @@
 
 @{
     string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
-    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
-    bool IsPlanPublished = (bool)ViewBag.IsPublished;
     var ViewYearList = (List<SelectListItem>)ViewBag.ViewYear;
     var CreatedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()];
     var SubmittedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()];
@@ -79,30 +77,6 @@
     </div>
     <div id="DefaultFilters" style="display:none"></div>
 </div>
-@*<div id="PlanModulesSection" class="plan-mod-section sidebar-main">
-        <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsPlanSummary">
-            <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
-            <div class="wraper-btns cf">
-                <div>
-                    @if (IsPlanEditable && !IsPlanPublished)
-                    {
-                        <button id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular publish-plan-btn" type="button" style="min-width: 90%">
-                            Publish Plan
-                        </button>
-                    }
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="AddActuals()" style="min-width:90%">
-                            Add Actuals
-                        </button>
-                    @if (IsPlanEditable)
-                    {
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()" style="min-width: 90%">
-                            Edit Plan Definition
-                        </button>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>*@
 <div id="Filtersidebar" class="span2 sidebar">
     <div class="error-msg-filter">
         <div id="successMessageSidebar" class="alert hide alert-success">

@@ -832,21 +832,11 @@ function CancelSavePreset() {
 }
 
 function ClearAllPreset() {
-
     BulkTTOperation(false);
     BulkStatusOperation(false);
-    BulkOwnerOperation(false);
-    if (activeMenu.toLowerCase() == 'home') {
-        LoadPlanData(null);
-        $("#ulSelectedPlans li").each(function (i) {
-            $(this).removeClass("close-list");
-            var chkid = $(this).find("input[type=checkbox]").attr("id");
-            $("#" + chkid).removeAttr("checked");
-        });
-    }
-    else {
-        BulkPlanOperation(false);
-    }
+    BulkOwnerOperation(false);    
+    LoadPlanData(null);        
+    BulkPlanOperation(false);
     $('#divCustomFieldsFilter').find("li").each(function (i) {
         $(this).removeClass("close-list");
         var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -857,12 +847,6 @@ function ClearAllPreset() {
         $(this).parent().removeClass("close-list");
     });
     UpdateSelectedFilters();
-    PdfFilters.customFieldIds = [];
-    PdfFilters.PlanIDs = [];
-    PdfFilters.SelectedPlans = [];
-    PdfFilters.PlanTitles = [];
-    PdfFilters.OwnerIds = [];
-    PdfFilters.TacticTypeids = [];
 }
 
 function LoadPreset() {
@@ -1022,7 +1006,14 @@ function UpdateResult() {
     SavePresetValue = false;
 }
 
-
+function GetPlanIds() {
+    filters.PlanIDs = [];
+    $("#ulSelectedPlans li input[type=checkbox]:checked").each(function () {
+        var chkid = $(this).attr("id");
+        filters.PlanIDs.push(chkid);
+    });
+    return filters.PlanIDs;
+}
 function GetFilterIds() {
     filters.SelectedYears = [];
     filters.PlanIDs = [];
@@ -1038,10 +1029,6 @@ function GetFilterIds() {
         var chkid = $(this).attr("id");
         filters.PlanIDs.push(chkid);
     });
-    $('#divCustomFieldsFilter').find("input[type=checkbox]:checked").each(function () {
-        var chkid = $(this).attr("id");
-        filters.customFieldIds.push(chkid);
-    });
     $("#ulSelectedOwner li input[type=checkbox]:checked").each(function () {
         filters.OwnerIds.push($(this).attr('id').toString());
     });
@@ -1051,6 +1038,47 @@ function GetFilterIds() {
     });
     $("#ulStatus li input[type=checkbox]:checked").each(function () {
         filters.StatusIds.push($(this).attr('id').toString());
+    });
+
+    $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+        if ($(this).attr('checked') == 'checked') {
+            var chkid = $(this).attr("id");
+            if (chkid != undefined && chkid != 'undefined') {
+                filters.customFieldIds.push(chkid);
+            }
+        }
+    });
+    var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
+    $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+        if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+            AllCounter = $(this).find("input[type=checkbox]").length;
+            CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+            UncheckedCounter = AllCounter - CheckedCounter;
+            if (AllCounter == UncheckedCounter) {
+                var Id = $(this).attr("id");
+                if (Id.indexOf("-") >= 0) {
+                    Id = Id.split('-')[1];
+                    var CustomId = Id + "_null";
+                    filters.customFieldIds.push(CustomId);
+                }
+            }
+            else if (AllCounter == CheckedCounter) {
+                id = this.id;
+                if (id != null && id != "" && id.indexOf("-") > -1) {
+                    id = this.id.split("-")[1];
+                }
+                var i = 0, customfieldid;
+                for (i = 0; i < filters.customFieldIds.length; i++) {
+                    if (filters.customFieldIds[i].indexOf("_") > -1) {
+                        customfieldid = filters.customFieldIds[i].split("_")[0];
+                        if (id == customfieldid) {
+                            filters.customFieldIds.splice(i, 1);
+                            i--;
+                        }
+                    }
+                }
+            }
+        }
     });
     return filters;
 }
@@ -1177,4 +1205,21 @@ function SaveLastSetofViews(ViewName) {
             }
         }
     });
+}
+
+function SaveAsPreset() {
+    var IsAnyPlanSelected = $('#ulSelectedPlans').find("li").hasClass("close-list");
+    var IsAnyCustomFieldSelected = $('#divCustomFieldsFilter').find("li").hasClass("close-list");
+    var IsAnyTTSelected = $('#ulTacticType').find("li").hasClass("close-list");
+    var IsAnyStatusSelected = $('#ulStatus').find("li").hasClass("close-list");
+    var IsAnyOwnerSelected = $('#ulSelectedOwner').find("li").hasClass("close-list");
+    if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected && !IsAnyOwnerSelected) {
+        alert('Please select at least one filter');
+        return false;
+    }
+    else {
+        $("#content_SaveFilters").css("display", "block");
+        $("#PlanModulesSection").css("display", "none");
+        $("#Filtersidebar").css("display", "none");
+    }
 }
