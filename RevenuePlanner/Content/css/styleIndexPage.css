@@ -353,7 +353,7 @@ a:hover, a:focus {
 	cursor: pointer;
 	line-height: 45px;
 	position: absolute;
-	right: -2px;
+	right: 6px;
 	width: 20px;
 	z-index: 999;
 	color: #777;
@@ -368,7 +368,7 @@ a:hover, a:focus {
 }
 .menu-content > li.dropdown > a { /* spacing with dropdown arrow */
 	margin: 0 1px;
-	padding: 0 22px 0 13px;
+	padding: 0 28px 0 13px;
 }
 .menu-content li a:hover, .menu-content li a:hover span {
 	background: transparent none repeat scroll 0 0;
@@ -712,6 +712,9 @@ footer {
 .filter-preset button .caret {
 	border-top: 4px solid #3e3f37;
 }
+.filter-preset .dropdown-menu{
+    right:-2px; left:auto;
+}  /* New added style */
 .sidebar-preset .filter-preset ul li {
 	margin: 2px 0;
 }
@@ -1375,6 +1378,10 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa {
 .category-title-right.show-fa:after {
 	content: "\f104";
 }
+.manageviewicon .fa {
+        color: #fff;
+        margin-left: 10px;
+    } 
 /*============= Footer Css ===================== */
 
 footer > span {
@@ -1502,7 +1509,117 @@ footer a {
 	height: 37px;
 }
 
+/* ============== Inspection Window new style ================= */ 
+#modal-container-186470 {
+	padding: 0;  background:rgba(255, 255, 255, 0.2) none repeat scroll 0 0;
+}
+.headerfix-wraper {
+    background-color: #f2f2f2;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0;
+    position:static;
+    z-index:0;
+}
+.partial_wrapper.new-wrapper {
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #ccc;
+    height: 61%;
+    left: auto;
+    margin: auto;
+    overflow: auto;
+    overflow-x:hidden;
+    position: absolute;
+    right: 15px;
+    top: 278px;
+    width: 1070px;
+    /*min-width:1070px;*/
+    z-index: 99999;
+    padding-bottom:15px;
+}
+.pop-body-wraper {
+    float: left;
+    height: auto !important;
+    margin: 0 auto;
+    min-width: 800px;
+    overflow: visible;
+    width: 100%;
+}
+.pop-body-wraper .PopupDiv {
+    width: 1050px;
+    margin:0 auto;
+}
+.pop-body-wraper, .PopupDiv {
+	width: 100% !important
+}
 
+.pop-body-wraper > form, .PopupDiv > form {
+    margin:8px 0;
+}
+.headerfix-wraper .headefix h2.title-simple {
+    display: table;
+    margin: 0;
+    width: 100%;
+}
+.modal-popup-title {
+    border-bottom: 1px solid #ccc;
+    margin: 0;
+    padding-bottom: 8px;
+}
+.modal-popup-title h2 {margin: 0 0 0 4%;}
+
+h2.title-simple .Save-icon-white.btn-blue, 
+h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
+
+.modal-popup-title h2 input{
+    color: #4d4d4d;
+    display: block;
+    font-family: "source_sans_prolight",Arial,"sans-serif";
+    font-size: 22px !important;
+    height: 25px !important;
+    line-height: normal;
+    margin-bottom: 0;
+    width: 95%;
+}
+.modal-popup-summary .nl-form {
+    font-size: 22px !important;
+    line-height: 20px;
+}
+.modal-popup-summary .nl-form .modal-status {
+    padding: 0;
+}
+.inspect-column-parent{padding:0 8px !important}
+.headefix .close-x-big-icon {
+    background-size: 21px auto !important;
+    border: 0 none;
+    outline: 0 none !important;
+    position: absolute;
+    right: -37px;
+    top: -6px;
+}
+.partial_wrapper.new-wrapper .headefix .close-x-big-icon {
+    background: none !important;
+    cursor: pointer;
+    float: none;
+    height: 30px;
+    width: 25px;
+    position: fixed;
+    right: 3px;
+    top: 265px;  
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 20px;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    z-index:3000;
+}
+.partial_wrapper.new-wrapper .headefix .close-x-big-icon:after{
+    content: "\f057";
+}
+.headefix > .title-simple > span{
+    float: right;
+    margin-right: 18px;
+}
+/* ============== Inspection Window new style End ================= */ 
 
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
@@ -1637,6 +1754,4 @@ body{overflow:auto}
 }
 }
 
-
-/* ============== new feature Searchbox style #2269 start ============== */
 
