@@ -966,7 +966,6 @@
     <Content Include="Views\Currency\_PlanCurrencyGrid.cshtml" />
     <Content Include="Views\Currency\_ReportCurrencyGrid.cshtml" />
     <Content Include="Views\Currency\_currencyMenu.cshtml" />
-    <Content Include="Views\Home\IndexNewDesign.cshtml" />
     <Content Include="Views\Shared\SideFilters.cshtml" />
     <Content Include="Views\ColumnView\_AddColumnView.cshtml" />
     <Content Include="Views\Home\Index - Copy.cshtml" />
