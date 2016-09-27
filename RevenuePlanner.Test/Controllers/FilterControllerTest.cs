@@ -18,6 +18,11 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class FilterControllerTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
         #region Filter with no parameters
         /// <summary>
         /// To check to retrieve Filter view with no parameters
