@@ -195,13 +195,12 @@ namespace RevenuePlanner.Services
         /// Get total planned cost for line items and tactic
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private List<Budgetdataobj> TotalPlannedCostForInspectPopup(List<BudgetModel> model, string activityType, List<Budgetdataobj> lstBudgetData, string activityId)
+        private List<Budgetdataobj> TotalPlannedCostForInspectPopup(BudgetModel modelEntity, string activityType, List<Budgetdataobj> lstBudgetData, string activityId)
         {
             string formatThousand = "#,#0.##";
             string stylecolorblack = "color:#000";
             string stylecolorgray = "color:#999";
-            BudgetModel modelEntity = model.Where(pl => pl.ActivityType == activityType && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
-
+            
             if (modelEntity != null)
             {
                 bool isLineItem = activityType == ActivityType.ActivityLineItem ? true : false;
@@ -230,10 +229,9 @@ namespace RevenuePlanner.Services
         /// Get monthly and quarterly allocated cost for line items and tactic
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private List<Budgetdataobj> CostAllocationForInspectPopup(List<BudgetModel> model, string activityType, List<Budgetdataobj> lstBudgetData, string allocatedBy, string activityId)
+        private List<Budgetdataobj> CostAllocationForInspectPopup(BudgetModel modelLineItem, string activityType, List<Budgetdataobj> lstBudgetData, string allocatedBy, string activityId)
         {
             Budgetdataobj objBudgetData = new Budgetdataobj();
-            BudgetModel modelLineItem = model.Where(pl => pl.ActivityType == activityType && pl.ActivityId == activityId).FirstOrDefault();
 
             bool isLineItem = activityType == ActivityType.ActivityLineItem ? true : false;
             bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && modelLineItem.LineItemTypeId == null;
@@ -454,6 +452,7 @@ namespace RevenuePlanner.Services
             objTacticRows.open = "1";
             objTacticRows.bgColor = TacticBackgroundColor;
             List<Budgetdataobj> lstTacticData = new List<Budgetdataobj>();
+            BudgetModel modelEntity = model.Where(pl => pl.ActivityType == ActivityType.ActivityTactic && pl.ActivityId == bmt.ActivityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
 
             Budgetdataobj objTacticData = new Budgetdataobj();
             objTacticData.value = bmt.ActivityId.Replace("cpt_", "");
@@ -463,10 +462,10 @@ namespace RevenuePlanner.Services
             objTacticData.value = HttpUtility.HtmlEncode(bmt.ActivityName).Replace("'", "&#39;");
             lstTacticData.Add(objTacticData);
 
-            lstTacticData = TotalPlannedCostForInspectPopup(model, ActivityType.ActivityTactic,
+            lstTacticData = TotalPlannedCostForInspectPopup(modelEntity, ActivityType.ActivityTactic,
                                 lstTacticData, bmt.ActivityId);
 
-            lstTacticData = CostAllocationForInspectPopup(model, ActivityType.ActivityTactic,
+            lstTacticData = CostAllocationForInspectPopup(modelEntity, ActivityType.ActivityTactic,
                                 lstTacticData, AllocatedBy, bmt.ActivityId);
 
             objTacticRows.data = lstTacticData;
@@ -503,19 +502,23 @@ namespace RevenuePlanner.Services
             objLineItemRows.bgColor = "#fff";
             List<Budgetdataobj> lstLineItemData = new List<Budgetdataobj>();
             Budgetdataobj objLineItemData = new Budgetdataobj();
+            BudgetModel modelEntity = model.Where(pl => pl.ActivityType == ActivityType.ActivityLineItem && pl.ActivityId == ActivityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
 
             objLineItemData.value = LineItemId;
             lstLineItemData.Add(objLineItemData);
 
             objLineItemData = new Budgetdataobj();
+            if (modelEntity.LineItemTypeId == null)
+            {
+                objLineItemData.locked = "1"; // Balance row name should not be editable
+                objLineItemData.style = "color:#999";
+            }
             objLineItemData.value = HttpUtility.HtmlEncode(ActivityName).Replace("'", "&#39;");
             lstLineItemData.Add(objLineItemData);
 
-            lstLineItemData = TotalPlannedCostForInspectPopup(model, ActivityType.ActivityLineItem,
-                              lstLineItemData, ActivityId);
+            lstLineItemData = TotalPlannedCostForInspectPopup(modelEntity, ActivityType.ActivityLineItem,lstLineItemData, ActivityId);
 
-            lstLineItemData = CostAllocationForInspectPopup(model, ActivityType.ActivityLineItem,
-                              lstLineItemData, AllocatedBy, ActivityId);
+            lstLineItemData = CostAllocationForInspectPopup(modelEntity, ActivityType.ActivityLineItem, lstLineItemData, AllocatedBy, ActivityId);
 
             objLineItemRows.data = lstLineItemData;
             return objLineItemRows;

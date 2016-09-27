@@ -97,7 +97,7 @@ else
     var GridDataLineItemGrid;
     var ActivityIdColIndex;
     var PlannedCostColIndex;
-    var TypeColIndex;
+    var TaskNameColIndex;
     var arrDetailedGrids = [];
 
     var arrFullMonthNames = { 'JAN': 'January' ,
@@ -149,80 +149,136 @@ else
         LineItemGrid.parse(GridDataLineItemGrid, "json");
         ActivityIdColIndex = LineItemGrid.getColIndexById("id");
         PlannedCostColIndex = LineItemGrid.getColIndexById("plannedcost");
+        TaskNameColIndex = LineItemGrid.getColIndexById("taskname");
     }
     
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
-        var detailedGridData = LineItemGrid;
-        if (stage == 0) {
+        if (stage == 0) {   // Stage == 0 Means Click on Cell
             // Disable cells which has no permission to edit
-            var locked = detailedGridData.cells(rowId, cellInd).getAttribute("locked");
+            var locked = LineItemGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
                 return false;
         }
-        if (stage == 1) {
+        if (stage == 1) {   // Stage == 1 - Means Perform Event on Cell -  Keydown, etc. 
             // Disable alphabets or special characters in input
-            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
-            detailedGridData.editor.obj.onkeypress = function (e) {
-                e = e || window.event;
-                if ((e.keyCode >= 47) || (e.keyCode == 0)) {
-                    var text = this.value;
-                    if (text.length > 10) { //max length of the text
-                        return false;
+            if(cellInd != TaskNameColIndex){
+                $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+                LineItemGrid.editor.obj.onkeypress = function (e) {
+                    e = e || window.event;
+                    if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                        var text = this.value;
+                        if (text.length > 10) { //max length of the text
+                            return false;
+                        }
                     }
                 }
             }
         }
-        if (stage == 2) {
+        if (stage == 2) {   // Stage == 2 - Means perform focus out event
             if (nValue != null && nValue != "") {
-                var entityId = detailedGridData.cells(rowId, 0).getValue();
+                var entityId = LineItemGrid.cells(rowId, 0).getValue(); 
                 var section = "lineitem";
                 var isTotalCost = false;
                 var month = "";
                 if(rowId.indexOf('tactic') > -1) {
                     section = "tactic";
                 }
-                if (cellInd == PlannedCostColIndex) {
-                    isTotalCost = true;
+                if(cellInd == TaskNameColIndex){
+                    // Get column name for edit
+                    var UpdateColumn = LineItemGrid.getColLabel(cellInd, 0);
+                    $.ajax({
+                        type: 'POST',
+                        url: urlContent + 'Plan/SaveGridDetail',
+                        data: { UpdateType: section, UpdateColumn: UpdateColumn.trim(), UpdateVal: nValue, Id: parseInt(entityId) },
+                        dataType: 'json',
+                        success: function (states) {
+                            if (data.isSuccess == true) {
+                                $("#liLine_Items").trigger("click");
+                            }
+                            else {
+                                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                                $('#errorMessageDuplicatePlan').slideDown(700);
+                            }
+                        }
+                    });
                 }
-                else {
-                    month = arrFullMonthNames[detailedGridData.getColLabel(cellInd)];
-                }
-                var monthlyplannedcost = detailedGridData.cells(rowId, cellInd).getValue();
-                
-                var tab = 'Planned';
-                var isquarter = false;
-                if('@isQuarter' == 'quarters') {
-                    isquarter = true;
-                }
-        
-                var inputArr = [];
-                inputArr.push({
-                    key: "CostMonth",
-                    Value: SetValueByExchangeRate(monthlyplannedcost.replace(/,/g, ""))
-                });
-                var jsonInputs = JSON.stringify(inputArr);
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Inspect/SaveLineItemCostAllocation/")',
-                dataType: "json",
-                data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost,
-                success: function (data) {
-                    if (data.isSuccess == true) {
-                        $("#liLine_Items").trigger("click");
+                else{
+                    if (cellInd == PlannedCostColIndex) {
+                        isTotalCost = true;
                     }
                     else {
-                        $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
-                        $('#errorMessageDuplicatePlan').slideDown(700);
+                        month = arrFullMonthNames[LineItemGrid.getColLabel(cellInd)];   // Get full name of month from initial (JAN -> January)
                     }
+                    var monthlyplannedcost = LineItemGrid.cells(rowId, cellInd).getValue(); // updated cell value
+                
+                    var tab = 'Planned';
+                    var isquarter = false;
+                    if('@isQuarter' == 'quarters') {
+                        isquarter = true;
+                    }
+        
+                    var inputArr = [];
+                    inputArr.push({
+                        key: "CostMonth",
+                        Value: SetValueByExchangeRate(monthlyplannedcost.replace(/,/g, ""))
+                    });
+                    var jsonInputs = JSON.stringify(inputArr);
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Inspect/SaveLineItemCostAllocation/")',
+                        dataType: "json",
+                        data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost,
+                        success: function (data) {
+                            if (data.isSuccess == true) {
+                                // format current cell value
+                                LineItemGrid.cells(rowId, cellInd).setValue(number_format(nValue, 0, '.', ','));
+
+                                // Start - Update balance row value on edit (vertical calculation)
+                                var rows_count = LineItemGrid.getRowsNum();
+                                var balance_rowid = LineItemGrid.getRowId(rows_count - 1);
+                                // always first row is for tactic so get tactic cost value
+                                var first_rowid = LineItemGrid.getRowId(0);
+                                var tac_cost = parseInt(LineItemGrid.cells(first_rowid, cellInd).getValue().replace(',','')); 
+                                var lineitem_cost = 0;
+                                for(var i = 1 ; i < rows_count - 1; i++) { // sum of line item cost
+                                    var row_id = LineItemGrid.getRowId(i);
+                                    lineitem_cost = lineitem_cost + parseInt(LineItemGrid.cells(row_id, cellInd).getValue().replace(',',''));
+                                }
+                                var balance_cost = tac_cost - lineitem_cost;
+                                // set balance line item cost 
+                                LineItemGrid.cells(balance_rowid, cellInd).setValue(number_format(balance_cost, 0, '.', ','));
+                                // End - Update balance row value on edit 
+
+                                UpdateUnallocatedColumnValues(rowId);   // update unallocated cost column for edited row
+                                UpdateUnallocatedColumnValues(balance_rowid);   // update unallocated cost column for balance row
+                            }
+                            else {
+                                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                                $('#errorMessageDuplicatePlan').slideDown(700);
+                            }
+                        }
+                    });
                 }
-            });
-        }
-        else {
-            return false;
-        }
+            }
+            else {
+                return false;
+            }
     }
     return true;
-}
+    }
+    function UpdateUnallocatedColumnValues(rowId){
+        // Update Unallocated column value on edit 
+        var cols_count = LineItemGrid.getColumnCount();
+        // always first row is for tactic so get tactic cost value
+        var planned_cost = parseInt(LineItemGrid.cells(rowId, PlannedCostColIndex).getValue().replace(',','')); 
+        var allocated_cost = 0;
+        for (var j = PlannedCostColIndex + 1; j < cols_count - 2; j++) { // sum of line item cost
+            allocated_cost = allocated_cost + parseInt(LineItemGrid.cells(rowId, j).getValue().replace(',',''));
+        }
+        var unallocated = planned_cost  - allocated_cost;
+        // set balance line item cost 
+        LineItemGrid.cells(rowId, cols_count - 1).setValue(number_format(unallocated, 0, '.', ','));
+    }
 $(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
     var $checkbox = $(this).find('input[type=checkbox]')
     $checkbox.bootstrapToggle('toggle')
