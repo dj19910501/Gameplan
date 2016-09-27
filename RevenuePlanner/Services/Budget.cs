@@ -28,13 +28,13 @@ namespace RevenuePlanner.Services
         private const string CellNotLocked = "0";
         public const string FixHeader = "ActivityId,Type,machinename,,,,,";
         public const string EndColumnsHeader = ",";
-        public const string FixColumnIds = "ActivityId,Type,machinename,taskname,Buttons,BudgetCost,PlannedCost,ActualCost";
+        public const string FixColumnIds = "ActivityId,Type,machinename,colourcode,taskname,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",Budget";
-        public const string FixColType = "ro,ro,ro,tree,ro,ed,ed,ed";
+        public const string FixColType = "ro,ro,ro,ro,tree,ro,ed,ed,ed";
         public const string EndColType = ",ro";
-        public const string FixcolWidth = "100,100,100,250,100,100,100,100";
+        public const string FixcolWidth = "100,100,100,10,250,100,100,100,100";
         public const string EndcolWidth = ",100";
-        public const string FixColsorting = "na,na,na,na,na,na,na,na";
+        public const string FixColsorting = "na,na,na,na,na,na,na,na,na";
         public const string EndColsorting = ",na";
         public const string QuarterPrefix = "Q";
         public const string DhtmlxColSpan = "#cspan";
@@ -236,6 +236,10 @@ namespace RevenuePlanner.Services
 
             BudgetDataObj = new Budgetdataobj();
             BudgetDataObj.value = Entity.MachineName;
+            BudgetDataObjList.Add(BudgetDataObj);
+
+            BudgetDataObj = new Budgetdataobj();
+            BudgetDataObj.style = "background-color:#" + Entity.ColorCode;
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
@@ -442,6 +446,7 @@ namespace RevenuePlanner.Services
             attachHeader.Add("ActivityId");
             attachHeader.Add("Type");
             attachHeader.Add("Machine Name" + manageviewicon);
+            attachHeader.Add("Colour Code"); //Colour column added by Rahul Shah for PL #2605
             attachHeader.Add("Task Name");
             attachHeader.Add("");
             attachHeader.Add("Total Budget" + manageviewicon);
