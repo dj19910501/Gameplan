@@ -473,7 +473,10 @@ namespace RevenuePlanner.Services
 
             BudgetModel balanceLineItem = model.Where(p => p.ActivityType == ActivityType.ActivityLineItem && p.LineItemTypeId == null).FirstOrDefault();
             model = model.Where(p => p.ActivityType == ActivityType.ActivityLineItem && p.LineItemTypeId != null).OrderBy(p => p.ActivityName).ToList();
-            model.Add(balanceLineItem);
+            if (balanceLineItem != null)
+            {
+                model.Add(balanceLineItem);
+            }
 
             foreach (BudgetModel bml in model.Where(p => p.ActivityType == ActivityType.ActivityLineItem))
             {
@@ -502,7 +505,7 @@ namespace RevenuePlanner.Services
             objLineItemRows.bgColor = "#fff";
             List<Budgetdataobj> lstLineItemData = new List<Budgetdataobj>();
             Budgetdataobj objLineItemData = new Budgetdataobj();
-            BudgetModel modelEntity = model.Where(pl => pl.ActivityType == ActivityType.ActivityLineItem && pl.ActivityId == ActivityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
+            BudgetModel modelEntity = model.Where(pl => pl.ActivityType == ActivityType.ActivityLineItem && pl.ActivityId == ActivityId).ToList().FirstOrDefault();
 
             objLineItemData.value = LineItemId;
             lstLineItemData.Add(objLineItemData);
@@ -682,12 +685,17 @@ namespace RevenuePlanner.Services
         /// <returns></returns>
         public double UpdateBalanceLineItemCost(int PlanTacticId)
         {
-            // Get total line item cost
-            double tacticTotalLineItemsCost = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => 
-                                                                lineItem.PlanTacticId == PlanTacticId && 
-                                                                lineItem.IsDeleted == false && 
-                                                                lineItem.LineItemTypeId != null).Sum(x => x.Cost);
-
+            List<Plan_Campaign_Program_Tactic_LineItem> lstLineItems = new List<Plan_Campaign_Program_Tactic_LineItem>();
+            double tacticTotalLineItemsCost = 0;
+            lstLineItems = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem =>
+                                                                lineItem.PlanTacticId == PlanTacticId &&
+                                                                lineItem.IsDeleted == false &&
+                                                                lineItem.LineItemTypeId != null).ToList();
+            if (lstLineItems.Any())
+            {
+                // Get total line item cost
+                tacticTotalLineItemsCost = lstLineItems.Sum(x => x.Cost);
+            }
             // Get cost of balance line item
             Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => 
                                                                             lineItem.PlanTacticId == PlanTacticId && 
