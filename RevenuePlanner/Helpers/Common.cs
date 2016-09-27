@@ -123,7 +123,7 @@ namespace RevenuePlanner.Helpers
         public static string ImprovementProgram = "Improvement Program";
 
         // Default Other line item title
-        public static string LineItemTitleDefault = "Line item _";
+        public static string LineItemTitleDefault = "Balance"; // Modified Name of other line item to "Balance" in Ticket #2634
 
         // Label text for Unallocated Budget label
         public static string UnallocatedBudgetLabelText = "Unallocated";
@@ -9293,7 +9293,39 @@ namespace RevenuePlanner.Helpers
             return TacticTypeListForHC.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
         }
 
+        /// <summary>
+        /// This function returns datatable which contains details reg. plan, campaign, program, tactic and line item's planned cost and actual 
+        /// </summary>
+        /// <param name="PlanId">int unique planid of plan which data will be return</param>
+        /// <param name="budgetTab">string which contains value like Planned or Actual</param>
+        /// <returns></returns>
+        public static DataTable GetLineItemCostAllocation(int LineItemId)
+        {
+            DataTable dtPlanHirarchy = new DataTable();
 
+            MRPEntities db = new MRPEntities();
+            ///If connection is closed then it will be open
+            var Connection = db.Database.Connection as SqlConnection;
+            if (Connection.State == System.Data.ConnectionState.Closed)
+                Connection.Open();
+            SqlCommand command = null;
+
+            command = new SqlCommand("LineItem_Cost_Allocation", Connection);
+
+            using (command)
+            {
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@PlanTacticId", LineItemId);
+                command.Parameters.AddWithValue("@UserId", Sessions.User.ID);
+                SqlDataAdapter adp = new SqlDataAdapter(command);
+                command.CommandTimeout = 0;
+                adp.Fill(dtPlanHirarchy);
+                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+            }
+
+            return dtPlanHirarchy;
+        }
 
     }
 
@@ -9376,8 +9408,7 @@ namespace RevenuePlanner.Helpers
         }
     }
     #endregion
-
-    // Add By Nishant Sheth
+       
     // Home Grid Properties
     #region Home Grid style properties
     public class HomeGridProperties

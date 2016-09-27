@@ -641,7 +641,8 @@ namespace RevenuePlanner.Helpers
 
                             if (pcptl.LineItemTypeId == null)
                           {
-                              pcptl.Title = Common.LineItemTitleDefault + objPlanCampaignProgramTactic.Title;
+                              // Modified by Arpita Soni for Ticket #2634 on 09/22/2016
+                              pcptl.Title = Common.LineItemTitleDefault;
                           }
                           pcptl.LineItemType = null;
                           pcptl.LinkedLineItemId = null;

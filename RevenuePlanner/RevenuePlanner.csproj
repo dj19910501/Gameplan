@@ -285,6 +285,8 @@
     <Compile Include="Services\IGrid.cs" />
     <Compile Include="Services\IImportData.cs" />
     <Compile Include="Services\ImportData.cs" />
+    <Compile Include="Services\IPlanTactic.cs" />
+    <Compile Include="Services\PlanTactic.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
@@ -1083,7 +1085,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>52863</DevelopmentServerPort>
+          <DevelopmentServerPort>64057</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

@@ -13,6 +13,7 @@ using System.Web;
 using Integration;
 using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
+using RevenuePlanner.Services;
 
 
 
@@ -31,6 +32,7 @@ namespace RevenuePlanner.Controllers
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
         List<BudgetCheckedItem> ListbudgetCheckedItem = new List<BudgetCheckedItem>(); // Add By Nishant Sheth #2325
         public double PlanExchangeRate = Sessions.PlanExchangeRate;
+        IPlanTactic objPlanTactic = new PlanTactic();
         #endregion
 
         #region "Inspect Index"
@@ -343,7 +345,7 @@ namespace RevenuePlanner.Controllers
                             #endregion
                         }
                         db.Entry(plan).State = EntityState.Modified;
-                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated,"",plan.CreatedBy);
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", plan.CreatedBy);
                         //Modified by Rahul Shah on 09/03/z2016 for PL #1939
                         int result = db.SaveChanges();
                         // Add By Nishant Sheth
@@ -963,7 +965,7 @@ namespace RevenuePlanner.Controllers
                                 #endregion
 
                                 int campaignid = pcobj.PlanCampaignId;
-                                result = Common.InsertChangeLog(form.PlanId, null, campaignid, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added,"",pcobj.CreatedBy);
+                                result = Common.InsertChangeLog(form.PlanId, null, campaignid, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", pcobj.CreatedBy);
                                 Plan pcp = db.Plans.Where(pcobj1 => pcobj1.PlanId.Equals(pcobj.PlanId) && pcobj1.IsDeleted.Equals(false)).FirstOrDefault();
 
                                 #region "Send Email Notification For Owner changed"
@@ -999,7 +1001,7 @@ namespace RevenuePlanner.Controllers
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
                                             //var csv = string.Concat(form.OwnerId, ",", Sessions.User.ID.ToString(), ",", Sessions.User.ID.ToString());
-                                            var lstOwners = new List<int> { form.OwnerId, Sessions.User.ID};
+                                            var lstOwners = new List<int> { form.OwnerId, Sessions.User.ID };
 
                                             try
                                             {
@@ -1141,7 +1143,7 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(pcobj).State = EntityState.Modified;
                                 #endregion
 
-                                Common.InsertChangeLog(planId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated,"",pcobj.CreatedBy);
+                                Common.InsertChangeLog(planId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcobj.CreatedBy);
 
                                 #region "Remove previous custom fields by PlanCampaignId"
                                 string entityTypeCampaign = Enums.EntityType.Campaign.ToString();
@@ -1207,7 +1209,7 @@ namespace RevenuePlanner.Controllers
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
                                             //var csv = string.Concat(oldOwnerId.ToString(), ",", Sessions.User.ID.ToString());
-                                            var lstOwners = new List<int> { oldOwnerId, Sessions.User.ID};
+                                            var lstOwners = new List<int> { oldOwnerId, Sessions.User.ID };
                                             if (form.OwnerId != oldOwnerId && form.OwnerId != 0)
                                             {
                                                 lstOwners.Add(form.OwnerId);
@@ -1250,27 +1252,27 @@ namespace RevenuePlanner.Controllers
 
                                             if (form.OwnerId != oldOwnerId && form.OwnerId != 0)
                                             {
-                                            var NewOwner = UsersDetails.Where(u => u.ID == form.OwnerId).Select(u => u).FirstOrDefault();
-                                            var ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
-                                            if (NewOwner.Email != string.Empty)
-                                            {
-                                                lstRecepientEmail.Add(NewOwner.Email);
-                                            }
-                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
-                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                                var NewOwner = UsersDetails.Where(u => u.ID == form.OwnerId).Select(u => u).FirstOrDefault();
+                                                var ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
+                                                if (NewOwner.Email != string.Empty)
+                                                {
+                                                    lstRecepientEmail.Add(NewOwner.Email);
+                                                }
+                                                string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                                string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
 
                                                 List<int> NewOwnerID = new List<int>();
                                                 NewOwnerID.Add(form.OwnerId);
                                                 List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
                                                 if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.ID)
-                                            {
-                                                string strURL = GetNotificationURLbyStatus(pcobj.PlanId, form.PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
-                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                                {
+                                                    string strURL = GetNotificationURLbyStatus(pcobj.PlanId, form.PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
+                                                    Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                                     Common.InsertChangeLog(pcobj.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", form.OwnerId);
+                                                }
                                             }
                                         }
                                     }
-                                }
                                 }
 
                                 // End - Added by Pratik on 11/03/2014 for PL ticket #711
@@ -1570,7 +1572,7 @@ namespace RevenuePlanner.Controllers
                                 // End - Added by Sohel Pathan on 09/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen 
                                 #endregion
 
-                                result = Common.InsertChangeLog(planid, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added,"",pcpobj.CreatedBy);
+                                result = Common.InsertChangeLog(planid, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", pcpobj.CreatedBy);
                                 // Added by Rahul Shah on 17/03/2016 for PL #2032 
                                 #region "Send Email Notification For Owner changed"
                                 if (result > 0)
@@ -1761,7 +1763,7 @@ namespace RevenuePlanner.Controllers
                                 int result = db.SaveChanges();
                                 #endregion
 
-                                result = Common.InsertChangeLog(planid, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated,"",pcpobj.CreatedBy);
+                                result = Common.InsertChangeLog(planid, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcpobj.CreatedBy);
 
                                 // Start - Added by Pratik on 11/03/2014 for PL ticket #711
                                 if (result > 0)
@@ -1799,7 +1801,7 @@ namespace RevenuePlanner.Controllers
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
                                             //var csv = string.Concat(oldOwnerId.ToString(), ",", Sessions.User.ID.ToString());
-                                            var lstOwners = new List<int> { oldOwnerId, Sessions.User.ID};
+                                            var lstOwners = new List<int> { oldOwnerId, Sessions.User.ID };
                                             if (form.OwnerId != oldOwnerId && form.OwnerId != 0)
                                             {
                                                 lstOwners.Add(form.OwnerId);// = string.Concat(form.OwnerId, ",", oldOwnerId.ToString(), ",", Sessions.User.ID.ToString());
@@ -1845,26 +1847,26 @@ namespace RevenuePlanner.Controllers
 
                                             if (form.OwnerId != oldOwnerId && form.OwnerId != 0)
                                             {
-                                            var NewOwner = UsersDetails.Where(u => u.ID == form.OwnerId).Select(u => u).FirstOrDefault();
-                                            var ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
-                                            if (NewOwner.Email != string.Empty)
-                                            {
-                                                lstRecepientEmail.Add(NewOwner.Email);
-                                            }
-                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
-                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                                var NewOwner = UsersDetails.Where(u => u.ID == form.OwnerId).Select(u => u).FirstOrDefault();
+                                                var ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
+                                                if (NewOwner.Email != string.Empty)
+                                                {
+                                                    lstRecepientEmail.Add(NewOwner.Email);
+                                                }
+                                                string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                                string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
                                                 List<int> NewOwnerID = new List<int>();
                                                 NewOwnerID.Add(form.OwnerId);
                                                 List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
                                                 if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.ID)
-                                            {
-                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign.PlanId, form.PlanProgramId, Enums.Section.Program.ToString().ToLower());
-                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Program.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
-                                                Common.InsertChangeLog(planid, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", form.OwnerId);
+                                                {
+                                                    string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign.PlanId, form.PlanProgramId, Enums.Section.Program.ToString().ToLower());
+                                                    Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Program.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                                    Common.InsertChangeLog(planid, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", form.OwnerId);
+                                                }
                                             }
                                         }
                                     }
-                                }
                                 }
                                 // End - Added by Pratik on 11/03/2014 for PL ticket #711
 
@@ -2879,7 +2881,7 @@ namespace RevenuePlanner.Controllers
                 Cost = objCurrency.GetValueByExchangeRate(LList.Cost, PlanExchangeRate)
 
             }).ToList();
-            ViewBag.LineItemList = LineItemList1.ToList();            
+            ViewBag.LineItemList = LineItemList1.ToList();
             return PartialView("Actual");
         }
 
@@ -2934,8 +2936,8 @@ namespace RevenuePlanner.Controllers
                     id = tacActual.PlanTacticId,
                     stageTitle = tacActual.StageTitle,
                     period = tacActual.Period,
-                        //actualValue = tacActual.Actualvalue
-                        actualValue = GetRevenueValueByExchangeRate(tacActual.StageTitle, tacActual.Actualvalue) //Modified by Rahul Shah for PL #2511 to apply multi currency
+                    //actualValue = tacActual.Actualvalue
+                    actualValue = GetRevenueValueByExchangeRate(tacActual.StageTitle, tacActual.Actualvalue) //Modified by Rahul Shah for PL #2511 to apply multi currency
                 }).ToList().Where(pcpta => (tacticMonth != null ? tacticMonth.Contains(pcpta.period) : pcpta.period.Contains(pcpta.period))).ToList();
 
                 ////// start-Added by Mitesh Vaishnav for PL ticket #571
@@ -3444,7 +3446,7 @@ namespace RevenuePlanner.Controllers
                                     }
 
                                     int result = db.SaveChanges();
-                                    result = Common.InsertChangeLog(objpcpt.Plan_Campaign_Program.Plan_Campaign.PlanId, null, actualResult.PlanTacticId, objpcpt.Title, Enums.ChangeLog_ComponentType.tacticresults, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated,"",objpcpt.CreatedBy);
+                                    result = Common.InsertChangeLog(objpcpt.Plan_Campaign_Program.Plan_Campaign.PlanId, null, actualResult.PlanTacticId, objpcpt.Title, Enums.ChangeLog_ComponentType.tacticresults, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", objpcpt.CreatedBy);
                                     scope.Complete();
                                     string strMessage = Common.objCached.PlanEntityActualsUpdated.Replace("{0}", Enums.PlanEntity.Tactic.ToString());    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                     return Json(new { id = actualResult.PlanTacticId, TabValue = "Actuals", msg = strMessage });
@@ -3801,6 +3803,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult SetupSaveTactic(Inspect_Popup_Plan_Campaign_Program_TacticModel form, string lineitems, string closedTask, string customFieldInputs, int UserId = 0, string strDescription = "", bool resubmission = false)
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
+
             //// check whether UserId is current loggined user or not.
             if (UserId != 0)
             {
@@ -3918,29 +3921,14 @@ namespace RevenuePlanner.Controllers
                                 #endregion
                                 int tacticId = pcpobj.PlanTacticId;
 
-                                //Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                //objNewLineitem.PlanTacticId = tacticId;
-                                //objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
-                                //objNewLineitem.Cost = pcpobj.Cost;
-                                //objNewLineitem.Description = string.Empty;
-                                //objNewLineitem.CreatedBy = Sessions.User.ID;
-                                //objNewLineitem.CreatedDate = DateTime.Now;
-                                //db.Entry(objNewLineitem).State = EntityState.Added;
+                                // Start - Modified by Arpita Soni for Ticket #2634 on 09/22/2016
+                                // Add "Balance" to tactic whether cost is 0 or greater
+                                objPlanTactic.AddBalanceLineItem(tacticId, pcpobj.Cost, form.OwnerId);
+                                // End - Modified by Arpita Soni for Ticket #2634 on 09/22/2016
 
                                 //// Insert LineItem for the Tactic.
                                 if (pcpobj.Cost > 0)
                                 {
-
-                                    Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                    objNewLineitem.PlanTacticId = tacticId;
-                                    objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
-                                    objNewLineitem.Cost = pcpobj.Cost;
-                                    objNewLineitem.Description = string.Empty;
-                                    //objNewLineitem.CreatedBy = Sessions.User.ID;
-                                    objNewLineitem.CreatedBy = form.OwnerId;//modified by Rahul Shah on 21/03/2016 for PL #2032 observation.
-                                    objNewLineitem.CreatedDate = DateTime.Now;
-                                    db.Entry(objNewLineitem).State = EntityState.Added;
-
                                     //Added by Komal Rawal for #1217
                                     int startmonth = pcpobj.StartDate.Month;
                                     Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
@@ -3950,16 +3938,6 @@ namespace RevenuePlanner.Controllers
                                     obPlanCampaignProgramTacticBudget.CreatedBy = Sessions.User.ID;
                                     obPlanCampaignProgramTacticBudget.CreatedDate = DateTime.Now;
                                     db.Entry(obPlanCampaignProgramTacticBudget).State = EntityState.Added;
-
-                                    Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                    obPlanCampaignProgramTacticCost.PlanTacticId = tacticId;
-                                    obPlanCampaignProgramTacticCost.Period = PeriodChar + startmonth;
-                                    obPlanCampaignProgramTacticCost.Value = pcpobj.TacticBudget; //modified for 1229
-                                    obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.ID;
-                                    obPlanCampaignProgramTacticCost.CreatedDate = DateTime.Now;
-                                    db.Entry(obPlanCampaignProgramTacticCost).State = EntityState.Added;
-
-
                                     //end
                                 }
                                 db.SaveChanges();
@@ -4008,7 +3986,7 @@ namespace RevenuePlanner.Controllers
 
                                 db.SaveChanges();
 
-                                result = Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added,"",pcpobj.CreatedBy);
+                                result = Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", pcpobj.CreatedBy);
 
                                 // Check whether the lineitmes is empty or not . if lineitems have any instance at that time call the SaveLineItems function and insert the data into the lineItems table. 
                                 if (lineitems != string.Empty)
@@ -4050,7 +4028,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
-                                            List<int> users = new List<int>() { Convert.ToInt32(form.Owner), Sessions.User.ID, Sessions.User.ID};  
+                                            List<int> users = new List<int>() { Convert.ToInt32(form.Owner), Sessions.User.ID, Sessions.User.ID };
                                             //TODO: why repeat session user wtice? // string.Concat(form.OwnerId, ",", Sessions.User.ID.ToString(), ",", Sessions.User.ID.ToString());
 
                                             try
@@ -4084,7 +4062,7 @@ namespace RevenuePlanner.Controllers
                                             string ProgramTitle = pcpobj.Plan_Campaign_Program.Title.ToString();
                                             List<int> NewOwnerID = new List<int>();
                                             NewOwnerID.Add(form.OwnerId);
-                                           List<int> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                                            List<int> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
                                             if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.ID)
                                             {
                                                 string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, tacticId, Enums.Section.Tactic.ToString().ToLower());
@@ -4433,286 +4411,8 @@ namespace RevenuePlanner.Controllers
                                     pcpobj.Cost = form.Cost;
                                 }
 
-                                List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                                double totalLineitemCost = 0;
-                                tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId).ToList();
-                                List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
-                                //Modified By komal rawal
-                                var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
-                                List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlist = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => lineitemidlist.Contains(lic.PlanLineItemId)).ToList();
-                                //End
-
-                                if (objtotalLineitemCost != null && objtotalLineitemCost.Count() > 0)
-                                    totalLineitemCost = objtotalLineitemCost.Sum(l => l.Cost);
-                                if (totalLineitemCost > form.Cost)
-                                {
-                                    // Added by Viral Kadiya for Pl ticket #1970.
-                                    string strReduceTacticPlannedCostMessage = string.Format(Common.objCached.TacticPlanedCostReduce, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
-                                    return Json(new { IsError = true, errormsg = strReduceTacticPlannedCostMessage });
-                                    //form.Cost = totalLineitemCost;
-                                }
-                                //Added By komal Rawal for #1249
-                                if (form.Cost > pcpobj.Cost)
-                                {
-                                    var diffcost = form.Cost - pcpobj.Cost;
-                                    int startmonth = pcpobj.StartDate.Month;
-
-                                    if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
-                                    {
-                                        pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
-
-                                    }
-                                    else
-                                    {
-                                        Plan_Campaign_Program_Tactic_Cost objTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                        objTacticCost.PlanTacticId = pcpobj.PlanTacticId;
-                                        objTacticCost.Period = PeriodChar + startmonth;
-                                        objTacticCost.Value = diffcost;
-                                        objTacticCost.CreatedBy = Sessions.User.ID;
-                                        objTacticCost.CreatedDate = DateTime.Now;
-                                        db.Entry(objTacticCost).State = EntityState.Added;
-                                    }
-
-                                    //Add linked Tactic TacticCost data
-                                    int yearDiff = 0;
-                                    bool isMultiYearlinkedTactic = false;
-                                    if (linkedTacticId > 0)
-                                    {
-                                        yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
-                                        isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
-                                        if (isMultiYearlinkedTactic)
-                                        {
-                                            string linkedstartmonth = ((12 * yearDiff) + startmonth).ToString();
-                                            if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedstartmonth).Any())
-                                            {
-                                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedstartmonth).FirstOrDefault().Value += diffcost;
-                                            }
-                                            //else
-                                            //{
-                                            //    Plan_Campaign_Program_Tactic_Cost lnkTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                            //    lnkTacticCost.PlanTacticId = linkedTacticId;
-                                            //    lnkTacticCost.Period = PeriodChar + linkedstartmonth;
-                                            //    lnkTacticCost.Value = diffcost;
-                                            //    lnkTacticCost.CreatedBy = Sessions.User.ID;
-                                            //    lnkTacticCost.CreatedDate = DateTime.Now;
-                                            //    db.Entry(lnkTacticCost).State = EntityState.Added;
-                                            //}
-                                        }
-                                    }
-                                }
-                                else if (form.Cost < pcpobj.Cost)
-                                {
-                                    var diffcost = pcpobj.Cost - form.Cost;
-                                    double diffLinkCost = diffcost;
-                                    int endmonth = 12;
-                                    while (diffcost > 0 && endmonth != 0)
-                                    {
-                                        if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
-                                        {
-                                            //Modified by komal Rawal
-                                            double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
-                                            double objtacticcost = pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
-                                            var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
-                                            if (DiffMonthCost > 0)
-                                            {
-                                                if (DiffMonthCost > diffcost)
-                                                {
-                                                    pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
-                                                    diffcost = 0;
-                                                }
-                                                else
-                                                {
-                                                    pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
-                                                    diffcost = diffcost - DiffMonthCost;
-                                                }
-                                            }
-                                            //END
-                                        }
-
-                                        int yearDiff = 0;
-                                        bool isMultiYearlinkedTactic = false;
-                                        if (linkedTacticId > 0)
-                                        {
-                                            yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
-                                            isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
-                                            string linkedendmonth = ((12 * yearDiff) + endmonth).ToString();
-                                            if (isMultiYearlinkedTactic)
-                                            {
-                                                if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).Any())
-                                                {
-                                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + linkedendmonth).Sum(lineitem => lineitem.Value);
-                                                    double objtacticcost = linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value;
-                                                    var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
-                                                    if (DiffMonthCost > 0)
-                                                    {
-                                                        if (DiffMonthCost > diffLinkCost)
-                                                        {
-                                                            linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value = objtacticcost - diffLinkCost;
-                                                            diffLinkCost = 0;
-                                                        }
-                                                        else
-                                                        {
-                                                            linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
-                                                            diffLinkCost = diffLinkCost - DiffMonthCost;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        if (endmonth > 0)
-                                        {
-                                            endmonth -= 1;
-                                        }
-
-                                    }
-
-                                }
-                                // Calculate Tactic Cost.
-                                #region "Calculate LineItem cost for Linked Tactic"
-                                //if (linkedTacticId > 0)
-                                //{
-                                //    List<Plan_Campaign_Program_Tactic_LineItem> tbllinkedTacLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                                //    double totalLinkedLineitemCost = 0;
-                                //    tbllinkedTacLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == linkedTacticId).ToList();
-                                //    List<Plan_Campaign_Program_Tactic_LineItem> objtotalLinkedLineitemCost = tbllinkedTacLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
-                                //    //Modified By komal rawal
-                                //    var linkedlineitemidlist = objtotalLinkedLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
-                                //    List<Plan_Campaign_Program_Tactic_LineItem_Cost> LinkedLineitemCostlist = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => linkedlineitemidlist.Contains(lic.PlanLineItemId)).ToList();
-                                //    //End
-
-                                //    if (objtotalLinkedLineitemCost != null && objtotalLinkedLineitemCost.Count() > 0)
-                                //        totalLinkedLineitemCost = objtotalLinkedLineitemCost.Sum(l => l.Cost);
-                                //    if (totalLinkedLineitemCost > linkedTactic.Cost)
-                                //    {
-                                //        form.Cost = totalLinkedLineitemCost;
-                                //    }
-                                //    //Added By komal Rawal for #1249
-                                //    if (form.Cost > pcpobj.Cost)
-                                //    {
-                                //        var diffcost = form.Cost - pcpobj.Cost;
-                                //        int startmonth = pcpobj.StartDate.Month;
-
-                                //        if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
-                                //        {
-                                //            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
-
-                                //        }
-                                //        else
-                                //        {
-                                //            Plan_Campaign_Program_Tactic_Cost objTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                //            objTacticCost.PlanTacticId = pcpobj.PlanTacticId;
-                                //            objTacticCost.Period = PeriodChar + startmonth;
-                                //            objTacticCost.Value = diffcost;
-                                //            objTacticCost.CreatedBy = Sessions.User.ID;
-                                //            objTacticCost.CreatedDate = DateTime.Now;
-                                //            db.Entry(objTacticCost).State = EntityState.Added;
-                                //        }
-
-                                //        //Add linked Tactic TacticCost data
-                                //        int yearDiff = 0, perdNum = 12, cntr = 0;
-                                //        bool isMultiYearlinkedTactic = false;
-                                //        if (linkedTacticId > 0)
-                                //        {
-                                //            yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
-                                //            isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
-                                //            if (isMultiYearlinkedTactic)
-                                //            {
-                                //                string linkedstartmonth = ((12 * yearDiff) + startmonth).ToString();
-                                //                if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedstartmonth).Any())
-                                //                {
-                                //                    linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedstartmonth).FirstOrDefault().Value += diffcost;
-                                //                }
-                                //                //else
-                                //                //{
-                                //                //    Plan_Campaign_Program_Tactic_Cost lnkTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                //                //    lnkTacticCost.PlanTacticId = linkedTacticId;
-                                //                //    lnkTacticCost.Period = PeriodChar + linkedstartmonth;
-                                //                //    lnkTacticCost.Value = diffcost;
-                                //                //    lnkTacticCost.CreatedBy = Sessions.User.ID;
-                                //                //    lnkTacticCost.CreatedDate = DateTime.Now;
-                                //                //    db.Entry(lnkTacticCost).State = EntityState.Added;
-                                //                //}
-                                //            }
-                                //        }
-                                //    }
-                                //    else if (form.Cost < pcpobj.Cost)
-                                //    {
-                                //        var diffcost = pcpobj.Cost - form.Cost;
-                                //        double diffLinkCost = diffcost;
-                                //        int endmonth = 12;
-                                //        while (diffcost > 0 && endmonth != 0)
-                                //        {
-                                //            if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
-                                //            {
-                                //                //Modified by komal Rawal
-                                //                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
-                                //                double objtacticcost = pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
-                                //                var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
-                                //                if (DiffMonthCost > 0)
-                                //                {
-                                //                    if (DiffMonthCost > diffcost)
-                                //                    {
-                                //                        pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
-                                //                        diffcost = 0;
-                                //                    }
-                                //                    else
-                                //                    {
-                                //                        pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
-                                //                        diffcost = diffcost - DiffMonthCost;
-                                //                    }
-                                //                }
-                                //                //END
-                                //            }
-
-                                //            int yearDiff = 0, perdNum = 12, cntr = 0;
-                                //            bool isMultiYearlinkedTactic = false;
-                                //            if (linkedTacticId > 0)
-                                //            {
-                                //                yearDiff = linkedTactic.EndDate.Year - linkedTactic.StartDate.Year;
-                                //                isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
-                                //                string linkedendmonth = ((12 * yearDiff) + endmonth).ToString();
-                                //                if (isMultiYearlinkedTactic)
-                                //                {
-                                //                    if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).Any())
-                                //                    {
-                                //                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + linkedendmonth).Sum(lineitem => lineitem.Value);
-                                //                        double objtacticcost = linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value;
-                                //                        var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
-                                //                        if (DiffMonthCost > 0)
-                                //                        {
-                                //                            if (DiffMonthCost > diffLinkCost)
-                                //                            {
-                                //                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value = objtacticcost - diffLinkCost;
-                                //                                diffLinkCost = 0;
-                                //                            }
-                                //                            else
-                                //                            {
-                                //                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + linkedendmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
-                                //                                diffLinkCost = diffLinkCost - DiffMonthCost;
-                                //                            }
-                                //                        }
-                                //                    }
-                                //                }
-                                //            }
-
-                                //            if (endmonth > 0)
-                                //            {
-                                //                endmonth -= 1;
-                                //            }
-
-                                //        }
-
-                                //    }
-                                //} 
-                                #endregion
-
-
                                 pcpobj.Cost = form.Cost;
 
-                                //End
-
-                                //pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcpobj.StageId = form.StageId;
                                 pcpobj.ProjectedStageValue = form.ProjectedStageValue;
                                 pcpobj.ModifiedBy = Sessions.User.ID;
@@ -4787,14 +4487,10 @@ namespace RevenuePlanner.Controllers
                                 }
 
 
-
-                                //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-                                var PrevAllocationList = db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).Select(_tacCost => _tacCost).ToList();  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
-
                                 int result;
                                 if (Common.CheckAfterApprovedStatus(pcpobj.Status))
                                 {
-                                    result = Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated,"",pcpobj.CreatedBy);
+                                    result = Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcpobj.CreatedBy);
                                 }
 
                                 if (isReSubmission && Common.CheckAfterApprovedStatus(status))
@@ -4813,13 +4509,13 @@ namespace RevenuePlanner.Controllers
                                     List<int> List_NotificationUserIds = Common.GetAllNotificationUserIds(lst_Userids, Enums.Custom_Notification.TacticIsEdited.ToString().ToLower());
                                     if (List_NotificationUserIds.Count > 0 || form.OwnerId != oldOwnerId)
                                     {
-                                    //Send Email Notification For Owner changed.
+                                        //Send Email Notification For Owner changed.
                                         if (Sessions.User != null)
                                         {
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
                                             //var csv = string.Concat(oldOwnerId.ToString(), ",", Sessions.User.ID.ToString());
-                                            var lstOwners = new List<int> { oldOwnerId, Sessions.User.ID};
+                                            var lstOwners = new List<int> { oldOwnerId, Sessions.User.ID };
 
                                             if (form.OwnerId != oldOwnerId && form.OwnerId != 0)
                                             {
@@ -4867,25 +4563,25 @@ namespace RevenuePlanner.Controllers
                                             if (form.OwnerId != oldOwnerId && form.OwnerId != 0)
                                             {
 
-                                            var NewOwner = UsersDetails.Where(u => u.ID == form.OwnerId).Select(u => u).FirstOrDefault();
-                                            var ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
-                                            if (NewOwner.Email != string.Empty)
-                                            {
-                                                lstRecepientEmail.Add(NewOwner.Email);
-                                            }
-                                            string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
-                                            string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                                                var NewOwner = UsersDetails.Where(u => u.ID == form.OwnerId).Select(u => u).FirstOrDefault();
+                                                var ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
+                                                if (NewOwner.Email != string.Empty)
+                                                {
+                                                    lstRecepientEmail.Add(NewOwner.Email);
+                                                }
+                                                string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                                                string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
 
                                                 List<int> NewOwnerID = new List<int>();
                                                 NewOwnerID.Add(form.OwnerId);
                                                 List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
                                                 if (List_NotificationUserIds.Count > 0 && form.OwnerId != Sessions.User.ID)
-                                            {
-                                                string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
-                                                Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
-                                                Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", form.OwnerId);
+                                                {
+                                                    string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
+                                                    Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, pcpobj.Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Tactic.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                                                    Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", form.OwnerId);
+                                                }
                                             }
-                                        }
                                         }
 
                                     }
@@ -4893,97 +4589,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 // End - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
                                 // Start Added by dharmraj for ticket #644
-
-                                //// Calculate TotalLineItem cost.
-
-
-
-                                Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
-
-                                if (objOtherLineItem == null)
-                                {
-                                    if (pcpobj.Cost > 0)// Add condition by Nishant sheth // desc :: To restrict other line item is not created when tactic planned cost is 0
-                                    {
-                                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                        objNewLineitem.PlanTacticId = pcpobj.PlanTacticId;
-                                        objNewLineitem.Title = Common.LineItemTitleDefault + pcpobj.Title;
-                                        if (pcpobj.Cost > totalLineitemCost)
-                                        {
-                                            objNewLineitem.Cost = pcpobj.Cost - totalLineitemCost;
-                                        }
-                                        else
-                                        {
-                                            objNewLineitem.Cost = 0;
-                                        }
-                                        objNewLineitem.Description = string.Empty;
-                                        objNewLineitem.CreatedBy = Sessions.User.ID;
-                                        objNewLineitem.CreatedDate = DateTime.Now;
-                                        db.Entry(objNewLineitem).State = EntityState.Added;
-
-                                        if (linkedTacticId > 0)
-                                        {
-                                            Plan_Campaign_Program_Tactic_LineItem objNewLinkedLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                            objNewLinkedLineitem.PlanTacticId = linkedTacticId;
-                                            objNewLinkedLineitem.Title = objNewLineitem.Title;
-                                            objNewLinkedLineitem.Cost = objNewLineitem.Cost;
-                                            objNewLinkedLineitem.Description = string.Empty;
-                                            objNewLinkedLineitem.CreatedBy = Sessions.User.ID;
-                                            objNewLinkedLineitem.CreatedDate = DateTime.Now;
-                                            objNewLinkedLineitem.LinkedLineItemId = objNewLineitem.PlanLineItemId;
-                                            db.Entry(objNewLinkedLineitem).State = EntityState.Added;
-                                            db.SaveChanges();
-
-                                            objNewLineitem.LinkedLineItemId = objNewLinkedLineitem.PlanLineItemId;
-                                            db.Entry(objNewLineitem).State = EntityState.Modified;
-                                            db.SaveChanges();
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    objOtherLineItem.IsDeleted = false;
-                                    if (pcpobj.Cost > totalLineitemCost)
-                                    {
-                                        objOtherLineItem.Cost = pcpobj.Cost - totalLineitemCost;
-                                    }
-                                    else
-                                    {
-                                        objOtherLineItem.Cost = 0;
-                                        objOtherLineItem.IsDeleted = true;
-                                    }
-                                    db.Entry(objOtherLineItem).State = EntityState.Modified;
-
-                                    #region "Updte linked other lineItem"
-                                    if (linkedTacticId > 0)
-                                    {
-                                        List<Plan_Campaign_Program_Tactic_LineItem> tblLinkedTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                                        //double totalLineitemCost = 0;
-                                        tblLinkedTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == linkedTacticId).ToList();
-
-                                        List<Plan_Campaign_Program_Tactic_LineItem> objtotalLinkedLineitemCost = tblLinkedTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
-                                        //objtotalLinkedLineitemCost
-                                        double totalLinkedLineitemCost = 0;
-                                        if (objtotalLinkedLineitemCost != null && objtotalLinkedLineitemCost.Count() > 0)
-                                            totalLinkedLineitemCost = objtotalLinkedLineitemCost.Sum(l => l.Cost);
-
-                                        Plan_Campaign_Program_Tactic_LineItem objLinkedOtherLineItem = tblLinkedTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
-
-                                        objLinkedOtherLineItem.IsDeleted = false;
-                                        if (linkedTactic.Cost > totalLineitemCost)
-                                        {
-                                            objLinkedOtherLineItem.Cost = linkedTactic.Cost - totalLineitemCost;
-                                        }
-                                        else
-                                        {
-                                            objLinkedOtherLineItem.Cost = 0;
-                                            objLinkedOtherLineItem.IsDeleted = true;
-                                        }
-                                        db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
-                                    }
-                                    #endregion
-
-                                }
-
+                                objPlanTactic.UpdateBalanceLineItemCost(pcpobj.PlanTacticId);
                                 // End Added by dharmraj for ticket #644
 
                                 ////Start modified by Mitesh Vaishnav for PL ticket #1073 multiselect attributes
@@ -5072,7 +4678,7 @@ namespace RevenuePlanner.Controllers
                                     if (oldProgramId > 0)
                                     {
                                         var actionSuffix = oldProgramTitle + " to " + pcpobj.Plan_Campaign_Program.Title;
-                                        Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix,pcpobj.CreatedBy);
+                                        Common.InsertChangeLog(planid, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix, pcpobj.CreatedBy);
                                     }
                                     //// End - Added by :- Mitesh Vaishnav on 19/05/2015 for PL ticket #546
                                     //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
@@ -5492,7 +5098,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                     {
-                                        result = Common.InsertChangeLog(improvementPlanTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, 0, planTacticId, improvementPlanTactic.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved,"",improvementPlanTactic.CreatedBy);
+                                        result = Common.InsertChangeLog(improvementPlanTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, 0, planTacticId, improvementPlanTactic.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, "", improvementPlanTactic.CreatedBy);
                                         //added by uday for #532
                                         if (improvementPlanTactic.IsDeployedToIntegration == true)
                                         {
@@ -5578,7 +5184,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     if (isApproved)
                                     {
-                                        result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved,"",tactic.CreatedBy);
+                                        result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, "", tactic.CreatedBy);
                                         //// added by uday for #532
                                         if (tactic.IsDeployedToIntegration == true)
                                         {
@@ -5901,7 +5507,7 @@ namespace RevenuePlanner.Controllers
                                 }
 
                                 //// Insert change log entry.
-                                result = Common.InsertChangeLog(planId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added,"",picpt.CreatedBy);
+                                result = Common.InsertChangeLog(planId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", picpt.CreatedBy);
                                 if (result >= 1)
                                 {
                                     scope.Complete();
@@ -5986,7 +5592,7 @@ namespace RevenuePlanner.Controllers
                                 int result;
                                 if (Common.CheckAfterApprovedStatus(pcpobj.Status))
                                 {
-                                    result = Common.InsertChangeLog(planId, null, pcpobj.ImprovementPlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated,"",pcpobj.CreatedBy);
+                                    result = Common.InsertChangeLog(planId, null, pcpobj.ImprovementPlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", pcpobj.CreatedBy);
                                 }
                                 if (isReSubmission && Common.CheckAfterApprovedStatus(status))
                                 {
@@ -6432,158 +6038,80 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns partial view</returns>
         public PartialViewResult LoadLineItemTabFromTacticPopup(int tacticId, bool isLocked = true, bool IsPlanCreateAll = false)
         {
-            PlanController objPlanController = new PlanController();
-            Plangrid objplangrid = new Plangrid();
-            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
-            // Modified by Arpita Soni for Ticket #2650
-            Dictionary<int, BudgetDHTMLXGridModel> lstChildPlanMainDHTMLXGrid = new Dictionary<int, BudgetDHTMLXGridModel>();
-            BudgetDHTMLXGridModel childPlanMainDHTMLXGrid = new BudgetDHTMLXGridModel();
+            BudgetDHTMLXGridModel objGridData = new BudgetDHTMLXGridModel();
             PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
-                // Modified by Arpita Soni for Ticket #2650
-                // Generate Json Header
-                objPlanMainDHTMLXGrid.head = objPlanController.GenerateJsonHeaderForLineItemListing();
-
                 Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId.Equals(tacticId) && _tactic.IsDeleted.Equals(false)).FirstOrDefault();
                 ViewBag.AllocatedBy = objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
                 // Add Condition by nishant sheth
                 // Desc :: To resolve test case when tactic object is null
                 if (objTactic != null)
                 {
-                    string type = string.Empty;
-                    List<Plan_Campaign_Program_Tactic_LineItem> finalLineitem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                    string cellTextColor = string.Empty;
-                    // Declare Variable for XML to JSON
-                    List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
-                    PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
+                    // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
+                    objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId);
 
-                    string lockedstateone = "1";
-                    string bgcolorLineItem = "#ffffff";
-                    string formatThousand = "#,#0.##";
-
-                    string stylecolorblack = "color:#000";
-                    string stylecolorgray = "color:#999"; // Add By Nishant Sheth #1987
-
-                    finalLineitem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanTacticId == tacticId && lineitem.IsDeleted == false).OrderBy(l => l.Title).ToList(); // Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for line item title
-
-                    if (objTactic != null)
-                    {
-
-                        cellTextColor = isLocked ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
-
-                        if (finalLineitem != null && finalLineitem.Count > 0)
-                        {
-                            // Modified by Arpita Soni for Ticket #2650
-                            double TacticCost = 0;
-                            TacticCost = objTactic.Cost;
-                            double TotalLineItemCost = finalLineitem.Where(lt => lt.LineItemType != null).Sum(x => x.Cost);
-                            double otherLineItemCost = objCurrency.GetValueByExchangeRate(TacticCost - TotalLineItemCost, PlanExchangeRate);
-                            var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
-                            {
-                                index = index,
-                                //Cost = taskdata.LineItemType == null ? (objTactic.Cost - TotalLineItemCost) : objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
-                                Cost = taskdata.LineItemType == null ? otherLineItemCost : objCurrency.GetValueByExchangeRate(taskdata.Cost, PlanExchangeRate), //Modified by Rahul Shah for PL #2511 to apply multi currency
-                                lineitemtype = taskdata.LineItemTypeId,
-                                PlanLineItemId = taskdata.PlanLineItemId,
-                                title = taskdata.Title,
-                                Typeid = taskdata.LineItemTypeId,
-                                Type = taskdata.LineItemTypeId != null ? taskdata.LineItemType.Title : "",
-                                CreatedBy = taskdata.CreatedBy,
-                                IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.ID) || !isLocked) == true ? "0" : "1"//Tactic created by condition add for ticket #1968 , Date : 05-02-2016, Bhavesh
-                            });
-
-                            #region LineItems
-                            // Modified by Arpita Soni for Ticket #2650
-                            // Child grids for each line items
-                            List<BudgetDHTMLXGridModel> allocatedCost = objPlanController.GetCostAllocationLineItemInspectPopup(tacticId);
-                            if (allocatedCost != null && allocatedCost.Count > 0)
-                            {
-                                allocatedCost.ForEach(x => lstChildPlanMainDHTMLXGrid.Add(x.LineItemId, x));
-                            }
-                            
-                            foreach (var lineitem in lstLineItemTaskData)
-                            {
-
-                                cellTextColor = lineitem.IstactEditable == lockedstateone ? stylecolorgray : stylecolorblack;// Modified By Nishant Sheth #1987
-
-                                lineitemrowsobj = new PlanDHTMLXGridDataModel();
-                                lineitemrowsobj.id = "line." + lineitem.index;
-                                lineitemrowsobj.bgColor = bgcolorLineItem;
-                                List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
-                                Plandataobj lineitemdataobj = new Plandataobj();
-
-                                lineitemdataobj.value = "LineItem";
-                                lineitemdataobjlist.Add(lineitemdataobj);
-                                
-                                // Added by Arpita Soni for Ticket #2612 on 09/08/2016
-                                // To implement sub grid of cost allocation in inspect popup
-                                lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.type = "sub_row_grid";
-                                lineitemdataobjlist.Add(lineitemdataobj);
-
-                                lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.title);
-                                lineitemdataobj.locked = lineitem.IstactEditable;
-                                lineitemdataobj.style = cellTextColor;
-                                lineitemdataobjlist.Add(lineitemdataobj);
-
-                                lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = "<div class=grid_Search id=LP title='View'></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Line1 title='Add'onclick=javascript:OpenLineItemGridPopup(this,event) alt=" + tacticId + "_" + lineitem.PlanLineItemId + " lt=" + ((lineitem.lineitemtype == null) ? 0 : lineitem.lineitemtype) + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
-                                lineitemdataobjlist.Add(lineitemdataobj);
-
-                                lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = lineitem.PlanLineItemId.ToString();
-                                lineitemdataobjlist.Add(lineitemdataobj);
-
-                                lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = objCurrency.GetValueByExchangeRate(lineitem.Cost, PlanExchangeRate).ToString(formatThousand);
-                                lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
-                                lineitemdataobj.type = "edn";
-                                lineitemdataobj.style = cellTextColor;
-                                lineitemdataobjlist.Add(lineitemdataobj);
-
-                                lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.Type);
-                                lineitemdataobj.style = cellTextColor;
-                                lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
-                                lineitemdataobjlist.Add(lineitemdataobj);
-
-                                lineitemdataobj = new Plandataobj();
-                                lineitemdataobj.value = objPlanController.GetUserName(lineitem.CreatedBy);
-                                lineitemdataobj.locked = lineitem.IstactEditable;
-                                lineitemdataobj.style = cellTextColor;
-                                lineitemdataobjlist.Add(lineitemdataobj);
-
-                                lineitemrowsobj.data = lineitemdataobjlist;
-
-                                Planuserdatagrid lineitemuserdata = new Planuserdatagrid();
-                                lineitemuserdata.IsOther = ((lineitem.Type == null || lineitem.Type == "") ? true : false).ToString();
-                                lineitemrowsobj.userdata = lineitemuserdata;
-
-                                lineitemrowsobjlist.Add(lineitemrowsobj);
-                            }
-                            #endregion
-                        }
-                    }
-                    objPlanMainDHTMLXGrid.rows = lineitemrowsobjlist;
-                    objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
                     // Modified by Arpita Soni for Ticket #2237 on 06/22/2016
                     var lstLineItemType = db.LineItemTypes.
                                             Where(litemtype => litemtype.ModelId == objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId
                                             && litemtype.IsDeleted == false).
                                             Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
                     TempData["lineItemTypes"] = lstLineItemType;
-
-                    objplangrid.lstChildPlanDHTMLXGrid = lstChildPlanMainDHTMLXGrid;
                 }
             }
             catch (Exception objException)
             {
                 ErrorSignal.FromCurrentContext().Raise(objException);
             }
-            return PartialView("_TacticLineItemListing", objplangrid);
+            return PartialView("_TacticLineItemListing", objGridData);
         }
+
+        #region Save Line Item Cost Allocation
+        public JsonResult SaveLineItemCostAllocation(string entityId, string section, string month, string inputs, string tab, bool isquarter, bool isTotalCost)
+        {
+            try
+            {
+                int EntityId = Convert.ToInt32(entityId);
+                var popupValues = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(inputs);
+                double monthlycost = 0;
+                if (popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).Any())
+                {
+                    if (popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).FirstOrDefault().Value != "")
+                    {
+                        monthlycost = Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).FirstOrDefault().Value);
+                    }
+                    if (string.Compare(section, Enums.Section.LineItem.ToString(), true) == 0)
+                    {
+                        if (isquarter)
+                        {
+                            objPlanTactic.SaveLineItemQuarterlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
+                        }
+                        else
+                        {
+                            objPlanTactic.SaveLineItemMonthlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
+                        }
+                    }
+                    else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
+                    {
+                        if (isquarter)
+                        {
+                            objPlanTactic.SaveTacticQuarterlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
+                        }
+                        else
+                        {
+                            objPlanTactic.SaveTacticMonthlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
+                        }
+                    }
+                }
+                return Json(new { isSuccess = true });
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { isSuccess = false });
+        }
+        #endregion
 
         /// <summary>
         /// Save Line item Actual 
@@ -6703,7 +6231,7 @@ namespace RevenuePlanner.Controllers
             pcptlm.Description = HttpUtility.HtmlDecode(pcptl.Description);
             pcptlm.StartDate = Convert.ToDateTime(pcptl.StartDate);
             pcptlm.EndDate = Convert.ToDateTime(pcptl.EndDate);
-            pcptlm.Cost = objCurrency.GetValueByExchangeRate(pcptl.Cost,PlanExchangeRate);
+            pcptlm.Cost = objCurrency.GetValueByExchangeRate(pcptl.Cost, PlanExchangeRate);
             pcptlm.TStartDate = pcptl.Plan_Campaign_Program_Tactic.StartDate;
             pcptlm.TEndDate = pcptl.Plan_Campaign_Program_Tactic.EndDate;
             pcptlm.PStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.StartDate;
@@ -6819,8 +6347,6 @@ namespace RevenuePlanner.Controllers
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
                     //// Ticket: 942 Exception handeling in Gameplan.
                     ViewBag.IsServiceUnavailable = false;
-
-               
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationIdEx(lstClientUsers, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
                     if (lstUserDetails.Count > 0)
                     {
@@ -6828,17 +6354,14 @@ namespace RevenuePlanner.Controllers
                         var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.ID, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
 
                         pcptlm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
-
                     }
                     else
                     {
-
                         pcptlm.OwnerList = new List<SelectListUser>();
                     }
                 }
                 else
                 {
-
                     pcptlm.OwnerList = new List<SelectListUser>();
                 }
                 //End
@@ -6926,13 +6449,9 @@ namespace RevenuePlanner.Controllers
                 if (LinkedLineitemId != null)
                 {
                     Lineitemobj = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanLineItemId == LinkedLineitemId && id.IsDeleted == false).ToList().FirstOrDefault();
-
-
                 }
                 if (LinkedTacticId != null && LinkedTacticId > 0)
                 {
-
-
                     ObjLinkedTactic = TblTactic.Where(id => id.PlanTacticId == LinkedTacticId).ToList().FirstOrDefault();
                     yearDiff = ObjLinkedTactic.EndDate.Year - ObjLinkedTactic.StartDate.Year;
                     isMultiYearlinkedTactic = yearDiff > 0 ? true : false;
@@ -7010,8 +6529,6 @@ namespace RevenuePlanner.Controllers
                                     int Finalresult = db.SaveChanges();
                                     NewLinkLineItemID = LinkedobjLineitem.PlanLineItemId;
                                     #endregion
-
-
                                 }
                                 #region " Insert LineItem record for Specific Improvement Tactic."
                                 Plan_Campaign_Program_Tactic_LineItem objLineitem = new Plan_Campaign_Program_Tactic_LineItem();
@@ -7042,7 +6559,7 @@ namespace RevenuePlanner.Controllers
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
                                             //var csv = string.Concat(form.OwnerId, ",", Sessions.User.ID.ToString(), ",", Sessions.User.ID.ToString());
-                                            var lstOwners = new List<int> { form.OwnerId, Sessions.User.ID};
+                                            var lstOwners = new List<int> { form.OwnerId, Sessions.User.ID };
 
                                             try
                                             {
@@ -7079,7 +6596,7 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 string strURL = GetNotificationURLbyStatus(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, lineItemId, Enums.Section.LineItem.ToString().ToLower());
                                                 Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, TacticTitle, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.LineItem.ToString().ToLower(), strURL, objLineitem.Title);
-                                                    Common.InsertChangeLog(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, null, lineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", form.OwnerId);
+                                                Common.InsertChangeLog(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, null, lineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", form.OwnerId);
                                             }
                                         }
 
@@ -7094,12 +6611,10 @@ namespace RevenuePlanner.Controllers
                                     if (isMultiYearlinkedTactic)
                                     {
                                         LinkedobjLineitem.Cost = form.Cost;
-
                                     }
                                     db.Entry(LinkedobjLineitem).State = EntityState.Modified;
                                     int Linkedresult = Common.InsertChangeLog(planid, null, LinkedobjLineitem.PlanLineItemId, LinkedobjLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                     db.SaveChanges();
-
                                 }
 
                                 #region Save Field Mapping Details
@@ -7154,149 +6669,14 @@ namespace RevenuePlanner.Controllers
                                 db.SaveChanges();
                                 #endregion
 
-                                //// Calculate TotalLineItemCost.
-                                var objOtherLineItem = objTactic.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == tid && l.LineItemTypeId == null);
-                                double totalLoneitemCost = objTactic.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == tid && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-
-                                List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId).ToList();
-                                List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
-                                var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
-                                List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlist = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => lineitemidlist.Contains(lic.PlanLineItemId)).ToList();
-
-                                List<Plan_Campaign_Program_Tactic_Cost> tacticostslist = objTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
-                                int startmonth = objTactic.StartDate.Month;
-                                //Added By komal Rawal for #1249
-                                if (objLineitem.Cost > 0)
-                                {
-                                    Plan_Campaign_Program_Tactic_LineItem_Cost objlineitemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
-                                    objlineitemCost.PlanLineItemId = objLineitem.PlanLineItemId;
-                                    objlineitemCost.Period = PeriodChar + startmonth;
-                                    objlineitemCost.Value = form.Cost;
-                                    objlineitemCost.CreatedBy = Sessions.User.ID;
-                                    objlineitemCost.CreatedDate = DateTime.Now;
-                                    db.Entry(objlineitemCost).State = EntityState.Added;
-                                }
-
-                                if (tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
-                                {
-                                    double tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
-                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != lineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + form.Cost;
-                                    if (tacticlineitemcostmonth > tacticmonthcost)
-                                    {
-                                        tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
-                                        if (objTactic.Cost < tacticlineitemcostmonth)
-                                        {
-                                            objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != lineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + form.Cost;
-                                    Plan_Campaign_Program_Tactic_Cost objtacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                    objtacticCost.PlanTacticId = objTactic.PlanTacticId;
-                                    objtacticCost.Period = PeriodChar + startmonth;
-                                    objtacticCost.Value = tacticlineitemcostmonth;
-                                    objtacticCost.CreatedBy = Sessions.User.ID;
-                                    objtacticCost.CreatedDate = DateTime.Now;
-                                    db.Entry(objtacticCost).State = EntityState.Added;
-                                    objTactic.Cost = objTactic.Cost + tacticlineitemcostmonth;
-                                }
-                                objTactic.ModifiedBy = Sessions.User.ID;
-                                objTactic.ModifiedDate = DateTime.Now;
-                                db.Entry(objTactic).State = EntityState.Modified;
-                                double LinkedtotalLineitemCost = 0;
-                                if (LinkedTacticId != null)
-                                {
-                                    //// Calculate TotalLineItemCost.
-                                    LinkedtotalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-                                }
-                                if (objOtherLineItem == null)
-                                {
-                                    Plan_Campaign_Program_Tactic_LineItem objLinkedNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                    if (LinkedTacticId != null)
-                                    {
-                                        objLinkedNewLineitem.PlanTacticId = Convert.ToInt32(LinkedTacticId);
-                                        objLinkedNewLineitem.Title = Common.LineItemTitleDefault + ObjLinkedTactic.Title;
-                                        if (ObjLinkedTactic.Cost > LinkedtotalLineitemCost)
-                                        {
-                                            objLinkedNewLineitem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
-                                        }
-                                        else
-                                        {
-                                            objLinkedNewLineitem.Cost = 0;
-                                        }
-                                        objLinkedNewLineitem.Description = string.Empty;
-                                        //objLinkedNewLineitem.CreatedBy = Sessions.User.ID;  // commented by Rahul Shah on 17/03/2016 for PL #2032 
-                                        objLinkedNewLineitem.CreatedBy = form.OwnerId;            // Added by Rahul Shah on 17/03/2016 for PL #2032 
-                                        objLinkedNewLineitem.CreatedDate = DateTime.Now;
-                                        db.Entry(objLinkedNewLineitem).State = EntityState.Added;
-                                        ObjLinkedTactic.ModifiedBy = Sessions.User.ID;
-                                        ObjLinkedTactic.ModifiedDate = DateTime.Now;
-                                        db.Entry(ObjLinkedTactic).State = EntityState.Modified;
-                                        db.SaveChanges();
-                                    }
-                                    //Changes made by mitesh vaishnav reg. PL ticket 2539 
-                                    //when we add new line item for tactic with cost 0, default line item will be created autometically
-                                    if (objTactic.Cost > totalLoneitemCost)
-                                    {
-                                    Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                    objNewLineitem.PlanTacticId = tacticId;
-                                    objNewLineitem.Title = Common.LineItemTitleDefault + objTactic.Title;
-                                        objNewLineitem.Cost = objTactic.Cost - totalLoneitemCost;
-                                    objNewLineitem.Description = string.Empty;
-                                    //objNewLineitem.CreatedBy = Sessions.User.ID;  // commented by Rahul Shah on 17/03/2016 for PL #2032 
-                                    objNewLineitem.CreatedBy = form.OwnerId;            // Added by Rahul Shah on 17/03/2016 for PL #2032 
-                                    objNewLineitem.CreatedDate = DateTime.Now;
-                                    objNewLineitem.LinkedLineItemId = objLinkedNewLineitem.PlanLineItemId;
-                                    db.Entry(objNewLineitem).State = EntityState.Added;
-                                }
-                                }
-                                else
-                                {
-                                    if (LinkedTacticId != null)
-                                    {
-                                        var objLinkedOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId == null && l.IsDeleted == false);
-                                        if (objLinkedOtherLineItem != null)
-                                        {
-                                            objLinkedOtherLineItem.IsDeleted = false;
-                                            if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
-                                            {
-                                                objLinkedOtherLineItem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
-                                            }
-                                            else
-                                            {
-                                                objLinkedOtherLineItem.Cost = 0;
-                                                objLinkedOtherLineItem.IsDeleted = true;
-                                            }
-                                            db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
-                                        }
-                                        ObjLinkedTactic.ModifiedBy = Sessions.User.ID;
-                                        ObjLinkedTactic.ModifiedDate = DateTime.Now;
-                                        db.Entry(ObjLinkedTactic).State = EntityState.Modified;
-
-                                    }
-                                    objOtherLineItem.IsDeleted = false;
-                                    if (objTactic.Cost > totalLoneitemCost)
-                                    {
-                                        objOtherLineItem.Cost = objTactic.Cost - totalLoneitemCost;
-                                    }
-                                    else
-                                    {
-                                        objOtherLineItem.Cost = 0;
-                                        objOtherLineItem.IsDeleted = true;
-                                    }
-                                    db.Entry(objOtherLineItem).State = EntityState.Modified;
-                                }
-
+                                // Added by Arpita Soni for Ticket #2634 on 09/23/2016
+                                objPlanTactic.UpdateBalanceLineItemCost(tid);
 
                                 //// Insert Chnage Log to DB.
                                 result = Common.InsertChangeLog(planid, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                db.SaveChanges();
 
                                 if (LinkedTacticId != null)
                                 {
-
                                     #region Save Field Mapping Details
                                     var LinkedMappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(FieldMappingValues);
                                     LineItem_Budget LineitemBudgetMappingobj = new LineItem_Budget();
@@ -7468,12 +6848,8 @@ namespace RevenuePlanner.Controllers
                                         db.SaveChanges();
                                     }
                                     #endregion
-
-
                                 }
-
                             }
-
                             scope.Complete();
                             string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                             return Json(new { isSaved = true, msg = strMessage, planLineitemID = lineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
@@ -7512,147 +6888,15 @@ namespace RevenuePlanner.Controllers
                                 objLineitem.Title = form.Title;
                                 if (!form.IsOtherLineItem)
                                 {
-
                                     objLineitem.LineItemTypeId = form.LineItemTypeId;
-
-                                    //if ((db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(t => t.PlanLineItemId == form.PlanLineItemId).ToList()).Count() == 0 ||
-                                    //    objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
-                                    //|| objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
-                                    //{
-                                    //    objLineitem.Cost = form.Cost;
-                                    //}
-
-                                    List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId).ToList();
-                                    List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
-                                    var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
-                                    List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlist = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => lineitemidlist.Contains(lic.PlanLineItemId)).ToList();
-
-
-                                    //Added By komal Rawal for #1249
-                                    if (form.Cost > objLineitem.Cost)
-                                    {
-                                        var diffcost = form.Cost - objLineitem.Cost;
-                                        int startmonth = objTactic.StartDate.Month; ;
-
-                                        if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
-                                        {
-                                            objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
-                                        }
-                                        else
-                                        {
-                                            Plan_Campaign_Program_Tactic_LineItem_Cost objlineitemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
-                                            objlineitemCost.PlanLineItemId = objLineitem.PlanLineItemId;
-                                            objlineitemCost.Period = PeriodChar + startmonth;
-                                            objlineitemCost.Value = diffcost;
-                                            objlineitemCost.CreatedBy = Sessions.User.ID;
-                                            objlineitemCost.CreatedDate = DateTime.Now;
-                                            db.Entry(objlineitemCost).State = EntityState.Added;
-                                        }
-
-                                        bool isQuarter = false;
-                                        if (objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())
-                                        {
-                                            isQuarter = true;
-                                        }
-                                        List<Plan_Campaign_Program_Tactic_Cost> tacticostslist = objTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
-                                        double tacticost = objTactic.Plan_Campaign_Program_Tactic_Cost.Select(tactic => tactic.Value).Sum();
-
-                                        if (tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
-                                        {
-                                            if (!isQuarter)
-                                            {
-                                                double tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
-                                                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != form.PlanLineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + diffcost;
-                                                if (tacticlineitemcostmonth > tacticmonthcost)
-                                                {
-                                                    tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
-                                                    objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                for (int quarterno = 1; quarterno <= 12; quarterno += 3)
-                                                {
-                                                    List<string> QuarterList = new List<string>();
-                                                    for (int J = 0; J < 3; J++)
-                                                    {
-                                                        QuarterList.Add(PeriodChar + (quarterno + J).ToString());
-                                                    }
-                                                    if (QuarterList.Contains(PeriodChar + startmonth))
-                                                    {
-                                                        double tacticmonthcost = tacticostslist.Where(pcptc => QuarterList.Contains(pcptc.Period)).Sum(p => p.Value);
-                                                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => QuarterList.Contains(lineitem.Period)).Sum(lineitem => lineitem.Value);
-                                                        if (tacticlineitemcostmonth > tacticmonthcost)
-                                                        {
-                                                            tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
-                                                            objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.PlanLineItemId != form.PlanLineItemId && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + form.Cost;
-                                            Plan_Campaign_Program_Tactic_Cost objtacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                            objtacticCost.PlanTacticId = objTactic.PlanTacticId;
-                                            objtacticCost.Period = PeriodChar + startmonth;
-                                            objtacticCost.Value = tacticlineitemcostmonth;
-                                            objtacticCost.CreatedBy = Sessions.User.ID;
-                                            objtacticCost.CreatedDate = DateTime.Now;
-                                            db.Entry(objtacticCost).State = EntityState.Added;
-                                            objTactic.Cost = objTactic.Cost + tacticlineitemcostmonth;
-                                        }
-
-                                    }
-                                    else if (form.Cost < objLineitem.Cost)
-                                    {
-                                        var diffcost = objLineitem.Cost - form.Cost;
-                                        var tacDiffCost = diffcost;
-                                        int endmonth = 12;
-                                        while (diffcost > 0 && endmonth != 0)
-                                        {
-                                            if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
-                                            {
-                                                double objtacticcost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
-                                                if (objtacticcost > diffcost)
-                                                {
-                                                    objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
-                                                    diffcost = 0;
-                                                }
-                                                else
-                                                {
-                                                    objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = 0;
-                                                    diffcost = diffcost - objtacticcost;
-                                                }
-                                            }
-                                            if (endmonth > 0)
-                                            {
-                                                endmonth -= 1;
-                                            }
-
-                                        }
-
-                                        (new PlanController()).ReduceTacticPlannedCost(ref objTactic, ref ObjLinkedTactic,ref lineitemcostlist, tacDiffCost);
-
-                                    }
-
                                     objLineitem.Cost = form.Cost;
-
-                                    //End
                                 }
-                                objTactic.ModifiedBy = Sessions.User.ID;
-                                objTactic.ModifiedDate = DateTime.Now;
-                                db.Entry(objTactic).State = EntityState.Modified;
-
                                 int oldOwnerId = objLineitem.CreatedBy;  //Added by Rahul Shah on 17/03/2016 for PL #2068 
                                 objLineitem.ModifiedBy = Sessions.User.ID;
                                 objLineitem.CreatedBy = form.OwnerId;
                                 objLineitem.ModifiedDate = DateTime.Now;
                                 db.Entry(objLineitem).State = EntityState.Modified;
                                 #endregion
-
-
 
                                 #region Save Field Mapping Details
                                 List<LineItem_Budget> ExistingValues = db.LineItem_Budget.Where(a => a.PlanLineItemId == form.PlanLineItemId).ToList();
@@ -7733,7 +6977,7 @@ namespace RevenuePlanner.Controllers
                                             List<string> lstRecepientEmail = new List<string>();
                                             List<User> UsersDetails = new List<BDSService.User>();
                                             //var csv = string.Concat(form.OwnerId, ",", oldOwnerId.ToString(), ",", Sessions.User.ID.ToString());
-                                            var lstOwners = new List<int> { form.OwnerId, oldOwnerId, Sessions.User.ID};
+                                            var lstOwners = new List<int> { form.OwnerId, oldOwnerId, Sessions.User.ID };
 
                                             try
                                             {
@@ -7789,115 +7033,13 @@ namespace RevenuePlanner.Controllers
                                             lstLinkedPeriods.Add(PeriodChar + (i).ToString());
                                             lstLinkedPeriods.Add(PeriodChar + (perdNum + i).ToString());
                                         }
-
-                                        var TotalCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(id => (id.PlanLineItemId == LinkedLineitemId) && lstLinkedPeriods.Contains(id.Period)).ToList().Sum(l => l.Value);
-                                        Lineitemobj.Cost = TotalCost;
-
                                     }
-
-
                                 }
+                                // Modified by Arpita Soni for Ticket #2634 on 09/23/2016
+                                // Modified Balance LineItem Data
                                 if (!form.IsOtherLineItem)
                                 {
-                                    //// Calculate TotalLineItemCost.
-                                    double totalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == tid && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-
-                                    //// Insert or Modified LineItem Data.
-                                    var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == tid && l.LineItemTypeId == null);
-                                    double LinkedtotalLineitemCost = 0;
-                                    if (LinkedLineitemId != null)
-                                    {
-                                        //// Calculate TotalLineItemCost.
-                                        LinkedtotalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-                                    }
-
-                                    
-
-                                    if (objOtherLineItem == null)
-                                    {
-                                        Plan_Campaign_Program_Tactic_LineItem objLinkedNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                        if (LinkedLineitemId != null)
-                                        {
-                                            objLinkedNewLineitem.PlanTacticId = Convert.ToInt32(LinkedTacticId);
-                                            objLinkedNewLineitem.Title = Common.LineItemTitleDefault + ObjLinkedTactic.Title;
-                                            if (ObjLinkedTactic.Cost > LinkedtotalLineitemCost)
-                                            {
-                                                objLinkedNewLineitem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
-                                            }
-                                            else
-                                            {
-                                                objLinkedNewLineitem.Cost = 0;
-                                            }
-                                            objLinkedNewLineitem.Description = string.Empty;
-                                            objLinkedNewLineitem.CreatedBy = Sessions.User.ID;
-                                            objLinkedNewLineitem.CreatedDate = DateTime.Now;
-                                            db.Entry(objLinkedNewLineitem).State = EntityState.Added;
-                                            ObjLinkedTactic.ModifiedBy = Sessions.User.ID;
-                                            ObjLinkedTactic.ModifiedDate = DateTime.Now;
-                                            db.Entry(ObjLinkedTactic).State = EntityState.Modified;
-                                            db.SaveChanges();
-                                        }
-                                        //// Insert New record to table.
-                                        //// Modified By Nishant Sheth for Ticket #2538
-                                        if (totalLineitemCost != objTactic.Cost)
-                                        {
-                                            Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                            objNewLineitem.PlanTacticId = form.PlanTacticId;
-                                            objNewLineitem.Title = Common.LineItemTitleDefault + objTactic.Title;
-                                            if (objTactic.Cost > totalLineitemCost)
-                                            {
-                                                objNewLineitem.Cost = objTactic.Cost - totalLineitemCost;
-                                            }
-                                            else
-                                            {
-                                                objNewLineitem.Cost = 0;
-                                            }
-                                            objNewLineitem.Description = string.Empty;
-                                            objNewLineitem.CreatedBy = Sessions.User.ID;
-                                            objNewLineitem.CreatedDate = DateTime.Now;
-                                            objNewLineitem.LinkedLineItemId = objLinkedNewLineitem.PlanLineItemId;
-                                            db.Entry(objNewLineitem).State = EntityState.Added;
-                                            db.SaveChanges();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (LinkedLineitemId != null)
-                                        {
-                                            var objLinkedOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == LinkedTacticId && l.LineItemTypeId == null && l.IsDeleted == false);
-                                            if (objLinkedOtherLineItem != null)
-                                            {
-                                                objLinkedOtherLineItem.IsDeleted = false;
-                                                if (objLinkedOtherLineItem.Cost > LinkedtotalLineitemCost)
-                                                {
-                                                    objLinkedOtherLineItem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
-                                                }
-                                                else
-                                                {
-                                                    objLinkedOtherLineItem.Cost = 0;
-                                                    objLinkedOtherLineItem.IsDeleted = true;
-                                                }
-                                                db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
-                                            }
-                                            ObjLinkedTactic.ModifiedBy = Sessions.User.ID;
-                                            ObjLinkedTactic.ModifiedDate = DateTime.Now;
-                                            db.Entry(ObjLinkedTactic).State = EntityState.Modified;
-                                        }
-
-                                        objOtherLineItem.IsDeleted = false;
-                                        if (objTactic.Cost > totalLineitemCost)
-                                        {
-                                            objOtherLineItem.Cost = objTactic.Cost - totalLineitemCost;
-                                        }
-                                        else
-                                        {
-                                            objOtherLineItem.Cost = 0;
-                                            objOtherLineItem.IsDeleted = true;
-                                        }
-                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
-                                    }
-                                    db.SaveChanges();
-
+                                    objPlanTactic.UpdateBalanceLineItemCost(tid);
                                 }
                                 //Modified By Komal Rawal for #1853
                                 if (LinkedLineitemId != null && LinkedLineitemId.HasValue && LinkedLineitemId > 0)  //Modified by Maitri Gandhi for #1888 Observation 2 on 21/03/2016
@@ -8104,8 +7246,6 @@ namespace RevenuePlanner.Controllers
 
                                     #endregion
 
-
-
                                     #region Save Field Mapping Details
                                     List<LineItem_Budget> LinkedExistingValues = db.LineItem_Budget.Where(a => a.PlanLineItemId == LinkedLineitemId).ToList();
                                     LinkedExistingValues.ForEach(Field => db.Entry(Field).State = EntityState.Deleted);
@@ -8172,8 +7312,6 @@ namespace RevenuePlanner.Controllers
                                     int Finalresult;
                                     Finalresult = Common.InsertChangeLog(planid, null, Lineitemobj.PlanLineItemId, Lineitemobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                                     Finalresult = db.SaveChanges();
-
-
                                 }
 
                                 scope.Complete();
@@ -9669,8 +8807,8 @@ namespace RevenuePlanner.Controllers
                     imodel.Title = objPlan.Title;
                     imodel.ModelId = objPlan.ModelId;
                     imodel.ModelTitle = objPlan.Model.Title + " " + objPlan.Model.Version;
-                    imodel.GoalType = objPlan.GoalType;                    
-                        //imodel.GoalValue = Convert.ToString(objPlan.GoalValue);
+                    imodel.GoalType = objPlan.GoalType;
+                    //imodel.GoalValue = Convert.ToString(objPlan.GoalValue);
                     imodel.GoalValue = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlan.GoalValue)), PlanExchangeRate).ToString();
                     imodel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlan.Budget)), PlanExchangeRate);
                     //imodel.GoalValue = objPlan.GoalValue.ToString();
@@ -9784,9 +8922,9 @@ namespace RevenuePlanner.Controllers
                             Plan_Campaign_Program_Tactic pct = ListOfTactics.Where(_tactic => _tactic.PlanTacticId == planTacticId).FirstOrDefault();
                             string strUrl = GetNotificationURLbyStatus(PlanId, planTacticId, section);
                             Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.CommentAddedToTactic.ToString(), pct.Title, true, comment, Convert.ToString(Enums.Section.Tactic).ToLower(), strUrl);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
-                          
+
                             Common.InsertChangeLog(PlanId, null, pct.PlanTacticId, pct.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.commentadded, "", pct.CreatedBy);
-                         
+
                         }
                         else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                         {
@@ -10030,7 +9168,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             if (isApproved)
                                             {
-                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null,tactic.CreatedBy);
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null, tactic.CreatedBy);
                                                 //added by uday for #532 
                                                 if (tactic.IsDeployedToIntegration == true)
                                                 {
@@ -10041,7 +9179,7 @@ namespace RevenuePlanner.Controllers
                                             }
                                             else if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                                             {
-                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null,tactic.CreatedBy);
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null, tactic.CreatedBy);
                                             }
                                             else if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                                             {
@@ -10114,7 +9252,7 @@ namespace RevenuePlanner.Controllers
                                         {
                                             if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                             {
-                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null,tactic.CreatedBy);
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null, tactic.CreatedBy);
                                                 //added by uday for #532
                                                 if (tactic.IsDeployedToIntegration == true)
                                                 {
@@ -10125,7 +9263,7 @@ namespace RevenuePlanner.Controllers
                                             }
                                             else if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                                             {
-                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null,tactic.CreatedBy);
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null, tactic.CreatedBy);
                                             }
                                         }
                                         if (result >= 1)
@@ -10159,7 +9297,7 @@ namespace RevenuePlanner.Controllers
                                                 string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
                                                 UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
                                                 AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
-                                                result = Common.InsertChangeLog(planid, null, planTacticId, program.Title.ToString(), Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null,program.CreatedBy);
+                                                result = Common.InsertChangeLog(planid, null, planTacticId, program.Title.ToString(), Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null, program.CreatedBy);
 
                                                 if (program.IsDeployedToIntegration == true)
                                                 {
@@ -10181,7 +9319,7 @@ namespace RevenuePlanner.Controllers
                                                 string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
                                                 UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId }); // Update child tactics status.
                                                 AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
-                                                Common.InsertChangeLog(program.Plan_Campaign.PlanId, 0, program.PlanProgramId, program.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined,null,program.CreatedBy);
+                                                Common.InsertChangeLog(program.Plan_Campaign.PlanId, 0, program.PlanProgramId, program.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null, program.CreatedBy);
 
                                             }
 
@@ -10220,7 +9358,7 @@ namespace RevenuePlanner.Controllers
                                                 string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
                                                 UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
                                                 AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
-                                                result = Common.InsertChangeLog(campaign.PlanId, null, planTacticId, campaign.Title.ToString(), Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null,campaign.CreatedBy);
+                                                result = Common.InsertChangeLog(campaign.PlanId, null, planTacticId, campaign.Title.ToString(), Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null, campaign.CreatedBy);
                                                 if (campaign.IsDeployedToIntegration == true)
                                                 {
                                                     ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.ID, EntityType.Campaign);
@@ -10239,7 +9377,7 @@ namespace RevenuePlanner.Controllers
                                                 string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
                                                 UpdateChildEntityStatusByParent(section, strstatus, new List<int> { planTacticId });    // Update Program & Tactic status.
                                                 AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
-                                                Common.InsertChangeLog(campaign.PlanId, 0, campaign.PlanCampaignId, campaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined,null,campaign.CreatedBy);
+                                                Common.InsertChangeLog(campaign.PlanId, 0, campaign.PlanCampaignId, campaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null, campaign.CreatedBy);
 
                                             }
                                         }
@@ -10985,7 +10123,7 @@ namespace RevenuePlanner.Controllers
                             {
 
                                 Plan plan = db.Plans.Where(p => p.PlanId == id).FirstOrDefault();
-                                returnValue = Common.InsertChangeLog(id, null, id, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed,"",plan.CreatedBy);
+                                returnValue = Common.InsertChangeLog(id, null, id, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", plan.CreatedBy);
                                 strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                             }
                         }
@@ -10998,7 +10136,7 @@ namespace RevenuePlanner.Controllers
                                 Plan_Campaign pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).FirstOrDefault();
                                 Title = pc.Title;
                                 planid = pc.PlanId;
-                                returnValue = Common.InsertChangeLog(pc.PlanId, null, pc.PlanCampaignId, pc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed,"",pc.CreatedBy);
+                                returnValue = Common.InsertChangeLog(pc.PlanId, null, pc.PlanCampaignId, pc.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pc.CreatedBy);
                                 strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                             }
                         }
@@ -11011,7 +10149,7 @@ namespace RevenuePlanner.Controllers
                                 cid = pc.PlanCampaignId;
                                 planid = db.Plan_Campaign.Where(p => p.PlanCampaignId == cid && p.IsDeleted.Equals(false)).Select(p => p.PlanId).FirstOrDefault();
                                 Title = pc.Title;
-                                returnValue = Common.InsertChangeLog(planid, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed,"",pc.CreatedBy);
+                                returnValue = Common.InsertChangeLog(planid, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pc.CreatedBy);
                                 strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                             }
                         }
@@ -11026,7 +10164,7 @@ namespace RevenuePlanner.Controllers
                                 planid = db.Plan_Campaign.Where(p => p.PlanCampaignId == cid && p.IsDeleted.Equals(false)).Select(p => p.PlanId).FirstOrDefault();
                                 pid = pcpt.PlanProgramId;
                                 Title = pcpt.Title;
-                                returnValue = Common.InsertChangeLog(planid, null, pcpt.PlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed,"",pcpt.CreatedBy);
+                                returnValue = Common.InsertChangeLog(planid, null, pcpt.PlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", pcpt.CreatedBy);
                                 strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
                             }
                         }
@@ -11086,7 +10224,8 @@ namespace RevenuePlanner.Controllers
                                     {
                                         Plan_Campaign_Program_Tactic_LineItem objLinkedNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
                                         objLinkedNewLineitem.PlanTacticId = Convert.ToInt32(LinkedTacticId);
-                                        objLinkedNewLineitem.Title = Common.LineItemTitleDefault + ObjLinkedTactic.Title;
+                                        // Modified by Arpita Soni for Ticket #2634 on 09/22/2016
+                                        objLinkedNewLineitem.Title = Common.LineItemTitleDefault;
                                         if (ObjLinkedTactic.Cost > LinkedtotalLineitemCost)
                                         {
                                             objLinkedNewLineitem.Cost = ObjLinkedTactic.Cost - LinkedtotalLineitemCost;
@@ -11106,7 +10245,8 @@ namespace RevenuePlanner.Controllers
                                     {
                                         Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
                                         objNewLineitem.PlanTacticId = pcptl.Plan_Campaign_Program_Tactic.PlanTacticId;
-                                        objNewLineitem.Title = Common.LineItemTitleDefault + pcptl.Plan_Campaign_Program_Tactic.Title;
+                                        // Modified by Arpita Soni for Ticket #2634 on 09/22/2016
+                                        objNewLineitem.Title = Common.LineItemTitleDefault;
                                         if (pcptl.Plan_Campaign_Program_Tactic.Cost > totalLoneitemCost)
                                         {
                                             objNewLineitem.Cost = pcptl.Plan_Campaign_Program_Tactic.Cost - totalLoneitemCost;
@@ -11154,7 +10294,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         objOtherLineItem.Cost = 0;
                                         objOtherLineItem.IsDeleted = true;
-                                    db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
                                     }
 
                                     db.SaveChanges();
@@ -11173,7 +10313,7 @@ namespace RevenuePlanner.Controllers
                                     pid = Lineitemobj.Plan_Campaign_Program_Tactic.PlanProgramId;
                                     tid = Lineitemobj.PlanTacticId;
                                     Title = Lineitemobj.Title;
-                                    Common.InsertChangeLog(Sessions.PlanId, null, Lineitemobj.PlanLineItemId, Lineitemobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed,"",Lineitemobj.CreatedBy);
+                                    Common.InsertChangeLog(Sessions.PlanId, null, Lineitemobj.PlanLineItemId, Lineitemobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", Lineitemobj.CreatedBy);
 
                                 }
 
@@ -11439,7 +10579,7 @@ namespace RevenuePlanner.Controllers
                     //else 
                     if (item.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                     {
-                        Common.InsertChangeLog(planid, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null,item.CreatedBy);
+                        Common.InsertChangeLog(planid, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null, item.CreatedBy);
                     }
 
                 }
@@ -11487,7 +10627,7 @@ namespace RevenuePlanner.Controllers
 
                     if (item.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                     {
-                        Common.InsertChangeLog(planid, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null,item.CreatedBy);
+                        Common.InsertChangeLog(planid, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null, item.CreatedBy);
                     }
 
                 }
@@ -11711,7 +10851,7 @@ namespace RevenuePlanner.Controllers
                         TacticId = a.TacticId,
 
                         MediaCodeId = a.MediaCodeId,
-                        MediaCode =  Convert.ToString(a.MediaCode),
+                        MediaCode = Convert.ToString(a.MediaCode),
                         CustomFieldList = a.Tactic_MediaCodes_CustomFieldMapping.Where(aa => aa.TacticId == a.TacticId).Select(aa => new CustomeFieldList
                         {
                             CustomFieldId = aa.CustomFieldId != null ? Convert.ToInt32(aa.CustomFieldId) : 0,

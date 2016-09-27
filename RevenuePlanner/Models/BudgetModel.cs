@@ -109,6 +109,8 @@ namespace RevenuePlanner.Models
         public int CreatedBy { get; set; }
         public bool isAfterApproved { get; set; }
         public int? LineItemTypeId { get; set; }
+
+        public double PlannedCost { get; set; }
     }
 
     public class BudgetModelReport
@@ -188,8 +190,8 @@ namespace RevenuePlanner.Models
         public string ColSorting { get; set; }
         public string ColumnIds { get; set; }
         public List<string> AttachHeader { get; set; }
-        public int LineItemId { get; set; }
         public string HiddenTab { get; set; }
+		public string ColAlign { get; set; } // Added by Arpita Soni for Ticket #2634 on 09/26/2016
         
         public BudgetDHTMLXGrid Grid { get; set; }
     }
