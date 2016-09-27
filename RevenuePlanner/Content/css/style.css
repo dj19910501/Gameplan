@@ -13429,7 +13429,7 @@ input.serach-input {
 }
 
 #lineItemGrid.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
-#lineItemGrid div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+#lineItemGrid.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
     width: 100% !important;
 }
 
