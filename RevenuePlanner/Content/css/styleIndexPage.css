@@ -656,6 +656,7 @@ footer {
 .sidebar-toogle {
 	padding: 5px 0;
 	left: -1px;
+    top: 1px;
 	position: absolute
 }
 .sidebar-toogle a.sidebar-filter-icon {
@@ -1443,7 +1444,7 @@ footer a {
 }
 
 .task-tbl #divgridview .xhdr, .task-tbl #divgridview .hdr{ height: 37px !important; }
-
+.task-tbl #divgridview.budget-grid .xhdr, .task-tbl #divgridview.budget-grid .hdr{ height: auto !important; }
 
 .task-tbl .gantt_container{overflow-y:auto;overflow-x:hidden}
 .task-tbl{width: 100%; padding:0 15px 0 20px;margin:0}
