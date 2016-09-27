@@ -113,10 +113,11 @@ a:hover, a:focus {
 	width: 50% !important;
 }
 /* SB HOlder Style */
-.selectBox {
+.viewby-wrap .selectBox {
 	display: inline-block;
-	margin-right: 10px;
+	margin-right: 0;
 }
+
 .sbHolder {
 	-moz-border-bottom-colors: none;
 	-moz-border-left-colors: none;
@@ -1139,6 +1140,11 @@ span.filter-count, span.filter-count > span {
 	float: left;
 	color: #3e3f37 !important; /* Edited for #2219 - Bhumika */
 }
+#ImportBtn {
+    line-height: 30px;
+    margin: 0;
+    width: auto;
+}
 .new-btn-plan-left {
 	border-radius: 5px 0 0 5px;
 	border-right: 0;
@@ -1148,12 +1154,12 @@ span.filter-count, span.filter-count > span {
 	margin: 20px 0 0;
 	position: relative;
 }
-.ix-icon-block {
-	margin-left: 6px
-}
+
 .request-icon-block .fa, .ix-icon-block .fa {
 	font-size: 16px;
 }
+
+
 .ix-icon-block span {
 	font-size: 12px;
 	padding-left: 3px;
@@ -1192,21 +1198,31 @@ span.filter-count, span.filter-count > span {
 	border: 1px solid #ccc;
 	box-shadow: none;
 	min-height: 29px;
+    /*min-width: 100px;*/
+    width: 100px;
 }
-.ui-multiselect.ui-widget.ui-state-default.ui-corner-all span {
+.viewby-wrap button.ui-multiselect{margin:0;  padding: 0 14px 0 0;}
+.viewby-wrap button.ui-multiselect span{font-size:12px}
+.viewby-wrap .ui-multiselect.ui-widget.ui-state-default.ui-corner-all span {
 	margin-left: 10px;
 	overflow: hidden;
 	text-align: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	width: 90%;
+    color: inherit;
+    font-family: "ProximaNova-Regular",Helvetica,Arial,sans-serif;
 }
 .ui-multiselect.ui-widget.ui-state-default.ui-corner-all span[class] {
 	width: 0;
 }
+.viewby-wrap .ui-multiselect .ui-icon{border-top: 4px solid #3e3f37;}
 .viewby-wrap .sbHolder .sbSelector {
 	line-height: 29px;
 }
+
+.ix-icon-block, .viewby-wrap{margin-left:9px}
+
 .goals-wrapper {
 	background: #e6e6e6;
 	font-family: source_sans_prosemibold;
@@ -1400,17 +1416,30 @@ footer a {
 	text-decoration: underline;
 }
 /* ============ Grid & Calendar View ========== */
-.task-tbl {position:relative}
+/*.task-tbl {position:relative}*/
 .changeView{
     height: 25px;
     padding: 3px;
-    position: absolute;
-    right: 8px;
-    top: -12px;
+    position: fixed;
+    right: 9px;
+    top: 266px;
     width: 25px;
     z-index: 1;
 }
 .changeView .fa{  color: #3e3f37;font-size: 22px;}
+.task-tbl #divgridview table, 
+.task-tbl #GridGanttContent .calendar-gant-table{font-family:'source_sans_proregular', Arial, sans-serif !important; font-size:14px; font-weight:normal !important}
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr{height:auto !important}
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+    color: #808080;
+    font-weight: normal;
+    width: auto;
+    padding:0 3px;
+}
+
+.task-tbl #divgridview .xhdr, .task-tbl #divgridview .hdr{ height: 37px !important; }
+
+
 .task-tbl .gantt_container{overflow-y:auto;overflow-x:hidden}
 .task-tbl{width: 100%; padding:0 15px 0 20px;margin:0}
 .task-tbl #divgridview, .task-tbl #GridGanttContent {
@@ -1631,7 +1660,7 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
     margin-right: 18px;
 }
 /* ============== Inspection Window new style End ================= */ 
-
+#multipleselect_ddlTabViewBy{max-width:250px !important}
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
 .task-tbl #divgridview, 
