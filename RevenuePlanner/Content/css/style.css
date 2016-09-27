@@ -13454,9 +13454,11 @@ input.serach-input {
 }
 
 /* =================== LIneitem Grid CSS in Ispect Window End ========================= */
-
-
-
+.import-popover .file-caption-main .input-group-btn{width:100%}
+.import-popover .file-caption-main .btn-primary.btn-file {
+    float: right;
+}
+.fileinput-remove-button{color:#333333 !important}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
