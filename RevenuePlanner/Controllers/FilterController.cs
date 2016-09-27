@@ -16,7 +16,6 @@ namespace RevenuePlanner.Controllers
     {
         #region Variables
         IFilter objCommonFilter = new RevenuePlanner.Services.Filter();
-        private MRPEntities objDbMrpEntities = new MRPEntities();
         #endregion
 
         /// <summary>
