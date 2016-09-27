@@ -107,6 +107,11 @@
                 IsManageviewClick = false;
                 return false;
             }
+            else if (IsManageDropdown)
+            {
+                IsManageviewClick = false;
+                return false;
+            }
             else
                 return true;
         });

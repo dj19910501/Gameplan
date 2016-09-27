@@ -14,6 +14,7 @@ $('#btngridcalendar').click(function () {
         if ($('#IsGridView').val().toLowerCase() == "false") {
             LoadPlanGrid();
             $('#IsGridView').val('true');
+           
         } else {
             $('#IsGridView').val('false');
             BindPlanCalendar();
@@ -1276,8 +1277,7 @@ function ConfirmLinkTactic() {
 ////End
 
 //set value of dropdown in search criteria
-$(".dropdown-menu li a").click(function () {
-
+$(".dropdown-menu searchDropdown li a").click(function () {
     $("#txtGlobalSearch").val("");
     $("#searchCriteria").text($(this).text()[0]);
     $("#searchCriteria").val($(this).text());
@@ -1288,7 +1288,17 @@ $(".dropdown-menu li a").click(function () {
 $('#ExpSearch').click(function () {
     if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
         GlobalSearch();
+        $('#ExpSearch').css('display', 'none');
+        $('#ExpClose').css('display', 'block');
     }
+});
+
+$('#ExpClose').click(function () {
+    $('#txtGlobalSearch').val("");
+    $('#ExpClose').css('display', 'none');
+    GlobalSearch();
+    $('#ExpSearch').css('display', 'block');
+
 });
 
 //Handle enter key in search textbox

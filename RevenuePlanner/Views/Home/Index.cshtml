@@ -44,25 +44,25 @@
 @*//insertation start by kausha 21/09/2016 #2638/2592 Export to excel*@
 <div class="cf full-width-header" id="planHeader">
     <div class="sidebar-toogle">
-        <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true"></i></a>
+        <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true" title="Filters"></i></a>
     </div>
     @Html.Partial("~/Views/Shared/_Planhud.cshtml")
     <div class="planheader-left">
         <div class="plan-header-grid">
             <div class="request-icon-block">
-                <a class="new-btn-plan-left P-icon-active" href="#" id="btngridcalendar">
+                <a class="new-btn-plan-left P-icon-active" href="#" id="btngridcalendar" title="Calendar View">
                     <i class="fa fa-calendar"></i>
                 </a>
-                <a id="btnbudget" class="new-btn-plan-right" href="#">
+                <a id="btnbudget" title="Budget & Cost" class="new-btn-plan-right" href="#">
                     <i class="fa fa-money"></i>
                 </a>
             </div>
             <div class="ix-icon-block">
                 <a id="ImportBtn" class="new-btn-plan-left P-icon-active" href="#" style="display:none" onclick="showModal();">
-                    <i class="fa fa-sign-in"></i><span>Import</span>
+                    <i class="fa fa-sign-in" title="Import"></i><span>Import</span>
                 </a>
                 <a href="#" id="" class="new-btn-plan-right dropdown-toggle " data-toggle="dropdown">
-                    <i class="fa fa-external-link"></i><span>Export</span>
+                    <i class="fa fa-external-link" title="Export"></i><span>Export</span>
                 </a>
                 <ul id="" class="dropdown-menu export-dd">
                     <li title=""><a href="#" id="ExportXls" onclick="ExportToExcel()">.xls</a></li>
@@ -92,7 +92,7 @@
     <div id="exp-serach" class="clearfix">
         <div class="input-group-btn">
             <button id="searchCriteria" onclick="OpenDropdown(true)" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="ActivityName">A</button>
-            <div class="dropdown-menu">
+            <div class="dropdown-menu searchDropdown">
                 <ul role="menu" aria-labelledby="dropdownMenu">
                 <li><a tabindex="-1" href="#">ActivityName</a></li>
                 <li><a tabindex="-1" href="#">ExternalName</a></li>
@@ -101,6 +101,7 @@
         </div>
         <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="ActivityName">
         <span class="ExpIcon" id="ExpSearch" data-toggle="tooltip" title="Search"><i class="fa fa-search"></i></span>
+        <span class="ExpIcon" id="ExpClose" style="display:none"><i class="fa fa-times-circle-o" aria-hidden="true"></i></span>
     </div>
     @* ===== Close button to change View Start ======= *@
     <a class="changeView"><i class="fa fa-times-circle" aria-hidden="true"></i></a>
@@ -172,6 +173,10 @@
 <div id="dvCopyEntity"></div>
 @Html.Partial("~/Views/Plan/_PlanGridVariable.cshtml")
 <div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
+<style type="text/css">
+    .searchDropdown{
+        }  /*stop resolve conflict with Export dropdown*/ 
+</style>
 <script src="~/Scripts/Filter.js"></script>
 <script src="~/Scripts/js/Home/Grid_CalendarCommon.js"></script>
 <script src="~/Scripts/js/Home/HomeGrid.js"></script>
@@ -217,6 +222,7 @@
     var DeselectAssetFromPackage = '@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage';
     var UnpackageSuccessful = '@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful';
     var activeMenu = '@ViewBag.ActiveMenu.ToString()';
+    var IsManageDropdown = false;
     ///////
     var IsManageviewClick = false;
     var IsBudgetGrid = false;
@@ -256,6 +262,7 @@
     var isEditTactic = 0;
     //for Hidding tooltip -ticket 2414
     var $doc = $(document);
+
     $doc.click(function () {
         $(".tooltip").hide();
     });
@@ -316,11 +323,6 @@
             }
         });
     });
-
-    //For Ticket 2596 -For stop sorting on dropdownclick
-    function OpenDropdown() {
-        IsManageDropdown = true;
-    }
 
     function OpenCreateNew(IsGridView) {
         $.ajax({
