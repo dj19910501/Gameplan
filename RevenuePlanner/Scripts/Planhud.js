@@ -257,7 +257,7 @@ function GetMultiplePlanNames() {
     PlanNames = PlanNames.slice(0, -1);
     $("#PlanTitle").html(PlanNames);
     $("#PlanTitle").attr('title', PlanNames);
-    $("#PlanCount").html(PlanCount + " Plans Selected")
+    $("#PlanCount").html(PlanCount + " Plan(s) Selected")
 
 }
 
