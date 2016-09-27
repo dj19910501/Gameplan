@@ -342,3 +342,4 @@ function BindUpcomingActivies(items) {
     $("#ddlUpComingActivites").selectbox('detach');
     $("#ddlUpComingActivites").selectbox("attach");
 }
+

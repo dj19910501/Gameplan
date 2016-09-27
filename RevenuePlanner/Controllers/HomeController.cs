@@ -9729,17 +9729,20 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns> Return Calendar Json Result</returns>
         [HttpPost]
-        public JsonResult GetCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe)
+        public JsonResult GetCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string viewBy)
         {
             #region "Declare local variables"
             string planYear = "";
             Services.IGrid objGrid = new Services.Grid();
             List<calendarDataModel> resultData = new List<calendarDataModel>(); 
+            
         #endregion
 
             try
             {
-                resultData = objGrid.GetPlanCalendarData(planIds, ownerIds, tactictypeIds, statusIds, timeframe, planYear); // Get Calendar data through SP.
+                if (string.IsNullOrEmpty(viewBy))
+                    viewBy = PlanGanttTypes.Tactic.ToString();
+                resultData = objGrid.GetPlanCalendarData(planIds, ownerIds, tactictypeIds, statusIds, timeframe, planYear, viewBy); // Get Calendar data through SP.
 
                 if (resultData != null && resultData.Count > 0 && !string.IsNullOrEmpty(customFieldIds))
                     resultData = FilterCustomField(resultData, customFieldIds); // Get filtered tactics based on customfield selection under Filter.
@@ -9802,6 +9805,31 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return resultData;
+        }
+
+
+
+        #endregion
+
+        #region "ViewBy related functions"
+        /// <summary>
+        /// Created by: Viral
+        /// Created On: 09/26/2016
+        /// Desc: Get Viewby list data. 
+        /// </summary>
+        /// <returns>Return Viewby list data.  </returns>
+        public JsonResult GetViewBylistData(string planids)
+        {
+            List<ViewByModel> lstViewBy = new List<ViewByModel>();
+            try
+            {
+                lstViewBy = (new StoredProcedure()).spViewByDropDownList(planids);  // Get ViewBy options by PlanIds.
+            }
+            catch (Exception ex)
+            {
+               ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(lstViewBy, JsonRequestBehavior.AllowGet);
         }
         #endregion
 

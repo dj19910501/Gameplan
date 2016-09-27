@@ -1254,10 +1254,10 @@ namespace RevenuePlanner.Services
         /// Createdy By: Viral
         /// Created On: 09/19/2016
         // Desc: Return List of Plan, Campaign, Program, Tactic
-        public List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string timeframe, string planYear)
+        public List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string timeframe, string planYear, string viewby)
         {
             #region "Declare Variables"
-            SqlParameter[] para = new SqlParameter[6];
+            SqlParameter[] para = new SqlParameter[7];
             List<calendarDataModel> calResultset = new List<calendarDataModel>();   // Return Calendar Result Data Model
             #endregion
 
@@ -1294,11 +1294,16 @@ namespace RevenuePlanner.Services
                     ParameterName = "planYear",
                     Value = planYear
                 };
+                para[6] = new SqlParameter()
+                {
+                    ParameterName = "viewBy",
+                    Value = viewby
+                };
                 #endregion
 
                 #region "Get Data"
                 calResultset = objDbMrpEntities.Database
-                    .SqlQuery<calendarDataModel>("spGetPlanCalendarData @planIds,@ownerIds,@tactictypeIds,@statusIds,@timeframe,@planYear", para)
+                    .SqlQuery<calendarDataModel>("spGetPlanCalendarData @planIds,@ownerIds,@tactictypeIds,@statusIds,@timeframe,@planYear,@viewBy", para)
                     .ToList();
                 #endregion
             }
@@ -1338,7 +1343,7 @@ namespace RevenuePlanner.Services
                 foreach (calendarDataModel data in lstCalendarDataModel)
                 {
                     #region "Set Owner Name"
-                    usr = lstUsersData.Where(u => u.Key == data.CreatedBy.Value).FirstOrDefault();
+                    usr = lstUsersData.Where(u => data.CreatedBy.HasValue && u.Key == data.CreatedBy.Value).FirstOrDefault();
                     if (usr.Value != null)
                         data.OwnerName = string.Format("{0} {1}", Convert.ToString(usr.Value.FirstName), Convert.ToString(usr.Value.LastName));
                     #endregion

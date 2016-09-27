@@ -42,6 +42,7 @@ function BindPlanCalendar() {
 function GetCalendarDataInJsonFormat() {
     var strURL = urlContent + 'Home/GetCalendarData/';
     filters = GetFilterIds();
+var viewBy = $('#ddlTabViewBy').val();
     $.ajax({
         url: strURL,
         type: 'POST',
@@ -51,7 +52,8 @@ function GetCalendarDataInJsonFormat() {
             tactictypeIds: filters.TacticTypeids.toString(),
             statusIds: filters.StatusIds.toString(),
             customFieldIds: filters.customFieldIds.toString(),
-            timeframe: ''
+            timeframe: '',
+            viewBy: viewBy
         },
         success: function (data) {
             ConfigureGanttwithdefaultSettings();    // Configure Calendar with default configuration.
@@ -89,8 +91,8 @@ function SetGanttData(resultdata) {
         objData.start_date = new Date(objData.start_date);
     });
 
-    //// Instead of iterating each task and delete then it, there is a better way to use .clearAll() method that removes all the task from gantt.
-    if ($('.gantt_task_row').length > 0) {
+    var taskcnt = gantt.getTaskCount();
+    if (taskcnt > 0) {
         gantt.clearAll();
     }
 
