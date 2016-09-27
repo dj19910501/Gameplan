@@ -303,7 +303,7 @@
                     GetTacticTypelist(filters.PlanIDs);
                     GetOwnerListForFilter(filters.PlanIDs);
                     GetLastSetofViews($('#FilterPresetName').val());
-                    BindUpcomingActivites(filters.PlanIDs, '@Url.Content("~/Home/BindUpcomingActivitesValues/")');
+                    BindUpcomingActivites(filters.PlanIDs);
                     SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
                     BindViewSelections(urlContent + 'Home/GetViewBylistData');
                     GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)

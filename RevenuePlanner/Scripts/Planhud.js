@@ -288,7 +288,7 @@ function GetGoalValues(url,selectedPlanIds) {
 
 }
 
-function BindUpcomingActivites(SelectedPlanIds,url) {
+function BindUpcomingActivites(SelectedPlanIds) {
     var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
     var years = "";
     $.each(listCheckbox, function () {
@@ -301,7 +301,7 @@ function BindUpcomingActivites(SelectedPlanIds,url) {
     var currentval = $("#ddlUpComingActivites").val();
     $.ajax({
         type: 'POST',
-        url: url,
+        url: urlContent + 'Home/BindUpcomingActivitesValues/',
         async: false,
         data: {
             planids: SelectedPlanIds.toString(),

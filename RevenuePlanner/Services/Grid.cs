@@ -948,7 +948,7 @@ namespace RevenuePlanner.Services
                     {
                         lstPlanData.Add(new Plandataobj
                         {
-                            value = objres.EntityType + "_" + objres.EntityId // Set dhtmlx id
+                            value = Convert.ToString(objres.EntityId) // set column id
                         });
                     }
                     if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName), true) == 0)

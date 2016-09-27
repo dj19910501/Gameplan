@@ -228,7 +228,7 @@ namespace RevenuePlanner.Helpers
             {FunnelFlag.M.ToString(), "M"},
             {FunnelFlag.T.ToString(), "T"},
             {FunnelFlag.S.ToString(), "S"}
-          
+
         };
 
         // Add By Nishant Sheth : 06-July-2015
@@ -250,7 +250,7 @@ namespace RevenuePlanner.Helpers
             {PerPage.TwentyFive.ToString(), "25"},
             {PerPage.Fifty.ToString(), "50"},
             {PerPage.Hundered.ToString(), "100"}
-          
+
         };
 
         public enum SortByRevenue
@@ -264,7 +264,7 @@ namespace RevenuePlanner.Helpers
             {SortByRevenue.Revenue.ToString(), "revenueval"},
             {SortByRevenue.Cost.ToString(), "costval"},
             {SortByRevenue.ROI.ToString(), "roival"}
-            
+
         };
 
         public enum SortByWaterFall
@@ -858,15 +858,7 @@ namespace RevenuePlanner.Helpers
                     value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.ColourCode)
                 }
             },
-            {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),new PlanHead
-                {
-                    type = "ro",
-                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),
-                    sort = "na",
-                    width = 0,
-                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.id)
-                }
-            },
+
             {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName),new PlanHead
                 {
                     type = "ro",
@@ -894,6 +886,15 @@ namespace RevenuePlanner.Helpers
                     sort = "na",
                     width = 85,
                     value = string.Empty
+                }
+            },
+             {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),new PlanHead
+                {
+                    type = "ro",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),
+                    sort = "na",
+                    width = 0,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.id)
                 }
             }
         };
@@ -1765,8 +1766,8 @@ namespace RevenuePlanner.Helpers
         {
             {PerformanceFector.Revenue.ToString(), "Revenue"},
             {PerformanceFector.PlannedCost.ToString(), "Planned Cost"},
-           
-          
+
+
         };
         public enum PerformanceComparison
         {
@@ -1794,7 +1795,7 @@ namespace RevenuePlanner.Helpers
             {GoalNum.Fifty.ToString(), "50"},
             {GoalNum.Seventyfive.ToString(), "75"},
             {GoalNum.Hundered.ToString(), "100"}
-          
+
         };
         public enum AlertNotification
         {
