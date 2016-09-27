@@ -7,6 +7,7 @@ $('#btngridcalendar').click(function () {
     $('#exp-serach').css('display', 'none'); // To hide dropdown before grid is loaded  ticket - 2596
     $('#txtGlobalSearch').val('');// On grid change searchbox should be empty 
     IsBudgetGrid = false;// To maintain the flag for search ticket - 2596
+    $('#ImportBtn').parent().removeClass('round-corner');
     $('#ImportBtn').hide();
     $('#btnbudget').removeClass('P-icon-active');
     if ($(this).hasClass('P-icon-active')) {
@@ -44,6 +45,7 @@ $('#btngridcalendar').click(function () {
 });
 
 $('#btnbudget').click(function () {
+    $('#ImportBtn').parent().addClass('round-corner');
     $('#exp-serach').css('display', 'none'); // To hide dropdown before grid is loaded  ticket - 2596
     $('#txtGlobalSearch').val('');// On grid change searchbox should be empty 
     IsBudgetGrid = true; // To maintain the flag for search ticket - 2596

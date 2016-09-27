@@ -1149,6 +1149,11 @@ span.filter-count, span.filter-count > span {
 	border-radius: 5px 0 0 5px;
 	border-right: 0;
 }
+.ix-icon-block .new-btn-plan-right {
+	border-radius: 5px;
+}
+.ix-icon-block.round-corner .new-btn-plan-right {border-radius:0 5px 5px 0}/* When budget view display */  
+
 .request-icon-block, .ix-icon-block {
 	float: left;
 	margin: 20px 0 0;
