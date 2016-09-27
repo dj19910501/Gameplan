@@ -4887,7 +4887,7 @@ CREATE TYPE [dbo].[ImportExcelBudgetMonthData] AS TABLE(
 GO
 CREATE PROCEDURE [dbo].[Sp_GetPlanBudgetDataMonthly]  --17314
 --@PlanId int,
-@ImportData ImportExcelBudgetMonthData_Test1 READONLY,
+@ImportData ImportExcelBudgetMonthData READONLY,
 @UserId INT
 --@ClientId INT
 AS
@@ -5181,7 +5181,7 @@ Begin
 			END
         ELSE
 		BEGIN
-		INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'test') 
+		INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'') 
 		END
 
 
@@ -5344,7 +5344,7 @@ IF ( @Type='Campaign')
 			END
 		ELSE
 		BEGIN
-			INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'test') 
+			INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'') 
 		END
 
 
@@ -5510,7 +5510,7 @@ IF ( @Type='Program')
 		END
 		 ELSE
 		BEGIN
-			INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'test') 
+			INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'') 
 		END
 
 IF ( @Type='Tactic')
@@ -5671,7 +5671,7 @@ IF ( @Type='Tactic')
 
 	 ELSE
 		BEGIN
-			INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'test') 
+			INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'') 
 		END
 
 		END
@@ -5718,7 +5718,7 @@ CREATE TYPE [dbo].[ImportExcelBudgetQuarterData] AS TABLE(
 GO
 CREATE PROCEDURE [dbo].[Sp_GetPlanBudgetDataQuarterly]  --17314
 --@PlanId int,
-@ImportData ImportExcelBudgetQuarterData_Test READONLY,
+@ImportData ImportExcelBudgetQuarterData READONLY,
 @UserId INT 
 --@ClientId INT
 AS
