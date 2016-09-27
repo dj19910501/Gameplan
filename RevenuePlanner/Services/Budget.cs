@@ -26,7 +26,7 @@ namespace RevenuePlanner.Services
         private const string Open = "1";
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
-        public const string FixHeader = "ActivityId,Type,machinename,,,,,";
+        public const string FixHeader = "ActivityId,Type,machinename,,,,,,";
         public const string EndColumnsHeader = ",";
         public const string FixColumnIds = "ActivityId,Type,machinename,colourcode,taskname,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",Budget";
