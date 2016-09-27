@@ -1547,3 +1547,56 @@ function LoadFileInputModelBox() {
 //Following function will be called on click of import bitton to opn pop up for import an excel
 
 ///End
+
+
+// Bind View Dropdown list.
+function BindViewSelections(strUrl) {
+    var $dropdown = $("#ddlTabViewBy");
+    $dropdown.html('');
+    var $html = '';
+    var type = '';
+    $.ajax({
+        type: 'POST',
+        url: strUrl,
+        data: { planids: filters.PlanIDs.toString() },
+        success: function (data) {
+            if (data != null && data != 'undefined') {
+                if (data.length > 0) {
+                    $.each(data, function (index, time) {
+
+                        if (type == time.Value) {
+                            $html += '<option value="' + time.Value + '" selected="selected">' + time.Text + '</option>';
+                        }
+                        else {
+                            $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                        }
+
+                    });
+                }
+                $dropdown.append($html);
+                $("#ddlTabViewBy").multiselect('refresh');
+                //$('#ddlTabViewBy').val(data.ViewBy.toString());
+            }
+        }
+    });
+}
+
+// ViewBy Change Event.
+$("#ddlTabViewBy").change(function () {
+
+    if ($('#IsGridView').val().toLowerCase() == "false") {
+        BindPlanCalendar();
+        $('.export-dd').find('#ExportXls').hide();
+        $('.export-dd').find('#ExportPDf').show();
+        $('#divupcomingact').hide();
+        $("#GridGanttContent").show();
+        $("#divgridview").hide();
+    } else {
+        LoadPlanGrid();
+        $("#GridGanttContent").hide();
+        $('#divupcomingact').show();
+        $("#divgridview").show();
+        $('.export-dd').find('#ExportXls').show();
+        $('.export-dd').find('#ExportPDf').hide();
+    }
+});
