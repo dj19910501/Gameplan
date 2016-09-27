@@ -1748,8 +1748,12 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
 }
 }
 
-@media (max-width: 1279px) {
-body{overflow:auto}
+@media (max-width: 1280px) {
+    body {
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+    }
+
 .container-fluid {
 	min-width: 1280px !important;
 }

@@ -13418,22 +13418,22 @@ input.serach-input {
 
 
 /* =================== LIneitem Grid CSS in Ispect Window ========================= */
-#lineItemGrid .gridViewGrid.gridbox.gridbox_dhx_skyblue {
+#lineItemGrid.gridViewGrid.gridbox.gridbox_dhx_skyblue {
     width: 98% !important;
     background: #fff;
 }
 
-#lineItemGrid div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{
+#lineItemGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{
     text-align: center;
     padding-left: 0px !important;
 }
 
-#lineItemGrid div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
+#lineItemGrid.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
 #lineItemGrid div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
     width: 100% !important;
 }
 
-#lineItemGrid  div.gridbox_dhx_skyblue.gridbox table.hdr td {
+#lineItemGrid.gridbox_dhx_skyblue.gridbox table.hdr td {
     -moz-user-select: none;
 }
 
