@@ -488,7 +488,7 @@ namespace RevenuePlanner.Helpers
                 {
 
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
+                   // command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
                     command.Parameters.AddWithValue("@ImportData", dtNew);
                     command.Parameters.AddWithValue("@UserId", userId);
                     SqlDataAdapter adp = new SqlDataAdapter(command);
@@ -505,7 +505,7 @@ namespace RevenuePlanner.Helpers
                 return null;
             }
         }
-
+       
         public string GetColumnValue(string Query)
         {
             SqlConnection DbConn = new SqlConnection();
