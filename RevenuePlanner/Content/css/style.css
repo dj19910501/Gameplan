@@ -11043,18 +11043,7 @@ li.accordion-inner.close-list {
 	width: 22px;
 	cursor: pointer;
 }
-.task-tbl .grid_add {
-	background-image: none;
-	width: 22px;
-	cursor: pointer;
-}
-.task-tbl .grid_add .fa.fa-plus-circle {
-	color: #9c9fa0;
-	font-size: 18px;
-}
-.task-tbl .grid_add:hover .fa.fa-plus-circle {
-	color: #89CEDE;
-}
+
 .grid_add {
 	float: left; /*by bheru 03-12-2015 #1762*/
 }

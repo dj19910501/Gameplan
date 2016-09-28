@@ -18,7 +18,7 @@
 }
 <!-- Stylesheet Only For Homepage -->
 @section FilterEx{
-    <link href="~/Content/css/styleIndexPage.css" rel="stylesheet" />
+    <link href="~/Content/css/styleIndexPage_28.css" rel="stylesheet" />
 }
 
 @* Sidebar Section Start *@
@@ -50,7 +50,7 @@
     <div class="planheader-left">
         <div class="plan-header-grid">
             <div class="request-icon-block">
-                <a class="new-btn-plan-left" href="#" id="btngridcalendar" title="Calendar View">
+                <a class="new-btn-plan-left P-icon-active" href="#" id="btngridcalendar" title="Calendar View">
                     <i class="fa fa-calendar"></i>
                 </a>
                 <a id="btnbudget" title="Budget & Cost" class="new-btn-plan-right" href="#">
@@ -58,7 +58,7 @@
                 </a>
             </div>
             <div class="ix-icon-block">
-                <a id="ImportBtn" class="new-btn-plan-left P-icon-active" href="#" style="display:none" onclick="showModal();">
+                <a id="ImportBtn" class="new-btn-plan-left" href="#" style="display:none" onclick="showModal();">@* P-icon-active class removed by Bhumika *@
                     <i class="fa fa-sign-in" title="Import"></i><span>Import</span>
                 </a>
                 <a href="#" id="" class="new-btn-plan-right dropdown-toggle " data-toggle="dropdown">
@@ -226,8 +226,6 @@
     ///////
     var IsManageviewClick = false;
     var IsBudgetGrid = false;
-    var isCalendarView = false;
-
     var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
     var ExportSelectedIds = {
         TaskID: [],
@@ -242,7 +240,8 @@
         DhtmlxRowId: [],
         AnchorTacticId: [],
     };
-    var IsPackageView = false;  
+    var IsPackageView = false;
+    var isDisplayGridview = true;
 
     var filters = {
         parentCustomFieldsIds: [],
@@ -287,7 +286,92 @@
     $('.sidebar-toogle a').click(function () {
         $("#sidebar").toggleClass("slideLeft");
         $("#content_wraper").toggleClass("slideLeft");
-    })
+    });
+
+    // Added by Bhumika to resize Grid and calendar when sidebar hide - Code copied from Index-original.cshtml
+    $('.sidebar-toogle a').toggle(
+    function () {
+        ///new code
+        var ganttwidth = $("#gantt_here").width();
+        var totalWidth = ganttwidth - 230;
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            if ($('#IsGridView').val().toLowerCase() == "true") {
+                var ganttwidth = $("#gridbox").width();
+                var totalWidth = ganttwidth + 230;
+                ResizeGrid(totalWidth);
+            }
+        }
+        gantt._render_tasks_scales(totalWidth);
+        $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
+
+        $(".gantt_last_cell").dblclick(function (e) {
+            e.stopPropagation();
+        });
+
+        $(".gantt_last_cell").click(function (e) {
+            e.stopPropagation();
+        });
+
+
+        var $doc = $(document);
+        $doc.click(function () {
+            $('#popupType').css('display', 'none');
+        });
+
+        $(document).mouseup(function (e) {
+            $('#popupType').css("display", "none");
+        });
+        $(".gantt_ver_scroll").scroll(function () {
+            $('#popupType').css('display', 'none');
+        });
+
+        $('.gantt_hor_scroll').hide();
+
+        @*if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                var ganttwidth = $("#gridbox").width();
+                var totalWidth = ganttwidth + 230;
+                ResizeGrid(totalWidth);
+            }
+        }*@
+
+    }, function () {
+        ///new code
+        var ganttwidth = $("#gantt_here").width();
+        var totalWidth = ganttwidth - 230;
+        gantt._render_tasks_scales(totalWidth);
+
+        $('#gantt_hor_scroll').attr('style', 'Width: 1483px;');
+
+        $(".gantt_last_cell").dblclick(function (e) {
+            e.stopPropagation();
+        });
+
+        $(".gantt_last_cell").click(function (e) {
+            e.stopPropagation();
+        });
+        var $doc = $(document);
+        $doc.click(function () {
+            $('#popupType').css('display', 'none');
+        });
+
+        $(document).mouseup(function (e) {
+            $('#popupType').css("display", "none");
+        });
+        $(".gantt_ver_scroll").scroll(function () {
+            $('#popupType').css('display', 'none');
+        });
+
+        $('.gantt_hor_scroll').hide();
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
+                var ganttwidth = $("#gridbox").width();
+                var totalWidth = ganttwidth - 230;
+                ResizeGrid(totalWidth);
+            }
+        }
+    });
+
 
     $(document).ready(function () {
 
@@ -317,7 +401,7 @@
                     GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
                     GetMultiplePlanNames();
                     GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
-                    if (IsGridView) {
+                    if (isDisplayGridview) {
                         LoadPlanGrid();
                     }
                 }
