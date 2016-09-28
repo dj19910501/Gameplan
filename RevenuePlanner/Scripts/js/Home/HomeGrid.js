@@ -359,7 +359,7 @@ function LoadAfterParsing() {
         $(".grid_Search").off("click");
         $(".grid_Search").click(function (e) {
             inspectCloseFocus = $(this).position().top;
-            var id = $(this).parent().next().html();
+            var id = $(this).parent().prev().html();
             var type = $(this).attr('id');
             gridSearchFlag = 1;
             DisplayEditablePopup(id, type);
