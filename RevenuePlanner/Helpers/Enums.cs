@@ -1826,8 +1826,7 @@ namespace RevenuePlanner.Helpers
            {"AssetType","Tactic Category"},
            {"TacticType","Type"},
            {"Owner","Owner"},
-           {"TargetStageGoal","Target Stage Goal"},
-           {"Revenue","Revenue"}
+           {"TargetStageGoal","Target Stage Goal"}
        };
         //end
     }
