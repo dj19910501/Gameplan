@@ -1,4 +1,49 @@
 
+--#2557 finance integration 
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('INT.PullLineItemActuals'))
+	DROP PROCEDURE [INT].[PullLineItemActuals]
+GO
+
+CREATE PROCEDURE [INT].[PullLineItemActuals](@DataSource NVARCHAR(255), @ClientID INT, @UserID INT, @IntegrationInstanceID INT)
+AS
+BEGIN 
+	DECLARE @CustomQuery NVARCHAR(MAX)
+	DECLARE @Start DATETIME = GETDATE()
+		
+	--DELETE, UPDATE AND INSERT plan tactic actuals for stage title ProjectedStageValue which match with measure sfdc tactics	
+	SET @CustomQuery='
+
+		DELETE FROM Plan_Campaign_Program_Tactic_LineItem_Actual
+		WHERE PlanLineItemID IN (SELECT LineItemID FROM '+@DataSource+')
+		GO 
+
+		INSERT INTO Plan_Campaign_Program_Tactic_LineItem_Actual (PlanLineItemId, Period, Value, CreatedDate, CreatedBy)
+		SELECT V.LineItemID, [INT].Period(T.StartDate, V.Period), SUM(V.Amount), GETDATE(), ' +STR(@UserID)+ '
+		FROM '+@DataSource+' V JOIN Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemID = V.LineItemID 
+			JOIN Plan_Campaign_Program_Tactic T ON T.PlanTacticID = L.PlanTacticID
+		GROUP BY V.LineItemID, [INT].Period(T.StartDate, V.Period)
+		GO
+	'
+		BEGIN TRY 
+			--PRINT @CustomQuery;
+			EXEC (@CustomQuery)
+		END TRY 
+
+		BEGIN CATCH 
+			INSERT INTO [dbo].[IntegrationInstanceLog] ( 
+				   [IntegrationInstanceID]
+				  ,[SyncStart]
+				  ,[SyncEnd]
+				  ,[Status]
+				  ,[ErrorDescription]
+				  ,[CreatedDate]
+				  ,[CreatedBy]
+				  ,[IsAutoSync]) 
+			SELECT @IntegrationInstanceID, @Start, GETDATE(), 'ERROR' ,ERROR_MESSAGE(), GETDATE(), @UserID, 1  
+		END CATCH 
+
+END 
+
 /****** Object:  Table [dbo].[User_CoulmnView]    Script Date: 09/14/2016 1:40:07 PM ******/
 SET ANSI_NULLS ON
 GO
