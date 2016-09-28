@@ -67,8 +67,8 @@
         HomeGrid.setImageSize(1, 1);
         gridheader = '@Model.SetHeader';
         ColumnIds = '@Model.ColumnIds';
-         colType = '@Model.ColType';
-         colSorting = '@Model.ColSorting';
+        colType = '@Model.ColType';
+        colSorting = '@Model.ColSorting';
         budgetWidth = '@Model.Width';
         HomeGrid.setHeader('@Model.SetHeader');
         attachHeader = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader)';
@@ -79,8 +79,12 @@
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
         HomeGrid.setColumnIds('@Model.ColumnIds');
-        HomeGrid.enableAutoHeight(true);
+        HomeGrid.enableAutoHeight(false);
         HomeGrid.enableAutoWidth(false);
+
+        var TaskNameIndex = HomeGrid.getColIndexById("taskname");
+        HomeGrid.setColumnMinWidth("300", TaskNameIndex);
+
         HomeGrid.setEditable(true);
         HomeGrid.init();
         setTimeout(function () {
@@ -92,8 +96,11 @@
         var mainGridData = JsonModel;
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-        
+
         HomeGrid.parse(GridDataHomeGrid, "json");
+
+        var colSplitId = HomeGrid.getColIndexById("BudgetCost");
+        HomeGrid.splitAt(colSplitId);
 
         HomeGrid.attachEvent("onOpenEnd", function (id, state) {
             $(".grid_Search").off("click");
@@ -114,17 +121,13 @@
         HomeGrid.setColumnHidden(colTypeIndex, true);
         var ColumnsToView = '@Model.HiddenTab';
         var selectedTab = ColumnsToView.split(',');
-        for (var i = 0; i < selectedTab.length; i++)
-        {
+        for (var i = 0; i < selectedTab.length; i++) {
             var sTab = selectedTab[i];
-            if (sTab!='' && sTab!=null)
-            {
-                for (var j=0;j<HomeGrid.getColumnsNum();j++)
-                {
+            if (sTab != '' && sTab != null) {
+                for (var j = 0; j < HomeGrid.getColumnsNum() ; j++) {
                     var ColumnId = HomeGrid.getColumnId(j);
                     var YearlyTab = sTab + "Cost";
-                    if (ColumnId == sTab || ColumnId == YearlyTab)
-                    {
+                    if (ColumnId == sTab || ColumnId == YearlyTab) {
                         HomeGrid.setColumnHidden(j, true);
                     }
                 }
@@ -231,7 +234,6 @@
                 Value: SetValueByExchangeRate(YearCost.replace(/,/g, ""))
             });
         }
-
         var jsonInputs = JSON.stringify(inputArr);
         var URL;
         if (Tab.toLowerCase() == 'budget') {

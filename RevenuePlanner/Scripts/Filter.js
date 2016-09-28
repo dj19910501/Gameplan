@@ -1004,6 +1004,8 @@ function UpdateResult() {
         SaveLastSetofViews();
     }
     SavePresetValue = false;
+
+    BindViewSelections(urlContent + 'Home/GetViewBylistData');
 }
 
 function GetPlanIds() {

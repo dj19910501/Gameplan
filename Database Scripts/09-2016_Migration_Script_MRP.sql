@@ -131,120 +131,6 @@ BEGIN
 
 GO
 
-/* Start - Added by Arpita Soni for Ticket #2612 on 09/08/2016 */
-
--- DROP AND CREATE STORED PROCEDURE dbo.LineItem_Cost_Allocation
-IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'LineItem_Cost_Allocation') AND type IN ( N'P', N'PC' ) ) 
-BEGIN
-	DROP PROCEDURE dbo.LineItem_Cost_Allocation
-END
-GO
-
-CREATE PROCEDURE [dbo].[LineItem_Cost_Allocation]
-( 
-	@PlanTacticId INT,
-	@UserId INT
-)
-AS
-BEGIN
-
-	SELECT Id
-		,ActivityId
-		,ActivityName
-		,ActivityType
-		,ParentActivityId
-		,MainBudgeted
-		,IsOwner
-		,CreatedBy
-		,IsEditable
-		,Cost
-		,0 [Y1],0 [Y2],0 [Y3],0 [Y4],0 [Y5],0 [Y6],0 [Y7],0 [Y8],0 [Y9],0 [Y10],0 [Y11],0 [Y12],[CY1],[CY2],[CY3],[CY4],[CY5],[CY6],[CY7],[CY8],[CY9],[CY10],[CY11],[CY12]
-	
-		,ISNULL([CY1],0)+ISNULL([CY2],0)+ISNULL([CY3],0)+ISNULL([CY4],0)+ISNULL([CY5],0)+ISNULL([CY6],0)+ISNULL([CY7],0)+ISNULL([CY8],0)+ISNULL([CY9],0)+ISNULL([CY10],0)+ISNULL([CY11],0)+ISNULL([CY12],0) TotalBudgetSum
-		,ISNULL([Y1],0)+ISNULL([Y2],0)+ISNULL([Y3],0)+ISNULL([Y4],0)+ISNULL([Y5],0)+ISNULL([Y6],0)+ISNULL([Y7],0)+ISNULL([Y8],0)+ISNULL([Y9],0)+ISNULL([Y10],0)+ISNULL([Y11],0)+ISNULL([Y12],0)  TotalCostSum
-		,0 as LineItemTypeId 
-	FROM
-	(
-	  SELECT	 CAST(PT.PlanTacticId AS NVARCHAR(20)) Id
-			,'cpt_'+CAST(PT.PlanTacticId AS NVARCHAR(20)) ActivityId
-			,PT.Title AS ActivityName
-			,'tactic' ActivityType
-			,NULL ParentActivityId
-			,CASE WHEN PT.CreatedBy=@UserId THEN 1 ELSE 0 END IsOwner
-			,PT.TacticBudget AS MainBudgeted
-			,PT.CreatedBy 
-			,0 as IsEditable
-			,CASE WHEN PT.[Status] in ('Approved','In-Progress','Complete') THEN 1 ELSE 0 END IsAfterApproved
-			,PTB.Value
-			,PTB.Period
-			,PT.Cost
-			,'C'+PTCst.Period as CPeriod
-			,PTCst.Value as CValue
-	FROM 
-		Plan_Campaign_Program_Tactic PT
-		LEFT JOIN Plan_Campaign_Program_Tactic_LineItem PL ON PT.PlanTacticId = PL.PlanTacticId
-		LEFT JOIN Plan_Campaign_Program_Tactic_Budget PTB ON PT.PlanTacticId=PTB.PlanTacticId
-		LEFT JOIN Plan_Campaign_Program_Tactic_Cost PTCst ON PT.PlanTacticId=PTCst.PlanTacticId
-		WHERE PT.IsDeleted=0 and pl.PlanTacticId = @PlanTacticId
-	) Tactic_Main
-	pivot
-	(
-	  sum(value)
-	  for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
- 
-	) PlanCampaignProgramTacticDetails
-	Pivot
-	(
-	sum(CValue)
-	  for CPeriod in ([CY1], [CY2], [CY3], [CY4],[CY5], [CY6], [CY7], [CY8],[CY9], [CY10], [CY11], [CY12])
-	)PlanCampaignProgramTacticDetails1
-
-	UNION ALL
-
-	-- Calculate line item planned cost allocated by monthly/quarterly
-	SELECT Id,ActivityId
-	,ActivityName
-	,ActivityType
-	,ParentActivityId
-	,MainBudgeted
-	,IsOwner
-	,CreatedBy
-	,IsEditable
-	,Cost
-	,0 [Y1],0 [Y2],0 [Y3],0 [Y4],0 [Y5],0 [Y6],0 [Y7],0 [Y8],0 [Y9],0 [Y10],0 [Y11],0 [Y12],[CY1],[CY2],[CY3],[CY4],[CY5],[CY6],[CY7],[CY8],[CY9],[CY10],[CY11],[CY12]
-	,ISNULL([CY1],0)+ISNULL([CY2],0)+ISNULL([CY3],0)+ISNULL([CY4],0)+ISNULL([CY5],0)+ISNULL([CY6],0)+ISNULL([CY7],0)+ISNULL([CY8],0)+ISNULL([CY9],0)+ISNULL([CY10],0)+ISNULL([CY11],0)+ISNULL([CY12],0) TotalBudgetSum
-	,0 TotalCostSum 
-	,LineItemTypeId
-	FROM
-	(
-		SELECT 
-			CAST(PL.PlanLineItemId as NVARCHAR(20)) Id
-			,'cptl_'+CAST(PL.PlanLineItemId as NVARCHAR(20)) ActivityId
-			,PL.Title as ActivityName
-			,'lineitem' ActivityType
-			,'cpt_'+CAST(PL.PlanTacticId as NVARCHAR(25)) ParentActivityId
-			,PL.Cost
-			,0 MainBudgeted
-			,CASE WHEN PL.CreatedBy = @UserId THEN 1 ELSE 0 END IsOwner
-			,PL.CreatedBy
-			,0 as IsEditable
-			,PLC.Value
-			,'C'+PLC.period as period 
-			,PL.LineItemTypeId as LineItemTypeId
-		FROM Plan_Campaign_Program_Tactic_LineItem PL
-		LEFT JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PLC ON PL.PlanLineItemId = PLC.PlanLineItemId
-		WHERE PL.PlanTacticId IN (@PlanTacticId) AND PL.IsDeleted=0
-	) LineItem_Main
-	PIVOT
-	(
-		SUM (Value)
-		FOR Period IN ([CY1], [CY2], [CY3], [CY4],[CY5], [CY6], [CY7], [CY8],[CY9], [CY10], [CY11], [CY12])
-	) PivotLineItem
-END
-
-GO
-/* End - Added by Arpita Soni for Ticket #2612 on 09/08/2016 */
-
 /* Start- Added by Viral for Ticket #2571 on 09/13/2016 */
 
 /****** Object:  UserDefinedFunction [dbo].[fnGetEntitieHirarchyByPlanId]    Script Date: 09/13/2016 12:55:37 PM ******/
@@ -699,7 +585,381 @@ GO
 
 /* End- Added by Viral for Ticket #2571 on 09/13/2016 */
 
-Go
+/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 09/27/2016 11:54:13 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnViewByEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[fnViewByEntityHierarchy]
+GO
+/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 09/27/2016 11:54:13 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnViewByEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+BEGIN
+execute dbo.sp_executesql @statement = N'-- =============================================
+-- Author:		Viral
+-- Create date: 09/23/2016
+-- Description:	Create Function to return data based on view by value.
+-- =============================================
+CREATE FUNCTION [dbo].[fnViewByEntityHierarchy]
+(
+	@planIds varchar(max),
+	@ownerIds nvarchar(max),
+	@tactictypeIds varchar(max),
+	@statusIds varchar(max),
+	@ViewBy varchar(500)
+)
+RETURNS 
+@ResultEntities TABLE (
+			UniqueId		NVARCHAR(30), 
+			EntityId		BIGINT,
+			EntityTitle		NVARCHAR(1000),
+			ParentEntityId	BIGINT, 
+			ParentUniqueId	NVARCHAR(30),
+			EntityType		NVARCHAR(15), 
+			ColorCode		NVARCHAR(7),
+			[Status]		NVARCHAR(15), 
+			StartDate		DATETIME, 
+			EndDate			DATETIME, 
+			CreatedBy		INT,
+			AltId			NVARCHAR(500),
+			TaskId			NVARCHAR(500),
+			ParentTaskId	NVARCHAR(500),
+			PlanId			BIGINT,
+			ModelId			BIGINT
+		)
+AS
+BEGIN
+
+	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Tactic'')	
+	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Status'')
+	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Stage'')
+	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''TacticCustom71'')
+	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''ProgramCustom18'')
+	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''CampaignCustom3'')
+	
+	-- Declare Local variables
+	BEGIN
+			Declare @stage varchar(10)=''Stage''
+			Declare @ROIPackage varchar(20)=''ROIPackage''
+			Declare @Status varchar(20)=''Status''
+			Declare @custom varchar(50)=''Custom''
+			
+			Declare @entType varchar(50)
+			Declare @entTactic varchar(50)=''Tactic''
+			Declare @entProgram varchar(50)=''Program''
+			Declare @entCampaign varchar(50)=''Campaign''
+			Declare @entPlan varchar(50)=''Plan''
+			
+			Declare @custmEntityTypeId int 
+			Declare @custCampaign varchar(20)=''CampaignCustom''
+			Declare @custProgram varchar(20)=''ProgramCustom''
+			Declare @custTactic varchar(20)=''TacticCustom''
+			Declare @isCustom bit=''0''
+			
+			Declare @ResultViewByHierarchyEntities TABLE (
+						UniqueId		NVARCHAR(30), 
+						EntityId		BIGINT,
+						EntityTitle		NVARCHAR(1000),
+						ParentEntityId	BIGINT, 
+						ParentUniqueId	NVARCHAR(30),
+						EntityType		NVARCHAR(15), 
+						ColorCode		NVARCHAR(7),
+						[Status]		NVARCHAR(15), 
+						StartDate		DATETIME, 
+						EndDate			DATETIME, 
+						CreatedBy		INT,
+						AltId			NVARCHAR(500),
+						TaskId			NVARCHAR(500),
+						ParentTaskId	NVARCHAR(500),
+						PlanId			BIGINT,
+						ModelId			BIGINT,
+						ViewByTitle		NVARCHAR(500)
+					)
+			
+			
+			Declare @vwEntities TABLE (
+						UniqueId		NVARCHAR(30), 
+						EntityId		BIGINT,
+						EntityTitle		NVARCHAR(1000),
+						ParentEntityId	BIGINT, 
+						ParentUniqueId	NVARCHAR(30),
+						EntityType		NVARCHAR(15), 
+						ColorCode		NVARCHAR(7),
+						[Status]		NVARCHAR(15), 
+						StartDate		DATETIME, 
+						EndDate			DATETIME, 
+						CreatedBy		INT,
+						AltId			NVARCHAR(500),
+						TaskId			NVARCHAR(500),
+						ParentTaskId	NVARCHAR(500),
+						PlanId			BIGINT,
+						ModelId			BIGINT
+					)
+			
+					Declare @distViewByValues Table(
+					 ViewByTitle NVarchar(max),
+					 ViewById Varchar(max)
+					)
+							
+					Declare @tblEntityViewByMapping Table(
+						EntityId bigint,
+						ViewByValue Nvarchar(1000) 
+					)
+			
+	END
+			-- If Viewby is Tactic then return Filter result set table
+			IF(@ViewBy = @entTactic)
+			BEGIN
+				
+				INSERT Into @ResultEntities(
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)		
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId
+				FROM		fnGetFilterEntityHierarchy (@planIds,@ownerIds,@tactictypeIds,@statusIds)
+	
+				RETURN
+			END
+			ELSE
+			BEGIN
+				-- GET Data with applying required filter and insert into local table to re use for further process.
+				INSERT Into @vwEntities(
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)		
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId
+				FROM		fnGetFilterEntityHierarchy (@planIds,@ownerIds,@tactictypeIds,@statusIds)
+			END
+	
+	
+			-- Insert distinct ViewBy values of Tactics.
+			If(@ViewBy = @Status)
+			BEGIN
+				SET @entType = @entTactic	-- Prepared View by structure based on Tactic
+	
+				Insert Into @distViewByValues(ViewByTitle,ViewById) 
+				Select Distinct [Status],[Status] from @vwEntities where EntityType=@entType
+	
+				Insert Into @tblEntityViewByMapping(EntityId,ViewByValue)
+				Select Distinct EntityId,[Status] from @vwEntities where EntityType=@entType
+			END
+			
+			ELSE If(@ViewBy = @stage)
+			BEGIN
+				SET @entType = @entTactic	-- Prepared View by structure based on Tactic
+			
+			-- Insert Distict ViewBy values to local table to show 1st as parent record into Calendar or Grid.
+				Insert Into @distViewByValues(ViewByTitle,ViewById)
+				Select Distinct S.Title,Cast(S.StageId as varchar) from @vwEntities as H
+				Join Plan_Campaign_Program_Tactic as T on H.EntityId = T.PlanTacticId and EntityType=@entType
+				JOIN Stage as S on T.StageId = S.StageId and S.IsDeleted=''0''
+	
+				-- Insert Entity and ViewBy value mapping records to local table for further process.
+				Insert Into @tblEntityViewByMapping(EntityId,ViewByValue)
+				Select Distinct H.EntityId,Cast(S.StageId as varchar) from @vwEntities as H
+				Join Plan_Campaign_Program_Tactic as T on H.EntityId = T.PlanTacticId and EntityType=@entType
+				JOIN Stage as S on T.StageId = S.StageId and S.IsDeleted=''0''
+	
+			END
+			
+			ELSE If(@ViewBy = @ROIPackage)
+			Begin
+				SET @entType = @entTactic	-- Prepared View by structure based on Tactic
+	
+				-- Insert Distict ViewBy values to local table to show 1st as parent record into Calendar or Grid.
+				Insert Into @distViewByValues(ViewByTitle,ViewById)
+				Select Distinct H.EntityTitle,Cast(H.EntityId  as varchar(max)) FROM @vwEntities as H
+				JOIN ROI_PackageDetail as ROI ON H.EntityId = ROI.AnchorTacticID
+				WHERE H.EntityType=@entType
+	
+				-- Insert Entity and ViewBy value mapping records to local table for further process.
+				Insert Into @tblEntityViewByMapping(EntityId,ViewByValue)
+				Select Distinct H.EntityId,Cast(ROI.AnchorTacticID as varchar)  FROM @vwEntities as H
+				JOIN ROI_PackageDetail as ROI ON H.EntityId = ROI.AnchorTacticID
+				WHERE H.EntityType=@entType
+			END
+	
+			ELSE 
+			BEGIN
+				
+				-- Identify that view by custom value is Campaign type or not
+				IF EXISTS(SELECT 1 WHERE @ViewBy like ''%''+@custCampaign+''%'')
+				BEGIN
+					SET @entType = @entCampaign
+					SET @isCustom = ''1''
+					SET @custmEntityTypeId = REPLACE(@ViewBy,@custCampaign,'''')
+				END
+	
+				-- Identify that view by custom value is Program type or not
+				ELSE IF EXISTS(SELECT 1 WHERE @ViewBy like ''%''+@custProgram+''%'')
+				BEGIN
+					SET @entType = @entProgram
+					SET @isCustom = ''1''
+					SET @custmEntityTypeId = REPLACE(@ViewBy,@custProgram,'''')
+				END
+				
+				-- Identify that view by custom value is Tactic type or not
+				ELSE IF EXISTS(SELECT 1 WHERE @ViewBy like ''%''+@custTactic+''%'')
+				BEGIN
+					SET @entType = @entTactic
+					SET @isCustom = ''1''
+					SET @custmEntityTypeId = REPLACE(@ViewBy,@custTactic,'''')
+				END
+	
+				IF(@isCustom =''1'')	-- If View by selection is Customfield then 
+				BEGIN
+	
+					-- Insert Distict ViewBy values to local table to show 1st as parent record into Calendar or Grid.
+					Insert Into @distViewByValues(ViewByTitle,ViewById) 
+					Select Distinct CFO.Value,Cast(CFO.CustomFieldOptionId as varchar) from @vwEntities as H
+					JOIN CustomField_Entity as CE on H.EntityId = CE.EntityId and H.EntityType=@entType and CE.CustomFieldId=@custmEntityTypeId
+					JOIN CustomFieldOption as CFO on CE.CustomFieldId = CFO.CustomFieldId and CFO.CustomFieldOptionId=CE.Value and CFO.IsDeleted=''0''
+					where H.EntityType=@entType
+	
+					-- Insert Entity and ViewBy value mapping records to local table for further process.
+					Insert Into @tblEntityViewByMapping(EntityId,ViewByValue)
+					Select Distinct H.EntityId,Cast(CFO.CustomFieldOptionId as varchar) from @vwEntities as H
+					JOIN CustomField_Entity as CE on H.EntityId = CE.EntityId and H.EntityType=@entType and CE.CustomFieldId=@custmEntityTypeId
+					JOIN CustomFieldOption as CFO on CE.CustomFieldId = CFO.CustomFieldId and CFO.CustomFieldOptionId=CE.Value and CFO.IsDeleted=''0''
+					where H.EntityType=@entType
+				END
+			END
+	
+			
+			-- Insert Distinct view by values to Result set.
+			INSERT INTO @ResultViewByHierarchyEntities(
+						EntityTitle,[EntityType],ViewByTitle,TaskId)
+			SELECT		ViewByTitle,@ViewBy,ViewByTitle,''Z''+ViewById 
+			FROM		@distViewByValues
+	
+			-- Insert Entity(based on value @entType set) for all ViewBy
+			INSERT INTO @ResultViewByHierarchyEntities
+			SELECT		H.UniqueId ,H.EntityId ,H.EntityTitle ,H.ParentEntityId ,H.ParentUniqueId ,H.EntityType ,H.ColorCode,H.[Status],H.StartDate,H.EndDate,H.CreatedBy,H.AltId			
+						,''Z''+R.ViewByValue+''_''+H.TaskId		
+						,''Z''+R.ViewByValue+''_''+H.ParentTaskId
+						,H.PlanId ,H.ModelId ,R.ViewByValue
+			FROM		@distViewByValues as DV
+			JOIN		@tblEntityViewByMapping as R on DV.ViewById = R.ViewByValue
+			JOIN		@vwEntities as H on R.EntityId = H.EntityId and H.EntityType=@entType
+			
+	
+			-- Get Parent Hierarchy
+			BEGIN
+	
+				-- Get Distinct Entity(based on value @entType set) ParentEntityId by ViewBy value
+				Declare @prntEntityTable Table (
+					ParentUniqueId NVARCHAR(500),
+					ViewByTitle Nvarchar(max)
+				)
+	
+				-- Create ParentEntity distinct Unique ids into local table to create parent hierarchy
+				Insert Into @prntEntityTable(ParentUniqueId,ViewByTitle)
+				Select Distinct R.ParentUniqueId,R.ViewByTitle
+				FROM @ResultViewByHierarchyEntities as R
+				JOIN @distViewByValues as V on R.ViewByTitle  = V.ViewById and R.EntityType=@entType
+				Group By R.ViewByTitle,R.ParentUniqueId
+	
+				
+				;WITH prnt AS 
+				(
+						
+						(
+							SELECT	H.UniqueId ,H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId			
+									,''Z''+C.ViewByTitle+''_''+H.TaskId as TaskId
+									,''Z''+C.ViewByTitle+''_''+H.ParentTaskId as ParentTaskId
+									,H.PlanId, H.ModelId, C.ViewByTitle
+							FROM @vwEntities H
+							JOIN @prntEntityTable as C ON H.UniqueId = C.ParentUniqueId
+						
+						)
+	
+							UNION ALL 
+	
+						(
+							-- Get recursive parents data based
+							SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy ,H.AltId		
+									,''Z''+P.ViewByTitle+''_''+H.TaskId as TaskId
+									,''Z''+P.ViewByTitle+''_''+H.ParentTaskId as ParentTaskId
+									,H.PlanId, H.ModelId, P.ViewByTitle
+							FROM @vwEntities H
+							JOIN prnt as P ON H.UniqueId = P.ParentUniqueId
+							
+						)
+				
+				)
+				
+	
+				INSERT INTO @ResultViewByHierarchyEntities(
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle)
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle 
+				FROM		prnt
+			
+			END
+	
+			-- Get Child hierarchy data
+			BEGIN
+				IF(@isCustom =''1'')	-- Identify that view by is Custom field or not
+				BEGIN
+	
+					;WITH child AS 
+					(
+						(
+							-- Get Parent records from @ResultViewByHierarchyEntities to create child hierarchy data.
+							SELECT	UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle
+							FROM	@ResultViewByHierarchyEntities 
+							WHERE	EntityType=@entType
+						)
+							UNION ALL 
+	
+						(
+							-- Get recursive child data based on above parents query
+							SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId,
+									Cast(''Z''+C.ViewByTitle+''_''+H.TaskId as nvarchar(500))  as TaskId,
+									C.TaskId as ParentTaskId,
+									H.PlanId, H.ModelId, C.ViewByTitle
+							FROM	@vwEntities as H
+							JOIN	child C on C.UniqueId = H.ParentUniqueId
+						)
+					)
+					
+					--select * from child
+	
+					INSERT INTO @ResultViewByHierarchyEntities (
+								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle)
+					SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle 
+					FROM		child 
+					WHERE EntityType <> @entType
+				END
+				ELSE
+				BEGIN
+					INSERT INTO @ResultViewByHierarchyEntities (
+								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle)
+				
+					SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId,
+							''Z''+R.ViewByTitle+''_''+H.TaskId,
+							R.TaskId, H.PlanId, H.ModelId, R.ViewByTitle
+					FROM	@ResultViewByHierarchyEntities as R
+					JOIN	@vwEntities H on R.UniqueId  = H.ParentUniqueId and R.EntityType=@entType
+				END
+			END
+	
+			-- Update Plan ParentTaskId value
+			Update @ResultViewByHierarchyEntities set ParentTaskId = ''Z''+ViewByTitle 
+			WHERE	EntityType=@entPlan
+	
+			-- Insert data to result set.
+			Insert INTO @ResultEntities (
+						UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)
+			SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId
+			FROM		@ResultViewByHierarchyEntities
+	
+	
+		RETURN 
+END
+' 
+END
+
+GO
+
+
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPlanBudget]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetPlanBudget] AS' 
@@ -2494,14 +2754,15 @@ ALTER PROCEDURE [dbo].[spGetPlanCalendarData]
 	@tactictypeIds varchar(max),
 	@statusIds varchar(max),
 	@timeframe varchar(255)='',
-	@planYear varchar(255)=''
+	@planYear varchar(255)='',
+	@viewBy	varchar(1000)
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-	--Exec spGetPlanCalendarData '20220','104','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','thisyear','','',''
+	--Exec spGetPlanCalendarData '20220','104','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','thisyear','','Stage'
 	Declare @dblDash varchar(10)='--'
 
 	Declare @tblResult Table(
@@ -2541,6 +2802,12 @@ BEGIN
 				PlanId bigint
 			)
 
+	Declare @entTactic varchar(20)='Tactic'
+	Declare @entProgram varchar(20)='Program'
+	Declare @entCampaign varchar(20)='Campaign'
+	Declare @entPlan varchar(20)='Plan'
+	Declare @tacColorCode varchar(20)='317232'
+
 	-- GetPlanGanttStartEndDate
 	BEGIN
 		Declare @calStartDate datetime
@@ -2568,8 +2835,9 @@ BEGIN
 			PlanId			BIGINT
 		)
 
-	INSERT INTO @Entities
-	Select UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy,TaskId,ParentTaskId,PlanId from [dbo].fnGetFilterEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds)
+	INSERT INTO @Entities 
+	SELECT		UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy,TaskId,ParentTaskId,PlanId 
+	FROM		[dbo].fnViewByEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@viewBy)
 	
 	-- Get Plan wise MinStartEffective date from Improvement Tactic
 		BEGIN
@@ -2675,7 +2943,7 @@ BEGIN
 					END as 'LinkTacticPermission',
 					tac.LinkedTacticId as 'LinkedTacticId',
 					IsNull(P.Title,'') as 'LinkedPlanName',
-					'Tactic' as [type],
+					@entTactic as [type],
 					TP.AssetType as 'ROITacticType',
 					NULL as 'OwnerName',
 					RP.AnchorTacticID as 'IsAnchorTacticId',
@@ -2687,7 +2955,7 @@ BEGIN
 			LEFT JOIN TacticType as TP on tac.TacticTypeId = TP.TacticTypeId and TP.IsDeleted='0'
 			LEFT JOIN ROI_PackageDetail as RP on tac.PlanTacticId = RP.PlanTacticId 
 			LEFT JOIN  [Plan] as P on tac.LinkedPlanId = P.PlanId 
-			WHERE EntityType='Tactic' 
+			WHERE EntityType=@entTactic
 			AND (ent.EndDate >= @calStartDate AND ent.EndDate <= @calEndDate) AND (ent.StartDate >= @calStartDate AND ent.StartDate <= @calEndDate)
 			order by [text]
 		END
@@ -2736,7 +3004,6 @@ BEGIN
 			) as RT on tac.PlanTacticId = RT.AnchorTacticID
 		END
 
-		--select * from @tblTactics
 		--Exec spGetPlanCalendarData '20220','41F64F4B-531E-4CAA-8F5F-328E36D9B202','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','thisyear','','',''
 	END
 	
@@ -2806,10 +3073,10 @@ BEGIN
 					ent.[Status] as 'Status',
 					@dblDash as 'TacticType',
 					ent.CreatedBy as 'CreatedBy',
-					'Program' as [type],
+					@entProgram as [type],
 					ent.PlanId
 			FROM @Entities as ent
-			WHERE EntityType='Program' 
+			WHERE EntityType=@entProgram 
 			AND (ent.EndDate >= @calStartDate AND ent.EndDate <= @calEndDate) AND (ent.StartDate >= @calStartDate AND ent.StartDate <= @calEndDate)
 			order by [text]
 		END
@@ -2941,10 +3208,10 @@ BEGIN
 					ent.[Status] as 'Status',
 					@dblDash as 'TacticType',
 					ent.CreatedBy as 'CreatedBy',
-					'Campaign' as [type],
+					@entCampaign as [type],
 					ent.PlanId
 			FROM @Entities as ent
-			WHERE EntityType='Campaign' 
+			WHERE EntityType=@entCampaign 
 			AND (ent.EndDate >= @calStartDate AND ent.EndDate <= @calEndDate) AND (ent.StartDate >= @calStartDate AND ent.StartDate <= @calEndDate)
 			order by [text]
 		END
@@ -3065,10 +3332,10 @@ BEGIN
 					ent.[Status] as 'Status',
 					@dblDash as 'TacticType',
 					ent.CreatedBy as 'CreatedBy',
-					'Plan' as [type],
+					@entPlan as [type],
 					ent.PlanId
 			FROM @Entities as ent
-			WHERE ent.EntityType='Plan' 
+			WHERE ent.EntityType=@entPlan 
 			order by [text]
 			--AND (ent.EndDate >= @calStartDate AND ent.EndDate <= @calEndDate) AND (ent.StartDate >= @calStartDate AND ent.StartDate <= @calEndDate)
 		END
@@ -3143,19 +3410,79 @@ BEGIN
 										WHERE 1=1 
 		END
 		
-		--select * from @tblPlans
 		--Exec spGetPlanCalendarData '20220','41F64F4B-531E-4CAA-8F5F-328E36D9B202','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','thisyear','','',''
 	END
 
 	--INSERT INTO @tblResult
 
-	SELECT * FROM @tblPlans 
-	UNION ALL
-	SELECT * FROM @tblCampaigns 
-	UNION ALL
-	SELECT * FROM @tblPrograms 
-	UNION ALL
-	SELECT * FROM @tblTactics 
+	-- Check that ViewBy is not 'Tactic' type then set 1st most parent record fields values as Plan entity
+	IF(@viewBy <> @entTactic)
+	BEGIN
+		INSERT INTO @tblResult(id,[text],[start_date],duration,progress,color,colorcode)
+		SELECT	IsNull(E.TaskId,'') as id 
+				,IsNull(E.EntityTitle,'') as [text],
+				P.[start_date],
+				duration = P.duration,
+				progress = P.progress,
+				color=p.color,
+				colorcode=@tacColorCode		-- if ViewBy is not 'Tactic' then set parent node color code same as 'Tactic' entity color code.
+		FROM	@Entities as E
+		JOIN	@tblPlans as P on E.TaskId = P.parent
+		WHERE	E.EntityType = @viewBy
+	END
+
+	-- Prepared Final Result Set.
+	BEGIN
+
+		INSERT INTO @tblResult
+					(id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
+					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId)
+		(
+		SELECT		id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
+					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+		
+		FROM		@tblPlans
+		)
+		 
+		UNION ALL
+
+		(
+		SELECT		id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
+					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+		 
+		FROM		@tblCampaigns
+		)
+		 
+		UNION ALL
+		
+		(
+		SELECT		id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
+					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+
+		FROM		@tblPrograms 
+		)
+
+		UNION ALL
+
+		(
+		SELECT		id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
+					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+
+		FROM		@tblTactics 
+		)
+
+	END
+
+	SELECT	id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
+			,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
+			,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+
+	FROM	@tblResult
 
 	--Exec spGetPlanCalendarData '20220','41F64F4B-531E-4CAA-8F5F-328E36D9B202','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','thisyear','','',''
 END
@@ -4026,6 +4353,1999 @@ BEGIN
   END
   END
   Go
+
+  
+/* Start - Added by Arpita Soni for Ticket #2612 on 09/08/2016 */
+
+-- DROP AND CREATE STORED PROCEDURE [dbo].[LineItem_Cost_Allocation]
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'LineItem_Cost_Allocation') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[LineItem_Cost_Allocation]
+END
+GO
+
+-- [dbo].[LineItem_Cost_Allocation] 135912,470
+CREATE PROCEDURE [dbo].[LineItem_Cost_Allocation]
+( 
+	@PlanTacticId INT,
+	@UserId INT
+)
+AS
+BEGIN
+
+	-- Calculate tactic and line item planned cost allocated by monthly/quarterly
+	SELECT Id,ActivityId
+	,ActivityName
+	,ActivityType
+	,ParentActivityId
+	,CreatedBy
+	,IsEditable
+	,Cost
+	,[CY1],[CY2],[CY3],[CY4],[CY5],[CY6],[CY7],[CY8],[CY9],[CY10],[CY11],[CY12]
+	,LineItemTypeId
+	FROM
+	(
+		-- Tactic cost allocation
+		SELECT DISTINCT CAST(PT.PlanTacticId AS NVARCHAR(20)) Id
+			,'cpt_'+CAST(PT.PlanTacticId AS NVARCHAR(20)) ActivityId
+			,PT.Title AS ActivityName
+			,'tactic' ActivityType
+			,NULL ParentActivityId
+			,PT.CreatedBy 
+			,0 as IsEditable
+			,PT.Cost
+			,'C'+PTCst.Period as Period
+			,PTCst.Value as Value
+			,0 LineItemTypeId
+		FROM Plan_Campaign_Program_Tactic PT
+		LEFT JOIN Plan_Campaign_Program_Tactic_Cost PTCst ON PT.PlanTacticId=PTCst.PlanTacticId
+		WHERE PT.IsDeleted = 0 AND PT.PlanTacticId = @PlanTacticId
+
+		UNION ALL
+		-- Line item cost allocation
+		SELECT 
+			CAST(PL.PlanLineItemId as NVARCHAR(20)) Id
+			,'cptl_'+CAST(PL.PlanLineItemId as NVARCHAR(20)) ActivityId
+			,PL.Title as ActivityName
+			,'lineitem' ActivityType
+			,'cpt_'+CAST(PL.PlanTacticId as NVARCHAR(25)) ParentActivityId
+			,PL.CreatedBy
+			,0 as IsEditable
+			,PL.Cost
+			,'C'+PLC.period as period 
+			,PLC.Value
+			,PL.LineItemTypeId as LineItemTypeId
+		FROM Plan_Campaign_Program_Tactic_LineItem PL
+		LEFT JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PLC ON PL.PlanLineItemId = PLC.PlanLineItemId
+		WHERE PL.PlanTacticId = @PlanTacticId AND PL.IsDeleted=0
+
+	) TacticLineItems
+	PIVOT
+	(
+		SUM (Value)
+		FOR Period IN ([CY1], [CY2], [CY3], [CY4],[CY5], [CY6], [CY7], [CY8],[CY9], [CY10], [CY11], [CY12])
+	) PivotLineItem
+END
+GO
+--Insertation start #2623 import multiple plan
+--Check Table type is exist or not
+-- =============================================
+-- Author:		<Kausha>
+-- Create date: <27/09/2016>
+-- Description:	<Following is stroprocedure and table type for multiple plan import in budget>
+-- =============================================
+
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Plan_BudgetQuarterCalculation') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE dbo.Plan_BudgetQuarterCalculation
+END
+GO
+CREATE PROCEDURE [dbo].[Plan_BudgetQuarterCalculation]	
+	@EntityId INT,
+	@Quater INT,
+	@newValue FLOAT
+	AS
+	BEGIN
+	
+	DECLARE @FirstMonthofQuarter NVARCHAR(10);
+	DECLARE @Sum FLOAT;
+	DECLARE @SecondMonthofQuarter NVARCHAR(10);
+	DECLARE @ThirdMonthofQuarter NVARCHAR(10);
+	/*Following is calculation to get quarter value and onths of quarter*/
+			IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataPlan_Budget') AND type in (N'U'))
+			BEGIN
+				DROP TABLE #tempDataPlan_Budget
+			END 
+			SELECT * INTO #tempDataPlan_Budget FROM (SELECT * from Plan_Budget where PlanId=@EntityId) a 
+			IF(@Quater=1)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataPlan_Budget where Period in('Y1','Y2','Y3')	
+				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
+			END
+
+            ELSE IF(@Quater=2)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataPlan_Budget where Period in('Y4','Y5','Y6')		
+				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
+			END
+
+			ELSE IF(@Quater=3)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataPlan_Budget where Period in('Y7','Y8','Y9')
+				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
+			END
+
+			ELSE IF(@Quater=4)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataPlan_Budget where Period in('Y10','Y11','Y12')
+				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
+			END
+
+			
+	BEGIN
+	      /*Ex if Q1- if value is less then sum of (y1+y2+y3) then it will be deducted from y3->y2->y1 respectively */
+			DECLARE @RemainingAmount FLOAT=0;
+			DECLARE @DifferenceAmount FLOAT=@Sum-@newValue;			
+			DECLARE @UpdateValue FLOAT=0;
+			
+			IF EXISTS (SELECT * from #tempDataPlan_Budget WHERE PlanId = @EntityId AND Period = @ThirdMonthofQuarter)
+			BEGIN		
+				IF((SELECT Value from #tempDataPlan_Budget WHERE PlanId = @EntityId AND Period = @ThirdMonthofQuarter)>@DifferenceAmount)
+				BEGIN
+				UPDATE Plan_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanId = @EntityId AND Period = @ThirdMonthofQuarter
+				SET @UpdateValue=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue=value from Plan_Budget WHERE   PlanId = @EntityId AND Period = @ThirdMonthofQuarter;
+				UPDATE Plan_Budget  SET Value = 0     WHERE   PlanId = @EntityId AND Period = @ThirdMonthofQuarter				
+				END			
+			END
+		
+			IF(@UpdateValue<@DifferenceAmount)
+			BEGIN
+			IF EXISTS (SELECT * from #tempDataPlan_Budget WHERE PlanId = @EntityId AND Period = @SecondMonthofQuarter)
+			BEGIN
+				IF((SELECT Value from #tempDataPlan_Budget WHERE PlanId = @EntityId AND Period = @SecondMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
+				BEGIN
+				UPDATE Plan_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanId = @EntityId AND Period = @SecondMonthofQuarter
+				SET @UpdateValue+=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue+=value from Plan_Budget WHERE   PlanId = @EntityId AND Period = @SecondMonthofQuarter;
+				UPDATE Plan_Budget  SET Value = 0     WHERE   PlanId = @EntityId AND Period = @SecondMonthofQuarter				
+				END			
+			END
+			END		
+		  IF(@UpdateValue<@DifferenceAmount)
+			BEGIN
+			IF EXISTS (SELECT * from #tempDataPlan_Budget WHERE PlanId = @EntityId AND Period = @FirstMonthofQuarter)
+			BEGIN
+				IF((SELECT Value from #tempDataPlan_Budget WHERE PlanId = @EntityId AND Period = @FirstMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
+				BEGIN
+				UPDATE Plan_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanId = @EntityId AND Period = @FirstMonthofQuarter
+				SET @UpdateValue+=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue+=value from Plan_Budget WHERE   PlanId = @EntityId AND Period = @FirstMonthofQuarter;
+				UPDATE Plan_Budget  SET Value = 0     WHERE   PlanId = @EntityId AND Period = @FirstMonthofQuarter				
+				END			
+			END
+			END			
+
+			END
+
+			END
+						
+GO
+
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Plan_CampaignBudgetQuarterCalculation') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE dbo.Plan_CampaignBudgetQuarterCalculation
+END
+GO
+CREATE PROCEDURE [dbo].[Plan_CampaignBudgetQuarterCalculation]	
+	@EntityId INT,
+	@Quater INT,
+	@newValue FLOAT
+	AS
+	BEGIN
+	
+	DECLARE @FirstMonthofQuarter NVARCHAR(10);
+	DECLARE @Sum FLOAT;
+	DECLARE @SecondMonthofQuarter NVARCHAR(10);
+	DECLARE @ThirdMonthofQuarter NVARCHAR(10);
+
+			IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataCampaign') AND type in (N'U'))
+			BEGIN
+				DROP TABLE #tempDataCampaign
+			END 
+			SELECT * INTO #tempDataCampaign FROM (SELECT * from Plan_Campaign_Budget where PlanCampaignId=@EntityId) a 
+			IF(@Quater=1)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataCampaign where Period in('Y1','Y2','Y3')	
+				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
+			END
+
+            ELSE IF(@Quater=2)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataCampaign where Period in('Y4','Y5','Y6')		
+				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
+			END
+
+			ELSE IF(@Quater=3)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataCampaign where Period in('Y7','Y8','Y9')
+				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
+			END
+
+			ELSE IF(@Quater=4)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataCampaign where Period in('Y10','Y11','Y12')
+				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
+			END
+
+			
+	BEGIN
+
+			DECLARE @RemainingAmount FLOAT=0;
+			DECLARE @DifferenceAmount FLOAT=@Sum-@newValue;			
+			DECLARE @UpdateValue FLOAT=0;
+			
+			IF EXISTS (SELECT * from #tempDataCampaign WHERE PlanCampaignId = @EntityId AND Period = @ThirdMonthofQuarter)
+			BEGIN		
+				IF((SELECT Value from #tempDataCampaign WHERE PlanCampaignId = @EntityId AND Period = @ThirdMonthofQuarter)>@DifferenceAmount)
+				BEGIN
+				UPDATE Plan_Campaign_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanCampaignId = @EntityId AND Period = @ThirdMonthofQuarter
+				SET @UpdateValue=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue=value from Plan_Campaign_Budget WHERE   PlanCampaignId = @EntityId AND Period = @ThirdMonthofQuarter;
+				UPDATE Plan_Campaign_Budget  SET Value = 0     WHERE   PlanCampaignId = @EntityId AND Period = @ThirdMonthofQuarter				
+				END			
+			END
+			
+			IF(@UpdateValue<@DifferenceAmount)
+			BEGIN
+			IF EXISTS (SELECT * from #tempDataCampaign WHERE PlanCampaignId = @EntityId AND Period = @SecondMonthofQuarter)
+			BEGIN
+				IF((SELECT Value from #tempDataCampaign WHERE PlanCampaignId = @EntityId AND Period = @SecondMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
+				BEGIN
+				UPDATE Plan_Campaign_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanCampaignId = @EntityId AND Period = @SecondMonthofQuarter
+				SET @UpdateValue+=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue+=value from Plan_Campaign_Budget WHERE   PlanCampaignId = @EntityId AND Period = @SecondMonthofQuarter;
+				UPDATE Plan_Campaign_Budget  SET Value = 0     WHERE   PlanCampaignId = @EntityId AND Period = @SecondMonthofQuarter				
+				END			
+			END
+			END		
+		  IF(@UpdateValue<@DifferenceAmount)
+			BEGIN
+			IF EXISTS (SELECT * from #tempDataCampaign WHERE PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter)
+			BEGIN
+				IF((SELECT Value from #tempDataCampaign WHERE PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
+				BEGIN
+				UPDATE Plan_Campaign_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter
+				SET @UpdateValue+=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue+=value from Plan_Campaign_Budget WHERE   PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter;
+				UPDATE Plan_Campaign_Budget  SET Value = 0     WHERE   PlanCampaignId = @EntityId AND Period = @FirstMonthofQuarter				
+				END			
+			END
+			END			
+
+			END
+
+END
+GO
+
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Plan_Campaign_Program_BudgetQuarterCalculation') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE dbo.Plan_Campaign_Program_BudgetQuarterCalculation
+END
+GO
+CREATE PROCEDURE [dbo].[Plan_Campaign_Program_BudgetQuarterCalculation]	
+	@EntityId INT,
+	@Quater INT,
+	@newValue FLOAT
+	AS
+	BEGIN
+	
+	DECLARE @FirstMonthofQuarter NVARCHAR(10);
+	DECLARE @Sum FLOAT;
+	DECLARE @SecondMonthofQuarter NVARCHAR(10);
+	DECLARE @ThirdMonthofQuarter NVARCHAR(10);
+
+			IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataProgram') AND type in (N'U'))
+			BEGIN
+				DROP TABLE #tempDataProgram
+			END 
+			SELECT * INTO #tempDataProgram FROM (SELECT * from Plan_Campaign_Program_Budget where PlanProgramId=@EntityId) a 
+			IF(@Quater=1)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataProgram where Period in('Y1','Y2','Y3')	
+				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
+			END
+
+            ELSE IF(@Quater=2)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataProgram where Period in('Y4','Y5','Y6')		
+				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
+			END
+
+			ELSE IF(@Quater=3)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataProgram where Period in('Y7','Y8','Y9')
+				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
+			END
+
+			ELSE IF(@Quater=4)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataProgram where Period in('Y10','Y11','Y12')
+				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
+			END
+
+			
+	BEGIN
+
+			DECLARE @RemainingAmount FLOAT=0;
+			DECLARE @DifferenceAmount FLOAT=@Sum-@newValue;			
+			DECLARE @UpdateValue FLOAT=0;
+			
+			IF EXISTS (SELECT * from #tempDataProgram WHERE PlanProgramId = @EntityId AND Period = @ThirdMonthofQuarter)
+			BEGIN		
+				IF((SELECT Value from #tempDataProgram WHERE PlanProgramId = @EntityId AND Period = @ThirdMonthofQuarter)>@DifferenceAmount)
+				BEGIN
+				UPDATE Plan_Campaign_Program_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanProgramId = @EntityId AND Period = @ThirdMonthofQuarter
+				SET @UpdateValue=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue=value from Plan_Campaign_Program_Budget WHERE   PlanProgramId = @EntityId AND Period = @ThirdMonthofQuarter;
+				UPDATE Plan_Campaign_Program_Budget  SET Value = 0     WHERE   PlanProgramId = @EntityId AND Period = @ThirdMonthofQuarter				
+				END			
+			END
+			PRINT @UpdateValue
+			IF(@UpdateValue<@DifferenceAmount)
+			BEGIN
+			IF EXISTS (SELECT * from #tempDataProgram WHERE PlanProgramId = @EntityId AND Period = @SecondMonthofQuarter)
+			BEGIN
+				IF((SELECT Value from #tempDataProgram WHERE PlanProgramId = @EntityId AND Period = @SecondMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
+				BEGIN
+				UPDATE Plan_Campaign_Program_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanProgramId = @EntityId AND Period = @SecondMonthofQuarter
+				SET @UpdateValue+=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue+=value from Plan_Campaign_Program_Budget WHERE   PlanProgramId = @EntityId AND Period = @SecondMonthofQuarter;
+				UPDATE Plan_Campaign_Program_Budget  SET Value = 0     WHERE   PlanProgramId = @EntityId AND Period = @SecondMonthofQuarter				
+				END			
+			END
+			END		
+		  IF(@UpdateValue<@DifferenceAmount)
+			BEGIN
+			IF EXISTS (SELECT * from #tempDataProgram WHERE PlanProgramId = @EntityId AND Period = @FirstMonthofQuarter)
+			BEGIN
+				IF((SELECT Value from #tempDataProgram WHERE PlanProgramId = @EntityId AND Period = @FirstMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
+				BEGIN
+				UPDATE Plan_Campaign_Program_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanProgramId = @EntityId AND Period = @FirstMonthofQuarter
+				SET @UpdateValue+=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue+=value from Plan_Campaign_Program_Budget WHERE   PlanProgramId = @EntityId AND Period = @FirstMonthofQuarter;
+				UPDATE Plan_Campaign_Program_Budget  SET Value = 0     WHERE   PlanProgramId = @EntityId AND Period = @FirstMonthofQuarter				
+				END			
+		END
+		END			
+	END
+
+END
+
+GO
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalculation') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE dbo.Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalculation
+END
+GO
+CREATE PROCEDURE [dbo].[Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalculation]	
+	@EntityId INT,
+	@Quater INT,
+	@newValue FLOAT
+	AS
+	BEGIN
+	
+	DECLARE @FirstMonthofQuarter NVARCHAR(10);
+	DECLARE @Sum FLOAT;
+	DECLARE @SecondMonthofQuarter NVARCHAR(10);
+	DECLARE @ThirdMonthofQuarter NVARCHAR(10);
+
+			IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataTactic') AND type in (N'U'))
+			BEGIN
+				DROP TABLE #tempDataTactic
+			END 
+			SELECT * INTO #tempDataTactic FROM (SELECT * from Plan_Campaign_Program_Tactic_Budget where PlanTacticId=@EntityId) a 
+			IF(@Quater=1)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataTactic where Period in('Y1','Y2','Y3')	
+				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
+			END
+
+            ELSE IF(@Quater=2)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataTactic where Period in('Y4','Y5','Y6')		
+				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
+			END
+
+			ELSE IF(@Quater=3)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataTactic where Period in('Y7','Y8','Y9')
+				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
+			END
+
+			ELSE IF(@Quater=4)
+			BEGIN
+				SELECT @Sum=SUM(value) from #tempDataTactic where Period in('Y10','Y11','Y12')
+				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
+			END
+
+			
+	BEGIN
+
+			DECLARE @RemainingAmount FLOAT=0;
+			DECLARE @DifferenceAmount FLOAT=@Sum-@newValue;			
+			DECLARE @UpdateValue FLOAT=0;
+			
+			IF EXISTS (SELECT * from #tempDataTactic WHERE PlanTacticId = @EntityId AND Period = @ThirdMonthofQuarter)
+			BEGIN		
+				IF((SELECT Value from #tempDataTactic WHERE PlanTacticId = @EntityId AND Period = @ThirdMonthofQuarter)>@DifferenceAmount)
+				BEGIN
+				UPDATE Plan_Campaign_Program_Tactic_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanTacticId = @EntityId AND Period = @ThirdMonthofQuarter
+				SET @UpdateValue=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue=value from Plan_Campaign_Program_Tactic_Budget WHERE   PlanTacticId = @EntityId AND Period = @ThirdMonthofQuarter;
+				UPDATE Plan_Campaign_Program_Tactic_Budget  SET Value = 0     WHERE   PlanTacticId = @EntityId AND Period = @ThirdMonthofQuarter				
+				END			
+			END
+			PRINT @UpdateValue
+			IF(@UpdateValue<@DifferenceAmount)
+			BEGIN
+			IF EXISTS (SELECT * from #tempDataTactic WHERE PlanTacticId = @EntityId AND Period = @SecondMonthofQuarter)
+			BEGIN
+				IF((SELECT Value from #tempDataTactic WHERE PlanTacticId = @EntityId AND Period = @SecondMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
+				BEGIN
+				UPDATE Plan_Campaign_Program_Tactic_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanTacticId = @EntityId AND Period = @SecondMonthofQuarter
+				SET @UpdateValue+=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue+=value from Plan_Campaign_Program_Tactic_Budget WHERE   PlanTacticId = @EntityId AND Period = @SecondMonthofQuarter;
+				UPDATE Plan_Campaign_Program_Tactic_Budget  SET Value = 0     WHERE   PlanTacticId = @EntityId AND Period = @SecondMonthofQuarter				
+				END			
+			END
+			END		
+		  IF(@UpdateValue<@DifferenceAmount)
+			BEGIN
+			IF EXISTS (SELECT * from #tempDataTactic WHERE PlanTacticId = @EntityId AND Period = @FirstMonthofQuarter)
+			BEGIN
+				IF((SELECT Value from #tempDataTactic WHERE PlanTacticId = @EntityId AND Period = @FirstMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
+				BEGIN
+				UPDATE Plan_Campaign_Program_Tactic_Budget  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanTacticId = @EntityId AND Period = @FirstMonthofQuarter
+				SET @UpdateValue+=@DifferenceAmount;
+				END
+				ELSE
+				BEGIN
+				SELECT @UpdateValue+=value from Plan_Campaign_Program_Tactic_Budget WHERE   PlanTacticId = @EntityId AND Period = @FirstMonthofQuarter;
+				UPDATE Plan_Campaign_Program_Tactic_Budget  SET Value = 0     WHERE   PlanTacticId = @EntityId AND Period = @FirstMonthofQuarter				
+				END			
+			END
+		END			
+		END
+
+END
+
+Go
+
+IF  EXISTS (SELECT * FROM sys.types WHERE is_user_defined = 1 AND name = 'ImportExcelBudgetMonthData')
+BEGIN
+--if table type exist then check sp is exist or not then drop and create it after type creation
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_GetPlanBudgetDataMonthly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+
+	DROP PROCEDURE [dbo].[Sp_GetPlanBudgetDataMonthly] 
+END
+DROP TYPE ImportExcelBudgetMonthData;
+END
+go
+CREATE TYPE [dbo].[ImportExcelBudgetMonthData] AS TABLE(
+	[ActivityId] [int] NULL,
+	[TYPE] [nvarchar](255) NULL,
+	[Task Name] [nvarchar](3000) NULL,
+	[Budget] [float] NULL,
+	[JAN] [float] NULL,
+	[FEB] [float] NULL,
+	[MAR] [float] NULL,
+	[APR] [float] NULL,
+	[MAY] [float] NULL,
+	[JUN] [float] NULL,
+	[JUL] [float] NULL,
+	[AUG] [float] NULL,
+	[SEP] [float] NULL,
+	[OCT] [float] NULL,
+	[NOV] [float] NULL,
+	[DEC] [float] NULL
+)
+GO
+CREATE PROCEDURE [dbo].[Sp_GetPlanBudgetDataMonthly]  --17314
+--@PlanId int,
+@ImportData ImportExcelBudgetMonthData READONLY,
+@UserId INT
+--@ClientId INT
+AS
+BEGIN
+DECLARE @OutputTable TABLE (ActivityId INT,Type NVARCHAR(50),Name NVARCHAR(255))
+SELECT *
+INTO #Temp
+FROM (
+
+select ActivityId,[Task Name],'Plan' as ActivityType, Budget,Y1 AS JAN,Y2 AS FEB,Y3 AS MAR,Y4 AS APR,Y5 AS MAY,Y6 AS JUN, Y7 AS JUL, Y8 AS AUG, Y9 AS SEP, Y10 AS OCT, Y11 AS NOV, Y12 AS DEC from (
+select 
+Convert(varchar(max),[PlanId]) as ActivityId,REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Title, '&amp;', '&'), '&quot;', '"'), '&lt;', '<'), '&gt;', '>'), '&amp;amp;', '&') as [Task Name],CASE WHEN Budget IS NULL THEN '0' ELSE convert(varchar(max),Budget) END AS Budget
+,case when Y1 is null then 0 else Y1 end as Y1,case when Y2 is null then 0 else Y2 end as Y2,case when Y3 is null then 0 else Y3 end as Y3,case when Y4 is null then 0 else Y4 end as Y4,case when Y5 is null then 0 else Y5 end as Y5,case when Y6 is null then 0 else Y6 end as Y6,case when Y7 is null then 0 else Y7 end as Y7,case when Y8 is null then 0 else Y8 end as Y8,case when Y9 is null then 0 else Y9 end as Y9,case when Y10 is null then 0 else Y10 end as Y10,case when Y11 is null then 0 else Y11 end as Y11,case when Y12 is null then 0 else Y12 end as Y12
+from
+(
+    SELECT p.planid, value , period,Budget, p.Title
+  FROM  [Plan] p
+  left JOIN plan_budget pb on p.PlanId=pb.PlanId  
+  WHERE p.PlanId in( SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan')
+
+
+) d
+pivot
+(
+   sum(value)
+  for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
+) planDetails
+) as rPlan group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
+union 
+select ActivityId,[Task Name],'Campaign' as ActivityType,Budget,Y1 AS JAN,Y2 AS FEB,Y3 AS MAR,Y4 AS APR,Y5 AS MAY,Y6 AS JUN, Y7 AS JUL, Y8 AS AUG, Y9 AS SEP, Y10 AS OCT, Y11 AS NOV, Y12 AS DEC from (
+select Convert(varchar(max),[PlanCampaignId]) as ActivityId,REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Title, '&amp;', '&'), '&quot;', '"'), '&lt;', '<'), '&gt;', '>'), '&amp;amp;', '&') as [Task Name],CASE WHEN Budget IS NULL THEN '0' ELSE convert(varchar(max),Budget) END AS Budget
+,case when Y1 is null then 0 else Y1 end as Y1,case when Y2 is null then 0 else Y2 end as Y2,case when Y3 is null then 0 else Y3 end as Y3,case when Y4 is null then 0 else Y4 end as Y4,case when Y5 is null then 0 else Y5 end as Y5,case when Y6 is null then 0 else Y6 end as Y6,case when Y7 is null then 0 else Y7 end as Y7,case when Y8 is null then 0 else Y8 end as Y8,case when Y9 is null then 0 else Y9 end as Y9,case when Y10 is null then 0 else Y10 end as Y10,case when Y11 is null then 0 else Y11 end as Y11,case when Y12 is null then 0 else Y12 end as Y12
+from
+(
+ 
+  select pc.PlanCampaignId,value, period,CampaignBudget as Budget, pc.Title from Plan_Campaign pc
+  left join Plan_Campaign_Budget pcb on pc.planCampaignid = pcb.PlanCampaignId where pc.PlanId in(SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan') and IsDeleted = 0
+  
+)
+ e
+pivot
+(
+  sum(value)
+  for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
+) planCampaignDetails
+) as rPlanCampaign group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
+
+union
+select ActivityId,[Task Name],'Program' as ActivityType,Budget,Y1 AS JAN,Y2 AS FEB,Y3 AS MAR,Y4 AS APR,Y5 AS MAY,Y6 AS JUN, Y7 AS JUL, Y8 AS AUG, Y9 AS SEP, Y10 AS OCT, Y11 AS NOV, Y12 AS DEC from (
+select Convert(varchar(max),[PlanProgramId]) as ActivityId,REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Title, '&amp;', '&'), '&quot;', '"'), '&lt;', '<'), '&gt;', '>'), '&amp;amp;', '&') as [Task Name],CASE WHEN Budget IS NULL THEN '0' ELSE convert(varchar(max),Budget) END AS Budget
+,case when Y1 is null then 0 else Y1 end as Y1,case when Y2 is null then 0 else Y2 end as Y2,case when Y3 is null then 0 else Y3 end as Y3,case when Y4 is null then 0 else Y4 end as Y4,case when Y5 is null then 0 else Y5 end as Y5,case when Y6 is null then 0 else Y6 end as Y6,case when Y7 is null then 0 else Y7 end as Y7,case when Y8 is null then 0 else Y8 end as Y8,case when Y9 is null then 0 else Y9 end as Y9,case when Y10 is null then 0 else Y10 end as Y10,case when Y11 is null then 0 else Y11 end as Y11,case when Y12 is null then 0 else Y12 end as Y12
+from
+(
+ 
+ select t.PlanProgramId,t.Title,t.Budget,Value,Period from
+ (
+  select pc.PlanProgramId, pc.Title,ProgramBudget as Budget from Plan_Campaign_Program pc where IsDeleted=0 and PlanCampaignId in
+   ( select PlanCampaignId from Plan_Campaign where PlanId in(SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan') and IsDeleted=0) 
+  ) as t
+  left join Plan_Campaign_Program_Budget pcb on t.PlanProgramId= pcb.PlanProgramBudgetId 
+  
+) r
+pivot
+(
+  sum(value)
+  for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
+) PlanCampaignProgramDetails
+) as rPlanCampaignProgram group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
+union
+select ActivityId,[Task Name],'Tactic' as ActivityType,Budget,Y1 AS JAN,Y2 AS FEB,Y3 AS MAR,Y4 AS APR,Y5 AS MAY,Y6 AS JUN, Y7 AS JUL, Y8 AS AUG, Y9 AS SEP, Y10 AS OCT, Y11 AS NOV, Y12 AS DEC from (
+select Convert(varchar(max),[PlanTacticId]) as ActivityId,REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Title, '&amp;', '&'), '&quot;', '"'), '&lt;', '<'), '&gt;', '>'), '&amp;amp;', '&') as [Task Name],CASE WHEN Budget IS NULL THEN '0' ELSE convert(varchar(max),Budget) END AS Budget
+,case when Y1 is null then 0 else Y1 end as Y1,case when Y2 is null then 0 else Y2 end as Y2,case when Y3 is null then 0 else Y3 end as Y3,case when Y4 is null then 0 else Y4 end as Y4,case when Y5 is null then 0 else Y5 end as Y5,case when Y6 is null then 0 else Y6 end as Y6,case when Y7 is null then 0 else Y7 end as Y7,case when Y8 is null then 0 else Y8 end as Y8,case when Y9 is null then 0 else Y9 end as Y9,case when Y10 is null then 0 else Y10 end as Y10,case when Y11 is null then 0 else Y11 end as Y11,case when Y12 is null then 0 else Y12 end as Y12
+from
+(
+ 
+ select * from(
+select b.IsDeleted,b.PlanProgramId, b.PlanTacticId, Value,Period,b.Title,b.TacticBudget as Budget from Plan_Campaign_Program_Tactic_Budget as a 
+right join Plan_Campaign_Program_Tactic as b on a.PlanTacticId=b.PlanTacticId
+) as t
+where IsDeleted=0 and PlanProgramId in (select PlanProgramId from Plan_Campaign_Program where IsDeleted =0 and PlanCampaignId in ( select PlanCampaignId from Plan_Campaign where PlanId 
+in( SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan')
+ and IsDeleted=0)) 
+  
+) t
+pivot
+(
+  sum(value)
+  for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
+) PlanCampaignProgramTacticDetails
+) as rPlanCampaignProgramTactic group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
+
+
+) as ExistingData
+
+select * into #temp2 from (select * from @ImportData EXCEPT select ActivityId,ActivityType,[Task Name],Budget, JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC from #Temp)   k
+
+
+--select * from @ImportData EXCEPT select * from #Temp
+select * into #TempFinal from
+(select T1.ActivityId,T1.[Task Name],T1.Budget,T1.JAN,T1.FEB,T1.MAR,T1.APR,T1.MAY,T1.JUN,T1.JUL,T1.AUG,T1.SEP,T1.OCT,T1.NOV,T1.DEC, T2.ActivityType 
+from #temp2 AS T1 inner join #Temp AS T2 ON  T1.ActivityId = T2.ActivityId WHERE T2.ActivityType=t1.[TYPE])
+
+ TempInner
+
+Declare @Type varchar(10)
+Declare @EntityId int
+Declare @Title int
+Declare @cnt int =0
+declare @total int = (Select Count(*) From #TempFinal)
+While (@cnt<@total)
+Begin
+
+ set @Type = ( SELECT  ActivityType FROM #TempFinal
+                              ORDER BY ActivityId
+                              OFFSET @cnt ROWS
+                              FETCH NEXT 1 ROWS ONLY)
+
+ set @EntityId = (SELECT  ActivityId FROM #TempFinal
+                              ORDER BY ActivityId
+                              OFFSET @cnt ROWS
+                              FETCH NEXT 1 ROWS ONLY)
+
+ SELECT * into #TempDiffer from (SELECT  * FROM #TempFinal
+                              ORDER BY ActivityId
+                              OFFSET @cnt ROWS
+                              FETCH NEXT 1 ROWS ONLY) tempData
+
+
+	
+	--if (@EntityId = 17634)
+	--begin
+	--update [plan] set [version] = '555' where planid = 17634 
+	--end
+	
+	IF ( @Type='Plan')
+		BEGIN
+	
+		IF Exists (select top 1 PlanId from [Plan] where PlanId =  @EntityId)
+
+			BEGIN
+			
+			UPDATE P SET P.Budget = CASE WHEN T.Budget != '' THEN T.Budget ELSE P.Budget END
+			from [Plan] P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId
+
+
+			IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y1')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JAN != '' THEN T.JAN ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y1'
+				END
+		    ELSE
+				BEGIN
+					IF ((SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y1', (SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y2')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.FEB != '' THEN T.FEB ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y2'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y2', (SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y3')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.MAR != '' THEN T.MAR ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y3'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y3', (SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y4')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.APR != '' THEN T.APR ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y4'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT APR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y4', (SELECT APR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+
+
+			IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y5')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.MAY != '' THEN T.MAY ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y5'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y5', (SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y6')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JUN != '' THEN T.JUN ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y6'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y6', (SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y7')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JUL != '' THEN T.JUL ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y7'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y7', (SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y8')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.AUG != '' THEN T.AUG ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y8'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y8', (SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			
+			IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y9')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.SEP != '' THEN T.SEP ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y9'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y9', (SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			
+			IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y10')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.OCT != '' THEN T.OCT ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y10'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y10', (SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y11')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.NOV != '' THEN T.NOV ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y11'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y11', (SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Budget WHERE PlanId = @EntityId AND Period = 'Y12')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.DEC != '' THEN T.DEC ELSE P.Value END
+			from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y12'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Budget VALUES (@EntityId, 'Y12', (SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			END
+        ELSE
+		BEGIN
+		INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'') 
+		END
+
+
+		END
+		
+IF ( @Type='Campaign')
+		BEGIN
+		IF Exists (select top 1 PlanCampaignId from [Plan_Campaign] where PlanCampaignId =  @EntityId)
+			BEGIN
+
+			UPDATE P SET P.CampaignBudget = CASE WHEN T.Budget != '' THEN T.Budget ELSE P.CampaignBudget END
+			from [Plan_Campaign] P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId
+
+
+			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y1')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JAN != '' THEN T.JAN ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y1'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y1', (SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y2')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.FEB != '' THEN T.FEB ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y2'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y2', (SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y3')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.MAR != '' THEN T.MAR ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y3'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y3', (SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y4')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.APR != '' THEN T.APR ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y4'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT APR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y4', (SELECT APR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+
+
+			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y5')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.MAY != '' THEN T.MAY ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y5'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y5', (SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y6')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JUN != '' THEN T.JUN ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y6'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y6', (SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y7')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JUL != '' THEN T.JUL ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y7'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y7', (SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y8')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.AUG != '' THEN T.AUG ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y8'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y8', (SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			
+			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y9')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.SEP != '' THEN T.SEP ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y9'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y9', (SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			
+			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y10')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.OCT != '' THEN T.OCT ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y10'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y10', (SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y11')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.NOV != '' THEN T.NOV ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y11'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y11', (SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Budget WHERE PlanCampaignId = @EntityId AND Period = 'Y12')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.DEC != '' THEN T.DEC ELSE P.Value END
+			from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y12'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y12', (SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			END
+		ELSE
+		BEGIN
+			INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'') 
+		END
+
+
+		END
+
+IF ( @Type='Program')
+		BEGIN
+			IF Exists (select top 1 PlanProgramId from [Plan_Campaign_Program] where PlanProgramId =  @EntityId)
+			BEGIN
+
+			UPDATE P SET P.ProgramBudget = CASE WHEN T.Budget != '' THEN T.Budget ELSE P.ProgramBudget END
+			from [Plan_Campaign_Program] P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId
+
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y1')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JAN != '' THEN T.JAN ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y1'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y1', (SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y2')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.FEB != '' THEN T.FEB ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y2'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y2', (SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y3')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.MAR != '' THEN T.MAR ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y3'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y3', (SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y4')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.APR != '' THEN T.APR ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y4'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT APR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y4', (SELECT APR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y5')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.MAY != '' THEN T.MAY ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y5'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y5', (SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y6')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JUN != '' THEN T.JUN ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y6'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y6', (SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y7')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JUL != '' THEN T.JUL ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y7'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y7', (SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y8')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.AUG != '' THEN T.AUG ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y8'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y8', (SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y9')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.SEP != '' THEN T.SEP ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y9'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y9', (SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y10')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.OCT != '' THEN T.OCT ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y10'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y10', (SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y11')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.NOV != '' THEN T.NOV ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y11'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y11', (SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Budget WHERE PlanProgramId = @EntityId AND Period = 'Y12')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.DEC != '' THEN T.DEC ELSE P.Value END
+			from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y12'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y12', (SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			END
+
+	
+		END
+		 ELSE
+		BEGIN
+			INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'') 
+		END
+
+IF ( @Type='Tactic')
+		BEGIN
+	IF Exists (select top 1 PlanTacticId from [Plan_Campaign_Program_Tactic] where PlanTacticId =  @EntityId)
+			BEGIN
+
+			UPDATE P SET P.TacticBudget = CASE WHEN T.Budget != '' THEN T.Budget ELSE P.TacticBudget END
+			from [Plan_Campaign_Program_Tactic] P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId
+
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y1')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JAN != '' THEN T.JAN ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y1'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y1', (SELECT JAN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y2')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.FEB != '' THEN T.FEB ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y2'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y2', (SELECT FEB from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y3')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.MAR != '' THEN T.MAR ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y3'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y3', (SELECT MAR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y4')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.APR != '' THEN T.APR ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y4'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT APR from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y4', (SELECT APR from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y5')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.MAY != '' THEN T.MAY ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y5'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y5', (SELECT MAY from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y6')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JUN != '' THEN T.JUN ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y6'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y6', (SELECT JUN from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y7')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.JUL != '' THEN T.JUL ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y7'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y7', (SELECT JUL from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y8')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.AUG != '' THEN T.AUG ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y8'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y8', (SELECT AUG from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y9')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.SEP != '' THEN T.SEP ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y9'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y9', (SELECT SEP from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y10')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.OCT != '' THEN T.OCT ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y10'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y10', (SELECT OCT from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+				IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y11')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.NOV != '' THEN T.NOV ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y11'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y11', (SELECT NOV from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+
+			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId AND Period = 'Y12')
+				BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.DEC != '' THEN T.DEC ELSE P.Value END
+			from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y12'
+				END
+		    ELSE
+				BEGIN
+				IF ((SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y12', (SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId), GETDATE(),@UserId)
+					
+				END
+			END
+
+	 ELSE
+		BEGIN
+			INSERT INTO @OutputTable (ActivityId,[Type],Name) Values (@EntityId,@Type,'') 
+		END
+
+		END
+
+ set @cnt = @cnt + 1
+
+
+  DROP TABLE #TempDiffer
+
+End
+--select ActivityId from @ImportData  EXCEPT select ActivityId from #Temp
+--select * from @OutputTable
+select ActivityId from @ImportData  EXCEPT select ActivityId from #Temp
+
+END
+
+
+
+
+
+GO
+--Check Table type is exist or not
+IF  EXISTS (SELECT * FROM sys.types WHERE is_user_defined = 1 AND name = 'ImportExcelBudgetQuarterData')
+BEGIN
+--if table type exist then check sp is exist or not then drop and create it after type creation
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_GetPlanBudgetDataQuarterly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[Sp_GetPlanBudgetDataQuarterly] 
+END
+DROP TYPE ImportExcelBudgetQuarterData;
+
+END
+go
+CREATE TYPE [dbo].[ImportExcelBudgetQuarterData] AS TABLE(
+	[ActivityId] [int] NULL,
+	[Type] [nvarchar](255) NULL,
+	[Task Name] [nvarchar](3000) NULL,
+	[Budget] [float] NULL,
+	[Q1] [float] NULL,
+	[Q2] [float] NULL,
+	[Q3] [float] NULL,
+	[Q4] [float] NULL
+)
+GO
+CREATE PROCEDURE [dbo].[Sp_GetPlanBudgetDataQuarterly]  --17314
+--@PlanId int,
+@ImportData ImportExcelBudgetQuarterData READONLY,
+@UserId INT 
+--@ClientId INT
+AS
+BEGIN
+
+SELECT *
+INTO #Temp
+FROM (
+
+select ActivityId,[Task Name],'Plan' as ActivityType, Budget,Sum(Y1+Y2+Y3) AS Q1,Sum(Y4+Y5+Y6) AS Q2,Sum(Y7+Y8+Y9) AS Q3,Sum(Y10+Y11+Y12) AS Q4 from (
+select 
+Convert(varchar(max),[PlanId]) as ActivityId,REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Title, '&amp;', '&'), '&quot;', '"'), '&lt;', '<'), '&gt;', '>'), '&amp;amp;', '&') as [Task Name],CASE WHEN Budget IS NULL THEN '0' ELSE convert(varchar(max),Budget) END AS Budget
+,case when Y1 is null then 0 else Y1 end as Y1,case when Y2 is null then 0 else Y2 end as Y2,case when Y3 is null then 0 else Y3 end as Y3,case when Y4 is null then 0 else Y4 end as Y4,case when Y5 is null then 0 else Y5 end as Y5,case when Y6 is null then 0 else Y6 end as Y6,case when Y7 is null then 0 else Y7 end as Y7,case when Y8 is null then 0 else Y8 end as Y8,case when Y9 is null then 0 else Y9 end as Y9,case when Y10 is null then 0 else Y10 end as Y10,case when Y11 is null then 0 else Y11 end as Y11,case when Y12 is null then 0 else Y12 end as Y12
+from
+(
+  SELECT p.planid, value , period,Budget, p.Title
+  FROM  [Plan] p
+  left JOIN plan_budget pb on p.PlanId=pb.PlanId
+  
+   WHERE p.PlanId in( SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan')
+) d
+pivot
+(
+   sum(value)
+  for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
+) planDetails
+) as rPlan group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
+union 
+select ActivityId,[Task Name],'Campaign' as ActivityType,Budget,Sum(Y1+Y2+Y3) AS Q1,Sum(Y4+Y5+Y6) AS Q2,Sum(Y7+Y8+Y9) AS Q3,Sum(Y10+Y11+Y12) AS Q4 from (
+select Convert(varchar(max),[PlanCampaignId]) as ActivityId,REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Title, '&amp;', '&'), '&quot;', '"'), '&lt;', '<'), '&gt;', '>'), '&amp;amp;', '&') as [Task Name],CASE WHEN Budget IS NULL THEN '0' ELSE convert(varchar(max),Budget) END AS Budget
+,case when Y1 is null then 0 else Y1 end as Y1,case when Y2 is null then 0 else Y2 end as Y2,case when Y3 is null then 0 else Y3 end as Y3,case when Y4 is null then 0 else Y4 end as Y4,case when Y5 is null then 0 else Y5 end as Y5,case when Y6 is null then 0 else Y6 end as Y6,case when Y7 is null then 0 else Y7 end as Y7,case when Y8 is null then 0 else Y8 end as Y8,case when Y9 is null then 0 else Y9 end as Y9,case when Y10 is null then 0 else Y10 end as Y10,case when Y11 is null then 0 else Y11 end as Y11,case when Y12 is null then 0 else Y12 end as Y12
+from
+(
+ 
+  select pc.PlanCampaignId,value, period,CampaignBudget as Budget, pc.Title from Plan_Campaign pc
+  left join Plan_Campaign_Budget pcb on pc.planCampaignid = pcb.PlanCampaignId where pc.PlanId in(
+SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan') and IsDeleted = 0
+  
+) e
+pivot
+(
+  sum(value)
+  for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
+) planCampaignDetails
+) as rPlanCampaign group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
+
+union
+select ActivityId,[Task Name],'Program' as ActivityType,Budget,Sum(Y1+Y2+Y3) AS Q1,Sum(Y4+Y5+Y6) AS Q2,Sum(Y7+Y8+Y9) AS Q3,Sum(Y10+Y11+Y12) AS Q4 from (
+select Convert(varchar(max),[PlanProgramId]) as ActivityId,REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Title, '&amp;', '&'), '&quot;', '"'), '&lt;', '<'), '&gt;', '>'), '&amp;amp;', '&') as [Task Name],CASE WHEN Budget IS NULL THEN '0' ELSE convert(varchar(max),Budget) END AS Budget
+,case when Y1 is null then 0 else Y1 end as Y1,case when Y2 is null then 0 else Y2 end as Y2,case when Y3 is null then 0 else Y3 end as Y3,case when Y4 is null then 0 else Y4 end as Y4,case when Y5 is null then 0 else Y5 end as Y5,case when Y6 is null then 0 else Y6 end as Y6,case when Y7 is null then 0 else Y7 end as Y7,case when Y8 is null then 0 else Y8 end as Y8,case when Y9 is null then 0 else Y9 end as Y9,case when Y10 is null then 0 else Y10 end as Y10,case when Y11 is null then 0 else Y11 end as Y11,case when Y12 is null then 0 else Y12 end as Y12
+from
+(
+ 
+ select t.PlanProgramId,t.Title,t.Budget,Value,Period from
+ (
+  select pc.PlanProgramId, pc.Title,ProgramBudget as Budget from Plan_Campaign_Program pc where IsDeleted=0 and PlanCampaignId in
+   ( select PlanCampaignId from Plan_Campaign where PlanId in( 
+ SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan') and IsDeleted=0) 
+  ) as t
+  left join Plan_Campaign_Program_Budget pcb on t.PlanProgramId= pcb.PlanProgramBudgetId 
+  
+) r
+pivot
+(
+  sum(value)
+  for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
+) PlanCampaignProgramDetails
+) as rPlanCampaignProgram group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
+union
+select ActivityId,[Task Name],'Tactic' as ActivityType,Budget,Sum(Y1+Y2+Y3) AS Q1,Sum(Y4+Y5+Y6) AS Q2,Sum(Y7+Y8+Y9) AS Q3,Sum(Y10+Y11+Y12) AS Q4 from (
+select Convert(varchar(max),[PlanTacticId]) as ActivityId,REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Title, '&amp;', '&'), '&quot;', '"'), '&lt;', '<'), '&gt;', '>'), '&amp;amp;', '&') as [Task Name],CASE WHEN Budget IS NULL THEN '0' ELSE convert(varchar(max),Budget) END AS Budget
+,case when Y1 is null then 0 else Y1 end as Y1,case when Y2 is null then 0 else Y2 end as Y2,case when Y3 is null then 0 else Y3 end as Y3,case when Y4 is null then 0 else Y4 end as Y4,case when Y5 is null then 0 else Y5 end as Y5,case when Y6 is null then 0 else Y6 end as Y6,case when Y7 is null then 0 else Y7 end as Y7,case when Y8 is null then 0 else Y8 end as Y8,case when Y9 is null then 0 else Y9 end as Y9,case when Y10 is null then 0 else Y10 end as Y10,case when Y11 is null then 0 else Y11 end as Y11,case when Y12 is null then 0 else Y12 end as Y12
+from
+(
+ 
+ select * from(
+select b.IsDeleted,b.PlanProgramId, b.PlanTacticId, Value,Period,b.Title,b.TacticBudget as Budget from Plan_Campaign_Program_Tactic_Budget as a 
+right join Plan_Campaign_Program_Tactic as b on a.PlanTacticId=b.PlanTacticId
+) as t
+where IsDeleted=0 and PlanProgramId in (select PlanProgramId from Plan_Campaign_Program where IsDeleted =0 and PlanCampaignId in ( select PlanCampaignId from Plan_Campaign where PlanId
+in( 
+SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan'
+
+)
+and IsDeleted=0)) 
+  
+) t
+pivot
+(
+  sum(value)
+  for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
+) PlanCampaignProgramTacticDetails
+) as rPlanCampaignProgramTactic group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
+
+
+) as ExistingData
+
+
+
+select * into #temp2 from (select * from @ImportData EXCEPT select ActivityId,ActivityType,[Task Name],Budget, Q1,Q2,Q3,Q4 from #Temp)   k
+
+
+--select * from @ImportData EXCEPT select * from #Temp
+select * into #TempFinal from
+(select T1.ActivityId,T1.[Task Name],T1.Budget,T1.Q1,T1.Q2,T1.Q3,T1.Q4,T2.ActivityType from #temp2 AS T1 inner join #Temp AS T2 ON  T1.ActivityId = T2.ActivityId WHERE T2.ActivityType=t1.[TYPE]) TempInner
+
+Declare @Type varchar(10)
+Declare @EntityId int
+Declare @Title int
+Declare @cnt int =0
+declare @total int = (Select Count(*) From #TempFinal)
+While (@cnt<@total)
+Begin
+
+ set @Type = ( SELECT  ActivityType FROM #TempFinal
+                              ORDER BY ActivityId
+                              OFFSET @cnt ROWS
+                              FETCH NEXT 1 ROWS ONLY)
+
+ set @EntityId = (SELECT  ActivityId FROM #TempFinal
+                              ORDER BY ActivityId
+                              OFFSET @cnt ROWS
+                              FETCH NEXT 1 ROWS ONLY)
+
+ SELECT * into #TempDiffer from (SELECT  * FROM #TempFinal
+                              ORDER BY ActivityId
+                              OFFSET @cnt ROWS
+                              FETCH NEXT 1 ROWS ONLY) tempData
+Declare @Sum float;	DECLARE @newValue FLOAT;
+	IF ( @Type='Plan')
+		BEGIN
+		IF Exists (select top 1 PlanId from [Plan] where PlanId =  @EntityId)
+			BEGIN
+
+
+			UPDATE P SET P.Budget = CASE WHEN T.Budget != '' THEN T.Budget ELSE P.Budget END
+			from [Plan] P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId
+
+			--get data for that specific plan
+
+			IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataFinal') AND type in (N'U'))
+			BEGIN
+				DROP TABLE #tempDataFinal
+			END 
+			SELECT * INTO #tempDataFinal FROM (SELECT * from Plan_Budget where PlanId=@EntityId) a 
+
+
+			
+			SELECT @Sum=SUM(value) from #tempDataFinal where Period in('Y1','Y2','Y3')		
+			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId
+			--start kausha 
+			IF(@newValue!='')
+			BEGIN
+
+			if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinal WHERE PlanId = @EntityId AND Period = 'Y1')
+						BEGIN
+							UPDATE P SET P.Value = CASE WHEN T.Q1 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+							from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y1'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+							INSERT INTO Plan_Budget VALUES (@EntityId, 'Y1',@newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+			END
+			ELSE
+
+			BEGIN
+			EXEC Plan_BudgetQuarterCalculation @EntityId,1,@newValue			
+			END
+			
+
+			SELECT @Sum=SUM(value) from #tempDataFinal where Period in('Y4','Y5','Y6')		
+			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinal WHERE PlanId = @EntityId AND Period = 'Y4')
+						BEGIN
+							UPDATE P SET P.Value = CASE WHEN T.Q2 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+							from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y4'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+							INSERT INTO Plan_Budget VALUES (@EntityId, 'Y4',@newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+				 ELSE
+				 BEGIN
+					EXEC Plan_BudgetQuarterCalculation @EntityId,2,@newValue			
+				END
+			END		
+
+				SELECT @Sum=SUM(value) from #tempDataFinal where Period in('Y7','Y8','Y9')		
+			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinal WHERE PlanId = @EntityId AND Period = 'Y7')
+						BEGIN
+							UPDATE P SET P.Value = CASE WHEN T.Q3 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+							from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y7'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+							INSERT INTO Plan_Budget VALUES (@EntityId, 'Y7',@newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+				  ELSE
+				 BEGIN
+					EXEC Plan_BudgetQuarterCalculation @EntityId,3,@newValue			
+				END
+			END
+
+		
+			SELECT @Sum=SUM(value) from #tempDataFinal where Period in('Y10','Y11','Y12')		
+			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinal WHERE PlanId = @EntityId AND Period = 'Y10')
+						BEGIN
+							UPDATE P SET P.Value = CASE WHEN T.Q4 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+							from Plan_Budget P INNER JOIN #TempDiffer T on P.PlanId = T.ActivityId WHERE P.PlanId = @EntityId AND Period = 'Y10'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+							INSERT INTO Plan_Budget VALUES (@EntityId, 'Y10',@newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+				  ELSE
+				 BEGIN
+					EXEC Plan_BudgetQuarterCalculation @EntityId,4,@newValue			
+				END
+			END
+
+			END
+
+
+
+		END
+		
+IF ( @Type='Campaign')
+		BEGIN
+		IF Exists (select top 1 PlanCampaignId from Plan_Campaign where PlanCampaignId =  @EntityId)
+			BEGIN
+
+			UPDATE P SET P.CampaignBudget = CASE WHEN T.Budget != '' THEN T.Budget ELSE P.CampaignBudget END
+			from [Plan_Campaign] P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId
+
+			IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataFinalCampaign') AND type in (N'U'))
+			BEGIN
+				DROP TABLE #tempDataFinalCampaign
+			END 
+			SELECT * INTO #tempDataFinalCampaign FROM (SELECT * from Plan_Campaign_Budget where PlanCampaignId=@EntityId) a 
+
+
+
+			SELECT @Sum=SUM(value) from #tempDataFinalCampaign where Period in('Y1','Y2','Y3')		
+			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalCampaign WHERE PlanCampaignId = @EntityId AND Period = 'Y1')
+						BEGIN
+							UPDATE P SET P.Value =  CASE WHEN T.Q1 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			       from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y1'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+			             INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y1', @newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+				 ELSE
+					BEGIN
+					EXEC Plan_CampaignBudgetQuarterCalculation @EntityId,1,@newValue			
+				END
+			END
+
+			SELECT @Sum=SUM(value) from #tempDataFinalCampaign where Period in('Y4','Y5','Y6')		
+			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalCampaign WHERE PlanCampaignId = @EntityId AND Period = 'Y4')
+						BEGIN
+							UPDATE P SET P.Value =  CASE WHEN T.Q2 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			       from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y4'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+			             INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y4', @newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+				 BEGIN
+					EXEC Plan_CampaignBudgetQuarterCalculation @EntityId,2,@newValue			
+				END
+			END
+
+		
+			SELECT @Sum=SUM(value) from #tempDataFinalCampaign where Period in('Y7','Y8','Y9')		
+			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalCampaign WHERE PlanCampaignId = @EntityId AND Period = 'Y7')
+						BEGIN
+							UPDATE P SET P.Value =  CASE WHEN T.Q3 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			       from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y7'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+			             INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y7', @newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+
+				 BEGIN
+					EXEC Plan_CampaignBudgetQuarterCalculation @EntityId,3,@newValue			
+				END
+			END
+
+			SELECT @Sum=SUM(value) from #tempDataFinalCampaign where Period in('Y10','Y11','Y12')		
+			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalCampaign WHERE PlanCampaignId = @EntityId AND Period = 'Y10')
+						BEGIN
+							UPDATE P SET P.Value =  CASE WHEN T.Q4 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			       from Plan_Campaign_Budget P INNER JOIN #TempDiffer T on P.PlanCampaignId = T.ActivityId WHERE P.PlanCampaignId = @EntityId AND Period = 'Y10'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+			             INSERT INTO Plan_Campaign_Budget VALUES (@EntityId, 'Y10', @newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+				 BEGIN
+					EXEC Plan_CampaignBudgetQuarterCalculation @EntityId,4,@newValue			
+				END
+			END
+		
+
+			END
+
+
+
+		END
+
+IF ( @Type='Program')
+		BEGIN
+		IF Exists (select top 1 PlanProgramId from Plan_Campaign_Program where PlanProgramId =  @EntityId)
+			BEGIN
+
+			UPDATE P SET P.ProgramBudget = CASE WHEN T.Budget != '' THEN T.Budget ELSE P.ProgramBudget END 
+			from [Plan_Campaign_Program] P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId
+
+
+
+			IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataFinalProgram') AND type in (N'U'))
+			BEGIN
+				DROP TABLE #tempDataFinalProgram
+			END 
+			SELECT * INTO #tempDataFinalProgram FROM (SELECT * from Plan_Campaign_Program_Budget where PlanProgramId=@EntityId) a 
+
+
+
+			SELECT @Sum=SUM(value) from #tempDataFinalProgram where Period in('Y1','Y2','Y3')		
+			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalProgram WHERE PlanProgramId = @EntityId AND Period = 'Y1')
+						BEGIN
+						UPDATE P SET P.Value = CASE WHEN T.Q1 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			      from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y1'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y1', @newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+				  ELSE
+					BEGIN
+					EXEC Plan_Campaign_Program_BudgetQuarterCalculation @EntityId,1,@newValue			
+				END
+			END
+
+				SELECT @Sum=SUM(value) from #tempDataFinalProgram where Period in('Y4','Y5','Y6')		
+			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalProgram WHERE PlanProgramId = @EntityId AND Period = 'Y4')
+						BEGIN
+						UPDATE P SET P.Value = CASE WHEN T.Q2 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			      from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y4'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y4', @newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+
+				   ELSE
+					BEGIN
+					EXEC Plan_Campaign_Program_BudgetQuarterCalculation @EntityId,2,@newValue			
+				END
+			END
+		
+				SELECT @Sum=SUM(value) from #tempDataFinalProgram where Period in('Y7','Y8','Y9')		
+			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalProgram WHERE PlanProgramId = @EntityId AND Period = 'Y7')
+						BEGIN
+						UPDATE P SET P.Value = CASE WHEN T.Q3 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			      from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y7'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y7', @newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+
+				   ELSE
+					BEGIN
+					EXEC Plan_Campaign_Program_BudgetQuarterCalculation @EntityId,3,@newValue			
+				END
+			END
+		
+				SELECT @Sum=SUM(value) from #tempDataFinalProgram where Period in('Y10','Y11','Y12')		
+			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalProgram WHERE PlanProgramId = @EntityId AND Period = 'Y10')
+						BEGIN
+						UPDATE P SET P.Value = CASE WHEN T.Q4 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			      from Plan_Campaign_Program_Budget P INNER JOIN #TempDiffer T on P.PlanProgramId = T.ActivityId WHERE P.PlanProgramId = @EntityId AND Period = 'Y10'
+						END
+					ELSE
+						BEGIN
+						IF ((SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Budget VALUES (@EntityId, 'Y10', @newValue-@Sum, GETDATE(),@UserId)
+					
+						END
+		         END
+
+				   ELSE
+					BEGIN
+					EXEC Plan_Campaign_Program_BudgetQuarterCalculation @EntityId,4,@newValue			
+				END
+			END
+		
+			END
+
+
+
+		END
+
+IF ( @Type='Tactic')
+		BEGIN
+		IF Exists (select top 1 PlanTacticId from Plan_Campaign_Program_Tactic where PlanTacticId =  @EntityId)
+			BEGIN
+
+			UPDATE P SET P.TacticBudget = CASE WHEN T.Budget != '' THEN T.Budget ELSE P.TacticBudget END
+			from [Plan_Campaign_Program_Tactic] P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId
+
+
+				IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataFinalTactic') AND type in (N'U'))
+			BEGIN
+				DROP TABLE #tempDataFinalTactic
+			END 
+			SELECT * INTO #tempDataFinalTactic FROM (SELECT * from Plan_Campaign_Program_Tactic_Budget WHERE PlanTacticId = @EntityId) a 
+
+
+
+			SELECT @Sum=SUM(value) from #tempDataFinalTactic where Period in('Y1','Y2','Y3')		
+			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
+
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalTactic WHERE PlanTacticId = @EntityId AND Period = 'Y1')
+						BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.Q1 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			     from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y1'
+						END
+					ELSE
+						BEGIN
+					IF ((SELECT Q1 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y1', @newValue-@Sum, GETDATE(),@UserId)
+						END
+		         END
+				   ELSE
+					BEGIN
+					EXEC Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalculation @EntityId,1,@newValue			
+				END
+			END
+
+			SELECT @Sum=SUM(value) from #tempDataFinalTactic where Period in('Y4','Y5','Y6')		
+			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
+
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalTactic WHERE PlanTacticId = @EntityId AND Period = 'Y4')
+						BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.Q2 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			     from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y4'
+						END
+					ELSE
+						BEGIN
+					IF ((SELECT Q2 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y4', @newValue-@Sum, GETDATE(),@UserId)
+						END
+		         END
+
+				   ELSE
+					BEGIN
+					EXEC Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalculation @EntityId,2,@newValue			
+				END
+			END
+			
+
+				SELECT @Sum=SUM(value) from #tempDataFinalTactic where Period in('Y7','Y8','Y9')		
+			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
+
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalTactic WHERE PlanTacticId = @EntityId AND Period = 'Y7')
+						BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.Q3 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			     from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y7'
+						END
+					ELSE
+						BEGIN
+					IF ((SELECT Q3 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y7', @newValue-@Sum, GETDATE(),@UserId)
+						END
+		         END
+
+				   ELSE
+					BEGIN
+					EXEC Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalculation @EntityId,3,@newValue			
+				END
+			END
+
+				SELECT @Sum=SUM(value) from #tempDataFinalTactic where Period in('Y10','Y11','Y12')		
+			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
+
+				IF(@newValue!='')
+			BEGIN
+				if(@Sum<@newValue)
+					BEGIN
+						IF EXISTS (SELECT * from #tempDataFinalTactic WHERE PlanTacticId = @EntityId AND Period = 'Y10')
+						BEGIN
+					UPDATE P SET P.Value = CASE WHEN T.Q4 != '' THEN p.Value+(@newValue-@Sum) ELSE P.Value END
+			     from Plan_Campaign_Program_Tactic_Budget P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y10'
+						END
+					ELSE
+						BEGIN
+					IF ((SELECT Q4 from #TempDiffer WHERE ActivityId = @EntityId) IS NOT NULL)
+				    INSERT INTO Plan_Campaign_Program_Tactic_Budget VALUES (@EntityId, 'Y10', @newValue-@Sum, GETDATE(),@UserId)
+						END
+		         END
+
+				   ELSE
+					BEGIN
+					EXEC Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalculation @EntityId,4,@newValue			
+				END
+			END			
+		
+			END
+
+		END
+
+ set @cnt = @cnt + 1
+  DROP TABLE #TempDiffer
+
+End
+
+select ActivityId from @ImportData  EXCEPT select ActivityId from #Temp
+END
+
+--Insertation End #2623 import multiple plan
+Go
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
 -- ======================================================================================

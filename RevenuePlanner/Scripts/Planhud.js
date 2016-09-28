@@ -142,18 +142,13 @@ function GetHeaderData(url, activemenu, timeframe, selectedPlanIds, Customid, Ow
 
 
 function GetNumberOfActivityPerMonByPlanId(url, activemenu, timeframe, selectedPlanIds, Customid, OwnerId, Tacticids, StatusId) {
-    var isMultiple = false;
-    if (activemenu == "home") {
-        isMultiple = true;
-    }
     $.ajax(
     {
         type: "POST",
         url: url,
         data: {
             planid: selectedPlanIds.toString(),
-            strparam: timeframe,
-            isMultiplePlan: isMultiple,
+            strtimeframe: timeframe,
             CustomFieldId: Customid.toString(),
             OwnerIds: OwnerId.toString(),
             TacticTypeids: Tacticids.toString(),
@@ -175,7 +170,7 @@ function GetNumberOfActivityPerMonByPlanId(url, activemenu, timeframe, selectedP
 function setgraphdata(data) {
     $(".dhx_chart_legend").html('');
     var legendvalue = "";
-    var activityyear = data.strparam;
+    var activityyear = data.strtimeframe;
     if (activityyear == "" || activityyear == undefined || activityyear == null) {
         activityyear = $('select#ddlUpComingActivites option:selected').val();
     }
@@ -257,7 +252,7 @@ function GetMultiplePlanNames() {
     PlanNames = PlanNames.slice(0, -1);
     $("#PlanTitle").html(PlanNames);
     $("#PlanTitle").attr('title', PlanNames);
-    $("#PlanCount").html(PlanCount + " Plans Selected")
+    $("#PlanCount").html(PlanCount + " Plan(s) Selected")
 
 }
 
@@ -288,7 +283,7 @@ function GetGoalValues(url,selectedPlanIds) {
 
 }
 
-function BindUpcomingActivites(SelectedPlanIds,url) {
+function BindUpcomingActivites(SelectedPlanIds) {
     var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
     var years = "";
     $.each(listCheckbox, function () {
@@ -301,7 +296,7 @@ function BindUpcomingActivites(SelectedPlanIds,url) {
     var currentval = $("#ddlUpComingActivites").val();
     $.ajax({
         type: 'POST',
-        url: url,
+        url: urlContent + 'Home/BindUpcomingActivitesValues/',
         async: false,
         data: {
             planids: SelectedPlanIds.toString(),
@@ -342,3 +337,4 @@ function BindUpcomingActivies(items) {
     $("#ddlUpComingActivites").selectbox('detach');
     $("#ddlUpComingActivites").selectbox("attach");
 }
+

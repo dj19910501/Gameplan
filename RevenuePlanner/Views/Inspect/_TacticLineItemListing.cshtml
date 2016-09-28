@@ -5,45 +5,9 @@
     var isQuarter = ViewBag.AllocatedBy;
 }
 <style>
-    .gridViewGrid.gridbox.gridbox_dhx_skyblue {
-        width: 98% !important;
-        background: #fff;
-    }
-
-    div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{
-        text-align: center;
-        padding-left: 0px !important;
-    }
-
-    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
-    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
-        width: 100% !important;
-    }
-
-    div.gridbox_dhx_skyblue.gridbox table.hdr td {
-        -moz-user-select: none;
-    }
-
-    #lineItemGrid .grid_add {
-        margin-top: 0;
-    }
-
-    #lineItemGrid .grid_Search {
-        margin-left: 10px;
-    }
-
-    #lineItemGrid .objbox {
-        overflow-x: hidden !important;
-    }
-
-    #lineItemGrid .rowselected td {
-        background: #f2f2f2;
-    }
-
     .tooltip {
-        z-index: 9999 !important;
+        z-index: 9999 !important; /* Need this style on page level - Bhumika */
     }
-      
 </style>
 
 <!-- Added by Arpita Soni for Ticket #2237 on 06/13/2016 -->
@@ -58,7 +22,6 @@ else
 
 <div class="market-activity-main">
     <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 11;" id="popupLineitemIP">
-       
     </div>
 </div>
 
@@ -75,7 +38,6 @@ else
         if (@countrows > 0) {
             BindLineItemGrid();
 
-            //Added by Rahul shah on 23/10/2015 for PL #1693 : set grid size after performing any operation
             $(document).ajaxComplete(function () {
                 LineItemGrid.setSizes();
             });
@@ -88,16 +50,7 @@ else
         window.focus();
 
         pageIsScroll = false;
-        //$('.task-tbl div.gridbox').css('height', $(window).height() - 450); //PL #1758 H9_QA - Grid View Scrolling - Added by Dashrath Prajapati
-       
-        //if ($('.honeycombbox-icon-gantt-Active').length == 0) {
-        //    $(".honeycombbox").hide();
-        //}
-        //else {
-        //    $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
-        //    $(".honeycombbox").show();
-        //}
-
+   
         $(".grid_Search").off("click");
         $(".grid_Search").click(function (e) {
             inspectCloseFocus = $(this).position().top;
@@ -107,7 +60,6 @@ else
             DisplayEditablePopup(id, type);
         });
         SetTooltip();
-        
     });
 
     function SetTooltip() {
@@ -138,96 +90,6 @@ else
         $('#popupLineitemIP').css('display', 'none');
     });
     
-  
-    // End By Nishant Sheth
-    //Added by Ashish mistry for PL #1782 :- export to csv for Honeycomb
-    var ListOfSelectedIds = { Id: [] };
-
-    // Add By Nishant Sheth
-    var countid = 0;
-    function UpdateLineItemGridData(id) {
-        var ColumnCount = LineItemGrid.getColumnCount();
-        var dataid;
-        if (id == null) {
-            dataid = ListOfSelectedIds.Id[countid];
-        } else {
-            dataid = id;
-        }
-        var datahome = JSON.parse(GridDataLineItemGrid);
-        $.each(datahome.rows, function () {
-
-            // Update data for planrecords
-            var planid = this.id;
-            var plandata = this;
-            if (planid == dataid) {
-                for (var i = 0; i < ColumnCount; i++)
-                {
-                    plandata.data[i].value = LineItemGrid.cells(planid, i).getValue();
-                }
-                countid++;
-                return UpdateLineItemGridData(countid);
-            } else {
-
-                // Update data for campaign records
-                if(plandata.rows != null && plandata.rows != "")
-                {
-                    $.each(plandata.rows, function () {
-
-                        var campid = this.id;
-                        var campdata = this;
-                        if (campid == dataid) {
-                            for ( var i = 0; i < ColumnCount; i++) {
-                                campdata.data[i].value = LineItemGrid.cells(campid, i).getValue();
-                            }
-                            countid++;
-                            return UpdateLineItemGridData(countid);
-                        }
-                        else {
-                            if(campdata.rows != null && campdata.rows != "")
-                            {
-                                // Update data for program records
-                                $.each(campdata.rows, function () {
-
-                                    var progid = this.id;
-                                    var progdata = this;
-                                    if (progid == dataid) {
-                                        for ( var i = 0; i < ColumnCount; i++) {
-                                            progdata.data[i].value = LineItemGrid.cells(progid, i).getValue();
-                                        }
-                                        countid++;
-                                        return UpdateLineItemGridData(countid);
-                                    } else {
-                                        // Update data for tactic records
-                                        if(progdata.rows != null && progdata.rows != "")
-                                        {
-                                            $.each(progdata.rows, function () {
-                                                var tacid = this.id;
-                                                var tacdata = this;
-                                                if (tacid == dataid) {
-                                                    for ( var i = 0; i < ColumnCount; i++) {
-                                                        tacdata.data[i].value = LineItemGrid.cells(tacid, i).getValue();
-                                                    }
-                                                    countid++;
-                                                    return UpdateLineItemGridData(countid);
-                                                } else {
-                                                    countid++;
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-            }
-        })
-
-        GridDataLineItemGrid = JSON.stringify(datahome);
-    }
-
-    // End By Nishant Sheth
-
     $('#errorMessageInspectPopup .close').click(function () {
         $('#errorMessageInspectPopup').css("display", "none");
     });
@@ -235,8 +97,7 @@ else
     var GridDataLineItemGrid;
     var ActivityIdColIndex;
     var PlannedCostColIndex;
-    var TypeColIndex;
-    var OwnerColIndex;
+    var TaskNameColIndex;
     var arrDetailedGrids = [];
 
     var arrFullMonthNames = { 'JAN': 'January' ,
@@ -277,321 +138,150 @@ else
         LineItemGrid.setColumnIds('@Model.ColumnIds');
         
         LineItemGrid.init();
-        //setTimeout(function () {
-        //    LineItemGrid.loadOpenStates();
-        //}, 500);
-        //setTimeout(function () {
-        //    LineItemGrid.setSizes();
-        //}, 200);
+        setTimeout(function () {
+            LineItemGrid.loadOpenStates();
+        }, 500);
+        setTimeout(function () {
+            LineItemGrid.setSizes();
+        }, 200);
         LineItemGrid.enableAutoHeight(true);
         
         LineItemGrid.parse(GridDataLineItemGrid, "json");
         ActivityIdColIndex = LineItemGrid.getColIndexById("id");
         PlannedCostColIndex = LineItemGrid.getColIndexById("plannedcost");
+        TaskNameColIndex = LineItemGrid.getColIndexById("taskname");
     }
     
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
-        var detailedGridData = LineItemGrid;
-        if (stage == 0) {
+        if (stage == 0) {   // Stage == 0 Means Click on Cell
             // Disable cells which has no permission to edit
-            var locked = detailedGridData.cells(rowId, cellInd).getAttribute("locked");
+            var locked = LineItemGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
                 return false;
-            
-            //// Remove placeholder when user click on the cell (i.e. "---")
-            //var oldValue = parseInt(detailedGridData.cells(rowId, cellInd).getValue().replace(',',''));
-            //if(isNaN(oldValue)){
-            //    detailedGridData.cells(rowId, cellInd).setValue("");
-            //}
         }
-    if (stage == 1) {
-        // Disable alphabets or special characters in input
-        $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
-        detailedGridData.editor.obj.onkeypress = function (e) {
-            e = e || window.event;
-            if ((e.keyCode >= 47) || (e.keyCode == 0)) {
-                var text = this.value;
-                if (text.length > 10) { //max length of the text
-                    return false;
-                }
-            }
-        }
-    }
-    if (stage == 2) {
-        if (nValue != null && nValue != "") {
-            var entityId = detailedGridData.cells(rowId, 0).getValue();
-            debugger;
-            var section = "lineitem";
-            var isTotalCost = false;
-            var month = "";
-            if(rowId.indexOf('tactic') > -1) {
-                section = "tactic";
-            }
-            if (cellInd == PlannedCostColIndex) {
-                isTotalCost = true;
-            }
-            else {
-                month = arrFullMonthNames[detailedGridData.getColLabel(cellInd)];
-            }
-            
-            var monthlyplannedcost = detailedGridData.cells(rowId, cellInd).getValue();
-
-            //tab
-            var tab = 'Planned';
-            var isquarter = false;
-            if('@isQuarter' == 'quarters') {
-                isquarter = true;
-            }
-        
-            var inputArr = [];
-            //Insertation Start 19/08/2016 Kausha #2503 Used SetValueByExchangeRate function to store value in dollar.
-            inputArr.push({
-                key: "CostMonth",
-                Value: SetValueByExchangeRate(monthlyplannedcost.replace(/,/g, ""))
-                });
-            var jsonInputs = JSON.stringify(inputArr);
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Inspect/SaveLineItemCostAllocation/")',
-                dataType: "json",
-                data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost,
-                success: function (data) {
-                    if (data.isSuccess == true) {
-                        $("#liLine_Items").trigger("click");
-                    }
-                    else {
-                        $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
-                        $('#errorMessageDuplicatePlan').slideDown(700);
-                    }
-                }
-            });
-        }
-        else {
-            return false;
-        }
-    }
-    return true;
-}
-
-function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
-    var updatetype = rowId.split(".")[0];
-    var Id;
-    var UpdateColumn;
-    var UpdateVal;
-    var Colind = this.cell.cellIndex;
-
-    if(stage == 0)
-    {
-        var  newvalue = LineItemGrid.cells(rowId, cellInd).getValue();
-        if(newvalue.indexOf("</div>") > -1)
-        {
-
-            value = newvalue.split("</div>")[0];
-        }
-        TacticName = newvalue.split("</div>")[1];
-    }
-    else
-    {
-        if(nValue != undefined)
-        {
-            TacticName = nValue;
-        }
-    }
-    UpdateColumn = LineItemGrid.getColLabel(Colind, 0);
-    if (stage == 0) {
-        // Only check for type column
-        if (Colind == TypeColIndex) {
-            if (updatetype == "line") {
-                var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
-                if (actval == "") {
-                    return false;
-                }
-                var combo = LineItemGrid.getCombo(cellInd);
-                var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(TempData["lineItemTypes"]))');
-                combo.clear();
-                $.each(lineitemtype, function (i, item) {
-                    combo.put(item.LineItemTypeId, item.Title);
-                });
-            }
-        }
-        var locked = LineItemGrid.cells(rowId, cellInd).getAttribute("locked");
-        if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
-            return false;
-    }
-    if (stage == 1) {
-        $('.dhx_combo_select').css('z-index', '9999');
-        if (updatetype == "line") {
-            var oldval = LineItemGrid.cells(rowId, cellInd).getValue();
-            var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
-            if (cellInd != 1) {
-                if (oldval == "")
-                    $('.dhx_combo_select option[value="' + oldval + '"]').remove();
-                else {
-                    var v1 = parseInt(oldval);
-                    if (isNaN(v1)) {
-                        $('.dhx_combo_select option[value="' + oldval + '"]').remove();
-                        $('.dhx_combo_select').val(actval);
-                    }
-                    else
-                        $('.dhx_combo_select').val(actval);
-                }
-            }
-        }
-        $(".dhx_combo_edit").off("keydown");
-        if (UpdateColumn == "Planned Cost") {
-
-            $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
-            LineItemGrid.editor.obj.onkeypress = function (e) {
-                e = e || window.event;
-                if ((e.keyCode >= 47) || (e.keyCode == 0)) {
-                    var text = this.value;
-                    if (text.length > 10) { //max length of the text
-                        return false;
+        if (stage == 1) {   // Stage == 1 - Means Perform Event on Cell -  Keydown, etc. 
+            // Disable alphabets or special characters in input
+            if(cellInd != TaskNameColIndex){
+                $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+                LineItemGrid.editor.obj.onkeypress = function (e) {
+                    e = e || window.event;
+                    if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                        var text = this.value;
+                        if (text.length > 10) { //max length of the text
+                            return false;
+                        }
                     }
                 }
             }
         }
-
-    }
-    if (stage == 2) // start edit Shipping column
-    {
-        if (nValue != null && nValue.trim() != "") {
-            var NewValue = htmlDecode(nValue);
-            var TaskID = LineItemGrid.cells(rowId,3).getValue();
-            if (UpdateColumn == "" || UpdateColumn == null)
-                UpdateColumn = LineItemGrid.getColLabel(Colind, 0);
-            if(UpdateColumn == "Task Name"){  
-                if (CheckHtmlTag(nValue) == false) {
-                    alert("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
-                    return false;
+        if (stage == 2) {   // Stage == 2 - Means perform focus out event
+            if (nValue != null && nValue != "") {
+                var entityId = LineItemGrid.cells(rowId, 0).getValue(); 
+                var section = "lineitem";
+                var isTotalCost = false;
+                var month = "";
+                if(rowId.indexOf('tactic') > -1) {
+                    section = "tactic";
                 }
-            }
-            if(cellInd == 1)
-            {
-                $("div[taskId='" + TaskID + "']").attr('taskname',NewValue);
-            }
-            if(ExportSelectedIds.TaskID.length > 0)
-            {
-                var TasknameIndex = ExportSelectedIds.Title.indexOf(oValue);
-                if(TasknameIndex >= 0 )
-                {
-                    ExportSelectedIds.Title[TasknameIndex] = NewValue;
-                }
-            }
-            var idindex = LineItemGrid.getColIndexById('id');
-            var costindex = LineItemGrid.getColIndexById('plannedcost');
-            var stageindex = LineItemGrid.getColIndexById('inq');
-
-            Id = LineItemGrid.cells(rowId, idindex).getValue();
-            if (updatetype == "line") {
-                var actval = LineItemGrid.cells(rowId, cellInd).getAttribute("actval");
-                if (actval == null || actval == "")
-                    actval = oValue;
-                if (nValue != oValue && nValue != actval) {
-
-                    UpdateVal = nValue;
-                    tactid = LineItemGrid.getParentId(rowId);
-                    var TotalRowIds = LineItemGrid.getAllSubItems(tactid);
+                if(cellInd == TaskNameColIndex){
+                    // Get column name for edit
+                    var UpdateColumn = LineItemGrid.getColLabel(cellInd, 0);
                     $.ajax({
                         type: 'POST',
-                        url: '@Url.Action("SaveGridDetail", "Plan")', // we are calling json method
-                                data: { UpdateType: 'LineItem', UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
-                                dataType: 'json',
-                                success: function (states) {
-                                    if (states.errormsg != null && states.errormsg.trim() != "") {
-                                        alert(states.errormsg.trim());
-                                        LineItemGrid.cells(rowId, cellInd).setValue(oValue);
-                                        return false;
-                                    }
-                                    else if (UpdateColumn == "Planned Cost") {
-                                        diff = parseInt(nValue) - parseInt(oValue);
-                                        diffLineAndTactic = states.lineItemCost - states.tacticCost
-                                        if (states.lineItemCost > states.tacticCost) {
-                                            for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                                if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") { //Modiied by Rahul Shah
-                                                    LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
-                                                    LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
-                                                }
-                                            }
-                                        }
-                                        else if(states.lineItemCost == states.tacticCost){
-                                            for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                                if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                                    LineItemGrid.deleteRow(TotalRowIds.split(',')[i]);
-                                                }
-                                            }
-                                        }
-                                        else {
+                        url: urlContent + 'Plan/SaveGridDetail',
+                        data: { UpdateType: section, UpdateColumn: UpdateColumn.trim(), UpdateVal: nValue, Id: parseInt(entityId) },
+                        dataType: 'json',
+                        success: function (states) {
+                            if (data.isSuccess == true) {
+                                $("#liLine_Items").trigger("click");
+                            }
+                            else {
+                                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                                $('#errorMessageDuplicatePlan').slideDown(700);
+                            }
+                        }
+                    });
+                }
+                else{
+                    if (cellInd == PlannedCostColIndex) {
+                        isTotalCost = true;
+                    }
+                    else {
+                        month = arrFullMonthNames[LineItemGrid.getColLabel(cellInd)];   // Get full name of month from initial (JAN -> January)
+                    }
+                    var monthlyplannedcost = LineItemGrid.cells(rowId, cellInd).getValue(); // updated cell value
+                
+                    var tab = 'Planned';
+                    var isquarter = false;
+                    if('@isQuarter' == 'quarters') {
+                        isquarter = true;
+                    }
+        
+                    var inputArr = [];
+                    inputArr.push({
+                        key: "CostMonth",
+                        Value: SetValueByExchangeRate(monthlyplannedcost.replace(/,/g, ""))
+                    });
+                    var jsonInputs = JSON.stringify(inputArr);
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Inspect/SaveLineItemCostAllocation/")',
+                        dataType: "json",
+                        data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost,
+                        success: function (data) {
+                            if (data.isSuccess == true) {
+                                // format current cell value
+                                LineItemGrid.cells(rowId, cellInd).setValue(number_format(nValue, 0, '.', ','));
 
-                                            for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                                if (LineItemGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                                    LineItemGrid.cells(TotalRowIds.split(',')[i], 4).setValue((states.otherLineItemCost));
-
-                                                }
-                                            }
-                                        }
-                                        $("#liLine_Items").trigger("click");
-                                         ItemIndex=LineItemGrid.getRowIndex(tactid);
-                                        state0 = ItemIndex;
-                                        LineItemGrid.cells(rowId, PlannedCostColIndex).setValue((nValue));
-                                    }
-                                    else if(UpdateColumn == "Type")
-                                        LineItemGrid.cells(rowId, cellInd).setAttribute("actval",nValue);
+                                // Start - Update balance row value on edit (vertical calculation)
+                                var rows_count = LineItemGrid.getRowsNum();
+                                var balance_rowid = LineItemGrid.getRowId(rows_count - 1);
+                                // always first row is for tactic so get tactic cost value
+                                var first_rowid = LineItemGrid.getRowId(0);
+                                var tac_cost = parseInt(LineItemGrid.cells(first_rowid, cellInd).getValue().replace(',','')); 
+                                var lineitem_cost = 0;
+                                for(var i = 1 ; i < rows_count - 1; i++) { // sum of line item cost
+                                    var row_id = LineItemGrid.getRowId(i);
+                                    lineitem_cost = lineitem_cost + parseInt(LineItemGrid.cells(row_id, cellInd).getValue().replace(',',''));
                                 }
-                            });
-                        }
-                    LineItemGrid.forEachRow(function (id) {
-                        LineItemGrid.cells(id, 0).open();
-                    });
-                        return true;
-                    }
-                    if (htmlDecode(nValue) != oValue) {
-                        if(cellInd == 1)
-                        {
-                            if(value != undefined && value != "undefined" && value != null)
-                            {
-                                LineItemGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
+                                var balance_cost = tac_cost - lineitem_cost;
+                                // set balance line item cost 
+                                LineItemGrid.cells(balance_rowid, cellInd).setValue(number_format(balance_cost, 0, '.', ','));
+                                // End - Update balance row value on edit 
+
+                                UpdateUnallocatedColumnValues(rowId);   // update unallocated cost column for edited row
+                                UpdateUnallocatedColumnValues(balance_rowid);   // update unallocated cost column for balance row
                             }
-                            else
-                            {
-                                LineItemGrid.cells(rowId, cellInd).setValue(TacticName);
+                            else {
+                                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                                $('#errorMessageDuplicatePlan').slideDown(700);
                             }
                         }
-                        value = "";
-                        $("div[id^='LinkIcon']").each(function () {
-                            bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
-                        });
-                            LineItemGrid.forEachRow(function (id) {
-                                LineItemGrid.cells(id, 0).open();
-                            });
-                        return true;
-                    }
-                    if(cellInd == 1)
-                    {
-                        if(value != undefined && value != "undefined" && value != null)
-                        {
-                            LineItemGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
-                        }
-                        else
-                        {
-                            LineItemGrid.cells(rowId, cellInd).setValue(TacticName);
-                        }
-                    }
-                    value = "";
-                    $("div[id^='LinkIcon']").each(function () {
-                        bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
                     });
-                    LineItemGrid.forEachRow(function (id) {
-                        LineItemGrid.cells(id, 0).open();
-                    });
-                    return true;
                 }
             }
+            else {
+                return false;
+            }
+    }
+    return true;
+    }
+    function UpdateUnallocatedColumnValues(rowId){
+        // Update Unallocated column value on edit 
+        var cols_count = LineItemGrid.getColumnCount();
+        // always first row is for tactic so get tactic cost value
+        var planned_cost = parseInt(LineItemGrid.cells(rowId, PlannedCostColIndex).getValue().replace(',','')); 
+        var allocated_cost = 0;
+        for (var j = PlannedCostColIndex + 1; j < cols_count - 2; j++) { // sum of line item cost
+            allocated_cost = allocated_cost + parseInt(LineItemGrid.cells(rowId, j).getValue().replace(',',''));
         }
-
-        $(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
-            var $checkbox = $(this).find('input[type=checkbox]')
-            $checkbox.bootstrapToggle('toggle')
-            e.preventDefault()
-        });    
+        var unallocated = planned_cost  - allocated_cost;
+        // set balance line item cost 
+        LineItemGrid.cells(rowId, cols_count - 1).setValue(number_format(unallocated, 0, '.', ','));
+    }
+$(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
+    var $checkbox = $(this).find('input[type=checkbox]')
+    $checkbox.bootstrapToggle('toggle')
+    e.preventDefault()
+});    
 </script>

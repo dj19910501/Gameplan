@@ -13416,6 +13416,49 @@ input.serach-input {
 } 
 .inspect-column-parent div:focus{outline:0 none}*/
 
+
+/* =================== LIneitem Grid CSS in Ispect Window ========================= */
+#lineItemGrid.gridViewGrid.gridbox.gridbox_dhx_skyblue {
+    width: 98% !important;
+    background: #fff;
+}
+
+#lineItemGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{
+    text-align: center;
+    padding-left: 0px !important;
+}
+
+#lineItemGrid.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr,
+#lineItemGrid.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+    width: 100% !important;
+}
+
+#lineItemGrid.gridbox_dhx_skyblue.gridbox table.hdr td {
+    -moz-user-select: none;
+}
+
+#lineItemGrid .grid_add {
+    margin-top: 0;
+}
+
+#lineItemGrid .grid_Search {
+    margin-left: 10px;
+}
+
+#lineItemGrid .objbox {
+    overflow-x: hidden !important;
+}
+
+#lineItemGrid .rowselected td {
+    background: #f2f2f2;
+}
+
+/* =================== LIneitem Grid CSS in Ispect Window End ========================= */
+.import-popover .file-caption-main .input-group-btn{width:100%}
+.import-popover .file-caption-main .btn-primary.btn-file {
+    float: right;
+}
+.fileinput-remove-button{color:#333333 !important}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

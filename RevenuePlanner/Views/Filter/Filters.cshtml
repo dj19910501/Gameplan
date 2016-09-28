@@ -4,58 +4,24 @@
 @{
     string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
     var ViewYearList = (List<SelectListItem>)ViewBag.ViewYear;
-    var CreatedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()];
-    var SubmittedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()];
-    var ApprovedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()];
-    var InProgressStatus = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()];
-    var CompleteStatus = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()];
-    var DeclineStatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()];
-    List<RevenuePlanner.Models.PlanListModel> planList = Model.lstPlan != null ? Model.lstPlan : new List<RevenuePlanner.Models.PlanListModel>();
-    List<RevenuePlanner.Models.CustomFieldsForFilter> customfiledList = Model.lstCustomFields != null ? Model.lstCustomFields : new List<RevenuePlanner.Models.CustomFieldsForFilter>();
-    List<RevenuePlanner.Models.CustomFieldsForFilter> customfiledOptionList = Model.lstCustomFieldOptions != null ? Model.lstCustomFieldOptions : new List<RevenuePlanner.Models.CustomFieldsForFilter>();
-    List<RevenuePlanner.Models.OwnerModel> ownerList = Model.lstOwner != null ? Model.lstOwner : new List<RevenuePlanner.Models.OwnerModel>();
-    List<RevenuePlanner.Models.TacticTypeModel> tacticTypeList = Model.lstTacticType != null ? Model.lstTacticType : new List<RevenuePlanner.Models.TacticTypeModel>();
-
-    string ddlYearId, YearText, liPlanid, acordionId, acordionParentId, acordionElementId, acordionElementHref, liCustom, ulCustom, allCustom, noCustom, cutomoptioninputid, liid,
-        litacticid, titielwithbracket, lastbracket, cbttid;
     int custFieldCount = 0;
-    acordionId = acordionParentId = acordionElementId = acordionElementHref = liCustom = ulCustom = allCustom = noCustom = string.Empty;
-    ddlYearId = YearText = string.Empty;
     List<string> SelectedYearText = new List<string>();
     List<string> SelectedPlanTitle = new List<string>();
-    List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
-
-    //Need parameter for Filter.js file
-    var TacticTypeURL = @Url.Action("GetTacticTypeListForFilter", "Filter");
-    var LastSetOfViewsURL = @Url.Action("LastSetOfViews", "Filter");
-    var OwnerListURL = @Url.Action("GetOwnerListForFilter", "Filter");
-    var SaveLastSetofViews = @Url.Action("SaveLastSetofViews", "Filter");
-    var ServerUnavailableURL = @Url.Content(Common.RedirectOnServiceUnavailibilityPage);
-    var PlanBudgetYearwise = @Url.Content("~/Report/GetBudgetPlanBasedOnYear/");
-    var GetCacheValue = @Url.Content("~/Home/GetCacheValue/");
-    var PlanId = Sessions.PlanId;
-    var FilterPresetName = Sessions.FilterPresetName;
-    var ActiveMenuHome = Enums.ActiveMenu.Home.ToString().ToLower();
-    var HomeIndexURL = @Url.Content("~/Login/Index");
-    var PlanGantType = PlanGanttTypes.Tactic.ToString();
-    var SavePresetSuccess = @Common.objCached.SavePresetSuccess;
-    var ProvidePresetName = @Common.objCached.ProvidePresetName;
 }
 
-@Html.Hidden("TacticTypeURL", TacticTypeURL)
-@Html.Hidden("LastSetOfViewsURL", LastSetOfViewsURL)
-@Html.Hidden("OwnerListURL", OwnerListURL)
-@Html.Hidden("ServerUnavailableURL", ServerUnavailableURL)
-@Html.Hidden("PlanBudgetYearwise", PlanBudgetYearwise)
-@Html.Hidden("PlanId", PlanId)
-@Html.Hidden("FilterPresetName", FilterPresetName)
-@Html.Hidden("ActiveMenuHome", ActiveMenuHome)
-@Html.Hidden("HomeIndexURL", HomeIndexURL)
-@Html.Hidden("PlanGantType", PlanGantType)
-@Html.Hidden("GetCacheValue", GetCacheValue)
-@Html.Hidden("SaveLastSetofViews", SaveLastSetofViews)
-@Html.Hidden("SavePresetSuccess", SavePresetSuccess)
-@Html.Hidden("ProvidePresetName", ProvidePresetName)
+@Html.Hidden("TacticTypeURL", @Url.Action("GetTacticTypeListForFilter", "Filter"))
+@Html.Hidden("LastSetOfViewsURL", @Url.Action("LastSetOfViews", "Filter"))
+@Html.Hidden("OwnerListURL", @Url.Action("GetOwnerListForFilter", "Filter"))
+@Html.Hidden("ServerUnavailableURL", @Url.Content(Common.RedirectOnServiceUnavailibilityPage))
+@Html.Hidden("PlanBudgetYearwise", @Url.Content("~/Report/GetBudgetPlanBasedOnYear/"))
+@Html.Hidden("FilterPresetName", Sessions.FilterPresetName)
+@Html.Hidden("ActiveMenuHome", Enums.ActiveMenu.Home.ToString().ToLower())
+@Html.Hidden("HomeIndexURL", @Url.Content("~/Login/Index"))
+@Html.Hidden("PlanGantType", PlanGanttTypes.Tactic.ToString())
+@Html.Hidden("GetCacheValue", @Url.Content("~/Home/GetCacheValue/"))
+@Html.Hidden("SaveLastSetofViews", @Url.Action("SaveLastSetofViews", "Filter"))
+@Html.Hidden("SavePresetSuccess", @Common.objCached.SavePresetSuccess)
+@Html.Hidden("ProvidePresetName", @Common.objCached.ProvidePresetName)
 
 <script src="~/Scripts/Filter.js"></script>
 
@@ -135,14 +101,14 @@
                         </li>
                         <li class="accordion-inner" title="Plan">
                             <span class="sidebarliwidthSelected-left">Plan -  </span>
-                            @foreach (var objplan in planList)
+                            @foreach (var objplan in Model.lstPlan)
                             {
                                 if (objplan.Checked == "checked")
                                 {
                                     SelectedPlanTitle.Add(objplan.Title);
                                 }
                             }
-                            @if (planList.Count == SelectedPlanTitle.Count())
+                            @if (Model.lstPlan.Count == SelectedPlanTitle.Count())
                             {
                                 SelectedPlanTitle.Clear();
                                 SelectedPlanTitle.Add("All");
@@ -170,8 +136,8 @@
                     <ul class="scroll-list singleselect" id="ulSelectedYear">
                         @foreach (SelectListItem item in ViewYearList)
                         {
-                            ddlYearId = "liYear" + item.Value;
-                            YearText = item.Text;
+                            string ddlYearId = "liYear" + item.Value;
+                            string YearText = item.Text;
                             if (item.Selected == true)
                             {
                                 <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" yearvalue="@item.Value">
@@ -203,14 +169,14 @@
                     <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">
                         Plan
                         <i class="indicator fa fa-angle-down pull-right"></i>
-                        <span id="tPlancount" class="filter-count"></span><span id="cPlancount" class="filter-count">/@planList.Count()</span>
+                        <span id="tPlancount" class="filter-count"></span><span id="cPlancount" class="filter-count">/@Model.lstPlan.Count()</span>
                     </h2>
                 </div>
                 <div id="accordion-element-Plan" class="accordion-body collapse">
                     <ul class="scroll-list" id="ulSelectedPlans">
-                        @foreach (var objplan in planList)
+                        @foreach (var objplan in Model.lstPlan)
                         {
-                            liPlanid = "liPlan" + objplan.PlanId;
+                            string liPlanid = "liPlan" + objplan.PlanId;
                             if (objplan.Checked == "checked")
                             {
                                 <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid">
@@ -227,7 +193,7 @@
                         }
                     </ul>
                     <div class="list-tab">
-                        @if (planList != null && planList.Count > 0)
+                        @if (Model.lstPlan != null && Model.lstPlan.Count > 0)
                         {
                             <ul id="PlanAllModule">
                                 <li><a onclick="BulkPlanOperation(true)">select all</a></li>
@@ -256,7 +222,7 @@
                 </div>
                 <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                     <ul class="scroll-list singleselect" id="ulSelectedFilter">
-                        @foreach (var custField in customfiledList)
+                        @foreach (var custField in Model.lstCustomFields)
                         {
                             <li class="accordion-inner" title='@custField.Title'>
                                 <div id="CustomFields">
@@ -290,16 +256,17 @@
             </div>
         </div>
         <div id="divCustomFieldsFilter">
-            @foreach (var custField in customfiledList)
+            @foreach (var custField in Model.lstCustomFields)
             {
-                lstCutomFieldOptions = customfiledOptionList.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Title).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Title, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
-                acordionId = "accordion-" + custField.CustomFieldId;
-                acordionParentId = "#" + acordionId;
-                acordionElementId = "accordion-element-" + custField.CustomFieldId;
-                acordionElementHref = "#" + acordionElementId;
-                ulCustom = "ulSelected" + custField.CustomFieldId;
-                allCustom = custField.CustomFieldId + "AllModule";
-                noCustom = "No" + custField.CustomFieldId + "Found";
+                List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
+                lstCutomFieldOptions = Model.lstCustomFieldOptions.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Title).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Title, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
+                string acordionId = "accordion-" + custField.CustomFieldId;
+                string acordionParentId = "#" + acordionId;
+                string acordionElementId = "accordion-element-" + custField.CustomFieldId;
+                string acordionElementHref = "#" + acordionElementId;
+                string ulCustom = "ulSelected" + custField.CustomFieldId;
+                string allCustom = custField.CustomFieldId + "AllModule";
+                string noCustom = "No" + custField.CustomFieldId + "Found";
                 <div id="@acordionId" class="dropdown-section accordion">
                     <div class="accordion-group">
                         <div class="accordion-heading">
@@ -310,8 +277,8 @@
                                 @foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
                                 {
 
-                                    liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
-                                    cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
+                                    string liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
+                                    string cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
 
                                     <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid" /></li>
                                 }
@@ -342,35 +309,9 @@
                     <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator fa fa-angle-down pull-right"></i><span id="tOwnercount" class="filter-count"></span><span id="cOwnercount" class="filter-count"></span></h2>
                 </div>
                 <div id="accordion-element-Owner" class="accordion-body collapse">
-                    <ul class="scroll-list" id="ulSelectedOwner">
-                        @foreach (var owner in ownerList)
-                        {
-                            liid = "liOwner" + owner.OwnerId;
-                            <li class="accordion-inner" title="@owner.Title + '" id="@liid">
-                                <span class="sidebarliwidth">@owner.Title</span>
-                                <input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId" />
-                            </li>
-                        }
+                    <ul class="scroll-list" id="ulSelectedOwner">                        
                     </ul>
-                    <div class="list-tab">
-                        @if (ownerList != null && ownerList.Count > 0)
-                        {
-                            <ul id="ulOwnerAllModule">
-                                <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
-                                <li>|</li>
-                                <li><a onclick="BulkOwnerOperation(false)">clear</a></li>
-                            </ul>
-                            <div id="NoOwnerFound" class="NoDataFoundFilter" style="display: none;">No Owner Found</div>
-                        }
-                        else
-                        {
-                            <ul id="ulOwnerAllModule" style="display: none;">
-                                <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
-                                <li>|</li>
-                                <li><a onclick="BulkOwnerOperation(false)">clear</a></li>
-                            </ul>
-                            <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
-                        }
+                    <div class="list-tab">                        
                     </div>
                 </div>
             </div>
@@ -382,37 +323,8 @@
                 </div>
                 <div id="accordion-element-TacticType" class="accordion-body collapse">
                     <ul class="scroll-list" id="ulTacticType">
-                        @foreach (var tactictype in tacticTypeList)
-                        {
-                            litacticid = "liTT" + tactictype.TacticTypeId;
-                            titielwithbracket = tactictype.Title + " (";
-                            lastbracket = ")";
-                            cbttid = "CbTT" + tactictype.TacticTypeId;
-                            <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
-                                <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
-                                <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid" />
-                            </li>
-                        }
                     </ul>
                     <div class="list-tab">
-                        @if (tacticTypeList != null && tacticTypeList.Count > 0)
-                        {
-                            <ul id="TacticTypeAllModule">
-                                <li><a onclick="BulkTTOperation(true)">select all</a></li>
-                                <li>|</li>
-                                <li><a onclick="BulkTTOperation(false)">clear</a></li>
-                            </ul>
-                            <div id="NoTTFound" class="NoDataFoundFilter" style="display: none;">No Tactic Type Found</div>
-                        }
-                        else
-                        {
-                            <ul id="TacticTypeAllModule" style="display: none;">
-                                <li><a onclick="BulkTTOperation(true)">select all</a></li>
-                                <li>|</li>
-                                <li><a onclick="BulkTTOperation(false)">clear</a></li>
-                            </ul>
-                            <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
-                        }
                     </div>
                 </div>
             </div>
@@ -426,12 +338,12 @@
                     </div>
                     <div id="accordion-element-Status" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulStatus">
-                            <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /> </li>
-                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" /></li>
-                            <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></li>
-                            <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></li>
-                            <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></li>
-                            <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></span></li>
+                            <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Created)]</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Created)]" /> </li>
+                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Submitted)]</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Submitted)]" /></li>
+                            <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Approved)]</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Approved)]" /></li>
+                            <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.InProgress)]</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.InProgress)]" /></li>
+                            <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Complete)]</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Complete)]" /></li>
+                            <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Decline)]</span><span class="chkbx-icon"><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@Enums.TacticStatusValues[Convert.ToString(Enums.TacticStatus.Decline)]" /></span></li>
                         </ul>
                         <div class="list-tab">
                             <ul id="StatusAllModule">

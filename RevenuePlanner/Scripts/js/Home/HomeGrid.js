@@ -64,8 +64,7 @@ function GridHideColumn() {
     MachineNameHidden = HomeGrid.getColIndexById(MachineNameId);
     HomeGrid.setColumnHidden(GridHiddenId, true);
     HomeGrid.setColumnHidden(ActivitypeHidden, true);
-    HomeGrid.setColumnHidden(MachineNameHidden, true);
-    HomeGrid.setColumnMinWidth("300", TaskNameColIndex);
+    HomeGrid.setColumnHidden(MachineNameHidden, true);   
 }
 ///
 

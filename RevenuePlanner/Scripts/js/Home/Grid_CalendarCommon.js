@@ -3,63 +3,112 @@ var isEditTacticHomeGrid = 0;
 
 ///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
-    $('#divgridview').removeClass('budget-grid');
-    $('#exp-serach').css('display', 'none'); // To hide dropdown before grid is loaded  ticket - 2596
-    $('#txtGlobalSearch').val('');// On grid change searchbox should be empty 
-    IsBudgetGrid = false;// To maintain the flag for search ticket - 2596
-    $('#ImportBtn').hide();
-    $('#btnbudget').removeClass('P-icon-active');
-    if ($(this).hasClass('P-icon-active')) {
-        if ($('#IsGridView').val().toLowerCase() == "false") {           
-            LoadPlanGrid();
-            $('#IsGridView').val('true');
-        } else {
-            $('#IsGridView').val('false');            
-            BindPlanCalendar();
-        }
+    if ($('#btnbudget').hasClass('P-icon-active')) {
+        $('#IsGridView').val('false');
+        BindPlanCalendar();
     }
     else {
-        $('#btngridcalendar').addClass('P-icon-active');
-        if ($('#IsGridView').val().toLowerCase() == "true") {            
+        if ($('#IsGridView').val().toLowerCase() == "false") {
             LoadPlanGrid();
+            $('#IsGridView').val('true');
+
         } else {
+            $('#IsGridView').val('false');
             BindPlanCalendar();
         }
     }
-    ///Show/Hide According to Criteria
+    ShowhideDataonGridCalendar();
+});
+
+function ShowhideDataonGridCalendar() {
     if ($('#IsGridView').val().toLowerCase() == "true") {
+        $("#GridGanttContent").empty();
         $("#GridGanttContent").hide();
-        $('#divupcomingact').show();
+        $('#divupcomingact').hide();
         $("#divgridview").show();
         $('.export-dd').find('#ExportXls').show();
         $('.export-dd').find('#ExportPDf').hide();
+        $('#ChangeView').hide();
+        isCalendarView = false;
+        $('#btngridcalendar').removeClass('P-icon-active');
     }
     else {
         $('.export-dd').find('#ExportXls').hide();
         $('.export-dd').find('#ExportPDf').show();
-        $('#divupcomingact').hide();
+        $('#divupcomingact').show();
+        $('#divgridview').empty();
         $("#GridGanttContent").show();
         $("#divgridview").hide();
+        isCalendarView = true;
+        $('#btngridcalendar').addClass('P-icon-active');
     }
-});
+    $('#divgridview').removeClass('budget-grid');
+    $('#exp-serach').css('display', 'none');
+    $('#txtGlobalSearch').val('');
+    IsBudgetGrid = false;
+    $('#ImportBtn').parent().removeClass('round-corner');
+    $('#ImportBtn').hide();
+    $('#btnbudget').removeClass('P-icon-active');    
+}
 
 $('#btnbudget').click(function () {
-    $('#exp-serach').css('display', 'none'); // To hide dropdown before grid is loaded  ticket - 2596
-    $('#txtGlobalSearch').val('');// On grid change searchbox should be empty 
-    IsBudgetGrid = true; // To maintain the flag for search ticket - 2596
-    $('#IsGridView').val('false');
+    $('#ChangeView').hide();
+    LoadBudgetGrid();
+    $('#exp-serach').css('display', 'block');
+    ShowHideDataonBudgetScreen();
+});
+
+function ShowHideDataonBudgetScreen() {
+    $('#ImportBtn').parent().addClass('round-corner');
+    $('#exp-serach').css('display', 'none');
+    $('#txtGlobalSearch').val('');
+    IsBudgetGrid = true;
     $('#divupcomingact').show();
     $('#btngridcalendar').removeClass('P-icon-active');
     $('#btnbudget').addClass('P-icon-active');
+    $("#GridGanttContent").empty();
     $("#GridGanttContent").hide();
-    $("#divgridview").show();
     $('#divgridview').empty();
+    $("#divgridview").show();
     $('#ImportBtn').show();
     $('.export-dd').find('#ExportXls').show();
-    $('.export-dd').find('#ExportPDf').hide();    
-    $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString());
-    $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
+    $('.export-dd').find('#ExportPDf').hide();
+}
+
+$('#ChangeView').click(function () {   
+    LoadPlanGrid();
+    $('#IsGridView').val('true');
+    ShowhideDataonGridCalendar();
 });
+
+//Added by Rahul Shah to call budget data 
+function LoadBudgetGrid() {
+    filters = GetFilterIds();
+    $.ajax({
+        url: urlContent + 'Plan/GetBudgetData/',
+        data: {
+            planIds: filters.PlanIDs.toString(),
+            ownerIds: filters.OwnerIds.toString(),
+            TacticTypeid: filters.TacticTypeids.toString(),
+            StatusIds: filters.StatusIds.toString(),
+            customFieldIds: filters.customFieldIds.toString()
+
+        },
+        success: function (result) {
+            var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
+    '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
+'<br/></div>';
+            gridhtml += result;
+            $("#divgridview").html('');
+            $("#divgridview").html(gridhtml);
+            $("div[id^='LinkIcon']").each(function () {
+                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+            });
+            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
+            $('#ChangeView').show();
+        }
+    });
+}
 
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
 var exportgridData;
@@ -76,7 +125,7 @@ function LoadPlanGrid() {
             TacticTypeid: filters.TacticTypeids.toString(),
             StatusIds: filters.StatusIds.toString(),
             customFieldIds: filters.customFieldIds.toString()
-           
+
         },
         success: function (result) {
             var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
@@ -84,7 +133,7 @@ function LoadPlanGrid() {
 '<br/></div>';
             gridhtml += result;
             $("#divgridview").html('');
-            $("#divgridview").html(gridhtml);          
+            $("#divgridview").html(gridhtml);
             $("div[id^='LinkIcon']").each(function () {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
@@ -202,7 +251,7 @@ function DisplayPopUpMenu(obj, e) {
     var title = $(obj).attr('aria-label');
     var permission = $(obj).attr('Permission');
     var LineType = $(obj).attr('lineitemtype');
-    if ($('#IsGridView').val().toLowerCase() == "true") {
+    if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
 
         LinkTacticPermission = $(obj).attr('linktacticper');
         LinkedTacticId = $(obj).attr('linkedtacticid');
@@ -378,7 +427,6 @@ function DisplayPopUpMenu(obj, e) {
     e.stopPropagation();
     $("#NewPlan").click(function (e) {
         var url = urlContent + 'Plan/CreatePlan/';
-        //var url = '@Url.Action("CreatePlan", "Plan")';
         displayconfirm(url);
     });
 
@@ -387,7 +435,6 @@ function DisplayPopUpMenu(obj, e) {
         if (parseInt(planId) > 0) {
             $.ajax({
                 type: 'POST',
-                //url: '@Url.Content("~/Plan/Clone")',
                 url: urlContent + 'Plan/Clone/',
                 data: {
                     CloneType: planCloneType,
@@ -396,7 +443,6 @@ function DisplayPopUpMenu(obj, e) {
                 },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        //window.location = '@Url.Content("~/Login/Index")';
                         window.location = urlContent + '/Login/Index';
                     }
                     else {
@@ -519,7 +565,6 @@ function DisplayPopUpMenu(obj, e) {
             },
             success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                    //window.location = '@Url.Content("~/Login/Index")';
                     window.location = urlContent + '/Login/Index';
                 }
                 else if (data.IsSuccess) {
@@ -587,7 +632,6 @@ function DisplayPopUpMenu(obj, e) {
         var Title = $("<div/>").text(title).html();
         $.ajax({
             type: 'POST',
-            //url: '@Url.Content("~/Inspect/Clone")',
             url: urlContent + 'Inspect/Clone/',
             data: {
                 CloneType: tacticCloneType,
@@ -598,7 +642,6 @@ function DisplayPopUpMenu(obj, e) {
             },
             success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                    //window.location = '@Url.Content("~/Login/Index")';
                     window.location = urlContent + '/Login/Index';
                 }
                 else if (data.IsSuccess) {
@@ -664,7 +707,6 @@ function DisplayPopUpMenu(obj, e) {
             },
             success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                    //window.location = '@Url.Content("~/Login/Index")';
                     window.location = urlContent + '/Login/Index';
                 }
                 else if (data.IsSuccess) {
@@ -779,16 +821,6 @@ function CloseIconClick() {
 
 //////HoneComb related Methods 
 ////start
-//$(".popover-content").live('click', function (e) {
-//    if (ExportToCsv) {
-//        CloseClick = false;
-//    }
-//    else {
-//        CloseClick = true;
-//    }
-//    ExportToCsv = false;
-
-//});
 
 $("#honeycomb").popover({
 
@@ -797,7 +829,7 @@ $("#honeycomb").popover({
     placement: 'top',
     content: function () {
         var IsPackageView = false; //temp change
-        CloseClick = true;        
+        CloseClick = true;
         $('#honeycomb_content').find(".hc-block").remove();
         var htmlstring = "";
         var htmlstringForAsset = "";
@@ -1123,7 +1155,7 @@ function OpentCopyPopup(obj, isProceed) {
             else {
                 linkItemId = $(obj).attr('entityid').replace("_", "");
             }
-            var selectedcell = HomeGrid.findCell(linkItemId, 3, true);
+            var selectedcell = HomeGrid.findCell(linkItemId, colSplitId, true);
             var id = selectedcell[0];
             var rowid = id[0];
             ItemIndex = HomeGrid.getRowIndex(rowid);
@@ -1209,108 +1241,6 @@ function OpentCopyPopuponProceed(obj) {
 
 //End
 
-//Global Search Related Functions.
-//Start
-var SearchTextforcal = ""
-//function GlobalSearch() {
-//    if (isCopyTactic > 0) {
-//        $('#txtGlobalSearch').val("");
-//        $('#ExpClose').css('display', 'none');
-//        $('#ExpSearch').css('display', 'block');
-//        isCopyTactic = 0;
-//    }
-//    if ($('#divPlanButton').children().hasClass("request-btn-active") || $('#RequestTab').children().hasClass("request-btn-active")) {
-//        gantt.refreshData();
-//        function contains(haystack, needle) {
-//            var a = (haystack || "").toLowerCase(),
-//                b = (needle || "").toLowerCase();
-
-//            return !!(a.indexOf(b) > -1);
-
-//        }
-//        function hasValue(parent, value, searchcriteria) {
-//            if (value == "") {
-//                return true;
-//            }
-//            if (searchcriteria == ExternalName) {
-//                if (contains(htmlDecode(gantt.getTask(parent).machineName), value))
-//                    return true;
-//            }
-//            if (searchcriteria == ActivityName) {
-//                if (contains(htmlDecode(gantt.getTask(parent).text), value))
-//                    return true;
-//            }
-
-//            var child = gantt.getChildren(parent);
-//            for (var i = 0; i < child.length; i++) {
-//                if (hasValue(child[i], value, searchcriteria))
-//                    return true;
-//            }
-//            return false;
-//        }
-//        gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
-//            if (hasValue(id, $('#txtGlobalSearch').val().trim(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        });
-//        if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
-
-//            if ($('#txtGlobalSearch').val().length > 0) {
-//                SearchTextforcal = $('#txtGlobalSearch').val().trim();
-//                $('#txtGlobalSearch').val("");
-//                GlobalSearch();
-//                $('#txtGlobalSearch').val(SearchTextforcal);
-//                $('#SuccessMsg').css('display', 'none');
-//                $("#spanMsgSuccess").empty();
-//                $("#errorMsg").css("display", "block");
-//                $("#spanMsgError").empty();
-//                $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
-//            }
-//        }
-//        else {
-//            $("#errorMsg").css("display", "none");
-//            $("#spanMsgError").empty();
-//        }
-//    }
-//    else if ($('#divPlanEditButtonHome').children().hasClass("request-btn-active")) {
-//        var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
-//        var SearchText = $('#txtGlobalSearch').val();
-//        GlobalSearchonGrid(SearchText, SearchDDLValue);
-//    }
-//}
-
-function GlobalSearchonGrid(node, columnName) {
-    var colindex = 0;
-    var text = node;
-    HomeGrid.setFiltrationLevel(-2);
-    if (columnName.toLowerCase().toString() == ActivityName) {
-        colindex = HomeGrid.getColIndexById('taskname');
-    }
-    else if (columnName.toLowerCase().toString() == ExternalName) {
-        colindex = HomeGrid.getColIndexById('machinename');
-    }
-    HomeGrid.filterTreeBy(colindex, function (data) {
-        return htmlDecode(data).toLowerCase().toString().indexOf(text.toLowerCase()) != -1;
-    });
-    if (HomeGrid.rowsBuffer.length <= 0) {
-        $('#txtGlobalSearch').val("");
-        BindHomeGrid();
-        $('#txtGlobalSearch').val(node.trim());
-        $("#errorMsg").css("display", "block");
-        $("#spanMsgError").empty();
-        $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
-        $(window).scrollTop(0);
-    }
-    else {
-        if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
-            HomeGrid.expandAll();
-        }
-        $("#errorMsg").css("display", "none");
-        $("#spanMsgError").empty();
-    }
-}
 function RemoveAllMediaCodeData() {
     $('#honeycomb_contentMediaCode').find(".hc-block").remove();
     $('#divHoneyCombBoxMediaCode .popover-content').html("");
@@ -1330,9 +1260,9 @@ function RemoveAllMediaCodeData() {
 
 //Common Functions
 //Start
-function RefershPlanHeaderCalc() {   
+function RefershPlanHeaderCalc() {
     //if ($('#IsGridView').val().toLowerCase() == "true") {
-        GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, SelectedTimeFrameOption);
+    GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, SelectedTimeFrameOption);
     //}
 
 }
@@ -1375,7 +1305,7 @@ function ConfirmLinkTactic() {
     }
     else {
         if (isDataModified) {
-            BindPlanCalendar(); 
+            BindPlanCalendar();
         }
         else {
             gantt.refreshData();
@@ -1385,22 +1315,15 @@ function ConfirmLinkTactic() {
     $(".datepicker.dropdown-menu").each(function () {
         $(this).remove();
     });
-   
+
     $("div[id^='LinkIcon']").each(function () {
         bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
     });
 };
 ////End
 
-// Start Code for ticket - 2596
-//function OpenDropdown() {
-//    debugger;
-//    IsManageDropdown = true; // handle sorting in task name column in grid 
-//}
-
 //set value of dropdown in search criteria
-$(".dropdown-menu li a").click(function () {  
-
+$(".dropdown-menu searchDropdown li a").click(function () {
     $("#txtGlobalSearch").val("");
     $("#searchCriteria").text($(this).text()[0]);
     $("#searchCriteria").val($(this).text());
@@ -1409,22 +1332,29 @@ $(".dropdown-menu li a").click(function () {
 
 //On search button click
 $('#ExpSearch').click(function () {
-
     if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
         GlobalSearch();
+        $('#ExpSearch').css('display', 'none');
+        $('#ExpClose').css('display', 'block');
     }
+});
+
+$('#ExpClose').click(function () {
+    $('#txtGlobalSearch').val("");
+    $('#ExpClose').css('display', 'none');
+    GlobalSearch();
+    $('#ExpSearch').css('display', 'block');
+
 });
 
 //Handle enter key in search textbox
 $('#txtGlobalSearch').on('keypress', function (event) {
-    
     if (event.which === 13) {
         $('#ExpSearch').click();
     }
 });
-
+var SearchTextforcal = ""
 function GlobalSearch() {
-
     if ($('#IsGridView').val() == 'True' || IsBudgetGrid) {
 
         var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
@@ -1432,7 +1362,6 @@ function GlobalSearch() {
         GlobalSearchonGrid(SearchText, SearchDDLValue);
     }
     else {
-
         gantt.refreshData();
         gantt.render();
         function contains(haystack, needle) {
@@ -1442,7 +1371,6 @@ function GlobalSearch() {
             return !!(a.indexOf(b) > -1);
         }
         function hasValue(parent, value, searchcriteria) {
-
             if (value == "") {
                 return true;
             }
@@ -1461,34 +1389,65 @@ function GlobalSearch() {
                     return true;
             }
             return false;
-            gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
-
-                if (hasValue(id, $('#txtGlobalSearch').val().trim(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
-                    return true;
-                } else {
-                    return false;
-                }
-            });
-            if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
-
-                if ($('#txtGlobalSearch').val().length > 0) {
-                    SearchTextforcal = $('#txtGlobalSearch').val().trim();
-                    $('#txtGlobalSearch').val("");
-                    GlobalSearch();
-                    $('#txtGlobalSearch').val(SearchTextforcal);
-                    $('#SuccessMsg').css('display', 'none');
-                    $("#spanMsgSuccess").empty();
-                    $("#errorMsg").css("display", "block");
-                    $("#spanMsgError").empty();
-                    $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
-                }
-            }
-            gantt.eachTask(function (task) {
-                task.$open = true;
-            });
-            gantt.render(); // To expand in gantt
-
         }
+        gantt.attachEvent("onBeforeTaskDisplay", function (id, task) {
+
+            if (hasValue(id, $('#txtGlobalSearch').val().trim(), $('#searchCriteria').val().replace(" ", "").toUpperCase().toString())) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
+
+            if ($('#txtGlobalSearch').val().length > 0) {
+                SearchTextforcal = $('#txtGlobalSearch').val().trim();
+                $('#txtGlobalSearch').val("");
+                GlobalSearch();
+                $('#txtGlobalSearch').val(SearchTextforcal);
+                $('#SuccessMsg').css('display', 'none');
+                $("#spanMsgSuccess").empty();
+                $("#errorMsg").css("display", "block");
+                $("#spanMsgError").empty();
+                $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+            }
+        }
+        gantt.eachTask(function (task) {
+            task.$open = true;
+        });
+        gantt.render(); // To expand in gantt
+
+    }
+}
+
+function GlobalSearchonGrid(node, columnName) {
+    var colindex = 0;
+    var text = node;
+    HomeGrid.setFiltrationLevel(-2);
+    if (columnName.toLowerCase().toString() == ActivityName) {
+        colindex = HomeGrid.getColIndexById(TaskNameId);
+    }
+    else if (columnName.toLowerCase().toString() == ExternalName) {
+        colindex = HomeGrid.getColIndexById(MachineNameId);
+    }
+    HomeGrid.filterTreeBy(colindex, function (data) {
+        return htmlDecode(data).toLowerCase().toString().indexOf(text.toLowerCase()) != -1;
+    });
+    if (HomeGrid.rowsBuffer.length <= 0) {
+        $('#txtGlobalSearch').val("");
+        BindHomeGrid();
+        $('#txtGlobalSearch').val(node.trim());
+        $("#errorMsg").css("display", "block");
+        $("#spanMsgError").empty();
+        $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+        $(window).scrollTop(0);
+    }
+    else {
+        if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
+            HomeGrid.expandAll();
+        }
+        $("#errorMsg").css("display", "none");
+        $("#spanMsgError").empty();
     }
 }
 //insertation start Added following method for open pop up to import file.
@@ -1526,7 +1485,7 @@ function LoadFileInputModelBox() {
 
         // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
         if (data.response.conflict == true) {
-            ShowMessage(false, data.response.message);          
+            ShowMessage(false, data.response.message);
         }
         else if (data.response.conflict == false) {
             ShowMessage(false, data.response.message);
@@ -1534,7 +1493,7 @@ function LoadFileInputModelBox() {
         $('#ImportModal').modal('hide');
         $('#btnbudget').click();
         $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString());
-        
+
     });
 
     $('#input-43').on('fileloaded', function (event, file, previewId, index, reader) {
@@ -1547,3 +1506,56 @@ function LoadFileInputModelBox() {
 //Following function will be called on click of import bitton to opn pop up for import an excel
 
 ///End
+
+
+// Bind View Dropdown list.
+function BindViewSelections(strUrl) {
+    var $dropdown = $("#ddlTabViewBy");
+    $dropdown.html('');
+    var $html = '';
+    var type = '';
+    $.ajax({
+        type: 'POST',
+        url: strUrl,
+        data: { planids: filters.PlanIDs.toString() },
+        success: function (data) {
+            if (data != null && data != 'undefined') {
+                if (data.length > 0) {
+                    $.each(data, function (index, time) {
+
+                        if (type == time.Value) {
+                            $html += '<option value="' + time.Value + '" selected="selected">' + time.Text + '</option>';
+                        }
+                        else {
+                            $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                        }
+
+                    });
+                }
+                $dropdown.append($html);
+                $("#ddlTabViewBy").multiselect('refresh');
+                //$('#ddlTabViewBy').val(data.ViewBy.toString());
+            }
+        }
+    });
+}
+
+// ViewBy Change Event.
+$("#ddlTabViewBy").change(function () {
+
+    if ($('#IsGridView').val().toLowerCase() == "false") {
+        BindPlanCalendar();
+        $('.export-dd').find('#ExportXls').hide();
+        $('.export-dd').find('#ExportPDf').show();
+        $('#divupcomingact').hide();
+        $("#GridGanttContent").show();
+        $("#divgridview").hide();
+    } else {
+        LoadPlanGrid();
+        $("#GridGanttContent").hide();
+        $('#divupcomingact').show();
+        $("#divgridview").show();
+        $('.export-dd').find('#ExportXls').show();
+        $('.export-dd').find('#ExportPDf').hide();
+    }
+});

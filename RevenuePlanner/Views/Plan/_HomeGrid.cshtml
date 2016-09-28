@@ -107,6 +107,11 @@
                 IsManageviewClick = false;
                 return false;
             }
+            else if (IsManageDropdown)
+            {
+                IsManageviewClick = false;
+                return false;
+            }
             else
                 return true;
         });
@@ -141,9 +146,10 @@
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         HomeGrid.parse(GridDataHomeGrid, "json");
-        colSplitId = HomeGrid.getColIndexById(AddId);
-        HomeGrid.splitAt(colSplitId);
-        GridHideColumn();  ///Calling Hide column function              
+        GridHideColumn();  ///Calling Hide column function
+        HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
+        colSplitId = HomeGrid.getColIndexById(EntityId);
+        HomeGrid.splitAt(colSplitId);        
         MoveColumn(); ///Calling Move column function       
         HomeGrid.collapseAll();
         var cookie = document.cookie;

@@ -44,25 +44,25 @@
 @*//insertation start by kausha 21/09/2016 #2638/2592 Export to excel*@
 <div class="cf full-width-header" id="planHeader">
     <div class="sidebar-toogle">
-        <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true"></i></a>
+        <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true" title="Filters"></i></a>
     </div>
     @Html.Partial("~/Views/Shared/_Planhud.cshtml")
     <div class="planheader-left">
         <div class="plan-header-grid">
             <div class="request-icon-block">
-                <a class="new-btn-plan-left P-icon-active" href="#" id="btngridcalendar">
+                <a class="new-btn-plan-left" href="#" id="btngridcalendar" title="Calendar View">
                     <i class="fa fa-calendar"></i>
                 </a>
-                <a id="btnbudget" class="new-btn-plan-right" href="#">
+                <a id="btnbudget" title="Budget & Cost" class="new-btn-plan-right" href="#">
                     <i class="fa fa-money"></i>
                 </a>
             </div>
-            <div class="ix-icon-block margin-left8 ">
+            <div class="ix-icon-block">
                 <a id="ImportBtn" class="new-btn-plan-left P-icon-active" href="#" style="display:none" onclick="showModal();">
-                    <i class="fa fa-sign-in"></i><span>Import</span>
+                    <i class="fa fa-sign-in" title="Import"></i><span>Import</span>
                 </a>
                 <a href="#" id="" class="new-btn-plan-right dropdown-toggle " data-toggle="dropdown">
-                    <i class="fa fa-external-link"></i><span>Export</span>
+                    <i class="fa fa-external-link" title="Export"></i><span>Export</span>
                 </a>
                 <ul id="" class="dropdown-menu export-dd">
                     <li title=""><a href="#" id="ExportXls" onclick="ExportToExcel()">.xls</a></li>
@@ -71,7 +71,7 @@
             </div>
 
             <!-- -->
-            <div id="divupcomingact" class="viewby-wrap margin-left9" style="display:none">
+            <div id="divupcomingact" class="viewby-wrap" style="display:none">
                 <label id="lblUpcoming_Activies1" for="Time_Frame:">Time Frame:</label>
                 <span style="width: 100px;" id="ddlUpComingActivitesSelectBox" class="selectBox">
                     <select name="ddlUpComingActivites" id="ddlUpComingActivites" class="hide" sb="85765995" style="display: none;"></select>
@@ -79,9 +79,7 @@
             </div>
             <div class="viewby-wrap">
                 <label id="lblViewBy1" for="View_By:">View By:</label>
-                <button id="btnMultiselect_ddlTabViewBy" type="button" class="ui-multiselect ui-widget ui-state-default ui-corner-all custom-right-pos" aria-haspopup="true" title="Tactic">
-                    <span>Tactic</span><span class="ui-icon ui-icon-triangle-1-s"></span>
-                </button>
+                <select name="ddlTabViewBy" id="ddlTabViewBy" class="hide" sb="83202234" style="display: none;"></select>
             </div>
             <!-- -->
         </div>
@@ -94,7 +92,7 @@
     <div id="exp-serach" class="clearfix">
         <div class="input-group-btn">
             <button id="searchCriteria" onclick="OpenDropdown(true)" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="ActivityName">A</button>
-            <div class="dropdown-menu">
+            <div class="dropdown-menu searchDropdown">
                 <ul role="menu" aria-labelledby="dropdownMenu">
                 <li><a tabindex="-1" href="#">ActivityName</a></li>
                 <li><a tabindex="-1" href="#">ExternalName</a></li>
@@ -103,9 +101,10 @@
         </div>
         <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="ActivityName">
         <span class="ExpIcon" id="ExpSearch" data-toggle="tooltip" title="Search"><i class="fa fa-search"></i></span>
+        <span class="ExpIcon" id="ExpClose" style="display:none"><i class="fa fa-times-circle-o" aria-hidden="true"></i></span>
     </div>
     @* ===== Close button to change View Start ======= *@
-    <a class="changeView"><i class="fa fa-times-circle" aria-hidden="true"></i></a>
+    <a class="changeView" id="ChangeView" style="display:none"><i class="fa fa-times-circle" aria-hidden="true"></i></a>
     @* ===== Close button to change View End ======= *@
     <!-- -->
     <div id="GridGanttContent" style="display:none"></div>
@@ -174,15 +173,19 @@
 <div id="dvCopyEntity"></div>
 @Html.Partial("~/Views/Plan/_PlanGridVariable.cshtml")
 <div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
+<style type="text/css">
+    .searchDropdown{
+        }  /*stop resolve conflict with Export dropdown*/ 
+</style>
 <script src="~/Scripts/Filter.js"></script>
 <script src="~/Scripts/js/Home/Grid_CalendarCommon.js"></script>
 <script src="~/Scripts/js/Home/HomeGrid.js"></script>
 <script src="~/Scripts/js/Home/Calendar.js"></script>
-    <script type="text/javascript">	 
-        //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
-        var imgPath = "";
-        imgPath = '@Url.Content("~/codebase/imgs/")';
-        //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
+    <script type="text/javascript">
+    //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
+    var imgPath = "";
+    imgPath = '@Url.Content("~/codebase/imgs/")';
+    //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
     ///Assign Enum and Server Side value to Variable
     var RequestedModule = '@RequestedModule';
     var CalledFromBudget = '@CalledFromBudget';
@@ -204,7 +207,7 @@
     var campaignCloneType = '@Enums.DuplicationModule.Campaign';
     var programCloneType = '@Enums.DuplicationModule.Program';
     var tacticCloneType = '@Enums.DuplicationModule.Tactic';
-    var lineItemCloneType = '@Enums.DuplicationModule.LineItem';    
+    var lineItemCloneType = '@Enums.DuplicationModule.LineItem';
     var ActivityName = '@Enums.GlobalSearch.ActivityName.ToString().ToLower()';
     var ExternalName = '@Enums.GlobalSearch.ExternalName.ToString().ToLower()';
     var AssetTypeAsset = '@Enums.AssetType.Asset.ToString()';
@@ -219,9 +222,12 @@
     var DeselectAssetFromPackage = '@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage';
     var UnpackageSuccessful = '@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful';
     var activeMenu = '@ViewBag.ActiveMenu.ToString()';
+    var IsManageDropdown = false;
     ///////
     var IsManageviewClick = false;
     var IsBudgetGrid = false;
+    var isCalendarView = false;
+
     var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
     var ExportSelectedIds = {
         TaskID: [],
@@ -236,8 +242,7 @@
         DhtmlxRowId: [],
         AnchorTacticId: [],
     };
-    var IsPackageView = false;
-    var isDisplayGridview = true;
+    var IsPackageView = false;  
 
     var filters = {
         parentCustomFieldsIds: [],
@@ -256,8 +261,9 @@
     var isDataModified = false;
     var isCopyTactic = 0;
     var isEditTactic = 0;
-        //for Hidding tooltip -ticket 2414
+    //for Hidding tooltip -ticket 2414
     var $doc = $(document);
+
     $doc.click(function () {
         $(".tooltip").hide();
     });
@@ -282,11 +288,11 @@
         $("#sidebar").toggleClass("slideLeft");
         $("#content_wraper").toggleClass("slideLeft");
     })
-   
+
     $(document).ready(function () {
 
-            $(".selectBox select").selectbox();
-            $("#ddlTabViewBy").multiselect();
+        $(".selectBox select").selectbox();
+        $("#ddlTabViewBy").multiselect();
 
         var strURL = '@Url.Content("~/Filter/Index/")';
         $.ajax({
@@ -305,23 +311,19 @@
                     GetTacticTypelist(filters.PlanIDs);
                     GetOwnerListForFilter(filters.PlanIDs);
                     GetLastSetofViews($('#FilterPresetName').val());
-                    BindUpcomingActivites(filters.PlanIDs, '@Url.Content("~/Home/BindUpcomingActivitesValues/")');
+                    BindUpcomingActivites(filters.PlanIDs);
                     SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
+                    BindViewSelections(urlContent + 'Home/GetViewBylistData');
                     GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
                     GetMultiplePlanNames();
                     GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
-                    if (isDisplayGridview) {
+                    if (IsGridView) {
                         LoadPlanGrid();
                     }
                 }
             }
         });
     });
-
-        //For Ticket 2596 -For stop sorting on dropdownclick
-        function  OpenDropdown() {
-               IsManageDropdown = true;
-        }
 
     function OpenCreateNew(IsGridView) {
         $.ajax({
