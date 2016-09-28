@@ -142,18 +142,13 @@ function GetHeaderData(url, activemenu, timeframe, selectedPlanIds, Customid, Ow
 
 
 function GetNumberOfActivityPerMonByPlanId(url, activemenu, timeframe, selectedPlanIds, Customid, OwnerId, Tacticids, StatusId) {
-    var isMultiple = false;
-    if (activemenu == "home") {
-        isMultiple = true;
-    }
     $.ajax(
     {
         type: "POST",
         url: url,
         data: {
             planid: selectedPlanIds.toString(),
-            strparam: timeframe,
-            isMultiplePlan: isMultiple,
+            strtimeframe: timeframe,
             CustomFieldId: Customid.toString(),
             OwnerIds: OwnerId.toString(),
             TacticTypeids: Tacticids.toString(),
@@ -175,7 +170,7 @@ function GetNumberOfActivityPerMonByPlanId(url, activemenu, timeframe, selectedP
 function setgraphdata(data) {
     $(".dhx_chart_legend").html('');
     var legendvalue = "";
-    var activityyear = data.strparam;
+    var activityyear = data.strtimeframe;
     if (activityyear == "" || activityyear == undefined || activityyear == null) {
         activityyear = $('select#ddlUpComingActivites option:selected').val();
     }

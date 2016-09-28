@@ -1256,6 +1256,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="currentView">Current view of calendar.</param>
         /// <param name="startDate">Start Date of calendar.</param>
         /// <param name="endDate">End date of calendar.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void GetPlanGanttStartEndDate(string planYear, string currentView, ref DateTime startDate, ref DateTime endDate)
         {
             int year;
@@ -2978,25 +2979,26 @@ namespace RevenuePlanner.Helpers
 
 
             StartDate = EndDate = DateTime.Now;
+            //// Set start and end date for calender
             Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
             double TotalMQLs = 0, TotalBudget = 0;
             double? TotalPercentageMQLImproved = 0;
             int TotalTacticCount = 0;
             DataSet dsPlanCampProgTac = new DataSet();
             dsPlanCampProgTac = (DataSet)dataCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
-            var planList = dataCache.Returncache(Enums.CacheObject.Plan.ToString()) as List<Plan>;
-            var planData = planList.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == year).Select(a => a.PlanId).ToList();
+            List<Plan> planList = dataCache.Returncache(Enums.CacheObject.Plan.ToString()) as List<Plan>;
+            List<int> planData = planList.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == year).Select(a => a.PlanId).ToList();
             planIds = planList.Select(a => a.PlanId).ToList();
-
-          var campplist = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).Where(campaign => (!((campaign.EndDate < StartDate) || (campaign.StartDate > EndDate))) && planIds.Contains(campaign.PlanId)).ToList();
-          var campplanid = campplist.Select(a => a.PlanId).ToList();
+          //get campaign list as per plan
+          List<Plan_Campaign> campplist = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).Where(campaign => (!((campaign.EndDate < StartDate) || (campaign.StartDate > EndDate))) && planIds.Contains(campaign.PlanId)).ToList();
+          List<int> campplanid = campplist.Select(a => a.PlanId).ToList();
           List<int> filterOwner = new List<int>();
           filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Int32.Parse(owner)).ToList();
 
             if (planList != null && planList.Count > 0)
             {
               
-                var innerplanids = planList.Where(a => campplanid.Count > 0 ? campplanid.Contains(a.PlanId) : planIds.Contains(a.PlanId)).Select(plan => plan.PlanId).ToList();
+                List<int> innerplanids = planList.Where(a => campplanid.Count > 0 ? campplanid.Contains(a.PlanId) : planIds.Contains(a.PlanId)).Select(plan => plan.PlanId).ToList();
             
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                 List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
@@ -3024,7 +3026,7 @@ namespace RevenuePlanner.Helpers
 
 
                 List<Custom_Plan_Campaign_Program_Tactic> customtacticList = (List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.CustomTactic.ToString());
-                var planTacticsList = ((List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.CustomTactic.ToString())).Where(t => t.IsDeleted == false && innerplanids.Contains(t.PlanId) && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
+                List<Custom_Plan_Campaign_Program_Tactic> planTacticsList = ((List<Custom_Plan_Campaign_Program_Tactic>)dataCache.Returncache(Enums.CacheObject.CustomTactic.ToString())).Where(t => t.IsDeleted == false && innerplanids.Contains(t.PlanId) && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
 
                 lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
@@ -3058,10 +3060,10 @@ namespace RevenuePlanner.Helpers
 
                 //End
 
-                var impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
-                var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => impprogramlist.Contains(imp.ImprovementPlanProgramId) && imp.IsDeleted == false).ToList();
+                List<int> impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
+                List<Plan_Improvement_Campaign_Program_Tactic> improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => impprogramlist.Contains(imp.ImprovementPlanProgramId) && imp.IsDeleted == false).ToList();
                
-                var LineItemList = sp.GetLineItemList(string.Join(",", planIds));
+                List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = sp.GetLineItemList(string.Join(",", planIds));
 
 
             
@@ -3074,7 +3076,7 @@ namespace RevenuePlanner.Helpers
                 List<StageList> stageListType = Common.GetStageList();
                 var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.CID).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
 
-                var improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
+                List<int> improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
                 List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
                 string size = Enums.StageType.Size.ToString();
                 List<ModelDateList> modelDateList = new List<ModelDateList>();
@@ -3105,7 +3107,7 @@ namespace RevenuePlanner.Helpers
 
                     if (planTacticIds.Count() > 0)
                     {
-                        var tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
+                        List<int> tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
                         TotalBudget += LineItemList.Where(l => tacticIds.Contains(l.PlanTacticId)).Sum(l => l.Cost);
                     }
 
@@ -3166,19 +3168,6 @@ namespace RevenuePlanner.Helpers
             }
             return newHomePlanModelHeader;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         #endregion
 

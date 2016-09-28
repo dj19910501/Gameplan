@@ -5855,7 +5855,7 @@ namespace RevenuePlanner.Controllers
 
         //Add by Komal Rawal on 12/09/2016
         //Desc : To get header values.
-        public async Task<JsonResult> GetActivityDistributionchart(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public async Task<JsonResult> GetActivityDistributionchart(string planid, string strtimeframe, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
         {
 
             List<int> filteredPlanIds = new List<int>();
@@ -5865,8 +5865,7 @@ namespace RevenuePlanner.Controllers
             List<int> campplanid = new List<int>();
             CalendarStartDate = DateTime.Now;
             CalendarEndDate = DateTime.Now;
-
-            isNumeric = int.TryParse(strparam, out Planyear);
+            isNumeric = int.TryParse(strtimeframe, out Planyear);
             if (isNumeric)
             {
                 planYear = Convert.ToString(Planyear);
@@ -5876,7 +5875,7 @@ namespace RevenuePlanner.Controllers
                 planYear = DateTime.Now.Year.ToString();
             }
            
-            if (string.IsNullOrEmpty(strparam))
+            if (string.IsNullOrEmpty(strtimeframe))
             {
                 List<Plan> lstPlans = new List<Plan>();
                 lstPlans = Common.GetPlan();
@@ -5886,29 +5885,27 @@ namespace RevenuePlanner.Controllers
                 if (objPlan != null)
                 {
                     planYear = objPlan.Year;
-                    strparam = planYear;
+                    strtimeframe = planYear;
                 }
 
             }
 
             //// Set start and end date for calender
-            Common.GetPlanGanttStartEndDate(planYear, strparam, ref CalendarStartDate, ref CalendarEndDate);
+            Common.GetPlanGanttStartEndDate(planYear, strtimeframe, ref CalendarStartDate, ref CalendarEndDate);
             DataSet dsPlanCampProgTac = new DataSet();
             dsPlanCampProgTac = (DataSet)objCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
             if (dsPlanCampProgTac == null)
             {
                 dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(planid);
             }
-            var planData = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
-            var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
+            List<Plan> planData = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+            List<Plan_Campaign> lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
        
             bool IsMultiYearPlan = false;
-            if (isMultiplePlan)
-            {
-
+          
                 List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
               
-                var planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
+                List<int> planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
 
                 if (planList.Count == 0)
                 {
@@ -5917,36 +5914,14 @@ namespace RevenuePlanner.Controllers
                 filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
                     campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
 
-            }
-            else
-            {
-                int PlanId = !string.IsNullOrEmpty(planid) ? int.Parse(planid) : 0;
-            
-                var Plan = planData.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
-              
-                if (Plan == null)
-                {
-                    Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
-                }
-                planYear = Plan.Year;
-                var CampaignList = lstCampaign.ToList(); 
-           
-                /// if strparam value null then set planYear as default value.
-                if (string.IsNullOrEmpty(strparam))
-                    strparam = planYear;
-                isNumeric = int.TryParse(strparam, out Planyear);
-                if (!string.IsNullOrEmpty(planid))
-                    filteredPlanIds.Add(int.Parse(planid));
-
-            }
             //// Get planyear of the selected Plan
-            if (strparam.Contains("-") || IsMultiYearPlan)
+            if (strtimeframe.Contains("-") || IsMultiYearPlan)
             {
 
                 List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
-                lstActivityChartyears = GetmultipleyearActivityChartData(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan);
+                lstActivityChartyears = GetmultipleyearActivityChartData(strtimeframe, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds);
 
-                return Json(new { lstchart = lstActivityChartyears.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet);
+                return Json(new { lstchart = lstActivityChartyears.ToList(), strparam = strtimeframe }, JsonRequestBehavior.AllowGet);
             }
           
             var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
@@ -6022,7 +5997,7 @@ namespace RevenuePlanner.Controllers
             {
                 IEnumerable<string> differenceItems;
                 int year = 0;
-                if (strparam != null && isNumeric)
+                if (strtimeframe != null && isNumeric)
                 {
                     year = Planyear;
                 }
@@ -6087,7 +6062,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                     }
-                    else if (strparam.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
+                    else if (strtimeframe.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         
                         endDate = new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month));
@@ -6118,7 +6093,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                     }
-                    else if (strparam.Equals(Enums.UpcomingActivities.thisquarter.ToString(), StringComparison.OrdinalIgnoreCase))
+                    else if (strtimeframe.Equals(Enums.UpcomingActivities.thisquarter.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         if (startDate.Year == System.DateTime.Now.Year || endDate.Year == System.DateTime.Now.Year)
                         {
@@ -6187,10 +6162,10 @@ namespace RevenuePlanner.Controllers
             }
             await Task.Delay(1);
       
-            return Json(new { lstchart = lstActivityChart.ToList(), strparam = strparam }, JsonRequestBehavior.AllowGet); //Modified BY Komal rawal for #1929 proper Hud chart and count
+            return Json(new { lstchart = lstActivityChart.ToList(), strtimeframe = strtimeframe }, JsonRequestBehavior.AllowGet); //Modified BY Komal rawal for #1929 proper Hud chart and count
         }
 
-        private List<ActivityChart> GetmultipleyearActivityChartData(string strParam, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool isMultiplePlan)
+        private List<ActivityChart> GetmultipleyearActivityChartData(string strtimeframe, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds)
         {
             List<int> filteredPlanIds = new List<int>();
             string planYear = string.Empty;
@@ -6206,15 +6181,14 @@ namespace RevenuePlanner.Controllers
             List<string> categories = new List<string>();
             DataSet dsPlanCampProgTac = new DataSet();
             dsPlanCampProgTac = (DataSet)objCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
-            if (strParam.Contains("-"))
+            if (strtimeframe.Contains("-"))
             {
-                if (isMultiplePlan)
-                {
-                    planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
-                }
+              
+                planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
+            
                 planData = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
-                var lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
-                string[] multipleyear = strParam.Split('-');
+                List<Plan_Campaign> lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
+                string[] multipleyear = strtimeframe.Split('-');
                 int multiYearCount = multipleyear.Count();
                 for (int i = 0; i < multiYearCount; i++)
                 {
@@ -6230,38 +6204,27 @@ namespace RevenuePlanner.Controllers
                     //// Set start and end date for calender
                     Common.GetPlanGanttStartEndDate(planYear, multipleyear[i], ref CalendarStartDate, ref CalendarEndDate);
 
-                    if (isMultiplePlan)
-                    {
-                        var planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
+                   
+                        List<int> planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
                         if (planList.Count == 0)
                         {
                             campplanid = lstCampaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && planIds.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
                         }
                         filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
-                            campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
-                    }
-                    else
-                    {
-
-                        int PlanId = !string.IsNullOrEmpty(planid) ? int.Parse(planid) : 0;
-                     
-                        var Plan = planData.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
-                        if (Plan == null)
-                        {
-                            Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId));
-                        }
-                        planYear = Plan.Year;
-                   
-                        if (string.IsNullOrEmpty(multipleyear[i]))
-                            multipleyear[i] = planYear;
-                        isNumeric = int.TryParse(multipleyear[i], out Planyear);
-                        if (!string.IsNullOrEmpty(planid))
-                            filteredPlanIds.Add(int.Parse(planid));
-                    }
+                         campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
 
 
-                    var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
-                                                 campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate, isdelete = tactic.IsDeleted }).ToList();
+                    var  objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
+                                                 campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId)
+                                                 && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false)
+                                                 .Select(tactic => new {
+                                                     PlanTacticId = tactic.PlanTacticId,
+                                                     CreatedBy = tactic.CreatedBy,
+                                                     TacticTypeId = tactic.TacticTypeId,
+                                                     Status = tactic.Status,
+                                                     StartDate = tactic.StartDate,
+                                                     EndDate = tactic.EndDate,
+                                                     isdelete = tactic.IsDeleted }).ToList();
 
                     objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
@@ -6619,6 +6582,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="endDateParam">end date</param>
         /// <param name="monthArray">array of months</param>
         /// <returns>returns array of int for months</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int[] GetQuarterWiseGraph(string Quarter, DateTime startDateParam, DateTime endDateParam, int[] monthArray)
         {
             IEnumerable<string> differenceItems;
