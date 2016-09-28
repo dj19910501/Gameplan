@@ -1611,7 +1611,6 @@ BEGIN
 END
 GO
 
-
 -- =============================================
 -- Author:		Nishant Sheth
 -- Create date: 16-Sep-2016
@@ -1634,7 +1633,10 @@ SET NOCOUNT ON;
 			,C.IsRequired
 			,C.EntityType
 			,C.AbbreviationForMulti
+			,CT.CustomFieldType
 			FROM CustomField  C
+			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' FROM CustomFieldType CT
+				WHERE C.CustomFieldTypeId=CT.CustomFieldTypeId)CT
 			WHERE ClientId=@ClientId
 					AND IsDeleted=0
 					AND EntityType IN('Campaign','Program','Tactic','Lineitem')
@@ -1695,11 +1697,11 @@ GO
 -- =============================================
 ALTER PROCEDURE [dbo].[GetGridData]
 	-- Add the parameters for the stored procedure here
-	@PlanId NVARCHAR(MAX) = ''
-	,@ClientId INT = 0
-	,@OwnerIds NVARCHAR(MAX) = ''
-	,@TacticTypeIds varchar(max)=''
-	,@StatusIds varchar(max)=''
+		@PlanId NVARCHAR(MAX) = ''
+		,@ClientId INT = 0
+		,@OwnerIds NVARCHAR(MAX) = ''
+		,@TacticTypeIds varchar(max)=''
+		,@StatusIds varchar(max)=''
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -1761,17 +1763,18 @@ BEGIN
 				,Tactic.LinkedTacticId
 				,P.PlanName AS 'LinkedPlanName'
 				,ROI.AnchorTacticID
+				--PackageTacticIds - comma saperated values selected as part of ROI package
 				,(SELECT SUBSTRING((	
 						SELECT ',' + CAST(PlanTacticId AS VARCHAR) FROM ROI_PackageDetail R
 						WHERE ROI.AnchorTacticID = R.AnchorTacticID
 						FOR XML PATH('')), 2,900000
-					))AS PackageTacticIds
-				--FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
+					))AS PackageTacticIds 
+				,PlanDetail.PlanYear
 				FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds) Hireachy 
 	OUTER APPLY (SELECT M.AverageDealSize FROM Model M WITH (NOLOCK)
 					WHERE M.IsDeleted = 0
 							AND Hireachy.ModelId = M.ModelId
-							) M
+							) M --This will get the average dealsize as per the plan model
 	OUTER APPLY (SELECT Tactic.PlanTacticId,
 						Tactic.TacticTypeId,
 						Tactic.Cost,
@@ -1787,8 +1790,14 @@ BEGIN
 	OUTER APPLY (SELECT ROI.PlanTacticId
 						,ROI.AnchorTacticID FROM ROI_PackageDetail ROI
 						WHERE Tactic.PlanTacticId = ROI.PlanTacticId) ROI
-	OUTER APPLY (SELECT Title AS 'PlanName' FROM [Plan] P WITH (NOLOCK)
+	OUTER APPLY (SELECT Title AS 'PlanName'
+						FROM [Plan] P WITH (NOLOCK)
 					WHERE Tactic.LinkedPlanId = P.PlanId) P
+	OUTER APPLY (SELECT [PlanDetail].[Year] AS 'PlanYear'
+						FROM [Plan] PlanDetail WITH (NOLOCK)
+					WHERE 
+					Hireachy.EntityType = 'Plan' AND
+					Hireachy.EntityId = PlanDetail.PlanId) PlanDetail
 	OUTER APPLY(SELECT TacticType.TacticTypeId,
 						TacticType.AssetType,
 						TacticType.Title  
@@ -1799,9 +1808,11 @@ BEGIN
 						LineItem.Cost,
 						LT.Title AS 'LineItemType'
 						FROM Plan_Campaign_Program_Tactic_LineItem LineItem WITH (NOLOCK)
-						CROSS APPLY(SELECT LT.LineItemTypeId,LT.Title FROM LineItemType LT
-									WHERE LineItem.LineItemTypeId = LT.LineItemTypeId
-									AND LT.IsDeleted = 0)LT
+						OUTER APPLY(SELECT LT.LineItemTypeId,LT.Title FROM LineItemType LT
+									WHERE 
+									LineItem.LineItemTypeId = LT.LineItemTypeId
+									AND
+									 LT.IsDeleted = 0)LT
 						WHERE Hireachy.EntityType = 'LineItem'
 						AND Hireachy.EntityId = LineItem.PlanLineItemId) LineItem
 	OUTER APPLY (SELECT Stage.Title,Stage.StageId,Stage.[Level] FROM Stage WITH (NOLOCK) WHERE Tactic.StageId = Stage.StageId AND Stage.IsDeleted=0) Stage

@@ -68,12 +68,33 @@ function GridHideColumn() {
 }
 ///
 
+
+// Start Function for Load home grid from cache data
+// Add By Nishant Sheth
+function LoadPlanGridFromCache() {
+    $.ajax({
+        url: urlContent + 'Plan/GetHomeGridDataFromCache/',
+        success: function (result) {
+            var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
+    '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +'<br/></div>';
+            gridhtml += result;
+            $("#divgridview").html('');
+            $("#divgridview").html(gridhtml);
+            $("div[id^='LinkIcon']").each(function () {
+                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+            });
+            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
+        }
+    });
+}
+// End
+
 ////Move column functionality
 function MoveColumn() {
     HomeGrid.attachEvent("onAfterCMove", function (cInd, posInd) {
         var ColumnCount = HomeGrid.getColumnCount();
         var ColumnDetail = [];
-        var AttrType = 'Common';
+        var AttrType = 'Common'; // For as default column or customfield column with which kind of entity custom fields
         for (var i = 0; i < ColumnCount; i++) {
             var ColWidth = HomeGrid.getColWidth(i);
             var customcolId = HomeGrid.getColumnId(i).toString();

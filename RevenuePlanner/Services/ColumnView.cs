@@ -255,5 +255,30 @@ namespace RevenuePlanner.Services
             return result;
         }
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Pass the xmldocument of user saved column view xml value and it's return the attribute value
+        /// </summary>
+        public List<AttributeDetail> UserSavedColumnAttribute(XDocument doc)
+        {
+            List<AttributeDetail> items = new List<AttributeDetail>();
+            try
+            {
+                int colOrder = 0;
+                items = (from r in doc.Root.Elements("attribute")
+                         select new AttributeDetail
+                         {
+                             AttributeType = (string)r.Attribute("AttributeType"),
+                             AttributeId = (string)r.Attribute("AttributeId"),
+                             ColumnOrder = (string)r.Attribute("ColumnOrder")
+                         }).OrderBy(col => int.TryParse(col.ColumnOrder, out colOrder))
+                           .ToList();
+            }
+            catch
+            {
+                throw;
+            }
+            return items;
+        }
     }
 }

@@ -177,6 +177,7 @@
                 success: function (data) {
                     if (data.Success != null && data.Success == true) {
                         $('#CreateNewView').hide();
+                        LoadPlanGridFromCache(); // Method for refesh plan grid view columns data // Add By Nishant Sheth
                     }
                     if (data.Success != null && data.Success == false && data.ErrorMessage != null) {
                         $("#errorMessage1").css("display", "block");
