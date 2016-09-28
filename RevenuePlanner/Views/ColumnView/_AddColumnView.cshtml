@@ -190,7 +190,12 @@
         else {
             $("#errorMessage1").css("display", "block");
             $("#spanMessageError1").empty();
-            $("#spanMessageError1").text("Please select at least common attributes");
+            if (Isgrid.toLocaleLowerCase() == "true") {
+                $("#spanMessageError1").text("Please select at least common attributes");
+            }
+            else {
+                $("#spanMessageError1").text("Please select at least planned tab");
+            }
             $("#successMessage1").css("display", "none");
             $(".modal-body").scrollTop(0);
         }

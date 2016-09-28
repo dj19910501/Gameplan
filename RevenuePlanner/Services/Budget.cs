@@ -557,7 +557,7 @@ namespace RevenuePlanner.Services
         private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model)
         {
             string setHeader = string.Empty, colType = string.Empty, width = string.Empty, colSorting = string.Empty, columnIds = string.Empty;
-            string manageviewicon = "<a href=javascript:void(0) onclick=OpenCreateNew(false) class=manageviewicon><i class='fa fa-edit'></i></a>";
+            string manageviewicon = "<a href=javascript:void(0) onclick=OpenCreateNew(false) class=manageviewicon  title='Open Column Management'><i class='fa fa-edit'></i></a>";
             List<string> attachHeader = new List<string>();
 
             setHeader = FixHeader;
@@ -617,7 +617,7 @@ namespace RevenuePlanner.Services
             objBudgetDHTMLXGrid.Width = width + EndcolWidth;
             objBudgetDHTMLXGrid.ColSorting = colSorting + EndColsorting;
             objBudgetDHTMLXGrid.ColumnIds = columnIds + EndColumnIds;
-            attachHeader.Add("Unallocated Budget");
+            attachHeader.Add("Unallocated Budget" + manageviewicon);
 
             objBudgetDHTMLXGrid.AttachHeader = attachHeader;
             return objBudgetDHTMLXGrid;
