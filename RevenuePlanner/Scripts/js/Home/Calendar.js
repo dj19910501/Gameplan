@@ -34,6 +34,7 @@ function BindPlanCalendar() {
                 $('#GridGanttContent').html(data);
             }
             GetCalendarDataInJsonFormat();
+            $('#ChangeView').show();
 
         }
     });
