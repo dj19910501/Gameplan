@@ -612,17 +612,17 @@ gantt._render_grid_item = function (item) {
         if (col.name == "add") {
             var _item = item.text.replace(/'/g, "&#39;");            
             if ("add" == col.name && i == columns.length - 1) {
-                if (item.type == "Plan" ) {
+                if (item.type == "Plan") {
                     // #1780
                     if (item.Permission == true)
                     {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                        value = "<div id='Plan' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanId + "','Plan')><i class='fa fa-search'></i></div><div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title='Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                        value = "<div id='Plan' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanId + "','Plan')><i class='fa fa-search'></i></div><div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title='Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
                     }
-                  
+
                     // #1780
                 }
 
@@ -630,48 +630,41 @@ gantt._render_grid_item = function (item) {
                     // #1780
                     if (item.Permission == true)
                     {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                        value = "<div id='CP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanCampaignId + "','CP')><i class='fa fa-search'></i></div><div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                        value = "<div id='CP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanCampaignId + "','CP')><i class='fa fa-search'></i></div><div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
                     }
-                  
+
                     // #1780
 
                 }
 
-                else if (item.type == "Program" ) {
+                else if (item.type == "Program") {
                     // #1780
                     if (item.Permission == true)
                     {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                        value = "<div id='PP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanProgramId + "','PP')><i class='fa fa-search'></i></div><div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title='Add to Honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                        value = "<div id='PP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanProgramId + "','PP')><i class='fa fa-search'></i></div><div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title='Add to Honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
                     }
-                
+
                     // #1780
                 }
 
-                else if (item.type == "Tactic" ) {
+                else if (item.type == "Tactic") {
                     // #1780
                     if (item.Permission == true) {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'>" + "</div>  ";
+                        value = "<div id='TP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanTacticId + "','TP')><i class='fa fa-search'></i></div> <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title='Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'></div>"
+                        value = "<div id='TP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanTacticId + "','TP')><i class='fa fa-search'></i></div><div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title='Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'></div>"
                     }
-                        // #1780
-                }
-
-                else if (item.type == "Imp Tactic" && item.Permission == true) {
-                    value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + item.text + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div>  ";
-                }
-                else {
-                    value = "";
+                    // #1780
                 }
             }
             else {
