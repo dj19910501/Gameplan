@@ -251,7 +251,7 @@ function DisplayPopUpMenu(obj, e) {
     var title = $(obj).attr('aria-label');
     var permission = $(obj).attr('Permission');
     var LineType = $(obj).attr('lineitemtype');
-    if ($('#IsGridView').val().toLowerCase() == "true") {
+    if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
 
         LinkTacticPermission = $(obj).attr('linktacticper');
         LinkedTacticId = $(obj).attr('linkedtacticid');
