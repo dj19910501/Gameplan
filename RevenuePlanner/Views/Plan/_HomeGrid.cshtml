@@ -148,8 +148,8 @@
         HomeGrid.parse(GridDataHomeGrid, "json");
         GridHideColumn();  ///Calling Hide column function
         HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
-        colSplitId = HomeGrid.getColIndexById(EntityId);
-        HomeGrid.splitAt(colSplitId);        
+        colSplitId = HomeGrid.getColIndexById(AddId);
+        HomeGrid.splitAt(colSplitId + 1);        
         MoveColumn(); ///Calling Move column function       
         HomeGrid.collapseAll();
         var cookie = document.cookie;

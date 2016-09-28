@@ -878,6 +878,16 @@ namespace RevenuePlanner.Helpers
                     value = string.Empty
                 }
             },
+            
+             {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),new PlanHead
+                {
+                    type = "ro",
+                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),
+                    sort = "na",
+                    width = 0,
+                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.id)
+                }
+            },
             {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add),new PlanHead
                 {
                     type = "ro",
@@ -886,15 +896,6 @@ namespace RevenuePlanner.Helpers
                     sort = "na",
                     width = 85,
                     value = string.Empty
-                }
-            },
-             {Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),new PlanHead
-                {
-                    type = "ro",
-                    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),
-                    sort = "na",
-                    width = 0,
-                    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.id)
                 }
             }
         };

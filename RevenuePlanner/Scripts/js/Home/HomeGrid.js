@@ -292,17 +292,22 @@ function LoadAfterParsing() {
         HomeGrid.detachEvent(eventidonbeforedrag);
     }
     eventidonbeforedrag = HomeGrid.attachEvent("onBeforeDrag", function (id) {
-        if (id.split(".")[0].toString() != "tact") return false;
+        if (id != "" && id != undefined) {
+            var drag_id = id.toString().split("_");
+            if (drag_id.length > 0) {
+                if (drag_id[0].toString().toLowerCase() != secTactic) return false;
         var locked = HomeGrid.cells(id, TaskNameColIndex).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
             return false;
         return true;
+            }
+        }
     });
 
     $(".grid_Search").off("click");
     $(".grid_Search").click(function (e) {
         inspectCloseFocus = $(this).position().top;
-        var id = $(this).parent().next().html();
+        var id = $(this).parent().prev().html();
         var type = $(this).attr('id');
         gridSearchFlag = 1;
         DisplayEditablePopup(id, type);
@@ -419,13 +424,21 @@ function ResizeGrid(wid) {
 }
 
 function doOnDrag(sid, tid) {
-    var dragSourcePtype = HomeGrid.getParentId(sid).split(".")[0];
-    var dragSourcetype = sid.split(".")[0].toString()
-    var dragTargettype = tid.split(".")[0];
-    if (dragSourcetype == "tact") {
+    var dragSourcePtype = ''
+    var dragSourcetype = ''
+    var dragTargettype = ''
+    if (sid != "" && tid != "" && sid != undefined && tid != undefined) {
+        var sourcePId = HomeGrid.getParentId(sid).split("_");
+        var sourceId = sid.split("_");
+        var targetedId = tid.split("_");
+        if (sourcePId.length > 0 && sourceId.length > 0 && targetedId.length > 0) {
+            dragSourcePtype = sourcePId[0];
+            dragSourcetype = sourceId[0];
+            dragTargettype = targetedId[0];
+            if (dragSourcetype.toLowerCase() == secTactic) {
         if (dragSourcePtype == dragTargettype) {
-            var splanid = HomeGrid.cells("plan." + sid.split(".")[1], HomeGrid.getColIndexById('id')).getValue();
-            var dplanid = HomeGrid.cells("plan." + tid.split(".")[1], HomeGrid.getColIndexById('id')).getValue();
+                    var splanid = HomeGrid.getParentId(HomeGrid.getParentId(HomeGrid.getParentId((dragSourcetype + "_" + sourceId[1]))));                    
+                    var dplanid = HomeGrid.getParentId(HomeGrid.getParentId((dragTargettype + "_" + targetedId[1])));
             var parentid = HomeGrid.getParentId(sid);
             if (dplanid == splanid) {
                 if (parentid != tid) {
@@ -470,6 +483,8 @@ function doOnDrag(sid, tid) {
     else {
         alert("Only tactic can Move.");
         return false;
+    }
+}
     }
 }
 
@@ -661,7 +676,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     return false;
                 }
 
-                updatePlanNameDrp(TaskID, NewValue);
             }
             if (cellInd == 1) {
                 $("div[taskId='" + TaskID + "']").attr('taskname', NewValue);
@@ -1067,19 +1081,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             return true;
         }
     }
-}
-
-function updatePlanNameDrp(_planid, newpplanname) {
-    $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').each(function (e) {
-        var planid = $(this).val().toString();
-        if (planid == _planid) {
-            var updatedPlantext = newpplanname;
-            $(this).attr('originalvalue', updatedPlantext);
-            $(this).text('');
-            $(this).text(updatedPlantext);
-            $(this).parent().parent().find('a').text(updatedPlantext)
-        }
-    });
 }
 
 function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
