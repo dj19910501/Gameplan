@@ -2500,21 +2500,24 @@ namespace RevenuePlanner.Controllers
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance);
             }
 
-            //integrationinstance - Push Tactic Data Salesforce
-            //integrationinstance11 - Push Tactic Data Eloqua
-            //integrationinstance4 - Project Management
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1.IsDeleted == false) {
-                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1);
+            //Please look at the MRP.edmx for how each instance is associated with an integration type. 
+            //Don't look at the number such as instance 1 or 2 as they may change from release to release as we regenerate models! zz
+
+            //Eloqua
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false) {
+                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11);
             }
+
             // Instance Marketo
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3.IsDeleted == false)
             {
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3);
             }
 
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false)
+            //workfront
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IsDeleted == false)
             {
-                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11);
+                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6);
                 ViewBag.IsModelIntegratedWorkFront = true; //Added 29 Dec 2015 by Brad Gray PL#1851
 
                 if (pcpt.TacticType.IntegrationWorkFrontTemplate != null && pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name != null)
@@ -2528,12 +2531,12 @@ namespace RevenuePlanner.Controllers
                 //_inspectmodel.WorkFrontTemplate = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name;
 
                 // add 1/10/2016 by Brad Gray PL#1856 - get a list of active Requeust Queues for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
-                ViewBag.WorkFrontRequestQueueList = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IntegrationInstanceId
-                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false && q.IsDeleted == false).Select(modelQ => new { modelQ.Id, modelQ.RequestQueueName })
+                ViewBag.WorkFrontRequestQueueList = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IntegrationInstanceId
+                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IsDeleted == false && q.IsDeleted == false).Select(modelQ => new { modelQ.Id, modelQ.RequestQueueName })
                                         .Distinct().OrderBy(q => q.RequestQueueName).ToList();
                 // add 1/13/2016 by Brad Gray PL#1895 - get a list of active WorkFront users for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
-                ViewBag.WorkFrontUserList = db.IntegrationWorkFrontUsers.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IntegrationInstanceId
-                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false).Select(user => new { user.Id, user.WorkFrontUserName })
+                ViewBag.WorkFrontUserList = db.IntegrationWorkFrontUsers.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IntegrationInstanceId
+                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IsDeleted == false).Select(user => new { user.Id, user.WorkFrontUserName })
                                         .Distinct().OrderBy(u => u.WorkFrontUserName).ToList();
 
 
