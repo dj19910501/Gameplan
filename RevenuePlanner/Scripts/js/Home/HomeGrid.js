@@ -1382,6 +1382,7 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
 function ExportToExcel(isHoneyComb) {
     //start  
     var rowIdArray = [];
+    var HoneyCombSelectedArray = [];
     if (gridname.toLowerCase() == "home") {
         //get following columns index which need to show/hide in export
         var iconColumnIndex = HomeGrid.getColIndexById("Add");
@@ -1395,6 +1396,9 @@ function ExportToExcel(isHoneyComb) {
                 if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
                     HomeGrid.setRowHidden(id, true);
                     rowIdArray.push(id);
+                }
+                else {
+                    HoneyCombSelectedArray.push(id);
                 }
             });
         }
@@ -1417,6 +1421,16 @@ function ExportToExcel(isHoneyComb) {
             $.each(rowIdArray, function (key) {
                 HomeGrid.setRowHidden(rowIdArray[key], false);
             });
+        }
+        //Checked honeycomb icon as active after export as it sometimes deactive due to export.
+        if (HoneyCombSelectedArray != undefined) {
+            $.each(HoneyCombSelectedArray, function (key) {
+                var columnText = HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).getValue();
+                if (columnText.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
+                    HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).setValue(columnText.replace("honeycombbox-icon-gantt", "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active"));
+                }
+            });
+
         }
 
     }
