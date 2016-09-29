@@ -897,7 +897,6 @@ function SavePreset() {
 }
 
 var isFiltered = false;
-var IsUpdate = false;
 var SavePresetValue = false;
 function UpdatePlan() {
     IsUpdate = true;

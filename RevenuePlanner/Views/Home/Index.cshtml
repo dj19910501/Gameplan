@@ -241,8 +241,13 @@
         DhtmlxRowId: [],
         AnchorTacticId: [],
     };
+    var AddRemovePackageItems = {
+        RemoveId: [],
+        AddItemId: [],
+    };
     var IsPackageView = false;   
-
+    var PreventUnPackageClick = true;
+    var IsUpdate = false;
     var filters = {
         parentCustomFieldsIds: [],
         customFieldIds: [],

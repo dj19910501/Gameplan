@@ -9525,12 +9525,12 @@ namespace RevenuePlanner.Controllers
 
             if (IsGridView == false)
             {
-                if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) || viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId, tactic.TacticTypeId),
+                        TaskId = string.Format("L{0}_C{1}_P{2}_T{3}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
                         ColorCode = TacticTaskColor,
@@ -9538,6 +9538,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
@@ -9547,7 +9548,6 @@ namespace RevenuePlanner.Controllers
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.StageId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
@@ -9556,6 +9556,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
@@ -9566,7 +9567,6 @@ namespace RevenuePlanner.Controllers
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.Status, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
@@ -9575,6 +9575,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
@@ -9585,7 +9586,6 @@ namespace RevenuePlanner.Controllers
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.AnchorTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
@@ -9594,6 +9594,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
@@ -9604,7 +9605,6 @@ namespace RevenuePlanner.Controllers
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.PlanTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
@@ -9613,6 +9613,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
