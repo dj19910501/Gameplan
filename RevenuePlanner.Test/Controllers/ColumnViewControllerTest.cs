@@ -86,7 +86,7 @@ namespace RevenuePlanner.Test.Controllers
             objattribute.AttributeType = "Actual";
             objattribute.ColumnOrder = " ";
             lstattribute.Add(objattribute);
-            var result = objUserController.SaveColumnView(lstattribute) as JsonResult;
+            var result = objUserController.SaveColumnView(lstattribute, string.Empty, false) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.Data);
             Assert.IsNotNull(result.Data);
 

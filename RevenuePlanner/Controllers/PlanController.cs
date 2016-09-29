@@ -12095,6 +12095,7 @@ namespace RevenuePlanner.Controllers
                         }
                         Request.Files[0].SaveAs(fileLocation);
                         string excelConnectionString = string.Empty;
+                        //Convert excel file in to datatable
                         if (fileExtension == ".xls")
                         {
                             excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
@@ -12117,10 +12118,12 @@ namespace RevenuePlanner.Controllers
                                 return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                             }
                         }
+                        //if excel will be blank then following message will be appear.
                         if (dt.Rows.Count == 0 || dt.Rows[0][0] == DBNull.Value)
                         {
                             return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                         }
+                        //if ActivityId will be null then following message will be appear.
                         foreach (DataRow row in dt.Rows)
                         {
                             if (string.IsNullOrEmpty(row["ActivityId"].ToString().Trim()))
@@ -12128,27 +12131,35 @@ namespace RevenuePlanner.Controllers
                                 return Json(new { msg = "error", error = "ActivityId must have a proper value." }, JsonRequestBehavior.AllowGet);
                             }
                         }
-                        DataTable dtImport = dt;
+                        DataTable dtImportBudget = dt.Copy();
+                        DataTable dtImportActual = dt.Copy();
+                        // DataTable dtImportActual = dt;
                         StoredProcedure objSp = new StoredProcedure();
                         //Check data is uploaded monthly or quarterly
                         bool isMonthly = false;
-                        string[] columnNames = dtImport.Columns.Cast<DataColumn>()
+                        string[] columnNames = dtImportBudget.Columns.Cast<DataColumn>()
                                .Select(x => x.ColumnName)
                                .ToArray();
                         if (columnNames.Where(w => w.ToLower().Contains("jan")).Any())
                             isMonthly = true;
                         //Following is method using which we can specify import data as per type.
-                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dtImport, "budget", isMonthly);
-                        //bool isMonthly = dtBudget.Columns.Count > 8;
-                        var dataResponse = objSp.GetPlanBudgetList(dt, isMonthly, Sessions.User.ID);
+                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dtImportBudget, "budget", isMonthly);
+                        dtBudget = dtBudget.AsEnumerable()
+         .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "campaign" || row.Field<String>("type").ToLower() == "program").CopyToDataTable();
 
-                        if (dataResponse == null)
+                        //Filter actual data table with only plan,tactic and lineitem
+                        DataTable dtActual = objcommonimportData.GetPlanBudgetDataByType(dtImportActual, "actual", isMonthly);
+                        dtActual = dtActual.AsEnumerable()
+         .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "lineitem").CopyToDataTable();
+                        DataSet dataResponsebudget = objSp.GetPlanBudgetList(dtBudget, isMonthly, Sessions.User.ID);
+                        DataSet dataResponseactual = objSp.ImportPlanActuals(dtActual, isMonthly, Sessions.User.ID);
+
+                        if (dataResponsebudget == null || dataResponseactual == null)
                         {
                             return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                         }
-
-                        // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
-                        if (dataResponse.Tables[0].Rows.Count > 0)
+                        //following message will be displayed if data will not match existing activityid                        
+                        if (dataResponsebudget.Tables[0].Rows.Count > 0 || dataResponseactual.Tables[0].Rows.Count > 0)
                         {
                             return Json(new { conflict = true, message = "Data that were not part of exported file were not added or updated." }, JsonRequestBehavior.AllowGet);
                         }
