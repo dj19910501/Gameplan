@@ -677,6 +677,15 @@ namespace RevenuePlanner.Services
                 sort = "str",
                 width = 330,
                 value = string.Empty
+            });          
+
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), new PlanHead
+            {
+                type = "ro",
+                id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),
+                sort = "na",
+                width = 0,
+                value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.id)
             });
 
             lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add), new PlanHead
@@ -688,16 +697,6 @@ namespace RevenuePlanner.Services
                 width = 85,
                 value = string.Empty
             });
-
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), new PlanHead
-            {
-                type = "ro",
-                id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id),
-                sort = "na",
-                width = 0,
-                value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.id)
-            });
-
             return lstColumns;
         }
 
@@ -776,7 +775,7 @@ namespace RevenuePlanner.Services
 
                         // Assign the sum of value to parent
                         DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).ToList()
-                            .ForEach(a => { a.MQL = MqlList.Sum(ab => ab.Value); });
+                            .ForEach(a => { a.MQL = MqlList.Where(mql => mql.HasValue).Sum(ab => ab.Value); });
                     }
 
                 }
@@ -814,7 +813,7 @@ namespace RevenuePlanner.Services
                            .Select(a => a.Revenue).ToList();
                         // Assign the sum of value to parent
                         DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).ToList()
-                            .ForEach(a => { a.Revenue = RevenueList.Sum(ab => ab.Value); });
+                            .ForEach(a => { a.Revenue = RevenueList.Where(rev => rev.HasValue).Sum(ab => ab.Value); });
                     }
                 }
             }
@@ -1395,7 +1394,7 @@ namespace RevenuePlanner.Services
                 " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
 
-            string addColumn = "<div class=grid_Search id=Plan title=View ></div>" +
+            string addColumn = "<div class=grid_Search id=Plan title=View><i class='fa fa-search'></i></div>" +
                 grid_add
                 + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=Plan dhtmlxrowid='"
                 + Row.EntityType + "_" + Row.EntityId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.Owner)
@@ -1415,7 +1414,7 @@ namespace RevenuePlanner.Services
                 " per=" + Convert.ToString(IsEditable).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
 
-            string addColumn = "<div class=grid_Search id=CP title=View></div>"
+            string addColumn = "<div class=grid_Search id=CP title=View><i class='fa fa-search'></i></div>"
                 + grid_add
                 + "<div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' dhtmlxrowid='" + Row.EntityType
                 + "_" + Row.EntityId + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '"
@@ -1434,7 +1433,7 @@ namespace RevenuePlanner.Services
                 grid_add = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Row.AltId +
                 " per=" + Convert.ToString(IsEditable).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
-            string addColumn = "<div class=grid_Search id=PP title=View></div>"
+            string addColumn = "<div class=grid_Search id=PP title=View><i class='fa fa-search'></i></div>"
                 + grid_add
                 + " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Add to Honeycomb' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId
                 + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.Owner)
@@ -1454,7 +1453,7 @@ namespace RevenuePlanner.Services
                 " per=" + IsEditable.ToString().ToLower() + "  LinkTacticper ='" + false + "' LinkedTacticId = '" + 0
                 + "' tacticaddId='" + Row.EntityId + "' title=Add><i class='fa fa-plus-circle'></i></div>";
             }
-            string addColumn = "<div class=grid_Search id=TP title=View></div>"
+            string addColumn = "<div class=grid_Search id=TP title=View><i class='fa fa-search'></i></div>"
                 + grid_add
                 + " <div class=honeycombbox-icon-gantt id=Tactic onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb'  pcptid = " + Row.TaskId
                 + " anchortacticid='" + Row.AnchorTacticID + "' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "'  roitactictype='" + Row.AssetType
@@ -1481,7 +1480,7 @@ namespace RevenuePlanner.Services
                 + " lt=" + LineItemTypeId
                 + " dt=" + HttpUtility.HtmlEncode(Row.EntityTitle) + " per=" + Convert.ToString(IsEditable).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
-            string addColumn = "<div class=grid_Search id=LP title=View></div>"
+            string addColumn = "<div class=grid_Search id=LP title=View><i class='fa fa-search'></i></div>"
                 + grid_add;
             return addColumn;
         }
