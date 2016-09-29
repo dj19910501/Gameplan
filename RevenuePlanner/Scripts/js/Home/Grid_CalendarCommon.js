@@ -1332,6 +1332,10 @@ $('#txtGlobalSearch').on('keypress', function (event) {
         $('#ExpSearch').click();
     }
 });
+//Added by Dhvani to maintain dop-down for Global search
+function OpenDropdown() {
+    IsManageDropdown = true; // Handle sorting on dropdown click 
+}
 var SearchTextforcal = ""
 function GlobalSearch() {
     if ($('#IsGridView').val() == 'True' || IsBudgetGrid) {
