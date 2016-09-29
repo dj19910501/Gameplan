@@ -286,6 +286,10 @@ namespace RevenuePlanner.Services
 
                 //Get list of entities for plan grid from Cache object
                 List<GridDefaultModel> GridHireachyData = (List<GridDefaultModel>)objCache.Returncache(Convert.ToString(Enums.CacheObject.ListPlanGridDefaultData));
+                if (GridHireachyData == null)
+                {
+                    GridHireachyData = new List<GridDefaultModel>();
+                }
 
                 // Check is user select Revnue column in column saved view
                 bool IsRevenueColumn = UserDefinedColumns.Where(a =>
@@ -310,6 +314,10 @@ namespace RevenuePlanner.Services
 
                 // Get List of customfields and it's entity's values
                 GridCustomColumnData ListOfCustomData = (GridCustomColumnData)objCache.Returncache(Convert.ToString(Enums.CacheObject.ListPlanGridCustomColumnData));
+                if (ListOfCustomData == null)
+                {
+                    ListOfCustomData = new GridCustomColumnData();
+                }
 
                 // Pivot Custom fields data with selected columns
                 PivotcustomFieldData(ref customColumnslist, ListOfCustomData);
@@ -355,7 +363,10 @@ namespace RevenuePlanner.Services
             if (selectedCustomColumns.Count == 0)
             {
                 // Update selectedCustomColumns variable with list of user selected/all custom fields columns name
-                selectedCustomColumns = data.CustomFields.Select(a => Convert.ToString(a.CustomFieldId)).ToList();
+                if (data.CustomFields != null)
+                {
+                    selectedCustomColumns = data.CustomFields.Select(a => Convert.ToString(a.CustomFieldId)).ToList();
+                }
             }
             // Pivoting the customfields entities values //EntityCustomDataValues decalre globally at class level and it's use with hireachy process
 
@@ -677,7 +688,7 @@ namespace RevenuePlanner.Services
                 sort = "str",
                 width = 330,
                 value = string.Empty
-            });          
+            });
 
             lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), new PlanHead
             {
@@ -770,12 +781,18 @@ namespace RevenuePlanner.Services
                     if (string.Compare(ParentDetail.EntityType, Convert.ToString(Enums.EntityType.Lineitem), true) != 0)
                     {
                         // Get list of Mql for that childs
-                        MqlList = DataList.Where(a => a.ParentUniqueId == ParentDetail.ParentUniqueId)
+                        MqlList = DataList.Where(a => a.ParentUniqueId == ParentDetail.ParentUniqueId && a.MQL != null)
                            .Select(a => a.MQL).ToList();
 
-                        // Assign the sum of value to parent
-                        DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).ToList()
-                            .ForEach(a => { a.MQL = MqlList.Where(mql => mql.HasValue).Sum(ab => ab.Value); });
+                        // Check there is any parent or not
+                        bool CheckisParent = DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).Any();
+                        if (CheckisParent && MqlList.Count > 0)
+                        {
+                            // Assign the sum of value to parent
+                            DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).FirstOrDefault()
+                               .MQL = MqlList.Sum(ab => ab.Value);
+
+                        }
                     }
 
                 }
@@ -809,11 +826,17 @@ namespace RevenuePlanner.Services
                     if (string.Compare(ParentDetail.EntityType, Convert.ToString(Enums.EntityType.Lineitem), true) != 0)
                     {
                         // Get list of Revenues for that childs
-                        RevenueList = DataList.Where(a => a.ParentUniqueId == ParentDetail.ParentUniqueId)
+                        RevenueList = DataList.Where(a => a.ParentUniqueId == ParentDetail.ParentUniqueId && a.Revenue != null)
                            .Select(a => a.Revenue).ToList();
-                        // Assign the sum of value to parent
-                        DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).ToList()
-                            .ForEach(a => { a.Revenue = RevenueList.Where(rev => rev.HasValue).Sum(ab => ab.Value); });
+
+                        // Check there is any parent or not
+                        bool CheckisParent = DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).Any();
+                        if (CheckisParent && RevenueList.Count > 0)
+                        {
+                            // Assign the sum of value to parent
+                            DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).FirstOrDefault()
+                                .Revenue = RevenueList.Sum(ab => ab.Value);
+                        }
                     }
                 }
             }
@@ -1640,29 +1663,31 @@ namespace RevenuePlanner.Services
             List<CustomfieldPivotData> arr = new List<CustomfieldPivotData>();
             List<string> cols = new List<string>();
             String rowName = ((MemberExpression)rowSelector.Body).Member.Name;
-            IEnumerable<TColumn> columns = source.Select(columnSelector).Distinct()
-                                    .ToList().Where(a => selectedColumns.Contains(a.ToString())).ToList();
-
-
-            cols = (new[] { rowName }).Concat(selectedColumns).ToList();
-
-            var rows = source.GroupBy(rowSelector.Compile())
-                             .Select(rowGroup => new
-                             {
-                                 Key = rowGroup.Key,
-                                 Values = columns.GroupJoin(
-                                     rowGroup,
-                                     c => c,
-                                     r => columnSelector(r),
-                                     (c, columnGroup) => dataSelector(columnGroup))
-                             }).ToList();
-
-            foreach (var row in rows)
+            if (source != null)
             {
-                var items = row.Values.Cast<object>().ToList();
-                items.Insert(0, row.Key);
-                CustomfieldPivotData obj = GetAnonymousObject(cols, items);
-                arr.Add(obj);
+                IEnumerable<TColumn> columns = source.Select(columnSelector).Distinct()
+                                        .ToList().Where(a => selectedColumns.Contains(a.ToString())).ToList();
+
+                cols = (new[] { rowName }).Concat(selectedColumns).ToList();
+
+                var rows = source.GroupBy(rowSelector.Compile())
+                                 .Select(rowGroup => new
+                                 {
+                                     Key = rowGroup.Key,
+                                     Values = columns.GroupJoin(
+                                         rowGroup,
+                                         c => c,
+                                         r => columnSelector(r),
+                                         (c, columnGroup) => dataSelector(columnGroup))
+                                 }).ToList();
+
+                foreach (var row in rows)
+                {
+                    var items = row.Values.Cast<object>().ToList();
+                    items.Insert(0, row.Key);
+                    CustomfieldPivotData obj = GetAnonymousObject(cols, items);
+                    arr.Add(obj);
+                }
             }
             return arr.ToList();
         }
@@ -1685,11 +1710,20 @@ namespace RevenuePlanner.Services
                 }
                 else
                 {
+                    string DataValue = string.Empty;
+                    // Check the index of columns is greater or not // to handle index exception error
+                    if (values.Count() > i)
+                    {
+                        if (!string.IsNullOrEmpty(Convert.ToString(values.ElementAt<object>(i))))
+                        {
+                            DataValue = Convert.ToString(values.ElementAt<object>(i));
+                        }
+                    }
                     lstCustomFieldData.Add(
                         new Plandataobj
                         {
                             locked = objHomeGrid.lockedstateone,
-                            value = Convert.ToString(values.ElementAt<object>(i)),
+                            value = DataValue,
                             style = objHomeGrid.stylecolorblack
                         });
                 }
