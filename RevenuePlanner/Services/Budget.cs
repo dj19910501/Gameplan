@@ -246,7 +246,7 @@ namespace RevenuePlanner.Services
 
             BudgetDataObj = new Budgetdataobj();
             //Add title of plan entity into dhtmlx model
-            BudgetDataObj.value = HttpUtility.HtmlEncode("<a id=aPlanDetails onClick=OpenPlanInspectPopup() ondblclick=PreventDoubleClick()>" + (HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;")) + "</a>");
+            BudgetDataObj.value = HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;");
             BudgetDataObjList.Add(BudgetDataObj);
 
             //Set icon of magnifying glass and honey comb for plan entity with respective ids

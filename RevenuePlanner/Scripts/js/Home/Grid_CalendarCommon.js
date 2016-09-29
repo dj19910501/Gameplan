@@ -1561,3 +1561,24 @@ $("#ddlTabViewBy").change(function () {
         $('.export-dd').find('#ExportPDf').hide();
     }
 });
+
+//For Task Name Edit
+function SetFilterData(EntityId, nValue) {
+    $('#ulSelectedPlans li[id=liPlan' + EntityId + ']').find('span').text(nValue);
+    $('#ulSelectedPlans li[id=liPlan' + EntityId + ']').attr('title', nValue);
+    $('#ulSelectedPlans li[id=liPlan' + EntityId + ']').find('input[type=checkbox]').attr('plantitle', nValue);
+    selectedFilters.planName = [];
+    $("#ulSelectedPlans li input[type=checkbox]:checked").each(function () {
+        selectedFilters.planName.push($(this).parent().attr("title"));
+    });
+    if (selectedFilters.planName.length == 0) {
+        $('#lstPlanActive').text(FiltersNone);
+    }
+    else if ($("#ulSelectedPlans li").length == selectedFilters.planName.length) {
+        $('#lstPlanActive').text(FiltersAll);
+    }
+    else {
+        $('#lstPlanActive').text(selectedFilters.planName.join(", "));
+    }
+    GetMultiplePlanNames();
+}
