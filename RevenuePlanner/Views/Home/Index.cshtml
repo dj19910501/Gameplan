@@ -50,7 +50,7 @@
     <div class="planheader-left">
         <div class="plan-header-grid">
             <div class="request-icon-block">
-                <a class="new-btn-plan-left P-icon-active" href="#" id="btngridcalendar" title="Calendar View">
+                <a class="new-btn-plan-left" href="#" id="btngridcalendar" title="Calendar View">
                     <i class="fa fa-calendar"></i>
                 </a>
                 <a id="btnbudget" title="Budget & Cost" class="new-btn-plan-right" href="#">
@@ -226,6 +226,7 @@
     ///////
     var IsManageviewClick = false;
     var IsBudgetGrid = false;
+    var isCalendarView = false;
     var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
     var ExportSelectedIds = {
         TaskID: [],
@@ -240,8 +241,7 @@
         DhtmlxRowId: [],
         AnchorTacticId: [],
     };
-    var IsPackageView = false;
-    var isDisplayGridview = true;
+    var IsPackageView = false;   
 
     var filters = {
         parentCustomFieldsIds: [],
@@ -401,7 +401,7 @@
                     GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
                     GetMultiplePlanNames();
                     GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
-                    if (isDisplayGridview) {
+                    if (IsGridView) {
                         LoadPlanGrid();
                     }
                 }
