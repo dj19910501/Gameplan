@@ -1672,20 +1672,46 @@ BEGIN
 
 SET NOCOUNT ON;
 
-	SELECT CustomFieldId
+	DECLARE @CustomFieldTypeText VARCHAR(20)= 'TextBox'
+	DECLARE @CustomFieldTypeDropDown VARCHAR(20)= 'DropDownList'
+	-- Get List of Custom fields which are textbox type
+	SELECT C.CustomFieldId
 			,C.Name AS 'CustomFieldName' 
 			,C.CustomFieldTypeId 
 			,C.IsRequired
 			,C.EntityType
 			,C.AbbreviationForMulti
-			,CT.CustomFieldType
+			,@CustomFieldTypeText As 'CustomFieldType'
 			FROM CustomField  C
 			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' FROM CustomFieldType CT
-				WHERE C.CustomFieldTypeId=CT.CustomFieldTypeId)CT
+				WHERE CT.Name=@CustomFieldTypeText 
+				AND CT.CustomFieldTypeId = C.CustomFieldTypeId)CT
+			WHERE ClientId=@ClientId
+					AND IsDeleted=0
+					AND EntityType IN('Campaign','Program','Tactic','Lineitem')
+		UNION ALL
+		-- Get Custom fields which are dropdown type and get only that custom fields which have it's option of that custom field
+		SELECT C.CustomFieldId
+			,C.Name AS 'CustomFieldName' 
+			,C.CustomFieldTypeId 
+			,C.IsRequired
+			,C.EntityType
+			,C.AbbreviationForMulti
+			,@CustomFieldTypeDropDown AS 'CustomFieldType'
+			FROM CustomField  C
+			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' FROM CustomFieldType CT
+				WHERE CT.Name=@CustomFieldTypeDropDown 
+				AND CT.CustomFieldTypeId = C.CustomFieldTypeId)CT
+			CROSS APPLY (SELECT CP.CustomFieldId FROM CustomFieldOption CP
+							WHERE 
+							C.CustomFieldId = CP.CustomFieldId
+							GROUP BY CP.CustomFieldId
+							HAVING COUNT(CP.CustomFieldOptionId)>0) CP
 			WHERE ClientId=@ClientId
 					AND IsDeleted=0
 					AND EntityType IN('Campaign','Program','Tactic','Lineitem')
 
+	-- Get list of Entity custom fields values
 	SELECT 
 	A.EntityId
 	,MAX(A.EntityType) EntityType
@@ -1710,7 +1736,7 @@ SET NOCOUNT ON;
 										,CT.CustomFieldType FROM CustomField C
 							CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT
 								WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId)CT
-						WHERE Hireachy.EntityType = C.EntityType AND C.ClientId = @ClientId
+							WHERE Hireachy.EntityType = C.EntityType AND C.ClientId = @ClientId
 						AND C.IsDeleted=0) C
 					CROSS APPLY(SELECT CE.EntityId,CE.CustomFieldId FROM CustomField_Entity CE
 						WHERE C.CustomFieldId = CE.CustomFieldId
@@ -1719,7 +1745,7 @@ SET NOCOUNT ON;
 					SELECT C.CustomFieldId,NULL,NULL,NULL,CT.CustomFieldType,NULL FROM CustomField C
 					CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT
 						WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId)CT
-					WHERE C.ClientId = @ClientId
+						WHERE C.ClientId = @ClientId
 					AND C.IsDeleted = 0
 					AND C.EntityType IN('Campaign','Program','Tactic','Lineitem')
 		) A

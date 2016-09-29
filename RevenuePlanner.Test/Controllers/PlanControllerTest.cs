@@ -60,8 +60,8 @@ namespace RevenuePlanner.Test.Controllers
             int planId = result.GetValue<int>("id");
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value planid:  " + planId);
             Assert.IsTrue(Convert.ToBoolean(planId));
-          
-          
+
+
 
         }
         #endregion
@@ -329,9 +329,9 @@ namespace RevenuePlanner.Test.Controllers
                 CampaignId = campaign.PlanCampaignId;
             }
             var result = objPlanController.GetBudgetAllocationCampaignData(CampaignId);
-                var serializedData = new RouteValueDictionary(result.Data);
-                var budgetData = serializedData["budgetData"];
-                var planRemainingBudget = serializedData["planRemainingBudget"];
+            var serializedData = new RouteValueDictionary(result.Data);
+            var budgetData = serializedData["budgetData"];
+            var planRemainingBudget = serializedData["planRemainingBudget"];
             // data object should not be null in json result
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value budgetData:  " + budgetData);
             Assert.IsNotNull(budgetData);
@@ -340,7 +340,7 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region Grid View       
+        #region Grid View
         /// To Get Improvement Tactic for the grid
         /// <author>Komal Rawal</author>
         /// <createdDate>11thAugust2015</createdDate>
@@ -358,11 +358,95 @@ namespace RevenuePlanner.Test.Controllers
             // data object should not be null in json result
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
+        }
 
-             
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// To get home grid data from cache with out set cache memory object or null cache memory
+        /// </summary>
+        [TestMethod]
+        public void GetPlanGridDataFromCache_WithOut_CacheMemoryData()
+        {
+            Console.WriteLine("To Get Home grid data from cache object without set cache data for grid.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            var result = controller.GetHomeGridDataFromCache() as ActionResult;
+            // data object should not be null in json result
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
+        }
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// To get home grid data from cache with set cache memory object 
+        /// </summary>
+        [TestMethod]
+        public void GetPlanGridDataFromCache_With_CacheMemoryData()
+        {
+            Console.WriteLine("To Get Home grid data from cache object.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            string PlanId = Convert.ToString(DataHelper.GetPlanId());
+            string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(int.Parse(PlanId)));
+            int ModelId = DataHelper.GetPlanModelId(int.Parse(PlanId));
+            List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
+            string TacticTypeIds = string.Join(",", lstTacticTypeIds);
+            List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
+            string StatusIds = string.Join(",", lstStatus);
+            // Call the GetHomeGridData method for set Cache memory data
+            controller.GetHomeGridData(PlanId, OwnerIds, TacticTypeIds, StatusIds, string.Empty);
+            
+            var result = controller.GetHomeGridDataFromCache() as ActionResult; // Call cache memory data method for grid data
+            // Data object should not be null in json result
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
+        }
 
 
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// To get home grid data with pass all parameters
+        /// </summary>
+        [TestMethod]
+        public void GetPlanGrid_With_ValidParameter()
+        {
+            Console.WriteLine("To Get Home grid data for the grid.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            string PlanId = Convert.ToString(DataHelper.GetPlanId());
+            string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(int.Parse(PlanId)));
+            int ModelId = DataHelper.GetPlanModelId(int.Parse(PlanId));
+            List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
+            string TacticTypeIds = string.Join(",", lstTacticTypeIds);
+            List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
+            string StatusIds = string.Join(",", lstStatus);
+            var result = controller.GetHomeGridData(PlanId, OwnerIds, TacticTypeIds, StatusIds, string.Empty) as ActionResult;
+            // data object should not be null in json result
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
+        }
 
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// To get home grid data with out pass paramters
+        /// </summary>
+        [TestMethod]
+        public void GetPlanGrid_With_EmptyParameter()
+        {
+            Console.WriteLine("To Get Home grid data.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            PlanController controller = new PlanController();
+            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            string EmptyString = string.Empty;
+            var result = controller.GetHomeGridData(EmptyString, EmptyString, EmptyString, EmptyString, EmptyString) as ActionResult;
+            // data object should not be null in json result
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
+            Assert.IsNotNull(result);
         }
 
         #endregion
@@ -393,8 +477,8 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
             Assert.AreEqual("~/Views/Plan/_CopyEntity.cshtml", result.ViewName);
 
-        
-        
+
+
         }
 
         /// To Refresh Parent Entity Selection List
@@ -416,7 +500,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
 
-            
+
         }
 
         #endregion
@@ -451,7 +535,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-            
+
         }
 
         #endregion
@@ -481,7 +565,7 @@ namespace RevenuePlanner.Test.Controllers
             var TaskData = db.Plan_Campaign_Program_Tactic.Where(id => PlanId == id.Plan_Campaign_Program.Plan_Campaign.PlanId).ToList();
             if (TaskData != null && TaskData.Count > 0)
             {
-                List<int>Owner = TaskData.Select(plan => plan.CreatedBy).ToList();
+                List<int> Owner = TaskData.Select(plan => plan.CreatedBy).ToList();
                 string Ownerids = string.Join(",", Owner);
                 List<int> tactic = TaskData.Select(tactictype => tactictype.TacticTypeId).ToList();
                 string tactictypeids = string.Join(",", tactic);
@@ -494,9 +578,9 @@ namespace RevenuePlanner.Test.Controllers
                 lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
                 lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
                 lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-                                
+
                 string Status = string.Join(",", lststatus);
-                
+
 
                 string honeyCombId = null;
 
@@ -505,7 +589,7 @@ namespace RevenuePlanner.Test.Controllers
                 var fileName = serializedData["data"];
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value fileName:  " + fileName);
                 Assert.IsNotNull(fileName);
-                
+
             }
         }
 
@@ -547,8 +631,8 @@ namespace RevenuePlanner.Test.Controllers
 
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
-            
-           
+
+
 
         }
 
@@ -573,7 +657,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.User.CID = DataHelper.GetClientId(PlanId);
             string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
             List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int>Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
             string Ownerids = string.Join(",", Owner);
             List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
             string tactictypeids = string.Join(",", tactic);
@@ -592,8 +676,8 @@ namespace RevenuePlanner.Test.Controllers
             var result = objPlanController.ExportToCsv(Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, null, PlanId) as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
-              
-          
+
+
 
         }
         #endregion
@@ -620,7 +704,7 @@ namespace RevenuePlanner.Test.Controllers
 
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result);
             Assert.IsNotNull(result);
-             
+
 
         }
 
@@ -723,18 +807,18 @@ namespace RevenuePlanner.Test.Controllers
             objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
 
             var result = objPlanController.PlanList() as PartialViewResult;
-            
-                if (!(result.ViewName.Equals("_ApplytoCalendarPlanList")))
-                {
-                    Assert.Fail();
-                }
-                else if (result.ViewName.Equals("_ApplytoCalendarPlanList"))
-                {
-                    Assert.IsNotNull(result.Model);
-                }
+
+            if (!(result.ViewName.Equals("_ApplytoCalendarPlanList")))
+            {
+                Assert.Fail();
+            }
+            else if (result.ViewName.Equals("_ApplytoCalendarPlanList"))
+            {
+                Assert.IsNotNull(result.Model);
+            }
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
             Assert.IsNotNull(result.ViewName);
-              
+
         }
         #endregion
 
@@ -763,8 +847,8 @@ namespace RevenuePlanner.Test.Controllers
             var resultvalue = serializedData["planYear"];
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value resultvalue:  " + resultvalue.ToString());
             Assert.IsNotNull(resultvalue.ToString());
-           
-           
+
+
 
         }
         #endregion
@@ -794,12 +878,12 @@ namespace RevenuePlanner.Test.Controllers
             //// Json result data should not be null
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Status);
             Assert.IsNotNull(result);
-         
-           
+
+
         }
         #endregion
 
-    
+
 
         #region "Check Permission By Owner for Entity owner upation"
         /// <summary>
@@ -847,8 +931,8 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
 
-               
-           
+
+
         }
         /// <summary>
         /// To Check Get Minimum And Maximum Date for Tactic
@@ -919,7 +1003,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-         
+
         }
         /// <summary>
         /// To Check to Save the Grid Data for Tactic
@@ -975,7 +1059,7 @@ namespace RevenuePlanner.Test.Controllers
             var TaskData = DataHelper.GetPlanProgram(Sessions.User.CID);
             if (TaskData != null)
             {
-                string UpdateValue = "Copy_Test_cases" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm"); 
+                string UpdateValue = "Copy_Test_cases" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm");
                 int EntityId = TaskData.PlanProgramId;
                 string updateColumnName = "Task Name";
 
@@ -983,7 +1067,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-          
+
 
         }
         /// <summary>
@@ -1038,7 +1122,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-          
+
         }
 
         #endregion
@@ -1067,7 +1151,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result.ViewName);
                 Assert.IsNotNull(result.ViewName);
             }
-          
+
         }
         #endregion
 
@@ -1286,7 +1370,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-            
+
         }
         #endregion
 
@@ -1315,7 +1399,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-          
+
 
         }
         #endregion
@@ -1345,7 +1429,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-            
+
         }
         #endregion
 
@@ -1375,7 +1459,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-           
+
 
         }
         #endregion
@@ -1432,7 +1516,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-           
+
         }
         #endregion
 
@@ -1462,7 +1546,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
                 Assert.IsNotNull(result.ViewName);
             }
-          
+
         }
         #endregion
 
@@ -1495,7 +1579,7 @@ namespace RevenuePlanner.Test.Controllers
                 Assert.IsNotNull(result.Data);
 
             }
-         
+
         }
         #endregion
 
@@ -1526,7 +1610,7 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-         
+
         }
         #endregion
 
@@ -1558,8 +1642,8 @@ namespace RevenuePlanner.Test.Controllers
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
                 Assert.IsNotNull(result.Data);
             }
-           
-            
+
+
         }
         #endregion
 
@@ -2014,7 +2098,8 @@ namespace RevenuePlanner.Test.Controllers
 
         }
         #endregion
-        #region Save Budget Allocation.
+
+        #region Get Budget Allocation.
         /// <summary>
         /// To get budget allocated data
         /// <author>Mitesh Vaishnav</author>
@@ -2024,7 +2109,7 @@ namespace RevenuePlanner.Test.Controllers
         public void Get_Budget_Allocation()
         {
             var routes = new RouteCollection();
-            Console.WriteLine("Save Budget Allocation.\n");
+            Console.WriteLine("Get Budget Allocation.\n");
             MRPEntities db = new MRPEntities();
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController objPlanController = new PlanController();
@@ -2037,8 +2122,8 @@ namespace RevenuePlanner.Test.Controllers
             routes
             );
             int PlanId = DataHelper.GetPlanId();
-           var result=   objPlanController.GetBudgetData(PlanId.ToString(), string.Empty, string.Empty, string.Empty, string.Empty) as PartialViewResult;
-           
+            var result = objPlanController.GetBudgetData(PlanId.ToString(), string.Empty, string.Empty, string.Empty, string.Empty) as PartialViewResult;
+
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
             Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
 
@@ -2054,9 +2139,9 @@ namespace RevenuePlanner.Test.Controllers
         [TestMethod]
         public void Excel_FileUpload()
         {
-            Console.WriteLine("Import data for plan budget.\n");          
+            Console.WriteLine("Import data for plan budget.\n");
             HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();           
+            PlanController controller = new PlanController();
             var result = controller.ExcelFileUpload() as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Data);
             Assert.IsNotNull(result.Data);
