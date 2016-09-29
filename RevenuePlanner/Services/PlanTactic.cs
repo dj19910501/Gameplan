@@ -19,8 +19,10 @@ namespace RevenuePlanner.Services
 
         // Object to use common properties for the grid
         HomeGridProperties objHomeGridProperty = new HomeGridProperties();
+        // Object to use exchange rate related functions
+        ICurrency objCurrency = new Currency();
 
-        string formatThousand = "#,#0.##";  // format thousand number values with comma
+        string formatThousand = "#,##0.##";  // format thousand number values with comma
         string commaString = ",";
 
         // dictionary of months and quarters to get cost 
@@ -122,7 +124,7 @@ namespace RevenuePlanner.Services
                 string colSorting = "na,na,na";                                 // sorting options for the column
                 string colAlign = objHomeGridProperty.alignleft + commaString +
                                   objHomeGridProperty.alignleft + commaString +
-                                  objHomeGridProperty.aligncenter ;             // alignment for the column
+                                  objHomeGridProperty.aligncenter;             // alignment for the column
 
                 if (String.Compare(AllocatedBy, Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.quarters)], true) == 0)
                 {
@@ -555,9 +557,10 @@ namespace RevenuePlanner.Services
                     {
                         // check permission for line items
                         int tacticOwner = 0;
-                        if (model.Where(m => m.ActivityId == item.ParentActivityId).Any())
+                        List<BudgetModel> tempModel = model.Where(m => m.ActivityId == item.ParentActivityId).ToList();
+                        if (tempModel.Any())
                         {
-                            tacticOwner = model.Where(m => m.ActivityId == item.ParentActivityId).FirstOrDefault().CreatedBy;
+                            tacticOwner = tempModel.FirstOrDefault().CreatedBy;
                         }
 
                         if (item.CreatedBy == UserId || tacticOwner == UserId || lstSubordinatesIds.Contains(tacticOwner))
@@ -579,7 +582,7 @@ namespace RevenuePlanner.Services
                     #endregion
                 }
             }
-            catch {throw;}
+            catch { throw; }
         }
 
         /// <summary>
@@ -588,7 +591,6 @@ namespace RevenuePlanner.Services
         private List<BudgetModel> SetAllocationValuesToModel(DataTable dtCosts, double PlanExchangeRate)
         {
             List<BudgetModel> model = new List<BudgetModel>();
-            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
             try
             {
                 model = dtCosts.AsEnumerable().Select(row => new BudgetModel
@@ -664,34 +666,38 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Save monthly cost allocation for line items and update balance line item
         /// </summary>
-        public void SaveLineItemMonthlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost,int UserId)
+        public void SaveLineItemMonthlyCostAllocation(int EntityId, double newCost, string month, bool isTotalCost, int UserId)
         {
             try
             {
                 Plan_Campaign_Program_Tactic_LineItem objLineitem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcpt =>
                                                                                     pcpt.PlanLineItemId == EntityId &&
                                                                                     pcpt.IsDeleted == false).FirstOrDefault();
-                if (isTotalCost) // Total planned cost is changed
+                if (objLineitem != null)
                 {
-                    objLineitem.Cost = monthlycost;
-                    objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
-                }
-                else // When month wise cost allocation is changed
-                {
-                    string period = Convert.ToString(MonthQuarterList[month]);
-                    if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == period).Any())
+                    if (isTotalCost) // Total planned cost is changed
                     {
-                        objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = monthlycost;
+                        objLineitem.Cost = newCost;
                         objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
                     }
-                    else
+                    else // When month wise cost allocation is changed
                     {
-                        AddNewRowLineItemCost(EntityId, period, monthlycost, UserId);   // Add new record for line item cost for the month
+                        string period = Convert.ToString(MonthQuarterList[month]);
+                        Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault();
+                        if (objLineItemCost != null)
+                        {
+                            objLineItemCost.Value = newCost;
+                            objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Modified;
+                        }
+                        else
+                        {
+                            AddNewRowLineItemCost(EntityId, period, newCost, UserId);   // Add new record for line item cost for the month
+                        }
                     }
-                }
-                objDbMrpEntities.SaveChanges();
+                    objDbMrpEntities.SaveChanges();
 
-                UpdateBalanceLineItemCost(objLineitem.PlanTacticId);
+                    UpdateBalanceLineItemCost(objLineitem.PlanTacticId);
+                }
             }
             catch { throw; }
         }
@@ -699,46 +705,48 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Save quarterly cost allocation for line items
         /// </summary>
-        public void SaveLineItemQuarterlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost, int UserId)
+        public void SaveLineItemQuarterlyCostAllocation(int EntityId, double newCost, string quarter, bool isTotalCost, int UserId)
         {
             try
             {
                 Plan_Campaign_Program_Tactic_LineItem objLineitem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcpt =>
                                                                                     pcpt.PlanLineItemId == EntityId &&
                                                                                     pcpt.IsDeleted == false).FirstOrDefault();
-                if (isTotalCost) // Total planned cost is changed
+                if (objLineitem != null)
                 {
-                    objLineitem.Cost = monthlycost;
-                    objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
-                }
-                else // When month wise cost allocation is changed
-                {
-                    string period = Convert.ToString(MonthQuarterList[month]);
-
-                    if (QuartersList[period] != null && objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).Any())
+                    if (isTotalCost) // Total planned cost is changed
                     {
-                        double curQuarterCost = 0;
-                        curQuarterCost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).Sum(x => x.Value);
+                        objLineitem.Cost = newCost;
+                        objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
+                    }
+                    else // When month wise cost allocation is changed
+                    {
+                        string period = Convert.ToString(MonthQuarterList[quarter]);
+                        List<Plan_Campaign_Program_Tactic_LineItem_Cost> lstLineItemCost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).ToList();
+                        if (QuartersList[period] != null && lstLineItemCost.Any())
+                        {
+                            double oldCost = lstLineItemCost.Sum(x => x.Value);
 
-                        // If new value is greater then add into first month
-                        if (curQuarterCost < monthlycost)
-                        {
-                            IncreaseQuarterlyLineItemCost(objLineitem, EntityId, period, monthlycost, curQuarterCost, UserId);
+                            // If new value is greater then add into first month
+                            if (oldCost < newCost)
+                            {
+                                IncreaseQuarterlyLineItemCost(objLineitem, EntityId, period, newCost, oldCost, UserId);
+                            }
+                            // If new value is lesser then subtract from last month
+                            else if (oldCost > newCost)
+                            {
+                                DecreaseQuarterlyLineItemCost(objLineitem, period, newCost, oldCost);
+                            }
                         }
-                        // If new value is lesser then subtract from last month
-                        else if (curQuarterCost > monthlycost)
+                        else
                         {
-                            DecreaseQuarterlyLineItemCost(objLineitem, period, monthlycost, curQuarterCost);
+                            AddNewRowLineItemCost(EntityId, period, newCost, UserId);   // Add new record for line item cost for the quarter
                         }
                     }
-                    else
-                    {
-                        AddNewRowLineItemCost(EntityId, period, monthlycost, UserId);   // Add new record for line item cost for the quarter
-                    }
-                }
-                objDbMrpEntities.SaveChanges();
+                    objDbMrpEntities.SaveChanges();
 
-                UpdateBalanceLineItemCost(objLineitem.PlanTacticId);
+                    UpdateBalanceLineItemCost(objLineitem.PlanTacticId);
+                }
             }
             catch { throw; }
         }
@@ -746,20 +754,21 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Save quarterly allocated line item cost while cost is increased
         /// </summary>
-        private void IncreaseQuarterlyLineItemCost(Plan_Campaign_Program_Tactic_LineItem objLineItem, int EntityId, string period, double monthlycost, double curQuarterCost,int UserId)
+        private void IncreaseQuarterlyLineItemCost(Plan_Campaign_Program_Tactic_LineItem objLineItem, int EntityId, string period, double newCost, double oldCost, int UserId)
         {
             try
             {
+                Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost = objLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).FirstOrDefault();
                 // If cost is increased for quarter then added into first month e.g. Q1 -> Y1
-                if (objLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).Any())
+                if (objLineItemCost != null)
                 {
-                    objLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).FirstOrDefault().Value += monthlycost - curQuarterCost;
-                    objDbMrpEntities.Entry(objLineItem).State = EntityState.Modified;
+                    objLineItemCost.Value += newCost - oldCost;
+                    objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Modified;
                     objDbMrpEntities.SaveChanges();
                 }
                 else
                 {
-                    AddNewRowLineItemCost(EntityId, period, monthlycost, UserId);   // Add new record for line item cost for the quarter
+                    AddNewRowLineItemCost(EntityId, period, newCost, UserId);   // Add new record for line item cost for the quarter
                 }
             }
             catch { throw; }
@@ -768,29 +777,31 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Save quarterly allocated line item cost while cost is decreased
         /// </summary>
-        private void DecreaseQuarterlyLineItemCost(Plan_Campaign_Program_Tactic_LineItem objLineitem, string period, double monthlycost, double curQuarterCost)
+        private void DecreaseQuarterlyLineItemCost(Plan_Campaign_Program_Tactic_LineItem objLineitem, string period, double newCost, double oldCost)
         {
             try
             {
                 QuartersList[period].Reverse(); // Reversed list to subtract from last months
                 double curPeriodVal = 0, needToSubtract = 0;
-                needToSubtract = curQuarterCost - monthlycost;
+                needToSubtract = oldCost - newCost;
                 // Subtract cost from each months of the quarter e.g. For Q1 -> subtract from Y3, Y2 and Y1 as per requirement
+                Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
                 foreach (string quarter in QuartersList[period])
                 {
-                    if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == quarter).Any())
+                    objLineItemCost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault();
+                    if (objLineItemCost != null)
                     {
-                        curPeriodVal = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault().Value;
+                        curPeriodVal = objLineItemCost.Value;
                         curPeriodVal = curPeriodVal - needToSubtract;
                         needToSubtract = -curPeriodVal;
-                        objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault().Value = curPeriodVal < 0 ? 0 : curPeriodVal;
+                        objLineItemCost.Value = curPeriodVal < 0 ? 0 : curPeriodVal;
                         if (curPeriodVal >= 0)
                         {
                             break;
                         }
                     }
+                    objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Modified;
                 }
-                objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
                 objDbMrpEntities.SaveChanges();
             }
             catch { throw; }
@@ -799,14 +810,14 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Add new row for allocated line item cost
         /// </summary>
-        private void AddNewRowLineItemCost(int EntityId, string period, double monthlycost, int UserId)
+        private void AddNewRowLineItemCost(int EntityId, string period, double newCost, int UserId)
         {
             try
             {
                 Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
                 objLineItemCost.PlanLineItemId = EntityId;
                 objLineItemCost.Period = period;
-                objLineItemCost.Value = monthlycost;
+                objLineItemCost.Value = newCost;
                 objLineItemCost.CreatedBy = UserId;
                 objLineItemCost.CreatedDate = DateTime.Now;
                 objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Added;
@@ -822,7 +833,7 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Save monthly allocated cost for tactic and update other line item
         /// </summary>
-        public void SaveTacticMonthlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost, int UserId)
+        public void SaveTacticMonthlyCostAllocation(int EntityId, double newCost, string month, bool isTotalCost, int UserId)
         {
             try
             {
@@ -833,20 +844,21 @@ namespace RevenuePlanner.Services
                 {
                     if (isTotalCost) // Total planned cost is changed
                     {
-                        objTactic.Cost = monthlycost;
+                        objTactic.Cost = newCost;
                         objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
                     }
                     else // When month wise cost allocation is changed
                     {
                         string period = Convert.ToString(MonthQuarterList[month]);
-                        if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == period).Any())
+                        Plan_Campaign_Program_Tactic_Cost objTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault();
+                        if (objTacCost != null)
                         {
-                            objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = monthlycost;
-                            objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
+                            objTacCost.Value = newCost;
+                            objDbMrpEntities.Entry(objTacCost).State = EntityState.Modified;
                         }
                         else
                         {
-                            AddNewRowTacticCost(EntityId, period, monthlycost, UserId); // Add new record for tactic cost for the month
+                            AddNewRowTacticCost(EntityId, period, newCost, UserId); // Add new record for tactic cost for the month
                         }
                     }
                     objDbMrpEntities.SaveChanges();
@@ -859,7 +871,7 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Save quarterly allocated cost for tactic and update other line item/// 
         /// </summary>
-        public void SaveTacticQuarterlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost, int UserId)
+        public void SaveTacticQuarterlyCostAllocation(int EntityId, double newCost, string month, bool isTotalCost, int UserId)
         {
             try
             {
@@ -870,32 +882,31 @@ namespace RevenuePlanner.Services
                 {
                     if (isTotalCost) // Total planned cost is changed
                     {
-                        objTactic.Cost = monthlycost;
+                        objTactic.Cost = newCost;
                         objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
                     }
                     else // When month wise cost allocation is changed
                     {
                         string period = Convert.ToString(MonthQuarterList[month]);
-
-                        if (QuartersList[period] != null && objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).Any())
+                        List<Plan_Campaign_Program_Tactic_Cost> lstTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).ToList();
+                        if (QuartersList[period] != null && lstTacCost.Any())
                         {
-                            double curQuarterCost = 0;
-                            curQuarterCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).Sum(x => x.Value);
+                            double oldCost = lstTacCost.Sum(x => x.Value);
 
                             // If new value is greater then add into first month
-                            if (curQuarterCost < monthlycost)
+                            if (oldCost < newCost)
                             {
-                                IncreaseQuarterlyTacticCost(objTactic, EntityId, period, monthlycost, curQuarterCost, UserId);
+                                IncreaseQuarterlyTacticCost(objTactic, EntityId, period, newCost, oldCost, UserId);
                             }
                             // If new value is lesser then subtract from last month
-                            else if (curQuarterCost > monthlycost)
+                            else if (oldCost > newCost)
                             {
-                                DecreaseQuarterlyTacticCost(objTactic, period, monthlycost, curQuarterCost);
+                                DecreaseQuarterlyTacticCost(objTactic, period, newCost, oldCost);
                             }
                         }
                         else
                         {
-                            AddNewRowTacticCost(EntityId, period, monthlycost, UserId); // Add new record for tactic cost for the quarter
+                            AddNewRowTacticCost(EntityId, period, newCost, UserId); // Add new record for tactic cost for the quarter
                         }
                     }
                     objDbMrpEntities.SaveChanges();
@@ -909,19 +920,20 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Save quarterly allocated tactic cost while cost is increased
         /// </summary>
-        private void IncreaseQuarterlyTacticCost(Plan_Campaign_Program_Tactic objTactic, int EntityId, string period, double monthlycost, double curQuarterCost, int UserId)
+        private void IncreaseQuarterlyTacticCost(Plan_Campaign_Program_Tactic objTactic, int EntityId, string period, double newCost, double oldCost, int UserId)
         {
             try
             {
-                if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).Any())
+                Plan_Campaign_Program_Tactic_Cost objTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).FirstOrDefault();
+                if (objTacCost != null)
                 {
-                    objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).FirstOrDefault().Value += monthlycost - curQuarterCost;
-                    objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
+                    objTacCost.Value += newCost - oldCost;
+                    objDbMrpEntities.Entry(objTacCost).State = EntityState.Modified;
                     objDbMrpEntities.SaveChanges();
                 }
                 else
                 {
-                    AddNewRowTacticCost(EntityId, period, monthlycost, UserId); // Add new record for tactic cost for the quarter
+                    AddNewRowTacticCost(EntityId, period, newCost, UserId); // Add new record for tactic cost for the quarter
                 }
             }
             catch { throw; }
@@ -930,29 +942,32 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Save quarterly allocated tactic cost while cost is decreased
         /// </summary>
-        private void DecreaseQuarterlyTacticCost(Plan_Campaign_Program_Tactic objTactic, string period, double monthlycost, double curQuarterCost)
+        private void DecreaseQuarterlyTacticCost(Plan_Campaign_Program_Tactic objTactic, string period, double newCost, double oldCost)
         {
             try
             {
                 QuartersList[period].Reverse(); // Reversed list for subtract from last months
                 double curPeriodVal = 0, costDiff = 0;
-                costDiff = curQuarterCost - monthlycost;
+                costDiff = oldCost - newCost;
+                Plan_Campaign_Program_Tactic_Cost objTacCost = new Plan_Campaign_Program_Tactic_Cost();
                 // Subtract cost from each months of the quarter
                 foreach (string quarter in QuartersList[period])
                 {
-                    if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == quarter).Any())
+                    objTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault();
+                    if (objTacCost != null)
                     {
-                        curPeriodVal = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault().Value;
+                        curPeriodVal = objTacCost.Value;
                         curPeriodVal = curPeriodVal - costDiff;
                         costDiff = -curPeriodVal;
-                        objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault().Value = curPeriodVal < 0 ? 0 : curPeriodVal;
+                        objTacCost.Value = curPeriodVal < 0 ? 0 : curPeriodVal;
                         if (curPeriodVal >= 0)
                         {
                             break;
                         }
                     }
+                    objDbMrpEntities.Entry(objTacCost).State = EntityState.Modified;
                 }
-                objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
+
                 objDbMrpEntities.SaveChanges();
             }
             catch { throw; }
@@ -961,14 +976,14 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Add new record for allocated tactic cost 
         /// </summary>
-        private void AddNewRowTacticCost(int EntityId, string period, double monthlycost,int UserId)
+        private void AddNewRowTacticCost(int EntityId, string period, double newCost, int UserId)
         {
             try
             {
                 Plan_Campaign_Program_Tactic_Cost objTacticCost = new Plan_Campaign_Program_Tactic_Cost();
                 objTacticCost.PlanTacticId = EntityId;
                 objTacticCost.Period = period;
-                objTacticCost.Value = monthlycost;
+                objTacticCost.Value = newCost;
                 objTacticCost.CreatedBy = UserId;
                 objTacticCost.CreatedDate = DateTime.Now;
                 objDbMrpEntities.Entry(objTacticCost).State = EntityState.Added;
