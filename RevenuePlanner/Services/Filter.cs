@@ -67,16 +67,7 @@ namespace RevenuePlanner.Services
             List<int> uniqueplanids = activePlan.Select(p => p.PlanId).Distinct().ToList();
 
             //List of Campaign based on Plan wise
-            var CampPlans = objDbMrpEntities.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId))
-                .Select(camp => new
-                {
-                    PlanId = camp.PlanId,
-                    StartYear = camp.StartDate.Year,
-                    EndYear = camp.EndDate.Year,
-                    StartDate = camp.StartDate,
-                    EndDate = camp.EndDate
-                })
-                .ToList();
+            List<Plan_Campaign> CampPlans = objDbMrpEntities.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId)).Select(camp => camp).ToList();
 
             // List of Campaign between selected years
             List<int> CampPlanIds = CampPlans.Where(camp => SelectedYear.Contains(Convert.ToString(camp.StartDate.Year)) || SelectedYear.Contains(Convert.ToString(camp.EndDate.Year)))
@@ -101,9 +92,9 @@ namespace RevenuePlanner.Services
             }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
 
             List<SelectListItem> lstYear = new List<SelectListItem>();
-            List<int> StartYears = CampPlans.Select(camp => camp.StartYear).Distinct().ToList();
+            List<int> StartYears = CampPlans.Select(camp => camp.StartDate.Year).Distinct().ToList();
 
-            List<int> EndYears = CampPlans.Select(camp => camp.EndYear)
+            List<int> EndYears = CampPlans.Select(camp => camp.EndDate.Year)
                 .Distinct().ToList();
 
             LstYear = GetListofYears(LstYear, SelectedYear, lstYear, StartYears, EndYears);
@@ -381,7 +372,7 @@ namespace RevenuePlanner.Services
                 int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                 int NonePermission = (int)Enums.CustomRestrictionPermission.None;
 
-                foreach (var customFieldId in lstCustomFieldId)
+                foreach (int customFieldId in lstCustomFieldId)
                 {
                     if (userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == customFieldId).Count() > 0)
                     {
@@ -519,37 +510,28 @@ namespace RevenuePlanner.Services
         /// <returns>returns List of TacticTypeModel</returns>
         public List<TacticTypeModel> GetTacticTypeListForFilter(string PlanId, int UserId, int ClientId)
         {
-            try
-            {
-                DataSet dsPlanCampProgTac = new DataSet();
-                dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(PlanId);
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.dsPlanCampProgTac), dsPlanCampProgTac);
+            DataSet dsPlanCampProgTac = new DataSet();
+            dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(PlanId);
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.dsPlanCampProgTac), dsPlanCampProgTac);
 
-                List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.Plan), lstPlans);
+            List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.Plan), lstPlans);
 
-                List<Plan_Campaign> lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.Campaign), lstCampaign);
+            List<Plan_Campaign> lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).ToList();
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.Campaign), lstCampaign);
 
-                List<Custom_Plan_Campaign_Program> lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.Program), lstProgramPer);
+            List<Custom_Plan_Campaign_Program> lstProgramPer = Common.GetSpCustomProgramList(dsPlanCampProgTac.Tables[2]);
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.Program), lstProgramPer);
 
-                List<Custom_Plan_Campaign_Program_Tactic> customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomTactic), customtacticList);
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.PlanTacticListforpackageing), customtacticList);
-                List<Plan_Campaign_Program_Tactic> tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.Tactic), tacticList);
+            List<Custom_Plan_Campaign_Program_Tactic> customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomTactic), customtacticList);
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.PlanTacticListforpackageing), customtacticList);
+            List<Plan_Campaign_Program_Tactic> tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.Tactic), tacticList);
 
-                List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
-                List<int> lstAllowedEntityIds = Common.GetViewableTacticList(UserId, ClientId, planTacticIds, false);
-                return GetTacticTypeList(tacticList, lstAllowedEntityIds, UserId);
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-            }
-
-            return null;
+            List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+            List<int> lstAllowedEntityIds = Common.GetViewableTacticList(UserId, ClientId, planTacticIds, false);
+            return GetTacticTypeList(tacticList, lstAllowedEntityIds, UserId);
         }
 
         /// <summary>
@@ -632,81 +614,73 @@ namespace RevenuePlanner.Services
         /// <returns>returns List of Owner</returns>
         public List<OwnerModel> GetOwnerListForFilter(int ClientId, int UserId, string FirstName, string LastName, Guid ApplicationId, string PlanId, string ViewBy, string ActiveMenu)
         {
-            try
+            List<int> lstAllowedEntityIds = new List<int>();
+            List<int> PlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
+            DataSet dsPlanCampProgTac = new DataSet();
+            dsPlanCampProgTac = (DataSet)objCache.Returncache(Convert.ToString(Enums.CacheObject.dsPlanCampProgTac));
+            if (dsPlanCampProgTac == null)
             {
-                List<int> lstAllowedEntityIds = new List<int>();
-                List<int> PlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
-                DataSet dsPlanCampProgTac = new DataSet();
-                dsPlanCampProgTac = (DataSet)objCache.Returncache(Convert.ToString(Enums.CacheObject.dsPlanCampProgTac));
-                if (dsPlanCampProgTac == null)
-                {
-                    dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(PlanId);
-                }
-                List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
-                if (dsPlanCampProgTac != null && dsPlanCampProgTac.Tables[1] != null)
-                {
-                    campaignList = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
-                }
-
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.Campaign), campaignList);
-                List<int> campaignListids = campaignList.Select(campaign => campaign.PlanCampaignId).ToList();
-                List<Plan_Campaign_Program> programList = new List<Plan_Campaign_Program>();
-                if (dsPlanCampProgTac != null && dsPlanCampProgTac.Tables[2] != null)
-                {
-                    programList = Common.GetSpProgramList(dsPlanCampProgTac.Tables[2]);
-                }
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.Program), programList);
-
-                List<int> programListids = programList.Select(program => program.PlanProgramId).ToList();
-                List<Custom_Plan_Campaign_Program_Tactic> customtacticList = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Convert.ToString(Enums.CacheObject.CustomTactic));
-                if (customtacticList == null || customtacticList.Count == 0)
-                {
-                    customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
-                }
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomTactic), customtacticList);
-                List<Plan_Campaign_Program_Tactic> tacticList = (List<Plan_Campaign_Program_Tactic>)objCache.Returncache(Convert.ToString(Enums.CacheObject.Tactic));
-                if (tacticList == null || tacticList.Count == 0)
-                {
-                    tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
-                }
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.Tactic), tacticList);
-                string section = Convert.ToString(Enums.Section.Tactic);
-
-                List<CustomField> customfield = objDbMrpEntities.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == ClientId && customField.IsDeleted == false).ToList();
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomField), customfield);
-                List<int> customfieldidlist = customfield.Select(c => c.CustomFieldId).ToList();
-                var lstAllTacticCustomFieldEntitiesanony = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
-                                                                                       .Select(customFieldEntity => new CacheCustomField { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value, CreatedBy = customFieldEntity.CreatedBy, CustomFieldEntityId = customFieldEntity.CustomFieldEntityId }).Distinct().ToList();
-
-                objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomFieldEntity), lstAllTacticCustomFieldEntitiesanony);
-                for (int i = 0; i < PlanIds.Count; i++)
-                {
-                    List<int> planTacticIds = customtacticList.Where(tact => tact.PlanId == PlanIds[i]).Select(tact => tact.PlanTacticId).ToList();
-                    List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
-                                                                join lst in planTacticIds on tbl.EntityId equals lst
-                                                                select new CustomField_Entity
-                                                                {
-                                                                    EntityId = tbl.EntityId,
-                                                                    CustomFieldId = tbl.CustomFieldId,
-                                                                    Value = tbl.Value
-                                                                }).ToList();
-
-                    List<int> AllowedEntityIds = Common.GetViewableTacticList(UserId, ClientId, planTacticIds, false, customfieldlist);
-                    if (AllowedEntityIds.Count > 0)
-                    {
-                        lstAllowedEntityIds.AddRange(AllowedEntityIds);
-                    }
-
-                }
-
-                return GetOwnerList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, ApplicationId, UserId);
+                dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(PlanId);
             }
-            catch (Exception objException)
+            List<Plan_Campaign> campaignList = new List<Plan_Campaign>();
+            if (dsPlanCampProgTac != null && dsPlanCampProgTac.Tables[1] != null)
             {
-                ErrorSignal.FromCurrentContext().Raise(objException);
+                campaignList = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
             }
 
-            return null;
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.Campaign), campaignList);
+            List<int> campaignListids = campaignList.Select(campaign => campaign.PlanCampaignId).ToList();
+            List<Plan_Campaign_Program> programList = new List<Plan_Campaign_Program>();
+            if (dsPlanCampProgTac != null && dsPlanCampProgTac.Tables[2] != null)
+            {
+                programList = Common.GetSpProgramList(dsPlanCampProgTac.Tables[2]);
+            }
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.Program), programList);
+
+            List<int> programListids = programList.Select(program => program.PlanProgramId).ToList();
+            List<Custom_Plan_Campaign_Program_Tactic> customtacticList = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Convert.ToString(Enums.CacheObject.CustomTactic));
+            if (customtacticList == null || customtacticList.Count == 0)
+            {
+                customtacticList = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]);
+            }
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomTactic), customtacticList);
+            List<Plan_Campaign_Program_Tactic> tacticList = (List<Plan_Campaign_Program_Tactic>)objCache.Returncache(Convert.ToString(Enums.CacheObject.Tactic));
+            if (tacticList == null || tacticList.Count == 0)
+            {
+                tacticList = Common.GetTacticFromCustomTacticList(customtacticList);
+            }
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.Tactic), tacticList);
+            string section = Convert.ToString(Enums.Section.Tactic);
+
+            List<CustomField> customfield = objDbMrpEntities.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == ClientId && customField.IsDeleted == false).ToList();
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomField), customfield);
+            List<int> customfieldidlist = customfield.Select(c => c.CustomFieldId).ToList();
+            List<CacheCustomField> lstAllTacticCustomFieldEntitiesanony = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
+                                                                                   .Select(customFieldEntity => new CacheCustomField { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value, CreatedBy = customFieldEntity.CreatedBy, CustomFieldEntityId = customFieldEntity.CustomFieldEntityId }).Distinct().ToList();
+
+            objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomFieldEntity), lstAllTacticCustomFieldEntitiesanony);
+            for (int i = 0; i < PlanIds.Count; i++)
+            {
+                List<int> planTacticIds = customtacticList.Where(tact => tact.PlanId == PlanIds[i]).Select(tact => tact.PlanTacticId).ToList();
+                List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
+                                                            join lst in planTacticIds on tbl.EntityId equals lst
+                                                            select new CustomField_Entity
+                                                            {
+                                                                EntityId = tbl.EntityId,
+                                                                CustomFieldId = tbl.CustomFieldId,
+                                                                Value = tbl.Value
+                                                            }).ToList();
+
+                List<int> AllowedEntityIds = Common.GetViewableTacticList(UserId, ClientId, planTacticIds, false, customfieldlist);
+                if (AllowedEntityIds.Count > 0)
+                {
+                    lstAllowedEntityIds.AddRange(AllowedEntityIds);
+                }
+
+            }
+
+            return GetOwnerList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, ApplicationId, UserId);
+
         }
 
         /// <summary>
