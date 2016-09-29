@@ -13,7 +13,7 @@
 @Html.Hidden("LastSetOfViewsURL", @Url.Action("LastSetOfViews", "Filter"))
 @Html.Hidden("OwnerListURL", @Url.Action("GetOwnerListForFilter", "Filter"))
 @Html.Hidden("ServerUnavailableURL", @Url.Content(Common.RedirectOnServiceUnavailibilityPage))
-@Html.Hidden("PlanBudgetYearwise", @Url.Content("~/Report/GetBudgetPlanBasedOnYear/"))
+@Html.Hidden("PlanBudgetYearwise", @Url.Content("~/Filter/GetPlanBasedOnYear/"))
 @Html.Hidden("FilterPresetName", Sessions.FilterPresetName)
 @Html.Hidden("ActiveMenuHome", Enums.ActiveMenu.Home.ToString().ToLower())
 @Html.Hidden("HomeIndexURL", @Url.Content("~/Login/Index"))
@@ -23,7 +23,7 @@
 @Html.Hidden("SavePresetSuccess", @Common.objCached.SavePresetSuccess)
 @Html.Hidden("ProvidePresetName", @Common.objCached.ProvidePresetName)
 
-<script src="~/Scripts/Filter.js"></script>
+
 
 <div class="save-filter">
     <div id="errorMessageMainSidebar" class="alert hide alert-error">

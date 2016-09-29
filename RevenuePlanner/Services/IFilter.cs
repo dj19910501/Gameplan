@@ -17,5 +17,6 @@ namespace RevenuePlanner.Services
         List<OwnerModel> GetOwnerListForFilter(int ClientId, int UserId, string FirstName, string LastName, Guid ApplicationId, string PlanId, string ViewBy, string ActiveMenu);
         List<Plan_UserSavedViews> SaveLasSetofViews(string planId, string ViewName, string ownerIds, string TacticTypeid, string StatusIds, string SelectedYears, string customFieldIds, string ParentCustomFieldsIds, List<int> planIds, List<Plan_UserSavedViews> prevCustomFieldList, int UserId);
         List<int> GetPlanIds(string planId);
+        List<SelectListItem> GetPlanBasedOnYear(string Year, int ClientId);
     }
 }

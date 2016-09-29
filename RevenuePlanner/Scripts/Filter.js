@@ -344,6 +344,9 @@ function UpdateSelectedFilters() {
 
     checkedStatuscount = selectedFilters.StatusIds.length;
     $('#cStatuscount').text(checkedStatuscount);
+
+    TotalStatus = $("#ulStatus li").length;
+    $('#tStatuscount').text('/' + TotalStatus);
 }
 
 var PreviousListFilter = {

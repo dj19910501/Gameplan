@@ -207,6 +207,41 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(result.Data);
         }
 
+        /// <summary>
+        /// Get Plan Based On Year
+        /// </summary>
+        /// <auther>Nandish Shah</auther>
+        /// <createddate>29Sep2016</createddate>
+        [TestMethod]
+        public void GetPlanBasedOnYear_EmptyParameters()
+        {
+            Console.WriteLine("To Get Plan Based On Year.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            FilterController objFilterController = new FilterController();
+
+            var result = objFilterController.GetPlanBasedOnYear() as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+        }
+
+        /// <summary>
+        /// Get Plan Based On Year
+        /// </summary>
+        /// <auther>Nandish Shah</auther>
+        /// <createddate>29Sep2016</createddate>
+        [TestMethod]
+        public void GetPlanBasedOnYear_WithParameters()
+        {
+            Console.WriteLine("To Get Plan Based On Year.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            FilterController objFilterController = new FilterController();
+            string Year = Convert.ToString(DateTime.Now.Year);
+
+            var result = objFilterController.GetPlanBasedOnYear(Year) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+        }
+
         #region Get Owner List For Filter
         /// <summary>
         /// To Get Owner List For Filter
