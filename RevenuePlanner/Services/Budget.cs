@@ -35,7 +35,7 @@ namespace RevenuePlanner.Services
         public const string EndColumnIds = ",Budget";
         public const string FixColType = "ro,ro,ro,ro,tree,ro,ed,ed,ed";
         public const string EndColType = ",ro";
-        public const string FixcolWidth = "100,100,100,10,250,75,100,100,100";
+        public const string FixcolWidth = "100,100,100,10,302,75,100,100,100";
         public const string EndcolWidth = ",100";
         public const string FixColsorting = "na,na,na,na,na,na,na,na,na";
         public const string EndColsorting = ",na";

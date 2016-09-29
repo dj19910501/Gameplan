@@ -1459,7 +1459,7 @@ footer a {
 }
 /* =============== Calendar View CSS =============== */
 .task-tbl #divgridview, .task-tbl #GridGanttContent {
-    overflow:hidden !important;width: 100%;margin:0;height:60vh; 
+    overflow:hidden !important;width: 100%;margin:0;height:65vh; 
 }
 /*.task-tbl #GridGanttContent {
     border: 1px solid #ccc;
@@ -1472,18 +1472,20 @@ footer a {
 
 .task-tbl .gantt_grid .gantt_grid_scale, 
 .task-tbl .gantt_task .gantt_task_scale{
-    height:45px !important; 
+    height:55px !important; 
     font-weight:normal !important; 
-    border-bottom: 1px solid #D4D4D4;
+    border-bottom: 2px solid #D4D4D4;
 }
-.task-tbl .gantt_task .gantt_scale_line:first-child {height:15px !important;  line-height:15px !important}
+.task-tbl .gantt_task .gantt_scale_line:first-child {height:23px !important;  line-height:23px !important}
+
+
 .task-tbl .gantt_task  .gantt_task_scale  .gantt_scale_cell{font-weight:normal !important; text-align:center}
 .task-tbl .gantt_task > .gantt_task_scale > .gantt_scale_line:first-child > .gantt_scale_cell {font-size:12px !important; }
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr tr:nth-child(2) td:nth-child(4){min-width:350px !important}
 
 
 /* =========== Grid and Budget  View CSS ======== */
-.task-tbl #divgridview .xhdr, .task-tbl #divgridview .hdr{ height: 44px !important; }
+.task-tbl #divgridview .xhdr, .task-tbl #divgridview .hdr{ height: 54px !important; }
 .task-tbl #divgridview.budget-grid .xhdr, .task-tbl #divgridview.budget-grid .hdr{ height: auto !important; }
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr{height:auto !important; }
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td {
@@ -1512,13 +1514,23 @@ footer a {
 .task-tbl #gridbox.financeReportGrid div.objbox table tr td{text-align:center}
 .task-tbl .market-activity-main .btn-dropdwn{position: absolute; top: 40px; z-index: 11;}
 
+#divgridview.budget-grid #gridbox table.hdr tr td{padding:0 !important}
+#divgridview.budget-grid #gridbox table.hdr tr:nth-child(2), #divgridview.budget-grid #gridbox div:nth-child(2) table.hdr tr:nth-child(2) {
+    height: 18px !important;
+    line-height: 18px !important
+}
+#divgridview.budget-grid #gridbox table.hdr tr:nth-child(3), #divgridview.budget-grid #gridbox div:nth-child(2) table.hdr tr:nth-child(3) {
+    height: 36px !important;
+    line-height: 36px !important
+}
+#divgridview.budget-grid #gridbox table.hdr{height:auto !important}
 /* ============== Search box CSS ================ */
 /*#divgridview .xhdr{ height: 37px !important; }*/
 
 #exp-serach{
     position: absolute;
     margin-top: 1px;
-    width:320px;
+    width:312px;
     background: #fff none repeat scroll 0 0;
     z-index:22;
 }
@@ -1553,7 +1565,7 @@ footer a {
     float: right;
     font-size: 16px;
     margin: 0;
-    padding: 7px 0 0;
+    padding: 13px 0 0;
     position: static;
     text-align: center;
     width: 35px;
@@ -1598,7 +1610,7 @@ footer a {
 	font-size: 12px;
     float:left;
 }
-#exp-serach, #searchCriteria, #txtGlobalSearch{height: 44px !important;}
+#exp-serach, #searchCriteria, #txtGlobalSearch{height: 53px !important;}
 
 
 /* ============== Inspection Window new style ================= */ 
@@ -1720,7 +1732,7 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
 @media (max-width: 1600px) {
 .task-tbl #divgridview, 
 .task-tbl #GridGanttContent {
-    height: 60vh; 
+    height: 59.5vh; 
 }
 }
 

@@ -13448,6 +13448,12 @@ input.serach-input {
     float: right;
 }
 .fileinput-remove-button{color:#333333 !important}
+#ImportModal .file-error-message {
+    margin-top: 38px;
+    padding: 0 15px;
+     margin-bottom: 0;
+}
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

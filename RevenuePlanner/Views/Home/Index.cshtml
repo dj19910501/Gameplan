@@ -18,7 +18,7 @@
 }
 <!-- Stylesheet Only For Homepage -->
 @section FilterEx{
-    <link href="~/Content/css/styleIndexPage_29.css" rel="stylesheet" />
+    <link href="~/Content/css/styleIndexPage.css" rel="stylesheet" />
 }
 
 @* Sidebar Section Start *@
@@ -331,14 +331,6 @@
         });
 
         $('.gantt_hor_scroll').hide();
-
-        @*if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                var ganttwidth = $("#gridbox").width();
-                var totalWidth = ganttwidth + 230;
-                ResizeGrid(totalWidth);
-            }
-        }*@
 
     }, function () {
         ///new code
