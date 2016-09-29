@@ -786,7 +786,7 @@ namespace RevenuePlanner.Helpers
                 //Added by Mitesh Vaishnav for PL ticket 2551 - remove empty strings from collaborator ids list
                 if (lst_CollaboratorId.Count > 0)
                 {
-                    lst_CollaboratorId.RemoveAll(id => id==0);
+                    lst_CollaboratorId.RemoveAll(id => id == 0);
                 }
                 var NotificationName = status;
 
@@ -2966,7 +2966,7 @@ namespace RevenuePlanner.Helpers
             }
             else
             {
-              
+
                 if (int.TryParse(ListYear[0], out Year))
                 {
                     planYear = ListYear[0];
@@ -2989,29 +2989,29 @@ namespace RevenuePlanner.Helpers
             List<Plan> planList = dataCache.Returncache(Enums.CacheObject.Plan.ToString()) as List<Plan>;
             List<int> planData = planList.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == year).Select(a => a.PlanId).ToList();
             planIds = planList.Select(a => a.PlanId).ToList();
-          //get campaign list as per plan
-          List<Plan_Campaign> campplist = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).Where(campaign => (!((campaign.EndDate < StartDate) || (campaign.StartDate > EndDate))) && planIds.Contains(campaign.PlanId)).ToList();
-          List<int> campplanid = campplist.Select(a => a.PlanId).ToList();
-          List<int> filterOwner = new List<int>();
-          filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Int32.Parse(owner)).ToList();
+            //get campaign list as per plan
+            List<Plan_Campaign> campplist = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).Where(campaign => (!((campaign.EndDate < StartDate) || (campaign.StartDate > EndDate))) && planIds.Contains(campaign.PlanId)).ToList();
+            List<int> campplanid = campplist.Select(a => a.PlanId).ToList();
+            List<int> filterOwner = new List<int>();
+            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Int32.Parse(owner)).ToList();
 
             if (planList != null && planList.Count > 0)
             {
-              
+
                 List<int> innerplanids = planList.Where(a => campplanid.Count > 0 ? campplanid.Contains(a.PlanId) : planIds.Contains(a.PlanId)).Select(plan => plan.PlanId).ToList();
-            
+
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                 List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
                 List<int> lstTacticIds = new List<int>();
 
 
-           
+
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
 
-              
+
                 List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
 
-               
+
                 List<string> filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldId) ? new List<string>() : CustomFieldId.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
                 if (filteredCustomFields.Count > 0)
                 {
@@ -3062,11 +3062,11 @@ namespace RevenuePlanner.Helpers
 
                 List<int> impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
                 List<Plan_Improvement_Campaign_Program_Tactic> improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => impprogramlist.Contains(imp.ImprovementPlanProgramId) && imp.IsDeleted == false).ToList();
-               
+
                 List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = sp.GetLineItemList(string.Join(",", planIds));
 
 
-            
+
 
                 Double MQLs = 0;
                 List<Custom_Plan_Campaign_Program_Tactic> planTacticIds = new List<Custom_Plan_Campaign_Program_Tactic>();
@@ -5269,8 +5269,8 @@ namespace RevenuePlanner.Helpers
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
 
             var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).Distinct().ToList();
-            List<ImprovementTacticType_Metric> improvementTacticTypeMetric =  db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
-            
+            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+
             List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
             //End #955
 
@@ -6250,7 +6250,7 @@ namespace RevenuePlanner.Helpers
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Status.ToString(), Value = PlanGanttTypes.Status.ToString() });
-      
+
 
             //// Check that if list of PlanTactic is not null then we are going to fetch the Custom Fields
             if (lstTactic != null && lstTactic.Count > 0)
@@ -7346,7 +7346,7 @@ namespace RevenuePlanner.Helpers
             BDSServiceClient bdsservice = new BDSServiceClient();
             List<User> userName = new List<User>();
             //userName = bdsservice.GetMultipleTeamMemberName(UserGuid);
-            userName = bdsservice.GetMultipleTeamMemberNameByApplicationIdEx(new List<int> { userId}, Sessions.ApplicationId);
+            userName = bdsservice.GetMultipleTeamMemberNameByApplicationIdEx(new List<int> { userId }, Sessions.ApplicationId);
             if (userName.Count > 0)
             {
                 return string.Concat(userName.FirstOrDefault().FirstName, " ", userName.FirstOrDefault().LastName);
@@ -9226,43 +9226,41 @@ namespace RevenuePlanner.Helpers
             else
             {
                 int OutVal = 0;
-                int.TryParse(val,out OutVal);
+                int.TryParse(val, out OutVal);
                 return OutVal;
             }
         }
 
         /// <summary>
-        /// This function returns datatable which contains details reg. plan, campaign, program, tactic and line item's planned cost and actual 
+        /// This function returns datatable which contains details tactic and line item's planned cost
         /// </summary>
-        /// <param name="PlanId">int unique planid of plan which data will be return</param>
-        /// <param name="budgetTab">string which contains value like Planned or Actual</param>
         /// <returns></returns>
-        public static DataTable GetLineItemCostAllocation(int LineItemId)
+        public static DataTable GetTacticLineItemCostAllocation(int PlanTacticId, int UserId)
         {
-            DataTable dtPlanHirarchy = new DataTable();
-
+            DataTable dtCosts = new DataTable();
             MRPEntities db = new MRPEntities();
-            ///If connection is closed then it will be open
-            var Connection = db.Database.Connection as SqlConnection;
-            if (Connection.State == System.Data.ConnectionState.Closed)
-                Connection.Open();
-            SqlCommand command = null;
 
-            command = new SqlCommand("LineItem_Cost_Allocation", Connection);
-
-            using (command)
+            try
             {
-
+                ///If connection is closed then it will be open
+                var Connection = db.Database.Connection as SqlConnection;
+                if (Connection.State == System.Data.ConnectionState.Closed)
+                {
+                    Connection.Open();
+                }
+                SqlCommand command = new SqlCommand("LineItem_Cost_Allocation", Connection);
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@PlanTacticId", LineItemId);
-                command.Parameters.AddWithValue("@UserId", Sessions.User.ID);
+                command.Parameters.AddWithValue("@PlanTacticId", PlanTacticId);
+                command.Parameters.AddWithValue("@UserId", UserId);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
-                command.CommandTimeout = 0;
-                adp.Fill(dtPlanHirarchy);
-                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                adp.Fill(dtCosts);
+                if (Connection.State == System.Data.ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
             }
-
-            return dtPlanHirarchy;
+            catch { throw; }
+            return dtCosts;
         }
 
     }
@@ -9346,7 +9344,7 @@ namespace RevenuePlanner.Helpers
         }
     }
     #endregion
-       
+
     // Home Grid Properties
     #region Home Grid style properties
     public class HomeGridProperties
@@ -9356,9 +9354,12 @@ namespace RevenuePlanner.Helpers
         public string doubledesh = "--";
         public string typero = "ro";
         public string typeEdn = "edn";
+        public string typetree = "tree";
         public string openstateone = "1";
         public string lockedstateone = "1";
         public string lockedstatezero = "0";
+        public string aligncenter = "center";
+        public string alignleft = "left";
 
         public string PlanBackgroundColor = "#e6e6e6";
         public string CampaignBackgroundColor = "#c6ebf3";

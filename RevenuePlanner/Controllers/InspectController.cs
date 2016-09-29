@@ -6051,8 +6051,9 @@ namespace RevenuePlanner.Controllers
                 // Desc :: To resolve test case when tactic object is null
                 if (objTactic != null)
                 {
+                    string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months); // this is passed based from UI once view by functinality implemented
                     // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
-                    objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId);
+                    objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate);
 
                     // Modified by Arpita Soni for Ticket #2237 on 06/22/2016
                     var lstLineItemType = db.LineItemTypes.
@@ -6070,40 +6071,31 @@ namespace RevenuePlanner.Controllers
         }
 
         #region Save Line Item Cost Allocation
-        public JsonResult SaveLineItemCostAllocation(string entityId, string section, string month, string inputs, string tab, bool isquarter, bool isTotalCost)
+        public JsonResult SaveLineItemCostAllocation(string entityId, string section, string month, double allocatedcost, string tab, bool isquarter, bool isTotalCost)
         {
             try
             {
                 int EntityId = Convert.ToInt32(entityId);
-                var popupValues = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(inputs);
-                double monthlycost = 0;
-                if (popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).Any())
+                if (string.Compare(section, Enums.Section.LineItem.ToString(), true) == 0)
                 {
-                    if (popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).FirstOrDefault().Value != "")
+                    if (isquarter)
                     {
-                        monthlycost = Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).FirstOrDefault().Value);
+                        objPlanTactic.SaveLineItemQuarterlyCostAllocation(EntityId, allocatedcost, month, isTotalCost, Sessions.User.ID);
                     }
-                    if (string.Compare(section, Enums.Section.LineItem.ToString(), true) == 0)
+                    else
                     {
-                        if (isquarter)
-                        {
-                            objPlanTactic.SaveLineItemQuarterlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
-                        }
-                        else
-                        {
-                            objPlanTactic.SaveLineItemMonthlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
-                        }
+                        objPlanTactic.SaveLineItemMonthlyCostAllocation(EntityId, allocatedcost, month, isTotalCost, Sessions.User.ID);
                     }
-                    else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
+                }
+                else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
+                {
+                    if (isquarter)
                     {
-                        if (isquarter)
-                        {
-                            objPlanTactic.SaveTacticQuarterlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
-                        }
-                        else
-                        {
-                            objPlanTactic.SaveTacticMonthlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
-                        }
+                        objPlanTactic.SaveTacticQuarterlyCostAllocation(EntityId, allocatedcost, month, isTotalCost, Sessions.User.ID);
+                    }
+                    else
+                    {
+                        objPlanTactic.SaveTacticMonthlyCostAllocation(EntityId, allocatedcost, month, isTotalCost, Sessions.User.ID);
                     }
                 }
                 return Json(new { isSuccess = true });
@@ -11120,7 +11112,7 @@ namespace RevenuePlanner.Controllers
 
                         if (result > 0)
                         {
-                            int intMediacode=(MediaCodeId % 1000000) + 9000000;
+                            int intMediacode = (MediaCodeId % 1000000) + 9000000;
                             objMediaCode.MediaCode = intMediacode;
                             // add media code for linked tactic
                             if (LinkedTacticID != 0)
@@ -11400,7 +11392,7 @@ namespace RevenuePlanner.Controllers
                             //if (IsLinkedTactic)
                             //    Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.CID && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId != linkedTacticID).FirstOrDefault();
                             //else
-                                Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.CID && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId == tacticId).FirstOrDefault();
+                            Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.CID && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId == tacticId).FirstOrDefault();
 
                             if (Result != null)
                                 IsValid = false;
