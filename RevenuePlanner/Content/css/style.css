@@ -11938,10 +11938,10 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 .menu-content .dd-arrow {
 	cursor: pointer;
 	line-height: 45px;
-	position: absolute;
+	/*position: absolute;
 	right: 6px;
 	width: 20px;
-	z-index: 999;
+	z-index: 999;*/
 	color: #777;
 }
 .menu-content > li > a { /* spacing without dropdown arrow */
@@ -11954,7 +11954,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 }
 .menu-content > li.dropdown > a { /* spacing with dropdown arrow */
 	margin: 0 1px;
-	padding: 0 28px 0 13px;
+	padding: 0 15px 0 13px;
 }
 .menu-content li a:hover, .menu-content li a:hover span { /* #2312 New change*/
 	background: transparent none repeat scroll 0 0;

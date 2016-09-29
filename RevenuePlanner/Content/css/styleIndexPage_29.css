@@ -353,11 +353,11 @@ a:hover, a:focus {
 .menu-content .dd-arrow {
 	cursor: pointer;
 	line-height: 45px;
-	position: absolute;
+	/*position: absolute;
 	right: 6px;
 	width: 20px;
 	z-index: 999;
-	color: #777;
+	color: #777;*/
 }
 .menu-content > li > a { /* spacing without dropdown arrow */
 	margin: 0 1px;
@@ -369,7 +369,7 @@ a:hover, a:focus {
 }
 .menu-content > li.dropdown > a { /* spacing with dropdown arrow */
 	margin: 0 1px;
-	padding: 0 28px 0 13px;
+	padding: 0 15px 0 13px;
 }
 .menu-content li a:hover, .menu-content li a:hover span {
 	background: transparent none repeat scroll 0 0;
@@ -1459,8 +1459,12 @@ footer a {
 }
 /* =============== Calendar View CSS =============== */
 .task-tbl #divgridview, .task-tbl #GridGanttContent {
-    overflow:hidden !important;width: 100%;margin:0;height:59vh; 
+    overflow:hidden !important;width: 100%;margin:0;height:60vh; 
 }
+/*.task-tbl #GridGanttContent {
+    border: 1px solid #ccc;
+}*/
+
 /*.task-tbl .gantt_task{padding-left:1px}*/
 .task-tbl .gantt_grid{margin-left:1px}
 
@@ -1611,7 +1615,7 @@ footer a {
 .partial_wrapper.new-wrapper {
     background: #fff none repeat scroll 0 0;
     border: 1px solid #ccc;
-    height: 61%;
+    height: 61.8%;
     left: auto;
     margin: auto;
     overflow: auto;
@@ -1624,6 +1628,9 @@ footer a {
     z-index: 99999;
     padding-bottom:15px;
 }
+.slideLeft#content_wraper  .partial_wrapper.new-wrapper{
+	width: 75.5%
+} /* When sidbar Hide */
 .pop-body-wraper {
     float: left;
     height: auto !important;
@@ -1713,7 +1720,7 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
 @media (max-width: 1600px) {
 .task-tbl #divgridview, 
 .task-tbl #GridGanttContent {
-    height: 54vh; 
+    height: 60vh; 
 }
 }
 

@@ -231,6 +231,7 @@ function ShowModels(mode, section, id, ParentId, RequestedModule) {
 };
 
 function loadInspectPopup(id, section, tabValue, mode, parentId) {
+       $('#modalMainContainer').show(); // Added to remove extra space Below Grid/Calendar Table
     logMixpanelTrack("Open " + section + " inspection window.");
     parentId = typeof parentId !== 'undefined' ? parentId : '0';
     var url = urlContent + 'Inspect/LoadInspectPopup/';
@@ -753,6 +754,7 @@ function isDataChanged() {
 //Start
 function CloseIconClick() {
     $('.close-x-big-icon').click(function () {
+        $('#modalMainContainer').hide();// Added to remove extra space Below Grid/Calendar Table
         logMixpanelTrack("Exit from inspection window.");
         RemoveAllMediaCodeData();
         $("#modal-container-186470").addClass("transition-close");
