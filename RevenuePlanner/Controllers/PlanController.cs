@@ -44,11 +44,13 @@ namespace RevenuePlanner.Controllers
         IBudget IBudgetObj;
         IGrid objGrid;
         IPlanTactic objPlanTactic;
+        IColumnView objcolumnview;
         public PlanController()
         {
             IBudgetObj = new RevenuePlanner.Services.Budget();
             objGrid = new Grid();
             objPlanTactic = new PlanTactic();
+            objcolumnview = new ColumnView();
         }
 
 
@@ -8198,6 +8200,7 @@ namespace RevenuePlanner.Controllers
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             try
             {
+                ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID);
                 objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID);
             }
             catch (Exception objException)
@@ -8232,42 +8235,6 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return PartialView("_HomeGrid", objPlanMainDHTMLXGrid);
-        }
-        #endregion
-
-        #region method to bind customfield options
-        public void GetCustomfieldDropdownOption()
-        {
-            IColumnView objcolumnView = new ColumnView();
-
-            DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.CID);
-
-            if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
-            {
-
-                var columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new
-                {
-                    EntityType = Convert.ToString(row["EntityType"]),
-                    CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
-                    CutomfieldName = Convert.ToString(row["Name"]),
-                    ParentId = Convert.ToInt32(row["ParentId"]),
-                    CustomfiledType = Convert.ToString(row["CustomFieldType"])
-
-                }).ToList();
-
-                List<int> customfieldid = columnattribute.Select(a => a.CustomFieldId).ToList();
-                var customattributeoptionlist = db.CustomFieldOptions.Where(a => a.CustomField.ClientId == Sessions.User.CID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new
-                {
-                    CustomFieldId = a.CustomFieldId,
-                    CustomFieldOptionId = a.CustomFieldOptionId,
-                    OptionValue = (a.Value)
-                }).ToList();
-                ViewBag.CustomAttributOotion = customattributeoptionlist;
-
-            }
-
-
-            //end
         }
         #endregion
 

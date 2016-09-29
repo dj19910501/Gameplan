@@ -25,24 +25,26 @@ namespace RevenuePlanner.Services
         {
             DataTable CustomFieldList = new DataTable();
             ///If connection is closed then it will be open
-            var Connection = objDbMrpEntities.Database.Connection as SqlConnection;
+            SqlConnection Connection = objDbMrpEntities.Database.Connection as SqlConnection;
             if (Connection.State == System.Data.ConnectionState.Closed)
                 Connection.Open();
             SqlCommand command = null;
-
-            command = new SqlCommand("sp_GetCustomFieldList", Connection);
-
-            using (command)
+            try
             {
-                command.CommandType = CommandType.StoredProcedure;
+                command = new SqlCommand("sp_GetCustomFieldList", Connection);
 
-                command.Parameters.AddWithValue("@ClientId", ClientId);
-                SqlDataAdapter adp = new SqlDataAdapter(command);
-                command.CommandTimeout = 0;
-                adp.Fill(CustomFieldList);
-                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                using (command)
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@ClientId", ClientId);
+                    SqlDataAdapter adp = new SqlDataAdapter(command);
+                    command.CommandTimeout = 0;
+                    adp.Fill(CustomFieldList);
+                    if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                }
             }
-
+            catch { throw; }
             return CustomFieldList;
         }
         #endregion
@@ -110,7 +112,7 @@ namespace RevenuePlanner.Services
             IsSelectall = false; //to check if no particular view exist for user then select all the columns by default.
             try
             {
-                var userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
+                User_CoulmnView userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
                 if (userview == null)
                 {
                     IsSelectall = true;
@@ -213,45 +215,58 @@ namespace RevenuePlanner.Services
                     }).ToList();
                 }
             }
-            catch (Exception objException)
+            catch 
             {
-                ErrorSignal.FromCurrentContext().Raise(objException);
+                throw;
             }
             return allattributeList;
         }
 
         public int UpdateColumnView(User_CoulmnView columnview, bool Isgrid, int UserId, string xmlElements)
         {
-            columnview.ModifyBy = UserId;
-            columnview.ModifyDate = DateTime.Now;
-            columnview.IsDefault = true;
-            if (Isgrid)
-                columnview.GridAttribute = xmlElements;
-            else
-                columnview.BudgetAttribute = xmlElements;
-            objDbMrpEntities.Entry(columnview).State = EntityState.Modified;
-            objDbMrpEntities.SaveChanges();
-
-            int result = columnview.ViewId;
-
+            int result = 0;
+            try
+            {
+                columnview.ModifyBy = UserId;
+                columnview.ModifyDate = DateTime.Now;
+                columnview.IsDefault = true;
+                if (Isgrid)
+                    columnview.GridAttribute = xmlElements;
+                else
+                    columnview.BudgetAttribute = xmlElements;
+                objDbMrpEntities.Entry(columnview).State = EntityState.Modified;
+                objDbMrpEntities.SaveChanges();
+                result = columnview.ViewId;
+            }
+            catch
+            {
+                throw;
+            }
             return result;
-
         }
 
         public int AddNewColumnView(string ViewName, bool Isgrid, int UserId, string xmlElements)
         {
             User_CoulmnView columnview = new User_CoulmnView();
-            columnview.ViewName = ViewName;
-            columnview.CreatedBy = UserId;
-            columnview.CreatedDate = DateTime.Now;
-            columnview.IsDefault = true;
-            if (Isgrid)
-                columnview.GridAttribute = xmlElements;
-            else
-                columnview.BudgetAttribute = xmlElements;
-            objDbMrpEntities.Entry(columnview).State = EntityState.Added;
-            objDbMrpEntities.SaveChanges();
-            int result = columnview.ViewId;
+            int result = 0;
+            try
+            {
+                columnview.ViewName = ViewName;
+                columnview.CreatedBy = UserId;
+                columnview.CreatedDate = DateTime.Now;
+                columnview.IsDefault = true;
+                if (Isgrid)
+                    columnview.GridAttribute = xmlElements;
+                else
+                    columnview.BudgetAttribute = xmlElements;
+                objDbMrpEntities.Entry(columnview).State = EntityState.Added;
+                objDbMrpEntities.SaveChanges();
+               result= columnview.ViewId;
+            }
+            catch
+            {
+                throw;
+            }
             return result;
         }
 
@@ -279,6 +294,41 @@ namespace RevenuePlanner.Services
                 throw;
             }
             return items;
+        }
+
+        public List<CustomfieldOption> GetCustomFiledOptionList(int clientID)
+        {
+            List<CustomfieldOption> optionlist = new List<CustomfieldOption>();
+            try
+            {
+                DataTable dtColumnAttribute = GetCustomFieldList(clientID);
+
+                if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
+                {
+                    List<CustomAttribute> columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new CustomAttribute
+                    {
+                        EntityType = Convert.ToString(row["EntityType"]),
+                        CustomFieldId = Convert.ToString(row["CustomFieldId"]),
+                        CutomfieldName = Convert.ToString(row["Name"]),
+                        ParentID = Convert.ToInt32(row["ParentId"]),
+                        CustomfiledType = Convert.ToString(row["CustomFieldType"])
+
+                    }).ToList();
+
+                    List<int> customfieldid = columnattribute.Select(a => Convert.ToInt32(a.CustomFieldId)).ToList();
+                    optionlist = objDbMrpEntities.CustomFieldOptions.Where(a => a.CustomField.ClientId == clientID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new CustomfieldOption
+                     {
+                         CustomFieldId = a.CustomFieldId,
+                         CustomFieldOptionId = a.CustomFieldOptionId,
+                         OptionValue = (a.Value)
+                     }).ToList();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+            return optionlist;
         }
     }
 }

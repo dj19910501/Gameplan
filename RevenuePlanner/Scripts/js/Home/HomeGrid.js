@@ -643,6 +643,28 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         //        });
         //    }
         //}
+        //added by devanshi #2598
+        var customcolId = HomeGrid.getColumnId(cellInd);
+        if (customcolId.indexOf("custom_") >= 0) {
+            var iddetail = customcolId.replace("custom_", "");
+            var id = iddetail.split(':')[0];
+            var clistitem = [];
+            var type = HomeGrid.getColType(cellInd);
+            if (type == "clist") {
+                var customoption = customfieldOptionList;
+                function filterbyname(obj) {
+                    if (obj.CustomFieldId == id)
+                        return true;
+                    else
+                        return false;
+                }
+                d = customoption.filter(filterbyname);
+                $.each(d, function (i, item) {
+                    clistitem.push(item.OptionValue);
+                });
+                HomeGrid.registerCList(cellInd, clistitem);
+            }
+        }
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
             return false;
