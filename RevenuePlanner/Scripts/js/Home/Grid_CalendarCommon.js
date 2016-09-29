@@ -1568,7 +1568,6 @@ var AnchorTaskIdsList = {
     Value: []
 };
 function CallPackageHoneyComb() {
-    debugger;
     var ViewBy = $('#ddlTabViewBy').val();
     if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
         return false;
@@ -2272,7 +2271,7 @@ function OpenHoneyComb(obj) {
             data: {
                 viewBy:$('#ddlTabViewBy').val(),
                 TacticIds: IdsNotinList.toString(),
-                TacticTaskColor:TacticColorCode.toString(),
+                TacticTaskColor:TacticColorCode,
                 IsGridView: isCalendarView == false ? true : false
             },
             success: function (data) {
