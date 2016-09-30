@@ -162,16 +162,17 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsPublished = isPublished;
            
             ViewBag.RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
-            if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+            //set value to show inspect popup for url sent in email 
+            if (currentPlanId > 0)
             {
                 currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
             }
-            else if (activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
+            else if (currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
             {
                 ViewBag.ShowInspectPopup = false;
                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
             }
-            else if ((activeMenu.Equals(Enums.ActiveMenu.Plan) || activeMenu.Equals(Enums.ActiveMenu.Home)) && currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
+            else if (currentPlanId <= 0)
             {
                 ViewBag.ShowInspectPopup = false;
                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
@@ -207,28 +208,12 @@ namespace RevenuePlanner.Controllers
             {
                 IsPlanEditable = true;
                 ViewBag.IsPlanEditable = IsPlanEditable;
-                if (activeMenu.Equals(Enums.ActiveMenu.Plan))
-                {
-                    latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
-                }
-                else
-                {
-                    latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
-                }
-
+                latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
                 List<Plan> fiterActivePlan = new List<Plan>();
                 fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
                 if (fiterActivePlan != null && fiterActivePlan.Any())
                 {
-                    if (activeMenu.Equals(Enums.ActiveMenu.Plan))
-                    {
-                        latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
-                    }
-                    else
-                    {
-                        latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
-
-                    }
+                    latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
                 }
                 if (currentPlanId != 0)
                 {
@@ -446,9 +431,9 @@ namespace RevenuePlanner.Controllers
                     GetCustomAttributesIndex(ref planmodel);                    
                     if (ViewBag.ShowInspectPopup != null)
                     {
-                        if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+                        if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0)
                         {
-                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
+                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, currentPlanId, planLineItemId);
                             ViewBag.ShowInspectPopup = isCustomRestrictionPass;
                             if (isCustomRestrictionPass.Equals(false))
                             {
@@ -469,15 +454,6 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                if (activeMenu != Enums.ActiveMenu.Plan)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = null;
-                }
-
                 //// Start - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
                 if (ViewBag.ShowInspectPopup != null)
                 {
@@ -492,7 +468,7 @@ namespace RevenuePlanner.Controllers
                 }
                 //// End - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
 
-                return RedirectToAction("PlanSelector", "Plan");
+                return View("Index", planmodel);
             }
         }
 
@@ -7903,7 +7879,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ViewOnlyPermission">ViewOnlyPermission flag in form of int</param>
         /// <param name="ViewEditPermission">ViewEditPermission flag in form of int</param>
         /// <returns>returns flag for custom restriction as per custom restriction</returns>
-        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int planLineItemId = 0)
+        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int currentPlanId, int planLineItemId = 0)
         {
             bool isValidEntity = false;
 
@@ -7957,6 +7933,16 @@ namespace RevenuePlanner.Controllers
                                                                 ).Select(lineItem => lineItem.PlanLineItemId);
 
                 if (objPlanLineItem.Count() != 0)
+                {
+                    isValidEntity = true;
+                }
+            }
+            else if (currentPlanId > 0)
+            {
+                var objPlan = objDbMrpEntities.Plans.Where(plan => plan.PlanId == currentPlanId && plan.IsDeleted == false
+                                                                ).Select(plan => plan.PlanId);
+
+                if (objPlan.Count() != 0)
                 {
                     isValidEntity = true;
                 }

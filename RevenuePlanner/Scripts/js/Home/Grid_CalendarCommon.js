@@ -3,6 +3,7 @@ var isEditTacticHomeGrid = 0;
 
 ///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
+    $('#exp-serach').css('display', 'none');
     if ($('#btnbudget').hasClass('P-icon-active')) {
         isCalendarView = true;
         $('#IsGridView').val('false');
@@ -46,7 +47,6 @@ function ShowhideDataonGridCalendar() {
         $('#btngridcalendar').addClass('P-icon-active');
     }
     $('#divgridview').removeClass('budget-grid');
-    $('#exp-serach').css('display', 'none');
     $('#txtGlobalSearch').val('');
     IsBudgetGrid = false;
     $('#ImportBtn').parent().removeClass('round-corner');
@@ -57,14 +57,13 @@ function ShowhideDataonGridCalendar() {
 $('#btnbudget').click(function () {
     isCalendarView = false;
     $('#ChangeView').hide();
+    $('#exp-serach').css('display', 'none');
     LoadBudgetGrid();
-    $('#exp-serach').css('display', 'block');
     ShowHideDataonBudgetScreen();
 });
 
 function ShowHideDataonBudgetScreen() {
     $('#ImportBtn').parent().addClass('round-corner');
-    $('#exp-serach').css('display', 'none');
     $('#txtGlobalSearch').val('');
     IsBudgetGrid = true;
     $('#divupcomingact').show();
@@ -101,6 +100,7 @@ function LoadBudgetGrid() {
 
         },
         success: function (result) {
+            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
             var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
     '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
 '<br/></div>';
@@ -110,7 +110,6 @@ function LoadBudgetGrid() {
             $("div[id^='LinkIcon']").each(function () {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
-            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
             $('#ChangeView').show();
         }
     });
@@ -134,6 +133,7 @@ function LoadPlanGrid() {
 
         },
         success: function (result) {
+            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
             var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
     '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
 '<br/></div>';
@@ -143,7 +143,6 @@ function LoadPlanGrid() {
             $("div[id^='LinkIcon']").each(function () {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
-            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
         }
     });
 }
@@ -1305,22 +1304,29 @@ function ConfirmLinkTactic() {
 ////End
 
 //set value of dropdown in search criteria
-$(".dropdown-menu searchDropdown li a").click(function () {
+$(".searchDropdown li a").click(function () {
     $("#txtGlobalSearch").val("");
     $("#searchCriteria").text($(this).text()[0]);
     $("#searchCriteria").val($(this).text());
     $("#txtGlobalSearch").attr('Placeholder', $(this).text())
 });
 
-//On search button click
+//Search button click
 $('#ExpSearch').click(function () {
-    if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
+    if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != null) {
         GlobalSearch();
-        $('#ExpSearch').css('display', 'none');
-        $('#ExpClose').css('display', 'block');
+        if ($('#txtGlobalSearch').val().trim() != "") {
+            $('#ExpSearch').css('display', 'none');
+            $('#ExpClose').css('display', 'block');
+        }
+        else {
+            $('#ExpSearch').css('display', 'block');
+            $('#ExpClose').css('display', 'none');
+        }
     }
 });
 
+//Close button click 
 $('#ExpClose').click(function () {
     $('#txtGlobalSearch').val("");
     $('#ExpClose').css('display', 'none');
@@ -1329,9 +1335,9 @@ $('#ExpClose').click(function () {
 
 });
 
-//Handle enter key in search textbox
-$('#txtGlobalSearch').on('keypress', function (event) {
-    if (event.which === 13) {
+////Handle enter key in search textbox 
+$('#txtGlobalSearch').on('keyup', function (event) {
+    if (event.which == 13 || $('#txtGlobalSearch').val().trim() == "") {
         $('#ExpSearch').click();
     }
 });
@@ -2359,5 +2365,37 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
         HomeGrid.openItem(divCamp);
         var divProg = $('div[taskid="' + ProgramId + '"]').attr('dhtmlxrowid');
         HomeGrid.openItem(divProg);
+    }
+}
+
+///Added by dhvani to open inspect popup for URL -- PL #2534
+function ShowInspectForPlanTacticId() {
+    var hdnIsImprovement = $('#hdnIsImprovement');
+    ShowModel(null, true);
+    $('#hdnshowInspectForPlanTacticId').val(0);
+    $('#hdnIsImprovement').val(false);
+
+}
+
+function ShowInspectForPlanCampaignId() {
+    ShowModel(null, true);
+    $('#hdnshowInspectForPlanCampaignId').val(0);
+}
+
+function ShowInspectForPlanProgramId() {
+    ShowModel(null, true);
+    $('#hdnshowInspectForPlanProgramId').val(0);
+}
+
+function ShowInspectForPlanLineItemId() {
+    ShowModel(null, true);
+    $('#hdnShowInspectForPlanLineItemId').val(0);
+    }
+
+function ShowInspectForPlanId() {
+    var hdnShowInspectForPlanId = $("#CurrentPlanId")
+    if (hdnShowInspectForPlanId.val() != 0) {
+        ShowModel(null, true);
+        $('#hdnShowInspectForPlanId').val(0);
     }
 }
