@@ -65,7 +65,7 @@ var viewBy = $('#ddlTabViewBy').val();
 }
 
 function ConfigureGanttwithdefaultSettings() {
-    gantt.config.grid_width = 364;
+    gantt.config.grid_width = 410;
     gantt.config.readonly = true;
     gantt.config.autofit = true;
     gantt.config.drag_links = false;
@@ -97,7 +97,7 @@ function SetGanttData(resultdata) {
         gantt.clearAll();
     }
 
-    gantt.config.select_task = false;
+    gantt.config.select_task = true;
     if (isQuater == "thisquarter") {
         //// Setting scale.
         gantt.config.scale_unit = "month";
@@ -105,7 +105,7 @@ function SetGanttData(resultdata) {
         gantt.config.date_scale = " %Y";
         gantt.config.row_height = 25;
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
+        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: 310, min_width: 310, resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 90 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         //// Getting quarter
@@ -158,7 +158,7 @@ function SetGanttData(resultdata) {
         gantt.config.date_scale = " %Y";
         gantt.config.row_height = 25;
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
+        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: 310, min_width: 310, resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 90 }];
         //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
@@ -219,7 +219,7 @@ function SetGanttData(resultdata) {
         gantt.config.date_scale = "%Y";
         gantt.config.scale_height = 60;
         gantt.config.row_height = 25;
-        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
+        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: 310, min_width: 310, resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 90 }];
         //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
@@ -256,7 +256,7 @@ function SetGanttData(resultdata) {
         gantt.config.row_height = 25;
         gantt.config.scale_height = 60;
         //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
-        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
+        gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: 310, min_width: 310, resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 90 }];
         //gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date();
@@ -278,22 +278,8 @@ function SetGanttData(resultdata) {
         gantt.parse(tasks);
     }
 
-    //// Hide/Show Tabulated data shown below gantt of request tab.
-    if ('Request' == type) {
-
-        var gantt_div1 = document.getElementById("gantt_here");
-
-        // To resolve extra space
-        CalGanntHeight();
-
-        ////
-        gantt.config.min_column_width = function (data) {
-            return 10;
-        };
-    }
-
-    isRender = true;
     gantt.eachTask(function (task) {
+
         // Planning Window doesnt remember previous view
         if (arrClosedTask.indexOf(task.id) > -1) {
             gantt.getTask(task.id).$open = false;
@@ -304,9 +290,6 @@ function SetGanttData(resultdata) {
         //CountTacticForRenderChart(task.id, '');
     });
 
-    isRender = false;
-
-    //hoverRows();
     AttachEventToTactic();
     AttachEventToonTaskRowClick();
     //GlobalSearch();
@@ -316,6 +299,7 @@ function SetGanttData(resultdata) {
         gantt.scrollTo(0, _scrollY);
     }, 250);
 
+    gantt.refreshData();   // Refresh Gantt to expand all tasks.
 }
 //To resolve extra space
 function CalGanntHeight() {
@@ -352,6 +336,19 @@ function onGanttTaskOpen(id) {
         return value != id;
     });
 
+    manageAddPopup();
+}
+
+gantt.attachEvent("onTaskClosed", function (id) {
+
+    if (arrClosedTask.indexOf(id) == -1) {
+        arrClosedTask.push(id);
+    }
+    manageAddPopup();
+});
+
+function manageAddPopup()
+{
     // To display tooltip on camp., prog., tactic name in calendar.
     $(".gantt_container .gantt_tree_content").each(function (index, element) {
         $(element).attr("title", htmlDecode(element.innerHTML));
@@ -380,13 +377,22 @@ function onGanttTaskOpen(id) {
 function AttachEventToTactic() {
 
     var eventTaskClick; //// Variable to hold double click event.
-    //// Detaching double click event.
+    var eventdblTaskClick;
+    //// Detaching single click event.
     if (eventTaskClick != undefined) {
         gantt.detachEvent(eventTaskClick);
     }
-
+        //// Detaching double click event.
+    if (eventdblTaskClick != undefined) {
+        gantt.detachEvent(eventdblTaskClick);
+    }
     //// Attaching single click event
-    eventTaskClick = gantt.attachEvent("onTaskClick", function (taskId, e) {
+    eventTaskClick = gantt.attachEvent("onTaskClick", function (taskId, e) {        
+        gantt.selectTask(taskId);
+    });
+
+    //// Attaching double click event
+    eventdblTaskClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) {
         var where = e.target.getAttribute('class');
         if (where == 'gantt_task_content' || where == 'gantt_tree_content') {
             scrollstate = gantt.getScrollState();
@@ -429,6 +435,7 @@ function ShowModel(taskId, isShowInspect) {
         planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
         planProgramId = $("#hdnshowInspectForPlanProgramId").val();
         planLineItemId = $("#hdnShowInspectForPlanLineItemId").val();
+        planId = $("#CurrentPlanId").val();
     }
     //// Checking whether current task is tactic or not.
     if (typeof planTacticId != 'undefined' && planTacticId != 0 && planTacticId != null && planTacticId != '') {

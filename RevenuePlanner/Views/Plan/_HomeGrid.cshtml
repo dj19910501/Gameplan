@@ -35,6 +35,8 @@
 
     @*var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); //ToDo : Made required changes to bind Tactic Type Dropdown list on edit tactic type.
     var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');*@ //ToDo : Made required changes to bind Line Item Type Dropdown list on edit Line Item type.
+    var customfieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.CustomAttributOption))'); // added by devanshi
+
     var IslineItemDelete = false;
 
     var colSplitId = 0;
@@ -50,19 +52,6 @@
     var TargetStageGoalColIndex = 0;
     var MQLColIndex = 0;
     var RevenueColIndex = 0;
-
-    ///Assign Enum and Server Side value to Variable
-    var StartDateCurrentYear = '@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear';
-    var EndDateCurrentYear = '@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear';
-    var DateComapreValidation = '@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation';
-    var TacticStartDateCompareWithParentStartDate = '@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate';
-    var ProgramStartDateCompareWithParentStartDate = '@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate';
-    var TacticEndDateCompareWithParentEndDate = '@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate';
-    var ProgramEndDateCompareWithParentEndDate = '@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate';
-    var TitleContainHTMLString  = '@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString';
-    var IsMediaCodePermission = '@Sessions.IsMediaCodePermission.ToString().ToLower()'
-    //var hdnYear = @ViewBag.Year; //ToDo : Made required changes to bind Plan year for Start/End Date validation on PlanGrid.
-    ///////
 
     $(document).ready(function () {
         BindHomeGrid();
@@ -143,15 +132,16 @@
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);
         var mainGridData = JsonModel;
-        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();        
         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         HomeGrid.parse(GridDataHomeGrid, "json");
         GridHideColumn();  ///Calling Hide column function
         HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
-        colSplitId = HomeGrid.getColIndexById(EntityId);
-        HomeGrid.splitAt(colSplitId);        
+        colSplitId = HomeGrid.getColIndexById(AddId);
+        HomeGrid.splitAt(colSplitId + 1);        
         MoveColumn(); ///Calling Move column function       
         HomeGrid.collapseAll();
+        HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
         var cookie = document.cookie;
         if (cookie.indexOf("gridOpengridbox") > -1) {
             var cookies = cookie.split(';');
@@ -181,6 +171,7 @@
             $("#gridbox").hide();
             $("#goalwrapper").hide();
             $("#NodatawithfilterGrid").show();
+            $('#exp-serach').css('display', 'none');
         }
         if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
             GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));

@@ -68,12 +68,33 @@ function GridHideColumn() {
 }
 ///
 
+
+// Start Function for Load home grid from cache data
+// Add By Nishant Sheth
+function LoadPlanGridFromCache() {
+    $.ajax({
+        url: urlContent + 'Plan/GetHomeGridDataFromCache/',
+        success: function (result) {
+            var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
+    '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +'<br/></div>';
+            gridhtml += result;
+            $("#divgridview").html('');
+            $("#divgridview").html(gridhtml);
+            $("div[id^='LinkIcon']").each(function () {
+                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+            });
+            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
+        }
+    });
+}
+// End
+
 ////Move column functionality
 function MoveColumn() {
     HomeGrid.attachEvent("onAfterCMove", function (cInd, posInd) {
         var ColumnCount = HomeGrid.getColumnCount();
         var ColumnDetail = [];
-        var AttrType = 'Common';
+        var AttrType = 'Common'; // For as default column or customfield column with which kind of entity custom fields
         for (var i = 0; i < ColumnCount; i++) {
             var ColWidth = HomeGrid.getColWidth(i);
             var customcolId = HomeGrid.getColumnId(i).toString();
@@ -112,161 +133,7 @@ function MoveColumn() {
 
 //Related to Honeycomb
 //Start
-//// Add RemoveEntity Function to add/remove data into Array on click of honeycomb icon for Plangrid/Budget Grid
-function AddRemoveEntity(item) {
-    $(".popover").removeClass('in').addClass('out');
-    if ($(item).attr('id') == 'PlanAdd') {
-        if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
-            var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
-            if (index >= 0) {
-                ExportSelectedIds.TaskID.splice(index, 1);
-                ExportSelectedIds.Title.splice(index, 1);
-                ExportSelectedIds.OwnerName.splice(index, 1);
-                ExportSelectedIds.TacticType.splice(index, 1);
-                ExportSelectedIds.ColorCode.splice(index, 1);
-                ExportSelectedIds.PlanFlag.splice(index, 1);
-                ExportSelectedIds.CsvId.splice(index, 1);
-                ExportSelectedIds.ROITacticType.splice(index, 1);
-                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
-                ExportSelectedIds.AnchorTacticId.splice(index, 1);
-            }
-            $(item).removeClass("honeycombbox-icon-gantt-Active");
-            $(item).addClass("honeycombbox-icon-gantt");
-        }
-        else {
-            $(item).addClass("honeycombbox-icon-gantt-Active");
-            ExportSelectedIds.TaskID.push($(item).attr('altId'));
-            ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp', '&'));
-            ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
-            ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
-            ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
-            ExportSelectedIds.PlanFlag.push('Grid');
-            ExportSelectedIds.CsvId.push($(item).attr('csvid'));
-            ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
-            ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
-            ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
-        }
-    }
-    if ($(item).attr('id') == 'CampaignAdd') {
 
-        if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
-            var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
-            if (index >= 0) {
-                ExportSelectedIds.TaskID.splice(index, 1);
-                ExportSelectedIds.Title.splice(index, 1);
-                ExportSelectedIds.OwnerName.splice(index, 1);
-                ExportSelectedIds.TacticType.splice(index, 1);
-                ExportSelectedIds.ColorCode.splice(index, 1);
-                ExportSelectedIds.PlanFlag.splice(index, 1);
-                ExportSelectedIds.CsvId.splice(index, 1);
-                ExportSelectedIds.ROITacticType.splice(index, 1);
-                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
-                ExportSelectedIds.AnchorTacticId.splice(index, 1);
-            }
-            $(item).removeClass("honeycombbox-icon-gantt-Active");
-            $(item).addClass("honeycombbox-icon-gantt");
-        }
-        else {
-            $(item).addClass("honeycombbox-icon-gantt-Active");
-            ExportSelectedIds.TaskID.push($(item).attr('altId'));
-            ExportSelectedIds.Title.push(($(item).attr('taskname')).replace('&amp', '&'));
-            ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
-            ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
-            ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
-            ExportSelectedIds.PlanFlag.push('Grid');
-            ExportSelectedIds.CsvId.push($(item).attr('csvid'));
-            ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
-            ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
-            ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
-        }
-    }
-    if ($(item).attr('id') == 'ProgramAdd') {
-
-        if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
-            $(item).removeClass("honeycombbox-icon-gantt-Active");
-            var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
-            if (index >= 0) {
-                ExportSelectedIds.TaskID.splice(index, 1);
-                ExportSelectedIds.Title.splice(index, 1);
-                ExportSelectedIds.OwnerName.splice(index, 1);
-                ExportSelectedIds.TacticType.splice(index, 1);
-                ExportSelectedIds.ColorCode.splice(index, 1);
-                ExportSelectedIds.PlanFlag.splice(index, 1);
-                ExportSelectedIds.CsvId.splice(index, 1);
-                ExportSelectedIds.ROITacticType.splice(index, 1);
-                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
-                ExportSelectedIds.AnchorTacticId.splice(index, 1);
-            }
-            $(item).addClass("honeycombbox-icon-gantt");
-
-        }
-        else {
-            $(item).addClass("honeycombbox-icon-gantt-Active");
-            ExportSelectedIds.TaskID.push($(item).attr('altId'));
-            ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp', '&'));
-            ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
-            ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
-            ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
-            ExportSelectedIds.PlanFlag.push('Grid');
-            ExportSelectedIds.CsvId.push($(item).attr('csvid'));
-            ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
-            ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
-            ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
-        }
-    }
-
-    if ($(item).attr('id') == 'TacticAdd') {
-        if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
-            var IsAssetTactic = $(item).attr('roitactictype');
-            var AssetTacId = $(item).attr('anchortacticid');
-            var EntityId = $(item).attr('taskid');
-            if (IsPackageView && PackageAnchorId == EntityId && IsAssetTactic == AssetTypeAsset && AssetTacId == EntityId) {
-                ShowMessage(true, '@RevenuePlanner.Helpers.Common.objCached.DeselectAssetFromPackage', 3000);
-                $('html,body').scrollTop(0);
-                return false;
-            }
-            $(item).removeClass("honeycombbox-icon-gantt-Active");
-            var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
-            if (index >= 0) {
-                ExportSelectedIds.TaskID.splice(index, 1);
-                ExportSelectedIds.Title.splice(index, 1);
-                ExportSelectedIds.OwnerName.splice(index, 1);
-                ExportSelectedIds.TacticType.splice(index, 1);
-                ExportSelectedIds.ColorCode.splice(index, 1);
-                ExportSelectedIds.PlanFlag.splice(index, 1);
-                ExportSelectedIds.CsvId.splice(index, 1);
-                ExportSelectedIds.ROITacticType.splice(index, 1);
-                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
-                ExportSelectedIds.AnchorTacticId.splice(index, 1);
-            }
-            $(item).addClass("honeycombbox-icon-gantt");
-        }
-        else {
-            $(item).addClass("honeycombbox-icon-gantt-Active");
-            ExportSelectedIds.TaskID.push($(item).attr('altId'));
-            ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp', '&'));
-            ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
-            ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
-            ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
-            ExportSelectedIds.PlanFlag.push('Grid');
-            ExportSelectedIds.CsvId.push($(item).attr('csvid'));
-            ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
-            ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
-            ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
-        }
-    }
-
-    if ($('.honeycombbox-icon-gantt-Active').length == 0) {
-        $(".honeycombbox").hide();
-    }
-    else {
-        $("#totalEntity").text(ExportSelectedIds.TaskID.length);
-        $(".honeycombbox").show();
-        $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
-        $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
-    }
-}
-//End
 
 //Related to Bind Grid
 //start
@@ -292,17 +159,22 @@ function LoadAfterParsing() {
         HomeGrid.detachEvent(eventidonbeforedrag);
     }
     eventidonbeforedrag = HomeGrid.attachEvent("onBeforeDrag", function (id) {
-        if (id.split(".")[0].toString() != "tact") return false;
+        if (id != "" && id != undefined) {
+            var drag_id = id.toString().split("_");
+            if (drag_id.length > 0) {
+                if (drag_id[0].toString().toLowerCase() != secTactic) return false;
         var locked = HomeGrid.cells(id, TaskNameColIndex).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
             return false;
         return true;
+            }
+        }
     });
 
     $(".grid_Search").off("click");
     $(".grid_Search").click(function (e) {
         inspectCloseFocus = $(this).position().top;
-        var id = $(this).parent().next().html();
+        var id = $(this).parent().prev().html();
         var type = $(this).attr('id');
         gridSearchFlag = 1;
         DisplayEditablePopup(id, type);
@@ -354,7 +226,7 @@ function LoadAfterParsing() {
         $(".grid_Search").off("click");
         $(".grid_Search").click(function (e) {
             inspectCloseFocus = $(this).position().top;
-            var id = $(this).parent().next().html();
+            var id = $(this).parent().prev().html();
             var type = $(this).attr('id');
             gridSearchFlag = 1;
             DisplayEditablePopup(id, type);
@@ -419,13 +291,21 @@ function ResizeGrid(wid) {
 }
 
 function doOnDrag(sid, tid) {
-    var dragSourcePtype = HomeGrid.getParentId(sid).split(".")[0];
-    var dragSourcetype = sid.split(".")[0].toString()
-    var dragTargettype = tid.split(".")[0];
-    if (dragSourcetype == "tact") {
+    var dragSourcePtype = ''
+    var dragSourcetype = ''
+    var dragTargettype = ''
+    if (sid != "" && tid != "" && sid != undefined && tid != undefined) {
+        var sourcePId = HomeGrid.getParentId(sid).split("_");
+        var sourceId = sid.split("_");
+        var targetedId = tid.split("_");
+        if (sourcePId.length > 0 && sourceId.length > 0 && targetedId.length > 0) {
+            dragSourcePtype = sourcePId[0];
+            dragSourcetype = sourceId[0];
+            dragTargettype = targetedId[0];
+            if (dragSourcetype.toLowerCase() == secTactic) {
         if (dragSourcePtype == dragTargettype) {
-            var splanid = HomeGrid.cells("plan." + sid.split(".")[1], HomeGrid.getColIndexById('id')).getValue();
-            var dplanid = HomeGrid.cells("plan." + tid.split(".")[1], HomeGrid.getColIndexById('id')).getValue();
+                    var splanid = HomeGrid.getParentId(HomeGrid.getParentId(HomeGrid.getParentId((dragSourcetype + "_" + sourceId[1]))));                    
+                    var dplanid = HomeGrid.getParentId(HomeGrid.getParentId((dragTargettype + "_" + targetedId[1])));
             var parentid = HomeGrid.getParentId(sid);
             if (dplanid == splanid) {
                 if (parentid != tid) {
@@ -470,6 +350,8 @@ function doOnDrag(sid, tid) {
     else {
         alert("Only tactic can Move.");
         return false;
+    }
+}
     }
 }
 
@@ -607,6 +489,28 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         //        });
         //    }
         //}
+        //added by devanshi #2598
+        var customcolId = HomeGrid.getColumnId(cellInd);
+        if (customcolId.indexOf("custom_") >= 0) {
+            var iddetail = customcolId.replace("custom_", "");
+            var id = iddetail.split(':')[0];
+            var clistitem = [];
+            var type = HomeGrid.getColType(cellInd);
+            if (type == "clist") {
+                var customoption = customfieldOptionList;
+                function filterbyname(obj) {
+                    if (obj.CustomFieldId == id)
+                        return true;
+                    else
+                        return false;
+                }
+                d = customoption.filter(filterbyname);
+                $.each(d, function (i, item) {
+                    clistitem.push(item.OptionValue);
+                });
+                HomeGrid.registerCList(cellInd, clistitem);
+            }
+        }
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
             return false;
@@ -661,7 +565,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     return false;
                 }
 
-                updatePlanNameDrp(TaskID, NewValue);
             }
             if (cellInd == 1) {
                 $("div[taskId='" + TaskID + "']").attr('taskname', NewValue);
@@ -1069,19 +972,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
 }
 
-function updatePlanNameDrp(_planid, newpplanname) {
-    $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').each(function (e) {
-        var planid = $(this).val().toString();
-        if (planid == _planid) {
-            var updatedPlantext = newpplanname;
-            $(this).attr('originalvalue', updatedPlantext);
-            $(this).text('');
-            $(this).text(updatedPlantext);
-            $(this).parent().parent().find('a').text(updatedPlantext)
-        }
-    });
-}
-
 function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
     $.ajax({
         type: 'POST',
@@ -1377,31 +1267,59 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
 }
 
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
+//insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
 function ExportToExcel(isHoneyComb) {
     //start  
     var rowIdArray = [];
+    var HoneyCombSelectedArray = [];
     if (gridname.toLowerCase() == "home") {
+        //get following columns index which need to show/hide in export
+        var iconColumnIndex = HomeGrid.getColIndexById("Add");
+        var colourCodeIndex = HomeGrid.getColIndexById("ColourCode");
+        var machineNameIndex = HomeGrid.getColIndexById("MachineName");
 
         if (isHoneyComb) {
             HomeGrid.forEachRow(function (id) {
-                var d = HomeGrid.cells(id, 2).getValue();
+
+                var d = HomeGrid.cells(id, iconColumnIndex).getValue();
                 if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
                     HomeGrid.setRowHidden(id, true);
                     rowIdArray.push(id);
                 }
+                else {
+                    HoneyCombSelectedArray.push(id);
+                }
             });
         }
+        //save users current strate of tree
         HomeGrid.saveOpenStates();
         HomeGrid.expandAll();
-        HomeGrid.setColumnHidden(2, true);
+        //Show/Hide columns as per export requirements
+        HomeGrid.setColumnHidden(iconColumnIndex, true);
+        HomeGrid.setColumnHidden(colourCodeIndex, true);
+        HomeGrid.setColumnHidden(machineNameIndex, true);
         HomeGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
         HomeGrid.collapseAll();
+        //load users current strate of tree
         HomeGrid.loadOpenStates();
-        HomeGrid.setColumnHidden(2, false);
+        //Show/Hide columns as per export requirements
+        HomeGrid.setColumnHidden(iconColumnIndex, false);
+        HomeGrid.setColumnHidden(colourCodeIndex, false);
+        HomeGrid.setColumnHidden(machineNameIndex, false);
         if (rowIdArray != undefined) {
             $.each(rowIdArray, function (key) {
                 HomeGrid.setRowHidden(rowIdArray[key], false);
             });
+        }
+        //Checked honeycomb icon as active after export as it sometimes deactive due to export.
+        if (HoneyCombSelectedArray != undefined) {
+            $.each(HoneyCombSelectedArray, function (key) {
+                var columnText = HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).getValue();
+                if (columnText.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
+                    HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).setValue(columnText.replace("honeycombbox-icon-gantt", "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active"));
+                }
+            });
+
         }
 
     }
@@ -1411,7 +1329,6 @@ function ExportToExcel(isHoneyComb) {
         var JsonExportModel = exportgridData;
         exportGrid.setImagePath(imgPath);
         exportGrid.setImageSize(1, 1);
-        exportGrid.setColAlign("right,left,left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
         exportGrid.enableAutoHeight(true);
         exportGrid.enableAutoWidth(false);
         exportGrid.setColumnIds(ColumnIds);
@@ -1445,27 +1362,36 @@ function ExportToExcel(isHoneyComb) {
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         exportGrid.parse(GridDataHomeGrid, "json");
+        //get following columns index which need to show/hide in export
+        var ActivityIdIndex = exportGrid.getColIndexById("ActivityId");
+        var TypeIndex = exportGrid.getColIndexById("Type");
+        var machineNameIndex = exportGrid.getColIndexById("machinename");
+        var colourCodeIndex = exportGrid.getColIndexById("colourcode");
+        var iconIndex = exportGrid.getColIndexById("Buttons");
+
         if (isHoneyComb) {
             HomeGrid.forEachRow(function (id) {
-                var d = HomeGrid.cells(id, 2).getValue();
+                var d = HomeGrid.cells(id, iconIndex).getValue();
                 if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
                     exportGrid.setRowHidden(id, true);
                     rowIdArray.push(id);
                 }
             });
         }
-        exportGrid.setColumnHidden(0, false);
-        exportGrid.setColumnHidden(1, false);
-        exportGrid.setColumnHidden(4, true);
-        exportGrid.setColumnHidden(2, true);
+        //Show/Hide columns as per export requirements
+        exportGrid.setColumnHidden(ActivityIdIndex, false);
+        exportGrid.setColumnHidden(TypeIndex, false);
+        exportGrid.setColumnHidden(machineNameIndex, true);
+        exportGrid.setColumnHidden(colourCodeIndex, true);
+        exportGrid.setColumnHidden(iconIndex, true);
+
         exportGrid.expandAll();
         exportGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
-        if (rowIdArray != undefined) {
-            $.each(rowIdArray, function (key) {
-                exportGrid.setRowHidden(rowIdArray[key], false);
-            });
-        }
-        exportGrid.setColumnHidden(4, false);
+        //if (rowIdArray != undefined) {
+        //    $.each(rowIdArray, function (key) {
+        //        exportGrid.setRowHidden(rowIdArray[key], false);
+        //    });
+        //}       
     }
     //end
 

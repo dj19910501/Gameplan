@@ -17,4 +17,14 @@
     var RevenueId = '@Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue)'
     var StartDateId = '@Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate)'
     var EndDateId = '@Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate)'
+
+    var StartDateCurrentYear = '@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear';
+    var EndDateCurrentYear = '@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear';
+    var DateComapreValidation = '@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation';
+    var TacticStartDateCompareWithParentStartDate = '@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate';
+    var ProgramStartDateCompareWithParentStartDate = '@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate';
+    var TacticEndDateCompareWithParentEndDate = '@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate';
+    var ProgramEndDateCompareWithParentEndDate = '@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate';
+    var TitleContainHTMLString = '@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString';
+    var IsMediaCodePermission = '@Sessions.IsMediaCodePermission.ToString().ToLower()'
 </script>

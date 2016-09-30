@@ -11,51 +11,59 @@ namespace RevenuePlanner.Services
 {
     public class PlanTactic : IPlanTactic
     {
+        #region Declaration
         private MRPEntities objDbMrpEntities;
+        private ICurrency objCurrency;
+        private HomeGridProperties objHomeGridProperty = new HomeGridProperties();
         public PlanTactic()
         {
             objDbMrpEntities = new MRPEntities();
+            objCurrency = new Currency();
         }
 
+        private string formatThousand = "#,##0.##";  // format thousand number values with comma
+        private string commaString = ",";
+        #endregion
+
+        #region Dictionary for month and quarter number which is used to get cost and other data 
         private Dictionary<string, string> MonthQuarterList = new Dictionary<string, string>() {
-                {Enums.Months.January.ToString(), "Y1" },
-                {Enums.Months.February.ToString(), "Y2" },
-                {Enums.Months.March.ToString(), "Y3" },
-                {Enums.Months.April.ToString(), "Y4" },
-                {Enums.Months.May.ToString(), "Y5" },
-                {Enums.Months.June.ToString(), "Y6" },
-                {Enums.Months.July.ToString(), "Y7" },
-                {Enums.Months.August.ToString(), "Y8" },
-                {Enums.Months.September.ToString(), "Y9" },
-                {Enums.Months.October.ToString(), "Y10" },
-                {Enums.Months.November.ToString(), "Y11" },
-                {Enums.Months.December.ToString(), "Y12" },
-                {"Quarter 1", "Y1" },
-                {"Quarter 2", "Y4" },
-                {"Quarter 3", "Y7" },
-                {"Quarter 4", "Y10" }
+                {Convert.ToString(Enums.Months.January), Common.Jan },
+                {Convert.ToString(Enums.Months.February), Common.Feb },
+                {Convert.ToString(Enums.Months.March), Common.Mar },
+                {Convert.ToString(Enums.Months.April), Common.Apr },
+                {Convert.ToString(Enums.Months.May), Common.May },
+                {Convert.ToString(Enums.Months.June), Common.Jun},
+                {Convert.ToString(Enums.Months.July), Common.Jul },
+                {Convert.ToString(Enums.Months.August), Common.Aug },
+                {Convert.ToString(Enums.Months.September), Common.Sep },
+                {Convert.ToString(Enums.Months.October), Common.Oct },
+                {Convert.ToString(Enums.Months.November), Common.Nov },
+                {Convert.ToString(Enums.Months.December), Common.Dec },
+                {Enums.Quarters[Convert.ToString(Enums.QuarterWithSpace.Quarter1)], Common.Jan },
+                {Enums.Quarters[Convert.ToString(Enums.QuarterWithSpace.Quarter2)], Common.Apr },
+                {Enums.Quarters[Convert.ToString(Enums.QuarterWithSpace.Quarter3)], Common.Jul },
+                {Enums.Quarters[Convert.ToString(Enums.QuarterWithSpace.Quarter4)], Common.Oct }
                 };
 
+        // dictionary to get in each quarter which values will be summed up
         private Dictionary<string, List<string>> QuartersList = new Dictionary<string, List<string>>()
         {
-                {"Y1", new List<string>{"Y1","Y2","Y3"} },
-                {"Y4", new List<string>{"Y4","Y5","Y6"} },
-                {"Y7", new List<string>{"Y7","Y8","Y9"} },
-                {"Y10", new List<string>{"Y10","Y11","Y12"} }
+                {Common.Jan, new List<string>{Common.Jan, Common.Feb, Common.Mar} },
+                {Common.Apr, new List<string>{Common.Apr, Common.May, Common.Jun } },
+                {Common.Jul, new List<string>{Common.Jul, Common.Aug, Common.Sep } },
+                {Common.Oct, new List<string>{Common.Oct, Common.Nov, Common.Dec } }
         };
+        #endregion
 
         /// <summary>
         /// Add Balance line item whether cost is 0 or greater
         /// </summary>
-        /// <param name="tacticId"></param>
-        /// <param name="Cost"></param>
-        /// <param name="UserId"></param>
         public void AddBalanceLineItem(int tacticId, double Cost, int UserId)
         {
             Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-            objNewLineitem.PlanTacticId = tacticId;
-            objNewLineitem.Title = Common.LineItemTitleDefault;
-            objNewLineitem.Cost = Cost;
+            objNewLineitem.PlanTacticId = tacticId;             // tactic for which balance line item created
+            objNewLineitem.Title = Common.LineItemTitleDefault; // default name is "Balance"
+            objNewLineitem.Cost = Cost;                         // balanced cost
             objNewLineitem.Description = string.Empty;
             objNewLineitem.CreatedBy = UserId;
             objNewLineitem.CreatedDate = DateTime.Now;
@@ -66,38 +74,25 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get cost allocation for line items in tactic inspect popup
         /// </summary>
-        /// <param name="LineItemId"></param>
-        /// <returns></returns>
-        public BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int curTacticId)
+        public BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int curTacticId, string AllocatedBy, int UserId, int ClientId, double PlanExchangeRate)
         {
-            #region Variables
-            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
-            List<BudgetModel> model = new List<BudgetModel>();
-            BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-            objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
-            #endregion
+            DataTable dtCosts = Common.GetTacticLineItemCostAllocation(curTacticId, UserId);    // Get cost allocation and set values to model
+            List<BudgetModel> model = SetAllocationValuesToModel(dtCosts, PlanExchangeRate);    // Set cost values to model
 
-            // Get allocated by based on Plan
-            int PlanId = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(x => x.PlanTacticId == curTacticId).FirstOrDefault().Plan_Campaign_Program.Plan_Campaign.PlanId;
-            Plan objPlan = objDbMrpEntities.Plans.FirstOrDefault(_pln => _pln.PlanId.Equals(PlanId));
-            AllocatedBy = objPlan.AllocatedBy;
+            model = SetPermissionForEditable(curTacticId, UserId, ClientId, model);             // Update model with view edit permissions
+            model = ManageBalanceLineItemCost(model);                                           // Update model by setting balance line item costs
 
-            // Get cost allocation and set values to model
-            DataTable dtCosts = Common.GetLineItemCostAllocation(curTacticId);
-            model = SetAllocationValuesToModel(dtCosts);
-
-            // Set view edit permissions
-            SetPermissionForEditable(curTacticId, ref model);
-            model = ManageLineItems(model);
-
-            //Set actual for quarters
-            if (AllocatedBy == "quarters")
+            //Set cost allocation for quarters by summed up respective months
+            if (String.Compare(AllocatedBy, Convert.ToString(Enums.PlanAllocatedBy.quarters),true) == 0)
             {
-                SumOfMonthsForQuaterlyAllocated(ref model);
+                model = SumOfMonthsForQuaterlyAllocated(model);
             }
+            BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel(); //New is required due to access the property
+            objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
 
-            // GenerateHeader
+            // Bind header of the grid
             objBudgetDHTMLXGrid = GenerateHeaderStringForInspectPopup(AllocatedBy, objBudgetDHTMLXGrid);
+
             // Bind final model grid data with tactic and lineitems
             objBudgetDHTMLXGrid.Grid.rows = BindFinalGridData(model, AllocatedBy);
             return objBudgetDHTMLXGrid;
@@ -108,121 +103,79 @@ namespace RevenuePlanner.Services
         /// Date : 09/08/2016
         /// Action to Generate Header String for line item listing
         /// </summary>
-        /// <param name="AllocatedBy">AllocatedBy</param>
         private BudgetDHTMLXGridModel GenerateHeaderStringForInspectPopup(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid)
         {
-            string setHeader = "", colType = "", width = "", colSorting = "", columnIds = "", colAlign = "";
-            setHeader = "ActivityId,Task Name,Planned Cost";
-            columnIds = "activityid,taskname,plannedcost";
-            colAlign = "left,left,center";
-            colType = "ro,tree,ed";
-            width = "0,100,50";
-            colSorting = "na,na,na";
+            objBudgetDHTMLXGrid.SetHeader = "ActivityId,Task Name,Planned Cost";         // header values for the grid
+            objBudgetDHTMLXGrid.ColAlign = objHomeGridProperty.alignleft + commaString +
+                                            objHomeGridProperty.alignleft + commaString +
+                                            objHomeGridProperty.aligncenter;             // alignment for the column
 
+            objBudgetDHTMLXGrid.ColumnIds = "activityid,taskname,plannedcost";           // ids of the columns
+            objBudgetDHTMLXGrid.ColType = objHomeGridProperty.typero + commaString +
+                                            objHomeGridProperty.typetree + commaString +
+                                            objHomeGridProperty.typeEdn;                  // types of the columns
+
+            objBudgetDHTMLXGrid.Width = "0,100,50";                                      // width of the columns
+            objBudgetDHTMLXGrid.ColSorting = "na,na,na";                                 // sorting options for the column
+            
             if (String.Compare(AllocatedBy, Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.quarters)], true) == 0)
             {
-                GenerateHeaderStringForQuarterlyAllocated(ref setHeader, ref columnIds, ref colType, ref width, ref colSorting, ref colAlign);
+                objBudgetDHTMLXGrid = GenerateHeaderStringForQuarterlyAllocated(objBudgetDHTMLXGrid);
             }
             else
             {
-                GenerateHeaderStringForMonthlyAllocated(ref setHeader, ref columnIds, ref colType, ref width, ref colSorting, ref colAlign);
+                objBudgetDHTMLXGrid = GenerateHeaderStringForMonthlyAllocated(objBudgetDHTMLXGrid);
             }
-            setHeader += ",Unallocated Cost";
-            columnIds += ",unallocatedcost";
-            colAlign += ",center";
-            colType += ",ro";
-            width += ",50";
-            colSorting += ",na";
 
-            objBudgetDHTMLXGrid.SetHeader = setHeader;
-            objBudgetDHTMLXGrid.ColAlign = colAlign;
-            objBudgetDHTMLXGrid.ColumnIds = columnIds;
-            objBudgetDHTMLXGrid.ColType = colType;
-            objBudgetDHTMLXGrid.Width = width;
-            objBudgetDHTMLXGrid.ColSorting = colSorting;
+            // Add unallocated cost column into the header
+            objBudgetDHTMLXGrid.SetHeader += commaString + Common.UnallocatedBudgetLabelText;
+            objBudgetDHTMLXGrid.ColAlign += commaString + objHomeGridProperty.aligncenter;
+            objBudgetDHTMLXGrid.ColumnIds += commaString + "unallocatedcost";
+            objBudgetDHTMLXGrid.ColType += commaString + objHomeGridProperty.typero;
+            objBudgetDHTMLXGrid.Width += commaString + "50";
+            objBudgetDHTMLXGrid.ColSorting += commaString + "na";
+
             return objBudgetDHTMLXGrid;
         }
 
         /// <summary>
         /// Bind header for monthly allocated
         /// </summary>
-        /// <param name="setHeader"></param>
-        /// <param name="columnIds"></param>
-        /// <param name="colType"></param>
-        /// <param name="width"></param>
-        /// <param name="colSorting"></param>
-        /// <param name="colAlign"></param>
-        private void GenerateHeaderStringForMonthlyAllocated(ref string setHeader, ref string columnIds, ref string colType, ref string width, ref string colSorting, ref string colAlign)
+        private BudgetDHTMLXGridModel GenerateHeaderStringForMonthlyAllocated(BudgetDHTMLXGridModel objBudgetDHTMLXGrid)
         {
+            // add each month to the header
+            DateTime dt;
             for (int i = 1; i <= 12; i++)
             {
-                DateTime dt = new DateTime(2012, i, 1);
-                setHeader = setHeader + "," + dt.ToString("MMM").ToUpper();
-                colAlign = colAlign + ",center";
-                columnIds = columnIds + "," + dt.ToString("MMM");
-                colType = colType + ",ed";
-                width = width + ",40";
-                colSorting = colSorting + ",str";
+                dt = new DateTime(2012, i, 1);
+                objBudgetDHTMLXGrid.SetHeader += commaString + dt.ToString("MMM").ToUpper();
+                objBudgetDHTMLXGrid.ColAlign += commaString + objHomeGridProperty.aligncenter;
+                objBudgetDHTMLXGrid.ColumnIds += commaString + dt.ToString("MMM");
+                objBudgetDHTMLXGrid.ColType += commaString + objHomeGridProperty.typeEdn;
+                objBudgetDHTMLXGrid.Width += commaString + "40";
+                objBudgetDHTMLXGrid.ColSorting += commaString + "na";
             }
+            return objBudgetDHTMLXGrid;
         }
 
         /// <summary>
         /// Bind header for quarterly allocated
         /// </summary>
-        /// <param name="setHeader"></param>
-        /// <param name="columnIds"></param>
-        /// <param name="colType"></param>
-        /// <param name="width"></param>
-        /// <param name="colSorting"></param>
-        /// <param name="colAlign"></param>
-        private void GenerateHeaderStringForQuarterlyAllocated(ref string setHeader, ref string columnIds, ref string colType, ref string width, ref string colSorting, ref string colAlign)
+        private BudgetDHTMLXGridModel GenerateHeaderStringForQuarterlyAllocated(BudgetDHTMLXGridModel objBudgetDHTMLXGrid)
         {
             int quarterCounter = 1;
+            // add each quarter in header object
             for (int i = 1; i <= 11; i += 3)
             {
-                DateTime dt = new DateTime(2012, i, 1);
-                setHeader = setHeader + ",Q" + Convert.ToString(quarterCounter);
-                colAlign = colAlign + ",center";
-                columnIds = columnIds + ",Q" + Convert.ToString(quarterCounter);
-                colType = colType + ",ed";
-                width = width + ",50";
-                colSorting = colSorting + ",str";
+                objBudgetDHTMLXGrid.SetHeader += commaString + "Q" + Convert.ToString(quarterCounter);
+                objBudgetDHTMLXGrid.ColAlign += commaString + objHomeGridProperty.aligncenter;
+                objBudgetDHTMLXGrid.ColumnIds += commaString + "Q" + Convert.ToString(quarterCounter);
+                objBudgetDHTMLXGrid.ColType += commaString + objHomeGridProperty.typeEdn;
+                objBudgetDHTMLXGrid.Width += commaString + "50";
+                objBudgetDHTMLXGrid.ColSorting += commaString + "na";
                 quarterCounter++;
             }
-        }
-
-        /// <summary>
-        /// Get total planned cost for line items and tactic
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private List<Budgetdataobj> TotalPlannedCostForInspectPopup(BudgetModel modelEntity, string activityType, List<Budgetdataobj> lstBudgetData, string activityId)
-        {
-            string formatThousand = "#,#0.##";
-            string stylecolorblack = "color:#000";
-            string stylecolorgray = "color:#999";
-            
-            if (modelEntity != null)
-            {
-                bool isLineItem = activityType == ActivityType.ActivityLineItem ? true : false;
-                bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && modelEntity.LineItemTypeId == null;
-                Budgetdataobj objBudgetData = new Budgetdataobj();
-                string divValue = "0";
-                divValue = modelEntity.PlannedCost.ToString(formatThousand);
-                if (modelEntity.isEditable && (!isLineItem || (!isOtherLineItem && isLineItem && modelEntity.LineItemTypeId != null)))
-                {
-                    objBudgetData.locked = "0";
-                    objBudgetData.style = stylecolorblack;
-                }
-                else
-                {
-                    objBudgetData.locked = "1";
-                    objBudgetData.style = stylecolorgray;
-                }
-                objBudgetData.value = divValue;
-
-                lstBudgetData.Add(objBudgetData);
-            }
-            return lstBudgetData;
+            return objBudgetDHTMLXGrid;
         }
 
         /// <summary>
@@ -231,19 +184,18 @@ namespace RevenuePlanner.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private List<Budgetdataobj> CostAllocationForInspectPopup(BudgetModel modelLineItem, string activityType, List<Budgetdataobj> lstBudgetData, string allocatedBy, string activityId)
         {
-            Budgetdataobj objBudgetData = new Budgetdataobj();
+            // Flag to indicate whether line item or tactic
+            bool isLineItem = (activityType == ActivityType.ActivityLineItem) ? true : false;
+            // Flag to indicate whether it is balance line item
+            bool isBalance = (activityType == ActivityType.ActivityLineItem && modelLineItem.LineItemTypeId == null) ? true : false;
 
-            bool isLineItem = activityType == ActivityType.ActivityLineItem ? true : false;
-            bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && modelLineItem.LineItemTypeId == null;
-
-            if (String.Compare(allocatedBy, Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()], true) == 0)
+            if (String.Compare(allocatedBy, Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.quarters)], true) == 0)
             {
-                string cellTextColor = "color:#000";
-                lstBudgetData = GetQuarterlyAllocatedPlannedCost(objBudgetData, isLineItem, isOtherLineItem, modelLineItem, lstBudgetData, cellTextColor);
+                lstBudgetData = GetQuarterlyAllocatedPlannedCost(isLineItem, isBalance, modelLineItem, lstBudgetData);
             }
             else
             {
-                lstBudgetData = GetMonthlyAllocatedPlannedCost(objBudgetData, isLineItem, isOtherLineItem, modelLineItem, lstBudgetData, allocatedBy);
+                lstBudgetData = GetMonthlyAllocatedPlannedCost(isLineItem, isBalance, modelLineItem, lstBudgetData, allocatedBy);
             }
             return lstBudgetData;
         }
@@ -251,88 +203,79 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get month wise allocated cost
         /// </summary>
-        /// <param name="objBudgetData"></param>
-        /// <param name="isLineItem"></param>
-        /// <param name="isOtherLineItem"></param>
-        /// <param name="modelLineItem"></param>
-        /// <param name="lstBudgetData"></param>
-        /// <param name="allocatedBy"></param>
-        /// <returns></returns>
-        private List<Budgetdataobj> GetMonthlyAllocatedPlannedCost(Budgetdataobj objBudgetData, bool isLineItem, bool isOtherLineItem, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData, string allocatedBy)
+        private List<Budgetdataobj> GetMonthlyAllocatedPlannedCost( bool isLineItem, bool isOtherLineItem, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData, string allocatedBy)
         {
-            string formatThousand = "#,#0.##";
-            double monthlyCampaignValue = 0, totalAllocatedCost = 0;
-            string stylecolorblack = "color:#000";
-            string stylecolorgray = "color:#999";
+            double monthlyValue = 0, totalAllocatedCost = 0;
             for (int i = 1; i <= 12; i++)
             {
                 if (i == 1)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Jan;
+                    monthlyValue = modelEntity.Month.Jan;
                 }
                 else if (i == 2)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Feb;
+                    monthlyValue = modelEntity.Month.Feb;
                 }
                 else if (i == 3)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Mar;
+                    monthlyValue = modelEntity.Month.Mar;
                 }
                 else if (i == 4)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Apr;
+                    monthlyValue = modelEntity.Month.Apr;
                 }
                 else if (i == 5)
                 {
-                    monthlyCampaignValue = modelEntity.Month.May;
+                    monthlyValue = modelEntity.Month.May;
                 }
                 else if (i == 6)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Jun;
+                    monthlyValue = modelEntity.Month.Jun;
                 }
                 else if (i == 7)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Jul;
+                    monthlyValue = modelEntity.Month.Jul;
                 }
                 else if (i == 8)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Aug;
+                    monthlyValue = modelEntity.Month.Aug;
                 }
                 else if (i == 9)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Sep;
+                    monthlyValue = modelEntity.Month.Sep;
                 }
                 else if (i == 10)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Oct;
+                    monthlyValue = modelEntity.Month.Oct;
                 }
                 else if (i == 11)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Nov;
+                    monthlyValue = modelEntity.Month.Nov;
                 }
                 else if (i == 12)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Dec;
+                    monthlyValue = modelEntity.Month.Dec;
                 }
-                objBudgetData = new Budgetdataobj();
-                if (modelEntity.isEditable && (!isLineItem || (!isOtherLineItem && isLineItem && modelEntity.LineItemTypeId != null)))
+                Budgetdataobj  objBudgetData = new Budgetdataobj();
+                // editable based on permission and balance line item never editable
+                if (!modelEntity.isEditable || modelEntity.LineItemTypeId == null)
                 {
-                    objBudgetData.locked = "0";
-                    objBudgetData.style = stylecolorblack;
+                    objBudgetData.locked = objHomeGridProperty.lockedstateone;
+                    objBudgetData.style = objHomeGridProperty.stylecolorgray;
                 }
                 else
                 {
-                    objBudgetData.locked = "1";
-                    objBudgetData.style = stylecolorgray;
+                    objBudgetData.locked = objHomeGridProperty.lockedstatezero;
+                    objBudgetData.style = objHomeGridProperty.stylecolorblack;
                 }
 
-                objBudgetData.value = monthlyCampaignValue.ToString(formatThousand);
+                objBudgetData.value = monthlyValue.ToString(formatThousand);
                 lstBudgetData.Add(objBudgetData);
 
-                totalAllocatedCost += monthlyCampaignValue;
+                totalAllocatedCost += monthlyValue;
             }
             // Add Unallocated Cost column to the grid
-            lstBudgetData.Add(AddUnallocatedCostColumnToGrid(stylecolorgray, modelEntity.PlannedCost, totalAllocatedCost, formatThousand));
+            lstBudgetData.Add(AddUnallocatedCostColumnToGrid(modelEntity.PlannedCost, totalAllocatedCost, formatThousand));
 
             return lstBudgetData;
         }
@@ -340,73 +283,59 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get quarter wise allocated cost
         /// </summary>
-        /// <param name="objBudgetData"></param>
-        /// <param name="isLineItem"></param>
-        /// <param name="isOtherLineItem"></param>
-        /// <param name="modelLineItem"></param>
-        /// <param name="lstBudgetData"></param>
-        /// <param name="cellTextColor"></param>
-        /// <returns></returns>
-        private List<Budgetdataobj> GetQuarterlyAllocatedPlannedCost(Budgetdataobj objBudgetData, bool isLineItem, bool isOtherLineItem, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData, string cellTextColor)
+        private List<Budgetdataobj> GetQuarterlyAllocatedPlannedCost(bool isLineItem, bool isOtherLineItem, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData)
         {
-            string formatThousand = "#,#0.##";
-            double monthlyCampaignValue = 0, totalAllocatedCost = 0;
-            string stylecolorblack = "color:#000";
-            string stylecolorgray = "color:#999";
+            double monthlyValue = 0, totalAllocatedCost = 0;
+            Budgetdataobj objBudgetData;
             for (int i = 1; i <= 11; i += 3)
             {
                 if (i == 1)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Jan;
+                    monthlyValue = modelEntity.Month.Jan;
                 }
                 else if (i == 4)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Apr;
+                    monthlyValue = modelEntity.Month.Apr;
                 }
                 else if (i == 7)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Jul;
+                    monthlyValue = modelEntity.Month.Jul;
                 }
                 else if (i == 10)
                 {
-                    monthlyCampaignValue = modelEntity.Month.Oct;
+                    monthlyValue = modelEntity.Month.Oct;
                 }
                 objBudgetData = new Budgetdataobj();
-                if (modelEntity.isEditable && (!isLineItem || (!isOtherLineItem && isLineItem && modelEntity.LineItemTypeId != null)))
+                // editable based on permission and balance line item never editable
+                if (!modelEntity.isEditable || modelEntity.LineItemTypeId == null)
                 {
-                    objBudgetData.locked = "0";
-                    objBudgetData.style = stylecolorblack;
+                    objBudgetData.locked = objHomeGridProperty.lockedstateone;
+                    objBudgetData.style = objHomeGridProperty.stylecolorgray;
                 }
                 else
                 {
-                    objBudgetData.locked = "1";
-                    objBudgetData.style = stylecolorgray;
+                    objBudgetData.locked = objHomeGridProperty.lockedstatezero;
+                    objBudgetData.style = objHomeGridProperty.stylecolorblack;
                 }
-                objBudgetData.value = monthlyCampaignValue.ToString(formatThousand);
+                objBudgetData.value = monthlyValue.ToString(formatThousand);
                 lstBudgetData.Add(objBudgetData);
-                totalAllocatedCost += monthlyCampaignValue;
+                totalAllocatedCost += monthlyValue;
             }
             // Add Unallocated Cost column to the grid
-            lstBudgetData.Add(AddUnallocatedCostColumnToGrid(stylecolorgray,modelEntity.PlannedCost,totalAllocatedCost,formatThousand));
-
+            lstBudgetData.Add(AddUnallocatedCostColumnToGrid(modelEntity.PlannedCost, totalAllocatedCost, formatThousand));
             return lstBudgetData;
         }
 
         /// <summary>
         /// Add unallocated cost column to the grid
         /// </summary>
-        /// <param name="stylecolorgray"></param>
-        /// <param name="PlannedCost"></param>
-        /// <param name="totalAllocatedCost"></param>
-        /// <param name="formatThousand"></param>
-        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Budgetdataobj AddUnallocatedCostColumnToGrid(string stylecolorgray, double PlannedCost, double totalAllocatedCost, string formatThousand)
+        private Budgetdataobj AddUnallocatedCostColumnToGrid(double PlannedCost, double totalAllocatedCost, string formatThousand)
         {
             // Add Unallocated Cost column at the end
             Budgetdataobj objBudgetData = new Budgetdataobj();
-            objBudgetData.locked = "1";
-            objBudgetData.style = stylecolorgray;
+            objBudgetData.locked = objHomeGridProperty.lockedstateone;
+            objBudgetData.style = objHomeGridProperty.stylecolorgray;
             objBudgetData.value = (PlannedCost - totalAllocatedCost).ToString(formatThousand);
             return objBudgetData;
         }
@@ -414,9 +343,9 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get summed up cost for required months in case of quarterly allocated
         /// </summary>
-        /// <param name="model"></param>
-        private void SumOfMonthsForQuaterlyAllocated(ref List<BudgetModel> model)
+        private List<BudgetModel> SumOfMonthsForQuaterlyAllocated(List<BudgetModel> model)
         {
+            // for quarterly allocation summed up respective months
             foreach (BudgetModel bm in model)
             {
                 bm.Month.Jan = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar;
@@ -432,45 +361,47 @@ namespace RevenuePlanner.Services
                 bm.Month.Nov = 0;
                 bm.Month.Dec = 0;
             }
+            return model;
         }
 
         /// <summary>
         /// Bind model for final data with tactic and line items
         /// </summary>
-        /// <param name="model"></param>
-        /// <param name="AllocatedBy"></param>
-        /// <returns></returns>
         private List<BudgetDHTMLXGridDataModel> BindFinalGridData(List<BudgetModel> model, string AllocatedBy)
         {
-            string TacticBackgroundColor = "#e4f1e1";
             List<BudgetDHTMLXGridDataModel> lstTacticRows = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel objTacticRows = new BudgetDHTMLXGridDataModel();
-            BudgetModel bmt = model.Where(p => p.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
+            // Get tactic model 
+            BudgetModel tacticModel = model.Where(p => p.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
 
-            objTacticRows = new BudgetDHTMLXGridDataModel();
-            objTacticRows.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(bmt.ActivityId);
-            objTacticRows.open = "1";
-            objTacticRows.bgColor = TacticBackgroundColor;
+            objTacticRows = new BudgetDHTMLXGridDataModel();    // Add row for tactic into the model
+            objTacticRows.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(tacticModel.ActivityId);
+            objTacticRows.open = "1";   // open = 1 means for this node child nodes will be expanded
+            objTacticRows.bgColor = objHomeGridProperty.TacticBackgroundColor;
+
             List<Budgetdataobj> lstTacticData = new List<Budgetdataobj>();
-            BudgetModel modelEntity = model.Where(pl => pl.ActivityType == ActivityType.ActivityTactic && pl.ActivityId == bmt.ActivityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
 
-            Budgetdataobj objTacticData = new Budgetdataobj();
-            objTacticData.value = bmt.ActivityId.Replace("cpt_", "");
+            Budgetdataobj objTacticData = new Budgetdataobj();  // Add Activity Id column value
+            objTacticData.value = tacticModel.ActivityId.Replace("cpt_", "");
             lstTacticData.Add(objTacticData);
 
-            objTacticData = new Budgetdataobj();
-            objTacticData.value = HttpUtility.HtmlEncode(bmt.ActivityName).Replace("'", "&#39;");
+            objTacticData = new Budgetdataobj();    // Add Activity Name column value
+            objTacticData.value = HttpUtility.HtmlEncode(tacticModel.ActivityName).Replace("'", "&#39;");   // HttpUtility.HtmlEncode handles all character except ' so need to be replaced
             lstTacticData.Add(objTacticData);
 
-            lstTacticData = TotalPlannedCostForInspectPopup(modelEntity, ActivityType.ActivityTactic,
-                                lstTacticData, bmt.ActivityId);
+            objTacticData = new Budgetdataobj();    // Add Planned Cost column value
+            objTacticData.value = tacticModel.PlannedCost.ToString(formatThousand);
+            objTacticData.locked = tacticModel.isEditable ? objHomeGridProperty.lockedstatezero : objHomeGridProperty.lockedstateone;
+            objTacticData.style = tacticModel.isEditable ? objHomeGridProperty.stylecolorblack : objHomeGridProperty.stylecolorgray;
+            lstTacticData.Add(objTacticData);
 
-            lstTacticData = CostAllocationForInspectPopup(modelEntity, ActivityType.ActivityTactic,
-                                lstTacticData, AllocatedBy, bmt.ActivityId);
+            // Add allocated cost data based on monthly/quarterly
+            lstTacticData = CostAllocationForInspectPopup(tacticModel, ActivityType.ActivityTactic, lstTacticData, AllocatedBy, tacticModel.ActivityId);
 
-            objTacticRows.data = lstTacticData;
+            objTacticRows.data = lstTacticData; // assigning all columns data to row object
             List<BudgetDHTMLXGridDataModel> lstLineItemRows = new List<BudgetDHTMLXGridDataModel>();
 
+            // Need to re-arrange order as balance line item always display at the end
             BudgetModel balanceLineItem = model.Where(p => p.ActivityType == ActivityType.ActivityLineItem && p.LineItemTypeId == null).FirstOrDefault();
             model = model.Where(p => p.ActivityType == ActivityType.ActivityLineItem && p.LineItemTypeId != null).OrderBy(p => p.ActivityName).ToList();
             if (balanceLineItem != null)
@@ -484,22 +415,17 @@ namespace RevenuePlanner.Services
             }
             objTacticRows.rows = lstLineItemRows;
             lstTacticRows.Add(objTacticRows);
-
             return lstTacticRows;
         }
 
         /// <summary>
         /// Bind data for each line item
         /// </summary>
-        /// <param name="LineItemId"></param>
-        /// <param name="ActivityName"></param>
-        /// <param name="ActivityId"></param>
-        /// <param name="model"></param>
-        /// <param name="AllocatedBy"></param>
-        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private BudgetDHTMLXGridDataModel BindGridJsonForLineItems(string LineItemId, string ActivityName, string ActivityId, List<BudgetModel> model, string AllocatedBy)
         {
             BudgetDHTMLXGridDataModel objLineItemRows = new BudgetDHTMLXGridDataModel();
+
             objLineItemRows.id = ActivityType.ActivityLineItem + HttpUtility.HtmlEncode(ActivityId);
             objLineItemRows.open = null;
             objLineItemRows.bgColor = "#fff";
@@ -507,43 +433,47 @@ namespace RevenuePlanner.Services
             Budgetdataobj objLineItemData = new Budgetdataobj();
             BudgetModel modelEntity = model.Where(pl => pl.ActivityType == ActivityType.ActivityLineItem && pl.ActivityId == ActivityId).ToList().FirstOrDefault();
 
-            objLineItemData.value = LineItemId;
+            objLineItemData.value = LineItemId; // Add LineItem Id to the column
             lstLineItemData.Add(objLineItemData);
 
-            objLineItemData = new Budgetdataobj();
+            objLineItemData = new Budgetdataobj();  // Add Activity Name to the column
             if (modelEntity.LineItemTypeId == null)
             {
-                objLineItemData.locked = "1"; // Balance row name should not be editable
-                objLineItemData.style = "color:#999";
+                objLineItemData.locked = objHomeGridProperty.lockedstateone; // Balance row name should not be editable
+                objLineItemData.style = objHomeGridProperty.stylecolorgray;
             }
             objLineItemData.value = HttpUtility.HtmlEncode(ActivityName).Replace("'", "&#39;");
             lstLineItemData.Add(objLineItemData);
 
-            lstLineItemData = TotalPlannedCostForInspectPopup(modelEntity, ActivityType.ActivityLineItem,lstLineItemData, ActivityId);
+            objLineItemData = new Budgetdataobj();  // Add Planned Cost to the column
+            objLineItemData.value = modelEntity.PlannedCost.ToString(formatThousand);
+            if (modelEntity.LineItemTypeId == null)
+            {
+                objLineItemData.locked = objHomeGridProperty.lockedstateone;    // Balance row name should not be editable
+                objLineItemData.style = objHomeGridProperty.stylecolorgray;
+            }
+            lstLineItemData.Add(objLineItemData);
 
             lstLineItemData = CostAllocationForInspectPopup(modelEntity, ActivityType.ActivityLineItem, lstLineItemData, AllocatedBy, ActivityId);
 
             objLineItemRows.data = lstLineItemData;
             return objLineItemRows;
-
         }
 
         /// <summary>
         /// Set permission for tactic and line items 
         /// </summary>
-        /// <param name="curTacticId"></param>
-        /// <param name="model"></param>
-        private void SetPermissionForEditable(int curTacticId, ref List<BudgetModel> model)
+        private List<BudgetModel> SetPermissionForEditable(int curTacticId, int UserId, int ClientId, List<BudgetModel> model)
         {
             List<int> lstSubordinatesIds = new List<int>();
-            string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+            string EntityTypeTactic = Convert.ToString(Enums.EntityType.Tactic);
             bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             if (IsTacticAllowForSubordinates)
             {
-                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);
+                lstSubordinatesIds = Common.GetAllSubordinates(UserId);
             }
-
-            var CstFields = objDbMrpEntities.CustomField_Entity.Where(entity => entity.EntityId == curTacticId && entity.CustomField.EntityType.Equals(EntityTypeTactic)).ToList();
+            // Get list of custom fields for tactic
+            List<CustomField_Entity> CstFields = objDbMrpEntities.CustomField_Entity.Where(entity => entity.EntityId == curTacticId && entity.CustomField.EntityType.Equals(EntityTypeTactic)).ToList();
             //Assign respective customfields to tactic
             foreach (BudgetModel Tactic in model.Where(m => m.ActivityType == ActivityType.ActivityTactic).ToList())
             {
@@ -551,35 +481,37 @@ namespace RevenuePlanner.Services
                 Tactic.CustomFieldEntities = CstFields.Where(entity => entity.EntityId == tempTacticId).ToList();
             }
 
-            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+            string DropDownList = Convert.ToString(Enums.CustomFieldType.DropDownList);
 
-            bool IsCustomFeildExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), Sessions.User.CID);
-            bool CustomFieldexists = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.CID &&
+            bool IsCustomFeildExist = Common.IsCustomFeildExist(Convert.ToString(Enums.EntityType.Tactic), ClientId);
+            bool CustomFieldexists = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == ClientId &&
                                                                         customfield.EntityType.Equals(EntityTypeTactic) &&
                                                                         customfield.IsRequired &&
                                                                         customfield.IsDeleted.Equals(false)).Any();
 
-
+            // Get list of entities
             List<CustomField_Entity> Entities = objDbMrpEntities.CustomField_Entity.Where(entityid => entityid.EntityId == curTacticId).Select(entityid => entityid).ToList();
 
-            List<CustomField_Entity> lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == Sessions.User.CID &&
+            // Get list of all custom fields of type drop down list
+            List<CustomField_Entity> lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == ClientId &&
                                                                                                         customFieldEntity.CustomField.IsDeleted.Equals(false) &&
                                                                                                         customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
                                                                                                         customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
                                                                                                         customFieldEntity.EntityId == curTacticId)
-                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
-            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.ID, true);
-            foreach (var item in model)
+                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
+            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId, true);
+            foreach (BudgetModel item in model)
             {
                 #region Set Permission For Tactic
                 if (item.ActivityType == ActivityType.ActivityTactic)
                 {
-                    if (item.CreatedBy == Sessions.User.ID || lstSubordinatesIds.Contains(item.CreatedBy))
+                    // check permission for tactic
+                    if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.ActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.ID, Sessions.User.CID, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isEditable = true;
@@ -595,18 +527,20 @@ namespace RevenuePlanner.Services
                 #region Set Permission for LineItem
                 else if (item.ActivityType == ActivityType.ActivityLineItem)
                 {
+                    // check permission for line items
                     int tacticOwner = 0;
-                    if (model.Where(m => m.ActivityId == item.ParentActivityId).Any())
+                    List<BudgetModel> tempModel = model.Where(m => m.ActivityId == item.ParentActivityId).ToList();
+                    if (tempModel.Any())
                     {
-                        tacticOwner = model.Where(m => m.ActivityId == item.ParentActivityId).FirstOrDefault().CreatedBy;
+                        tacticOwner = tempModel.FirstOrDefault().CreatedBy;
                     }
 
-                    if (item.CreatedBy == Sessions.User.ID || tacticOwner == Sessions.User.ID || lstSubordinatesIds.Contains(tacticOwner))
+                    if (item.CreatedBy == UserId || tacticOwner == UserId || lstSubordinatesIds.Contains(tacticOwner))
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.ParentActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.ID, Sessions.User.CID, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isEditable = true;
@@ -619,70 +553,49 @@ namespace RevenuePlanner.Services
                 }
                 #endregion
             }
+            return model;
         }
 
         /// <summary>
         /// Bind allocated cost values to the model
         /// </summary>
-        /// <param name="dtCosts"></param>
-        /// <returns></returns>
-        private List<BudgetModel> SetAllocationValuesToModel(DataTable dtCosts)
+        private List<BudgetModel> SetAllocationValuesToModel(DataTable dtCosts, double PlanExchangeRate)
         {
             List<BudgetModel> model = new List<BudgetModel>();
-            double PlanExchangeRate = Sessions.PlanExchangeRate;
-            RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
-
             model = dtCosts.AsEnumerable().Select(row => new BudgetModel
             {
-                Id = Convert.ToString(row["Id"]),
-                ActivityId = Convert.ToString(row["ActivityId"]),
+                Id = Convert.ToString(row["Id"]),   // Id of the tactic or line item
+                ActivityId = Convert.ToString(row["ActivityId"]),   // Activity id for the entity
                 ParentActivityId = Convert.ToString(row["ParentActivityId"]),
                 ActivityName = Convert.ToString(row["ActivityName"]),
                 PlannedCost = row["Cost"] != null ? Convert.ToDouble(row["Cost"]) : 0,
+                // Set values by applying exchange rate
                 Month = new BudgetMonth()
                 {
-                    Jan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY1"].ToString()), PlanExchangeRate),
-                    Feb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY2"].ToString()), PlanExchangeRate),
-                    Mar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY3"].ToString()), PlanExchangeRate),
-                    Apr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY4"].ToString()), PlanExchangeRate),
-                    May = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY5"].ToString()), PlanExchangeRate),
-                    Jun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY6"].ToString()), PlanExchangeRate),
-                    Jul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY7"].ToString()), PlanExchangeRate),
-                    Aug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY8"].ToString()), PlanExchangeRate),
-                    Sep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY9"].ToString()), PlanExchangeRate),
-                    Oct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY10"].ToString()), PlanExchangeRate),
-                    Nov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY11"].ToString()), PlanExchangeRate),
-                    Dec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY12"].ToString()), PlanExchangeRate)
+                    Jan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY1"])), PlanExchangeRate),
+                    Feb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY2"])), PlanExchangeRate),
+                    Mar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY3"])), PlanExchangeRate),
+                    Apr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY4"])), PlanExchangeRate),
+                    May = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY5"])), PlanExchangeRate),
+                    Jun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY6"])), PlanExchangeRate),
+                    Jul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY7"])), PlanExchangeRate),
+                    Aug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY8"])), PlanExchangeRate),
+                    Sep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY9"])), PlanExchangeRate),
+                    Oct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY10"])), PlanExchangeRate),
+                    Nov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY11"])), PlanExchangeRate),
+                    Dec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CY12"])), PlanExchangeRate)
                 },
-                ParentMonth = row["ActivityType"].ToString() == ActivityType.ActivityLineItem.ToString() ? new BudgetMonth()
-                {
-                    Jan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY1"].ToString()), PlanExchangeRate),
-                    Feb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY2"].ToString()), PlanExchangeRate),
-                    Mar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY3"].ToString()), PlanExchangeRate),
-                    Apr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY4"].ToString()), PlanExchangeRate),
-                    May = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY5"].ToString()), PlanExchangeRate),
-                    Jun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY6"].ToString()), PlanExchangeRate),
-                    Jul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY7"].ToString()), PlanExchangeRate),
-                    Aug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY8"].ToString()), PlanExchangeRate),
-                    Sep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY9"].ToString()), PlanExchangeRate),
-                    Oct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY10"].ToString()), PlanExchangeRate),
-                    Nov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY11"].ToString()), PlanExchangeRate),
-                    Dec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(row["CY12"].ToString()), PlanExchangeRate)
-                } : null,
                 CreatedBy = Convert.ToInt32(row["CreatedBy"]),
                 isEditable = Convert.ToBoolean(row["IsEditable"]),
-                ActivityType = row["ActivityType"].ToString(),
+                ActivityType = Convert.ToString(row["ActivityType"]),
                 LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"]))
             }).ToList();
-
             return model;
         }
 
         /// <summary>
         /// Update balance line item cost for the tactic
         /// </summary>
-        /// <param name="PlanTacticId"></param>
-        /// <returns></returns>
         public double UpdateBalanceLineItemCost(int PlanTacticId)
         {
             List<Plan_Campaign_Program_Tactic_LineItem> lstLineItems = new List<Plan_Campaign_Program_Tactic_LineItem>();
@@ -697,9 +610,9 @@ namespace RevenuePlanner.Services
                 tacticTotalLineItemsCost = lstLineItems.Sum(x => x.Cost);
             }
             // Get cost of balance line item
-            Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => 
-                                                                            lineItem.PlanTacticId == PlanTacticId && 
-                                                                            lineItem.LineItemTypeId == null && 
+            Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem =>
+                                                                            lineItem.PlanTacticId == PlanTacticId &&
+                                                                            lineItem.LineItemTypeId == null &&
                                                                             lineItem.IsDeleted == false).FirstOrDefault();
             if (objOtherLineItem != null)
             {
@@ -711,155 +624,145 @@ namespace RevenuePlanner.Services
             return 0;
         }
 
-        #region Functions related to line item cost allocation
+        #region Functions related to save line item cost allocation
+
+        /// <summary>
+        /// Save total planned cost for line item
+        /// </summary>
+        public void SaveTotalLineItemCost(int EntityId, double newCost)
+        {
+            Plan_Campaign_Program_Tactic_LineItem objLineitem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcpt =>
+                                                                                    pcpt.PlanLineItemId == EntityId &&
+                                                                                    pcpt.IsDeleted == false).FirstOrDefault();
+            if (objLineitem != null)
+            {
+                objLineitem.Cost = newCost;
+                objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
+                objDbMrpEntities.SaveChanges();
+                UpdateBalanceLineItemCost(objLineitem.PlanTacticId);
+            }
+        }
 
         /// <summary>
         /// Save monthly cost allocation for line items and update balance line item
         /// </summary>
-        /// <param name="EntityId"></param>
-        /// <param name="monthlycost"></param>
-        /// <param name="month"></param>
-        public void SaveLineItemMonthlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost)
+        public void SaveLineItemMonthlyCostAllocation(int EntityId, double newCost, string month, int UserId)
         {
-            Plan_Campaign_Program_Tactic_LineItem objLineitem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcpt => 
-                                                                                pcpt.PlanLineItemId == EntityId && 
+            Plan_Campaign_Program_Tactic_LineItem objLineitem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcpt =>
+                                                                                pcpt.PlanLineItemId == EntityId &&
                                                                                 pcpt.IsDeleted == false).FirstOrDefault();
-            if (isTotalCost) // Total planned cost is changed
-            {
-                objLineitem.Cost = monthlycost;
-                objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
-            }
-            else // When month wise cost allocation is changed
+            if (objLineitem != null)
             {
                 string period = Convert.ToString(MonthQuarterList[month]);
-                if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == period).Any())
+                Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault();
+                if (objLineItemCost != null)
                 {
-                    objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = monthlycost;
-                    objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
+                    objLineItemCost.Value = newCost;
+                    objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Modified;
                 }
                 else
                 {
-                    AddNewRowLineItemCost(EntityId, period, monthlycost);
+                    AddNewRowLineItemCost(EntityId, period, newCost, UserId);   // Add new record for line item cost for the month
                 }
+                objDbMrpEntities.SaveChanges();
             }
-            objDbMrpEntities.SaveChanges();
-
-            UpdateBalanceLineItemCost(objLineitem.PlanTacticId);
         }
 
         /// <summary>
         /// Save quarterly cost allocation for line items
         /// </summary>
-        /// <param name="EntityId"></param>
-        /// <param name="monthlycost"></param>
-        /// <param name="yearlycost"></param>
-        /// <param name="month"></param>
-        public void SaveLineItemQuarterlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost)
+        public void SaveLineItemQuarterlyCostAllocation(int EntityId, double newCost, string quarter, int UserId)
         {
             Plan_Campaign_Program_Tactic_LineItem objLineitem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcpt =>
                                                                                 pcpt.PlanLineItemId == EntityId &&
                                                                                 pcpt.IsDeleted == false).FirstOrDefault();
-            if (isTotalCost) // Total planned cost is changed
+            if (objLineitem != null)
             {
-                objLineitem.Cost = monthlycost;
-                objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
-            }
-            else // When month wise cost allocation is changed
-            {
-                string period = Convert.ToString(MonthQuarterList[month]);
-
-                if (QuartersList[period] != null && objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).Any())
+                string period = Convert.ToString(MonthQuarterList[quarter]);
+                List<Plan_Campaign_Program_Tactic_LineItem_Cost> lstLineItemCost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).ToList();
+                if (QuartersList[period] != null && lstLineItemCost.Any())
                 {
-                    double curQuarterCost = 0;
-                    curQuarterCost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).Sum(x => x.Value);
+                    double oldCost = lstLineItemCost.Sum(x => x.Value);
 
                     // If new value is greater then add into first month
-                    if (curQuarterCost < monthlycost)
+                    if (oldCost < newCost)
                     {
-                        IncreaseQuarterlyLineItemCost(objLineitem, EntityId, period, monthlycost, curQuarterCost);
+                        IncreaseQuarterlyLineItemCost(objLineitem, EntityId, period, newCost, oldCost, UserId);
                     }
                     // If new value is lesser then subtract from last month
-                    else if (curQuarterCost > monthlycost)
+                    else if (oldCost > newCost)
                     {
-                        DecreaseQuarterlyLineItemCost(objLineitem, period, monthlycost, curQuarterCost);
+                        DecreaseQuarterlyLineItemCost(objLineitem, period, newCost, oldCost);
                     }
                 }
                 else
                 {
-                    AddNewRowLineItemCost(EntityId, period, monthlycost);
+                    AddNewRowLineItemCost(EntityId, period, newCost, UserId);   // Add new record for line item cost for the quarter
                 }
+                objDbMrpEntities.SaveChanges();
             }
-            objDbMrpEntities.SaveChanges();
-
-            UpdateBalanceLineItemCost(objLineitem.PlanTacticId);
         }
-        
+
         /// <summary>
         /// Save quarterly allocated line item cost while cost is increased
         /// </summary>
-        /// <param name="objLineItem"></param>
-        /// <param name="EntityId"></param>
-        /// <param name="period"></param>
-        /// <param name="monthlycost"></param>
-        /// <param name="curQuarterCost"></param>
-        private void IncreaseQuarterlyLineItemCost(Plan_Campaign_Program_Tactic_LineItem objLineItem, int EntityId, string period, double monthlycost, double curQuarterCost)
+        private void IncreaseQuarterlyLineItemCost(Plan_Campaign_Program_Tactic_LineItem objLineItem, int EntityId, string period, double newCost, double oldCost, int UserId)
         {
-            if (objLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).Any())
+            Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost = objLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).FirstOrDefault();
+            // If cost is increased for quarter then added into first month e.g. Q1 -> Y1
+            if (objLineItemCost != null)
             {
-                objLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).FirstOrDefault().Value += monthlycost - curQuarterCost;
-                objDbMrpEntities.Entry(objLineItem).State = EntityState.Modified;
+                objLineItemCost.Value += newCost - oldCost;
+                objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Modified;
                 objDbMrpEntities.SaveChanges();
             }
             else
             {
-                AddNewRowLineItemCost(EntityId, period, monthlycost);
+                AddNewRowLineItemCost(EntityId, period, newCost, UserId);   // Add new record for line item cost for the quarter
             }
         }
 
         /// <summary>
         /// Save quarterly allocated line item cost while cost is decreased
         /// </summary>
-        /// <param name="objLineitem"></param>
-        /// <param name="period"></param>
-        /// <param name="monthlycost"></param>
-        /// <param name="curQuarterCost"></param>
-        private void DecreaseQuarterlyLineItemCost(Plan_Campaign_Program_Tactic_LineItem objLineitem, string period, double monthlycost, double curQuarterCost)
+        private void DecreaseQuarterlyLineItemCost(Plan_Campaign_Program_Tactic_LineItem objLineitem, string period, double newCost, double oldCost)
         {
-            QuartersList[period].Reverse(); // Reversed list for subtract from last months
-            double curPeriodVal = 0, costDiff = 0;
-            costDiff = curQuarterCost - monthlycost;
-            // Subtract cost from each months of the quarter
+            QuartersList[period].Reverse(); // Reversed list to subtract from last months
+            double curPeriodVal = 0, needToSubtract = 0;
+            needToSubtract = oldCost - newCost;
+
+            // Subtract cost from each months of the quarter e.g. For Q1 -> subtract from Y3, Y2 and Y1 as per requirement
+            Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost;
             foreach (string quarter in QuartersList[period])
             {
-                if (objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == quarter).Any())
+                objLineItemCost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault();
+                if (objLineItemCost != null)
                 {
-                    curPeriodVal = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault().Value;
-                    curPeriodVal = curPeriodVal - costDiff;
-                    costDiff = -curPeriodVal;
-                    objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault().Value = curPeriodVal < 0 ? 0 : curPeriodVal;
+                    curPeriodVal = objLineItemCost.Value;
+                    curPeriodVal = curPeriodVal - needToSubtract;
+                    needToSubtract = -curPeriodVal;
+                    objLineItemCost.Value = curPeriodVal < 0 ? 0 : curPeriodVal;
                     if (curPeriodVal >= 0)
                     {
-                        break;
+                        objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Modified;
+                        break;  // break when quarterly allocated value subtracted from months
                     }
                 }
+                objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Modified;
             }
-            objDbMrpEntities.Entry(objLineitem).State = EntityState.Modified;
             objDbMrpEntities.SaveChanges();
         }
 
         /// <summary>
         /// Add new row for allocated line item cost
         /// </summary>
-        /// <param name="EntityId"></param>
-        /// <param name="period"></param>
-        /// <param name="monthlycost"></param>
-        private void AddNewRowLineItemCost(int EntityId, string period, double monthlycost)
+        private void AddNewRowLineItemCost(int EntityId, string period, double newCost, int UserId)
         {
             Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
             objLineItemCost.PlanLineItemId = EntityId;
             objLineItemCost.Period = period;
-            objLineItemCost.Value = monthlycost;
-            objLineItemCost.CreatedBy = Sessions.User.ID;
+            objLineItemCost.Value = newCost;
+            objLineItemCost.CreatedBy = UserId;
             objLineItemCost.CreatedDate = DateTime.Now;
             objDbMrpEntities.Entry(objLineItemCost).State = EntityState.Added;
             objDbMrpEntities.SaveChanges();
@@ -867,155 +770,144 @@ namespace RevenuePlanner.Services
 
         #endregion
 
-        #region Functions related to tactic cost allocation
+        #region Functions related to save tactic cost allocation
+
+        /// <summary>
+        /// Save total planned cost for tactic
+        /// </summary>
+        public void SaveTotalTacticCost(int EntityId, double newCost)
+        {
+            Plan_Campaign_Program_Tactic objTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpt =>
+                                                                                    pcpt.PlanTacticId == EntityId &&
+                                                                                    pcpt.IsDeleted == false).FirstOrDefault();
+            if (objTactic != null)
+            {
+                objTactic.Cost = newCost;
+                objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
+                objDbMrpEntities.SaveChanges();
+                UpdateBalanceLineItemCost(objTactic.PlanTacticId);
+            }
+        }
 
         /// <summary>
         /// Save monthly allocated cost for tactic and update other line item
         /// </summary>
-        /// <param name="EntityId"></param>
-        /// <param name="monthlycost"></param>
-        /// <param name="month"></param>
-        public void SaveTacticMonthlyCostAllocation(int EntityId, double monthlycost, string month,bool isTotalCost)
+        public void SaveTacticMonthlyCostAllocation(int EntityId, double newCost, string month, int UserId)
         {
             Plan_Campaign_Program_Tactic objTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpt =>
                                                                                 pcpt.PlanTacticId == EntityId &&
                                                                                 pcpt.IsDeleted == false).FirstOrDefault();
-            if (isTotalCost) // Total planned cost is changed
-            {
-                objTactic.Cost = monthlycost;
-                objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
-            }
-            else // When month wise cost allocation is changed
+            if (objTactic != null)
             {
                 string period = Convert.ToString(MonthQuarterList[month]);
-                if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == period).Any())
+                Plan_Campaign_Program_Tactic_Cost objTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault();
+                if (objTacCost != null)
                 {
-                    objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = monthlycost;
-                    objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
+                    objTacCost.Value = newCost;
+                    objDbMrpEntities.Entry(objTacCost).State = EntityState.Modified;
                 }
                 else
                 {
-                    AddNewRowTacticCost(EntityId, period, monthlycost);
+                    AddNewRowTacticCost(EntityId, period, newCost, UserId); // Add new record for tactic cost for the month
                 }
+                objDbMrpEntities.SaveChanges();
             }
-            objDbMrpEntities.SaveChanges();
-
-            UpdateBalanceLineItemCost(objTactic.PlanTacticId);
         }
 
         /// <summary>
         /// Save quarterly allocated cost for tactic and update other line item/// 
         /// </summary>
-        /// <param name="EntityId"></param>
-        /// <param name="monthlycost"></param>
-        /// <param name="month"></param>
-        /// <param name="isTotalCost"></param>
-        public void SaveTacticQuarterlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost)
+        public void SaveTacticQuarterlyCostAllocation(int EntityId, double newCost, string month, int UserId)
         {
             Plan_Campaign_Program_Tactic objTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpt =>
                                                                                 pcpt.PlanTacticId == EntityId &&
                                                                                 pcpt.IsDeleted == false).FirstOrDefault();
-            if (isTotalCost) // Total planned cost is changed
-            {
-                objTactic.Cost = monthlycost;
-                objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
-            }
-            else // When month wise cost allocation is changed
+            if (objTactic != null)
             {
                 string period = Convert.ToString(MonthQuarterList[month]);
-
-                if (QuartersList[period] != null && objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).Any())
+                List<Plan_Campaign_Program_Tactic_Cost> lstTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).ToList();
+                if (QuartersList[period] != null && lstTacCost.Any())
                 {
-                    double curQuarterCost = 0;
-                    curQuarterCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => QuartersList[period].Contains(pcptc.Period)).Sum(x => x.Value);
+                    double oldCost = lstTacCost.Sum(x => x.Value);
 
                     // If new value is greater then add into first month
-                    if (curQuarterCost < monthlycost)
+                    if (oldCost < newCost)
                     {
-                        IncreaseQuarterlyTacticCost(objTactic, EntityId, period, monthlycost, curQuarterCost);
+                        IncreaseQuarterlyTacticCost(objTactic, EntityId, period, newCost, oldCost, UserId);
                     }
                     // If new value is lesser then subtract from last month
-                    else if (curQuarterCost > monthlycost)
+                    else if (oldCost > newCost)
                     {
-                        DecreaseQuarterlyTacticCost(objTactic, period, monthlycost, curQuarterCost);
+                        DecreaseQuarterlyTacticCost(objTactic, period, newCost, oldCost);
                     }
                 }
                 else
                 {
-                    AddNewRowTacticCost(EntityId, period, monthlycost);
+                    AddNewRowTacticCost(EntityId, period, newCost, UserId); // Add new record for tactic cost for the quarter
                 }
+                objDbMrpEntities.SaveChanges();
             }
-            objDbMrpEntities.SaveChanges();
-
-            UpdateBalanceLineItemCost(objTactic.PlanTacticId);
         }
 
         /// <summary>
         /// Save quarterly allocated tactic cost while cost is increased
         /// </summary>
-        /// <param name="objTactic"></param>
-        /// <param name="EntityId"></param>
-        /// <param name="period"></param>
-        /// <param name="monthlycost"></param>
-        /// <param name="curQuarterCost"></param>
-        private void IncreaseQuarterlyTacticCost(Plan_Campaign_Program_Tactic objTactic, int EntityId, string period, double monthlycost, double curQuarterCost)
+        private void IncreaseQuarterlyTacticCost(Plan_Campaign_Program_Tactic objTactic, int EntityId, string period, double newCost, double oldCost, int UserId)
         {
-            if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).Any())
+            Plan_Campaign_Program_Tactic_Cost objTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).FirstOrDefault();
+            if (objTacCost != null)
             {
-                objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == QuartersList[period].First()).FirstOrDefault().Value += monthlycost - curQuarterCost;
-                objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
+                objTacCost.Value += newCost - oldCost;
+                objDbMrpEntities.Entry(objTacCost).State = EntityState.Modified;
                 objDbMrpEntities.SaveChanges();
             }
             else
             {
-                AddNewRowTacticCost(EntityId, period, monthlycost);
+                AddNewRowTacticCost(EntityId, period, newCost, UserId); // Add new record for tactic cost for the quarter
             }
         }
 
         /// <summary>
         /// Save quarterly allocated tactic cost while cost is decreased
         /// </summary>
-        /// <param name="objTactic"></param>
-        /// <param name="period"></param>
-        /// <param name="monthlycost"></param>
-        /// <param name="curQuarterCost"></param>
-        private void DecreaseQuarterlyTacticCost(Plan_Campaign_Program_Tactic objTactic, string period, double monthlycost, double curQuarterCost)
+        private void DecreaseQuarterlyTacticCost(Plan_Campaign_Program_Tactic objTactic, string period, double newCost, double oldCost)
         {
             QuartersList[period].Reverse(); // Reversed list for subtract from last months
             double curPeriodVal = 0, costDiff = 0;
-            costDiff = curQuarterCost - monthlycost;
+            costDiff = oldCost - newCost;
+            Plan_Campaign_Program_Tactic_Cost objTacCost = new Plan_Campaign_Program_Tactic_Cost();
             // Subtract cost from each months of the quarter
             foreach (string quarter in QuartersList[period])
             {
-                if (objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == quarter).Any())
+                objTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault();
+                if (objTacCost != null)
                 {
-                    curPeriodVal = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault().Value;
+                    curPeriodVal = objTacCost.Value;
                     curPeriodVal = curPeriodVal - costDiff;
                     costDiff = -curPeriodVal;
-                    objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault().Value = curPeriodVal < 0 ? 0 : curPeriodVal;
+                    objTacCost.Value = curPeriodVal < 0 ? 0 : curPeriodVal;
                     if (curPeriodVal >= 0)
                     {
+                        objDbMrpEntities.Entry(objTacCost).State = EntityState.Modified;
                         break;
                     }
                 }
+                objDbMrpEntities.Entry(objTacCost).State = EntityState.Modified;
             }
-            objDbMrpEntities.Entry(objTactic).State = EntityState.Modified;
+
             objDbMrpEntities.SaveChanges();
         }
 
         /// <summary>
         /// Add new record for allocated tactic cost 
         /// </summary>
-        /// <param name="EntityId"></param>
-        /// <param name="period"></param>
-        /// <param name="monthlycost"></param>
-        private void AddNewRowTacticCost(int EntityId, string period, double monthlycost)
+        private void AddNewRowTacticCost(int EntityId, string period, double newCost, int UserId)
         {
             Plan_Campaign_Program_Tactic_Cost objTacticCost = new Plan_Campaign_Program_Tactic_Cost();
             objTacticCost.PlanTacticId = EntityId;
             objTacticCost.Period = period;
-            objTacticCost.Value = monthlycost;
-            objTacticCost.CreatedBy = Sessions.User.ID;
+            objTacticCost.Value = newCost;
+            objTacticCost.CreatedBy = UserId;
             objTacticCost.CreatedDate = DateTime.Now;
             objDbMrpEntities.Entry(objTacticCost).State = EntityState.Added;
             objDbMrpEntities.SaveChanges();
@@ -1026,46 +918,45 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Manage lines items if cost is allocated to other
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public List<BudgetModel> ManageLineItems(List<BudgetModel> model)
+        private List<BudgetModel> ManageBalanceLineItemCost(List<BudgetModel> model)
         {
-            foreach (BudgetModel l in model.Where(l => l.ActivityType == ActivityType.ActivityTactic))
+            // tactic cost model
+            BudgetModel tacticModel = model.Where(l => l.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
+            if (tacticModel != null)
             {
-                //// Calculate Line Difference.
                 BudgetMonth lineDiff = new BudgetMonth();
-                List<BudgetModel> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
-                BudgetModel otherLine = lines.Where(ol => ol.LineItemTypeId == null).FirstOrDefault();
-                lines = lines.Where(ol => ol.LineItemTypeId != null).ToList();
+
+                // Get all line items for the tactic
+                List<BudgetModel> lines = model.Where(line =>
+                                                line.ActivityType == ActivityType.ActivityLineItem &&
+                                                line.LineItemTypeId != null).ToList();
+
+                // Get balance line item for the tactic
+                BudgetModel otherLine = model.Where(line =>
+                                                line.ActivityType == ActivityType.ActivityLineItem &&
+                                                line.LineItemTypeId == null).FirstOrDefault();
+
                 if (otherLine != null)
                 {
                     if (lines.Count > 0)
                     {
-                        lineDiff.Jan = l.Month.Jan - lines.Sum(lmon => (double?)lmon.Month.Jan) ?? 0;
-                        lineDiff.Feb = l.Month.Feb - lines.Sum(lmon => (double?)lmon.Month.Feb) ?? 0;
-                        lineDiff.Mar = l.Month.Mar - lines.Sum(lmon => (double?)lmon.Month.Mar) ?? 0;
-                        lineDiff.Apr = l.Month.Apr - lines.Sum(lmon => (double?)lmon.Month.Apr) ?? 0;
-                        lineDiff.May = l.Month.May - lines.Sum(lmon => (double?)lmon.Month.May) ?? 0;
-                        lineDiff.Jun = l.Month.Jun - lines.Sum(lmon => (double?)lmon.Month.Jun) ?? 0;
-                        lineDiff.Jul = l.Month.Jul - lines.Sum(lmon => (double?)lmon.Month.Jul) ?? 0;
-                        lineDiff.Aug = l.Month.Aug - lines.Sum(lmon => (double?)lmon.Month.Aug) ?? 0;
-                        lineDiff.Sep = l.Month.Sep - lines.Sum(lmon => (double?)lmon.Month.Sep) ?? 0;
-                        lineDiff.Oct = l.Month.Oct - lines.Sum(lmon => (double?)lmon.Month.Oct) ?? 0;
-                        lineDiff.Nov = l.Month.Nov - lines.Sum(lmon => (double?)lmon.Month.Nov) ?? 0;
-                        lineDiff.Dec = l.Month.Dec - lines.Sum(lmon => (double?)lmon.Month.Dec) ?? 0;
-
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Month = lineDiff;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonth = lineDiff;
-
-                        //double allocated = l.Allocated - lines.Sum(l1 => l1.Allocated);
-                        //allocated = allocated < 0 ? 0 : allocated;
-                        //model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Allocated = allocated;
+                        lineDiff.Jan = tacticModel.Month.Jan - lines.Sum(lmon => (double?)lmon.Month.Jan) ?? 0;
+                        lineDiff.Feb = tacticModel.Month.Feb - lines.Sum(lmon => (double?)lmon.Month.Feb) ?? 0;
+                        lineDiff.Mar = tacticModel.Month.Mar - lines.Sum(lmon => (double?)lmon.Month.Mar) ?? 0;
+                        lineDiff.Apr = tacticModel.Month.Apr - lines.Sum(lmon => (double?)lmon.Month.Apr) ?? 0;
+                        lineDiff.May = tacticModel.Month.May - lines.Sum(lmon => (double?)lmon.Month.May) ?? 0;
+                        lineDiff.Jun = tacticModel.Month.Jun - lines.Sum(lmon => (double?)lmon.Month.Jun) ?? 0;
+                        lineDiff.Jul = tacticModel.Month.Jul - lines.Sum(lmon => (double?)lmon.Month.Jul) ?? 0;
+                        lineDiff.Aug = tacticModel.Month.Aug - lines.Sum(lmon => (double?)lmon.Month.Aug) ?? 0;
+                        lineDiff.Sep = tacticModel.Month.Sep - lines.Sum(lmon => (double?)lmon.Month.Sep) ?? 0;
+                        lineDiff.Oct = tacticModel.Month.Oct - lines.Sum(lmon => (double?)lmon.Month.Oct) ?? 0;
+                        lineDiff.Nov = tacticModel.Month.Nov - lines.Sum(lmon => (double?)lmon.Month.Nov) ?? 0;
+                        lineDiff.Dec = tacticModel.Month.Dec - lines.Sum(lmon => (double?)lmon.Month.Dec) ?? 0;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.LineItemTypeId == null).FirstOrDefault().Month = lineDiff;
                     }
                     else
                     {
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Month = l.Month;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonth = l.Month;
-                        //model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Allocated = l.Allocated < 0 ? 0 : l.Allocated;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.LineItemTypeId == null).FirstOrDefault().Month = tacticModel.Month;
                     }
                 }
             }

@@ -405,6 +405,7 @@ namespace RevenuePlanner.Models
         public string EntityTitle { get; set; }
         public Nullable<Int32> LineItemTypeId { get; set; }
         public string LineItemType { get; set; }
+        public Nullable<int> AnchorTacticID { get; set; }
         public List<Plandataobj> lstdata { get; set; }
         //public Plandataobj objdata { get; set; }
     }
@@ -446,6 +447,16 @@ namespace RevenuePlanner.Models
         public string LinkedPlanName { get; set; }
         public Nullable<int> AnchorTacticID { get; set; }
         public string PackageTacticIds { get; set; }
+        public string PlanYear { get; set; }
+    }
+
+    // Add By Nishant Sheth
+    // Class For User default Permission
+    public class EntityPermission
+    {
+        public bool PlanCreate { get; set; }
+        public bool PlanEditSubordinates { get; set; }
+        public bool PlanEditAll { get; set; }
     }
 
     // Add By Nishant Sheth

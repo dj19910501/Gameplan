@@ -344,6 +344,9 @@ function UpdateSelectedFilters() {
 
     checkedStatuscount = selectedFilters.StatusIds.length;
     $('#cStatuscount').text(checkedStatuscount);
+
+    TotalStatus = $("#ulStatus li").length;
+    $('#tStatuscount').text('/' + TotalStatus);
 }
 
 var PreviousListFilter = {
@@ -894,7 +897,6 @@ function SavePreset() {
 }
 
 var isFiltered = false;
-var IsUpdate = false;
 var SavePresetValue = false;
 function UpdatePlan() {
     IsUpdate = true;
@@ -926,6 +928,7 @@ function UpdatePlan() {
             $(this).parent().removeClass("close-list");
         });
     }
+    BindUpcomingActivites(planids);
     GetTacticTypelist(planids, false);
     GetOwnerListForFilter(planids, false);
     UpdateResult();
@@ -998,7 +1001,8 @@ function UpdateResult() {
         //Need to Implement
         BindPlanCalendar();
     }
-    GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs', urlContent + 'Home/GetActivityDistributionchart', secHome, SelectedTimeFrameOption)
+    var TimeFrame=$('#ddlUpComingActivites').val();
+    GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs', urlContent + 'Home/GetActivityDistributionchart', secHome, TimeFrame)
     UpdateSelectedFilters();
     if (SavePresetValue == false) {
         SaveLastSetofViews();

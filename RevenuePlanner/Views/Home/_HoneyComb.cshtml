@@ -1,4 +1,5 @@
-﻿    <span id="totalEntity" class="badge">0</span>
+﻿@using RevenuePlanner.Helpers
+    <span id="totalEntity" class="badge">0</span>
     <!-- honeycomb svg -->
     <svg id="honeycomb" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
          viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve">
@@ -108,3 +109,18 @@
         </div>
 
     </div>
+<script>
+    var PackageAnchorId = 0;
+    var OnlyTacticsMessage = '@Common.objCached.OnlyTacticsToCreatePackage';
+    var OnlySinglePlanTacticMessage = '@Common.objCached.SinglePlanTacticForPackage';
+    var AtleastOneAssetMessage = '@Common.objCached.AtLeastOneAssetValidation';
+    var MorethanOneAssetMessage = '@Common.objCached.MoreThanOneAssetValidation';
+    var AssetType = '@Enums.AssetType.Asset.ToString()';
+    var PromotionType = '@Enums.AssetType.Promotion.ToString()';
+    var EntityTypeTactic = '@Enums.EntityType.Tactic.ToString()';
+    var ViewByROI = '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]';
+    var PackageUpdated = "@Common.objCached.PackageUpdated";
+    var PackageCreated = "@Common.objCached.PackageCreated"
+    var DeselectAssetFromPackage = "@Common.objCached.DeselectAssetFromPackage";
+    var PackageUnsuccessful = "@Common.objCached.UnpackageSuccessful";
+</script>

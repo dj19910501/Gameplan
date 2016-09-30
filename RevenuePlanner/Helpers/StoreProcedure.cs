@@ -205,8 +205,9 @@ namespace RevenuePlanner.Helpers
         /// <param name="OwnerIds">ownerids filter which will apply on budget hierarchy only for tactic</param>
         /// <param name="TacticTypeids">tactic type id filter which will apply on budget hierarchy only for tactic</param>
         /// <param name="StatusIds">Status Id filter which will apply on budget hierarchy only for tactic</param>
+        /// <param name="Year">selected year from timeframe to filter plan data</param>
         /// <returns></returns>
-        public DataTable GetBudget(string PlanIds, string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public DataTable GetBudget(string PlanIds, int UserId, string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string Year = "")
         {
             DataTable dtPlanBudgetHirarchy = new DataTable();
 
@@ -227,6 +228,8 @@ namespace RevenuePlanner.Helpers
                 command.Parameters.AddWithValue("@ownerIds", OwnerIds);
                 command.Parameters.AddWithValue("@tactictypeIds", TacticTypeids);
                 command.Parameters.AddWithValue("@statusIds", StatusIds);
+                command.Parameters.AddWithValue("@UserID", UserId);
+                command.Parameters.AddWithValue("@TimeFrame", Year);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
                 adp.Fill(dtPlanBudgetHirarchy);
@@ -465,10 +468,11 @@ namespace RevenuePlanner.Helpers
         /// <returns>Dataset with conflicted ActivityIds.</returns>
         public DataSet GetPlanBudgetList(DataTable dtNew, bool isMonthly, int userId)
         {
+            DataSet dataset = new DataSet();
             try
             {
-                DataTable datatable = new DataTable();
-                DataSet dataset = new DataSet();
+               // DataTable datatable = new DataTable();
+              
                 MRPEntities db = new MRPEntities();
                 ///If connection is closed then it will be open
                 var Connection = db.Database.Connection as SqlConnection;
@@ -488,7 +492,7 @@ namespace RevenuePlanner.Helpers
                 {
 
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
+                   // command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
                     command.Parameters.AddWithValue("@ImportData", dtNew);
                     command.Parameters.AddWithValue("@UserId", userId);
                     SqlDataAdapter adp = new SqlDataAdapter(command);
@@ -498,12 +502,64 @@ namespace RevenuePlanner.Helpers
                     adp.Fill(dataset);
                     if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
                 }
-                return dataset;
+               
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             }
+            return dataset;
+        }
+        /// <summary>
+        /// Following method is used to import actuals data 29/09/2016 #2637 Kausha.
+        /// </summary>
+        /// <param name="dtNew"></param>
+        /// <param name="isMonthly"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public DataSet ImportPlanActuals(DataTable dtNew, bool isMonthly, int userId)
+        {
+            DataSet dataset = new DataSet();
+            try
+            {
+                //DataTable datatable = new DataTable();
+                
+                MRPEntities db = new MRPEntities();
+                ///If connection is closed then it will be open
+                var Connection = db.Database.Connection as SqlConnection;
+                if (Connection.State == System.Data.ConnectionState.Closed)
+                    Connection.Open();
+                SqlCommand command = null;
+                if (!isMonthly)
+                {
+                    command = new SqlCommand("Sp_GetPlanActualDataQuarterly", Connection);
+                }
+                else
+                {
+                    command = new SqlCommand("Sp_GetPlanActualDataMonthly", Connection);
+                }
+
+                using (command)
+                {
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    //  command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
+                    command.Parameters.AddWithValue("@ImportData", dtNew);
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    SqlDataAdapter adp = new SqlDataAdapter(command);
+                    command.CommandTimeout = 0;
+
+              
+                    adp.Fill(dataset);
+                    if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return dataset;
         }
 
         public string GetColumnValue(string Query)

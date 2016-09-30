@@ -612,17 +612,17 @@ gantt._render_grid_item = function (item) {
         if (col.name == "add") {
             var _item = item.text.replace(/'/g, "&#39;");            
             if ("add" == col.name && i == columns.length - 1) {
-                if (item.type == "Plan" ) {
+                if (item.type == "Plan") {
                     // #1780
                     if (item.Permission == true)
                     {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                        value = "<div id='Plan' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanId + "','Plan')><i class='fa fa-search'></i></div><div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div> <div id='" + item.type + "' onclick='javascript:AddRemoveEntity(this)'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanId + "'  ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' taskname='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title='Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                        value = "<div id='Plan' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanId + "','Plan')><i class='fa fa-search'></i></div><div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' onclick='javascript:AddRemoveEntity(this)' title='Add to Honeycomb' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanId + "'  ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' taskname='" + _item + "' Permission='" + item.Permission + "'></div>"
                     }
-                  
+
                     // #1780
                 }
 
@@ -630,48 +630,41 @@ gantt._render_grid_item = function (item) {
                     // #1780
                     if (item.Permission == true)
                     {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                        value = "<div id='CP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanCampaignId + "','CP')><i class='fa fa-search'></i></div><div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div><div id='" + item.type + "' onclick='javascript:AddRemoveEntity(this)' class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Add to Honeycomb' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanCampaignId + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   taskname='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                        value = "<div id='CP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanCampaignId + "','CP')><i class='fa fa-search'></i></div><div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' onclick='javascript:AddRemoveEntity(this)'  title= 'Add to Honeycomb' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanId + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   taskname='" + _item + "' Permission='" + item.Permission + "'></div>"
                     }
-                  
+
                     // #1780
 
                 }
 
-                else if (item.type == "Program" ) {
+                else if (item.type == "Program") {
                     // #1780
                     if (item.Permission == true)
                     {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+                        value = "<div id='PP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanProgramId + "','PP')><i class='fa fa-search'></i></div><div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div><div id='" + item.type + "' onclick='javascript:AddRemoveEntity(this)'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanProgramId + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  taskname='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title='Add to Honeycomb' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'></div>"
+                        value = "<div id='PP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanProgramId + "','PP')><i class='fa fa-search'></i></div><div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' onclick='javascript:AddRemoveEntity(this)'  title='Add to Honeycomb' altId='" + item.id + "'  csvid='" + item.type + '_' + item.PlanId + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  taskname='" + _item + "' Permission='" + item.Permission + "'></div>"
                     }
-                
+
                     // #1780
                 }
 
-                else if (item.type == "Tactic" ) {
+                else if (item.type == "Tactic") {
                     // #1780
                     if (item.Permission == true) {
-                        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "' onclick='DisplayPopUpMenu(this,event)'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'>" + "</div>  ";
+                        value = "<div id='TP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanTacticId + "','TP')><i class='fa fa-search'></i></div> <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div>  <div id='" + item.type + "' onclick='javascript:AddRemoveEntity(this)'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanTacticId + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  taskname='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'>" + "</div>  ";
                     }
                     else
                     {
-                        value = "<div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb'  title='Add to Honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'></div>"
+                        value = "<div id='TP' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanTacticId + "','TP')><i class='fa fa-search'></i></div><div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' onclick='javascript:AddRemoveEntity(this)'  title='Add to Honeycomb' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanId + "'  ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  taskname='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'></div>"
                     }
-                        // #1780
-                }
-
-                else if (item.type == "Imp Tactic" && item.Permission == true) {
-                    value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + item.text + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'></div>  ";
-                }
-                else {
-                    value = "";
+                    // #1780
                 }
             }
             else {
@@ -3106,19 +3099,22 @@ gantt._render_data = function () {
     //Added By Komal Rawal for #2355 on 14-07-16 to maintain package icon without refreshing page   
     if (AnchorTaskIdsList.Id != undefined && AnchorTaskIdsList.Id != 'undefined' && AnchorTaskIdsList.Id != null && AnchorTaskIdsList.Id != [] && AnchorTaskIdsList.Id != "") {
         $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
-            var TaskHtml = $("div[task_id='" + AnchorID + "']")[0];
-            if (TaskHtml != undefined && TaskHtml != 'undefined' && TaskHtml != null) {
-                var LastChildNode = TaskHtml.firstChild.lastChild.outerHTML;
-                var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
-                var AllCHildNodes = TaskHtml.firstChild.innerHTML;
-                var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+            var TaskHtml = $("div[task_id='" + AnchorID + "']");
+            if (TaskHtml.length > 0) {
+                TaskHtml = $("div[task_id='" + AnchorID + "']")[0];
+                var length = TaskHtml.childNodes.length;
+            }
+            if (TaskHtml != undefined && TaskHtml != 'undefined' && TaskHtml != null && length > 1) {
+                var LastChildNode = TaskHtml.getElementsByClassName("gantt_tree_content").item(0).outerHTMLL;
+                var FileNode = TaskHtml.getElementsByClassName("gantt_file").item(0).outerHTML;
+                var AllCHildNodes = TaskHtml.childNodes[1].innerHTML;
+                var IsPAckageExists = TaskHtml.getElementsByClassName("ROIPackage").item(0);
                 var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
-                var IsLinkIcon = TaskHtml.firstChild.getElementsByClassName("unlink-icon");
+                var IsLinkIcon = TaskHtml.getElementsByClassName("unlink-icon");
                 if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
-                    var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
-                    AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                    var PackageNode = TaskHtml.getElementsByClassName("ROIPackage").item(0).outerHTML;
                     AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
-                    TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                    TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
                 }
                 if (AnchorTaskIdsList.Value[index] != undefined && AnchorTaskIdsList.Value[index] != 'undefined' && AnchorTaskIdsList.Value[index] != null && AnchorTaskIdsList.Value[index] != [] && AnchorTaskIdsList.Value[index] != "") {
                     if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
@@ -3131,14 +3127,14 @@ gantt._render_data = function () {
                         AllCHildNodes = AllCHildNodes.replace(FileNode, "");
                         AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
                     }
-                    TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                    TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
                 }
                 else if ((BlankDiv == null || BlankDiv == 'undefined' || BlankDiv == undefined) && (IsLinkIcon != null && IsLinkIcon != 'undefined' && IsLinkIcon != undefined && IsLinkIcon.length <= 1))
                 {
                     AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
                     AllCHildNodes = AllCHildNodes.replace(FileNode, "");
                     AllCHildNodes = AllCHildNodes.concat("<div class='gantt_tree_icon gantt_blank'></div>" + FileNode + LastChildNode);
-                    TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                    TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
                 }
 
 
@@ -3153,7 +3149,7 @@ gantt._render_data = function () {
     if (AddRemovePackageItems != null && AddRemovePackageItems != [] && AddRemovePackageItems != "") {
         if (AddRemovePackageItems.RemoveId.length > 0) {
             for (var i = 0; i < AddRemovePackageItems.RemoveId.length; i++) {
-                $('.honeycombbox-icon-gantt[name1 =' + AddRemovePackageItems.RemoveId[i] + ']').each(function () {
+                $('.honeycombbox-icon-gantt[altid =' + AddRemovePackageItems.RemoveId[i] + ']').each(function () {
                     if ($(this).attr('roitactictype') == "Asset") {
                         if ($(this).parents('.gantt_row').find('.gantt_blank').length > 0) {
                             $(this).parents('.gantt_row').find('.ROIPackage').remove();
@@ -3193,10 +3189,10 @@ gantt._render_data = function () {
     var DisplayedItems = $('.honeycombbox-icon-gantt.calender-view-honeycomb');
     if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "" && DisplayedItems != null && ExportSelectedIds.TaskID.length > 0) {
         $.each(DisplayedItems, function () {
-            var ExportIndex = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+            var ExportIndex = ExportSelectedIds.TaskID.indexOf($(this).attr('altid'));
             if (ExportIndex >= 0) {
                 if (ExportSelectedIds.PlanFlag[ExportIndex] == 'Calender') {
-                    $("div").find("[name1='" + ExportSelectedIds.TaskID[ExportIndex] + "']").addClass("honeycombbox-icon-gantt-Active");
+                    $("div").find("[altid='" + ExportSelectedIds.TaskID[ExportIndex] + "']").addClass("honeycombbox-icon-gantt-Active");
                 }
             }
         });
@@ -8656,17 +8652,20 @@ gantt.scrollTo = function (left, top) {
             //Added by komal Rawal for #2355 Assigning attributes on package unpackage on scroll after applying smart rendering
             if (AnchorTaskIdsList.Id != undefined && AnchorTaskIdsList.Id != 'undefined' && AnchorTaskIdsList.Id != null && AnchorTaskIdsList.Id != [] && AnchorTaskIdsList.Id != "") {
                 $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
-                    var TaskHtml = $("div[task_id='" + AnchorID + "']")[0];
-                    if (TaskHtml != undefined && TaskHtml != 'undefined' && TaskHtml != null) {
-                        var LastChildNode = TaskHtml.firstChild.lastChild.outerHTML;
-                        var FileNode = TaskHtml.firstChild.getElementsByClassName("gantt_file").item(0).outerHTML;
-                        var AllCHildNodes = TaskHtml.firstChild.innerHTML;
-                        var IsPAckageExists = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0);
+                    var TaskHtml = $("div[task_id='" + AnchorID + "']");
+                    if (TaskHtml.length > 0) {
+                        TaskHtml = $("div[task_id='" + AnchorID + "']")[0];
+                        var length = TaskHtml.childNodes.length;
+                    }
+                    if (TaskHtml != undefined && TaskHtml != 'undefined' && TaskHtml != null && length>1) {
+                        var LastChildNode = TaskHtml.getElementsByClassName("gantt_tree_content").item(0).outerHTML;
+                        var FileNode = TaskHtml.getElementsByClassName("gantt_file").item(0).outerHTML;
+                        var AllCHildNodes = TaskHtml.childNodes[1].innerHTML;
+                        var IsPAckageExists = TaskHtml.getElementsByClassName("ROIPackage").item(0);
                         var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
-                        var IsLinkIcon = TaskHtml.firstChild.getElementsByClassName("unlink-icon");
+                        var IsLinkIcon = TaskHtml.getElementsByClassName("unlink-icon");
                         if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
-                            var PackageNode = TaskHtml.firstChild.getElementsByClassName("ROIPackage").item(0).outerHTML;
-                            AllCHildNodes = TaskHtml.firstChild.innerHTML;
+                            var PackageNode = TaskHtml.getElementsByClassName("ROIPackage").item(0).outerHTML;
                             if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
                                 AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
                             }
@@ -8679,7 +8678,7 @@ gantt.scrollTo = function (left, top) {
                                 }
                             }
                            
-                            TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                            TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
                         }
                         if (AnchorTaskIdsList.Value[index] != undefined && AnchorTaskIdsList.Value[index] != 'undefined' && AnchorTaskIdsList.Value[index] != null && AnchorTaskIdsList.Value[index] != [] && AnchorTaskIdsList.Value[index] != "") {
                             if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
@@ -8691,7 +8690,7 @@ gantt.scrollTo = function (left, top) {
                                 AllCHildNodes = AllCHildNodes.replace(FileNode, "");
                                 AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
                             }
-                            TaskHtml.firstChild.innerHTML = AllCHildNodes;
+                            TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
                         }
                     }
                 });
@@ -8700,7 +8699,7 @@ gantt.scrollTo = function (left, top) {
             if (AddRemovePackageItems != null && AddRemovePackageItems != [] && AddRemovePackageItems != "") {
                 if (AddRemovePackageItems.RemoveId.length > 0) {
                     for (var i = 0; i < AddRemovePackageItems.RemoveId.length; i++) {
-                        $('.honeycombbox-icon-gantt[name1 =' + AddRemovePackageItems.RemoveId[i] + ']').each(function () {
+                        $('.honeycombbox-icon-gantt[altid =' + AddRemovePackageItems.RemoveId[i] + ']').each(function () {
                             if ($(this).attr('roitactictype') == "Asset") {
                                 if ($(this).parents('.gantt_row').find('.gantt_blank').length > 0)
                                 {
@@ -8738,13 +8737,14 @@ gantt.scrollTo = function (left, top) {
             //End
             // Modified By Nishant Sheth
             // For Performance issue regarding selected honey comb Date: 29-Jul-2016
+            
             var DisplayedItems = $('.honeycombbox-icon-gantt.calender-view-honeycomb');
             if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "" && DisplayedItems != null && ExportSelectedIds.TaskID.length > 0) {
                 $.each(DisplayedItems, function () {
-                    var ExportIndex = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                    var ExportIndex = ExportSelectedIds.TaskID.indexOf($(this).attr('altid'));
                     if (ExportIndex >= 0) {
                         if (ExportSelectedIds.PlanFlag[ExportIndex] == 'Calender') {
-                            $("div").find("[name1='" + ExportSelectedIds.TaskID[ExportIndex] + "']").addClass("honeycombbox-icon-gantt-Active");
+                            $("div").find("[altid='" + ExportSelectedIds.TaskID[ExportIndex] + "']").addClass("honeycombbox-icon-gantt-Active");
                         }
                     }
                 });
@@ -10150,7 +10150,7 @@ if (!gantt.templates) gantt.templates = {};
                      
                     }
                     else if (item.IsAnchorTacticId == item.PlanTacticId) {
-                        return "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + item.CalendarHoneycombpackageIDs + " ><i class='fa fa-object-group'></i></div>"
+                        return "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids='" + item.CalendarHoneycombpackageIDs + "' ><i class='fa fa-object-group'></i></div>"
 
                     }
                     else {

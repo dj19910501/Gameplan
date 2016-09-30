@@ -34,5 +34,13 @@ namespace RevenuePlanner.Models
         public string CutomfieldName { get; set; }
         public int ParentID { get; set; }
         public string EntityType { get; set; }
+        public string CustomfiledType { get; set; }
+    }
+    public class CustomfieldOption
+    {
+        public int CustomFieldId { get; set; }
+        public int CustomFieldOptionId { get; set; }
+        public string OptionValue { get; set; }
+
     }
 }

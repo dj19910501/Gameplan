@@ -3,16 +3,20 @@ var isEditTacticHomeGrid = 0;
 
 ///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
+    $('#exp-serach').css('display', 'none');
     if ($('#btnbudget').hasClass('P-icon-active')) {
+        isCalendarView = true;
         $('#IsGridView').val('false');
         BindPlanCalendar();
     }
     else {
         if ($('#IsGridView').val().toLowerCase() == "false") {
+            isCalendarView = false;
             LoadPlanGrid();
             $('#IsGridView').val('true');
 
         } else {
+            isCalendarView = true;
             $('#IsGridView').val('false');
             BindPlanCalendar();
         }
@@ -43,7 +47,6 @@ function ShowhideDataonGridCalendar() {
         $('#btngridcalendar').addClass('P-icon-active');
     }
     $('#divgridview').removeClass('budget-grid');
-    $('#exp-serach').css('display', 'none');
     $('#txtGlobalSearch').val('');
     IsBudgetGrid = false;
     $('#ImportBtn').parent().removeClass('round-corner');
@@ -52,15 +55,15 @@ function ShowhideDataonGridCalendar() {
 }
 
 $('#btnbudget').click(function () {
+    isCalendarView = false;
     $('#ChangeView').hide();
+    $('#exp-serach').css('display', 'none');
     LoadBudgetGrid();
-    $('#exp-serach').css('display', 'block');
     ShowHideDataonBudgetScreen();
 });
 
 function ShowHideDataonBudgetScreen() {
     $('#ImportBtn').parent().addClass('round-corner');
-    $('#exp-serach').css('display', 'none');
     $('#txtGlobalSearch').val('');
     IsBudgetGrid = true;
     $('#divupcomingact').show();
@@ -83,7 +86,8 @@ $('#ChangeView').click(function () {
 
 //Added by Rahul Shah to call budget data 
 function LoadBudgetGrid() {
-    filters = GetFilterIds();
+    filters = GetFilterIds(); 
+ var selectedTimeFrame = $('#ddlUpComingActivites').val();
     $.ajax({
         url: urlContent + 'Plan/GetBudgetData/',
         data: {
@@ -91,10 +95,12 @@ function LoadBudgetGrid() {
             ownerIds: filters.OwnerIds.toString(),
             TacticTypeid: filters.TacticTypeids.toString(),
             StatusIds: filters.StatusIds.toString(),
-            customFieldIds: filters.customFieldIds.toString()
+            customFieldIds: filters.customFieldIds.toString() ,
+            year:selectedTimeFrame.toString()
 
         },
         success: function (result) {
+            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
             var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
     '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
 '<br/></div>';
@@ -104,7 +110,6 @@ function LoadBudgetGrid() {
             $("div[id^='LinkIcon']").each(function () {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
-            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
             $('#ChangeView').show();
         }
     });
@@ -128,6 +133,7 @@ function LoadPlanGrid() {
 
         },
         success: function (result) {
+            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
             var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
     '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
 '<br/></div>';
@@ -137,7 +143,6 @@ function LoadPlanGrid() {
             $("div[id^='LinkIcon']").each(function () {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
-            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
         }
     });
 }
@@ -231,6 +236,7 @@ function ShowModels(mode, section, id, ParentId, RequestedModule) {
 };
 
 function loadInspectPopup(id, section, tabValue, mode, parentId) {
+       $('#modalMainContainer').show(); // Added to remove extra space Below Grid/Calendar Table
     logMixpanelTrack("Open " + section + " inspection window.");
     parentId = typeof parentId !== 'undefined' ? parentId : '0';
     var url = urlContent + 'Inspect/LoadInspectPopup/';
@@ -753,6 +759,7 @@ function isDataChanged() {
 //Start
 function CloseIconClick() {
     $('.close-x-big-icon').click(function () {
+        $('#modalMainContainer').hide();// Added to remove extra space Below Grid/Calendar Table
         logMixpanelTrack("Exit from inspection window.");
         RemoveAllMediaCodeData();
         $("#modal-container-186470").addClass("transition-close");
@@ -828,7 +835,6 @@ $("#honeycomb").popover({
     html: true,
     placement: 'top',
     content: function () {
-        var IsPackageView = false; //temp change
         CloseClick = true;
         $('#honeycomb_content').find(".hc-block").remove();
         var htmlstring = "";
@@ -844,13 +850,12 @@ $("#honeycomb").popover({
         $('#honeycomb_content').find("#UnpackageHoneyComb").removeAttr('style');
         $('#honeycomb_content').find("#PackageHoneyComb").removeAttr('style');
         var ViewBy = $('#ddlTabViewBy').val();
-        if ($('#IsGridView').val().toLowerCase() == "false" && ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]') {
+        if ( ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
             $('#honeycomb_content').find("#PackageHoneyComb").attr('style', 'color:gray; cursor: default !important');
         }
         else {
             $('#honeycomb_content').find("#PackageHoneyComb").attr('style', 'cursor: pointer !important');
         }
-
         if (!IsPackageView) {
             $('#honeycomb_content').find("#UnpackageHoneyComb").attr('style', 'color:gray; cursor: default !important');
         }
@@ -858,15 +863,11 @@ $("#honeycomb").popover({
             $('#honeycomb_content').find("#UnpackageHoneyComb").attr('style', 'cursor: pointer !important');
         }
         var hccontrolsdiv = $('#honeycomb_content').find("#hc-controlsdiv").parent().html();
-        var Removefromlist = [];
         if (ExportSelectedIds.TaskID.length > 0) {
             $('#honeycomb_content').html("");
             for (i = 0; i < (ExportSelectedIds.TaskID.length) ; i++) {
-                var HasActiveClass = false;
-                if ($('#IsGridView').val().toLowerCase() == "true") {
-                    HasActiveClass = $("div[altid='" + ExportSelectedIds.TaskID[i] + "']").hasClass("honeycombbox-icon-gantt-Active");
-                    if (HasActiveClass == true || IsPackageView == true) {
-                        if (ExportSelectedIds.ROITacticType[i] == '@Enums.AssetType.Asset.ToString()') {
+                if (isCalendarView == false) {
+                   if (ExportSelectedIds.ROITacticType[i] == AssetType) {
                             htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '" dhtmlxrowid="' + ExportSelectedIds.DhtmlxRowId[i] + '"  csvid="' + ExportSelectedIds.CsvId[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"> <div class="row-fluid"> ' +
                             ' <div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"> ' +
                             ' <h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5> ' +
@@ -890,35 +891,16 @@ $("#honeycomb").popover({
                         }
                     }
                     else {
-                        Removefromlist.push(ExportSelectedIds.TaskID[i]);
-                    }
+                    if (ExportSelectedIds.ROITacticType[i] == AssetType) {
+                        htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '" csvid="' + ExportSelectedIds.CsvId[i] + '"  roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                 }
                 else {
-                    if (ExportSelectedIds.ROITacticType[i] == '@Enums.AssetType.Asset.ToString()') {
-                        htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
-                    }
-                    else {
-                        htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  EntityType="' + ExportSelectedIds.CalendarEntityType[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                        htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '" csvid="' + ExportSelectedIds.CsvId[i] + '"  roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                     }
                 }
             }
         }
         $('#honeycomb_content').append(errMessageTopDisplay + htmlstringForAsset + htmlstring + hccontrolsdiv);
-        for (i = 0; i < Removefromlist.length; i++) {
-            var index = ExportSelectedIds.TaskID.indexOf(Removefromlist[i]);
-            if (index >= 0) {
-                ExportSelectedIds.TaskID.splice(index, 1);
-                ExportSelectedIds.Title.splice(index, 1);
-                ExportSelectedIds.OwnerName.splice(index, 1);
-                ExportSelectedIds.TacticType.splice(index, 1);
-                ExportSelectedIds.ColorCode.splice(index, 1);
-                ExportSelectedIds.ROITacticType.splice(index, 1);
-                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
-                ExportSelectedIds.AnchorTacticId.splice(index, 1);
-                ExportSelectedIds.CalendarEntityType.splice(index, 1);
-                ExportSelectedIds.AnchorTacticId.splice(index, 1);
-            }
-        }
         return $("#honeycomb_content").html();
     }
 });
@@ -940,199 +922,197 @@ function RemoveAllHoneyCombData() {
         AnchorTacticId: [],
         CalendarEntityType: [],
     };
-    if ($('#IsGridView').val().toLowerCase() == "true") {
-        $("div[class*='honeycombbox-icon-gantt-Active']").removeClass("honeycombbox-icon-gantt-Active")
-    }
-    else {
         $("div[class*='honeycombbox-icon-gantt-Active']").removeClass("honeycombbox-icon-gantt-Active");
-    }
     $("#totalEntity").text(0);
     $(".popover ").hide();
     $(".honeycombbox").hide();
 }
 
-function OpenHoneyComb(obj) {
-    RemoveAllHoneyCombData();
-    IsPackageView = true;
-
-    PreventUnPackageClick = false;
-    currentPkgIds = $(obj).attr('pkgtacids').split(',');
-    $('.popover-content > #UnpackageHoneyComb').removeAttr('style');
-    $('.popover-content > #UnpackageHoneyComb').attr('style', 'cursor: pointer !important');
-    var ViewBy = $('#ddlTabViewBy').val();
-    if ($('#IsGridView').val().toLowerCase() == "false" && ViewBy != null && ViewBy != undefined && ViewBy == '@Enums.DictPlanGanttTypes[Convert.ToString(PlanGanttTypes.ROIPackage)]') {
-        $('.popover-content > #PackageHoneyComb').removeAttr('style');
-        $('.popover-content > #PackageHoneyComb').attr('style', 'color:gray; cursor: default !important');
-    }
-    var IdsNotinList = [];
-    for (i = 0; i < currentPkgIds.length; i++) {
-        var rowObject = $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']');
-        var id = $(rowObject).attr('taskid');
-
-        if (rowObject.is(':visible') == true && id == $(rowObject).attr('anchortacticid')) {
-            PackageAnchorId = id;
-        }
-
-        if (IsUpdate == true || rowObject.is(':visible') == false || (id == undefined || id == 'undefined' || id == null || id == "")) {
-            IdsNotinList.push(currentPkgIds[i])
-        }
-
-        if (currentPkgIds.indexOf(id) >= 0) {
-            $(rowObject).trigger('click');
-        }
-    }
-    if (IdsNotinList.length != 0) {
-        $.ajax({
-            beforeSend: function (x) {
-                myApp.hidePleaseWait();
-            },
-            type: 'POST',
-            url: '@Url.Content("~/Home/GetPackageTacticDetails")',
-            data: {
-                viewBy: isRequest ? '@PlanGanttTypes.Request.ToString()' : type,
-                TacticIds: IdsNotinList.toString(),
-                TacticTaskColor: '@TacticTaskColor',
-                IsGridView: $('#IsGridView').val().toLowerCase()
-            },
-            success: function (data) {
-                var ListData = data.Listofdata;
-                if ($('#IsGridView').val().toLowerCase() == "true") {
-                    $.each(IdsNotinList, function (index, TacticId) {
-                        $.each(ListData, function (index, Data) {
-                            if (Data.TacticId.toString() == TacticId) {
-                                var index = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
-                                if (index < 0) {
-                                    ExportSelectedIds.TaskID.push(Data.TaskId);
-                                    ExportSelectedIds.Title.push(htmlDecode(Data.Title));
-                                    ExportSelectedIds.OwnerName.push(Data.OwnerName);
-                                    ExportSelectedIds.TacticType.push(Data.TacticTypeValue);
-                                    ExportSelectedIds.ColorCode.push(Data.ColorCode);
-                                    ExportSelectedIds.PlanFlag.push('Grid');
-                                    ExportSelectedIds.CsvId.push(Data.CsvId);
-                                    ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
-                                    ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
-                                    if (Data.PCPTId != undefined && Data.PCPTId != null && Data.PCPTId != "") {
-                                        ExpandTacticsForSelectedPackage(Data.PCPTId);
-                                    }
-                                    $("div[altid='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
-                                }
-                            }
-
-                        });
-                    });
-                }
-                else {
-                    $.each(IdsNotinList, function (index, TacticId) {
-                        $.each(ListData, function (index, Data) {
-                            if (Data.TacticId.toString() == TacticId) {
-                                var ValueAlreadyExists = false
-                                $("div[name1='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
-                                $.each(ExportSelectedIds.TaskID, function (index, TaskId) {
-                                    var Ids = TaskId.split('_');
-                                    var index = Ids.indexOf("T" + TacticId);
-                                    if (index >= 0) {
-                                        ValueAlreadyExists = true;
-                                    }
-
-                                });
-                                var Dataindex = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
-                                if (Dataindex < 0 && ValueAlreadyExists == false) {
-                                    ExportSelectedIds.TaskID.push(Data.TaskId);
-                                    ExportSelectedIds.Title.push(htmlDecode(Data.Title));
-                                    ExportSelectedIds.OwnerName.push(Data.OwnerName);
-                                    ExportSelectedIds.TacticType.push(Data.TacticTypeValue);
-                                    ExportSelectedIds.ColorCode.push(Data.ColorCode);
-                                    ExportSelectedIds.PlanFlag.push('Calender');
-                                    ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
-                                    ExportSelectedIds.CalendarEntityType.push(Data.CalendarEntityType);
-                                    ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
-                                }
-
-                            }
-
-                        });
-                    });
-                }
-                $("#totalEntity").text(ExportSelectedIds.TaskID.length);
-                $(".honeycombbox").show();
+//// Add RemoveEntity Function to add/remove data into Array on click of honeycomb icon for Plangrid/Budget Grid
+function AddRemoveEntity(item) {
+    $(".popover").removeClass('in').addClass('out');
+    if ($(item).attr('id') == 'Plan') {
+        if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
+            var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
+            if (index >= 0) {
+                ExportSelectedIds.TaskID.splice(index, 1);
+                ExportSelectedIds.Title.splice(index, 1);
+                ExportSelectedIds.OwnerName.splice(index, 1);
+                ExportSelectedIds.TacticType.splice(index, 1);
+                ExportSelectedIds.ColorCode.splice(index, 1);
+                ExportSelectedIds.PlanFlag.splice(index, 1);
+                ExportSelectedIds.CsvId.splice(index, 1);
+                ExportSelectedIds.ROITacticType.splice(index, 1);
+                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
+                ExportSelectedIds.AnchorTacticId.splice(index, 1);
+                ExportSelectedIds.CalendarEntityType.splice(index, 1);
             }
-        });
-    }
-}
-
-function CloseIcon(item) {
-    CloseClick = true;
-    var IsPackageView = false; //temp change
-    var taskId = item.attributes.taskid.value;
-    var Totallength = $("#totalEntity").text();
-    var Height = $(".popover").css('top').replace("px", "");
-    var Blockheight = $('.popover-content').find(".hc-block").css('height').replace("px", "");
-    var Margin = $('.popover-content').find(".hc-block").css('margin').split(" ")[0].replace("px", "");
-    var Sum = parseInt(Number(Blockheight) + Number(Margin));
-    var removeFromHoneyComb = true;
-    if ($('#IsGridView').val().toLowerCase() == "true") {
-        if (IsPackageView && currentPkgIds.indexOf($(item).parents('.hc-block').attr('anchortacticid')) > -1) {
-            var result = DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Height, Sum);
-            if (!result) {
-                return false;
-            }
+            $(item).removeClass("honeycombbox-icon-gantt-Active");
+            $(item).addClass("honeycombbox-icon-gantt");
         }
         else {
-            $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
-            Totallength = Totallength - 1;
-            Height = Number(Height) + (Sum);
-            $("#totalEntity").text(Totallength);
-            $(".popover").css('top', Height + "px");
+            $(item).addClass("honeycombbox-icon-gantt-Active");
+            ExportSelectedIds.TaskID.push($(item).attr('altId'));
+            ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp', '&'));
+            ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
+            ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+            ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
+            ExportSelectedIds.CsvId.push($(item).attr('csvid'));
+            ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
+            ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
+            if (isCalendarView == true) {
+                ExportSelectedIds.PlanFlag.push('Calender');
+                ExportSelectedIds.CalendarEntityType.push($(this).attr('id'));
+            }
+            else {
+                                    ExportSelectedIds.PlanFlag.push('Grid');
+                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
+
+            }
         }
-        var index = ExportSelectedIds.TaskID.indexOf(taskId);
+    }
+    if ($(item).attr('id') == 'Campaign') {
+
+        if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
+            var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
+                                    if (index >= 0) {
+                ExportSelectedIds.TaskID.splice(index, 1);
+                ExportSelectedIds.Title.splice(index, 1);
+                ExportSelectedIds.OwnerName.splice(index, 1);
+                ExportSelectedIds.TacticType.splice(index, 1);
+                ExportSelectedIds.ColorCode.splice(index, 1);
+                ExportSelectedIds.PlanFlag.splice(index, 1);
+                ExportSelectedIds.CsvId.splice(index, 1);
+                ExportSelectedIds.ROITacticType.splice(index, 1);
+                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
+                ExportSelectedIds.AnchorTacticId.splice(index, 1);
+                ExportSelectedIds.CalendarEntityType.splice(index, 1);
+            }
+            $(item).removeClass("honeycombbox-icon-gantt-Active");
+            $(item).addClass("honeycombbox-icon-gantt");
+        }
+        else {
+            $(item).addClass("honeycombbox-icon-gantt-Active");
+            ExportSelectedIds.TaskID.push($(item).attr('altId'));
+            ExportSelectedIds.Title.push(($(item).attr('taskname')).replace('&amp', '&'));
+            ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
+            ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+            ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
+            ExportSelectedIds.CsvId.push($(item).attr('csvid'));
+            ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
+            ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
+            if (isCalendarView == true) {
+                                    ExportSelectedIds.PlanFlag.push('Calender');
+                ExportSelectedIds.CalendarEntityType.push($(this).attr('id'));
+        }
+        else {
+                ExportSelectedIds.PlanFlag.push('Grid');
+                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
+            }
+        }
+    }
+    if ($(item).attr('id') == 'Program') {
+
+        if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
+            $(item).removeClass("honeycombbox-icon-gantt-Active");
+            var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
         if (index >= 0) {
             ExportSelectedIds.TaskID.splice(index, 1);
             ExportSelectedIds.Title.splice(index, 1);
             ExportSelectedIds.OwnerName.splice(index, 1);
             ExportSelectedIds.TacticType.splice(index, 1);
             ExportSelectedIds.ColorCode.splice(index, 1);
+                ExportSelectedIds.PlanFlag.splice(index, 1);
+                ExportSelectedIds.CsvId.splice(index, 1);
             ExportSelectedIds.ROITacticType.splice(index, 1);
-            ExportSelectedIds.CalendarEntityType.splice(index, 1);
             ExportSelectedIds.DhtmlxRowId.splice(index, 1);
             ExportSelectedIds.AnchorTacticId.splice(index, 1);
-        }
+                ExportSelectedIds.CalendarEntityType.splice(index, 1);
+            }
+            $(item).addClass("honeycombbox-icon-gantt");
+
     }
     else {
-        if (IsPackageView && currentPkgIds.indexOf($(item).parents('.hc-block').attr('anchortacticid')) > -1) {
-            var result = DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totallength, Height, Sum);
-            if (!result) {
-                return false;
-            }
+            $(item).addClass("honeycombbox-icon-gantt-Active");
+            ExportSelectedIds.TaskID.push($(item).attr('altId'));
+            ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp', '&'));
+            ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
+            ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+            ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
+            ExportSelectedIds.CsvId.push($(item).attr('csvid'));
+            ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
+            ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
+            if (isCalendarView == true) {
+                ExportSelectedIds.PlanFlag.push('Calender');
+                ExportSelectedIds.CalendarEntityType.push($(this).attr('id'));
         }
         else {
-            $("div[name1='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
-            Totallength = Totallength - 1;
-            Height = Number(Height) + (Sum);
-            $("#totalEntity").text(Totallength);
-            $(".popover").css('top', Height + "px");
+                ExportSelectedIds.PlanFlag.push('Grid');
+                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
+            }
         }
-        var index = ExportSelectedIds.TaskID.indexOf(taskId);
+    }
+
+    if ($(item).attr('id') == 'Tactic') {
+        if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
+            var IsAssetTactic = $(item).attr('roitactictype');
+            var AssetTacId = $(item).attr('anchortacticid');
+            var EntityId = $(item).attr('taskid');
+            if (IsPackageView && PackageAnchorId == EntityId && IsAssetTactic == AssetTypeAsset && AssetTacId == EntityId) {
+                ShowMessage(true, DeselectAssetFromPackage, 3000);
+                $('html,body').scrollTop(0);
+                return false;
+            }
+            $(item).removeClass("honeycombbox-icon-gantt-Active");
+            var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
         if (index >= 0) {
             ExportSelectedIds.TaskID.splice(index, 1);
             ExportSelectedIds.Title.splice(index, 1);
             ExportSelectedIds.OwnerName.splice(index, 1);
             ExportSelectedIds.TacticType.splice(index, 1);
             ExportSelectedIds.ColorCode.splice(index, 1);
+                ExportSelectedIds.PlanFlag.splice(index, 1);
+                ExportSelectedIds.CsvId.splice(index, 1);
             ExportSelectedIds.ROITacticType.splice(index, 1);
-            ExportSelectedIds.CalendarEntityType.splice(index, 1);
+                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
             ExportSelectedIds.AnchorTacticId.splice(index, 1);
+                ExportSelectedIds.CalendarEntityType.splice(index, 1);
+            }
+            $(item).addClass("honeycombbox-icon-gantt");
         }
-
+        else {
+            $(item).addClass("honeycombbox-icon-gantt-Active");
+            ExportSelectedIds.TaskID.push($(item).attr('altId'));
+            ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp', '&'));
+            ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
+            ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+            ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
+            ExportSelectedIds.CsvId.push($(item).attr('csvid'));
+            ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
+            ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
+            if (isCalendarView == true) {
+                ExportSelectedIds.PlanFlag.push('Calender');
+                ExportSelectedIds.CalendarEntityType.push($(this).attr('id'));
+            }
+            else {
+                ExportSelectedIds.PlanFlag.push('Grid');
+                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
+            }
+        }
     }
-    item.parentNode.parentNode.parentNode.remove();
-    var HoneyContent = $('.popover-content').find(".hc-block").length;
-    if (HoneyContent == 0) {
-        PreventUnPackageClick = true;
-        IsPackageView = false;
-        $(".popover ").hide();
+
+    if ($('.honeycombbox-icon-gantt-Active').length == 0) {
         $(".honeycombbox").hide();
     }
-};
+    else {
+                $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+                $(".honeycombbox").show();
+        $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
+        $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
+    }
+}
+//End
+
 //End
 
 
@@ -1261,8 +1241,9 @@ function RemoveAllMediaCodeData() {
 //Common Functions
 //Start
 function RefershPlanHeaderCalc() {
-    //if ($('#IsGridView').val().toLowerCase() == "true") {
-    GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, SelectedTimeFrameOption);
+    //if ($('#IsGridView').val().toLowerCase() == "true") {	
+ var TimeFrame=$('#ddlUpComingActivites').val();
+    GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, TimeFrame);
     //}
 
 }
@@ -1323,22 +1304,29 @@ function ConfirmLinkTactic() {
 ////End
 
 //set value of dropdown in search criteria
-$(".dropdown-menu searchDropdown li a").click(function () {
+$(".searchDropdown li a").click(function () {
     $("#txtGlobalSearch").val("");
     $("#searchCriteria").text($(this).text()[0]);
     $("#searchCriteria").val($(this).text());
     $("#txtGlobalSearch").attr('Placeholder', $(this).text())
 });
 
-//On search button click
+//Search button click
 $('#ExpSearch').click(function () {
-    if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "" && $('#txtGlobalSearch').val().trim() != null) {
+    if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != null) {
         GlobalSearch();
-        $('#ExpSearch').css('display', 'none');
-        $('#ExpClose').css('display', 'block');
+        if ($('#txtGlobalSearch').val().trim() != "") {
+            $('#ExpSearch').css('display', 'none');
+            $('#ExpClose').css('display', 'block');
+        }
+        else {
+            $('#ExpSearch').css('display', 'block');
+            $('#ExpClose').css('display', 'none');
+        }
     }
 });
 
+//Close button click 
 $('#ExpClose').click(function () {
     $('#txtGlobalSearch').val("");
     $('#ExpClose').css('display', 'none');
@@ -1347,12 +1335,16 @@ $('#ExpClose').click(function () {
 
 });
 
-//Handle enter key in search textbox
-$('#txtGlobalSearch').on('keypress', function (event) {
-    if (event.which === 13) {
+////Handle enter key in search textbox 
+$('#txtGlobalSearch').on('keyup', function (event) {
+    if (event.which == 13 || $('#txtGlobalSearch').val().trim() == "") {
         $('#ExpSearch').click();
     }
 });
+//Added by Dhvani to maintain dop-down for Global search
+function OpenDropdown() {
+    IsManageDropdown = true; // Handle sorting on dropdown click 
+}
 var SearchTextforcal = ""
 function GlobalSearch() {
     if ($('#IsGridView').val() == 'True' || IsBudgetGrid) {
@@ -1559,3 +1551,851 @@ $("#ddlTabViewBy").change(function () {
         $('.export-dd').find('#ExportPDf').hide();
     }
 });
+
+//For Task Name Edit
+function SetFilterData(EntityId, nValue) {
+    $('#ulSelectedPlans li[id=liPlan' + EntityId + ']').find('span').text(nValue);
+    $('#ulSelectedPlans li[id=liPlan' + EntityId + ']').attr('title', nValue);
+    $('#ulSelectedPlans li[id=liPlan' + EntityId + ']').find('input[type=checkbox]').attr('plantitle', nValue);
+    selectedFilters.planName = [];
+    $("#ulSelectedPlans li input[type=checkbox]:checked").each(function () {
+        selectedFilters.planName.push($(this).parent().attr("title"));
+    });
+    if (selectedFilters.planName.length == 0) {
+        $('#lstPlanActive').text(FiltersNone);
+    }
+    else if ($("#ulSelectedPlans li").length == selectedFilters.planName.length) {
+        $('#lstPlanActive').text(FiltersAll);
+    }
+    else {
+        $('#lstPlanActive').text(selectedFilters.planName.join(", "));
+    }
+    GetMultiplePlanNames();
+} 
+
+
+
+//To Handle roi package/unpackage
+var AnchorTaskIdsList = {
+    Id: [],
+    Value: []
+};
+function CallPackageHoneyComb() {
+    var ViewBy = $('#ddlTabViewBy').val();
+    if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+        return false;
+    }
+    var countElements = $('.popover-content').find(".hc-block").length;
+    var hasAnchorTactic = 0;
+    var isOnlyTactics = true;
+    var anchorTacticId = "";
+    var promotionTacticIds = [];
+    var AnchorTaskId = 0;
+    var dhtmlxrowid = "";
+    var IsAlreadyPackaged = [];
+    var PlanIds = [];
+
+    if (countElements > 0) {
+     //   if (isCalendarView == false) {
+        $('.popover-content').find(".hc-block").each(function () {
+                var ROITacticType = $(this).attr('roitactictype');
+                var ExistingAnchorTacticId = $(this).attr('anchortacticid');
+                var Csvid = $(this).attr('csvid').split('_');
+                var EntityType = Csvid[0];
+
+                if (ROITacticType.toLowerCase() == AssetType.toLowerCase()) {
+                    anchorTacticId = Csvid[1];
+                    if (isCalendarView == false)
+                    {
+                        dhtmlxrowid = $(this).attr('dhtmlxrowid');
+                    }
+                    else
+                    {
+                        AnchorTaskId = $(this).attr('EntityTaskId');
+                        var index = AnchorTaskIdsList.Id.indexOf(AnchorTaskId);
+                        if (index >= 0) {
+                            AnchorTaskIdsList.Id.splice(index, 1);
+                            AnchorTaskIdsList.Value.splice(index, 1);
+                        }
+                        AnchorTaskIdsList.Id.push(AnchorTaskId);
+                    }
+                    
+                    hasAnchorTactic++;
+                }
+                if (EntityType.toLowerCase() != EntityTypeTactic.toLowerCase()) {
+                    isOnlyTactics = false;
+                }
+                else {
+                    promotionTacticIds.push(Csvid[1]);
+                }
+
+                if ((!IsPackageView && ExistingAnchorTacticId != "0" && ExistingAnchorTacticId != "null") || (IsPackageView && ExistingAnchorTacticId != "0" && ExistingAnchorTacticId != anchorTacticId && ExistingAnchorTacticId != "null")) {
+                    IsAlreadyPackaged.push($(this).find('h5').text());
+                }
+            });
+
+            AnchorTaskIdsList.Value.push(promotionTacticIds.toString());
+
+       // }   // To Do so commented for now
+        //else {
+        //    $('.popover-content').find(".hc-block").each(function () {
+        //        debugger;
+        //        var ROITacticType = $(this).attr('roitactictype');
+        //        var EntityType = $(this).attr('EntityType');
+        //        var ExistingAnchorTacticId = $(this).attr('anchortacticid');
+        //        var TacticId = 0;
+        //        if (EntityType.toLowerCase() == 'tactic') {
+        //            var TaskId = $(this).attr('EntityTaskId');
+        //            var ListIds = TaskId.split('_');
+        //            $.each(ListIds, function (index, Id) {
+        //                if (Id.indexOf('T') >= 0) {
+        //                    TacticId = Id.replace("T", "");
+        //                }
+        //                else if (Id.indexOf('L') >= 0) {
+        //                    var TacticPlanId = Id.replace("L", "");
+        //                    var PlanIndex = PlanIds.indexOf(TacticPlanId);
+        //                    if (PlanIndex < 0) {
+        //                        PlanIds.push(TacticPlanId);
+        //                    }
+
+        //                }
+
+        //            });
+        //        }
+        //        if (ROITacticType.toLowerCase() == AssetType.toLowerCase()) {
+        //            anchorTacticId = TacticId;
+        //            hasAnchorTactic++;
+        //            AnchorTaskId = $(this).attr('EntityTaskId');
+        //            var index = AnchorTaskIdsList.Id.indexOf(AnchorTaskId);
+        //            if (index >= 0) {
+        //                AnchorTaskIdsList.Id.splice(index, 1);
+        //                AnchorTaskIdsList.Value.splice(index, 1);
+        //            }
+        //            AnchorTaskIdsList.Id.push(AnchorTaskId);
+        //        }
+
+        //        if (EntityType.toLowerCase() != EntityTypeTactic.toLowerCase()) {
+        //            isOnlyTactics = false;
+        //        }
+        //        else {
+        //            promotionTacticIds.push(TacticId);
+        //        }
+
+        //        if ((!IsPackageView && ExistingAnchorTacticId != "0") || (IsPackageView && ExistingAnchorTacticId != "0" && ExistingAnchorTacticId != anchorTacticId)) {
+        //            IsAlreadyPackaged.push($(this).find('h5').text());
+        //        }
+
+        //    });
+        //    //End
+
+        //    AnchorTaskIdsList.Value.push(promotionTacticIds.toString());
+
+
+        //}
+    }
+    if (hasAnchorTactic != 1 || !isOnlyTactics || IsAlreadyPackaged.length > 0 || PlanIds.length > 1) {
+        // All errors as per validation
+        isError = true;
+        AnchorTaskIdsList = {
+            Id: [],
+            Value: []
+        };
+        if (!isOnlyTactics) {
+            ShowMessageHoneyComb(isError, OnlyTacticsMessage, 400);
+        }
+        else if (PlanIds.length > 1) {
+            ShowMessageHoneyComb(isError, OnlySinglePlanTacticMessage, 400);
+        }
+        else if (hasAnchorTactic == 0) {
+            ShowMessageHoneyComb(isError, AtleastOneAssetMessage, 400);
+        }
+        else if (hasAnchorTactic > 1) {
+            ShowMessageHoneyComb(isError, MorethanOneAssetMessage, 400);
+        }
+        else if (IsAlreadyPackaged.length > 0) {
+            ShowMessageHoneyComb(isError, "Tactics(" + IsAlreadyPackaged.join(',') + ") can belong to only one package. Please remove above tactic(s).", 400);
+        }
+
+    }
+    else {
+        // Create new package
+        $.ajax({
+            type: 'POST',
+            url:   urlContent + 'Home/AddROIPackageDetails/',
+            data: { AnchorTacticId: anchorTacticId, PromotionTacticIds: promotionTacticIds.toString() },
+            success: function (data) {
+                if (isCalendarView == true) {
+                    var TaskHtml = $("div[task_id='" + AnchorTaskId + "']");
+                    if (TaskHtml.length > 0)
+                    {
+                        TaskHtml = $("div[task_id='" + AnchorTaskId + "']")[0];
+                        var length = TaskHtml.childNodes.length;
+                    }
+                    if (TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null && length > 1) {
+                        var LastChildNode = TaskHtml.getElementsByClassName("gantt_tree_content").item(0).outerHTML;
+                        var FileNode = TaskHtml.getElementsByClassName("gantt_file").item(0);
+                        var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
+                        if (FileNode != null && FileNode != 'undefined' && FileNode != undefined) {
+                            FileNode = TaskHtml.getElementsByClassName("gantt_file").item(0).outerHTML;
+                        }
+                        var AllCHildNodes = TaskHtml.childNodes[1].innerHTML;
+                        var IsPAckageExists = TaskHtml.getElementsByClassName("ROIPackage").item(0);
+                        if (IsPAckageExists != null && IsPAckageExists != undefined && IsPAckageExists != 'undefined') {
+                            var PackageNode = TaskHtml.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                            AllCHildNodes = AllCHildNodes.replace(PackageNode, "");
+                        }
+                        if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
+
+                            AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + promotionTacticIds + " ><i class='fa fa-object-group'></i></div>");
+                        }
+                        else {
+                            AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
+                            AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                            AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + promotionTacticIds + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                        }
+                        TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
+                    }
+
+
+                    // Bind anchortacticid of the new package to honeycomb icons in the grid
+                    $.each(promotionTacticIds, function (i) {
+                        var ItemID = anchorTacticId + "_" + promotionTacticIds[i];
+                        AddRemovePackageItems.AddItemId.push(ItemID);
+                        $('.honeycombbox-icon-gantt[taskid=' + promotionTacticIds[i] + ']').attr('anchortacticid', anchorTacticId);
+                    });
+                }
+                else {
+                    var rowId = dhtmlxrowid;
+                    var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
+                    var Index = getvalue.indexOf("pkgIcon");
+                    if (Index <= -1) {
+                        // Add package icon on the grid when new package is created
+                        var PkgIconDiv = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer' onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
+                        HomeGrid.cells(rowId, TaskNameColIndex).setValue(PkgIconDiv + getvalue);
+                    }
+                    else if (Index > -1) {
+                        // Bind updated items to package icon into grid
+                        var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
+                        var oldValue = $(getvalue).get(0).outerHTML;
+                        getvalue = getvalue.replace(oldValue, newValue);
+                        HomeGrid.cells(rowId, TaskNameColIndex).setValue(getvalue);
+                    }
+                    // Bind anchortacticid of the new package to honeycomb icons in the grid
+                    $.each(promotionTacticIds, function (i) {
+                        $('.honeycombbox-icon-gantt[csvid=Tactic_' + promotionTacticIds[i] + ']').attr('anchortacticid', anchorTacticId);
+                    });
+
+                }
+                // Unselect all items
+                RemoveAllHoneyCombData();
+                if (data.IsUpdatePackage != undefined && data.IsUpdatePackage == true) {
+                    ShowMessage(false, PackageUpdated, 3000);
+                }
+                else {
+                    ShowMessage(false, PackageCreated, 3000);
+                }
+            }
+
+        });
+    }
+
+}
+
+function CallUnPackageHoneyComb() {
+    if (PreventUnPackageClick == false) {
+        var anchorTacticId = 0;
+         
+            var objAssetElement = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]");
+            if (objAssetElement != undefined && objAssetElement != null && objAssetElement.length > 0) {
+                anchorTacticId = $(objAssetElement).attr('csvid').split('_')[1];
+                if (isCalendarView == true) {
+                    var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]").attr('entitytaskid');
+                    $('.popover-content').find(".hc-block[anchortacticid= " + anchorTacticId + " ]").each(function () {
+                        var TaskID = $(this).attr('entitytaskid');
+                        AddRemovePackageItems.RemoveId.push(TaskID);
+                    });
+                }
+            }
+            else {
+                ShowMessageHoneyComb(true, DeselectAssetFromPackage, 400);
+                return false;
+            }
+           
+
+        $.ajax({
+            url: urlContent + 'Home/UnpackageTactics/',
+            data: {
+                AnchorTacticId: anchorTacticId
+            },
+            success: function (data) {
+                if (isCalendarView == false) {
+                    // Remove package icon from the grid
+                    var rowObject = $('.honeycombbox-icon-gantt[taskid=' + anchorTacticId + ']');
+                    var rowId = $(rowObject).attr('dhtmlxrowid');
+                    var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
+
+                    var Index = getvalue.indexOf("pkgIcon");
+                    if (Index > -1) {
+                        var newValue = $(getvalue).get(0).outerHTML;
+                        getvalue = getvalue.replace(newValue, '');
+                        HomeGrid.cells(rowId, TaskNameColIndex).setValue(getvalue);
+                    }
+                }
+                else {
+                    var TaskHtml = $("div[task_id='" + CalendarTaskID + "']");
+                    if (TaskHtml.length > 0) {
+                        TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
+                        var length = TaskHtml.childNodes.length;
+                    }
+                    if (TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null && length > 1) {
+                        var FileNode = TaskHtml.getElementsByClassName("ROIPackage").item(0);
+                        var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
+                        var IsLinkIcon = TaskHtml.getElementsByClassName("unlink-icon");
+                        if (FileNode != null && FileNode != 'undefined' && FileNode != undefined) {
+                            FileNode = TaskHtml.getElementsByClassName("ROIPackage").item(0).outerHTML
+                        }
+                        var AllCHildNodes = TaskHtml.childNodes[1].innerHTML;
+                        if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
+                            AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+
+                        }
+                        else {
+                            if (IsLinkIcon != null && IsLinkIcon != 'undefined' && IsLinkIcon != undefined && IsLinkIcon.length <= 1) {
+                                AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                            }
+                            else {
+                                AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                            }
+
+                        }
+                        TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
+                    }
+                    if (AnchorTaskIdsList.Id.length != 0) {
+                        $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
+                            if (AnchorID == CalendarTaskID) {
+                                var index = AnchorTaskIdsList.Id.indexOf(AnchorID);
+                                if (index >= 0) {
+                                    AnchorTaskIdsList.Id.splice(index, 1);
+                                    AnchorTaskIdsList.Value.splice(index, 1);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        AnchorTaskIdsList.Id.push(CalendarTaskID);
+                    }
+                    // Added by Arpita Soni for Ticket #2357 on 07/15/2016
+                    var ViewBy = $('#ddlTabViewBy').val();
+                    if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+                        var removeEntirePkg = CalendarTaskID.split('_')[0];
+                        gantt.deleteTask(removeEntirePkg);
+                        gantt.refreshData();
+                        // If there is no data then hide grid and display message
+                        if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
+                            $("#gantt_here").hide();
+                            $(".pull-right.toggle-status.source-sans-proregular").hide();
+                            $("#improvements").hide();
+                            $('#lblMarkringActivitiestitle').hide();
+                            $('#divCollaborator').hide();
+                            $('#divCollaboratorCount').hide(); // Added for #2112
+                            $("#NodatawithfilterCalendar").show();
+                        }
+
+                        RefershPlanHeaderCalc();
+                    }
+                }
+
+                // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
+
+                $('.honeycombbox-icon-gantt[anchortacticid=' + anchorTacticId + ']').each(function () {
+                    $(this).attr('anchortacticid', '0');
+                });
+                // Unselect all items from the grid
+                RemoveAllHoneyCombData();
+
+                ShowMessage(false, PackageUnsuccessful, 3000);
+            }
+        });
+    }
+    else {
+        return false;
+    }
+}
+
+function ShowMessageHoneyComb(IsError, Message, time) {
+    $(".popover-content > #errorMsgHoneyComb").css("display", "block");
+    $(".popover-content > #errorMsgHoneyComb > #spanMsgErrorHoneyComb").empty();
+    $(".popover-content > #errorMsgHoneyComb > #spanMsgErrorHoneyComb").text(Message);
+    if (time != 'undefined') {
+        $(".popover-content > #errorMsgHoneyComb").slideDown(time);
+    }
+    $("#errorMsgHoneyComb").find(".close").click(function (e) {
+        $(this).closest(".alert").slideUp(400);
+    });
+}
+
+function CloseIcon(item) {
+    CloseClick = true;
+    var taskId = item.attributes.taskid.value;
+    var Totallength = $("#totalEntity").text();
+    var Height = $(".popover").css('top').replace("px", "");
+    var Blockheight = $('.popover-content').find(".hc-block").css('height').replace("px", "");
+    var Margin = $('.popover-content').find(".hc-block").css('margin').split(" ")[0].replace("px", "");
+    var Sum = parseInt(Number(Blockheight) + Number(Margin));
+    var removeFromHoneyComb = true;
+    if (isCalendarView == false) {
+        if (IsPackageView && currentPkgIds.indexOf($(item).parents('.hc-block').attr('anchortacticid')) > -1) {
+            var result = DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Height, Sum);
+            if (!result) {
+                return false;
+            }
+        }
+        else {
+            $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
+            Totallength = Totallength - 1;
+            Height = Number(Height) + (Sum);
+            $("#totalEntity").text(Totallength);
+            $(".popover").css('top', Height + "px");
+        }
+        var index = ExportSelectedIds.TaskID.indexOf(taskId);
+        if (index >= 0) {
+            ExportSelectedIds.TaskID.splice(index, 1);
+            ExportSelectedIds.Title.splice(index, 1);
+            ExportSelectedIds.OwnerName.splice(index, 1);
+            ExportSelectedIds.TacticType.splice(index, 1);
+            ExportSelectedIds.ColorCode.splice(index, 1);
+            ExportSelectedIds.PlanFlag.splice(index, 1);
+            ExportSelectedIds.CsvId.splice(index, 1);
+            ExportSelectedIds.ROITacticType.splice(index, 1);
+            ExportSelectedIds.DhtmlxRowId.splice(index, 1);
+            ExportSelectedIds.AnchorTacticId.splice(index, 1);
+            ExportSelectedIds.CalendarEntityType.splice(index, 1);
+        }
+    }
+    else {
+        if (IsPackageView && currentPkgIds.indexOf($(item).parents('.hc-block').attr('anchortacticid')) > -1) {
+            var result = DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totallength, Height, Sum);
+            if (!result) {
+                return false;
+            }
+        }
+        else {
+            $("div[altId='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
+            Totallength = Totallength - 1;
+            Height = Number(Height) + (Sum);
+            $("#totalEntity").text(Totallength);
+            $(".popover").css('top', Height + "px");
+        }
+        var index = ExportSelectedIds.TaskID.indexOf(taskId);
+        if (index >= 0) {
+            ExportSelectedIds.TaskID.splice(index, 1);
+            ExportSelectedIds.Title.splice(index, 1);
+            ExportSelectedIds.OwnerName.splice(index, 1);
+            ExportSelectedIds.TacticType.splice(index, 1);
+            ExportSelectedIds.ColorCode.splice(index, 1);
+            ExportSelectedIds.PlanFlag.splice(index, 1);
+            ExportSelectedIds.CsvId.splice(index, 1);
+            ExportSelectedIds.ROITacticType.splice(index, 1);
+            ExportSelectedIds.DhtmlxRowId.splice(index, 1);
+            ExportSelectedIds.AnchorTacticId.splice(index, 1);
+            ExportSelectedIds.CalendarEntityType.splice(index, 1);
+        }
+
+    }
+    item.parentNode.parentNode.parentNode.remove();
+    var HoneyContent = $('.popover-content').find(".hc-block").length;
+    if (HoneyContent == 0) {
+        PreventUnPackageClick = true;
+        IsPackageView = false;
+        $(".popover ").hide();
+        $(".honeycombbox").hide();
+    }
+};
+
+function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Height, Sum) {
+    // If package is selected then apply validation as per selected asset or promotion
+    var ROITacticType = $(item).parents('.hc-block').attr('roitactictype');
+    var planTacticId = $(item).parents('.hc-block').attr('csvid').split('_')[1];
+    var dhtmlxrowid = $(item).parents('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]").attr('dhtmlxrowid');
+    var IsPromotion = true;
+
+    // If Asset tactic then provide confirmation to delete entire package
+    if (ROITacticType.toLowerCase() == AssetType.toLowerCase()) {
+        var deleteAsset = confirm('Deleting this Tactic will delete the entire package.\n Do you wish to continue?');
+        IsPromotion = false;
+        if (!deleteAsset) {
+            removeFromHoneyComb = false;
+            return false;
+        }
+    }
+
+    // Delete tactics from database
+    $.ajax({
+        type: 'POST',
+        beforeSend: function (x) {
+            if (ROITacticType.toLowerCase() != AssetType.toLowerCase()) {
+                myApp.hidePleaseWait();
+            }
+        },
+        url:urlContent + 'Home/UnpackageTactics/',
+        data: { AnchorTacticId: planTacticId, IsPromotion: IsPromotion },
+        success: function (data) {
+            var getvalue = HomeGrid.cells(dhtmlxrowid, TaskNameColIndex).getValue();
+            var Index = getvalue.indexOf("pkgIcon");
+
+            if (IsPromotion) {
+                if (Index > -1) {
+                    // Bind updated items to package icon into grid
+                    var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids=" + data.remainItems.toString() + "><i class='fa fa-object-group'></i></div>";
+                    var oldValue = $(getvalue).get(0).outerHTML;
+                    getvalue = getvalue.replace(oldValue, newValue);
+                    HomeGrid.cells(dhtmlxrowid, TaskNameColIndex).setValue(getvalue);
+                }
+                // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
+                $('.honeycombbox-icon-gantt[csvid=Tactic_' + planTacticId + ']').each(function () {
+                    $(this).attr('anchortacticid', '0');
+                });
+                // Update count on Honeycomb icon
+                $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
+                Totallength = Totallength - 1;
+                Height = Number(Height) + (Sum);
+            }
+            else {
+                // As package is deleted, remove package icon from the grid
+                if (Index > -1) {
+                    var newValue = $(getvalue).get(0).outerHTML;
+                    getvalue = getvalue.replace(newValue, '');
+                    HomeGrid.cells(dhtmlxrowid, TaskNameColIndex).setValue(getvalue);
+                }
+                // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
+                $('.honeycombbox-icon-gantt[anchortacticid=' + planTacticId + ']').each(function () {
+                    $(this).attr('anchortacticid', '0');
+                });
+
+                // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
+                RemoveAllHoneyCombData();
+                ShowMessage(false, PackageUnsuccessful, 3000);
+            }
+
+            $("#totalEntity").text(Totallength);
+            $(".popover").css('top', Height + "px");
+        }
+    });
+    return true;
+}
+
+
+function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totallength, Height, Sum) {
+    // If package is selected then apply validation as per selected asset or promotion
+    var ROITacticType = $(item).parents('.hc-block').attr('roitactictype');
+    var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]").attr('entitytaskid');
+    var planTacticId = $(item).parents('.hc-block').attr('csvid').split('_')[1];
+    var IsPromotion = true;
+    var PromoID = 0;
+
+    // If Asset tactic then provide confirmation to delete entire package
+    if (ROITacticType.toLowerCase() == AssetType.toLowerCase() ) {
+        var deleteAsset = confirm('Deleting this Tactic will delete the entire package.\n Do you wish to continue?');
+        IsPromotion = false;
+        if (!deleteAsset) {
+            removeFromHoneyComb = false;
+            return false;
+        }
+        else {
+            $('.popover-content').find(".hc-block[anchortacticid= " + planTacticId + " ]").each(function () {
+                var TaskID = $(this).attr('entitytaskid');
+                AddRemovePackageItems.RemoveId.push(TaskID);
+            });
+        }
+    }
+
+    // Delete tactics from database
+    $.ajax({
+        beforeSend: function (x) {
+            if (ROITacticType.toLowerCase() != AssetType.toLowerCase()) {
+                myApp.hidePleaseWait();
+            }
+        },
+        type: 'POST',
+        url:urlContent + 'Home/UnpackageTactics/',
+        data: { AnchorTacticId: planTacticId, IsPromotion: IsPromotion },
+        success: function (data) {
+            var TaskHtml = $("div[task_id='" + CalendarTaskID + "']");
+            if (TaskHtml.length > 0) {
+                TaskHtml = $("div[task_id='" + CalendarTaskID + "']")[0];
+                var length = TaskHtml.childNodes.length;
+            }
+            if (TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null && TaskHtml.length != 0) {
+                var FileNode = TaskHtml.getElementsByClassName("ROIPackage").item(0);
+                if (FileNode != null && FileNode != 'undefined' && FileNode != undefined) {
+                    FileNode = TaskHtml.getElementsByClassName("ROIPackage").item(0).outerHTML;
+                }
+            }
+            var ViewBy = $('#ddlTabViewBy').val();
+
+            if (IsPromotion) {
+                AddRemovePackageItems.RemoveId.push(taskId);
+                if (TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null && TaskHtml.length != 0) {
+                    TaskHtml.getElementsByClassName("ROIPackage").item(0).setAttribute("pkgtacids", data.remainItems.toString());
+                }
+
+                if (AnchorTaskIdsList.Id.length != 0) {
+                    $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
+                        if (AnchorID == CalendarTaskID) {
+                            AnchorTaskIdsList.Value[index] = data.remainItems.toString()
+                        }
+                    });
+                }
+                else {
+
+                    AnchorTaskIdsList.Id.push(CalendarTaskID);
+                    AnchorTaskIdsList.Value.push(data.remainItems.toString());
+                }
+
+                if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+                    var taskToDelete = $("div[altid='" + taskId + "']");
+                    if (taskToDelete != undefined && taskToDelete.length > 0) {
+                        gantt.deleteTask(taskId);
+                    }
+                }
+                // Update count on Honeycomb icon
+                // Conditions for Calender
+                $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
+                Totallength = Totallength - 1;
+                Height = Number(Height) + (Sum);
+
+                // Unbind anchortacticid of the deleted package to honeycomb icons in the grid
+                $('.honeycombbox-icon-gantt[altid =' + taskId + ']').each(function () {
+                    $(this).attr('anchortacticid', '0');
+                });
+            }
+            else {
+
+                // As package is deleted, remove package icon from the grid
+                if (TaskHtml != 'undefined' && TaskHtml != undefined && TaskHtml != null && length > 1) {
+                    var BlankDiv = TaskHtml.getElementsByClassName("gantt_blank").item(0);
+                    var IsLinkIcon = TaskHtml.getElementsByClassName("unlink-icon");
+                    var AllCHildNodes = TaskHtml.childNodes[1].innerHTML;
+                    if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
+                        AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+
+                    }
+                    else {
+                        if (IsLinkIcon != null && IsLinkIcon != 'undefined' && IsLinkIcon != undefined && IsLinkIcon.length <= 1) {
+                            AllCHildNodes = AllCHildNodes.replace(FileNode, "<div class='gantt_tree_icon gantt_blank'></div>");
+                        }
+                        else {
+                            AllCHildNodes = AllCHildNodes.replace(FileNode, "");
+                        }
+                    }
+
+                    TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
+                }
+
+                $.each(AnchorTaskIdsList.Id, function (index, AnchorID) {
+                    if (AnchorID == CalendarTaskID) {
+                        var index = AnchorTaskIdsList.Id.indexOf(AnchorID);
+                        if (index >= 0) {
+                            AnchorTaskIdsList.Id.splice(index, 1);
+                            AnchorTaskIdsList.Value.splice(index, 1);
+                        }
+
+                    }
+
+                });
+                AnchorTaskIdsList.Id.push(CalendarTaskID);
+                if ( ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+                    var removeEntirePkg = taskId.split('_')[0];
+                    gantt.deleteTask(removeEntirePkg);
+                    gantt.refreshData();
+                }
+                // If there is no data then hide grid and display message
+                if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
+                    $("#gantt_here").hide();
+                    $(".pull-right.toggle-status.source-sans-proregular").hide();
+                    $("#improvements").hide();
+                    $('#lblMarkringActivitiestitle').hide();
+                    $('#divCollaborator').hide();
+                    $('#divCollaboratorCount').hide(); // Added for #2112
+                    $("#NodatawithfilterCalendar").show();
+                }
+
+                // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
+                RemoveAllHoneyCombData();
+
+                $('.honeycombbox-icon-gantt[anchortacticid=' + planTacticId + ']').each(function () {
+                    $(this).attr('anchortacticid', '0');
+                });
+
+                ShowMessage(false, PackageUnsuccessful, 3000);
+            }
+            $("#totalEntity").text(Totallength);
+            $(".popover").css('top', Height + "px");
+        }
+    });
+
+    return true;
+}
+
+function OpenHoneyComb(obj) {
+    RemoveAllHoneyCombData();
+    IsPackageView = true;
+    PreventUnPackageClick = false;
+    currentPkgIds = $(obj).attr('pkgtacids').replace(/ /g, '').split(',');
+    $('.popover-content > #UnpackageHoneyComb').removeAttr('style');
+    $('.popover-content > #UnpackageHoneyComb').attr('style', 'cursor: pointer !important');
+    var ViewBy = $('#ddlTabViewBy').val();
+    if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+        $('.popover-content > #PackageHoneyComb').removeAttr('style');
+        $('.popover-content > #PackageHoneyComb').attr('style', 'color:gray; cursor: default !important');
+    }
+    var IdsNotinList = [];
+    var TacticColorCode;
+    for (i = 0; i < currentPkgIds.length; i++) {
+        var rowObject = $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']');
+        if (rowObject.length > 1)
+        {
+            $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']').each(function () {
+                if ($(this).is(':visible') == true) {
+                    rowObject = $(this);
+                }
+            });
+        }
+        var id = $(rowObject).attr('taskid');
+        if (rowObject.is(':visible') == true && id == $(rowObject).attr('anchortacticid')) {
+            PackageAnchorId = id;
+            TacticColorCode = $(rowObject).attr('colorcode');
+        }
+
+        if (IsUpdate == true || rowObject.is(':visible') == false || (id == undefined || id == 'undefined' || id == null || id == "")) {
+            IdsNotinList.push(currentPkgIds[i])
+        }
+        if (currentPkgIds.indexOf(id) >= 0) {
+            $(rowObject).trigger('click');
+        }
+    }
+    if (IdsNotinList.length != 0) {
+        $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
+            type: 'POST',
+            url: urlContent + 'Home/GetPackageTacticDetails/',
+            data: {
+                viewBy:$('#ddlTabViewBy').val(),
+                TacticIds: IdsNotinList.toString(),
+                TacticTaskColor:TacticColorCode,
+                IsGridView: isCalendarView == false ? true : false
+            },
+            success: function (data) {
+                var ListData = data.Listofdata;
+                if (isCalendarView == false) {
+                    $.each(IdsNotinList, function (index, TacticId) {
+                        $.each(ListData, function (index, Data) {
+                            if (Data.TacticId.toString() == TacticId) {
+                                var index = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
+                                if (index < 0) {
+                                    ExportSelectedIds.TaskID.push(Data.TaskId);
+                                    ExportSelectedIds.Title.push(htmlDecode(Data.Title));
+                                    ExportSelectedIds.OwnerName.push(Data.OwnerName);
+                                    ExportSelectedIds.TacticType.push(Data.TacticTypeValue);
+                                    ExportSelectedIds.ColorCode.push(Data.ColorCode);
+                                    ExportSelectedIds.PlanFlag.push('Grid');
+                                    ExportSelectedIds.CsvId.push(Data.CsvId);
+                                    ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
+                                    ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
+                                    if (Data.PCPTId != undefined && Data.PCPTId != null && Data.PCPTId != "") {
+                                        ExpandTacticsForSelectedPackage(Data.PCPTId);
+                                    }
+                                    $("div[altid='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
+                                }
+                            }
+
+                        });
+                    });
+                }
+                else {
+                    $.each(IdsNotinList, function (index, TacticId) {
+                        $.each(ListData, function (index, Data) {
+                            if (Data.TacticId.toString() == TacticId) {
+                                var ValueAlreadyExists = false
+                                $("div[altId='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
+                                $.each(ExportSelectedIds.TaskID, function (index, TaskId) {
+                                    var Ids = TaskId.split('_');
+                                    var index = Ids.indexOf("T" + TacticId);
+                                    if (index >= 0) {
+                                        ValueAlreadyExists = true;
+                                    }
+
+                                });
+                                var Dataindex = ExportSelectedIds.TaskID.indexOf(Data.TaskId);
+                                if (Dataindex < 0 && ValueAlreadyExists == false) {
+                                    ExportSelectedIds.TaskID.push(Data.TaskId);
+                                    ExportSelectedIds.Title.push(htmlDecode(Data.Title));
+                                    ExportSelectedIds.OwnerName.push(Data.OwnerName);
+                                    ExportSelectedIds.TacticType.push(Data.TacticTypeValue);
+                                    ExportSelectedIds.ColorCode.push(Data.ColorCode);
+                                    ExportSelectedIds.PlanFlag.push('Calender');
+                                    ExportSelectedIds.CsvId.push(Data.CsvId);
+                                    ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
+                                    ExportSelectedIds.CalendarEntityType.push(Data.CalendarEntityType);
+                                    ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
+                                }
+
+                            }
+
+                        });
+                    });
+                }
+                $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+                $(".honeycombbox").show();
+            }
+        });
+    }
+}
+
+//to expand tactics for selected package
+function ExpandTacticsForSelectedPackage(PCPTId) {
+    var arrEntityIds = PCPTId.split('_');
+    var CampaignId = "", ProgramId = "", TacticId = "";
+    if (arrEntityIds != null && arrEntityIds.length > 2) {
+        CampaignId = arrEntityIds[1].replace('C', '');
+        ProgramId = arrEntityIds[2].replace('P', '');
+        var divCamp = $('div[taskid="' + CampaignId + '"]').attr('dhtmlxrowid');
+        HomeGrid.openItem(divCamp);
+        var divProg = $('div[taskid="' + ProgramId + '"]').attr('dhtmlxrowid');
+        HomeGrid.openItem(divProg);
+    }
+}
+
+///Added by dhvani to open inspect popup for URL -- PL #2534
+function ShowInspectForPlanTacticId() {
+    var hdnIsImprovement = $('#hdnIsImprovement');
+    ShowModel(null, true);
+    $('#hdnshowInspectForPlanTacticId').val(0);
+    $('#hdnIsImprovement').val(false);
+
+}
+
+function ShowInspectForPlanCampaignId() {
+    ShowModel(null, true);
+    $('#hdnshowInspectForPlanCampaignId').val(0);
+}
+
+function ShowInspectForPlanProgramId() {
+    ShowModel(null, true);
+    $('#hdnshowInspectForPlanProgramId').val(0);
+}
+
+function ShowInspectForPlanLineItemId() {
+    ShowModel(null, true);
+    $('#hdnShowInspectForPlanLineItemId').val(0);
+    }
+
+function ShowInspectForPlanId() {
+    var hdnShowInspectForPlanId = $("#CurrentPlanId")
+    if (hdnShowInspectForPlanId.val() != 0) {
+        ShowModel(null, true);
+        $('#hdnShowInspectForPlanId').val(0);
+    }
+}

@@ -2496,25 +2496,30 @@ namespace RevenuePlanner.Controllers
 
             //provide a list of tactic integration Id and workfront project 
             List<IntegrationInstance> modelIntegrationList = new List<IntegrationInstance>();
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IsDeleted == false) {
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IsDeleted == false)
+            {
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance);
             }
 
-            //integrationinstance - Push Tactic Data Salesforce
-            //integrationinstance11 - Push Tactic Data Eloqua
-            //integrationinstance4 - Project Management
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1.IsDeleted == false) {
-                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1);
+            //Please look at the MRP.edmx for how each instance is associated with an integration type. 
+            //Don't look at the number such as instance 1 or 2 as they may change from release to release as we regenerate models! zz
+
+            //Eloqua
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false)
+            {
+                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11);
             }
+
             // Instance Marketo
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3.IsDeleted == false)
             {
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3);
             }
 
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false)
+            //workfront
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IsDeleted == false)
             {
-                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11);
+                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6);
                 ViewBag.IsModelIntegratedWorkFront = true; //Added 29 Dec 2015 by Brad Gray PL#1851
 
                 if (pcpt.TacticType.IntegrationWorkFrontTemplate != null && pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name != null)
@@ -2528,12 +2533,12 @@ namespace RevenuePlanner.Controllers
                 //_inspectmodel.WorkFrontTemplate = pcpt.TacticType.IntegrationWorkFrontTemplate.Template_Name;
 
                 // add 1/10/2016 by Brad Gray PL#1856 - get a list of active Requeust Queues for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
-                ViewBag.WorkFrontRequestQueueList = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IntegrationInstanceId
-                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false && q.IsDeleted == false).Select(modelQ => new { modelQ.Id, modelQ.RequestQueueName })
+                ViewBag.WorkFrontRequestQueueList = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IntegrationInstanceId
+                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IsDeleted == false && q.IsDeleted == false).Select(modelQ => new { modelQ.Id, modelQ.RequestQueueName })
                                         .Distinct().OrderBy(q => q.RequestQueueName).ToList();
                 // add 1/13/2016 by Brad Gray PL#1895 - get a list of active WorkFront users for instance ID, creating a dictionary of database id & name, order by name. Will use in dropdown select box
-                ViewBag.WorkFrontUserList = db.IntegrationWorkFrontUsers.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IntegrationInstanceId
-                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false).Select(user => new { user.Id, user.WorkFrontUserName })
+                ViewBag.WorkFrontUserList = db.IntegrationWorkFrontUsers.Where(q => q.IntegrationInstanceId == pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IntegrationInstanceId
+                                    && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance6.IsDeleted == false).Select(user => new { user.Id, user.WorkFrontUserName })
                                         .Distinct().OrderBy(u => u.WorkFrontUserName).ToList();
 
 
@@ -6042,22 +6047,11 @@ namespace RevenuePlanner.Controllers
             PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
-                Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId.Equals(tacticId) && _tactic.IsDeleted.Equals(false)).FirstOrDefault();
-                ViewBag.AllocatedBy = objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
-                // Add Condition by nishant sheth
-                // Desc :: To resolve test case when tactic object is null
-                if (objTactic != null)
-                {
-                    // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
-                    objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId);
-
-                    // Modified by Arpita Soni for Ticket #2237 on 06/22/2016
-                    var lstLineItemType = db.LineItemTypes.
-                                            Where(litemtype => litemtype.ModelId == objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId
-                                            && litemtype.IsDeleted == false).
-                                            Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
-                    TempData["lineItemTypes"] = lstLineItemType;
-                }
+                // Todo: this will be passed based from UI once view by functinality implemented
+                string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months); 
+                ViewBag.AllocatedBy = AllocatedBy;
+                // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
+                objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate);
             }
             catch (Exception objException)
             {
@@ -6067,40 +6061,39 @@ namespace RevenuePlanner.Controllers
         }
 
         #region Save Line Item Cost Allocation
-        public JsonResult SaveLineItemCostAllocation(string entityId, string section, string month, string inputs, string tab, bool isquarter, bool isTotalCost)
+        public JsonResult SaveLineItemCostAllocation(string entityId, string section, string month, double allocatedcost, string tab, bool isquarter, bool isTotalCost)
         {
             try
             {
-                int EntityId = Convert.ToInt32(entityId);
-                var popupValues = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(inputs);
-                double monthlycost = 0;
-                if (popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).Any())
+                int EntityId = Convert.ToInt32(entityId);   // this is tactic or line item id
+                if (string.Compare(section, Enums.Section.LineItem.ToString(), true) == 0)
                 {
-                    if (popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).FirstOrDefault().Value != "")
+                    if (isTotalCost)
                     {
-                        monthlycost = Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).FirstOrDefault().Value);
+                        objPlanTactic.SaveTotalLineItemCost(EntityId, allocatedcost);
                     }
-                    if (string.Compare(section, Enums.Section.LineItem.ToString(), true) == 0)
+                    else if (isquarter)
                     {
-                        if (isquarter)
-                        {
-                            objPlanTactic.SaveLineItemQuarterlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
-                        }
-                        else
-                        {
-                            objPlanTactic.SaveLineItemMonthlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
-                        }
+                        objPlanTactic.SaveLineItemQuarterlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
                     }
-                    else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
+                    else
                     {
-                        if (isquarter)
-                        {
-                            objPlanTactic.SaveTacticQuarterlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
-                        }
-                        else
-                        {
-                            objPlanTactic.SaveTacticMonthlyCostAllocation(EntityId, monthlycost, month, isTotalCost);
-                        }
+                        objPlanTactic.SaveLineItemMonthlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
+                    }
+                }
+                else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
+                {
+                    if (isTotalCost)
+                    {
+                        objPlanTactic.SaveTotalTacticCost(EntityId, allocatedcost);
+                    }
+                    else if (isquarter)
+                    {
+                        objPlanTactic.SaveTacticQuarterlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
+                    }
+                    else
+                    {
+                        objPlanTactic.SaveTacticMonthlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
                     }
                 }
                 return Json(new { isSuccess = true });
@@ -11117,7 +11110,7 @@ namespace RevenuePlanner.Controllers
 
                         if (result > 0)
                         {
-                            int intMediacode=(MediaCodeId % 1000000) + 9000000;
+                            int intMediacode = (MediaCodeId % 1000000) + 9000000;
                             objMediaCode.MediaCode = intMediacode;
                             // add media code for linked tactic
                             if (LinkedTacticID != 0)
@@ -11397,7 +11390,7 @@ namespace RevenuePlanner.Controllers
                             //if (IsLinkedTactic)
                             //    Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.CID && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId != linkedTacticID).FirstOrDefault();
                             //else
-                                Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.CID && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId == tacticId).FirstOrDefault();
+                            Result = db.vClientWise_Tactic.Where(a => a.ClientId == Sessions.User.CID && a.MediaCode != null && a.IsDeleted == false && a.MediaCodeValue == MediaCodevalue && a.TacticId == tacticId).FirstOrDefault();
 
                             if (Result != null)
                                 IsValid = false;

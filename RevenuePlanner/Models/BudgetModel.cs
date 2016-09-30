@@ -62,6 +62,7 @@ namespace RevenuePlanner.Models
         public bool IsOwner { get; set; }
         public int CreatedBy { get; set; }
         public BudgetMonth MonthValues { get; set; }
+        public BudgetMonth NextYearMonthValues { get; set; }
         public double TotalUnallocatedBudget { get; set; }
         public double YearlyBudget { get; set; }
         public double TotalAllocatedCost { get; set; }
@@ -81,6 +82,7 @@ namespace RevenuePlanner.Models
         public int TacticTypeId { get; set; }
         public string MachineName { get; set; }
         public double UnallocatedBudget { get; set; }
+        public string PlanYear { get; set; }
 
     }
 

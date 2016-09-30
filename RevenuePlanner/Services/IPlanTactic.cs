@@ -11,17 +11,21 @@ namespace RevenuePlanner.Services
     public interface IPlanTactic
     {
         void AddBalanceLineItem(int tacticId, double Cost, int UserId);
-        
-        BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int curTacticId);
+
+        BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int curTacticId, string AllocatedBy, int UserId, int ClientId, double PlanExchangeRate);
 
         double UpdateBalanceLineItemCost(int PlanTacticId);
 
-        void SaveLineItemMonthlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost);
+        void SaveTotalTacticCost(int EntityId, double newCost);
 
-        void SaveLineItemQuarterlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost);
+        void SaveTotalLineItemCost(int EntityId, double newCost);
 
-        void SaveTacticMonthlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost);
+        void SaveLineItemMonthlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
 
-        void SaveTacticQuarterlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost);
+        void SaveLineItemQuarterlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
+
+        void SaveTacticMonthlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
+
+        void SaveTacticQuarterlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
     }
 }

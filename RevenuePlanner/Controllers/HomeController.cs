@@ -162,16 +162,17 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsPublished = isPublished;
            
             ViewBag.RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
-            if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+            //set value to show inspect popup for url sent in email 
+            if (currentPlanId > 0)
             {
                 currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
             }
-            else if (activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
+            else if (currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
             {
                 ViewBag.ShowInspectPopup = false;
                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
             }
-            else if ((activeMenu.Equals(Enums.ActiveMenu.Plan) || activeMenu.Equals(Enums.ActiveMenu.Home)) && currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
+            else if (currentPlanId <= 0)
             {
                 ViewBag.ShowInspectPopup = false;
                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
@@ -207,28 +208,12 @@ namespace RevenuePlanner.Controllers
             {
                 IsPlanEditable = true;
                 ViewBag.IsPlanEditable = IsPlanEditable;
-                if (activeMenu.Equals(Enums.ActiveMenu.Plan))
-                {
-                    latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
-                }
-                else
-                {
-                    latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
-                }
-
+                latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
                 List<Plan> fiterActivePlan = new List<Plan>();
                 fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
                 if (fiterActivePlan != null && fiterActivePlan.Any())
                 {
-                    if (activeMenu.Equals(Enums.ActiveMenu.Plan))
-                    {
-                        latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
-                    }
-                    else
-                    {
-                        latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
-
-                    }
+                    latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
                 }
                 if (currentPlanId != 0)
                 {
@@ -446,9 +431,9 @@ namespace RevenuePlanner.Controllers
                     GetCustomAttributesIndex(ref planmodel);                    
                     if (ViewBag.ShowInspectPopup != null)
                     {
-                        if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+                        if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0)
                         {
-                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
+                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, currentPlanId, planLineItemId);
                             ViewBag.ShowInspectPopup = isCustomRestrictionPass;
                             if (isCustomRestrictionPass.Equals(false))
                             {
@@ -469,15 +454,6 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                if (activeMenu != Enums.ActiveMenu.Plan)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = null;
-                }
-
                 //// Start - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
                 if (ViewBag.ShowInspectPopup != null)
                 {
@@ -492,7 +468,7 @@ namespace RevenuePlanner.Controllers
                 }
                 //// End - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
 
-                return RedirectToAction("PlanSelector", "Plan");
+                return View("Index", planmodel);
             }
         }
 
@@ -7569,10 +7545,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="planids">comma sepreated plan id(s)</param>
         /// <param name="CurrentTime">Current Time</param>
         /// <returns></returns>
-        public JsonResult BindUpcomingActivitesValues(string planids, string fltrYears)
+        /// modified by Mitesh vaishnav add flag to check request come from calender view or budget view
+        public JsonResult BindUpcomingActivitesValues(string planids, string fltrYears, bool IsCalender=true)
         {
             //// Fetch the list of Upcoming Activity
-            List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears);
+            List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears,IsCalender);
             objUpcomingActivity = objUpcomingActivity.Where(activity => !string.IsNullOrEmpty(activity.Text)).OrderBy(activity => activity.Text, new AlphaNumericComparer()).ToList();
             return Json(objUpcomingActivity.ToList(), JsonRequestBehavior.AllowGet);
         }
@@ -7582,7 +7559,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="PlanIds">comma sepreated string plan id(s)</param>
         /// <returns>List fo SelectListItem of Upcoming activity</returns>
-        public List<SelectListItem> UpComingActivity(string PlanIds, string fltrYears)
+        public List<SelectListItem> UpComingActivity(string PlanIds, string fltrYears, bool isCalenderView=true)
         {
             //// List of plan id(s)
             List<int> planIds = string.IsNullOrWhiteSpace(PlanIds) ? new List<int>() : PlanIds.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -7612,9 +7589,21 @@ namespace RevenuePlanner.Controllers
 
 
 
+            //Add this year (quarterly) and this year (monthly) option to timeframe data
+            string strThisQuarter = Enums.UpcomingActivities.ThisYearQuaterly.ToString();
+            string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+            string quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString();
+            string monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
 
-            string strThisQuarter = Enums.UpcomingActivities.thisquarter.ToString(), strThisMonth = Enums.UpcomingActivities.thismonth.ToString(),
-                                    quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString(), monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
+            //for calander add this month and this quarter option instead of this year (quarterly) and this year (monthly)
+            if (isCalenderView)
+            {
+                strThisQuarter = Enums.UpcomingActivities.ThisYearQuaterly.ToString();
+                strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+                quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString();
+                monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
+            }
+
             string MinYear = string.Empty;
             string MaxYear = string.Empty;
             //// If active plan dosen't have any current plan at that time we have to remove this month and thisquater option
@@ -7890,7 +7879,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ViewOnlyPermission">ViewOnlyPermission flag in form of int</param>
         /// <param name="ViewEditPermission">ViewEditPermission flag in form of int</param>
         /// <returns>returns flag for custom restriction as per custom restriction</returns>
-        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int planLineItemId = 0)
+        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int currentPlanId, int planLineItemId = 0)
         {
             bool isValidEntity = false;
 
@@ -7944,6 +7933,16 @@ namespace RevenuePlanner.Controllers
                                                                 ).Select(lineItem => lineItem.PlanLineItemId);
 
                 if (objPlanLineItem.Count() != 0)
+                {
+                    isValidEntity = true;
+                }
+            }
+            else if (currentPlanId > 0)
+            {
+                var objPlan = objDbMrpEntities.Plans.Where(plan => plan.PlanId == currentPlanId && plan.IsDeleted == false
+                                                                ).Select(plan => plan.PlanId);
+
+                if (objPlan.Count() != 0)
                 {
                     isValidEntity = true;
                 }
@@ -9525,12 +9524,12 @@ namespace RevenuePlanner.Controllers
 
             if (IsGridView == false)
             {
-                if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) || viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId, tactic.TacticTypeId),
+                        TaskId = string.Format("L{0}_C{1}_P{2}_T{3}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
                         ColorCode = TacticTaskColor,
@@ -9538,6 +9537,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
@@ -9547,7 +9547,6 @@ namespace RevenuePlanner.Controllers
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.StageId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
@@ -9556,6 +9555,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
@@ -9566,7 +9566,6 @@ namespace RevenuePlanner.Controllers
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.Status, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
@@ -9575,6 +9574,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
@@ -9585,7 +9585,6 @@ namespace RevenuePlanner.Controllers
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.AnchorTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
@@ -9594,6 +9593,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
@@ -9604,7 +9604,6 @@ namespace RevenuePlanner.Controllers
                     var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
-
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.PlanTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
                         Title = tactic.Title,
                         TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
@@ -9613,6 +9612,7 @@ namespace RevenuePlanner.Controllers
                         ROITacticType = tactic.AssetType,
                         CalendarEntityType = "Tactic",
                         AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
 
                     return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);

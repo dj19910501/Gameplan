@@ -44,11 +44,13 @@ namespace RevenuePlanner.Controllers
         IBudget IBudgetObj;
         IGrid objGrid;
         IPlanTactic objPlanTactic;
+        IColumnView objcolumnview;
         public PlanController()
         {
             IBudgetObj = new RevenuePlanner.Services.Budget();
             objGrid = new Grid();
             objPlanTactic = new PlanTactic();
+            objcolumnview = new ColumnView();
         }
 
 
@@ -8198,9 +8200,8 @@ namespace RevenuePlanner.Controllers
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             try
             {
-
+                ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID);
                 objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID);
-
             }
             catch (Exception objException)
             {
@@ -8212,41 +8213,28 @@ namespace RevenuePlanner.Controllers
             }
             return PartialView("_HomeGrid", objPlanMainDHTMLXGrid);
         }
-        #endregion
 
-        #region method to bind customfield options
-        public void GetCustomfieldDropdownOption()
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// Get home grid data from cache memory 
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetHomeGridDataFromCache()
         {
-            IColumnView objcolumnView = new ColumnView();
-
-            DataTable dtColumnAttribute = objcolumnView.GetCustomFieldList(Sessions.User.CID);
-
-            if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
+            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            try
             {
-
-                var columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new
-                {
-                    EntityType = Convert.ToString(row["EntityType"]),
-                    CustomFieldId = Convert.ToInt32(row["CustomFieldId"]),
-                    CutomfieldName = Convert.ToString(row["Name"]),
-                    ParentId = Convert.ToInt32(row["ParentId"]),
-                    CustomfiledType = Convert.ToString(row["CustomFieldType"])
-
-                }).ToList();
-
-                List<int> customfieldid = columnattribute.Select(a => a.CustomFieldId).ToList();
-                var customattributeoptionlist = db.CustomFieldOptions.Where(a => a.CustomField.ClientId == Sessions.User.CID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new
-                {
-                    CustomFieldId = a.CustomFieldId,
-                    CustomFieldOptionId = a.CustomFieldOptionId,
-                    OptionValue = (a.Value)
-                }).ToList();
-                ViewBag.CustomAttributOotion = customattributeoptionlist;
-
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGridDataFromCache(Sessions.User.CID, Sessions.User.ID);
             }
-
-
-            //end
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            return PartialView("_HomeGrid", objPlanMainDHTMLXGrid);
         }
         #endregion
 
@@ -12107,6 +12095,7 @@ namespace RevenuePlanner.Controllers
                         }
                         Request.Files[0].SaveAs(fileLocation);
                         string excelConnectionString = string.Empty;
+                        //Convert excel file in to datatable
                         if (fileExtension == ".xls")
                         {
                             excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
@@ -12129,10 +12118,12 @@ namespace RevenuePlanner.Controllers
                                 return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                             }
                         }
+                        //if excel will be blank then following message will be appear.
                         if (dt.Rows.Count == 0 || dt.Rows[0][0] == DBNull.Value)
                         {
                             return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                         }
+                        //if ActivityId will be null then following message will be appear.
                         foreach (DataRow row in dt.Rows)
                         {
                             if (string.IsNullOrEmpty(row["ActivityId"].ToString().Trim()))
@@ -12140,27 +12131,35 @@ namespace RevenuePlanner.Controllers
                                 return Json(new { msg = "error", error = "ActivityId must have a proper value." }, JsonRequestBehavior.AllowGet);
                             }
                         }
-                        DataTable dtImport = dt;
+                        DataTable dtImportBudget = dt.Copy();
+                        DataTable dtImportActual = dt.Copy();
+                        // DataTable dtImportActual = dt;
                         StoredProcedure objSp = new StoredProcedure();
                         //Check data is uploaded monthly or quarterly
                         bool isMonthly = false;
-                        string[] columnNames = dtImport.Columns.Cast<DataColumn>()
+                        string[] columnNames = dtImportBudget.Columns.Cast<DataColumn>()
                                .Select(x => x.ColumnName)
                                .ToArray();
                         if (columnNames.Where(w => w.ToLower().Contains("jan")).Any())
                             isMonthly = true;
                         //Following is method using which we can specify import data as per type.
-                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dtImport, "budget", isMonthly);
-                        //bool isMonthly = dtBudget.Columns.Count > 8;
-                        var dataResponse = objSp.GetPlanBudgetList(dt, isMonthly, Sessions.User.ID);
+                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dtImportBudget, "budget", isMonthly);
+                        dtBudget = dtBudget.AsEnumerable()
+         .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "campaign" || row.Field<String>("type").ToLower() == "program").CopyToDataTable();
 
-                        if (dataResponse == null)
+                        //Filter actual data table with only plan,tactic and lineitem
+                        DataTable dtActual = objcommonimportData.GetPlanBudgetDataByType(dtImportActual, "actual", isMonthly);
+                        dtActual = dtActual.AsEnumerable()
+         .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "lineitem").CopyToDataTable();
+                        DataSet dataResponsebudget = objSp.GetPlanBudgetList(dtBudget, isMonthly, Sessions.User.ID);
+                        DataSet dataResponseactual = objSp.ImportPlanActuals(dtActual, isMonthly, Sessions.User.ID);
+
+                        if (dataResponsebudget == null || dataResponseactual == null)
                         {
                             return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
                         }
-
-                        // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
-                        if (dataResponse.Tables[0].Rows.Count > 0)
+                        //following message will be displayed if data will not match existing activityid                        
+                        if (dataResponsebudget.Tables[0].Rows.Count > 0 || dataResponseactual.Tables[0].Rows.Count > 0)
                         {
                             return Json(new { conflict = true, message = "Data that were not part of exported file were not added or updated." }, JsonRequestBehavior.AllowGet);
                         }
@@ -12313,13 +12312,14 @@ namespace RevenuePlanner.Controllers
         /// <param name="OwnerIds">filtered owner ids</param>
         /// <param name="TacticTypeids">filtered tactic type ids</param>
         /// <param name="StatusIds">filter status ids</param>
+        /// <param name="Year">selected year of plans from timeframe </param>
         /// <returns></returns>
-        public ActionResult GetBudgetData(string PlanIds, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "")
+        public ActionResult GetBudgetData(string PlanIds, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "",string year="")
         {
             IBudget Iobj = new RevenuePlanner.Services.Budget();
             int UserID = Sessions.User.ID;
             int ClientId = Sessions.User.CID;
-            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, string.Empty, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds); //objSp.GetBudget(PlanId.ToString(), string.Empty, string.Empty, string.Empty);
+            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds); 
             return PartialView("~/Views/Budget/Budget.cshtml", budgetModel);
 
         }

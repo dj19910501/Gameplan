@@ -3084,6 +3084,18 @@ warning 6002: The table/view 'MRPDev.dbo.vClientWise_Tactic' does not have a pri
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Model_IntegrationInstanceProjMgmt">
+          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="0..1" />
+          <End Role="Model" Type="Self.Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceIdProjMgmt" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Model_Model">
           <End Role="Model" Type="Self.Model" Multiplicity="0..1" />
           <End Role="Model1" Type="Self.Model" Multiplicity="*" />
@@ -6826,6 +6838,10 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
             <Parameter Name="timeframe" Mode="In" Type="String" />
             <Parameter Name="planYear" Mode="In" Type="String" />
           </FunctionImport>
+          <AssociationSet Name="FK_Model_IntegrationInstanceProjMgmt" Association="MRPModel.FK_Model_IntegrationInstanceProjMgmt">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="Model" EntitySet="Models" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Dimension">
           <Key>
@@ -7885,6 +7901,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="Models4" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
           <NavigationProperty Name="Models11" Relationship="MRPModel.FK_Model_IntegrationInstance1" FromRole="IntegrationInstance" ToRole="Model" />
+          <NavigationProperty Name="Models6" Relationship="MRPModel.FK_Model_IntegrationInstanceProjMgmt" FromRole="IntegrationInstance" ToRole="Model" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -8357,6 +8374,7 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <NavigationProperty Name="Plans" Relationship="MRPModel.FK_Plan_Plan" FromRole="Model" ToRole="Plan" />
           <NavigationProperty Name="TacticTypes" Relationship="MRPModel.FK_TacticType_ModelId" FromRole="Model" ToRole="TacticType" />
           <NavigationProperty Name="IntegrationInstance11" Relationship="MRPModel.FK_Model_IntegrationInstance1" FromRole="Model" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="IntegrationInstance6" Relationship="MRPModel.FK_Model_IntegrationInstanceProjMgmt" FromRole="Model" ToRole="IntegrationInstance" />
         </EntityType>
         <EntityType Name="Model_Stage">
           <Key>
@@ -11199,6 +11217,18 @@ FROM [dbo].[vClientWise_Tactic] AS [vClientWise_Tactic]</DefiningQuery>
           <Property Type="Boolean" Name="Permission" Nullable="true" />
           <Property Type="Int64" Name="PlanId" Nullable="true" />
         </ComplexType>
+        <Association Name="FK_Model_IntegrationInstanceProjMgmt">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceIdProjMgmt" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->

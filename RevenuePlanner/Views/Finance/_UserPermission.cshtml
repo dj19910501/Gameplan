@@ -462,7 +462,6 @@
                                         $("#NoSearch").hide();
                                         myApp.hidePleaseWait();
                                         response($.map(data, function (item) {
-                                            debugger;
                                             return { label: item.UserId, value: item.DisplayName, title: item.JobTitle };
                                         }))
                                     }

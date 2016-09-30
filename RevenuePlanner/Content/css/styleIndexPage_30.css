@@ -353,11 +353,11 @@ a:hover, a:focus {
 .menu-content .dd-arrow {
 	cursor: pointer;
 	line-height: 45px;
-	position: absolute;
+	/*position: absolute;
 	right: 6px;
 	width: 20px;
 	z-index: 999;
-	color: #777;
+	color: #777;*/
 }
 .menu-content > li > a { /* spacing without dropdown arrow */
 	margin: 0 1px;
@@ -369,7 +369,7 @@ a:hover, a:focus {
 }
 .menu-content > li.dropdown > a { /* spacing with dropdown arrow */
 	margin: 0 1px;
-	padding: 0 28px 0 13px;
+	padding: 0 15px 0 13px;
 }
 .menu-content li a:hover, .menu-content li a:hover span {
 	background: transparent none repeat scroll 0 0;
@@ -641,14 +641,7 @@ a:hover, a:focus {
 	margin-left: 0;
 	width: 100%
 }
-footer {
-	bottom: 0;
-	width: calc(100% - 281px);
-	text-align: center;
-	position: fixed;
-    right:0;
 
-}
 /* =============== Sidebar Style ================== */
 .row-fluid .sidebar, .row-fluid .sidebar .sidebar-section {
 	width: 100%
@@ -1042,7 +1035,7 @@ span.filter-count, span.filter-count > span {
 }
 /* ==============  Container CSS =============== */
 #planHeader.full-width-header {
-	padding: 15px 0 0 20px;
+	padding: 15px 0 5px 20px;
 	position: relative;
 }
 .planheader-left {
@@ -1405,7 +1398,16 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa {
         margin-left: 10px;
     } 
 /*============= Footer Css ===================== */
-
+footer {
+	width: 50%;
+	text-align: center;
+	position: fixed;
+    bottom: 0;
+    right:0;
+    left:0;
+    margin:auto;
+    z-index:0;
+}
 footer > span {
 	background: transparent none repeat scroll 0 0;
     border-top:none;
@@ -1423,6 +1425,7 @@ footer a {
 }
 /* ============ Grid & Calendar View ========== */
 /*.task-tbl {position:relative}*/
+.task-tbl{width: 100%; padding:0 15px 0 20px;margin:0}
 .changeView{
     height: 25px;
     padding: 3px;
@@ -1434,8 +1437,78 @@ footer a {
 }
 .changeView .fa{  color: #3e3f37;font-size: 22px;}
 .task-tbl #divgridview table, 
-.task-tbl #GridGanttContent .calendar-gant-table{font-family:'source_sans_proregular', Arial, sans-serif !important; font-size:14px; font-weight:normal !important}
-.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr{height:auto !important}
+.task-tbl #GridGanttContent .gantt_container,
+.task-tbl #GridGanttContent .gantt_container .gantt_tree_content{font-family:'source_sans_proregular', Arial, sans-serif !important; font-size:14px; font-weight:normal !important}
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td{font-family:'source_sans_proregular', Arial, sans-serif !important;font-size:13px;}
+.task-tbl .grid_add, .task-tbl .gantt_add,
+.task-tbl .grid_Search{
+	background-image: none;
+	width: 22px;
+	cursor: pointer;
+}
+.task-tbl .grid_add .fa.fa-plus-circle, .task-tbl .gantt_add .fa,
+.task-tbl .grid_Search .fa{
+	color: #9c9fa0;
+	font-size: 18px;
+}
+.task-tbl .grid_Search .fa{font-size: 16px;}
+.task-tbl .grid_add:hover .fa.fa-plus-circle, 
+.task-tbl .gantt_add:hover .fa, 
+.task-tbl .grid_Search:hover .fa {
+	color: #89CEDE;
+}
+/* For odd row color */
+.task-tbl #divgridview.budget-grid .odd_dhx_skyblue,
+.task-tbl .gantt_task_row.odd {background:#f2f2f2}
+
+ .task-tbl #divgridview .obj .uneven {
+        background-color: #f2f2f2;
+    }
+.task-tbl #divgridview  div#cgrid2_1475232815576 table.obj .uneven, 
+.task-tbl #divgridview.budget-grid div#gridbox .gridbox.gridbox_dhx_skyblue table.obj .odd_dhx_skyblue{
+    background:#fff !important;
+}
+/* =============== Calendar View CSS =============== */
+.task-tbl #divgridview, .task-tbl #GridGanttContent {
+    overflow:hidden !important;width: 100%;margin:0;height:64vh; 
+}
+.task-tbl #divgridview .gantt-padding.market-activity-main.lenght-div{min-height:100% !important; height:100% !important}
+/*.task-tbl #GridGanttContent {
+    border: 1px solid #ccc;
+}*/
+
+/*.task-tbl .gantt_task{padding-left:1px}*/
+.task-tbl .gantt_grid{margin-left:1px}
+
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{text-align: center;}
+
+.task-tbl .gantt_grid .gantt_grid_scale, 
+.task-tbl .gantt_task .gantt_task_scale{
+    height:55px !important; 
+    font-weight:normal !important; 
+    border-bottom: 2px solid #D4D4D4;
+}
+.task-tbl .gantt_task .gantt_scale_line:first-child {height:23px !important;  line-height:23px !important}
+
+
+.task-tbl .gantt_task  .gantt_task_scale  .gantt_scale_cell{font-weight:normal !important; text-align:center}
+.task-tbl .gantt_task > .gantt_task_scale > .gantt_scale_line:first-child > .gantt_scale_cell {font-size:12px !important; }
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr tr:nth-child(2) td:nth-child(4){min-width:350px !important}
+
+
+/* =========== Grid and Budget  View CSS ======== */
+.task-tbl #divgridview .xhdr, .task-tbl #divgridview .hdr{ height: 54px !important; }
+.task-tbl #divgridview.budget-grid .xhdr, .task-tbl #divgridview.budget-grid .hdr{ height: auto !important; }
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr{height:auto !important; }
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td {
+    vertical-align: middle;
+}
+
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.obj.row20px tr td {
+    text-align: center;
+}
+.task-tbl table.obj.row20px tr td .treegrid_cell{text-align: left;}
+.task-tbl table.obj.row20px tr td .treegrid_cell a{color:#000}
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
     color: #808080;
     font-weight: normal;
@@ -1443,16 +1516,8 @@ footer a {
     padding:0 3px;
 }
 
-.task-tbl #divgridview .xhdr, .task-tbl #divgridview .hdr{ height: 37px !important; }
-.task-tbl #divgridview.budget-grid .xhdr, .task-tbl #divgridview.budget-grid .hdr{ height: auto !important; }
-
-.task-tbl .gantt_container{overflow-y:auto;overflow-x:hidden}
-.task-tbl{width: 100%; padding:0 15px 0 20px;margin:0}
-.task-tbl #divgridview, .task-tbl #GridGanttContent {
-    overflow:hidden !important;width: 100%;margin:0;height:59vh; 
-}
-.task-tbl  #divgridview #gridbox { min-height:98%;}
-.task-tbl  div.gridbox_dhx_skyblue.gridbox {
+.task-tbl  #divgridview #gridbox { min-height:100%; border:0 !important}
+.task-tbl  #divgridview {
     border: 1px solid #ccc;
 }
 .task-tbl div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
@@ -1460,18 +1525,24 @@ footer a {
 }
 .task-tbl #gridbox.financeReportGrid div.objbox table tr td{text-align:center}
 .task-tbl .market-activity-main .btn-dropdwn{position: absolute; top: 40px; z-index: 11;}
-/*.task-tbl .gantt_task{padding-left:1px}*/
-.task-tbl .gantt_grid{margin-left:1px}
 
-.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell{text-align: center;}
-
+#divgridview.budget-grid #gridbox table.hdr tr td{padding:0 !important}
+#divgridview.budget-grid #gridbox table.hdr tr:nth-child(2), #divgridview.budget-grid #gridbox div:nth-child(2) table.hdr tr:nth-child(2) {
+    height: 19px !important;
+    line-height: 19px !important
+}
+#divgridview.budget-grid #gridbox table.hdr tr:nth-child(3), #divgridview.budget-grid #gridbox div:nth-child(2) table.hdr tr:nth-child(3) {
+    height: 38px !important;
+    line-height: 38px !important
+}
+#divgridview.budget-grid #gridbox table.hdr{height:auto !important}
 /* ============== Search box CSS ================ */
 /*#divgridview .xhdr{ height: 37px !important; }*/
+
 #exp-serach{
     position: absolute;
-    height: 37px;
     margin-top: 1px;
-    width:320px;
+    width:312px;
     background: #fff none repeat scroll 0 0;
     z-index:22;
 }
@@ -1506,7 +1577,7 @@ footer a {
     float: right;
     font-size: 16px;
     margin: 0;
-    padding: 7px 0 0;
+    padding: 13px 0 0;
     position: static;
     text-align: center;
     width: 35px;
@@ -1524,7 +1595,7 @@ footer a {
 	border-radius: 0;
 	padding: 0;
 	width: 45px;
-	height: 38px !important;
+	/*height: 38px !important;*/
 }
 .open #searchCriteria {
 	background: #89CEDE;
@@ -1541,7 +1612,7 @@ footer a {
 #txtGlobalSearch {
 	border: 0 none;
 	border-radius: 0;
-	height: 38px;
+	/*height: 38px;*/
 	margin: 0;
 	background: transparent;
 	outline: 0 !important;
@@ -1551,9 +1622,9 @@ footer a {
 	font-size: 12px;
     float:left;
 }
-.Exp-serach {
-	height: 37px;
-}
+#exp-serach, #searchCriteria, #txtGlobalSearch{height: 53px !important;}
+
+
 
 /* ============== Inspection Window new style ================= */ 
 #modal-container-186470 {
@@ -1569,7 +1640,7 @@ footer a {
 .partial_wrapper.new-wrapper {
     background: #fff none repeat scroll 0 0;
     border: 1px solid #ccc;
-    height: 61%;
+    height: 65.8%;
     left: auto;
     margin: auto;
     overflow: auto;
@@ -1577,11 +1648,14 @@ footer a {
     position: absolute;
     right: 15px;
     top: 278px;
-    width: 1070px;
-    /*min-width:1070px;*/
+    min-width: 1070px;
+    width:62%;
     z-index: 99999;
     padding-bottom:15px;
 }
+.slideLeft#content_wraper  .partial_wrapper.new-wrapper{
+	width: 75.5%
+} /* When sidbar Hide */
 .pop-body-wraper {
     float: left;
     height: auto !important;
@@ -1671,10 +1745,16 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
 @media (max-width: 1600px) {
 .task-tbl #divgridview, 
 .task-tbl #GridGanttContent {
-    height: 54vh; 
+    height: 59.5vh; 
 }
+.partial_wrapper.new-wrapper{height:61%}
 }
-
+@media screen and ( max-height: 600px ){
+       .task-tbl #divgridview, 
+    .task-tbl #GridGanttContent {
+    height: 28.5vh; 
+}
+    }
 @media (max-width: 1550px) {
 .new-btn-plan-left, .new-btn-plan-right {
 	padding: 0 8px;

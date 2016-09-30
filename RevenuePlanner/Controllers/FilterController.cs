@@ -27,21 +27,28 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns partial view of Filter</returns>
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, List<int> currentPlanId = null)
         {
-            #region Declare Variables
             HomePlanModel PlanModel = new Models.HomePlanModel();
-            #endregion
-
-            List<SelectListItem> LstYear = new List<SelectListItem>();
-            List<Plan_UserSavedViews> PlanUserSavedViews = Sessions.PlanUserSavedViews;
-            PlanModel = objCommonFilter.GetFilterData(currentPlanId, Sessions.User.ID, Sessions.User.CID, Sessions.PlanPlanIds, Sessions.FilterPresetName, ref PlanUserSavedViews, ref LstYear);
-            Sessions.PlanUserSavedViews = PlanUserSavedViews;
-            if (PlanModel.lstPlanId.Count() > 0)
+            try
             {
-                Sessions.PlanPlanIds = PlanModel.lstPlanId;
+                List<SelectListItem> LstYear = new List<SelectListItem>();
+                List<Plan_UserSavedViews> PlanUserSavedViews = Sessions.PlanUserSavedViews;
+                PlanModel = objCommonFilter.GetFilterData(currentPlanId, Sessions.User.ID, Sessions.User.CID, Sessions.PlanPlanIds, Sessions.FilterPresetName, ref PlanUserSavedViews, ref LstYear);
+                Sessions.PlanUserSavedViews = PlanUserSavedViews;
+                if (PlanModel.lstPlanId.Count() > 0)
+                {
+                    Sessions.PlanPlanIds = PlanModel.lstPlanId;
+                }
+                ViewBag.ViewYear = LstYear;
+                ViewBag.activeMenu = activeMenu;
             }
-            ViewBag.ViewYear = LstYear;
-            ViewBag.activeMenu = activeMenu;
-
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             return PartialView("Filters", PlanModel);
         }
 
@@ -83,83 +90,95 @@ namespace RevenuePlanner.Controllers
             string StatusLabel = Convert.ToString(Enums.FilterLabel.Status);
             List<string> LastSetOfStatus = new List<string>();
             List<Plan_UserSavedViews> NewListOfViews = new List<Plan_UserSavedViews>();
-            List<Plan_UserSavedViews> listofsavedviews = objCommonFilter.LastSetOfViews(Sessions.User.ID, Sessions.PlanUserSavedViews, PresetName, isLoadPreset);
-            if (isLoadPreset == true)
+            try
             {
-                List<Preset> listofPreset = objCommonFilter.GetListofPreset(listofsavedviews, PresetName);
-
-                return PartialView("~/Views/Shared/_DefaultViewFilters.cshtml", listofPreset);
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(PresetName))
+                List<Plan_UserSavedViews> listofsavedviews = objCommonFilter.LastSetOfViews(Sessions.User.ID, Sessions.PlanUserSavedViews, PresetName, isLoadPreset);
+                if (isLoadPreset == true)
                 {
-                    listofsavedviews = listofsavedviews.Where(name => name.ViewName == PresetName).ToList();
+                    List<Preset> listofPreset = objCommonFilter.GetListofPreset(listofsavedviews, PresetName);
+
+                    return PartialView("~/Views/Shared/_DefaultViewFilters.cshtml", listofPreset);
                 }
                 else
                 {
-                    if (Sessions.PlanUserSavedViews == null)
+                    if (!string.IsNullOrEmpty(PresetName))
                     {
-                        NewListOfViews = listofsavedviews.Where(view => view.IsDefaultPreset == true).ToList();
-                        if (NewListOfViews.Count == 0)
-                        {
-                            listofsavedviews = listofsavedviews.Where(view => view.ViewName == null).ToList();
-                        }
-                        else
-                        {
-                            listofsavedviews = NewListOfViews;
-                        }
+                        listofsavedviews = listofsavedviews.Where(name => name.ViewName == PresetName).ToList();
                     }
                     else
                     {
-                        listofsavedviews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
+                        if (Sessions.PlanUserSavedViews == null)
+                        {
+                            NewListOfViews = listofsavedviews.Where(view => view.IsDefaultPreset == true).ToList();
+                            if (NewListOfViews.Count == 0)
+                            {
+                                listofsavedviews = listofsavedviews.Where(view => view.ViewName == null).ToList();
+                            }
+                            else
+                            {
+                                listofsavedviews = NewListOfViews;
+                            }
+                        }
+                        else
+                        {
+                            listofsavedviews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
+                        }
                     }
-                }
-                List<string> SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel).Select(View => View.FilterValues).ToList();
-                if (SetOfStatus.Count > 0)
-                {
-                    if (SetOfStatus.FirstOrDefault() != null)
+                    List<string> SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel).Select(View => View.FilterValues).ToList();
+                    if (SetOfStatus.Count > 0)
                     {
-                        LastSetOfStatus = SetOfStatus.FirstOrDefault().Split(',').ToList();
+                        if (SetOfStatus.FirstOrDefault() != null)
+                        {
+                            LastSetOfStatus = SetOfStatus.FirstOrDefault().Split(',').ToList();
+                        }
                     }
-                }
-                string OwnerLabel = Convert.ToString(Enums.FilterLabel.Owner);
+                    string OwnerLabel = Convert.ToString(Enums.FilterLabel.Owner);
 
-                List<string> LastSetOfOwners = new List<string>();
+                    List<string> LastSetOfOwners = new List<string>();
 
-                string SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel).Select(View => View.FilterValues).FirstOrDefault();
-                if (SetOfOwners != null)
-                {
-                    LastSetOfOwners = SetOfOwners.Split(',').ToList();
-                }
-
-                string TTLabel = Convert.ToString(Enums.FilterLabel.TacticType);
-                List<string> LastSetOfTacticType = new List<string>();
-
-                List<string> SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel).Select(View => View.FilterValues).ToList();
-                if (SetOfTacticType.Count > 0)
-                {
-                    if (SetOfTacticType.FirstOrDefault() != null)
+                    string SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel).Select(View => View.FilterValues).FirstOrDefault();
+                    if (SetOfOwners != null)
                     {
-                        LastSetOfTacticType = SetOfTacticType.FirstOrDefault().Split(',').ToList();
+                        LastSetOfOwners = SetOfOwners.Split(',').ToList();
                     }
-                }
 
-                string YearLabel = Convert.ToString(Enums.FilterLabel.Year);
-                List<string> LastSetOfYears = new List<string>();
+                    string TTLabel = Convert.ToString(Enums.FilterLabel.TacticType);
+                    List<string> LastSetOfTacticType = new List<string>();
 
-                List<string> SetOfYears = listofsavedviews.Where(view => view.FilterName == YearLabel).Select(View => View.FilterValues).ToList();
-                if (SetOfYears.Count > 0)
-                {
-                    if (SetOfYears.FirstOrDefault() != null)
+                    List<string> SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel).Select(View => View.FilterValues).ToList();
+                    if (SetOfTacticType.Count > 0)
                     {
-                        LastSetOfYears = SetOfYears.FirstOrDefault().Split(',').ToList();
+                        if (SetOfTacticType.FirstOrDefault() != null)
+                        {
+                            LastSetOfTacticType = SetOfTacticType.FirstOrDefault().Split(',').ToList();
+                        }
                     }
+
+                    string YearLabel = Convert.ToString(Enums.FilterLabel.Year);
+                    List<string> LastSetOfYears = new List<string>();
+
+                    List<string> SetOfYears = listofsavedviews.Where(view => view.FilterName == YearLabel).Select(View => View.FilterValues).ToList();
+                    if (SetOfYears.Count > 0)
+                    {
+                        if (SetOfYears.FirstOrDefault() != null)
+                        {
+                            LastSetOfYears = SetOfYears.FirstOrDefault().Split(',').ToList();
+                        }
+                    }
+                    var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF")).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
+                    Sessions.FilterPresetName = null;
+                    return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType, Years = LastSetOfYears }, JsonRequestBehavior.AllowGet);
                 }
-                var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF")).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
-                Sessions.FilterPresetName = null;
-                return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType, Years = LastSetOfYears }, JsonRequestBehavior.AllowGet);
             }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -179,7 +198,7 @@ namespace RevenuePlanner.Controllers
                     OwnerId = Sessions.User.ID,
                     Title = Convert.ToString(Sessions.User.FirstName + " " + Sessions.User.LastName),
                 };
-                List<OwnerModel> lstOwner = objCommonFilter.GetOwnerListForFilter(Sessions.User.ID, Sessions.User.ID, Sessions.User.FirstName, Sessions.User.LastName, Sessions.ApplicationId, PlanId, ViewBy, ActiveMenu);
+                List<OwnerModel> lstOwner = objCommonFilter.GetOwnerListForFilter(Sessions.User.CID, Sessions.User.ID, Sessions.User.FirstName, Sessions.User.LastName, Sessions.ApplicationId, PlanId, ViewBy, ActiveMenu);
                 return Json(new { isSuccess = true, AllowedOwner = lstOwner, LoggedInUser = LoggedInUser }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception objException)
@@ -219,7 +238,7 @@ namespace RevenuePlanner.Controllers
                 {
                     prevCustomFieldList = prevCustomFieldList.Where(custmfield => custmfield.ViewName == null).ToList();
                 }
-            }            
+            }
             #endregion
 
             prevCustomFieldList = objCommonFilter.SaveLasSetofViews(planId, ViewName, ownerIds, TacticTypeid, StatusIds, SelectedYears, customFieldIds, ParentCustomFieldsIds, planIds, prevCustomFieldList, Sessions.User.ID);
@@ -227,6 +246,29 @@ namespace RevenuePlanner.Controllers
             Sessions.PlanUserSavedViews = prevCustomFieldList;
 
             return Json(new { isSuccess = true, ViewName = ViewName }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added By: Nandish Shah.
+        /// Function to get Plan based on selection of Year.
+        /// </summary>
+        /// <param name="Year">Year</param>
+        public JsonResult GetPlanBasedOnYear(string Year = "")
+        {
+            List<SelectListItem> planList = new List<SelectListItem>();
+            try
+            {
+                planList = objCommonFilter.GetPlanBasedOnYear(Year, Sessions.User.CID);
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            return Json(planList, JsonRequestBehavior.AllowGet);
         }
     }
 }

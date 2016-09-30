@@ -425,6 +425,24 @@ namespace RevenuePlanner.Test.MockHelpers
             return ClientId;
         }
 
+        // Add By Nishant Sheth
+        // Get Crearted By Id from PlanId
+        public static int GetPlanOwnerId(int PlanId = 0)
+        {
+            int OwnerId = 0;
+            OwnerId = db.Plans.Where(a => a.PlanId == PlanId).Select(a => a.CreatedBy).FirstOrDefault();
+            return OwnerId;
+        }
+
+        // Add By Nishant Sheth
+        // Get Model Id From PlanId
+        public static int GetPlanModelId(int PlanId = 0)
+        {
+            int ModelId = 0;
+            ModelId = db.Plans.Where(a => a.PlanId == PlanId).Select(a => a.ModelId).FirstOrDefault();
+            return ModelId;
+        }
+
         #region Get Dashboard Id
         public static string GetDashboardId()
         {

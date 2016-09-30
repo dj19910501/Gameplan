@@ -209,25 +209,20 @@ else
                     else {
                         month = arrFullMonthNames[LineItemGrid.getColLabel(cellInd)];   // Get full name of month from initial (JAN -> January)
                     }
-                    var monthlyplannedcost = LineItemGrid.cells(rowId, cellInd).getValue(); // updated cell value
+                    var plannedcost = LineItemGrid.cells(rowId, cellInd).getValue(); // updated cell value
                 
                     var tab = 'Planned';
                     var isquarter = false;
                     if('@isQuarter' == 'quarters') {
                         isquarter = true;
                     }
-        
-                    var inputArr = [];
-                    inputArr.push({
-                        key: "CostMonth",
-                        Value: SetValueByExchangeRate(monthlyplannedcost.replace(/,/g, ""))
-                    });
-                    var jsonInputs = JSON.stringify(inputArr);
+                    var allocatedcost = SetValueByExchangeRate(plannedcost.replace(/,/g, ""))
+                    
                     $.ajax({
                         type: 'POST',
                         url: '@Url.Content("~/Inspect/SaveLineItemCostAllocation/")',
                         dataType: "json",
-                        data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost,
+                        data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&allocatedcost=' + allocatedcost + '&tab=' + tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost,
                         success: function (data) {
                             if (data.isSuccess == true) {
                                 // format current cell value
@@ -266,13 +261,13 @@ else
     }
     return true;
     }
-    function UpdateUnallocatedColumnValues(rowId){
+    function UpdateUnallocatedColumnValues(rowId) {
         // Update Unallocated column value on edit 
         var cols_count = LineItemGrid.getColumnCount();
         // always first row is for tactic so get tactic cost value
         var planned_cost = parseInt(LineItemGrid.cells(rowId, PlannedCostColIndex).getValue().replace(',','')); 
         var allocated_cost = 0;
-        for (var j = PlannedCostColIndex + 1; j < cols_count - 2; j++) { // sum of line item cost
+        for (var j = PlannedCostColIndex + 1; j <= cols_count - 2; j++) { // sum of line item cost
             allocated_cost = allocated_cost + parseInt(LineItemGrid.cells(rowId, j).getValue().replace(',',''));
         }
         var unallocated = planned_cost  - allocated_cost;

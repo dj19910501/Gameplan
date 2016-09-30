@@ -161,50 +161,76 @@
             var MonthCost;
             var Tab = HomeGrid.getColLabel(cellInd, 1);
 
-            if (Tab.toLowerCase() == 'actual' || Tab.toLowerCase() == 'planned' || Tab.toLowerCase() == 'budget') {
-                if (HomeGrid.getColLabel(cellInd) == "") {
-                    if (HomeGrid.getColLabel(cellInd - 1) == "") {
-                        Month = HomeGrid.getColLabel(cellInd - 2);
+            var TaskNameId = HomeGrid.getColIndexById("taskname");
+            var TypeIndex = HomeGrid.getColIndexById("Type");
+
+            if (TaskNameId == cellInd) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/SaveGridDetail/")',
+                    data: { UpdateType: HomeGrid.cells(rowId, TypeIndex).cell.innerText, UpdateColumn: 'Task Name', UpdateVal: nValue, Id: parseInt(EntityId) },
+                    dataType: 'json',
+                    success: function (states) {
+                        if (states.errormsg != null && states.errormsg.trim() != "") {
+                            alert(states.errormsg.trim());
+                            HomeGrid.cells(rowId, cellInd).setValue(oValue);
+                            return false;
+                        }
+                        else {
+                            if (HomeGrid.cells(rowId, TypeIndex).cell.innerText.toLowerCase() == "plan") {
+                                SetFilterData(EntityId, nValue);
+                            }
+                        }
+                    }
+                });
+            }
+            else {
+                if (Tab.toLowerCase() == 'actual' || Tab.toLowerCase() == 'planned' || Tab.toLowerCase() == 'budget') {
+                    if (HomeGrid.getColLabel(cellInd) == "") {
+                        if (HomeGrid.getColLabel(cellInd - 1) == "") {
+                            Month = HomeGrid.getColLabel(cellInd - 2);
+                        }
+                        else {
+                            Month = HomeGrid.getColLabel(cellInd - 1);
+                        }
                     }
                     else {
-                        Month = HomeGrid.getColLabel(cellInd - 1);
+                        Month = HomeGrid.getColLabel(cellInd);
                     }
                 }
-                else {
-                    Month = HomeGrid.getColLabel(cellInd);
+                if (Tab.toLowerCase() == 'actual') {
+                    var ActualCostColIndex = HomeGrid.getColIndexById("ActualCost");
+                    YearCost = HomeGrid.cells(rowId, ActualCostColIndex).cell.innerText;
+                    MonthCost = nValue;
                 }
+                else if (Tab.toLowerCase() == 'planned') {
+                    var PlannedCostColIndex = HomeGrid.getColIndexById("plannedcost");
+                    YearCost = HomeGrid.cells(rowId, PlannedCostColIndex).cell.innerText;
+                    MonthCost = nValue;
+                }
+                else if (Tab.toLowerCase() == 'budget') {
+                    var BudgetCostColIndex = HomeGrid.getColIndexById("BudgetCost");
+                    YearCost = HomeGrid.cells(rowId, BudgetCostColIndex).cell.innerText;
+                    MonthCost = nValue;
+                }
+                else if (Tab.toLowerCase() == 'total actual') {
+                    Tab = "Actual";
+                    MonthCost = '';
+                    YearCost = nValue;
+                }
+                else if (Tab.toLowerCase() == 'planned cost') {
+                    Tab = "Planned";
+                    MonthCost = '';
+                    YearCost = nValue;
+                }
+                else if (Tab.toLowerCase() == 'total budget') {
+                    Tab = "Budget";
+                    MonthCost = '';
+                    YearCost = nValue;
+                }
+                SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost);
             }
-            if (Tab.toLowerCase() == 'actual') {
-                var ActualCostColIndex = HomeGrid.getColIndexById("ActualCost");
-                YearCost = HomeGrid.cells(rowId, ActualCostColIndex).cell.innerText;
-                MonthCost = nValue;
-            }
-            else if (Tab.toLowerCase() == 'planned') {
-                var PlannedCostColIndex = HomeGrid.getColIndexById("plannedcost");
-                YearCost = HomeGrid.cells(rowId, PlannedCostColIndex).cell.innerText;
-                MonthCost = nValue;
-            }
-            else if (Tab.toLowerCase() == 'budget') {
-                var BudgetCostColIndex = HomeGrid.getColIndexById("BudgetCost");
-                YearCost = HomeGrid.cells(rowId, BudgetCostColIndex).cell.innerText;
-                MonthCost = nValue;
-            }
-            else if (Tab.toLowerCase() == 'total actual') {
-                Tab = "Actual";
-                MonthCost = '';
-                YearCost = nValue;
-            }
-            else if (Tab.toLowerCase() == 'planned cost') {
-                Tab = "Planned";
-                MonthCost = '';
-                YearCost = nValue;
-            }
-            else if (Tab.toLowerCase() == 'total budget') {
-                Tab = "Budget";
-                MonthCost = '';
-                YearCost = nValue;
-            }
-            SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost);
+            return true;
         }
     }
 
