@@ -11,21 +11,21 @@ namespace RevenuePlanner.Services
 {
     public class PlanTactic : IPlanTactic
     {
+        #region Declaration
         private MRPEntities objDbMrpEntities;
+        private ICurrency objCurrency;
+        private HomeGridProperties objHomeGridProperty = new HomeGridProperties();
         public PlanTactic()
         {
             objDbMrpEntities = new MRPEntities();
+            objCurrency = new Currency();
         }
 
-        // Object to use common properties for the grid
-        HomeGridProperties objHomeGridProperty = new HomeGridProperties();
-        // Object to use exchange rate related functions
-        ICurrency objCurrency = new Currency();
+        private string formatThousand = "#,##0.##";  // format thousand number values with comma
+        private string commaString = ",";
+        #endregion
 
-        string formatThousand = "#,##0.##";  // format thousand number values with comma
-        string commaString = ",";
-
-        // dictionary of months and quarters to get cost 
+        #region Dictionary for month and quarter number which is used to get cost and other data 
         private Dictionary<string, string> MonthQuarterList = new Dictionary<string, string>() {
                 {Convert.ToString(Enums.Months.January), Common.Jan },
                 {Convert.ToString(Enums.Months.February), Common.Feb },
@@ -53,6 +53,7 @@ namespace RevenuePlanner.Services
                 {Common.Jul, new List<string>{Common.Jul, Common.Aug, Common.Sep } },
                 {Common.Oct, new List<string>{Common.Oct, Common.Nov, Common.Dec } }
         };
+        #endregion
 
         /// <summary>
         /// Add Balance line item whether cost is 0 or greater
@@ -75,10 +76,6 @@ namespace RevenuePlanner.Services
         /// </summary>
         public BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int curTacticId, string AllocatedBy, int UserId, int ClientId, double PlanExchangeRate)
         {
-            #region Variables
-            BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-            objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
-            #endregion
             DataTable dtCosts = Common.GetTacticLineItemCostAllocation(curTacticId, UserId);    // Get cost allocation and set values to model
             List<BudgetModel> model = SetAllocationValuesToModel(dtCosts, PlanExchangeRate);    // Set cost values to model
 
@@ -86,10 +83,12 @@ namespace RevenuePlanner.Services
             model = ManageBalanceLineItemCost(model);                                           // Update model by setting balance line item costs
 
             //Set cost allocation for quarters by summed up respective months
-            if (String.Compare(AllocatedBy, Convert.ToString(Enums.PlanAllocatedBy.quarters)) == 0)
+            if (String.Compare(AllocatedBy, Convert.ToString(Enums.PlanAllocatedBy.quarters),true) == 0)
             {
                 model = SumOfMonthsForQuaterlyAllocated(model);
             }
+            BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel(); //New is required due to access the property
+            objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
 
             // Bind header of the grid
             objBudgetDHTMLXGrid = GenerateHeaderStringForInspectPopup(AllocatedBy, objBudgetDHTMLXGrid);
@@ -144,10 +143,11 @@ namespace RevenuePlanner.Services
         /// </summary>
         private BudgetDHTMLXGridModel GenerateHeaderStringForMonthlyAllocated(BudgetDHTMLXGridModel objBudgetDHTMLXGrid)
         {
-            // add each month to the header 
+            // add each month to the header
+            DateTime dt;
             for (int i = 1; i <= 12; i++)
             {
-                DateTime dt = new DateTime(2012, i, 1);
+                dt = new DateTime(2012, i, 1);
                 objBudgetDHTMLXGrid.SetHeader += commaString + dt.ToString("MMM").ToUpper();
                 objBudgetDHTMLXGrid.ColAlign += commaString + objHomeGridProperty.aligncenter;
                 objBudgetDHTMLXGrid.ColumnIds += commaString + dt.ToString("MMM");
@@ -184,7 +184,6 @@ namespace RevenuePlanner.Services
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private List<Budgetdataobj> CostAllocationForInspectPopup(BudgetModel modelLineItem, string activityType, List<Budgetdataobj> lstBudgetData, string allocatedBy, string activityId)
         {
-            Budgetdataobj objBudgetData = new Budgetdataobj();
             // Flag to indicate whether line item or tactic
             bool isLineItem = (activityType == ActivityType.ActivityLineItem) ? true : false;
             // Flag to indicate whether it is balance line item
@@ -192,11 +191,11 @@ namespace RevenuePlanner.Services
 
             if (String.Compare(allocatedBy, Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.quarters)], true) == 0)
             {
-                lstBudgetData = GetQuarterlyAllocatedPlannedCost(objBudgetData, isLineItem, isBalance, modelLineItem, lstBudgetData);
+                lstBudgetData = GetQuarterlyAllocatedPlannedCost(isLineItem, isBalance, modelLineItem, lstBudgetData);
             }
             else
             {
-                lstBudgetData = GetMonthlyAllocatedPlannedCost(objBudgetData, isLineItem, isBalance, modelLineItem, lstBudgetData, allocatedBy);
+                lstBudgetData = GetMonthlyAllocatedPlannedCost(isLineItem, isBalance, modelLineItem, lstBudgetData, allocatedBy);
             }
             return lstBudgetData;
         }
@@ -204,7 +203,7 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get month wise allocated cost
         /// </summary>
-        private List<Budgetdataobj> GetMonthlyAllocatedPlannedCost(Budgetdataobj objBudgetData, bool isLineItem, bool isOtherLineItem, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData, string allocatedBy)
+        private List<Budgetdataobj> GetMonthlyAllocatedPlannedCost( bool isLineItem, bool isOtherLineItem, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData, string allocatedBy)
         {
             double monthlyValue = 0, totalAllocatedCost = 0;
             for (int i = 1; i <= 12; i++)
@@ -257,7 +256,7 @@ namespace RevenuePlanner.Services
                 {
                     monthlyValue = modelEntity.Month.Dec;
                 }
-                objBudgetData = new Budgetdataobj();
+                Budgetdataobj  objBudgetData = new Budgetdataobj();
                 // editable based on permission and balance line item never editable
                 if (!modelEntity.isEditable || modelEntity.LineItemTypeId == null)
                 {
@@ -284,9 +283,10 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get quarter wise allocated cost
         /// </summary>
-        private List<Budgetdataobj> GetQuarterlyAllocatedPlannedCost(Budgetdataobj objBudgetData, bool isLineItem, bool isOtherLineItem, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData)
+        private List<Budgetdataobj> GetQuarterlyAllocatedPlannedCost(bool isLineItem, bool isOtherLineItem, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData)
         {
             double monthlyValue = 0, totalAllocatedCost = 0;
+            Budgetdataobj objBudgetData;
             for (int i = 1; i <= 11; i += 3)
             {
                 if (i == 1)
@@ -732,7 +732,7 @@ namespace RevenuePlanner.Services
             needToSubtract = oldCost - newCost;
 
             // Subtract cost from each months of the quarter e.g. For Q1 -> subtract from Y3, Y2 and Y1 as per requirement
-            Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
+            Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost;
             foreach (string quarter in QuartersList[period])
             {
                 objLineItemCost = objLineitem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == quarter).FirstOrDefault();
