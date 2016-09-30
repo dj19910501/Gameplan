@@ -6048,7 +6048,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 // Todo: this will be passed based from UI once view by functinality implemented
-                string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.quarters); 
+                string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months); 
                 ViewBag.AllocatedBy = AllocatedBy;
                 // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
                 objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate);
