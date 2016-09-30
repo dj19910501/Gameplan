@@ -66,7 +66,7 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine("To check to retrieve Home view with plan id.\n");
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
-
+            MRPEntities db = new MRPEntities();
             //// Call index method
             HomeController objHomeController = new HomeController();
             int UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ID;
