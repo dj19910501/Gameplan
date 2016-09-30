@@ -7598,8 +7598,8 @@ namespace RevenuePlanner.Controllers
             //for calander add this month and this quarter option instead of this year (quarterly) and this year (monthly)
             if (isCalenderView)
             {
-                strThisQuarter = Enums.UpcomingActivities.ThisYearQuaterly.ToString();
-                strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+                strThisQuarter = Enums.UpcomingActivities.thisquarter.ToString();
+                strThisMonth = Enums.UpcomingActivities.thismonth.ToString();
                 quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString();
                 monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
             }
@@ -9715,7 +9715,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
-               ErrorSignal.FromCurrentContext().Raise(ex);
+                ErrorSignal.FromCurrentContext().Raise(ex);  // Log error in Elmah.
             }
 
             var jsonResult = Json(new { data = resultData }, JsonRequestBehavior.AllowGet);
@@ -9728,7 +9728,7 @@ namespace RevenuePlanner.Controllers
         /// Desc: Filter Calendar Model data based on custom field selected under filter screen. 
         /// </summary>
         /// <returns> Return List<calendarDataModel> dataset</returns>
-        public List<calendarDataModel> FilterCustomField(List<calendarDataModel> allData, string fltrCustomfields)
+        private List<calendarDataModel> FilterCustomField(List<calendarDataModel> allData, string fltrCustomfields)
         {
             List<calendarDataModel> resultData = new List<calendarDataModel>();
             try
@@ -9747,20 +9747,22 @@ namespace RevenuePlanner.Controllers
                     resultData = allData.Where(tac => tac.type.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
                     if (filteredCustomFields != null)
                     {
-                        //  filteredCustomFields.ForEach(customField =>
+                        string[] splittedCustomField;
+                        // Splitting filter Customfield values Ex. 71_104 to CustomFieldId: 71 & OptionId: 104
                         foreach (string customField in filteredCustomFields)
                         {
-                            string[] splittedCustomField = customField.Split('_');
+                            splittedCustomField = new string[2];
+                            splittedCustomField = customField.Split('_');
                             lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
                             lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
                         };
 
-                        lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                        lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds); // Filter Tactics list by selected Custofields in filter. 
                         tacData = tacData.Where(tactic => lstTacticIds.Contains(tactic.PlanTacticId.Value)).ToList();
                     }
                     //// get Allowed Entity Ids
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
-                    tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId.Value)).ToList();
+                    tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId.Value)).ToList();    //filter tactics with allowed entity.
                     resultData.AddRange(tacData);
                 }
             }

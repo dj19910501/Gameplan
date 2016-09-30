@@ -1039,6 +1039,7 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Views\Plan\_PlanGridVariable.cshtml" />
+    <Content Include="Views\Home\_CalExportPDFHeaderHtml.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

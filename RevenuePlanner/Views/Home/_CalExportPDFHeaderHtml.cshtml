@@ -1,0 +1,86 @@
+﻿<div id="testdiv" style="display:none;">
+    <div style="display:block;width:100%;margin:0 auto;">
+        <div style="width: 100%; background-color: rgb(36, 133, 186); color: rgb(255, 255, 255); font-size: 16px;">
+            <div style="padding: 20px 14px; height: 23px;">
+                <div style="float: left;  margin-top: -5px;font-size:19px">
+                    Hive9™
+                </div>
+                <div style="float: right; height: 31px;margin-top: -4px;">
+                    <img id="imglogopdf" src="" style="height: 100%; width: auto;">
+                </div>
+            </div>
+        </div>
+        <div style="background-color:#fff;padding: 20px 14px;" id="filterdiv">
+            <h2 style="color: #040707; margin: 0 0 7px;">Marketing Calendar</h2>
+        </div>
+        <div id="mainpdfdiv" style="padding:4px;margin-left: 8px;">
+            <div id="mqlmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;    border-radius: 5px;">
+                <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="mqllabeltest">
+                    Projected MQLs
+                </span>
+                <p style="margin-top:20px;word-break:break-all">
+                    <span style="font-size: 30px; color: rgb(123, 122, 124);" id="mqlspanvalue">270</span>
+                </p>
+                <p style="font-size: 13px; margin: -15px 0px 0px; font-weight: 600;word-break: break-all;" id="mqlspanpercentage">+8.0%</p>
+                <p></p>
+            </div>
+            <div id="budgetmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px; ">
+                <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="budgetlabeltest">
+                    Budget
+                </span>
+                <p style="margin-top:20px;word-break:break-all">
+                    <span style="font-size: 30px; color: rgb(123, 122, 124);" id="budgetspanvalue">$800,000</span>
+                </p>
+                <p></p>
+            </div>
+            <div style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px;">
+                <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                    Tactics
+                </span>
+                <p style="margin-top:20px;word-break:break-all">
+                    <span style="font-size: 30px; color: rgb(123, 122, 124);" id="ptacticcounttest">36</span>
+                </p>
+
+                <p></p>
+            </div>
+            <div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
+                <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                    Activity Distribution
+                </span>
+                <div id="chartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;display:none;">
+                    <div id="JAN" style="margin-left:3px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">J</div>
+                    <div id="APR" style="margin-left: 35px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">A</div>
+                    <div id="JUL" style="margin-left: 69px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">J</div>
+                    <div id="OCT" style="margin-left: 101px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">O</div>
+                    <div id="DEC" style="margin-left: 123px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">D</div>
+                    <div id="border" style="border: 1px solid; width: 100%; float: left; margin-top: 63px;margin-left:-5px;"></div>
+                </div>
+                <div id="AttachChartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;">
+                </div>
+                <div id="chartCanvasmultiyear" style="width: 270px; height: 85px; position: absolute; margin-left: 66px; margin-top: -10px; display: none;">
+                    <div id="Q1" style="margin-left: 3px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q1</div>
+                    <div id="Q2" style="margin-left: 17px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q2</div>
+                    <div id="Q3" style="margin-left: 32px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q3</div>
+                    <div id="Q4" style="margin-left: 47px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q4</div>
+                    <div id="Q5" style="margin-left: 64px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q1</div>
+                    <div id="Q6" style="margin-left: 79px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q2</div>
+                    <div id="Q7" style="margin-left: 94px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q3</div>
+                    <div id="Q8" style="margin-left: 109px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q4</div>
+                    <div id="bordermultiyear" style="border: 1px solid; width: 100%; float: left; margin-top: 63px; margin-left: -5px;"></div>
+                </div>
+                <div id="AttachChartCanvasmultiyear" style="width: 135px; height: 85px; position: absolute; margin-left: 155px; margin-top: -10px;">
+                </div>
+
+                <div id="legendchart" style="display: block; position: absolute; margin-top: -228px;margin-left: 495px;">
+                    <div style="position: absolute; right: 42px; font-size: 10px; top:231px">
+                        <span id="firstyear"></span><div style="display: inline-block; margin-left: -2px;margin-top:4px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #C633C9; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
+                    </div>
+                    <div style="position: absolute; right: 42px; font-size: 10px; top: 260px;">
+                        <span id="secondyear"></span><div style="display: inline-block; margin-left: -2px;margin-top:6px; height: 10px; width: 25px; border-radius: 10px 10px 0 0; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; background: #407B22; -ms-transform: rotate(-90deg); -webkit-transform: rotate(-90deg); transform: rotate(-90deg);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+</div>

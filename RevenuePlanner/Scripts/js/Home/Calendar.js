@@ -43,6 +43,7 @@ function BindPlanCalendar() {
 function GetCalendarDataInJsonFormat() {
     var strURL = urlContent + 'Home/GetCalendarData/';
     filters = GetFilterIds();
+    var timeframe = $("#ddlUpComingActivites").val();
 var viewBy = $('#ddlTabViewBy').val();
     $.ajax({
         url: strURL,
@@ -53,7 +54,7 @@ var viewBy = $('#ddlTabViewBy').val();
             tactictypeIds: filters.TacticTypeids.toString(),
             statusIds: filters.StatusIds.toString(),
             customFieldIds: filters.customFieldIds.toString(),
-            timeframe: '',
+            timeframe: timeframe,
             viewBy: viewBy
         },
         success: function (data) {
@@ -78,10 +79,8 @@ function ConfigureGanttwithdefaultSettings() {
 function SetGanttData(resultdata) {
     var isRender;
     var taskData = resultdata;
-    //var taskData = JSON.parse('[{"id":"L20220","text":"Plan_Usability_V","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":1,"open":false,"color":"","colorcode":"333333","planid":20220,"type":"Plan","TacticType":"--","Status":"Published","OwnerName":"Admin admin","Permission":true},{"id":"L20220_C27294","text":"C1","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":2,"open":false,"parent":"L20220","color":"","colorcode":"4798ba","plancampaignid":27294,"Status":"Created","type":"Campaign","TacticType":"--","OwnerName":"Admin admin","Permission":true},{"id":"L20220_C27294_P33913_T128321_Y31104","text":"T1","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":0,"open":false,"parent":"L20220_C27294_P33913","color":"","colorcode":"317232","isSubmitted":false,"isDeclined":false,"projectedStageValue":"0","mqls":"0","cost":100000,"cws":0,"plantacticid":128321,"Status":"Created","type":"Tactic","TacticType":"Email","OwnerName":"Admin admin","ROITacticType":"Promotion","IsAnchorTacticId":0,"PlanTacticId":128321,"CalendarHoneycombpackageIDs":"","Permission":true,"LinkTacticPermission":false,"LinkedTacticId":null,"LinkedPlanName":null},{"id":"L20220_C27294_P33913_T129873_Y31104","text":"T2","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":0,"open":false,"parent":"L20220_C27294_P33913","color":"","colorcode":"317232","isSubmitted":false,"isDeclined":false,"projectedStageValue":"0","mqls":"0","cost":100000,"cws":0,"plantacticid":129873,"Status":"Created","type":"Tactic","TacticType":"Email","OwnerName":"Admin admin","ROITacticType":"Promotion","IsAnchorTacticId":0,"PlanTacticId":129873,"CalendarHoneycombpackageIDs":"","Permission":true,"LinkTacticPermission":false,"LinkedTacticId":null,"LinkedPlanName":null},{"id":"L20220_C27294_P33913","text":"P1","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":0,"open":false,"parent":"L20220_C27294","color":"","colorcode":"c6ebf3","planprogramid":33913,"Status":"Created","type":"Program","TacticType":"--","OwnerName":"Admin admin","Permission":true}]');
-    var isQuater = '2016';  //TODO: Set Fix value.
-    var planYear = 2016;    //TODO: Set Fix value.
-
+    //var staticData = JSON.parse('[{"id":"L20220","text":"Plan_Usability_V","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":1,"open":false,"color":"","colorcode":"333333","planid":20220,"type":"Plan","TacticType":"--","Status":"Published","OwnerName":"Admin admin","Permission":true},{"id":"L20220_C27294","text":"C1","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":2,"open":false,"parent":"L20220","color":"","colorcode":"4798ba","plancampaignid":27294,"Status":"Created","type":"Campaign","TacticType":"--","OwnerName":"Admin admin","Permission":true},{"id":"L20220_C27294_P33913_T128321_Y31104","text":"T1","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":0,"open":false,"parent":"L20220_C27294_P33913","color":"","colorcode":"317232","isSubmitted":false,"isDeclined":false,"projectedStageValue":"0","mqls":"0","cost":100000,"cws":0,"plantacticid":128321,"Status":"Created","type":"Tactic","TacticType":"Email","OwnerName":"Admin admin","ROITacticType":"Promotion","IsAnchorTacticId":0,"PlanTacticId":128321,"CalendarHoneycombpackageIDs":"","Permission":true,"LinkTacticPermission":false,"LinkedTacticId":null,"LinkedPlanName":null},{"id":"L20220_C27294_P33913_T129873_Y31104","text":"T2","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":0,"open":false,"parent":"L20220_C27294_P33913","color":"","colorcode":"317232","isSubmitted":false,"isDeclined":false,"projectedStageValue":"0","mqls":"0","cost":100000,"cws":0,"plantacticid":129873,"Status":"Created","type":"Tactic","TacticType":"Email","OwnerName":"Admin admin","ROITacticType":"Promotion","IsAnchorTacticId":0,"PlanTacticId":129873,"CalendarHoneycombpackageIDs":"","Permission":true,"LinkTacticPermission":false,"LinkedTacticId":null,"LinkedPlanName":null},{"id":"L20220_C27294_P33913","text":"P1","machineName":"","start_date":"09/08/2016","duration":30.999999999998842,"progress":0,"open":false,"parent":"L20220_C27294","color":"","colorcode":"c6ebf3","planprogramid":33913,"Status":"Created","type":"Program","TacticType":"--","OwnerName":"Admin admin","Permission":true}]');
+    var timeframe = $("#ddlUpComingActivites").val();
 
     var tasks = {
         data: taskData
@@ -98,7 +97,7 @@ function SetGanttData(resultdata) {
     }
 
     gantt.config.select_task = true;
-    if (isQuater == "thisquarter") {
+    if (timeframe == "thisquarter") {
         //// Setting scale.
         gantt.config.scale_unit = "month";
         gantt.config.step = 12;
@@ -109,7 +108,7 @@ function SetGanttData(resultdata) {
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         //// Getting quarter
-        var startDate = getQarterStartDate();
+        var startDate = getQuarterStartDate();
         var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
         gantt.config.start_date = startDate;
         gantt.config.end_date = endDate;
@@ -152,7 +151,7 @@ function SetGanttData(resultdata) {
             $('#popupType').css('display', 'none');
         });
     }
-    else if (isQuater == "thismonth") {
+    else if (timeframe == "thismonth") {
         gantt.config.scale_unit = "month";
         gantt.config.step = 12;
         gantt.config.date_scale = " %Y";
@@ -207,9 +206,9 @@ function SetGanttData(resultdata) {
             $('#popupType').css('display', 'none');
         });
     }
-    else if ($.isNumeric(isQuater)) {
+    else if ($.isNumeric(timeframe)) {
 
-        var PlanYears = isQuater.split("-");
+        var PlanYears = timeframe.split("-");
         var yearDiffrence = 1;
         if (PlanYears.length > 1) {
             yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
@@ -224,8 +223,8 @@ function SetGanttData(resultdata) {
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date();
-        gantt.config.start_date = new Date(planYear, 00, 01);
-        gantt.config.end_date = new Date(planYear + yearDiffrence, 00, 01);
+        gantt.config.start_date = new Date(parseInt(PlanYears[0]), 00, 01);
+        gantt.config.end_date = new Date(parseInt(PlanYears[0]) + yearDiffrence, 00, 01);
 
         gantt.init("gantt_here");
 
@@ -245,7 +244,7 @@ function SetGanttData(resultdata) {
     else {
 
         // Desc :: For 24 months
-        var PlanYears = isQuater.split("-");
+        var PlanYears = timeframe.split("-");
         var yearDiffrence = 1;
         if (PlanYears.length > 1) {
             yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
@@ -260,8 +259,8 @@ function SetGanttData(resultdata) {
         //gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date();
-        gantt.config.start_date = new Date(planYear, 00, 01);
-        gantt.config.end_date = new Date(planYear + yearDiffrence, 00, 01);
+        gantt.config.start_date = new Date(parseInt(PlanYears[0]), 00, 01);
+        gantt.config.end_date = new Date(parseInt(PlanYears[0]) + yearDiffrence, 00, 01);
         gantt.init("gantt_here");
 
         var json_length = tasks.data.length;
@@ -326,18 +325,39 @@ function getCSSForTask(task) {
     return cssClass;
 }
 
-gantt.attachEvent("onTaskOpened", function (id) {
-    onGanttTaskOpen(id);
-});
+//// Function to start date of current quarter.
+function getQuarterStartDate() {
+    var currentDate = new Date();
+    var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
+    var startDate;
+    var fullYear = currentDate.getFullYear();
+    switch (quater) {
+        case 1:
+            startDate = new Date(fullYear, 00, 01);
+            break;
+        case 2:
+            startDate = new Date(fullYear, 03, 01);
+            break;
+        case 3:
+            startDate = new Date(fullYear, 06, 01);
+            break;
+        case 4:
+            startDate = new Date(fullYear, 09, 01);
+            break;
+        default:
+            startDate = currentDate;
+    }
 
-function onGanttTaskOpen(id) {
+    return startDate;
+}
+
+gantt.attachEvent("onTaskOpened", function (id) {
 
     arrClosedTask = jQuery.grep(arrClosedTask, function (value) {
         return value != id;
     });
-
     manageAddPopup();
-}
+});
 
 gantt.attachEvent("onTaskClosed", function (id) {
 
@@ -370,8 +390,6 @@ function manageAddPopup()
     $(".gantt_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
     });
-    GlobalSearch();
-
 }
 
 function AttachEventToTactic() {
@@ -489,3 +507,351 @@ function ShowModel(taskId, isShowInspect) {
     }
 }
 ///End
+
+var PdfFilters = {
+    customFieldIds: [],
+    PlanIDs: [],
+    SelectedPlans: [],
+    PlanTitles: [],
+    OwnerIds: [],
+    TacticTypeids: [],
+    StatusIds: []
+};
+
+// Export PDF function for calendar.
+function CallPDF() {
+    var timeframe = $("#ddlUpComingActivites").val();
+
+    var isAvailablerecord = false;
+
+    PdfFilters.SelectedPlans = [];
+    $.each(filters.PlanIDs, function () {
+        PdfFilters.SelectedPlans.push(this);
+    });
+    PdfFilters.OwnerIds = [];
+    $.each(filters.OwnerIds, function () {
+        PdfFilters.OwnerIds.push(this);
+    });
+    PdfFilters.TacticTypeids = [];
+    $.each(filters.TacticTypeids, function () {
+        PdfFilters.TacticTypeids.push(this);
+    });
+    PdfFilters.StatusIds = [];
+    $.each(filters.StatusIds, function () {
+        PdfFilters.StatusIds.push(this);
+    });
+    //PdfFilters.SelectedPlans = filters.SelectedPlans;
+    PdfFilters.customFieldIds = filters.customFieldIds;
+
+    
+    // Desc :: To resolve click on clear filters
+    if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
+        isAvailablerecord = true;
+    }
+    
+    if (isAvailablerecord) {
+        // Check Export only filtered data after performing global search.
+        if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != null && $('#txtGlobalSearch').val().trim() != "") {
+
+            $(GanttTaskData.data).each(function () {
+                if ($('#searchCriteria').val().replace(" ", "").toUpperCase() == ActivityName) {        // The 'ActivityName' variable set at Index page through Enum properties.
+                    if (this.text.toLowerCase().indexOf($('#txtGlobalSearch').val().trim().toLowerCase()) > -1) {
+                        ExportSelectedIdsafterSearch.TaskID.push(this.id);
+                    }
+
+                }
+                if ($('#searchCriteria').val().replace(" ", "").toUpperCase() == ExternalName) {        // The 'ExternalName' variable set at Index page through Enum properties.
+                    if (this.machineName.toLowerCase().indexOf($('#txtGlobalSearch').val().trim().toLowerCase()) > -1) {
+                        ExportSelectedIdsafterSearch.TaskID.push(this.id);
+                    }
+
+                }
+            });
+
+        }
+        if (ExportSelectedIdsafterSearch.TaskID.length > 0) {
+            CallPdfHoneyComb();
+            ExportSelectedIdsafterSearch.TaskID = [];
+            RemoveAllHoneyCombData();
+        }
+        else {
+            $.each(GanttTaskData.data, function () {
+                this.color = '#' + this.colorcode;
+            });
+
+            gantt.init("gantt_here");
+            gantt.parse(GanttTaskData);
+            var htmltestdiv = '';
+            htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Calendar</h2>';
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            htmltestdiv += timeframe + '</span>';
+            htmltestdiv += '</p>';
+
+            var innerfiltervalueplan = "";
+            var isselectedplan = true;
+            var DropDownPlan = true;
+            $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+                if ($(this).attr('checked') == 'checked') {
+                    isselectedplan = true;
+                }
+            });
+
+            if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
+                $.each(PdfFilters.SelectedPlans, function () {
+                    // Export pdf issue for plan name display undefined
+                    innerfiltervalueplan += " " + $("#" + this).parent().parent("#ulSelectedPlans").children().children("#" + this).parent().attr('title') + ",";
+                });
+            }
+
+            if (PdfFilters.SelectedPlans.toLocaleString().trim().length > 0) {
+                DropDownPlan = false;
+            }
+
+            if (innerfiltervalueplan != undefined && innerfiltervalueplan != 'undefined' && innerfiltervalueplan != '') {
+                htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                htmltestdiv += '<label style="color:#050708;font-weight: 600;">Plan: </label>';
+                htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                innerfiltervalueplan = DropDownPlan == true ? innerfiltervalueplan : innerfiltervalueplan.substring(0, innerfiltervalueplan.length - 1);
+                htmltestdiv += innerfiltervalueplan + '</span>';
+                htmltestdiv += '</p>';
+            }
+            var Parentid = "";
+            $.each($('#divCustomFieldsFilter').find('.dropdown-section'), function () {
+
+                var headertitle = $(this).find("h2 span").text();
+                var innerfiltervalue = "";
+
+                Parentid = this.id;
+                var sl = Parentid.lastIndexOf('-');
+                Parentid = Parentid.substring(sl + 1, sl.length).toString();
+
+                if (PdfFilters.customFieldIds.length > 0) {
+
+                    var a = PdfFilters.customFieldIds;
+                    $.each(a, function () {
+                        if (this != null && this != undefined && this != 'undefined') {
+
+                            var liId = this.toString();
+                            var splitIds = liId.split('_');
+                            if (Parentid == splitIds[0].toString()) {
+                                var actualId = "#li_" + Parentid + "_" + splitIds[1];
+                                var chkid = $(actualId).attr("title");
+                                innerfiltervalue += " " + chkid + ",";
+                            }
+                        }
+                    });
+                    if (innerfiltervalue != undefined && innerfiltervalue != 'undefined' && innerfiltervalue != '') {
+                        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                        htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
+                        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                        innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
+                        htmltestdiv += innerfiltervalue + '</span>';
+                        htmltestdiv += '</p>';
+                    }
+                }
+            });
+
+
+            var innerfiltervalueOwner = "";
+            var isselectedOwner = true;
+            var pdfowner = PdfFilters.OwnerIds.toString().trim();
+            if (pdfowner.length > 0) {
+                $.each(PdfFilters.OwnerIds, function () {
+                    innerfiltervalueOwner += " " + $("#ulSelectedOwner").find('#liOwner' + this).attr("title") + ",";
+                });
+            }
+
+            if (innerfiltervalueOwner != undefined && innerfiltervalueOwner != 'undefined' && innerfiltervalueOwner != '') {
+                htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                htmltestdiv += '<label style="color:#050708;font-weight: 600;">Owner: </label>';
+                htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                innerfiltervalueOwner = innerfiltervalueOwner.substring(0, innerfiltervalueOwner.length - 1);
+                htmltestdiv += innerfiltervalueOwner + '</span>';
+                htmltestdiv += '</p>';
+            }
+
+            var innerfiltervalueTacticType = "";
+            var isselectedTacticType = true;
+            if (PdfFilters.TacticTypeids.length > 0) {
+                $.each(PdfFilters.TacticTypeids, function () {
+                    innerfiltervalueTacticType += " " + $("#ulTacticType").find('#liTT' + this).attr("title") + ",";
+                });
+            }
+
+            if (innerfiltervalueTacticType != undefined && innerfiltervalueTacticType != 'undefined' && innerfiltervalueTacticType != '') {
+                htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                htmltestdiv += '<label style="color:#050708;font-weight: 600;">Tactic Type: </label>';
+                htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                innerfiltervalueTacticType = innerfiltervalueTacticType.substring(0, innerfiltervalueTacticType.length - 1);
+                htmltestdiv += innerfiltervalueTacticType + '</span>';
+                htmltestdiv += '</p>';
+            }
+
+            var innerfiltervalueStatus = "";
+            var isselectedStatus = true;
+            if (PdfFilters.StatusIds.length > 0) {
+                $.each(PdfFilters.StatusIds, function () {
+                    innerfiltervalueStatus += " " + $("#ulStatus").find('#' + this).parent().find("span").text() + ",";
+                });
+            }
+
+            if (innerfiltervalueStatus != undefined && innerfiltervalueStatus != 'undefined' && innerfiltervalueStatus != '') {
+                htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                htmltestdiv += '<label style="color:#050708;font-weight: 600;">Status: </label>';
+                htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                innerfiltervalueStatus = innerfiltervalueStatus.substring(0, innerfiltervalueStatus.length - 1);
+                htmltestdiv += innerfiltervalueStatus + '</span>';
+                htmltestdiv += '</p>';
+            }
+            $("#filterdiv").html('');
+            $("#filterdiv").append(htmltestdiv);
+            $("#mqllabeltest").text($("#pmqlLabel").text());
+            $("#mqlspanvalue").text($("#pMQLs").text());
+            $("#mqlspanpercentage").text($("#pMQLImproved").text());
+            $("#pMQLImproved").parent().find('.greenfont').each(function () {
+                $("#mqlspanpercentage").css("color", "#559659");
+            });
+            $("#pMQLImproved").parent().find('.redfont').each(function () {
+                $("#mqlspanpercentage").css("color", "#EF2240");
+            });
+
+            var originurl = document.location.origin;
+            var mypathurl = document.location.pathname.split('/')[1];
+            var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
+            $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
+                $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
+                $("#mqlmaindiv").css("background-position", "right bottom");
+                $("#mqlmaindiv").css("background-repeat", "no-repeat");
+            });
+
+            $("#DivBullhornbg").parent().find('.bullhorn-bg-disabled').each(function () {
+                $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg-disabled.png')");
+                $("#mqlmaindiv").css("background-position", "right bottom");
+                $("#mqlmaindiv").css("background-repeat", "no-repeat");
+            });
+
+            $("#DivBullhornbg").parent().find('.bulldoller-bg').each(function () {
+
+                $("#budgetmaindiv").css("background-image", "url('" + urlpdf + "Content/images/icon-dollar.png')");
+                $("#budgetmaindiv").css("background-position", "right bottom");
+                $("#budgetmaindiv").css("background-repeat", "no-repeat");
+            });
+
+
+            $("#budgetlabeltest").text($("#pcostLabel").text());
+            $("#budgetspanvalue").text($("#pbudget").text());
+            $("#ptacticcounttest").text($("#ptacticcount").text());
+
+
+            if (timeframe.split('-').length > 1) {
+                $("#AttachChartCanvas").html('');
+                $("#legendchart").show();
+                var ChartHtml = $("#chartCanvasmultiyear").html();
+                var Chartlegend = $("#legendchart").html();
+                var Canvas = $("#chart2").find(".dhx_canvas_text");
+                var i = 0;
+                var AttachChartHtml = '';
+                AttachChartHtml = ChartHtml;
+                var leAlignment = 15;
+                var z = 20;
+                var colorchart = "#C633C9;";
+                $.each(Canvas, function () {
+                    if (i > 7) {
+
+                        var left = $(this).css('left');
+                        var leftvalue = "";
+                        var top = $(this).css('top');
+                        var text = $(this).text();
+                        var BarHeight = 55 - parseInt(top);
+                        if (parseInt(left) > 60) {
+                            colorchart = "#407B22;";
+                        }
+                        AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                        AttachChartHtml += text;
+                        AttachChartHtml += "<div style='width:5px;background-color:" + colorchart + " height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                        AttachChartHtml += "</div>";
+                    }
+
+                    i++;
+                });
+
+                $("#firstyear").text(timeframe.split('-')[0]);
+                $("#secondyear").text(timeframe.split('-')[1]);
+                $("#AttachChartCanvasmultiyear").html('');
+                $("#AttachChartCanvasmultiyear").html(AttachChartHtml);
+            }
+            else {
+                $("#legendchart").hide();
+                $("#AttachChartCanvasmultiyear").html('');
+                var ChartHtml = $("#chartCanvas").html();
+                var Canvas = $("#chart2").find(".dhx_canvas_text");
+                var i = 0;
+                var AttachChartHtml = ChartHtml;
+                $.each(Canvas, function () {
+
+                    if (i > 4) {
+                        var left = $(this).css('left');
+                        var top = $(this).css('top');
+                        var text = $(this).text();
+                        var BarHeight = 55 - parseInt(top);
+                        AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                        AttachChartHtml += text;
+                        AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                        AttachChartHtml += "</div>";
+                    }
+                    i++;
+                });
+
+                $("#AttachChartCanvas").html('');
+                $("#AttachChartCanvas").html(AttachChartHtml);
+                $('#AttachChartCanvas').css('margin-left', '55px');
+            }
+
+            var headerhtml = $("#testdiv").html();
+            var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
+            var datestart;
+            var dateend;
+            if ($.isNumeric(timeframe)) {
+                datestart = "01-01-" + timeframe;
+                dateend = "01-01-" + (parseInt(timeframe) + 1).toString();
+            }
+            else if (timeframe == 'thismonth') {
+                var date = new Date(), m = date.getMonth();
+                datestart = "01-" + (m + 1).toString() + "-" + date.getFullYear().toString();
+                dateend = "01-" + (m + 2).toString() + "-" + date.getFullYear().toString();
+                $('#mainpdfdiv').css('width', '1000px');
+                var headerhtml = $("#testdiv").html();
+            }
+            else if (timeframe == 'thisquarter') {
+                var startDate = getQuarterStartDate();
+                var m = startDate.getMonth();
+                datestart = "01-" + (m + 1).toString() + "-" + startDate.getFullYear().toString();
+                dateend = "01-" + (m + 4).toString() + "-" + startDate.getFullYear().toString();
+                $('#mainpdfdiv').css('width', '1000px');
+                var headerhtml = $("#testdiv").html();
+            }
+            else { 
+                var PlanYears = timeframe.split("-");
+                var yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
+                datestart = "01-01-" + timeframe.split("-")[0];
+                dateend = "01-01-" + (parseInt(timeframe) + yearDiffrence).toString();
+                $('#mainpdfdiv').css('width', '');
+                var headerhtml = $("#testdiv").html();
+            }
+            gantt.getGridColumn("colorcode").hide = true;   // Hide 'ColorCode' column on export to PDF file.
+            gantt.exportToPDF({
+                header: headerhtml,
+                start: datestart,
+                end: dateend
+
+            });
+        }
+    }
+    else {
+        $('#cErrorInspectPopup').html('No plan selected to export the data in .pdf');
+        $('#errorMessageInspectPopup').css("display", "block");
+        $('#errorMessageInspectPopup').removeClass('message-position');
+    }
+}
