@@ -97,7 +97,7 @@ function SetGanttData(resultdata) {
         gantt.clearAll();
     }
 
-    gantt.config.select_task = false;
+    gantt.config.select_task = true;
     if (isQuater == "thisquarter") {
         //// Setting scale.
         gantt.config.scale_unit = "month";
@@ -377,13 +377,22 @@ function manageAddPopup()
 function AttachEventToTactic() {
 
     var eventTaskClick; //// Variable to hold double click event.
-    //// Detaching double click event.
+    var eventdblTaskClick;
+    //// Detaching single click event.
     if (eventTaskClick != undefined) {
         gantt.detachEvent(eventTaskClick);
     }
-
+        //// Detaching double click event.
+    if (eventdblTaskClick != undefined) {
+        gantt.detachEvent(eventdblTaskClick);
+    }
     //// Attaching single click event
-    eventTaskClick = gantt.attachEvent("onTaskClick", function (taskId, e) {
+    eventTaskClick = gantt.attachEvent("onTaskClick", function (taskId, e) {        
+        gantt.selectTask(taskId);
+    });
+
+    //// Attaching double click event
+    eventdblTaskClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) {
         var where = e.target.getAttribute('class');
         if (where == 'gantt_task_content' || where == 'gantt_tree_content') {
             scrollstate = gantt.getScrollState();
