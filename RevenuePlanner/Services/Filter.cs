@@ -16,9 +16,17 @@ namespace RevenuePlanner.Services
     public class Filter : IFilter
     {
         #region Variables
-        StoredProcedure objSp = new StoredProcedure();
-        CacheObject objCache = new CacheObject();
-        private MRPEntities objDbMrpEntities = new MRPEntities();
+        private StoredProcedure objSp;
+        private CacheObject objCache;
+        private MRPEntities objDbMrpEntities;
+        private BDSService.BDSServiceClient bdsUserRepository;
+        public Filter()
+        {
+            objSp = new StoredProcedure();
+            objCache = new CacheObject();
+            objDbMrpEntities = new MRPEntities();
+            bdsUserRepository = new BDSService.BDSServiceClient();
+        }
         #endregion
 
         /// <summary>
@@ -35,10 +43,13 @@ namespace RevenuePlanner.Services
             string currentYear = Convert.ToString(DateTime.Now.Year);
             #endregion
 
-            //Get Active ModelIds for particular Client
-            List<int> modelIds = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(ClientId) && model.IsDeleted == false).Select(m => m.ModelId).ToList();
-            //Get Active Plans for particular Model
-            List<Plan> activePlan = objDbMrpEntities.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
+            //Get Active Plans for particular Model of a client 
+            List<Plan> activePlan = (from plan in objDbMrpEntities.Plans
+                                     join model in objDbMrpEntities.Models on plan.ModelId equals model.ModelId
+                                     where model.ClientId.Equals(ClientId) && plan.IsDeleted == false && plan.IsActive == true && model.IsDeleted == false
+                                     select plan
+                                    ).ToList();
+
 
             if (activePlan != null && activePlan.Count() > 0)
             {
@@ -47,8 +58,7 @@ namespace RevenuePlanner.Services
             }
 
             //Set Last User Saved Views
-            List<Plan_UserSavedViews> SetOFLastViews = new List<Plan_UserSavedViews>();
-            SetOFLastViews = SetLastViews(UserId, PlanUserSavedViews, FilterPresetName, SetOFLastViews);
+            List<Plan_UserSavedViews> SetOFLastViews = SetLastViews(UserId, PlanUserSavedViews, FilterPresetName);
 
             // Fetch List of Plan Saved Views wise
             List<Plan_UserSavedViews> SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Convert.ToString(Enums.FilterLabel.Plan) && view.Userid == UserId).ToList();
@@ -91,13 +101,19 @@ namespace RevenuePlanner.Services
 
             }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
 
-            List<SelectListItem> lstYear = new List<SelectListItem>();
-            List<int> StartYears = CampPlans.Select(camp => camp.StartDate.Year).Distinct().ToList();
+            List<int> StartYears = new List<int>();
+            List<int> EndYears = new List<int>();
+            if (CampPlans != null && CampPlans.Count() > 0)
+            {
+                StartYears = CampPlans.Select(camp => camp.StartDate.Year).Distinct().ToList();
+                EndYears = CampPlans.Select(camp => camp.EndDate.Year).Distinct().ToList();
+            }
+            else
+            {
+                StartYears = activePlan.Select(camp => Convert.ToInt32(camp.Year)).Distinct().ToList();
+            }
 
-            List<int> EndYears = CampPlans.Select(camp => camp.EndDate.Year)
-                .Distinct().ToList();
-
-            LstYear = GetListofYears(LstYear, SelectedYear, lstYear, StartYears, EndYears);
+            LstYear = GetListofYears(SelectedYear, StartYears, EndYears);
 
             return planmodel;
         }
@@ -106,9 +122,10 @@ namespace RevenuePlanner.Services
         /// Get List of Years
         /// Modified By Nandish Shah PL Ticket#2611
         /// </summary>
-        public List<SelectListItem> GetListofYears(List<SelectListItem> LstYear, List<string> SelectedYear, List<SelectListItem> lstYear, List<int> StartYears, List<int> EndYears)
+        public List<SelectListItem> GetListofYears(List<string> SelectedYear, List<int> StartYears, List<int> EndYears)
         {
             List<int> PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
+            List<SelectListItem> LstYear = new List<SelectListItem>();
 
             List<int> yearlist = PlanYears;
             SelectListItem objYear = new SelectListItem();
@@ -121,11 +138,11 @@ namespace RevenuePlanner.Services
 
                 objYear.Value = yearname;
                 objYear.Selected = SelectedYear.Contains(Convert.ToString(years)) ? true : false;
-                lstYear.Add(objYear);
+                LstYear.Add(objYear);
             }
 
             //List of Filter Year
-            LstYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+            LstYear = LstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             return LstYear;
         }
 
@@ -199,8 +216,9 @@ namespace RevenuePlanner.Services
         /// Set Last Views
         /// Modified By Nandish Shah PL Ticket#2611
         /// </summary>
-        public List<Plan_UserSavedViews> SetLastViews(int UserId, List<Plan_UserSavedViews> PlanUserSavedViews, string FilterName, List<Plan_UserSavedViews> SetOFLastViews)
+        public List<Plan_UserSavedViews> SetLastViews(int UserId, List<Plan_UserSavedViews> PlanUserSavedViews, string FilterName)
         {
+            List<Plan_UserSavedViews> SetOFLastViews;
             // Set User's Last set of Views
             if (PlanUserSavedViews == null)
             {
@@ -276,9 +294,9 @@ namespace RevenuePlanner.Services
             {
                 //Check whether current plan is in list of Active Plan or not
                 LstPlan = ActivePlan.Where(p => SelectedPlanId.Contains(p.PlanId)).ToList();
-                if (LstPlan == null)
+                if (LstPlan == null || LstPlan.Count == 0)
                 {
-                    LstPlan[0] = DefaultPlan;
+                    LstPlan.Add(DefaultPlan);
                     SelectedPlanId = LstPlan.Select(s => s.PlanId).ToList();
                 }
             }
@@ -287,7 +305,7 @@ namespace RevenuePlanner.Services
                 //If Session of PlanIds null then fetch one plan from Active Plan List
                 if (StoredPlanId == null || StoredPlanId.Count() == 0)
                 {
-                    List<Plan> fiterActivePlan = new List<Plan>();
+                    List<Plan> fiterActivePlan;
                     fiterActivePlan = ActivePlan.Where(plan => plan.Year == CurrentYear).ToList();
                     if (fiterActivePlan != null && fiterActivePlan.Any())
                     {
@@ -295,7 +313,7 @@ namespace RevenuePlanner.Services
                     }
                     else
                     {
-                        LstPlan[0] = DefaultPlan;
+                        LstPlan.Add(DefaultPlan);
                     }
 
                 }
@@ -303,9 +321,9 @@ namespace RevenuePlanner.Services
                 {
                     //Check whether Session plan is in list of Active Plan or not
                     LstPlan = ActivePlan.Where(plan => StoredPlanId.Contains(plan.PlanId)).ToList();
-                    if (LstPlan == null)
+                    if (LstPlan == null || LstPlan.Count == 0)
                     {
-                        LstPlan[0] = DefaultPlan;
+                        LstPlan.Add(DefaultPlan);
                     }
                 }
             }
@@ -320,7 +338,7 @@ namespace RevenuePlanner.Services
             #region Variables
             customFieldListOut = new List<CustomFieldsForFilter>();
             customFieldOptionsListOut = new List<CustomFieldsForFilter>();
-            List<int> lstCustomFieldId = new List<int>();
+            List<int> lstCustomFieldId;
 
             string DropDownList = Convert.ToString(Enums.CustomFieldType.DropDownList);
             string EntityTypeTactic = Convert.ToString(Enums.EntityType.Tactic);
@@ -541,7 +559,7 @@ namespace RevenuePlanner.Services
         /// <returns>returns List of TacticTypeModel</returns>
         public List<TacticTypeModel> GetTacticTypeList(List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, int UserId)
         {
-            List<Plan_Campaign_Program_Tactic> TacticUserList = tacticList.ToList();
+            List<Plan_Campaign_Program_Tactic> TacticUserList = tacticList;
             if (TacticUserList.Count > 0)
             {
                 TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == UserId).ToList();
@@ -708,7 +726,6 @@ namespace RevenuePlanner.Services
         /// <returns>returns List of Individuals By PlanId</returns>
         public List<User> GetIndividualsByPlanId(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds, Guid ApplicationId, int UserId)
         {
-            BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
             List<Plan_Campaign_Program_Tactic> TacticUserList = tacticList.Distinct().ToList();
             if (TacticUserList.Count > 0)
             {
