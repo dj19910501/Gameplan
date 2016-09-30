@@ -7462,6 +7462,25 @@ END
 GO
 --Insertation End #2623 import multiple plan
 Go
+
+-- =============================================
+-- Author:<Author,,Rahul Shah>
+-- Create date: <Create Date,29-Sept-2016,>
+-- Description:	<This is a insertion script to add a color code for LineItem>
+-- =============================================
+DECLARE @TableName nvarchar(255) = 'EntityTypeColor'
+DECLARE @EntityType nvarchar(255) = 'LineItem'
+DECLARE @ColorCode nvarchar(255) = 'FFFFFF'
+
+IF (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @TableName))
+BEGIN
+	if (NOT EXISTS(SELECT * FROM EntityTypeColor  WHERE EntityType = @EntityType))
+	BEGIN
+		INSERT INTO EntityTypeColor VALUES (@EntityType, @ColorCode)
+	END
+END
+
+Go
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
 -- ======================================================================================
