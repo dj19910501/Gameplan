@@ -69,7 +69,9 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call index method
             HomeController objHomeController = new HomeController();
-            int planId = DataHelper.GetPlanId();
+            int UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ID;
+            //int planId = DataHelper.GetPlanId();
+            int planId = db.Plans.Where(pl => pl.CreatedBy == UserId).Select(pl => pl.PlanId).FirstOrDefault();
             string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
             string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
             string singlehash = DataHelper.ComputeSingleHash(password);
@@ -94,7 +96,6 @@ namespace RevenuePlanner.Test.Controllers
             MRPEntities db = new MRPEntities();
             //// Set session value
             HttpContext.Current = DataHelper.SetUserAndPermission();
-
             string userName = Convert.ToString(ConfigurationManager.AppSettings["Username"]);
             string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
             string singlehash = DataHelper.ComputeSingleHash(password);
@@ -103,9 +104,10 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call index method
             HomeController objHomeController = new HomeController();
-            int planId = DataHelper.GetPlanId();
-            var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews;
+            int UserId = ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).ID;
+            //int planId = DataHelper.GetPlanId();
+            int planId = db.Plans.Where(pl => pl.CreatedBy == UserId).Select(pl => pl.PlanId).FirstOrDefault();
+            //var SetOFLastViews = db.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();            
             var result = objHomeController.Index(Enums.ActiveMenu.Plan, planId) as ViewResult;
 
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ActiveMenu:  " + result.ViewBag.ActiveMenu);
