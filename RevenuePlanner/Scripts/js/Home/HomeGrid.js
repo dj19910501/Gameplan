@@ -20,6 +20,8 @@ var newTactVal = 0;
 var value;
 var TacticName;
 var ExportToCsv = false;
+var NodatawithfilterGrid = '<div id="NodatawithfilterGrid" style="display:none;">' +
+    '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' + '<br/></div>';
 function SetTooltip() {
     $(".grid_Search").tooltip({
         'container': 'body',
@@ -75,8 +77,7 @@ function LoadPlanGridFromCache() {
     $.ajax({
         url: urlContent + 'Plan/GetHomeGridDataFromCache/',
         success: function (result) {
-            var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
-    '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +'<br/></div>';
+            var gridhtml = NodatawithfilterGrid;
             gridhtml += result;
             $("#divgridview").html('');
             $("#divgridview").html(gridhtml);
