@@ -170,6 +170,7 @@
             $("#gridbox").hide();
             $("#goalwrapper").hide();
             $("#NodatawithfilterGrid").show();
+            $('#exp-serach').css('display', 'none');
         }
         if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
             GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));

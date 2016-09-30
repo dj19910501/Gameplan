@@ -435,6 +435,7 @@ function ShowModel(taskId, isShowInspect) {
         planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
         planProgramId = $("#hdnshowInspectForPlanProgramId").val();
         planLineItemId = $("#hdnShowInspectForPlanLineItemId").val();
+        planId = $("#CurrentPlanId").val();
     }
     //// Checking whether current task is tactic or not.
     if (typeof planTacticId != 'undefined' && planTacticId != 0 && planTacticId != null && planTacticId != '') {
