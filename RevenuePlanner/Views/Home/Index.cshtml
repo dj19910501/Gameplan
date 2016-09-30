@@ -79,7 +79,7 @@
                 </a>
                 <ul id="" class="dropdown-menu export-dd">
                     <li title=""><a href="#" id="ExportXls" onclick="ExportToExcel()">.xls</a></li>
-                    <li title=""><a href="#" id="ExportPDf" style="display:none">PDF</a></li>
+                    <li title=""><a href="#" id="ExportPDf" onclick="CallPDF()" style="display:none">PDF</a></li>
                 </ul>
             </div>
 
@@ -185,6 +185,7 @@
 </div>
 <div id="dvCopyEntity"></div>
 @Html.Partial("~/Views/Plan/_PlanGridVariable.cshtml")
+@Html.Partial("~/Views/Home/_CalExportPDFHeaderHtml.cshtml")
 <div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
 <script src="~/Scripts/Filter.js"></script>
 <script src="~/Scripts/js/Home/Grid_CalendarCommon.js"></script>
@@ -417,6 +418,9 @@
         $("#ddlUpComingActivites").change(function () {
             if (IsBudgetGrid) {
                 $('#btnbudget').trigger('click');
+            }
+            else if ($('#IsGridView').val().toLowerCase() == "false") {
+                BindPlanCalendar();
             }
         });
         var strURL = '@Url.Content("~/Filter/Index/")';

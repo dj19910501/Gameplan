@@ -1523,44 +1523,14 @@ namespace RevenuePlanner.Services
             List<calendarDataModel> calResultset = new List<calendarDataModel>();   // Return Calendar Result Data Model
             #endregion
 
-            try
-            {
                 #region "Set SP Parameters"
-                para[0] = new SqlParameter()
-                {
-                    ParameterName = "planIds",
-                    Value = planIds
-                };
-                para[1] = new SqlParameter()
-                {
-                    ParameterName = "ownerIds",
-                    Value = ownerIds
-                };
-                para[2] = new SqlParameter()
-                {
-                    ParameterName = "tactictypeIds",
-                    Value = tactictypeIds
-                };
-                para[3] = new SqlParameter()
-                {
-                    ParameterName = "statusIds",
-                    Value = statusIds
-                };
-                para[4] = new SqlParameter()
-                {
-                    ParameterName = "timeframe",
-                    Value = timeframe
-                };
-                para[5] = new SqlParameter()
-                {
-                    ParameterName = "planYear",
-                    Value = planYear
-                };
-                para[6] = new SqlParameter()
-                {
-                    ParameterName = "viewBy",
-                    Value = viewby
-                };
+            para[0] = new SqlParameter() { ParameterName = "planIds",Value = planIds };
+            para[1] = new SqlParameter() { ParameterName = "ownerIds",Value = ownerIds };
+            para[2] = new SqlParameter() { ParameterName = "tactictypeIds",Value = tactictypeIds };
+            para[3] = new SqlParameter() { ParameterName = "statusIds",Value = statusIds };
+            para[4] = new SqlParameter() { ParameterName = "timeframe",Value = timeframe };
+            para[5] = new SqlParameter() { ParameterName = "planYear",Value = planYear };
+            para[6] = new SqlParameter() { ParameterName = "viewBy",Value = viewby };
                 #endregion
 
                 #region "Get Data"
@@ -1568,11 +1538,6 @@ namespace RevenuePlanner.Services
                     .SqlQuery<calendarDataModel>("spGetPlanCalendarData @planIds,@ownerIds,@tactictypeIds,@statusIds,@timeframe,@planYear,@viewBy", para)
                     .ToList();
                 #endregion
-            }
-            catch (Exception ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex); // Log error in Elmah.
-            }
 
             return calResultset;
         }
@@ -1582,18 +1547,17 @@ namespace RevenuePlanner.Services
         // Desc: Set Owner Name and Permission of entity
         public List<calendarDataModel> SetOwnerNameAndPermission(List<calendarDataModel> lstCalendarDataModel)
         {
-            try
-            {
                 #region "Get OwnerName"
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 Dictionary<int, User> lstUsersData = new Dictionary<int, BDSService.User>();
-                objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ForEach(u => lstUsersData.Add(u.ID, u));
+            objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ForEach(u => lstUsersData.Add(u.ID, u)); // Get User list by Client ID.
                 #endregion
 
                 #region "Get SubOrdinates"
                 List<int> lstSubordinatesIds = new List<int>();
-                bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                var IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);    // Check that user has subordinates permission or not. 
+            var IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);                  // Check that user has plan create permission or not.
+            
                 if (IsTacticAllowForSubordinates)
                 {
                     lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);   // Get all subordinates based on UserId.
@@ -1607,7 +1571,7 @@ namespace RevenuePlanner.Services
                     #region "Set Owner Name"
                     usr = lstUsersData.Where(u => data.CreatedBy.HasValue && u.Key == data.CreatedBy.Value).FirstOrDefault();
                     if (usr.Value != null)
-                        data.OwnerName = string.Format("{0} {1}", Convert.ToString(usr.Value.FirstName), Convert.ToString(usr.Value.LastName));
+                    data.OwnerName = string.Format("{0} {1}", Convert.ToString(usr.Value.FirstName), Convert.ToString(usr.Value.LastName)); // Set Owner Name in format like: 'FirstName LastName'
                     #endregion
 
                     #region "Set Permission"
@@ -1623,11 +1587,7 @@ namespace RevenuePlanner.Services
                     #endregion
                 }
                 #endregion
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            
             return lstCalendarDataModel;
         }
 

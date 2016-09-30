@@ -18,6 +18,7 @@ $('#btngridcalendar').click(function () {
         } else {
             isCalendarView = true;
             $('#IsGridView').val('false');
+            BindUpcomingActivites(filters.PlanIDs.toString())
             BindPlanCalendar();
         }
     }
@@ -87,13 +88,14 @@ $('#ChangeView').click(function () {
 //Added by Rahul Shah to call budget data 
 function LoadBudgetGrid() {
     filters = GetFilterIds(); 
+    BindUpcomingActivites(filters.PlanIDs.toString())
  var selectedTimeFrame = $('#ddlUpComingActivites').val();
     $.ajax({
         url: urlContent + 'Plan/GetBudgetData/',
         data: {
             planIds: filters.PlanIDs.toString(),
             ownerIds: filters.OwnerIds.toString(),
-            TacticTypeid: filters.TacticTypeids.toString(),
+            TacticTypeids: filters.TacticTypeids.toString(),
             StatusIds: filters.StatusIds.toString(),
             customFieldIds: filters.customFieldIds.toString() ,
             year:selectedTimeFrame.toString()
