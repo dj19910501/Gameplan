@@ -16,12 +16,16 @@ namespace RevenuePlanner.Services
 
         double UpdateBalanceLineItemCost(int PlanTacticId);
 
-        void SaveLineItemMonthlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost,int UserId);
+        void SaveTotalTacticCost(int EntityId, double newCost);
 
-        void SaveLineItemQuarterlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost, int UserId);
+        void SaveTotalLineItemCost(int EntityId, double newCost);
 
-        void SaveTacticMonthlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost, int UserId);
+        void SaveLineItemMonthlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
 
-        void SaveTacticQuarterlyCostAllocation(int EntityId, double monthlycost, string month, bool isTotalCost, int UserId);
+        void SaveLineItemQuarterlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
+
+        void SaveTacticMonthlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
+
+        void SaveTacticQuarterlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
     }
 }

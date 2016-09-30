@@ -2496,7 +2496,8 @@ namespace RevenuePlanner.Controllers
 
             //provide a list of tactic integration Id and workfront project 
             List<IntegrationInstance> modelIntegrationList = new List<IntegrationInstance>();
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IsDeleted == false) {
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IsDeleted == false)
+            {
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance);
             }
 
@@ -2504,7 +2505,8 @@ namespace RevenuePlanner.Controllers
             //Don't look at the number such as instance 1 or 2 as they may change from release to release as we regenerate models! zz
 
             //Eloqua
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false) {
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false)
+            {
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11);
             }
 
@@ -6045,23 +6047,11 @@ namespace RevenuePlanner.Controllers
             PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
-                Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId.Equals(tacticId) && _tactic.IsDeleted.Equals(false)).FirstOrDefault();
-                ViewBag.AllocatedBy = objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
-                // Add Condition by nishant sheth
-                // Desc :: To resolve test case when tactic object is null
-                if (objTactic != null)
-                {
-                    string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months); // this is passed based from UI once view by functinality implemented
-                    // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
-                    objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate);
-
-                    // Modified by Arpita Soni for Ticket #2237 on 06/22/2016
-                    var lstLineItemType = db.LineItemTypes.
-                                            Where(litemtype => litemtype.ModelId == objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId
-                                            && litemtype.IsDeleted == false).
-                                            Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
-                    TempData["lineItemTypes"] = lstLineItemType;
-                }
+                // Todo: this will be passed based from UI once view by functinality implemented
+                string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.quarters); 
+                ViewBag.AllocatedBy = AllocatedBy;
+                // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
+                objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate);
             }
             catch (Exception objException)
             {
@@ -6075,27 +6065,35 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-                int EntityId = Convert.ToInt32(entityId);
+                int EntityId = Convert.ToInt32(entityId);   // this is tactic or line item id
                 if (string.Compare(section, Enums.Section.LineItem.ToString(), true) == 0)
                 {
-                    if (isquarter)
+                    if (isTotalCost)
                     {
-                        objPlanTactic.SaveLineItemQuarterlyCostAllocation(EntityId, allocatedcost, month, isTotalCost, Sessions.User.ID);
+                        objPlanTactic.SaveTotalLineItemCost(EntityId, allocatedcost);
+                    }
+                    else if (isquarter)
+                    {
+                        objPlanTactic.SaveLineItemQuarterlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
                     }
                     else
                     {
-                        objPlanTactic.SaveLineItemMonthlyCostAllocation(EntityId, allocatedcost, month, isTotalCost, Sessions.User.ID);
+                        objPlanTactic.SaveLineItemMonthlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
                     }
                 }
                 else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
                 {
-                    if (isquarter)
+                    if (isTotalCost)
                     {
-                        objPlanTactic.SaveTacticQuarterlyCostAllocation(EntityId, allocatedcost, month, isTotalCost, Sessions.User.ID);
+                        objPlanTactic.SaveTotalTacticCost(EntityId, allocatedcost);
+                    }
+                    else if (isquarter)
+                    {
+                        objPlanTactic.SaveTacticQuarterlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
                     }
                     else
                     {
-                        objPlanTactic.SaveTacticMonthlyCostAllocation(EntityId, allocatedcost, month, isTotalCost, Sessions.User.ID);
+                        objPlanTactic.SaveTacticMonthlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
                     }
                 }
                 return Json(new { isSuccess = true });
