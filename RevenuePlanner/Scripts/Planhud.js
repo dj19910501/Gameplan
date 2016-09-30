@@ -300,7 +300,8 @@ function BindUpcomingActivites(SelectedPlanIds) {
         async: false,
         data: {
             planids: SelectedPlanIds.toString(),
-            fltrYears: years
+            fltrYears: years,
+            IsCalender: isCalendarView
         },
         success: function (data) {
             BindUpcomingActivies(data);

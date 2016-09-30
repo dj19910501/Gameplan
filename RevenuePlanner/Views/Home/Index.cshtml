@@ -374,7 +374,11 @@
 
         $(".selectBox select").selectbox();
         $("#ddlTabViewBy").multiselect();
-
+        $("#ddlUpComingActivites").change(function () {
+            if (IsBudgetGrid) {
+                $('#btnbudget').trigger('click');
+            }
+        });
         var strURL = '@Url.Content("~/Filter/Index/")';
         $.ajax({
             url: strURL,

@@ -44,11 +44,35 @@ namespace RevenuePlanner.Services
         public const string ColBudget = "Budget";
         public const string ColActual = "Actual";
         public const string ColPlanned = "Planned";
+        public bool isMultiYear = false;
 
 
         public BudgetDHTMLXGridModel GetBudget(int ClientId, int UserID, string PlanIds, double PlanExchangeRate, Enums.ViewBy viewBy = Enums.ViewBy.Campaign, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
         {
-            DataTable dt = objSp.GetBudget(PlanIds, OwnerIds, TacticTypeids, StatusIds); //Get budget data for budget,planned cost and actual using store proc. GetplanBudget
+            string strThisQuarter = Enums.UpcomingActivities.ThisYearQuaterly.ToString();
+            string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+            string quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString();
+            string monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
+            //Set actual for quarters
+            string AllocatedBy =Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
+            //Check timeframe selected for this year quarterly or this year monthly data and for this year option isMultiyear flag will always be false
+            if (year == quartText)
+            {
+                isMultiYear = false;
+                year = DateTime.Now.Year.ToString();
+            }
+            else if (year==monthText)
+            {
+                isMultiYear=false;
+                AllocatedBy =Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
+                year = DateTime.Now.Year.ToString();
+            }
+            else
+            {
+                isMultiYear = IsMultiyearTimeframe(year);
+            }
+
+            DataTable dt = objSp.GetBudget(PlanIds, UserID, OwnerIds, TacticTypeids, StatusIds, year); //Get budget data for budget,planned cost and actual using store proc. GetplanBudget
 
             List<PlanBudgetModel> model = CreateBudgetDataModel(dt, PlanExchangeRate); //Convert datatable with budget data to PlanBudgetModel model
             List<int> CustomFieldFilteredTacticIds = FilterCustomField(model, CustomFieldId);
@@ -60,8 +84,7 @@ namespace RevenuePlanner.Services
             }
             model = SetCustomFieldRestriction(model, UserID, ClientId);//Set customfield permission for budget cells. budget cell will editable or not.
             int ViewByID = (int)viewBy;
-            //Set actual for quarters
-            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
+           
 
             //get number of tab views for user in column management
             bool isPlangrid = false;
@@ -85,9 +108,9 @@ namespace RevenuePlanner.Services
             model = SetLineItemCostByWeightage(model, ViewByID);//// Set LineItem monthly budget cost by it's parent tactic weightage.
 
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-            objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, model);
+            objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, model, year);
 
-            objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy, UserID, ClientId);//create model to bind data in grid as per DHTMLx grid format.
+            objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy, UserID, ClientId, year);//create model to bind data in grid as per DHTMLx grid format.
 
             List<ColumnViewEntity> userManagedColumns = objColumnView.GetCustomfieldModel(ClientId, isPlangrid, out isSelectAll, UserID);
             string hiddenTab = string.Empty;
@@ -163,7 +186,7 @@ namespace RevenuePlanner.Services
                     YearlyBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Budget"])), PlanExchangeRate),
                     TotalUnallocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnallocatedBudget"])), PlanExchangeRate),
                     TotalActuals = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationActual"])), PlanExchangeRate),
-                    TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationCost"])), PlanExchangeRate),
+                    TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Cost"])), PlanExchangeRate),
                     IsOwner = Convert.ToBoolean(row["IsOwner"]),
                     CreatedBy = int.Parse(row["CreatedBy"].ToString()),
                     LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
@@ -174,7 +197,7 @@ namespace RevenuePlanner.Services
                     EndDate = Convert.ToDateTime(row["EndDate"]),
                     LinkTacticId = Convert.ToInt32(row["LinkTacticId"]),
                     TacticTypeId = Convert.ToInt32(Convert.ToString(row["TacticTypeId"])),
-
+                    PlanYear = Convert.ToString(row["PlanYear"]),
                     MonthValues = new BudgetMonth()
                     {
                         //Budget Month Allocation
@@ -218,13 +241,57 @@ namespace RevenuePlanner.Services
                         AOct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY10"])), PlanExchangeRate),
                         ANov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY11"])), PlanExchangeRate),
                         ADec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY12"])), PlanExchangeRate)
+                    },
+                    NextYearMonthValues = new BudgetMonth()
+                    {
+                        //Budget Month Allocation
+                        Feb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y14"])), PlanExchangeRate),
+                        Jan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y13"])), PlanExchangeRate),
+                        Mar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y15"])), PlanExchangeRate),
+                        Apr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y16"])), PlanExchangeRate),
+                        May = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y17"])), PlanExchangeRate),
+                        Jun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y18"])), PlanExchangeRate),
+                        Jul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y19"])), PlanExchangeRate),
+                        Aug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y20"])), PlanExchangeRate),
+                        Sep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y21"])), PlanExchangeRate),
+                        Oct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y22"])), PlanExchangeRate),
+                        Nov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y23"])), PlanExchangeRate),
+                        Dec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y24"])), PlanExchangeRate),
+
+                        //Cost Month Allocation
+                        CFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY14"])), PlanExchangeRate),
+                        CJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY13"])), PlanExchangeRate),
+                        CMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY15"])), PlanExchangeRate),
+                        CApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY16"])), PlanExchangeRate),
+                        CMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY17"])), PlanExchangeRate),
+                        CJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY18"])), PlanExchangeRate),
+                        CJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY19"])), PlanExchangeRate),
+                        CAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY20"])), PlanExchangeRate),
+                        CSep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY21"])), PlanExchangeRate),
+                        COct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY22"])), PlanExchangeRate),
+                        CNov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY23"])), PlanExchangeRate),
+                        CDec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY24"])), PlanExchangeRate),
+
+                        //Actuals Month Allocation
+                        AFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY14"])), PlanExchangeRate),
+                        AJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY13"])), PlanExchangeRate),
+                        AMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY15"])), PlanExchangeRate),
+                        AApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY16"])), PlanExchangeRate),
+                        AMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY17"])), PlanExchangeRate),
+                        AJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY18"])), PlanExchangeRate),
+                        AJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY19"])), PlanExchangeRate),
+                        AAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY20"])), PlanExchangeRate),
+                        ASep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY21"])), PlanExchangeRate),
+                        AOct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY22"])), PlanExchangeRate),
+                        ANov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY23"])), PlanExchangeRate),
+                        ADec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY24"])), PlanExchangeRate)
                     }
                 }).ToList();
             }
             return model;
         }
 
-        public List<Budgetdataobj> SetBudgetDhtmlxFormattedValues(List<PlanBudgetModel> model, PlanBudgetModel Entity, string OwnerName, string EntityType, string AllocatedBy, string DhtmlxGridRowId, string EntityColor, bool IsAddEntityRights, string pcptid = "", string TacticType = "")  // pcptid = Plan-Campaign-Program-Tactic-Id
+        public List<Budgetdataobj> SetBudgetDhtmlxFormattedValues(List<PlanBudgetModel> model, PlanBudgetModel Entity, string OwnerName, string EntityType, string AllocatedBy, bool IsNextYear, bool IsMultiyearPlan, string DhtmlxGridRowId, string EntityColor, bool IsAddEntityRights, string pcptid = "", string TacticType = "")  // pcptid = Plan-Campaign-Program-Tactic-Id
         {
             List<Budgetdataobj> BudgetDataObjList = new List<Budgetdataobj>();
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
@@ -259,7 +326,7 @@ namespace RevenuePlanner.Services
                   BudgetDataObjList, AllocatedBy, Entity.ActivityId);
             //Set monthly/quarterly allocation of budget,actuals and planned for plan
             BudgetDataObjList = CampaignMonth(model, EntityType, Entity.ParentActivityId,
-                    BudgetDataObjList, AllocatedBy, Entity.ActivityId);
+                    BudgetDataObjList, AllocatedBy, Entity.ActivityId, IsNextYear,IsMultiyearPlan);
 
             BudgetDataObj = new Budgetdataobj();
             //Add unAllocated budget into dhtmlx model
@@ -368,7 +435,7 @@ namespace RevenuePlanner.Services
             return IconsData;
         }
 
-        public BudgetDHTMLXGridModel CreateDhtmlxFormattedBudgetData(BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string AllocatedBy, int UserID, int ClientId)
+        public BudgetDHTMLXGridModel CreateDhtmlxFormattedBudgetData(BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string AllocatedBy, int UserID, int ClientId,string Year)
         {
 
             List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
@@ -411,6 +478,29 @@ namespace RevenuePlanner.Services
                     else
                         IsPlanCreateAll = false;
                 }
+                bool isCampignExist=model.Where(p => p.ParentActivityId == bm.ActivityId).Any();
+                DateTime MaxDate = default(DateTime); ;
+                if (isCampignExist)
+                {
+                    MaxDate = model.Where(p => p.ParentActivityId == bm.ActivityId).Max(a=>a.EndDate);
+                }
+
+                //Set flag to identify plan year. e.g.if timeframe is 2015-2016 and plan have plan year 2016 then we will not set month data for Jan-2015 to Dec-2015 of respective plan
+                bool isNextYearPlan = false;
+                bool isMultiYearPlan = false;
+                string firstYear = GetInitialYearFromTimeFrame(Year);
+                if (bm.PlanYear != firstYear)
+                {
+                    isNextYearPlan = true;
+                }
+                if (MaxDate != default(DateTime))
+                {
+                    int MaxYear = MaxDate.Year;
+                    if (MaxYear - Convert.ToInt32(bm.PlanYear) > 0)
+                    {
+                        isMultiYearPlan = true;
+                    }
+                }
 
                 gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
                 gridjsonlistPlanObj.id = ActivityType.ActivityPlan + HttpUtility.HtmlEncode(bm.ActivityId);
@@ -425,7 +515,7 @@ namespace RevenuePlanner.Services
                     }
                 }
 
-                BudgetDataObjList = SetBudgetDhtmlxFormattedValues(model, bm, OwnerName, ActivityType.ActivityPlan, AllocatedBy, gridjsonlistPlanObj.id, PlanColor, IsPlanCreateAll);
+                BudgetDataObjList = SetBudgetDhtmlxFormattedValues(model, bm, OwnerName, ActivityType.ActivityPlan, AllocatedBy, isNextYearPlan, isMultiYearPlan, gridjsonlistPlanObj.id, PlanColor, IsPlanCreateAll);
                 gridjsonlistPlanObj.data = BudgetDataObjList;
 
                 List<BudgetDHTMLXGridDataModel> CampaignRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -449,7 +539,7 @@ namespace RevenuePlanner.Services
                             OwnerName = Convert.ToString(lstUserDetails[bm.CreatedBy]);
                         }
                     }
-                    List<Budgetdataobj> CampaignDataObjList = SetBudgetDhtmlxFormattedValues(model, bmc, OwnerName, ActivityType.ActivityCampaign, AllocatedBy, CampaignRowsObj.id, CampaignColor, IsCampCreateAll);
+                    List<Budgetdataobj> CampaignDataObjList = SetBudgetDhtmlxFormattedValues(model, bmc, OwnerName, ActivityType.ActivityCampaign, AllocatedBy, isNextYearPlan,isMultiYearPlan, CampaignRowsObj.id, CampaignColor, IsCampCreateAll);
 
                     CampaignRowsObj.data = CampaignDataObjList;
                     List<BudgetDHTMLXGridDataModel> ProgramRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -474,7 +564,7 @@ namespace RevenuePlanner.Services
                                 OwnerName = Convert.ToString(lstUserDetails[bm.CreatedBy]);
                             }
                         }
-                        List<Budgetdataobj> ProgramDataObjList = SetBudgetDhtmlxFormattedValues(model, bmp, OwnerName, ActivityType.ActivityProgram, AllocatedBy, ProgramRowsObj.id, ProgramColor, IsProgCreateAll);
+                        List<Budgetdataobj> ProgramDataObjList = SetBudgetDhtmlxFormattedValues(model, bmp, OwnerName, ActivityType.ActivityProgram, AllocatedBy, isNextYearPlan,isMultiYearPlan, ProgramRowsObj.id, ProgramColor, IsProgCreateAll);
                         ProgramRowsObj.data = ProgramDataObjList;
 
                         List<BudgetDHTMLXGridDataModel> TacticRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -503,7 +593,7 @@ namespace RevenuePlanner.Services
                             List<TacticType> TacticTypeListForHC = new List<TacticType>();
                             string TacticType = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == bmt.TacticTypeId && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
 
-                            List<Budgetdataobj> TacticDataObjList = SetBudgetDhtmlxFormattedValues(model, bmt, OwnerName, ActivityType.ActivityTactic, AllocatedBy, TacticRowsObj.id, TacticColor, IsTacCreateAll, "L" + bm.ActivityId + "_C" + bmc.ActivityId + "_P" + bmp.ActivityId + "_T" + bmt.ActivityId, TacticType);
+                            List<Budgetdataobj> TacticDataObjList = SetBudgetDhtmlxFormattedValues(model, bmt, OwnerName, ActivityType.ActivityTactic, AllocatedBy, isNextYearPlan,isMultiYearPlan, TacticRowsObj.id, TacticColor, IsTacCreateAll, "L" + bm.ActivityId + "_C" + bmc.ActivityId + "_P" + bmp.ActivityId + "_T" + bmt.ActivityId, TacticType);
 
                             TacticRowsObj.data = TacticDataObjList;
                             List<BudgetDHTMLXGridDataModel> LineRowsObjList = new List<BudgetDHTMLXGridDataModel>();
@@ -528,7 +618,7 @@ namespace RevenuePlanner.Services
                                         OwnerName = Convert.ToString(lstUserDetails[bm.CreatedBy]);
                                     }
                                 }
-                                List<Budgetdataobj> LineDataObjList = SetBudgetDhtmlxFormattedValues(model, bml, OwnerName, ActivityType.ActivityLineItem, AllocatedBy, LineRowsObj.id, "", IsLinItmCreateAll);
+                                List<Budgetdataobj> LineDataObjList = SetBudgetDhtmlxFormattedValues(model, bml, OwnerName, ActivityType.ActivityLineItem, AllocatedBy, isNextYearPlan,isMultiYearPlan, LineRowsObj.id, "", IsLinItmCreateAll);
 
                                 LineRowsObj.data = LineDataObjList;
                                 LineRowsObjList.Add(LineRowsObj);
@@ -554,8 +644,16 @@ namespace RevenuePlanner.Services
             return objBudgetDHTMLXGrid;
         }
 
-        private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model)
+        private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string Year)
         {
+            string firstYear = GetInitialYearFromTimeFrame(Year);
+            string lastYear = string.Empty;
+            //check if multiyear flag is on then last year will be firstyear+1
+            if (isMultiYear)
+            {
+                lastYear = Convert.ToString(Convert.ToInt32(firstYear) + 1);
+            }
+
             string setHeader = string.Empty, colType = string.Empty, width = string.Empty, colSorting = string.Empty, columnIds = string.Empty;
             string manageviewicon = "<a href=javascript:void(0) onclick=OpenCreateNew(false) class=manageviewicon  title='Open Column Management'><i class='fa fa-edit'></i></a>";
             List<string> attachHeader = new List<string>();
@@ -578,11 +676,25 @@ namespace RevenuePlanner.Services
             if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
                 int quarterCounter = 1;
-                for (int i = 1; i <= 11; i += 3)
+                string headerYear = firstYear;//column header year text which will bind with respective header
+                int multiYearCounter = 23;//If budget data need to show with multi year then set header for multi quarter
+                if (!isMultiYear)
                 {
-                    DateTime dt = new DateTime(2012, i, 1);
-
-                    setHeader = setHeader + ",Q" + quarterCounter.ToString() + ",#cspan,#cspan";
+                    multiYearCounter = 11;
+                }
+                for (int i = 1; i <= multiYearCounter; i += 3)
+                {
+                    //datetime object will be used to find respective month text by month numbers
+                    DateTime dt;
+                    if (i < 12)
+                    {
+                        dt = new DateTime(2012, i, 1);
+                    }
+                    else
+                    {
+                        dt = new DateTime(2012, i - 12, 1);
+                    }
+                    setHeader = setHeader + ",Q" + quarterCounter.ToString() + "-"+headerYear+",#cspan,#cspan";
                     attachHeader.Add(ColBudget + manageviewicon);
                     attachHeader.Add(ColPlanned + manageviewicon);
                     attachHeader.Add(ColActual + manageviewicon);
@@ -593,8 +705,16 @@ namespace RevenuePlanner.Services
                     width = width + ",100,100,100";
                     colSorting = colSorting + ",str,str,str";
 
+                    if (quarterCounter == 4)//Check if queter counter reach to last quarter then reset it
+                    {
+                        quarterCounter = 1;
+                        headerYear = lastYear;
+                    }
+                    else
+                    {
                     quarterCounter++;
                 }
+            }
             }
             else
             {
@@ -659,18 +779,28 @@ namespace RevenuePlanner.Services
             return BudgetDataObjList;
         }
 
-        private List<Budgetdataobj> CampaignMonth(List<PlanBudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string activityId)
+        private List<Budgetdataobj> CampaignMonth(List<PlanBudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string activityId, bool isNextYearPlan,bool IsMulityearPlan)
         {
             PlanBudgetModel Entity = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
             bool isTactic = activityType == Helpers.ActivityType.ActivityTactic ? true : false;
             bool isLineItem = activityType == Helpers.ActivityType.ActivityLineItem ? true : false;
             if (string.Compare(allocatedBy, "quarters", true) != 0)
             {
+                if (!isNextYearPlan)
+                {
                 BudgetDataObjList = CampignMonthlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList);
+            }
             }
             else
             {
-                BudgetDataObjList = CampignQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList);
+                if (!isNextYearPlan)
+                {
+                    BudgetDataObjList = CampignQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList,IsMulityearPlan);
+                }
+                else
+                {
+                    BudgetDataObjList = CampignNextYearQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList);
+                }
             }
             return BudgetDataObjList;
         }
@@ -821,14 +951,96 @@ namespace RevenuePlanner.Services
             return BudgetDataObjList;
         }
 
-        private List<Budgetdataobj> CampignQuarterlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList)
+        private List<Budgetdataobj> CampignQuarterlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList,bool IsMultiYearPlan)
         {
-            for (int i = 1; i <= 11; i += 3)
+            int multiYearCounter = 23;
+            if (!isMultiYear)
+            {
+                multiYearCounter = 11;
+            }
+            for (int i = 1; i <= multiYearCounter; i += 3)
             {
                 Budgetdataobj objBudgetMonth = new Budgetdataobj();
                 Budgetdataobj objCostMonth = new Budgetdataobj();
                 Budgetdataobj objActualMonth = new Budgetdataobj();
+                objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 if (i == 1)
+                {
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jan + Entity.MonthValues.Feb + Entity.MonthValues.Mar);
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan + Entity.MonthValues.CFeb + Entity.MonthValues.CMar);
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan + Entity.MonthValues.AFeb + Entity.MonthValues.AMar);
+                    
+                }
+                else if (i == 4)
+                {
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Apr + Entity.MonthValues.May + Entity.MonthValues.Jun);
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CApr + Entity.MonthValues.CMay + Entity.MonthValues.CJun);
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AApr + Entity.MonthValues.AMay + Entity.MonthValues.AJun);
+                }
+                else if (i == 7)
+                {
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jul + Entity.MonthValues.Aug + Entity.MonthValues.Sep);
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.CJul + Entity.MonthValues.CAug + Entity.MonthValues.CSep);
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AJul + Entity.MonthValues.AAug + Entity.MonthValues.ASep);
+                }
+                else if (i == 10)
+                {
+                    objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Oct + Entity.MonthValues.Nov + Entity.MonthValues.Dec);
+                    objCostMonth.value = Convert.ToString(Entity.MonthValues.COct + Entity.MonthValues.CNov + Entity.MonthValues.CDec);
+                    objActualMonth.value = Convert.ToString(Entity.MonthValues.AOct + Entity.MonthValues.ANov + Entity.MonthValues.ADec);
+                }
+                else if (i==13)
+                {
+                    objBudgetMonth.value = IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.Jan + Entity.NextYearMonthValues.Feb + Entity.NextYearMonthValues.Mar):"---";
+                    objCostMonth.value = IsMultiYearPlan?Convert.ToString(Entity.NextYearMonthValues.CJan + Entity.NextYearMonthValues.CFeb + Entity.NextYearMonthValues.CMar):"---";
+                    objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.AJan + Entity.NextYearMonthValues.AFeb + Entity.NextYearMonthValues.AMar) : "---";
+                }
+                else if (i==16)
+                {
+                    objBudgetMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.Apr + Entity.NextYearMonthValues.May + Entity.NextYearMonthValues.Jun):"---";
+                    objCostMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.CApr + Entity.NextYearMonthValues.CMay + Entity.NextYearMonthValues.CJun):"---";
+                    objActualMonth.value = IsMultiYearPlan?Convert.ToString(Entity.NextYearMonthValues.AApr + Entity.NextYearMonthValues.AMay + Entity.NextYearMonthValues.AJun):"---";
+                }
+                else if (i==19)
+                {
+                    objBudgetMonth.value = IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.Jul + Entity.NextYearMonthValues.Aug + Entity.NextYearMonthValues.Sep):"---";
+                    objCostMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.CJul + Entity.NextYearMonthValues.CAug + Entity.NextYearMonthValues.CSep):"---";
+                    objActualMonth.value = IsMultiYearPlan?Convert.ToString(Entity.NextYearMonthValues.AJul + Entity.NextYearMonthValues.AAug + Entity.NextYearMonthValues.ASep):"---";
+                }
+                else if (i==22)
+                {
+                    objBudgetMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.Oct + Entity.NextYearMonthValues.Nov + Entity.NextYearMonthValues.Dec):"---";
+                    objCostMonth.value = IsMultiYearPlan?Convert.ToString(Entity.NextYearMonthValues.COct + Entity.NextYearMonthValues.CNov + Entity.NextYearMonthValues.CDec):"---";
+                    objActualMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.AOct + Entity.NextYearMonthValues.ANov + Entity.NextYearMonthValues.ADec):"---";
+                }
+                BudgetDataObjList.Add(objBudgetMonth);
+                BudgetDataObjList.Add(objCostMonth);
+                BudgetDataObjList.Add(objActualMonth);
+            }
+            return BudgetDataObjList;
+        }
+
+        private List<Budgetdataobj> CampignNextYearQuarterlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList)
+        {
+            for (int i = 1; i <= 23; i += 3)
+            {
+                Budgetdataobj objBudgetMonth = new Budgetdataobj();
+                Budgetdataobj objCostMonth = new Budgetdataobj();
+                Budgetdataobj objActualMonth = new Budgetdataobj();
+                if (i < 13)
+                {
+                    objBudgetMonth.value = "---";
+                    objBudgetMonth.locked = CellLocked;
+
+                    objCostMonth.value = "---";
+                    objCostMonth.locked = CellLocked;
+
+                    objActualMonth.value = "---";
+                    objActualMonth.locked = CellLocked;
+                }
+                else if (i == 13)
                 {
                     objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jan + Entity.MonthValues.Feb + Entity.MonthValues.Mar);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
@@ -839,7 +1051,7 @@ namespace RevenuePlanner.Services
                     objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan + Entity.MonthValues.AFeb + Entity.MonthValues.AMar);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
-                else if (i == 4)
+                else if (i == 16)
                 {
                     objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Apr + Entity.MonthValues.May + Entity.MonthValues.Jun);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
@@ -850,7 +1062,7 @@ namespace RevenuePlanner.Services
                     objActualMonth.value = Convert.ToString(Entity.MonthValues.AApr + Entity.MonthValues.AMay + Entity.MonthValues.AJun);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
-                else if (i == 7)
+                else if (i == 19)
                 {
                     objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jul + Entity.MonthValues.Aug + Entity.MonthValues.Sep);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
@@ -861,7 +1073,7 @@ namespace RevenuePlanner.Services
                     objActualMonth.value = Convert.ToString(Entity.MonthValues.AJul + Entity.MonthValues.AAug + Entity.MonthValues.ASep);
                     objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 }
-                else if (i == 10)
+                else if (i == 22)
                 {
                     objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Oct + Entity.MonthValues.Nov + Entity.MonthValues.Dec);
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
@@ -1206,5 +1418,38 @@ namespace RevenuePlanner.Services
             return model;
         }
 
+        private string GetInitialYearFromTimeFrame(string Year)
+        {
+            if (!string.IsNullOrEmpty(Year))
+            {
+                string[] arrYear = Year.Split('-');
+                if (arrYear.Length > 0)
+                {
+                    return arrYear[0];
+                }
+            }
+            return string.Empty;
+
+        }
+
+        private bool IsMultiyearTimeframe(string Year)
+        {
+            bool result = false;
+            if (!string.IsNullOrEmpty(Year))
+            {
+                string[] arrYear = Year.Split('-');
+                if (arrYear.Length == 2)//If array of year have 2 items then we can find diff between 2 years
+                {
+                    int FirstYear = Convert.ToInt32(arrYear[0]);
+                    int LastYear = Convert.ToInt32(arrYear[1]);
+                    int diff = LastYear - FirstYear;
+                    if (diff > 0)
+                    {
+                        result = true;
+                    }
+                }
+            }
+            return result;
+        }
     }
 }

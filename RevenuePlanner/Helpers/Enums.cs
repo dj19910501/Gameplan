@@ -175,7 +175,9 @@ namespace RevenuePlanner.Helpers
             nextyear = 3,
             planYear = 4,
             previousyear = 5,
-            lastyear = 6
+            lastyear = 6,
+            ThisYearQuaterly=7,
+            ThisYearMonthly=8
         }
         /// <summary>
         /// Data Dictionary to hold Upcoming Activity values.
@@ -190,7 +192,9 @@ namespace RevenuePlanner.Helpers
             {UpcomingActivities.nextyear.ToString(), "next year"},
             {UpcomingActivities.planYear.ToString(), "plan year"},
             {UpcomingActivities.previousyear.ToString(), "previous year"},
-            {UpcomingActivities.lastyear.ToString(), "last year"}
+            {UpcomingActivities.lastyear.ToString(), "last year"},
+             {UpcomingActivities.ThisYearMonthly.ToString(), "This Year(Monthly)"},
+            {UpcomingActivities.ThisYearQuaterly.ToString(), "This Year(Quarterly)"}
         };
         #endregion
 

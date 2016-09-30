@@ -87,7 +87,8 @@ $('#ChangeView').click(function () {
 
 //Added by Rahul Shah to call budget data 
 function LoadBudgetGrid() {
-    filters = GetFilterIds();
+    filters = GetFilterIds(); 
+ var selectedTimeFrame = $('#ddlUpComingActivites').val();
     $.ajax({
         url: urlContent + 'Plan/GetBudgetData/',
         data: {
@@ -95,7 +96,8 @@ function LoadBudgetGrid() {
             ownerIds: filters.OwnerIds.toString(),
             TacticTypeid: filters.TacticTypeids.toString(),
             StatusIds: filters.StatusIds.toString(),
-            customFieldIds: filters.customFieldIds.toString()
+            customFieldIds: filters.customFieldIds.toString() ,
+            year:selectedTimeFrame.toString()
 
         },
         success: function (result) {
@@ -1240,8 +1242,9 @@ function RemoveAllMediaCodeData() {
 //Common Functions
 //Start
 function RefershPlanHeaderCalc() {
-    //if ($('#IsGridView').val().toLowerCase() == "true") {
-    GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, SelectedTimeFrameOption);
+    //if ($('#IsGridView').val().toLowerCase() == "true") {	
+ var TimeFrame=$('#ddlUpComingActivites').val();
+    GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, TimeFrame);
     //}
 
 }

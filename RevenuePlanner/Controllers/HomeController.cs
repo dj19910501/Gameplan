@@ -7569,10 +7569,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="planids">comma sepreated plan id(s)</param>
         /// <param name="CurrentTime">Current Time</param>
         /// <returns></returns>
-        public JsonResult BindUpcomingActivitesValues(string planids, string fltrYears)
+        /// modified by Mitesh vaishnav add flag to check request come from calender view or budget view
+        public JsonResult BindUpcomingActivitesValues(string planids, string fltrYears, bool IsCalender=true)
         {
             //// Fetch the list of Upcoming Activity
-            List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears);
+            List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears,IsCalender);
             objUpcomingActivity = objUpcomingActivity.Where(activity => !string.IsNullOrEmpty(activity.Text)).OrderBy(activity => activity.Text, new AlphaNumericComparer()).ToList();
             return Json(objUpcomingActivity.ToList(), JsonRequestBehavior.AllowGet);
         }
@@ -7582,7 +7583,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="PlanIds">comma sepreated string plan id(s)</param>
         /// <returns>List fo SelectListItem of Upcoming activity</returns>
-        public List<SelectListItem> UpComingActivity(string PlanIds, string fltrYears)
+        public List<SelectListItem> UpComingActivity(string PlanIds, string fltrYears, bool isCalenderView=true)
         {
             //// List of plan id(s)
             List<int> planIds = string.IsNullOrWhiteSpace(PlanIds) ? new List<int>() : PlanIds.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -7612,9 +7613,21 @@ namespace RevenuePlanner.Controllers
 
 
 
+            //Add this year (quarterly) and this year (monthly) option to timeframe data
+            string strThisQuarter = Enums.UpcomingActivities.ThisYearQuaterly.ToString();
+            string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+            string quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString();
+            string monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
 
-            string strThisQuarter = Enums.UpcomingActivities.thisquarter.ToString(), strThisMonth = Enums.UpcomingActivities.thismonth.ToString(),
-                                    quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString(), monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
+            //for calander add this month and this quarter option instead of this year (quarterly) and this year (monthly)
+            if (isCalenderView)
+            {
+                strThisQuarter = Enums.UpcomingActivities.ThisYearQuaterly.ToString();
+                strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+                quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString();
+                monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
+            }
+
             string MinYear = string.Empty;
             string MaxYear = string.Empty;
             //// If active plan dosen't have any current plan at that time we have to remove this month and thisquater option

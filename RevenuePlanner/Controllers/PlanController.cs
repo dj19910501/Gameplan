@@ -12312,13 +12312,14 @@ namespace RevenuePlanner.Controllers
         /// <param name="OwnerIds">filtered owner ids</param>
         /// <param name="TacticTypeids">filtered tactic type ids</param>
         /// <param name="StatusIds">filter status ids</param>
+        /// <param name="Year">selected year of plans from timeframe </param>
         /// <returns></returns>
-        public ActionResult GetBudgetData(string PlanIds, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "")
+        public ActionResult GetBudgetData(string PlanIds, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "",string year="")
         {
             IBudget Iobj = new RevenuePlanner.Services.Budget();
             int UserID = Sessions.User.ID;
             int ClientId = Sessions.User.CID;
-            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, string.Empty, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds); //objSp.GetBudget(PlanId.ToString(), string.Empty, string.Empty, string.Empty);
+            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds); 
             return PartialView("~/Views/Budget/Budget.cshtml", budgetModel);
 
         }
