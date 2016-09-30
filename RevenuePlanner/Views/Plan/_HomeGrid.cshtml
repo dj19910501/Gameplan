@@ -141,6 +141,7 @@
         HomeGrid.splitAt(colSplitId + 1);        
         MoveColumn(); ///Calling Move column function       
         HomeGrid.collapseAll();
+        HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
         var cookie = document.cookie;
         if (cookie.indexOf("gridOpengridbox") > -1) {
             var cookies = cookie.split(';');
