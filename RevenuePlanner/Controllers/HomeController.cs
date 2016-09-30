@@ -40,7 +40,7 @@ namespace RevenuePlanner.Controllers
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
 
         #endregion
-
+      
         //public ActionResult IndexNewDesign() // Added by Bhumika for new HTML #2621 Remove when task finished 
         //{
         //    return View();
@@ -61,7 +61,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planProgramId">planProgramId used for notification email shared link</param>
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
-
+       
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false)
         {
             var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
@@ -136,7 +136,7 @@ namespace RevenuePlanner.Controllers
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.ID);
                 var objPlan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId == currentPlanId);
 
-                if (objPlan.CreatedBy == Sessions.User.ID)
+                if (objPlan.CreatedBy == Sessions.User.ID) 
                 {
                     IsPlanEditable = true;
                 }
@@ -160,19 +160,18 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsPlanEditable = IsPlanEditable;
             ViewBag.IsPublished = isPublished;
-
+           
             ViewBag.RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
-            //set value to show inspect popup for url sent in email 
-            if (currentPlanId > 0)
+            if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
             {
                 currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
             }
-            else if (currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
+            else if (activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
             {
                 ViewBag.ShowInspectPopup = false;
                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
             }
-            else if (currentPlanId <= 0)
+            else if ((activeMenu.Equals(Enums.ActiveMenu.Plan) || activeMenu.Equals(Enums.ActiveMenu.Home)) && currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
             {
                 ViewBag.ShowInspectPopup = false;
                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
@@ -197,7 +196,7 @@ namespace RevenuePlanner.Controllers
 
             HomePlanModel planmodel = new Models.HomePlanModel();
             List<int> modelIds = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.CID) && model.IsDeleted == false).Select(m => m.ModelId).ToList();
-
+            
             List<Plan> activePlan = objDbMrpEntities.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
 
             Plan currentPlan = new Plan();
@@ -208,12 +207,28 @@ namespace RevenuePlanner.Controllers
             {
                 IsPlanEditable = true;
                 ViewBag.IsPlanEditable = IsPlanEditable;
-                latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                if (activeMenu.Equals(Enums.ActiveMenu.Plan))
+                {
+                    latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                }
+                else
+                {
+                    latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                }
+
                 List<Plan> fiterActivePlan = new List<Plan>();
                 fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
                 if (fiterActivePlan != null && fiterActivePlan.Any())
                 {
-                    latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+                    if (activeMenu.Equals(Enums.ActiveMenu.Plan))
+                    {
+                        latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+                    }
+                    else
+                    {
+                        latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+
+                    }
                 }
                 if (currentPlanId != 0)
                 {
@@ -297,7 +312,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.ID).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews;
+            Common.PlanUserSavedViews = SetOFLastViews; 
             if (Enums.ActiveMenu.Home.Equals(activeMenu))
             {
                 var LastSetOfPlanSelected = new List<string>();
@@ -384,7 +399,7 @@ namespace RevenuePlanner.Controllers
 
                 }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
 
-                List<SelectListItem> lstYear = new List<SelectListItem>();
+                List<SelectListItem> lstYear = new List<SelectListItem>();               
                 var StartYears = CampPlans.Select(camp => camp.StartYear)
              .Distinct().ToList();
 
@@ -406,7 +421,7 @@ namespace RevenuePlanner.Controllers
                     lstYear.Add(objYear);
                 }
                 ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
-
+               
                 if (LastSetOfPlanSelected.Count() == 1)
                 {
                     if (LastSetOfPlanSelected.Contains(currentPlan.PlanId.ToString()) == false)
@@ -428,23 +443,23 @@ namespace RevenuePlanner.Controllers
                     planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(currentPlan.PlanId, onlyplan: true);
 
                     Sessions.PlanId = planmodel.PlanId;
-                    GetCustomAttributesIndex(ref planmodel);
+                    GetCustomAttributesIndex(ref planmodel);                    
                     if (ViewBag.ShowInspectPopup != null)
                     {
-                        if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0)
+                        if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
                         {
-                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, currentPlanId, planLineItemId);
+                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
                             ViewBag.ShowInspectPopup = isCustomRestrictionPass;
                             if (isCustomRestrictionPass.Equals(false))
                             {
                                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.CustomRestrictionFailedForInspectPopup.ToString();
                             }
                         }
-                    }
+                    }                    
                 }
                 catch (Exception objException)
                 {
-                    ErrorSignal.FromCurrentContext().Raise(objException);
+                    ErrorSignal.FromCurrentContext().Raise(objException);                    
                     if (objException is System.ServiceModel.EndpointNotFoundException)
                     {
                         return RedirectToAction("ServiceUnavailable", "Login");
@@ -454,6 +469,15 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
+                if (activeMenu != Enums.ActiveMenu.Plan)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = null;
+                }
+
                 //// Start - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
                 if (ViewBag.ShowInspectPopup != null)
                 {
@@ -468,7 +492,7 @@ namespace RevenuePlanner.Controllers
                 }
                 //// End - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
 
-                return View("Index", planmodel);
+                return RedirectToAction("PlanSelector", "Plan");
             }
         }
 
@@ -555,7 +579,7 @@ namespace RevenuePlanner.Controllers
 
             DataSet dsPlanCampProgTac = new DataSet();
             dsPlanCampProgTac = (DataSet)objCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
-
+            
             List<Plan> lstPlans = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
             // Add By Nishant Sheth // Desc:: For get values from cache
             objCache.AddCache(Enums.CacheObject.Plan.ToString(), lstPlans);
@@ -5850,7 +5874,7 @@ namespace RevenuePlanner.Controllers
             {
                 planYear = DateTime.Now.Year.ToString();
             }
-
+           
             if (string.IsNullOrEmpty(strtimeframe))
             {
                 List<Plan> lstPlans = new List<Plan>();
@@ -5876,19 +5900,19 @@ namespace RevenuePlanner.Controllers
             }
             List<Plan> planData = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
             List<Plan_Campaign> lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
-
+       
             bool IsMultiYearPlan = false;
+          
+                List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
+              
+                List<int> planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
 
-            List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
-
-            List<int> planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
-
-            if (planList.Count == 0)
-            {
-                campplanid = lstCampaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && planIds.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
-            }
-            filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
-                campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
+                if (planList.Count == 0)
+                {
+                    campplanid = lstCampaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && planIds.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
+                }
+                filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
+                    campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
 
             //// Get planyear of the selected Plan
             if (strtimeframe.Contains("-") || IsMultiYearPlan)
@@ -5899,7 +5923,7 @@ namespace RevenuePlanner.Controllers
 
                 return Json(new { lstchart = lstActivityChartyears.ToList(), strparam = strtimeframe }, JsonRequestBehavior.AllowGet);
             }
-
+          
             var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
                                                    campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) &&
                                                    tactic.EndDate > CalendarStartDate &&
@@ -5943,7 +5967,7 @@ namespace RevenuePlanner.Controllers
                 });
 
             }
-
+     
             if ((filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0))
             {
                 lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
@@ -5965,7 +5989,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-
+      
             //// Prepare an array of month as per selected dropdown paramter
             int[] monthArray = new int[12];
 
@@ -5980,7 +6004,7 @@ namespace RevenuePlanner.Controllers
 
                 int currentMonth = DateTime.Now.Month, monthNo = 0;
                 DateTime startDate, endDate;
-
+           
                 int TacticCount = objPlan_Campaign_Program_Tactic.Count;
                 for (int tactic = 0; tactic < TacticCount; tactic++)
                 {
@@ -6040,12 +6064,12 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (strtimeframe.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-
+                        
                         endDate = new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month));
                         differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM-yyyy"));
 
                         List<string> thismonthdifferenceItem = new List<string>();
-
+                      
                         thismonthdifferenceItem = differenceItems.ToList();
                         int thismonthdifferenceItemCount = thismonthdifferenceItem.Count;
                         for (int monthdiffer = 0; monthdiffer < thismonthdifferenceItemCount; monthdiffer++)
@@ -6065,7 +6089,7 @@ namespace RevenuePlanner.Controllers
                                         monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
                                     }
                                 }
-
+                              
                             }
                         }
                     }
@@ -6076,22 +6100,22 @@ namespace RevenuePlanner.Controllers
                             if (currentMonth == 1 || currentMonth == 2 || currentMonth == 3)
                             {
                                 monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q1), startDate, endDate, monthArray);
-
+                             
                             }
                             else if (currentMonth == 4 || currentMonth == 5 || currentMonth == 6)
                             {
                                 monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q2), startDate, endDate, monthArray);
-
+                              
                             }
                             else if (currentMonth == 7 || currentMonth == 8 || currentMonth == 9)
                             {
                                 monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q3), startDate, endDate, monthArray);
-
+                              
                             }
                             else if (currentMonth == 10 || currentMonth == 11 || currentMonth == 12)
                             {
                                 monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q4), startDate, endDate, monthArray);
-
+                              
                             }
                         }
                     }
@@ -6137,7 +6161,7 @@ namespace RevenuePlanner.Controllers
                 lstActivityChart.Add(objActivityChart);
             }
             await Task.Delay(1);
-
+      
             return Json(new { lstchart = lstActivityChart.ToList(), strtimeframe = strtimeframe }, JsonRequestBehavior.AllowGet); //Modified BY Komal rawal for #1929 proper Hud chart and count
         }
 
@@ -6159,9 +6183,9 @@ namespace RevenuePlanner.Controllers
             dsPlanCampProgTac = (DataSet)objCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
             if (strtimeframe.Contains("-"))
             {
-
+              
                 planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
-
+            
                 planData = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
                 List<Plan_Campaign> lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
                 string[] multipleyear = strtimeframe.Split('-');
@@ -6180,29 +6204,27 @@ namespace RevenuePlanner.Controllers
                     //// Set start and end date for calender
                     Common.GetPlanGanttStartEndDate(planYear, multipleyear[i], ref CalendarStartDate, ref CalendarEndDate);
 
+                   
+                        List<int> planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
+                        if (planList.Count == 0)
+                        {
+                            campplanid = lstCampaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && planIds.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
+                        }
+                        filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
+                         campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
 
-                    List<int> planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
-                    if (planList.Count == 0)
-                    {
-                        campplanid = lstCampaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && planIds.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
-                    }
-                    filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
-                     campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
 
-
-                    var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
+                    var  objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
                                                  campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId)
                                                  && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false)
-                                                 .Select(tactic => new
-                                                 {
+                                                 .Select(tactic => new {
                                                      PlanTacticId = tactic.PlanTacticId,
                                                      CreatedBy = tactic.CreatedBy,
                                                      TacticTypeId = tactic.TacticTypeId,
                                                      Status = tactic.Status,
                                                      StartDate = tactic.StartDate,
                                                      EndDate = tactic.EndDate,
-                                                     isdelete = tactic.IsDeleted
-                                                 }).ToList();
+                                                     isdelete = tactic.IsDeleted }).ToList();
 
                     objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tactic => tactic.isdelete.Equals(false)).ToList();
 
@@ -6231,7 +6253,7 @@ namespace RevenuePlanner.Controllers
                         });
 
                     }
-
+              
                     if ((filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0))
                     {
                         lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
@@ -6253,7 +6275,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-
+                   
                     int[] monthArrayactivity = new int[12];
                     int q1 = 0;
                     int q2 = 0;
@@ -6270,7 +6292,7 @@ namespace RevenuePlanner.Controllers
 
                         int currentMonth = DateTime.Now.Month, monthNo = 0;
                         DateTime startDate, endDate;
-
+                   
                         int TacticCount = objPlan_Campaign_Program_Tactic.Count;
                         for (int tactic = 0; tactic < TacticCount; tactic++)
                         {
@@ -6300,7 +6322,7 @@ namespace RevenuePlanner.Controllers
                                     foreach (string objDifference in differenceItems)
                                     {
                                         monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
-
+                                    
                                         categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
                                         string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNo);
                                         int CurrentQuarter = (int)Math.Floor(((decimal)(monthNo) + 2) / 3);
@@ -6352,7 +6374,7 @@ namespace RevenuePlanner.Controllers
                                                 }
                                             }
                                         }
-
+                                    
                                     }
                                 }
                                 else if (endDate.Year == year)
@@ -6369,7 +6391,7 @@ namespace RevenuePlanner.Controllers
                                         foreach (string objDifference in differenceItems)
                                         {
                                             monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
-
+                                     
                                             categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
                                             string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNo);
                                             int CurrentQuarter = (int)Math.Floor(((decimal)(monthNo) + 2) / 3);
@@ -7868,7 +7890,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ViewOnlyPermission">ViewOnlyPermission flag in form of int</param>
         /// <param name="ViewEditPermission">ViewEditPermission flag in form of int</param>
         /// <returns>returns flag for custom restriction as per custom restriction</returns>
-        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int currentPlanId, int planLineItemId = 0)
+        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int planLineItemId = 0)
         {
             bool isValidEntity = false;
 
@@ -7922,16 +7944,6 @@ namespace RevenuePlanner.Controllers
                                                                 ).Select(lineItem => lineItem.PlanLineItemId);
 
                 if (objPlanLineItem.Count() != 0)
-                {
-                    isValidEntity = true;
-                }
-            }
-            else if (currentPlanId > 0)
-            {
-                var objPlan = objDbMrpEntities.Plans.Where(plan => plan.PlanId == currentPlanId && plan.IsDeleted == false
-                                                                ).Select(plan => plan.PlanId);
-
-                if (objPlan.Count() != 0)
                 {
                     isValidEntity = true;
                 }
@@ -9673,8 +9685,8 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public PartialViewResult LoadPlanCalendar()
         {
-            return PartialView("_PlanCalendar");
-        }
+                return PartialView("_PlanCalendar");
+            }
         /// <summary>
         /// Created by: Viral
         /// Created On: 09/19/2016
@@ -9687,9 +9699,9 @@ namespace RevenuePlanner.Controllers
             #region "Declare local variables"
             string planYear = "";
             Services.IGrid objGrid = new Services.Grid();
-            List<calendarDataModel> resultData = new List<calendarDataModel>();
-
-            #endregion
+            List<calendarDataModel> resultData = new List<calendarDataModel>(); 
+            
+        #endregion
 
             try
             {
@@ -9704,7 +9716,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
-                ErrorSignal.FromCurrentContext().Raise(ex);
+               ErrorSignal.FromCurrentContext().Raise(ex);
             }
 
             var jsonResult = Json(new { data = resultData }, JsonRequestBehavior.AllowGet);
@@ -9730,7 +9742,7 @@ namespace RevenuePlanner.Controllers
                     string tacticType = Enums.EntityType.Tactic.ToString().ToUpper();
                     string[] filteredCustomFields = string.IsNullOrWhiteSpace(fltrCustomfields) ? null : fltrCustomfields.Split(',');
                     List<calendarDataModel> tacData = allData.Where(tac => tac.type.ToUpper() == tacticType).ToList();
-                    List<int> lstTacticIds = tacData.Select(tactic => tactic.PlanTacticId.Value).ToList();
+                    List<int> lstTacticIds = tacData.Select(tactic => tactic.PlanTacticId.Value).ToList(); 
                     #endregion
 
                     resultData = allData.Where(tac => tac.type.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
@@ -9780,7 +9792,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
-                ErrorSignal.FromCurrentContext().Raise(ex);
+               ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return Json(lstViewBy, JsonRequestBehavior.AllowGet);
         }

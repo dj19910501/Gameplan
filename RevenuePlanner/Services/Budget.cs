@@ -31,7 +31,7 @@ namespace RevenuePlanner.Services
         private const string CellNotLocked = "0";
         public const string FixHeader = "ActivityId,Type,machinename,,,,,,";
         public const string EndColumnsHeader = ",";
-        public const string FixColumnIds = "ActivityId,Type,MachineName,colourcode,TaskName,Buttons,BudgetCost,PlannedCost,ActualCost";
+        public const string FixColumnIds = "ActivityId,Type,machinename,colourcode,taskname,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",Budget";
         public const string FixColType = "ro,ro,ro,ro,tree,ro,ed,ed,ed";
         public const string EndColType = ",ro";
