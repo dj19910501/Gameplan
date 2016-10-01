@@ -10726,10 +10726,17 @@ li.accordion-inner.close-list {
 	color: #fff;
 	cursor: default;
 }
+#divsidebartoggle{position:relative}
 .sidebar-toogle { /* Changed for #2621 UI changes */
 	padding: 5px 0; /* 27-10-2015 for ticket 1713 by bheru */
 	position: relative;
 }
+#divsidebartoggle .sidebar-toogle{ 
+    position: absolute;
+    right: 10px;
+    top: 0;   
+}
+#divsidebartoggle .sidebar-toogle a{color:#F8710E;}
 .sidebar-toogle a.sidebar-filter-icon {
 	background: #89cede none repeat scroll 0 0;
 	border-radius: 0 4px 4px 0;

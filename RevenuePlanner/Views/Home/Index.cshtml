@@ -32,7 +32,7 @@
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 <!-- Stylesheet Only For Homepage -->
 @section FilterEx{
-    <link href="~/Content/css/styleIndexPage.css" rel="stylesheet" />
+    <link href="~/Content/css/styleIndexPage_1.css" rel="stylesheet" />
 }
 
 @* Sidebar Section Start *@
@@ -74,10 +74,10 @@
             </div>
             <div class="ix-icon-block">
                 <a id="ImportBtn" class="new-btn-plan-left" href="#" style="display:none" onclick="showModal();">@* P-icon-active class removed by Bhumika *@
-                    <i class="fa fa-upload" title="Import"></i><span>Import</span>
+                    <i class="fa fa-download" title="Import"></i><span>Import</span>
                 </a>
                 <a href="#" id="" class="new-btn-plan-right dropdown-toggle " data-toggle="dropdown">
-                    <i class="fa fa-download" title="Export"></i><span>Export</span>
+                    <i class="fa fa-upload" title="Export"></i><span>Export</span>
                 </a>
                 <ul id="" class="dropdown-menu export-dd">
                     <li title=""><a href="#" id="ExportXls" onclick="ExportToExcel()">.xls</a></li>
