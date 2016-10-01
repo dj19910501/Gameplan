@@ -532,7 +532,7 @@ function DisplayPopUpMenu(obj, e) {
                     isCopyTactic = data.Id;
                     isCopyTacticHomeGrid = isCopyTactic;
                     if ($('#IsGridView').val().toLowerCase() == "false") {
-                        RefreshCurrentTab();
+                        BindPlanCalendar();
                     }
                     else {
                         LoadPlanGrid();
@@ -595,7 +595,7 @@ function DisplayPopUpMenu(obj, e) {
                     isCopyTactic = data.Id;
                     isCopyTacticHomeGrid = isCopyTactic;
                     if ($('#IsGridView').val().toLowerCase() == "false") {
-                        RefreshCurrentTab();
+                        BindPlanCalendar();
                     }
                     else {
                         LoadPlanGrid();
@@ -672,7 +672,7 @@ function DisplayPopUpMenu(obj, e) {
                     isCopyTactic = data.Id;
                     isCopyTacticHomeGrid = isCopyTactic;
                     if ($('#IsGridView').val().toLowerCase() == "false") {
-                        RefreshCurrentTab();
+                        BindPlanCalendar();
                     }
                     else {
                         LoadPlanGrid();
