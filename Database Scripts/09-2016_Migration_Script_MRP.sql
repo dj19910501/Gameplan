@@ -3247,6 +3247,16 @@ GO
 -- Create date: <27/09/2016>
 -- Description:	<Following is stroprocedure and table type for multiple plan import in budget>
 -- =============================================
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_GetPlanBudgetDataMonthly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE dbo.Sp_GetPlanBudgetDataMonthly
+END
+GO
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_GetPlanBudgetDataQuarterly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE dbo.Sp_GetPlanBudgetDataQuarterly
+END
+GO
 
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Plan_BudgetQuarterCalculation') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
