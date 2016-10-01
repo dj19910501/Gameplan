@@ -106,6 +106,8 @@ namespace Integration.Salesforce
             _applicationId = applicationId;
             this.objectName = "Campaign";
 
+            _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+
             SetIntegrationInstanceDetail();
             //// Authenticate
             this.Authenticate();
