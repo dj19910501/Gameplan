@@ -334,6 +334,7 @@ namespace RevenuePlanner.Services
             return BudgetDataObjList;
         }
 
+        //html part of this function will be move into html helper as part of PL ticket 2676
         public string SetIcons(PlanBudgetModel Entity, string OwnerName, string EntityType, string DhtmlxGridRowId, string EntityColor, bool IsAddEntityRights, string pcptid, string TacticType)
         {
             string doubledesh = "--";
