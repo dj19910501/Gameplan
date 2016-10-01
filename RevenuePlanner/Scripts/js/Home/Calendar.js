@@ -285,7 +285,7 @@ else if ( $.isNumeric(timeframe)) {
         gantt.config.scale_height = 60;
         //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: 310, min_width: 310, resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 90 }];
-        //gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date();
         var startDate = new Date(parseInt(PlanYears[0]), 00, 01);

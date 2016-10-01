@@ -837,8 +837,8 @@ function CancelSavePreset() {
 function ClearAllPreset() {
     BulkTTOperation(false);
     BulkStatusOperation(false);
-    BulkOwnerOperation(false);    
-    LoadPlanData(null);        
+    BulkOwnerOperation(false);
+    LoadPlanData(null);
     BulkPlanOperation(false);
     $('#divCustomFieldsFilter').find("li").each(function (i) {
         $(this).removeClass("close-list");
@@ -942,10 +942,10 @@ var IsUpdate = false;
 var SavePresetValue = false;
 function UpdateResult() {
     IsUpdate = true;
-    isRequest = false; 
+    isRequest = false;
     GetFilterIds();
     //if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-    if ($('#IsGridView').val().toLowerCase() == "true") {
+    if ($('#IsGridView').val().toLowerCase() == "true" && !IsBudgetGrid) {
         filters.customFieldIds = [];
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
@@ -997,11 +997,13 @@ function UpdateResult() {
         $("#totalEntity").text(ExportSelectedIds.TaskID.length);
 
     }
+    else if (IsBudgetGrid) {
+        LoadBudgetGrid();
+    }
     else {
-        //Need to Implement
         BindPlanCalendar();
     }
-    var TimeFrame=$('#ddlUpComingActivites').val();
+    var TimeFrame = $('#ddlUpComingActivites').val();
     GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs', urlContent + 'Home/GetActivityDistributionchart', secHome, TimeFrame)
     UpdateSelectedFilters();
     if (SavePresetValue == false) {
@@ -1040,7 +1042,7 @@ function GetFilterIds() {
     });
     $("#ulTacticType li input[type=checkbox]:checked").each(function () {
         var Value = $(this).attr("id").replace("CbTT", "");
-            filters.TacticTypeids.push(Value);        
+        filters.TacticTypeids.push(Value);
     });
     $("#ulStatus li input[type=checkbox]:checked").each(function () {
         filters.StatusIds.push($(this).attr('id').toString());

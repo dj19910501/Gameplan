@@ -90,6 +90,10 @@ function LoadBudgetGrid() {
     filters = GetFilterIds(); 
     BindUpcomingActivites(filters.PlanIDs.toString())
  var selectedTimeFrame = $('#ddlUpComingActivites').val();
+    var currentDate = new Date();
+    if (selectedTimeFrame == null || selectedTimeFrame == 'undefined' || selectedTimeFrame == "") {
+        selectedTimeFrame = currentDate.getFullYear().toString();
+    }
     $.ajax({
         url: urlContent + 'Plan/GetBudgetData/',
         data: {
