@@ -115,897 +115,6 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region Load calendar for home screen view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen viewby tactic
-        /// </summary>
-        /// <auther>Sohel Pathan</auther>
-        /// <createddate>21Jan2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen viewby tactic.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-            
-        }
-        #endregion
-
-        #region Load calendar for home screen view by custom field
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen viewby custom field
-        /// </summary>
-        /// <auther>Sohel Pathan</auther>
-        /// <createddate>21Jan2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_ViewBy_CustomField()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen viewby custom field.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for home screen view by Status
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen viewby Status
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_ViewBy_Status()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen viewby Status.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Status.ToString();
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", "");
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for home screen status view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  status viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_status_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  status viewby tactic.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", Status) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for home screen status view by custom field
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  status viewby custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_status_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  status viewby custom field.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, "", Status) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for home screen TacticType view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  TacticType viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_TacticType_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType viewby tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, tactictypeids, "") as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-
-        #endregion
-
-        #region Load calendar for home screen TacticType view by Custom field
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  TacticType viewby Custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_TacticType_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType viewby Custom field.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, tactictypeids, "") as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for home screen Owner view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  Owner viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_Owner_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  Owner viewby tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-            string Ownerids = string.Join(",", Owner);
-
-            var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-
-        #endregion
-
-        #region Load calendar for home screen Owner view by Custom field
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  Owner viewby Custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_Owner_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  Owner viewby Custom field.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-            string Ownerids = string.Join(",", Owner);
-
-            var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, "", "") as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-
-        #endregion
-
-        #region Load calendar for home screen TacticType and Status view by Custom field
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  TacticType  and Status  viewby Custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_TacticType_Status_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType  and Status  viewby Custom field.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, tactictypeids, Status) as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for home screen TacticType and status view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  TacticType and status viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_TacticType_Status_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType and status viewby tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Home.ToString(), false, tactictypeids, Status) as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for home screen TacticType ,Status and Owner view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  TacticType ,Status and Owner  viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_TacticType_Status__Owner_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType ,Status and Owner  viewby tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-            string Ownerids = string.Join(",", Owner);
-
-
-            var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, tactictypeids, Status) as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for home screen TacticType ,Status and Owner view by Custom field
-        /// <summary>
-        /// To check to retrieve calendar data for Home Screen  TacticType ,Status and Owner  viewby Custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Home_Screen_TacticType_Status__Owner_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Home Screen  TacticType ,Status and Owner  viewby Custom field.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-            string Ownerids = string.Join(",", Owner);
-
-
-            var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Home.ToString(), false, tactictypeids, Status) as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for Plan Screen viewby tactic
-        /// </summary>
-        /// <auther>Sohel Pathan</auther>
-        /// <createddate>21Jan2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Plan Screen viewby tactic.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen view by custom field
-        /// <summary>
-        /// To check to retrieve calendar data for Plan Screen viewby custom field
-        /// </summary>
-        /// <auther>Sohel Pathan</auther>
-        /// <createddate>21Jan2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_ViewBy_CustomField()
-        {
-            Console.WriteLine("To check to retrieve calendar data for Plan Screen viewby custom field.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for Plan screen view by Status
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen viewby Status
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_ViewBy_Status()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen viewby Status.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Status.ToString();
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen status view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  status viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_status_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  status viewby tactic.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", Status) as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen status view by custom field
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  status viewby custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_status_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  status viewby custom field.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, "", Status) as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen TacticType view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  TacticType viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_TacticType_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType viewby tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, "") as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen TacticType view by Custom field
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  TacticType viewby Custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_TacticType_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType viewby Custom field.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, "") as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen Owner view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  Owner viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_Owner_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  Owner viewby tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-            string Ownerids = string.Join(",", Owner);
-
-            var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-
-        #endregion
-
-        #region Load calendar for plan screen Owner view by Custom field
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  Owner viewby Custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_Owner_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  Owner viewby Custom field.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-            string Ownerids = string.Join(",", Owner);
-
-            var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, "", "") as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-
-        #endregion
-
-        #region Load calendar for plan screen TacticType and Status view by Custom field
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  TacticType  and Status  viewby Custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_TacticType_Status_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType  and Status  viewby Custom field.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, Status) as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen TacticType and status view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  TacticType and status viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_TacticType_Status_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType and status viewby tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            var result = LoadFunction(ViewBy, "", Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, Status) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen TacticType ,Status and Owner view by tactic
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  TacticType ,Status and Owner  viewby tactic
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_TacticType_Status__Owner_ViewBy_Tactic()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType ,Status and Owner  viewby tactic.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Tactic.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-            string Ownerids = string.Join(",", Owner);
-
-
-            var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, Status) as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Load calendar for plan screen TacticType ,Status and Owner view by Custom field
-        /// <summary>
-        /// To check to retrieve calendar data for plan Screen  TacticType ,Status and Owner  viewby Custom field
-        /// </summary>
-        /// <auther>Komal Rawal</auther>
-        /// <createddate>26June2015</createddate>
-        [TestMethod]
-        public void Load_Calendar_For_Plan_Screen_TacticType_Status__Owner_ViewBy_Custom()
-        {
-            Console.WriteLine("To check to retrieve calendar data for plan Screen  TacticType ,Status and Owner  viewby Custom field.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            List<string> lststatus = new List<string>();
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-
-            string Status = string.Join(",", lststatus);
-
-
-            //// Call index method
-            string ViewBy = PlanGanttTypes.Custom.ToString();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-            string tactictypeids = string.Join(",", tactic);
-
-            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-            string Ownerids = string.Join(",", Owner);
-
-
-            var result = LoadFunction(ViewBy, Ownerids, Enums.ActiveMenu.Plan.ToString(), false, tactictypeids, Status) as JsonResult;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.getvalue:  " + result.GetValue("taskData"));
-            Assert.IsNull(result.GetValue("taskData"));
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
-            Assert.IsNull(result.Data);
-        }
-        #endregion
-
-        #region Common Function
-        //this function is use for internal
-        public JsonResult LoadFunction(string ViewBy, string OwnerIds, string Activemenu, bool getViewByList, string Tactictypeids, string Statusids)
-        {
-            Console.WriteLine("Common function.\n");
-            HomeController objHomeController = new HomeController();
-            string CommaSeparatedPlanId = "";
-            string Year = DataHelper.GetYear();
-            if (Activemenu == Enums.ActiveMenu.Home.ToString())
-            {
-                CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            }
-            else
-            {
-                CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
-            }
-            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
-
-            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, Year, CommaSeparatedCustomFields, OwnerIds, Activemenu, getViewByList, Tactictypeids, Statusids, true) as Task<JsonResult>;
-            return new JsonResult();
-        }
-
-        #endregion
-        #endregion
-
         #region PL#1144 Multi select: Add actuals page changes for custom fields
 
         #region Add Actual view
@@ -1203,41 +312,7 @@ namespace RevenuePlanner.Test.Controllers
         //}
         #endregion
 
-        #region Get ActivityDistribution Data
-        [TestMethod]
-        public void Get_ActivityDistributionData()
-        {
-            Console.WriteLine("To check to retrieve Header Data with Activity distribution data.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            HomeController objHomeController = new HomeController();
-            int planId = DataHelper.GetPlanId();
-            string Year = DataHelper.GetYear();
-            var result = objHomeController.GetNumberOfActivityPerMonth(planId.ToString(), Year, false) as Task<JsonResult>;
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Status:  " + result.Status);
-            Assert.IsNotNull(result.Status);
-        }
-
-        [TestMethod]
-        public void Get_ActivityDistributionData_WithMultiplePlans()
-        {
-            Console.WriteLine("To check to retrieve Header Data with Activity distribution data with multiple planids.\n");
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            HomeController objHomeController = new HomeController();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            string Year = DataHelper.GetYear();
-            var result = objHomeController.GetNumberOfActivityPerMonth(CommaSeparatedPlanId, Year, true);
-
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Status:  " + result.Status);
-            Assert.IsNotNull(result.Status);
-        }
-        #endregion
+        
 
         #endregion
 
@@ -1857,37 +932,6 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region Get Number Of Activity Per Month
-        /// <summary>
-        /// To Get Number Of Activity Per Month.
-        /// <author>Rahul Shah</author>
-        /// <createddate>04Jul2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Number_Of_Activity_Per_Month()
-        {
-            var routes = new RouteCollection();
-            Console.WriteLine("To Get Number Of Activity Per Month.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-
-            var TaskData = DataHelper.GetPlan(Sessions.User.CID);
-            int PlanId = TaskData.PlanId;
-            Sessions.PlanId = PlanId;
-            string strParam = TaskData.Year.ToString();
-            bool isMultiyear = false;
-
-            var result = objHomeController.GetNumberOfActivityPerMonthPer(PlanId.ToString(), strParam, isMultiyear) as Task<JsonResult>;
-            var serializedData = new RouteValueDictionary(result.Result.Data);
-            var resultvalue = serializedData["strparam"];
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
-            Assert.IsNotNull(resultvalue.ToString());
-           
-        }
-        #endregion
-
         #region Get Default URL
         /// <summary>
         /// To Get Default URL.
@@ -1919,35 +963,6 @@ namespace RevenuePlanner.Test.Controllers
             Assert.IsNotNull(resultvalue.ToString());
            
 
-        }
-        #endregion
-
-        #region Get Current Plan Permission Detail
-        /// <summary>
-        /// To Get Current Plan Permission Detail.
-        /// <author>Rahul Shah</author>
-        /// <createddate>04Jul2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void Get_Current_Plan_Permission_Detail()
-        {
-            var routes = new RouteCollection();
-            Console.WriteLine("Get Current Plan Permission Detail.\n");
-            MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            int PlanId = DataHelper.GetPlanId();
-            Sessions.PlanId = PlanId;
-
-            var result = objHomeController.GetCurrentPlanPermissionDetail(PlanId) as JsonResult;
-            var serializedData = new RouteValueDictionary(result.Data);
-            var resultvalue = serializedData["IsPlanEditable"];
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value resultvalue:  " + resultvalue.ToString());
-            Assert.IsNotNull(resultvalue.ToString());
-            
         }
         #endregion
 
@@ -2078,5 +1093,533 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
+        #region "PlanCalendar related TestCases"
+
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Rahul Shah</author>
+        /// <createddate>04Jul2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void LoadPlanCalendar()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get Calendar Screen.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+
+            var result = objHomeController.LoadPlanCalendar() as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+
+        }
+
+        [TestMethod]
+        public void GetCalendarData()
+        {
+            Console.WriteLine("Get Calendar Data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            #region "Set Status"
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus); 
+            #endregion
+
+            // Set Timeframe            
+            string timeframe;
+            timeframe = DataHelper.GetYear(); 
+
+            //// Set View By
+            string ViewBy = PlanGanttTypes.Tactic.ToString();
+
+            // Get PlanIds in comma separated format.
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+
+            // Get OwnerNames in comma separated format.
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            // Get tactictype ids in comma separated format.
+            List<int> tacticTypeIds = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tacticTypeIds);
+
+            // Get CustomFields in comma separated.
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
+
+            // Execute actual controller function.
+            result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+
+            // Verify result is null to check whether test case fail or not.
+            Assert.IsNotNull(result, "Success");
+        }
+        // Test case with all empty parameter 
+        [TestMethod]
+        public void GetCalendarDataEmptyParameter()
+        {
+            Console.WriteLine("Get Calendar Data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            #region "Set Status"
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+            #endregion
+
+            // Set Timeframe            
+            string timeframe;
+            timeframe = string.Empty;
+
+            //// Set View By
+            string ViewBy = string.Empty;
+
+            // Get PlanIds in comma separated format.
+            string CommaSeparatedPlanId = string.Empty;
+
+            // Get OwnerNames in comma separated format.
+            string Ownerids = string.Empty;
+
+            // Get tactictype ids in comma separated format.
+            string tactictypeids = string.Empty;
+
+            // Get CustomFields in comma separated.
+            string CommaSeparatedCustomFields = string.Empty;
+
+            // Execute actual controller function.
+            result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+
+            // Verify result is null to check whether test case fail or not.
+            Assert.IsNotNull(result, "Success");
+        }
+
+        // Test case with empty Time Frame
+        [TestMethod]
+        public void GetCalendarDataWithEmptyTimeFrame()
+        {
+            Console.WriteLine("Get Calendar Data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            #region "Set Status"
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+            #endregion
+
+            // Set Timeframe            
+            string timeframe;
+            timeframe = string.Empty;
+
+            //// Set View By
+            string ViewBy = PlanGanttTypes.Tactic.ToString();
+
+            // Get PlanIds in comma separated format.
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+
+            // Get OwnerNames in comma separated format.
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            // Get tactictype ids in comma separated format.
+            List<int> tacticTypeIds = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tacticTypeIds);
+
+            // Get CustomFields in comma separated.
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
+
+            // Execute actual controller function.
+            result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+
+            // Verify result is null to check whether test case fail or not.
+            Assert.IsNotNull(result, "Success");
+        }
+
+        // Test case with empty CustomFields
+        [TestMethod]
+        public void GetCalendarDataWithEmptyCustomFields()
+        {
+            Console.WriteLine("Get Calendar Data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            #region "Set Status"
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+            #endregion
+
+            // Set Timeframe            
+            string timeframe;
+            timeframe = DataHelper.GetYear();
+
+            //// Set View By
+            string ViewBy = PlanGanttTypes.Tactic.ToString();
+
+            // Get PlanIds in comma separated format.
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+
+            // Get OwnerNames in comma separated format.
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            // Get tactictype ids in comma separated format.
+            List<int> tacticTypeIds = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tacticTypeIds);
+
+            // Get CustomFields in comma separated.
+            string CommaSeparatedCustomFields = string.Empty;
+
+            // Execute actual controller function.
+            result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+
+            // Verify result is null to check whether test case fail or not.
+            Assert.IsNotNull(result, "Success");
+        }
+
+        #region "PlanCalendar related TestCases With differnt ViewBy Parameter"
+        // Test case with  Viewby value - Custom
+        [TestMethod]
+        public void GetCalendarDataViewByValueCustom()
+        {
+            Console.WriteLine("Get Calendar Data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            #region "Set Status"
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+            #endregion
+
+            // Set Timeframe            
+            string timeframe;
+            timeframe = DataHelper.GetYear();
+
+            //// Set View By
+            string ViewBy = PlanGanttTypes.Status.ToString();
+
+            // Get PlanIds in comma separated format.
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+
+            // Get OwnerNames in comma separated format.
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            // Get tactictype ids in comma separated format.
+            List<int> tacticTypeIds = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tacticTypeIds);
+
+            // Get CustomFields in comma separated.
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
+
+            // Execute actual controller function.
+            result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+
+            // Verify result is null to check whether test case fail or not.
+            Assert.IsNotNull(result, "Success");
+        }
+
+        // Test case with  Viewby value - Status
+        [TestMethod]
+        public void GetCalendarDataViewByValueStatus()
+        {
+            Console.WriteLine("Get Calendar Data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            #region "Set Status"
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+            #endregion
+
+            // Set Timeframe            
+            string timeframe;
+            timeframe = DataHelper.GetYear();
+
+            //// Set View By
+            string ViewBy = PlanGanttTypes.Status.ToString();
+
+            // Get PlanIds in comma separated format.
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+
+            // Get OwnerNames in comma separated format.
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            // Get tactictype ids in comma separated format.
+            List<int> tacticTypeIds = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tacticTypeIds);
+
+            // Get CustomFields in comma separated.
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
+
+            // Execute actual controller function.
+            result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+
+            // Verify result is null to check whether test case fail or not.
+            Assert.IsNotNull(result, "Success");
+        }
+
+        // Test case with  Viewby value - ROIPackage
+        [TestMethod]
+        public void GetCalendarDataViewByCustomValueROIPackage()
+        {
+            Console.WriteLine("Get Calendar Data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            #region "Set Status"
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+            #endregion
+
+            // Set Timeframe            
+            string timeframe;
+            timeframe = DataHelper.GetYear();
+
+            //// Set View By
+            string ViewBy = PlanGanttTypes.ROIPackage.ToString();
+
+            // Get PlanIds in comma separated format.
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+
+            // Get OwnerNames in comma separated format.
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            // Get tactictype ids in comma separated format.
+            List<int> tacticTypeIds = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tacticTypeIds);
+
+            // Get CustomFields in comma separated.
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
+
+            // Execute actual controller function.
+            result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+
+            // Verify result is null to check whether test case fail or not.
+            Assert.IsNotNull(result, "Success");
+        }
+
+        // Test case with  Viewby value - Stage
+        [TestMethod]
+        public void GetCalendarDataViewByCustomValueStage()
+        {
+            Console.WriteLine("Get Calendar Data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            #region "Set Status"
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+            #endregion
+
+            // Set Timeframe            
+            string timeframe;
+            timeframe = DataHelper.GetYear();
+
+            //// Set View By
+            string ViewBy = PlanGanttTypes.Stage.ToString();
+
+            // Get PlanIds in comma separated format.
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+
+            // Get OwnerNames in comma separated format.
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            // Get tactictype ids in comma separated format.
+            List<int> tacticTypeIds = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tacticTypeIds);
+
+            // Get CustomFields in comma separated.
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
+
+            // Execute actual controller function.
+            result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+
+            // Verify result is null to check whether test case fail or not.
+            Assert.IsNotNull(result, "Success");
+        }
+
+        // Test case with  Viewby value - Tactic
+        [TestMethod]
+        public void GetCalendarDataViewByCustomValueTactic()
+        {
+            Console.WriteLine("Get Calendar Data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            JsonResult result = null;
+
+            #region "Set Status"
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+            #endregion
+
+            // Set Timeframe            
+            string timeframe;
+            timeframe = DataHelper.GetYear();
+
+            //// Set View By
+            string ViewBy = PlanGanttTypes.Tactic.ToString();
+
+            // Get PlanIds in comma separated format.
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+
+            // Get OwnerNames in comma separated format.
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            // Get tactictype ids in comma separated format.
+            List<int> tacticTypeIds = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tacticTypeIds);
+
+            // Get CustomFields in comma separated.
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.ID);
+
+            // Execute actual controller function.
+            result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+
+            // Verify result is null to check whether test case fail or not.
+            Assert.IsNotNull(result, "Success");
+        }
+
+        #endregion
+
+        #endregion
+
+        #endregion
     }
 }

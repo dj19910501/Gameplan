@@ -419,7 +419,7 @@ namespace RevenuePlanner.Test.MockHelpers
             else
             {
                 ClientId = (from i in db.Models
-                            where i.IsDeleted == false
+                            where i.IsDeleted == false && i.ModelId==ModelId
                             select i.ClientId).FirstOrDefault();
             }
             return ClientId;

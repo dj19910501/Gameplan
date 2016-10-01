@@ -853,35 +853,7 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region Get Get_HeaderData_With_MultiplePlanIds using new performance method
-        /// <summary>
-        /// To check to Get Get_HeaderData_With_MultiplePlanIds using new performance method.
-        /// <author>Rahul Shah</author>
-        /// <createddate>29June2016</createddate>
-        /// </summary>
-        [TestMethod]
-        public void Get_HeaderData_With_MultiplePlanIds()
-        {
-            Console.WriteLine("To check to Get Get_HeaderData_With_MultiplePlanIds using new performance method.\n");
-            MRPEntities db = new MRPEntities();
-            //// Set session value
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-
-            //// Call index method
-            PlanController objPlanController = new PlanController();
-            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
-            string Year = DataHelper.GetYear();
-            int planId = DataHelper.GetPlanId();
-            Sessions.User.CID = DataHelper.GetClientId(planId);
-            Common.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.ID).ToList();
-            var result = objPlanController.GetPlanByMultiplePlanIDsPer(Convert.ToString(planId), Enums.ActiveMenu.Home.ToString(), Year) as Task<JsonResult>;
-            //// Json result data should not be null
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.Status);
-            Assert.IsNotNull(result);
-
-
-        }
-        #endregion
+        
 
 
 
