@@ -361,13 +361,7 @@
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setEditable(false);
         HomeGrid.init();
-        setTimeout(function () {
-            HomeGrid.loadOpenStates();
-        }, 500);
-        setTimeout(function () {
-            HomeGrid.setSizes();
-        }, 200);
-
+       
         var mainGridData = JsonModel;
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
@@ -382,6 +376,13 @@
         //    $('.treegrid_cell').find('img').css('display', 'none');
 
         //}
+        setTimeout(function () {
+            HomeGrid.loadOpenStates("gridOpenplangridState");
+        }, 1000);
+        setTimeout(function () {
+            HomeGrid.setSizes();
+        }, 200);
+
         //added by devanshi for pl ticket #2213
         var selectedid = $("#hdnSelectedTacticLineItemId").val();
         if (selectedid != "0") {
@@ -890,7 +891,7 @@
                 isquarter = true;
             }
             setTimeout(function () {
-                HomeGrid.saveOpenStates();
+                HomeGrid.saveOpenStates("plangridState");
             }, 500);
             $('.clickmeAnchor').each(function () {
                 var selfClickMe = $(this);

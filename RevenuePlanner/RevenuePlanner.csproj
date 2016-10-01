@@ -1040,6 +1040,7 @@
     </Content>
     <Content Include="Views\Plan\_PlanGridVariable.cshtml" />
     <Content Include="Views\Home\_CalExportPDFHeaderHtml.cshtml" />
+    <Content Include="Views\Inspect\_SetupPlanDetails.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>

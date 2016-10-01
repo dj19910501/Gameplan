@@ -34,7 +34,7 @@ namespace RevenuePlanner.Controllers
                 List<Plan_UserSavedViews> PlanUserSavedViews = Sessions.PlanUserSavedViews;
                 PlanModel = objCommonFilter.GetFilterData(currentPlanId, Sessions.User.ID, Sessions.User.CID, Sessions.PlanPlanIds, Sessions.FilterPresetName, ref PlanUserSavedViews, ref LstYear);
                 Sessions.PlanUserSavedViews = PlanUserSavedViews;
-                if (PlanModel.lstPlanId.Count() > 0)
+                if (PlanModel.lstPlanId != null && PlanModel.lstPlanId.Count() > 0)
                 {
                     Sessions.PlanPlanIds = PlanModel.lstPlanId;
                 }

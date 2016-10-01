@@ -180,12 +180,12 @@ function LoadAfterParsing() {
         gridSearchFlag = 1;
         DisplayEditablePopup(id, type);
     });
-
+    var idcoluIndex = HomeGrid.getColIndexById('id');
     if (isCopyTacticHomeGrid != 0) {
         $('#txtGlobalSearch').val("");
         $('#ExpClose').css('display', 'none');
         $('#ExpSearch').css('display', 'block');
-        var selectedcell = HomeGrid.findCell(isCopyTacticHomeGrid, 3, true);
+       var selectedcell = HomeGrid.findCell(isCopyTacticHomeGrid, idcoluIndex, true);
         var id = selectedcell[0];
         var rowid;
         if (id != undefined && id != 'undefined') {
@@ -198,11 +198,12 @@ function LoadAfterParsing() {
             state0 = ItemIndex;
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
         }
+        selectedTaskID = rowid;
         isCopyTacticHomeGrid = 0;
         isCopyTactic = 0;
     }
     else if (isEditTacticHomeGrid != 0) {
-        var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, 3, true);
+        var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, idcoluIndex, true);
         var id = selectedcell[0];
         var rowid;
         if (id != undefined && id != 'undefined') {
@@ -212,6 +213,7 @@ function LoadAfterParsing() {
             ItemIndex = HomeGrid.getRowIndex(rowid);
             state0 = ItemIndex;
         }
+        selectedTaskID = rowid;
         isEditTacticHomeGrid = 0;
         isEditTactic = 0;
     }
@@ -222,7 +224,7 @@ function LoadAfterParsing() {
     editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
         SetTooltip();
         setTimeout(function () {
-            HomeGrid.saveOpenStates();
+            HomeGrid.saveOpenStates("plangridState");
         }, 1000);
         $(".grid_Search").off("click");
         $(".grid_Search").click(function (e) {
@@ -514,6 +516,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
+            return false;
+        if (rowId == "newRow_0")
             return false;
     }
     if (stage == 1) {
@@ -1302,7 +1306,7 @@ function ExportToExcel(isHoneyComb) {
         HomeGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
         HomeGrid.collapseAll();
         //load users current strate of tree
-        HomeGrid.loadOpenStates();
+        HomeGrid.loadOpenStates("plangridState");
         //Show/Hide columns as per export requirements
         HomeGrid.setColumnHidden(iconColumnIndex, false);
         HomeGrid.setColumnHidden(colourCodeIndex, false);

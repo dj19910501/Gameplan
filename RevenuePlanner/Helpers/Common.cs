@@ -1301,9 +1301,18 @@ namespace RevenuePlanner.Helpers
             }
             else
             {
+                if (!string.IsNullOrEmpty(currentView))
+                {
                 string[] PlanYears = currentView.Split('-');
                 startDate = new DateTime(Convert.ToInt32(PlanYears[0]), 1, 1);
                 endDate = new DateTime(Convert.ToInt32(PlanYears[1]), 12, 31);
+            }
+                else
+                {
+                    startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
+                    endDate = new DateTime(Convert.ToInt32(planYear), 12, 31);
+                }
+
             }
         }
 
@@ -3224,7 +3233,9 @@ namespace RevenuePlanner.Helpers
                         {
                             if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate))
                             {
-                                return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
+                                //return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
+                                Sessions.IsNoPlanCreated = true;
+                                return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Home" };
                             }
                             if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit))
                             {
@@ -3249,7 +3260,9 @@ namespace RevenuePlanner.Helpers
                         }
                         else if (allModelIds != null || allModelIds.Count > 0)
                         {
-                            return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
+                          //  return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
+                            Sessions.IsNoPlanCreated = true;
+                            return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Home" };
                         }
                         else
                         {

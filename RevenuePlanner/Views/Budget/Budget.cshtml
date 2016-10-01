@@ -88,7 +88,7 @@
         HomeGrid.setEditable(true);
         HomeGrid.init();
         setTimeout(function () {
-            HomeGrid.loadOpenStates();
+            HomeGrid.loadOpenStates("gridOpenplangridState");
         }, 500);
         setTimeout(function () {
             HomeGrid.setSizes();
@@ -112,6 +112,9 @@
                 gridSearchFlag = 1;
                 DisplayEditablePopup(id, type);
             });
+            setTimeout(function () {
+                HomeGrid.saveOpenStates("plangridState");
+            }, 500);
         });
         var machineNameindex = HomeGrid.getColIndexById("machinename");
         var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
@@ -133,7 +136,20 @@
                 }
             }
         }
+        setTimeout(function () {
+            HomeGrid.loadOpenStates("plangridState");
+        }, 1000);
+        setTimeout(function () {
+            HomeGrid.setSizes();
+        }, 200);
         LoadAfterParsing();
+        var rowCount = HomeGrid.getRowsNum();
+        if (rowCount != undefined && rowCount == 0) {
+            var noplan='@Sessions.IsNoPlanCreated';
+            if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
+                AddBlankRow();
+            }
+        }
     });
 
     function LoadAfterParsing() {
@@ -149,7 +165,8 @@
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
-
+            if (rowId == "newRow_0")
+                return false;
         }
         //if (stage == 1) { } // Stage == 1 - Means Perform Event on Cell -  Keydown, etc. This is currently not used but if required we can use this flag.
         if (stage == 2) { // Stage == 2 - Means perform focus out event
@@ -307,5 +324,37 @@
     function showModal() {
         LoadFileInputModelBox();
         $('#ImportModal').modal('show');
+    }
+    //added by devanshi to add blank row to budget grid when there is no plan for client #2587 30-9-2016
+    function AddBlankRow() {
+        var blankrawdata = [];
+        blankrawdata.push("--");
+        var id = "";
+        var addcolindex = 0;
+        var taskcolindex = 0;
+        for (var i = 1; i < HomeGrid.getColumnCount() ; i++) {
+            id = HomeGrid.getColumnId(i);
+            if (id == '@Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString().ToLower()') {
+                blankrawdata.push("Your plan goes here");
+                taskcolindex = i;
+            }
+            else if (id == 'Buttons') {
+                blankrawdata.push("");
+                addcolindex = i;
+            }
+            else if (id == 'ActivityId') {
+                blankrawdata.push("0");
+            }
+            else if (id == '@Enums.HomeGrid_Default_Hidden_Columns.ColourCode.ToString().ToLower()') {
+                blankrawdata.push("");
+            }
+            else {
+                blankrawdata.push("--");
+            }
+        }
+        var rawdata = blankrawdata.join(',');
+        HomeGrid.addRow("newRow_0", rawdata);
+        HomeGrid.cells("newRow_0", addcolindex).setValue("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id='Plan' alt='000' per='true' title='Add'><i class='fa fa-plus-circle'></i></div>");
+        HomeGrid.setCellTextStyle("newRow_0", taskcolindex, "color:gray;font-style: italic;");
     }
 </script>

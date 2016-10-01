@@ -653,5 +653,26 @@ namespace RevenuePlanner.Helpers
                 HttpContext.Current.Session["ViewByValue"] = value;
             }
         }
+        //added by devanshi for finding no plan for clien/user
+        public static bool IsNoPlanCreated
+        {
+
+            get
+            {
+                if (HttpContext.Current.Session["IsNoPlanCreated"] != null)
+                {
+                    return Convert.ToBoolean(HttpContext.Current.Session["IsNoPlanCreated"]);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["IsNoPlanCreated"] = value;
+            }
+
+        }
     }
 }

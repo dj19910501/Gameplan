@@ -333,12 +333,17 @@ function DisplayPopUpMenu(obj, e) {
     var ul;
     if (type == "Plan") {
         if (permission == "true") {
+            if (PlanId == "000") { // bind only new plan option for bank row
+                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li></ul>";
+            }
+            else {
             if ('@IsPlanCreateAuthorized') {
                 ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>New Campaign</li> </ul>";
             }
             else {
                 ul = "<ul style='margin: 0;'> <li class='new-prog' id='ChildCampaign'>New Campaign</li> </ul>";
             }
+        }
         }
         else {
             $('#popupType').css('display', 'none');
@@ -434,8 +439,9 @@ function DisplayPopUpMenu(obj, e) {
     }
     e.stopPropagation();
     $("#NewPlan").click(function (e) {
-        var url = urlContent + 'Plan/CreatePlan/';
-        displayconfirm(url);
+       //Open inspect popup for add new plan added by devanshi #2587
+        ShowModels(inspectAdd, secPlan, " ", 0, RequestedModule);
+
     });
 
     $('#ClonePlan1').click(function () {
@@ -779,7 +785,7 @@ function CloseIconClick() {
                 if (gridSearchFlag == 1) {
                     isCopyTacticHomeGrid = isCopyTactic;
                     isEditTacticHomeGrid = isEditTactic;
-                    LoadPlanGrid();
+                    LoadFilter();
                     gridSearchFlag = 0;
                 }
                 //else if (isBoostAuthorized) {
@@ -2368,6 +2374,12 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
         var divProg = $('div[taskid="' + ProgramId + '"]').attr('dhtmlxrowid');
         HomeGrid.openItem(divProg);
     }
+}
+// Method to refresh calender after popup close-- #2587
+function RefreshCurrentTab()
+{
+    LoadFilter();
+    BindPlanCalendar();
 }
 
 ///Added by dhvani to open inspect popup for URL -- PL #2534

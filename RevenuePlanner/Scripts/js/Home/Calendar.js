@@ -31,10 +31,15 @@ function BindPlanCalendar() {
         type: 'POST',
         success: function (data) {
             if (data != 'undefined' && data != null) {
-                $('#GridGanttContent').html(data);
-            }
+                var calendarHtml = '<div id="NodatawithfilterCalendar" style="display:none;">' +
+  '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
+'<br/></div>';
+                calendarHtml += data;
+                $("#GridGanttContent").html('');
+                $("#GridGanttContent").html(calendarHtml);
             GetCalendarDataInJsonFormat();
             $('#ChangeView').show();
+				   }
 
         }
     });
@@ -58,9 +63,17 @@ var viewBy = $('#ddlTabViewBy').val();
             viewBy: viewBy
         },
         success: function (data) {
+            var permission = Boolean($("#IsPlanEditable").val());
+            if (data.data.length > 0 || (NoPlanCreated.toString().toLowerCase()=='true' && permission.toString().toLowerCase()=='true' )) {
             ConfigureGanttwithdefaultSettings();    // Configure Calendar with default configuration.
             SetGanttData(data.data);            // Render Calendar.
             $('#exp-serach').css('display', 'block');
+                $('#ChangeView').show();
+            } else {
+                $('#NodatawithfilterCalendar').show();
+                $('#ChangeView').hide();
+            }
+
         }
     });
 }
@@ -95,8 +108,14 @@ function SetGanttData(resultdata) {
     if (taskcnt > 0) {
         gantt.clearAll();
     }
-
+    
     gantt.config.select_task = true;
+    var currentDate = new Date();
+    if (timeframe == null || timeframe == 'undefined' || timeframe == "") {
+        timeframe = currentDate.getFullYear().toString();
+    }
+
+    
     if (timeframe == "thisquarter") {
         //// Setting scale.
         gantt.config.scale_unit = "month";
@@ -132,6 +151,9 @@ function SetGanttData(resultdata) {
         gantt.templates.task_class = function (start, end, task) {
             return getCSSForTask(task);
         };
+        if (json_length == 0) {
+            filteredTasks = AddCalenderBlankRow(startDate);
+        }
         gantt.parse(filteredTasks);
 
         //// display popup based on type and name and title.
@@ -185,7 +207,9 @@ function SetGanttData(resultdata) {
         gantt.templates.task_class = function (start, end, task) {
             return getCSSForTask(task);
         };
-
+        if (json_length == 0) {
+            filteredTasks = AddCalenderBlankRow(startDate);
+        }
         gantt.parse(filteredTasks);//Freezing of Application with Please Wait Dialog Box (This Month Option)
 
 
@@ -206,7 +230,7 @@ function SetGanttData(resultdata) {
             $('#popupType').css('display', 'none');
         });
     }
-    else if ($.isNumeric(timeframe)) {
+else if ( $.isNumeric(timeframe)) {
 
         var PlanYears = timeframe.split("-");
         var yearDiffrence = 1;
@@ -221,9 +245,10 @@ function SetGanttData(resultdata) {
         gantt.config.columns = [{ name: "colorcode", label: "", tree: false, width: 10, resize: false }, { name: "text", label: "Task name", tree: true, width: 310, min_width: 310, resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 90 }];
         //gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "machineName", label: "Machine name", tree: true, resize: true, align: "center", hide: true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
+      
         var date = new Date();
-        gantt.config.start_date = new Date(parseInt(PlanYears[0]), 00, 01);
+        var startDate = new Date(parseInt(PlanYears[0]), 00, 01);
+        gantt.config.start_date = startDate
         gantt.config.end_date = new Date(parseInt(PlanYears[0]) + yearDiffrence, 00, 01);
 
         gantt.init("gantt_here");
@@ -238,13 +263,17 @@ function SetGanttData(resultdata) {
         gantt.templates.task_class = function (start, end, task) {
             return getCSSForTask(task);
         };
-
+        if (json_length == 0)
+        {
+            tasks = AddCalenderBlankRow(startDate);
+        }
         gantt.parse(tasks);
     }
     else {
-
         // Desc :: For 24 months
-        var PlanYears = timeframe.split("-");
+        var    PlanYears = timeframe.split("-");
+        
+        
         var yearDiffrence = 1;
         if (PlanYears.length > 1) {
             yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
@@ -259,7 +288,8 @@ function SetGanttData(resultdata) {
         //gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date();
-        gantt.config.start_date = new Date(parseInt(PlanYears[0]), 00, 01);
+        var startDate = new Date(parseInt(PlanYears[0]), 00, 01);
+        gantt.config.start_date = startDate
         gantt.config.end_date = new Date(parseInt(PlanYears[0]) + yearDiffrence, 00, 01);
         gantt.init("gantt_here");
 
@@ -273,7 +303,9 @@ function SetGanttData(resultdata) {
         gantt.templates.task_class = function (start, end, task) {
             return getCSSForTask(task);
         };
-
+        if (json_length == 0) {
+            tasks = AddCalenderBlankRow(startDate);
+        }
         gantt.parse(tasks);
     }
 
@@ -506,7 +538,23 @@ function ShowModel(taskId, isShowInspect) {
         loadInspectPopup(planId, secPlan, "Setup", inspectEdit);
     }
 }
-///End
+///End	
+//function add blank row in calendar when there is no plan for client #2587
+function AddCalenderBlankRow(startDate)
+{
+    startDate = "01-04-"+startDate.getFullYear();
+    var tasks = {
+        data: [
+            {
+                id: "000", text: "Your plan goes here", start_date: startDate, duration: 0, color: "ffffff",
+                progress: 0.4, parent: null, type: "Plan", Permission: true,
+            }
+        ]
+    };
+    return tasks;
+}
+//end
+
 
 var PdfFilters = {
     customFieldIds: [],

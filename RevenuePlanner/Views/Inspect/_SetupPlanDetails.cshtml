@@ -1,0 +1,368 @@
+﻿@model RevenuePlanner.Models.InspectModel
+@using RevenuePlanner.Helpers
+@{
+    string strPlanId = Convert.ToString(Model.PlanId);
+    bool IsModelCreateEditAuthorized = (bool)ViewBag.modelcreateedit;
+    var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
+    string CurrencySymbol = Sessions.PlanCurrencySymbol;
+    bool isPlanDefinationDisable = false;
+    if (ViewBag.IsPlanDefinationDisable != null)
+    {
+        isPlanDefinationDisable = ViewBag.IsPlanDefinationDisable;
+    }
+    bool isPlanEdit = false;
+    if (!string.IsNullOrEmpty(strPlanId) && strPlanId != "0")
+    {
+        isPlanEdit = true;
+    }
+    string goalvalue = Model.GoalValue == null ? "0" : Model.GoalValue;
+}
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+}
+@Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
+@Html.HiddenFor(model => model.GoalType, new { id = "GoalType" })
+
+@using (Html.BeginForm())
+{
+   
+        @Html.HiddenFor(model => model.Title)
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment n1-form-main">
+                            <div class="bold font_size16 plan-defination">Plan definition</div>
+                            <div id="divPlanDefinationEnabled" class="plan-text">
+                                I'm using the
+                                @{
+        if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()) && IsModelCreateEditAuthorized)
+                            {
+                        @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
+                        <span id="ModelTitle" class="source-sans-proregular"></span>
+                            }
+                            else
+                            {
+                        <span id="ModelTitle" class="source-sans-proregular">@Model.ModelTitle</span>
+                                }
+                                }
+                                model to create a plan 
+                                @*<span id="spandef">@Model.Title</span>*@
+                                in
+                                @{
+                            if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
+                            {
+                        @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
+                            }
+                            else
+                            {
+                        <span id="spandef">@Model.Year</span>
+                            }
+                                }
+                                with a
+                                @{
+                            if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
+                            {
+                        @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType })
+                            }
+                            else
+                            {
+                        <span id="spandef">@Model.GoalType</span>
+                            }
+                                }
+                                goal of
+                                <span id="revenueSign">@CurrencySymbol</span>
+                              
+                                @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @goalvalue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })
+                                and a budget of
+                                @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>" + CurrencySymbol + "800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat" })
+                                <span id="spanZeroBudget" class="source-sans-prosemibold" style="display: none;">none</span> .
+                                <div class="nl-overlay"></div>
+
+                            </div>
+                            <div id="divBudgetSummary">
+                                Based on my goal, this plan will require
+                                <span id="input1" class="source-sans-prosemibold"></span>
+                                <span id="msg1" class="source-sans-prosemibold"></span>
+                                <span id="conjuntionWord">and </span>
+                                <span id="input2" class="source-sans-prosemibold"></span>
+                                <span id="msg2" class="source-sans-prosemibold"></span>
+                                with an<span class="source-sans-prosemibold"> average deal size of</span>
+                                <span id="averageDealSize" class="source-sans-prosemibold">@Model.AverageDealSize</span>.
+                            </div>
+                            <div>
+                                This plan is owned by
+                                @{
+                            if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
+                            {
+                        @Html.DropDownListFor(m => Model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "select", new { datadefault = "SelectOwner", @class = "myValue  hide", placeholder = @Model.Owner })
+                            }
+                            else
+                            {
+                        <span id="spandef">@Model.Owner</span>
+                            }
+                                }
+
+                            </div>
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            @Html.TextBoxFor(model => model.Description, new { placeholder = @Model.Description, id = "txtDescription" })
+
+                        }
+                        else
+                        {
+                            @Html.TextBoxFor(model => model.Description, new { placeholder = "Add Description Here", id = "txtDescription" })
+                        }
+                            <script>
+                        var nlform = new NLForm(document.getElementById('nl-form'));
+                            </script>
+
+                        </div>
+                    </td>
+
+                    @Html.HiddenFor(model => model.ModelId)
+                    @Html.HiddenFor(model => model.PlanId)
+                    @Html.HiddenFor(model => model.TotalAllocatedCampaignBudget)
+                </tr>
+            </tbody>
+        </table>
+  
+  
+}
+<script>
+    var CurrencySymbol = '@CurrencySymbol';
+    $('#EditForm').removeClass('SpanDisable');
+    $('#InspectTab').removeClass('SpanDisable');
+
+    $(document).ready(function () {
+        var hdnPlanId = $("#hdnPlanId").val();
+        var goalType = $("#GoalType").val();
+        if (hdnPlanId != 0) {
+            $('#divBudgetSummary').show();
+            var modelId = 0;
+          
+            var goalValue = $("#GoalValue").val();
+
+            if ($('#ModelId').val() != '')
+                modelId = $('#ModelId').val();
+
+            if (goalType != '')
+                calculateBudget(modelId, goalType, goalValue);
+
+           
+        }
+        else {
+            $('#divBudgetSummary').hide();
+        }
+        if (goalType.toLowerCase() == "revenue") {
+            $('#revenueSign').show();
+            $('#conjuntionWord').html('and ');
+        }
+        else {
+            $('#revenueSign').hide();
+            $('#conjuntionWord').html('to deliver ');
+        }
+    });
+
+    $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
+        var element = $(this).parent().parent().next();
+
+        $('#AllocatedBy').prev().children('ul').children('li').removeClass("nl-dd-checked");
+        $(this).addClass('nl-dd-checked');
+
+        if (element.hasClass('calculateBudget')) {
+            //Modified by Rahul Shah for PL #2383
+            if ($(element).attr('datadefault') == "SelectGoalType") {
+                var tValue = $(this).attr('textvalue');
+                $("#GoalType").attr('value', tValue);
+            }
+            if ($("#GoalType").val().toLowerCase() == 'revenue') {
+                if (!$("#revenueSign").is(':visible')) {
+                    $('#revenueSign').show();
+                    $('#conjuntionWord').html('and ');
+                }
+            }
+            else {
+                if ($("#revenueSign").is(':visible')) {
+                    $('#revenueSign').hide();
+                    $('#conjuntionWord').html('to deliver ');
+                }
+            }
+
+            if ($("#GoalType").val().toLowerCase() == '') {
+                $('#divBudgetSummary').hide();
+            }
+            else {
+                $('#divBudgetSummary').show();
+            }
+
+            var modelId = 0;
+            var goalType = $("#GoalType").val();
+            var goalValue = $("#GoalValue").val();
+
+            if ($('#ModelId').val() != '') {
+                modelId = $('#ModelId').val();
+                $('#averageDealSize').html("0");
+                $('#ModelTitle').html($('#ModelId').prev().find('.nl-field-toggle').html());
+                $('#ModelTitle').hide();
+            }
+            calculateBudget(modelId, goalType, goalValue);
+        }
+    });
+
+    $('#GoalValue').parent().find('.priceValue').blur(function () {
+        if (!$(this).parent().hasClass('budget-month') && !$(this).parent().hasClass('budget-quarters')) {
+            var modelId = 0;
+            var goalType = $("#GoalType").val();
+            var goalValue = $('#GoalValue').parent().find('.priceValue').val();
+
+            if ($('#ModelId').val() != '')
+                modelId = $('#ModelId').val();
+
+            calculateBudget(modelId, goalType, goalValue);
+
+        }
+    });
+
+    function calculateBudget(_modelId, _goalType, _goalValue) {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Plan/CalculateBudget/")',
+            dataType: "json",
+            data: { modelId: _modelId, goalType: _goalType, goalValue: _goalValue },
+            success: function (data) {
+                $('#msg1').html(data.msg1);
+                $('#msg2').html(data.msg2);
+                $('#input1').html(number_format(data.input1.toString(), 0, '.', ','));
+                if (_goalType.toLowerCase() != "revenue") {
+                    $('#input2').html(CurrencySymbol + number_format(data.input2.toString(), 0, '.', ',')); //Modified by Rahul Shah for PL #2499
+                }
+                else {
+                    $('#input2').html(number_format(data.input2.toString(), 0, '.', ','));
+                }
+                $('#averageDealSize').html(FormatCurrency(data.ADS, false));
+            }
+        });
+    }
+
+    function SetupPlanSave() {
+     
+        var returnparameter = false;
+        var iserror = false;
+        $('.nl-field').each(function () {
+            if ($(this).next().attr('datadefault') == "SelectModel") {
+                var tValue = $(this).children('a').text();
+                if (tValue == 'select') {
+                    $(this).children('a').addClass("error-form");
+                    iserror = true;
+
+                }
+                else {
+                    $(this).children('a').removeClass("error-form");
+                }
+            }
+            else if ($(this).next().attr('datadefault') == "SelectGoalType") {
+                var tValue = $(this).children('a').text();
+                if (tValue == 'select') {
+                    $(this).children('a').addClass("error-form");
+                    iserror = true;
+
+                }
+                else {
+                    $(this).children('a').removeClass("error-form");
+                }
+            }
+            else if ($(this).next().attr('datadefault') == "SelectOwner") {
+                var tValue = $(this).children('a').text();
+                if (tValue == 'select') {
+                    $(this).children('a').addClass("error-form");
+                    iserror = true;
+                }
+                else {
+                    $(this).children('a').removeClass("error-form");
+                }
+            }
+        });
+
+        if ($("#txtTitle").val().toString().trim() == '') {
+            $("#txtTitle").addClass("error");
+            iserror = true;
+        }
+        else {
+            $("#txtTitle").removeClass("error");
+        }
+
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
+        }
+        else {
+            $("#errorMessage").css("display", "none");
+        }
+
+        var regex = /(>|<)/m;
+
+        var descriptionvalue = $("#txtDescription").val();
+        if (descriptionvalue.search(regex) >= 0) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
+            $("#txtDescription").addClass("error");
+            iserror = true;
+        }
+
+        if (CheckHtmlTag($("#txtTitle").val()) == false) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+            $("#txtTitle").addClass("error");
+            iserror = true;
+        }
+        if (!iserror) {
+            $("#txtTitle").value = htmlEncode($('#txtTitle').val());
+            $('#Title').val($('#txtTitle').val());
+            $("#GoalValue").val(ReplaceCC($("#GoalValue").val()));
+            $("#txtBudget").val(ReplaceCC($("#txtBudget").val()));
+            var formData = $("form").serialize();
+            var RedirectType = "";
+            var uId = $(window).attr('name');
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: '@Url.Content("~/Inspect/SavePlanDetails")',
+                data: formData + '&UserId=' + uId,
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data.succmsg != "") {
+                            if (data.redirect != "") {
+                            }
+                            else {
+                                isDataModified = true;
+                                $("#successMessage").css("display", "block");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.succmsg);
+                                returnparameter = true;
+                            }
+                            returnparameter = true;
+                        }
+                        if (data.errormsg != "" && data.errormsg != undefined) {
+                            $("#txtTitle").value = htmlDecode($('#txtTitle').val());
+                            ShowError(data.errormsg);
+                            returnparameter = false;
+                        }
+                    }
+                }
+            });
+        }
+
+        return returnparameter;
+    }
+
+    function ShowError(value) {
+        $("#errorMessagePlan").slideDown(400);
+        $("#spanErrMessagePlan").empty();
+        $("#spanErrMessagePlan").html(value);
+    }
+</script>

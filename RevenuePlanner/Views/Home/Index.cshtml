@@ -21,6 +21,7 @@
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
     var ShowInspectPopup = ViewBag.ShowInspectPopup; //nullable  value
+    bool NoPlanCreated = (bool)Sessions.IsNoPlanCreated;
 }
 @Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
@@ -47,6 +48,7 @@
 
 @*add new*@
 @Html.Hidden("IsGridView", IsGridView)
+@Html.Hidden("IsPlanEditable", IsPlanCreateAuthorized)
 @*end*@
 <script type="text/javascript" src="~/Scripts/Planhud.js"></script>
 @*<script src="~/Scripts/js/Home/planCalendar.js"></script>*@
@@ -192,6 +194,9 @@
 <script src="~/Scripts/js/Home/HomeGrid.js"></script>
 <script src="~/Scripts/js/Home/Calendar.js"></script>
     <script type="text/javascript">
+    var isCopyTacticHomeGrid = 0;
+    var isEditTacticHomeGrid = 0;
+    var selectedTaskID = "";
     //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
     var imgPath = "";
     imgPath = '@Url.Content("~/codebase/imgs/")';
@@ -233,6 +238,7 @@
     var UnpackageSuccessful = '@RevenuePlanner.Helpers.Common.objCached.UnpackageSuccessful';
     var activeMenu = '@ViewBag.ActiveMenu.ToString()';
     var IsManageDropdown = false;
+    var NoPlanCreated = '@NoPlanCreated';
     ///////
     var IsManageviewClick = false;
     var IsBudgetGrid = false;
@@ -416,6 +422,7 @@
 
         $(".selectBox select").selectbox();
         $("#ddlTabViewBy").multiselect();
+        LoadFilter();
         $("#ddlUpComingActivites").change(function () {
             if (IsBudgetGrid) {
                 $('#btnbudget').trigger('click');
@@ -424,6 +431,8 @@
                 BindPlanCalendar();
             }
         });
+    });
+    function LoadFilter() {
         var strURL = '@Url.Content("~/Filter/Index/")';
         $.ajax({
             url: strURL,
@@ -453,8 +462,7 @@
                 }
             }
         });
-    });
-
+    }
     function OpenCreateNew(IsGridView) {
         $.ajax({
             type: 'POST',

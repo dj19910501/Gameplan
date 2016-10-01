@@ -193,6 +193,10 @@ namespace RevenuePlanner.Models
         public string programType { get; set; }
         public string Channel { get; set; }
         public string ROIType { get; set; }
+
+        public string Year { get; set; }
+        public string AverageDealSize { get; set; }
+        public double TotalAllocatedCampaignBudget { get; set; }
     }
 
     public class InspectReviewModel

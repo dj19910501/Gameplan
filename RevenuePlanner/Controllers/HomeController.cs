@@ -274,8 +274,11 @@ namespace RevenuePlanner.Controllers
 
                     }
                 }
-                isPublished = currentPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString()); //Added by Dashrath Prajapati-PL #1758 Publish Plan: Unable to Publish Draft Plan 
-                ViewBag.IsPublished = isPublished;
+                if (currentPlan != null)
+                {
+                    isPublished = currentPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString()); //Added by Dashrath Prajapati-PL #1758 Publish Plan: Unable to Publish Draft Plan 
+                    ViewBag.IsPublished = isPublished;
+                }
             }
             var Label = Enums.FilterLabel.Plan.ToString();
             var FilterName = Sessions.FilterPresetName;
@@ -417,7 +420,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-            if (activePlan.Count() > 0)
+            if (activePlan.Count() > 0 && currentPlan!=null)
             {
                 try
                 {

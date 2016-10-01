@@ -616,11 +616,20 @@ gantt._render_grid_item = function (item) {
                     // #1780
                     if (item.Permission == true)
                     {
+					    if (item.id == "000") { // bind only add icon for new bank row -- #2587
+                            value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div>";
+                        }
+                        else {
                         value = "<div id='Plan' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanId + "','Plan')><i class='fa fa-external-link-square'></i></div><div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div> <div id='" + item.type + "' onclick='javascript:AddRemoveEntity(this)'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Add to Honeycomb' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanId + "'  ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' taskname='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+						}
                     }
                     else
                     {
+					    if (item.id != "000") {
                         value = "<div id='Plan' class='grid_Search' title='' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanId + "','Plan')><i class='fa fa-external-link-square'></i></div><div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' onclick='javascript:AddRemoveEntity(this)' title='Add to Honeycomb' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanId + "'  ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' taskname='" + _item + "' Permission='" + item.Permission + "'></div>"
+						    }
+                        else
+                            value = "";
                     }
 
                     // #1780

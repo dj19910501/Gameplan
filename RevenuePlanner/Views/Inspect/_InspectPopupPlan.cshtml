@@ -9,7 +9,11 @@
 
     var popupvalue = (string)planDetails.InspectPopup;
     var InspectMode = planDetails.InspectMode != null ? (string)planDetails.InspectMode : string.Empty;
-
+    bool IsPlanPublished=false;
+    if(ViewBag.IsPublished!=null)
+    { 
+     IsPlanPublished = (bool)ViewBag.IsPublished;
+    }
     bool IsPlanEditable = (bool)planDetails.IsPlanEditable;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string RequestedModule = planDetails.RedirectType != null ? planDetails.RedirectType : "";
@@ -57,14 +61,15 @@
 
 
             <span>
-                @if (IsPlanEditable)
+               
+                @if (IsPlanEditable && planDetails.PlanId!=0)
                 {
                     <div id="divDeletePlan" style="float: right;" class="delete-btn-tab">
                         <button type="button" id="deletePlan" class="delete-btn-gray">Delete</button>
                     </div>
                 }
 
-                   @if (IsPlanCreateAuthorized)
+                   @if (IsPlanCreateAuthorized && InspectMode == Enums.InspectPopupMode.Edit.ToString())
                             {
                 <div style="float: right; position: relative;">
                     <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" class="add-icon-white btn-blue btn-large"></span>
@@ -81,12 +86,12 @@
                     </div>
                 </div>
                    }
-                @if (IsPlanEditable)
+                @if (IsPlanEditable || (InspectMode == Enums.InspectPopupMode.Add.ToString() && IsPlanCreateAuthorized))
                 {
                     <div style="float: right; position: relative;">
                         @{
                     string classbutton = "edit-icon-white";
-                    if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+                    if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || (InspectMode == Enums.InspectPopupMode.Add.ToString() && IsPlanCreateAuthorized))
                     {
                         classbutton = "Save-icon-white";
                     }
@@ -100,7 +105,15 @@
                         </div>
                     </div>
                 }
-
+                @if (IsPlanEditable && !IsPlanPublished)
+                {
+                    @*<button id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular publish-plan-btn" type="button" style="min-width: 90%">
+                Publish Plan
+            </button>*@
+                    <div style="float: right;">
+                        <button type="button" id="BtnPublishPlan" class="btn-blue btn-large">Publish Plan</button>
+                    </div>
+                }
 
             </span>
 
@@ -118,17 +131,17 @@
             <div class="modal-popup-title">
                 <span class="icon-flag bg-purple" style="background-color:#@planDetails.ColorCode !important;"></span>
                 <h2 class="title-simple source-sans-prolight">
-                    @if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+                    @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
                     {
-                        @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(planDetails.Title), new { placeholder = "Required", require = "true", maxlength = "255", @class = "span12 input-small font20 light-blue-background", style = "width: 95%; height: 28px;", title = planDetails.Title })
+                        @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(planDetails.Title), new { placeholder = "Plan Title", require = "true", maxlength = "255", @class = "span12 input-small font20 light-blue-background", style = "width: 95%; height: 28px;", title = planDetails.Title })
                         @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle1" })
                     }
                     else
                     {
                         <span class="tipsyclassTitle ConcatTextlength" title="@Html.Raw(planDetails.Title)">@Html.Raw(planDetails.Title)</span>
-                        <div style="float: right; position: relative;">
+                        @*<div style="float: right; position: relative;">
                             <button id="BtnPlan" class="GoToPlan-icon btn-Green btn-large" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" type="button" onclick="window.location.href=' @Url.Action("Index", "Home",new{activemenu = Enums.ActiveMenu.Plan,currentPlanId = planDetails.PlanId}) '"></button>
-                        </div>
+                        </div>*@
                     }
 
                 </h2>
@@ -137,16 +150,10 @@
 </form>
 <div>
     <ul class="nav nav-tabs new-margin no-position SpanDisable" id="InspectTab">
-        <li class="active pull-left" id="liSetup">
+        <li class="active pull-left" id="liSetup" style="display:none;">
             <a>Setup</a>
         </li>
-        @*Commented by Arpita Soni for Ticket #2236 on 06/20/2016*@
-        @*@if(!Sessions.IsBudgetShow)
-        {
-            <li class="pull-left" id="liBudget">
-                <a>Budget</a>
-            </li>
-        }*@
+       
     </ul>
     <div id="divTab">
     </div>
@@ -206,10 +213,7 @@
         if (tabValue == TabSetup) {
             url = '@Url.Content("~/Inspect/LoadPlanSetup/")';
         }
-        // Commented by Arpita Soni for Ticket #2236 on 06/20/2016
-        @*else if (tabValue == TabBudget) {
-            url = '@Url.Content("~/Inspect/LoadPlanBudget/")';
-        }*@
+      
 
         RemoveTabClass();
         $("#li" + tabValue).removeClass("pull-left");
@@ -545,5 +549,51 @@
             displayconfirm(url);
         }
     });
+    $('#BtnPublishPlan').click(function () {
+        publishPlan();
+    });
 
+    function publishPlan() {
+        var uId = $(window).attr('name');
+        var planId = $("#hdnPlanId").val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/PublishPlan/")',
+            data: {
+                UserId: uId,
+                PlanId: planId
+            },
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.errorMessage != undefined) {
+                        isError = true;
+                        ShowError(data.errormsg);
+                    }
+                    else if (data.activeMenu != undefined && data.currentPlanId != undefined) {
+                        var url = '@Url.Content("~/Home/Index")';
+
+                        var queryStringArr = [];
+
+                        queryStringArr.push(
+                         {
+                             key: 'ActiveMenu',
+                             Value: data.activeMenu
+                         });
+
+                        queryStringArr.push(
+                         {
+                             key: 'currentPlanId',
+                             Value: data.currentPlanId
+                         });
+
+                        formSubmitEvent(url, queryStringArr);
+                    }
+
+                }
+            }
+        });
+    }
 </script>

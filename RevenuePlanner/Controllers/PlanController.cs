@@ -1746,8 +1746,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         //   [ActionName("ApplyToCalendar")] 
         //Modified By Komal Rawal for new UI
-        public ActionResult PublishPlan(int UserId = 0)
+        public ActionResult PublishPlan(int UserId = 0, int PlanId=0)
         {
+            int IntPlanId = PlanId;
             try
             {
                 //// Check cross user login check
@@ -1761,7 +1762,9 @@ namespace RevenuePlanner.Controllers
                 }
 
                 //// Update Plan status to Published.
-                var plan = db.Plans.FirstOrDefault(p => p.PlanId.Equals(Sessions.PlanId));
+                if (IntPlanId == 0)
+                    IntPlanId = Sessions.PlanId;
+                var plan = db.Plans.FirstOrDefault(p => p.PlanId.Equals(IntPlanId));
                 plan.Status = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()];
                 plan.ModifiedBy = Sessions.User.ID;
                 plan.ModifiedDate = DateTime.Now;

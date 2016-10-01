@@ -2,7 +2,11 @@
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
 @{
-    var countrows = Model.rows.Count;
+    var countrows = 0;
+    if (Model != null && Model.rows!=null)
+    { 
+        countrows=Model.rows.Count;
+    }
     //List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);   
 
 }
@@ -30,8 +34,8 @@
 
 <script src="~/Scripts/js/Home/HomeGrid.js"></script>
 <script type="text/javascript">
-    var HomeGrid;
     gridname = "home";
+    var HomeGrid;
 
     @*var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); //ToDo : Made required changes to bind Tactic Type Dropdown list on edit tactic type.
     var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');*@ //ToDo : Made required changes to bind Line Item Type Dropdown list on edit Line Item type.
@@ -110,7 +114,7 @@
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
         HomeGrid.attachEvent("onDistributedEnd", function () {
-            HomeGrid.loadOpenStates();
+            HomeGrid.loadOpenStates("plangridState");
             LoadAfterParsing();
             if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
                 HomeGrid.showRow(HomeGrid.getRowId(state0));
@@ -142,24 +146,24 @@
         MoveColumn(); ///Calling Move column function       
         HomeGrid.collapseAll();
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
-        var cookie = document.cookie;
-        if (cookie.indexOf("gridOpengridbox") > -1) {
-            var cookies = cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                if (cookies[i] == "gridOpengridbox") {
-                    if (cookies[i].indexOf("|") > -1) {
-                        cookies[i] = "gridOpengridbox=plan.1";
-                        document.cookie = "gridOpengridbox=plan.1";
-                    }
-                }
-            }
-        }
-        else {
-            document.cookie = "gridOpengridbox=plan.1";
-        }
+        //var cookie = document.cookie;
+        //if (cookie.indexOf("gridOpenplangridState") > -1) {
+        //    var cookies = cookie.split(';');
+        //    for (var i = 0; i < cookies.length; i++) {
+        //        if (cookies[i] == "gridOpenplangridState") {
+        //            if (cookies[i].indexOf("|") > -1) {
+        //                cookies[i] = "gridOpenplangridState=plan.1";
+        //                document.cookie = "gridOpenplangridState=plan.1";
+        //            }
+        //        }
+        //    }
+        //}
+        //else {
+        //    document.cookie = "gridOpengridbox=plan.1";
+        //}
         setTimeout(function () {
-            HomeGrid.loadOpenStates();
-        }, 1000);
+            HomeGrid.loadOpenStates("plangridState");
+        }, 500);
         LoadAfterParsing();
 
         if (parseInt('@countrows') > 0) {
@@ -168,14 +172,54 @@
             $("#NodatawithfilterGrid").hide();
 
         } else {
+            var noplan = '@Sessions.IsNoPlanCreated';
+            if ($("#IsPlanEditable").val().toString().toLowerCase()=='true' && noplan.toLowerCase()=='true') {
+                AddBlankRow();
+                $("#gridbox").show();
+                $("#goalwrapper").show();
+                $("#NodatawithfilterGrid").hide();
+            }
+            else {
             $("#gridbox").hide();
             $("#goalwrapper").hide();
             $("#NodatawithfilterGrid").show();
-            $('#exp-serach').css('display', 'none');
+        }
         }
         if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
             GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
         }
     }
+    //added by devanshi to add blank row to plan grid when there is no plan for client #2587 30-9-2016
+    function AddBlankRow() {
+        var blankrawdata = [];
+        blankrawdata.push("--");
+        var id = "";
+        var addcolindex = 0;
+        var taskcolindex = 0;
+        for (var i = 1; i < HomeGrid.getColumnCount() ; i++) {
+            id = HomeGrid.getColumnId(i);
+            if (id == '@Enums.HomeGrid_Default_Hidden_Columns.TaskName') {
+                blankrawdata.push("Your lan goes here");
+                taskcolindex = i;
+            }
+            else if (id == '@Enums.HomeGrid_Default_Hidden_Columns.Add') {
+                blankrawdata.push("");
+                addcolindex = i;
+            }
+            else if (id == '@Enums.HomeGrid_Default_Hidden_Columns.id') {
+                blankrawdata.push("0");
+            }
+            else if (id == '@Enums.HomeGrid_Default_Hidden_Columns.ColourCode') {
+                blankrawdata.push("");
+            }
+            else {
+                blankrawdata.push("--");
+            }
+        }
+        var rawdata = blankrawdata.join(',');
+        HomeGrid.addRow("newRow_0", rawdata);
+        HomeGrid.cells("newRow_0", addcolindex).setValue("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id='Plan' alt='000' per='true' title='Add'><i class='fa fa-plus-circle'></i></div>");
+        HomeGrid.setCellTextStyle("newRow_0", taskcolindex, "color:gray;font-style: italic;");
 
+    }
 </script>

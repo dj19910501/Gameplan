@@ -3,7 +3,11 @@
 
 @{
     string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
-    var ViewYearList = (List<SelectListItem>)ViewBag.ViewYear;
+    List<SelectListItem> ViewYearList = new List<SelectListItem>();
+    if (ViewBag.ViewYear != null)
+    {
+        ViewYearList = (List<SelectListItem>)ViewBag.ViewYear;
+    }
     int custFieldCount = 0;
     List<string> SelectedYearText = new List<string>();
     List<string> SelectedPlanTitle = new List<string>();
@@ -83,6 +87,7 @@
                     <ul class="scroll-list singleselect" id="ulSelectedPlanFilter">
                         @*@if (activeMenu.ToLower() != Enums.ActiveMenu.Plan.ToString().ToLower())
                             {*@
+                       
                         <li class="accordion-inner" title="Year">
                             <span class="sidebarliwidthSelected-left">Year - </span>
                             @foreach (SelectListItem item in ViewYearList)
@@ -99,6 +104,7 @@
                             }
                             <span id="lstYearActive" class="sidebarliwidthSelected-right">@string.Join(", ", SelectedYearText).ToString()</span>
                         </li>
+                        
                         <li class="accordion-inner" title="Plan">
                             <span class="sidebarliwidthSelected-left">Plan -  </span>
                             @foreach (var objplan in Model.lstPlan)
@@ -134,6 +140,7 @@
                 </div>
                 <div id="accordion-element-Year" class="accordion-body collapse">
                     <ul class="scroll-list singleselect" id="ulSelectedYear">
+
                         @foreach (SelectListItem item in ViewYearList)
                         {
                             string ddlYearId = "liYear" + item.Value;
@@ -153,6 +160,7 @@
                                 </li>
                             }
                         }
+
                     </ul>
                     @if (ViewYearList == null)
                     {
@@ -222,15 +230,18 @@
                 </div>
                 <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
                     <ul class="scroll-list singleselect" id="ulSelectedFilter">
-                        @foreach (var custField in Model.lstCustomFields)
+                        @if (Model.lstCustomFields != null)
                         {
-                            <li class="accordion-inner" title='@custField.Title'>
-                                <div id="CustomFields">
-                                    <span class="sidebarliwidthSelected-left">@custField.Title - </span>
-                                    <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
-                                </div>
-                            </li>
-                        }
+                            foreach (var custField in Model.lstCustomFields)
+                            {
+                                <li class="accordion-inner" title='@custField.Title'>
+                                    <div id="CustomFields">
+                                        <span class="sidebarliwidthSelected-left">@custField.Title - </span>
+                                        <span id="lstCustomFieldSelected_@custField.CustomFieldId" class="sidebarliwidthSelected-right">All</span>
+                                    </div>
+                                </li>
+                            }
+                        }                        
                         <li class="accordion-inner" title="Owner">
                             <span class="sidebarliwidthSelected-left">Owner - </span>
                             <span id="lstOwner" class="sidebarliwidthSelected-right"></span>
@@ -256,52 +267,55 @@
             </div>
         </div>
         <div id="divCustomFieldsFilter">
-            @foreach (var custField in Model.lstCustomFields)
+            @if (Model.lstCustomFields != null)
             {
-                List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
-                lstCutomFieldOptions = Model.lstCustomFieldOptions.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Title).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Title, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
-                string acordionId = "accordion-" + custField.CustomFieldId;
-                string acordionParentId = "#" + acordionId;
-                string acordionElementId = "accordion-element-" + custField.CustomFieldId;
-                string acordionElementHref = "#" + acordionElementId;
-                string ulCustom = "ulSelected" + custField.CustomFieldId;
-                string allCustom = custField.CustomFieldId + "AllModule";
-                string noCustom = "No" + custField.CustomFieldId + "Found";
-                <div id="@acordionId" class="dropdown-section accordion">
-                    <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator fa fa-angle-down pull-right"></i><span class="filter-count"><span id="SelectedCustomFilter_@custField.CustomFieldId">@lstCutomFieldOptions.Count()</span>/@lstCutomFieldOptions.Count()</span></h2>
-                        </div>
-                        <div id="@acordionElementId" class="accordion-body collapse">
-                            <ul class="scroll-list" id="@ulCustom">
-                                @foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
-                                {
+                foreach (var custField in Model.lstCustomFields)
+                {
+                    List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
+                    lstCutomFieldOptions = Model.lstCustomFieldOptions.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Title).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Title, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
+                    string acordionId = "accordion-" + custField.CustomFieldId;
+                    string acordionParentId = "#" + acordionId;
+                    string acordionElementId = "accordion-element-" + custField.CustomFieldId;
+                    string acordionElementHref = "#" + acordionElementId;
+                    string ulCustom = "ulSelected" + custField.CustomFieldId;
+                    string allCustom = custField.CustomFieldId + "AllModule";
+                    string noCustom = "No" + custField.CustomFieldId + "Found";
+                    <div id="@acordionId" class="dropdown-section accordion">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator fa fa-angle-down pull-right"></i><span class="filter-count"><span id="SelectedCustomFilter_@custField.CustomFieldId">@lstCutomFieldOptions.Count()</span>/@lstCutomFieldOptions.Count()</span></h2>
+                            </div>
+                            <div id="@acordionElementId" class="accordion-body collapse">
+                                <ul class="scroll-list" id="@ulCustom">
+                                    @foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
+                                    {
 
-                                    string liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
-                                    string cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
+                                        string liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
+                                        string cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
 
-                                    <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid" /></li>
-                                }
-                            </ul>
-                            <div class="list-tab">
-                                @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
-                                {
-                                    <ul id="@allCustom">
-                                        <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">select all</a></li>
-                                        <li>|</li>
-                                        <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">clear</a></li>
-                                    </ul>
-                                }
-                                else
-                                {
-                                    <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
-                                }
+                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this,@custField.CustomFieldId,@custFieldCount)" id="@cutomoptioninputid" /></li>
+                                    }
+                                </ul>
+                                <div class="list-tab">
+                                    @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
+                                    {
+                                        <ul id="@allCustom">
+                                            <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">select all</a></li>
+                                            <li>|</li>
+                                            <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId','@lstCutomFieldOptions.Count()')">clear</a></li>
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                                custFieldCount++;
-            }
+                                    custFieldCount++;
+                }
+            }            
         </div>
         <div id="accordion-Owner" class="dropdown-section accordion">
             <div class="accordion-group">

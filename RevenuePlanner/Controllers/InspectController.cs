@@ -55,53 +55,94 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadPlanSetup(int id, string InspectPopupMode = "")
         {
-            InspectModel _inspectmodel;
-            //// Load Inspect Model data.
-            if (TempData["PlanModel"] != null)
+            InspectModel _inspectmodel = new InspectModel();
+            List<SelectListItem> Listyear = new List<SelectListItem>();
+            int yr = DateTime.Now.Year;
+            for (int i = 0; i < 5; i++)
             {
-                _inspectmodel = (InspectModel)TempData["PlanModel"];
+                Listyear.Add(new SelectListItem { Text = Convert.ToString(yr + i), Value = Convert.ToString(yr + i), Selected = false });
             }
-            else
+            ViewBag.modelcreateedit = true;
+            if (id > 0)
             {
                 _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Plan).ToLower());
-            }
 
-            try
-            {
-                _inspectmodel.Owner = Common.GetUserName(_inspectmodel.OwnerId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-                //// To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
+
+                try
                 {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                    _inspectmodel.Owner = Common.GetUserName(_inspectmodel.OwnerId);
+                    if (_inspectmodel.Status == Convert.ToString(Enums.PlanStatus.Published))
+                    {
+                        bool IsModelCreateEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+                        ViewBag.modelcreateedit = IsModelCreateEdit;
+                    }
+                    ViewBag.PlanDetails = _inspectmodel;
+                    #region "If plan year might be of previous year. We include previous year"
+                    int planYear = 0; //plan's year
+                    int.TryParse(_inspectmodel.Year, out planYear);
+                    if (planYear != 0 && planYear < yr)
+                    {
+                        for (int i = planYear; i < yr; i++)
+                        {
+                            Listyear.Add(new SelectListItem { Text = Convert.ToString(i), Value = Convert.ToString(i), Selected = false });
+                        }
+                    }
+                    #endregion
                 }
-            }
-
-            ViewBag.PlanDetails = _inspectmodel;
-
-            if (InspectPopupMode == Enums.InspectPopupMode.ReadOnly.ToString())
-            {
-                ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
-            }
-            else if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
-            {
-                ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
-                SetOwnerListToViewBag();
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                    //// To handle unavailability of BDSService
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        //// Flag to indicate unavailability of web service.
+                        return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                    }
+                }
             }
             else
             {
-                ViewBag.InspectMode = "";
+                bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
+                _inspectmodel.Title = "Plan Title";
+                _inspectmodel.GoalValue = "0";
+                _inspectmodel.Budget = 0;
+                _inspectmodel.Year = Convert.ToString(DateTime.Now.Year);
             }
-
-            return PartialView("_SetupPlan", _inspectmodel);
+            ViewBag.InspectMode = InspectPopupMode;
+            if (InspectPopupMode != Convert.ToString(Enums.InspectPopupMode.ReadOnly))
+            {
+                GetPlaDropdownList();
+                Listyear = Listyear.OrderBy(objyear => objyear.Value).ToList();
+                TempData["selectYearList"] = new SelectList(Listyear, "Value", "Text");
+            }
+            return PartialView("_SetupPlanDetails", _inspectmodel);
         }
 
+        /// <summary>
+        /// Added by devanshi on 30-9-2016
+        /// Method to get all dropdown list for plan definition
+        /// </summary>
+        private void GetPlaDropdownList()
+        {
+            SetOwnerListToViewBag();
+
+            SelectList GoalTypeList = Common.GetGoalTypeList(Sessions.User.CID);
+            List<SelectListItem> AllocatedByList = Common.GetAllocatedByList();
+
+            TempData["goalTypeList"] = GoalTypeList;
+            TempData["allocatedByList"] = AllocatedByList;
+            List<PlanModel> List = GetModelName();
+
+            List.Insert(0, new PlanModel { ModelId = 0, ModelTitle = "select" });
+            TempData["selectList"] = new SelectList(List, "ModelId", "ModelTitle");
+
+        }
+
+        /// <summary>
+        /// Method to get owner list for plan detail
+        /// Added by : devanshi 
+        /// </summary>
         private void SetOwnerListToViewBag()
         {
             //Added by Rahul Shah on 09/03/2016 for PL #1939
@@ -130,6 +171,112 @@ namespace RevenuePlanner.Controllers
                 ViewBag.OwnerList = new List<User>();
             }
         }
+
+        #region GetModelName
+        /// <summary>
+        /// Get last child
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private Model GetLatestModelVersion(Model obj)
+        {
+            Model objModel = (from model in db.Models where model.ParentModelId == obj.ModelId select model).FirstOrDefault();
+            if (objModel != null)
+            {
+                return GetLatestModelVersion(objModel);
+            }
+            else
+            {
+                return obj;
+            }
+
+        }
+
+        /// <summary>
+        /// Get latest published
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private Model GetLatestPublishedVersion(Model obj)
+        {
+
+            Model objModel = (from model in db.Models where model.ModelId == obj.ParentModelId select model).FirstOrDefault();
+            if (objModel != null)
+            {
+                //// Check status that Published or not.
+                if (Convert.ToString(objModel.Status).ToLower() == Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Published.ToString())).Value).ToLower())
+                {
+                    return objModel;
+                }
+                else
+                {
+                    return GetLatestPublishedVersion(objModel);
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Function to get model list
+        /// </summary>
+        /// <returns></returns>
+        public List<PlanModel> GetModelName()
+        {
+            // Customer DropDown
+            List<PlanModel> lstPlanModel = new List<PlanModel>();
+            List<Model> objModelList = new List<Model>();
+            List<Model> lstModels = new List<Model>();
+            try
+            {
+                int clientId = Sessions.User.CID;
+                string strPublish = Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Published.ToString())).Value);
+                string strDraft = Convert.ToString(Enums.ModelStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value);
+                /*Added by Nirav shah on 20 feb 2014 for TFS Point 252 : editing a published model*/
+                lstModels = (from mdl in db.Models
+                             where mdl.IsDeleted == false && mdl.ClientId == clientId && (mdl.ParentModelId == 0 || mdl.ParentModelId == null)
+                             select mdl).ToList();
+                if (lstModels != null && lstModels.Count > 0)
+                {
+                    foreach (Model obj in lstModels)
+                    {
+                        objModelList.Add(GetLatestModelVersion(obj));
+                    }
+                }
+
+                //// Insert Drafted Model record to List.
+                List<Model> objModelDraftList = objModelList.Where(mdl => mdl.Status == strDraft).ToList();
+                objModelList = objModelList.Where(mdl => mdl.Status == strPublish).ToList();
+
+                if (objModelDraftList != null && objModelDraftList.Count > 0)
+                {
+                    foreach (Model obj in objModelDraftList)
+                    {
+                        objModelList.Add(GetLatestPublishedVersion(obj));
+                    }
+                }
+                /*end Nirav changes*/
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            foreach (var model in objModelList)
+            {
+                if (model != null)
+                {
+                    PlanModel objPlanModel = new PlanModel();
+                    objPlanModel.ModelId = model.ModelId;
+                    objPlanModel.ModelTitle = model.Title + " " + model.Version;
+                    lstPlanModel.Add(objPlanModel);
+                }
+            }
+            return lstPlanModel.OrderBy(mdl => mdl.ModelTitle, new AlphaNumericComparer()).ToList();
+        }
+        #endregion
         #endregion
 
         #region Save Plan Details other than Budget Allocation
@@ -143,7 +290,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param> Added by Sohel Pathan on 07/08/2014 for PL ticket #672
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SavePlanDetails(InspectModel objPlanModel, string BudgetInputValues = "", string planBudget = "", string RedirectType = "", int UserId = 0, string AllocatedBy = "", int YearDiffrence = 0)
+      public JsonResult SavePlanDetails(InspectModel objPlanModel, int UserId = 0)
         {
             //// check whether UserId is current loggined user or not.
             if (UserId != 0)
@@ -154,7 +301,6 @@ namespace RevenuePlanner.Controllers
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
             }
-
             try
             {
                 if (ModelState.IsValid)
@@ -162,270 +308,78 @@ namespace RevenuePlanner.Controllers
                     Plan plan = new Plan();
                     PlanExchangeRate = Sessions.PlanExchangeRate;
                     //// Get Plan Updated message.
-                    string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                    string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Convert.ToString(Enums.PlanEntity.Plan)]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
 
                     if (objPlanModel.PlanId > 0)
                     {
-                        //// Get Plan list by PlanId.
                         plan = db.Plans.Where(_plan => _plan.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
-                        //Modified by Rahul Shah on 09/03/2016 for PL #1939
                         int oldOwnerId = plan.CreatedBy;
-                        plan.Title = objPlanModel.Title.Trim();
-                        plan.Budget = objCurrency.SetValueByExchangeRate(objPlanModel.Budget, PlanExchangeRate); //Modified by Rahul Shah for PL #2511 to apply multi currency
-                        plan.ModifiedBy = Sessions.User.ID;
-                        plan.ModifiedDate = System.DateTime.Now;
 
-                        if (BudgetInputValues == "" && planBudget.ToString() == "") //// Setup Tab
+                        //Check whether the user wants to switch the Model for this Plan
+                        if (plan.ModelId != objPlanModel.ModelId)
                         {
-                            plan.CreatedBy = objPlanModel.OwnerId;
-                            plan.Description = objPlanModel.Description;
-                        }
-                        else   //// Budget Tab
-                        {
-                            //// Get budget updated message.
-                            strMessage = Common.objCached.PlanEntityAllocationUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                            plan.Budget = Convert.ToDouble(planBudget.ToString().Trim().Replace(",", "").Replace("$", ""));
-
-                            #region Update Budget Allocation Value
-                            if (BudgetInputValues != "")
+                            //Check whether the Model switching is valid or not - check whether Model to switch to has all of the tactics present that are present in the plan
+                            List<string> lstTactic = CheckModelTacticType(objPlanModel.PlanId, objPlanModel.ModelId);
+                            if (lstTactic.Count() > 0)
                             {
-                                string[] arrBudgetInputValues = BudgetInputValues.Split(',');
-
-                                //// Get Previous budget allocation data by PlanId.
-                                var PrevPlanBudgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == objPlanModel.PlanId).Select(pb => pb).ToList();
-                                // Change by Nishant sheth
-                                // Desc :: #1765 - to replace the lenth of array to allocated by
-                                if (AllocatedBy == Enums.PlanAllocatedBy.months.ToString().ToLower()) // if current input values are monthly.
-                                {
-                                    bool isExists;
-                                    Plan_Budget updatePlanBudget, objPlanBudget;
-                                    double newValue = 0;
-                                    for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                    {
-                                        //// Start - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
-                                        isExists = false;
-                                        if (PrevPlanBudgetAllocationList != null && PrevPlanBudgetAllocationList.Count > 0)
-                                        {
-                                            //// Get budget value periodically.
-                                            updatePlanBudget = new Plan_Budget();
-                                            updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (i + 1))).FirstOrDefault();
-                                            if (updatePlanBudget != null)
-                                            {
-                                                if (arrBudgetInputValues[i] != "")
-                                                {
-                                                    //// Get current inputed value.
-                                                    newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                    if (updatePlanBudget.Value != newValue)
-                                                    {
-                                                        //// Update previous budget value with current value.
-                                                        updatePlanBudget.Value = newValue;
-                                                        db.Entry(updatePlanBudget).State = EntityState.Modified;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    db.Entry(updatePlanBudget).State = EntityState.Deleted;
-                                                }
-                                                isExists = true;
-                                            }
-                                        }
-                                        //// if previous values does not exist then insert new values.
-                                        if (!isExists && arrBudgetInputValues[i] != "")
-                                        {
-                                            //// End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
-                                            objPlanBudget = new Plan_Budget();
-                                            objPlanBudget.PlanId = objPlanModel.PlanId;
-                                            objPlanBudget.Period = PeriodChar + (i + 1);
-                                            objPlanBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                            objPlanBudget.CreatedBy = Sessions.User.ID;
-                                            objPlanBudget.CreatedDate = DateTime.Now;
-                                            db.Entry(objPlanBudget).State = EntityState.Added;
-                                        }
-                                    }
-                                }
-                                // Change by Nishant sheth
-                                // Desc :: #1765 - to replace the lenth of array to allocated by
-                                else if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString().ToLower()) //// if current input values are Quarterly.
-                                {
-                                    int QuarterCnt = 1, j = 1;
-                                    // Change by Nishant sheth
-                                    // Desc :: #1765 - for add/update the multiple year period value
-                                    int m = 0;
-                                    for (int k = 1; k <= (YearDiffrence + 1); k++)
-                                    {
-                                        bool isExists;
-                                        List<Plan_Budget> thisQuartersMonthList;
-                                        Plan_Budget thisQuarterFirstMonthBudget, objPlanBudget;
-                                        double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
-                                        for (int i = m; i < (4 * k); i++)
-                                        {
-                                            if ((i + 1) % 4 == 0)
-                                            {
-                                                m = i + 1;
-                                            }
-                                            //// Start - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
-                                            isExists = false;
-                                            if (PrevPlanBudgetAllocationList != null && PrevPlanBudgetAllocationList.Count > 0)
-                                            {
-                                                //// Get current Quarter months budget.
-                                                thisQuartersMonthList = new List<Plan_Budget>();
-                                                thisQuartersMonthList = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt)) || pb.Period == (PeriodChar + (QuarterCnt + 1)) || pb.Period == (PeriodChar + (QuarterCnt + 2))).ToList().OrderBy(a => a.Period).ToList();
-                                                thisQuarterFirstMonthBudget = new Plan_Budget();
-                                                thisQuarterFirstMonthBudget = thisQuartersMonthList.FirstOrDefault();
-
-                                                if (thisQuarterFirstMonthBudget != null)
-                                                {
-                                                    if (arrBudgetInputValues[i] != "")
-                                                    {
-                                                        thisQuarterOtherMonthBudget = thisQuartersMonthList.Where(a => a.Period != thisQuarterFirstMonthBudget.Period).ToList().Sum(a => a.Value);
-                                                        //// Get quarter total budget. 
-                                                        thisQuarterTotalBudget = thisQuarterFirstMonthBudget.Value + thisQuarterOtherMonthBudget;
-                                                        newValue = Convert.ToDouble(arrBudgetInputValues[i]);
-
-                                                        if (thisQuarterTotalBudget != newValue)
-                                                        {
-                                                            //// Get budget difference.
-                                                            BudgetDiff = newValue - thisQuarterTotalBudget;
-                                                            if (BudgetDiff > 0)
-                                                            {
-                                                                //// Set quarter first month budget value.
-                                                                thisQuarterFirstMonthBudget.Value = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-                                                                db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                            }
-                                                            else
-                                                            {
-                                                                j = 1;
-                                                                while (BudgetDiff < 0)
-                                                                {
-                                                                    if (thisQuarterFirstMonthBudget != null)
-                                                                    {
-                                                                        BudgetDiff = thisQuarterFirstMonthBudget.Value + BudgetDiff;
-
-                                                                        if (BudgetDiff <= 0)
-                                                                            thisQuarterFirstMonthBudget.Value = 0;
-                                                                        else
-                                                                            thisQuarterFirstMonthBudget.Value = BudgetDiff;
-
-                                                                        db.Entry(thisQuarterFirstMonthBudget).State = EntityState.Modified;
-                                                                    }
-                                                                    if ((QuarterCnt + j) <= (QuarterCnt + 2))
-                                                                    {
-                                                                        thisQuarterFirstMonthBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == (PeriodChar + (QuarterCnt + j))).FirstOrDefault();
-                                                                    }
-
-                                                                    j = j + 1;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        thisQuartersMonthList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                                    }
-                                                    isExists = true;
-                                                }
-                                            }
-                                            //// if previous values does not exist then insert new values.
-                                            if (!isExists && arrBudgetInputValues[i] != "")
-                                            {
-                                                //// End - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
-                                                objPlanBudget = new Plan_Budget();
-                                                objPlanBudget.PlanId = objPlanModel.PlanId;
-                                                objPlanBudget.Period = PeriodChar + QuarterCnt;
-                                                objPlanBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
-                                                objPlanBudget.CreatedBy = Sessions.User.ID;
-                                                objPlanBudget.CreatedDate = DateTime.Now;
-                                                db.Entry(objPlanBudget).State = EntityState.Added;
-                                            }
-                                            QuarterCnt = QuarterCnt + 3;
-                                        }
-                                    }
-                                }
-                            }
-                            #endregion
-                        }
-                        db.Entry(plan).State = EntityState.Modified;
-                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", plan.CreatedBy);
-                        //Modified by Rahul Shah on 09/03/z2016 for PL #1939
-                        int result = db.SaveChanges();
-                        // Add By Nishant Sheth
-                        // Desc :: get records from cache dataset for Plan,Campaign,Program,Tactic
-                        DataSet dsPlanCampProgTac = new DataSet();
-                        dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
-                        objCache.AddCache(Enums.CacheObject.dsPlanCampProgTac.ToString(), dsPlanCampProgTac);
-                        if (result > 0)
-                        {
-                            #region "Send Email Notification For Owner changed"
-
-                            //Send Email Notification For Owner changed.
-                            if (objPlanModel.OwnerId != oldOwnerId && objPlanModel.OwnerId != 0)
-                            {
-                                if (Sessions.User != null)
-                                {
-                                    List<string> lstRecepientEmail = new List<string>();
-                                    List<User> UsersDetails = new List<BDSService.User>();
-                                    //var csv = string.Concat(objPlanModel.OwnerId.ToString(), ",", oldOwnerId.ToString(), ",", Sessions.User.ID.ToString());
-                                    var lstOwners = new List<int> { objPlanModel.OwnerId, oldOwnerId, Sessions.User.ID };
-                                    try
-                                    {
-                                        UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetailsEx(lstOwners, Sessions.ApplicationId);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        ErrorSignal.FromCurrentContext().Raise(e);
-
-                                        //To handle unavailability of BDSService
-                                        if (e is System.ServiceModel.EndpointNotFoundException)
-                                        {
-                                            //// Flag to indicate unavailability of web service.
-                                            return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-                                        }
-                                    }
-
-                                    var NewOwner = UsersDetails.Where(u => u.ID == objPlanModel.OwnerId).Select(u => u).FirstOrDefault();
-                                    var ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
-                                    if (NewOwner.Email != string.Empty)
-                                    {
-                                        lstRecepientEmail.Add(NewOwner.Email);
-                                    }
-                                    string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
-                                    string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
-                                    string PlanTitle = plan.Title.ToString();
-                                    //string CampaignTitle = pcobj.Title.ToString();
-                                    //string ProgramTitle = pcobj.Title.ToString();
-                                    List<int> NewOwnerID = new List<int>();
-                                    NewOwnerID.Add(objPlanModel.OwnerId);
-                                    List<int> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
-                                    if (List_NotificationUserIds.Count > 0 && objPlanModel.OwnerId != Sessions.User.ID)
-                                    {
-                                        string strURL = GetNotificationURLbyStatus(plan.PlanId, plan.PlanId, Enums.Section.Plan.ToString().ToLower());
-                                        Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, PlanTitle, PlanTitle, PlanTitle, PlanTitle, Enums.Section.Plan.ToString().ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
-                                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", objPlanModel.OwnerId);
-
-                                    }
-                                }
-                            }
-                            #endregion
-                            if (RedirectType.ToLower() == "budgeting")
-                            {
-                                TempData["SuccessMessage"] = Common.objCached.PlanSaved;
-                                return Json(new { id = plan.PlanId, redirect = Url.Action("Budgeting", new { PlanId = plan.PlanId }) });
-                            }
-                            else if (RedirectType.ToLower() == "")
-                            {
-
-                                return Json(new { id = plan.PlanId, succmsg = strMessage, redirect = "" });
+                                string msg = RevenuePlanner.Helpers.Common.objCached.CannotSwitchModelForPlan.Replace("[TacticNameToBeReplaced]", String.Join(" ,", lstTactic));
+                                return Json(new { id = -1, errormsg = msg });
                             }
                             else
                             {
-                                return Json(new { id = plan.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
+                                //Update the TacticTypeIds based on new Modeld
+                                UpdateTacticType(objPlanModel.PlanId, objPlanModel.ModelId);
                             }
+                        }
+
+                        //Update Plan Details
+                        int result = AddUpdatePlanDetails(objPlanModel, oldOwnerId, plan);
+
+                        DataSet dsPlanCampProgTac = new DataSet();
+                        dsPlanCampProgTac = objSp.GetListPlanCampaignProgramTactic(string.Join(",", Sessions.PlanPlanIds));
+                        objCache.AddCache(Convert.ToString(Enums.CacheObject.dsPlanCampProgTac), dsPlanCampProgTac);
+
+                        if (result > 0)
+                        {
+                            try
+                            {
+                                SendNotificationonOwnerchange(objPlanModel, oldOwnerId, plan);
+                            }
+                            catch (Exception e)
+                            {
+                                //To handle unavailability of BDSService
+                                if (e is System.ServiceModel.EndpointNotFoundException)
+                                {
+                                    //// Flag to indicate unavailability of web service.
+                                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                                }
+                            }
+                            return Json(new { id = plan.PlanId, succmsg = strMessage, redirect = "" });
+
                         }
                         else
                         {
                             return Json(new { id = 0, errormsg = Common.objCached.ErrorOccured.ToString() });
                         }
                     }
+                    else  //// Add Mode
+                    {
+                        int resultadd = AddUpdatePlanDetails(objPlanModel, 0, plan, true);
+                        if (resultadd > 0)
+                        {
+                            Sessions.PlanId = plan.PlanId;
+                            Sessions.PlanPlanIds.Add(plan.PlanId);
+                            Sessions.IsNoPlanCreated = true;
+                            //Create default Plan Improvement Campaign, Program
+                            int returnValue = CreatePlanImprovementCampaignAndProgram();
+                            return Json(new { id = plan.PlanId, succmsg = strMessage, redirect = "" });
+                        }
+                        else
+                        {
+                            return Json(new { id = 0, errormsg = Common.objCached.ErrorOccured.ToString() });
+                        }
+                    }
+
                 }
             }
             catch (Exception e)
@@ -433,6 +387,272 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
             return Json(new { id = 0 });
+        }       
+            /// <summary>
+        /// Method to Add / update plan detail from inspect popup
+        /// Added by : Devanshi
+        /// </summary>
+        /// <param name="objPlanModel"></param>
+        /// <param name="oldOwnerId"></param>
+        /// <param name="plan"></param>
+        /// <param name="IsAdd"></param>
+        /// <returns>result</returns>
+        public int AddUpdatePlanDetails(InspectModel objPlanModel, int oldOwnerId, Plan plan, bool IsAdd = false)
+        {
+            int result = 0;
+            try
+            {
+                plan.Title = objPlanModel.Title.Trim();
+                plan.ModelId = objPlanModel.ModelId;
+                plan.GoalType = objPlanModel.GoalType;
+                plan.Budget = objCurrency.SetValueByExchangeRate(objPlanModel.Budget, PlanExchangeRate);
+                if (objPlanModel.GoalValue != null)
+                {
+                    plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace(Sessions.PlanCurrencySymbol, ""));
+                    if (Convert.ToString(objPlanModel.GoalType).ToUpper() == Convert.ToString(Enums.PlanGoalType.Revenue).ToUpper())
+                    {
+                        plan.GoalValue = objCurrency.SetValueByExchangeRate(double.Parse(Convert.ToString(plan.GoalValue)), PlanExchangeRate);
+                    }
+                }
+                else
+                    plan.GoalValue = 0;
+                plan.AllocatedBy = Convert.ToString(Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.months)]);
+                plan.Description = objPlanModel.Description;
+                if (IsAdd)
+                {
+                    string planDraftStatus = Enums.PlanStatusValues.FirstOrDefault(status => status.Key.Equals(Convert.ToString(Enums.PlanStatus.Draft))).Value;
+                    plan.Status = planDraftStatus;
+                    plan.CreatedDate = System.DateTime.Now;
+                    plan.CreatedBy = Sessions.User.ID;
+                    plan.IsActive = true;
+                    plan.IsDeleted = false;
+                    double version = 0;
+                    Plan plantable = db.Plans.Where(m => m.ModelId == objPlanModel.ModelId && m.IsActive == true && m.IsDeleted == false).FirstOrDefault();
+                    if (plantable != null)
+                        version = Convert.ToDouble(plantable.Version) + 0.1;
+                    else
+                        version = 1;
+                    plan.Version = version.ToString();
+                    plan.Year = objPlanModel.Year;
+                    db.Entry(plan).State = EntityState.Added;
+                }
+                else
+                {
+                    if (plan.Year != objPlanModel.Year)
+                    {
+                        plan.Year = objPlanModel.Year;
+                        Common.UpdatePlanYearOfActivities(objPlanModel.PlanId, Convert.ToInt32(objPlanModel.Year));
+                    }
+                    plan.ModifiedBy = Sessions.User.ID;
+                    plan.ModifiedDate = System.DateTime.Now;
+                    plan.CreatedBy = objPlanModel.OwnerId;
+                    db.Entry(plan).State = EntityState.Modified;
+                }
+                result = db.SaveChanges();
+                if (result > 0)
+                {      //// Insert Changelog.
+                    if (objPlanModel.PlanId == 0)
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", plan.CreatedBy);
+                    else
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", plan.CreatedBy);
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Check whether the Model switching for the Plan is valid or not
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <param name="modelId"></param>
+        /// <returns></returns>
+        private List<string> CheckModelTacticType(int planId, int modelId)
+        {
+            //Check if any Tactic exists for this Plan
+            List<Plan_Campaign_Program_Tactic> lstPlan_Campaign_Program_Tactic = (from pc in db.Plan_Campaign
+                                                                                  join pcp in db.Plan_Campaign_Program on pc.PlanCampaignId equals pcp.PlanCampaignId
+                                                                                  join pcpt in db.Plan_Campaign_Program_Tactic on pcp.PlanProgramId equals pcpt.PlanProgramId
+                                                                                  where pc.PlanId == planId && pcpt.IsDeleted == false
+                                                                                  select pcpt).ToList();
+            if (lstPlan_Campaign_Program_Tactic == null || lstPlan_Campaign_Program_Tactic.Count() <= 0)
+                return new List<string>();
+
+
+            Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = lstPlan_Campaign_Program_Tactic.FirstOrDefault();
+            if (objPlan_Campaign_Program_Tactic == null)
+                return new List<string>();
+
+            List<string> lstTacticType = GetTacticTypeListbyModelId(modelId);
+            return (lstPlan_Campaign_Program_Tactic.Where(_tacType => !lstTacticType.Contains(_tacType.TacticType.Title)).Select(_tacType => _tacType.Title)).ToList();
+        }
+
+        /// <summary>
+        /// Update the TacticTypeIds based on new Modeld
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <param name="modelId"></param>
+        /// <returns></returns>
+        private void UpdateTacticType(int planId, int modelId)
+        {
+            //Check if any Tactic exists for this Plan
+            List<Plan_Campaign_Program_Tactic> lstPlan_Campaign_Program_Tactic = (from pc in db.Plan_Campaign
+                                                                                  join pcp in db.Plan_Campaign_Program on pc.PlanCampaignId equals pcp.PlanCampaignId
+                                                                                  join pcpt in db.Plan_Campaign_Program_Tactic on pcp.PlanProgramId equals pcpt.PlanProgramId
+                                                                                  where pc.PlanId == planId && pcpt.IsDeleted == false
+                                                                                  select pcpt).ToList();
+            if (lstPlan_Campaign_Program_Tactic == null || lstPlan_Campaign_Program_Tactic.Count() <= 0)
+                return;
+
+            Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = lstPlan_Campaign_Program_Tactic.FirstOrDefault();
+            if (objPlan_Campaign_Program_Tactic == null)
+                return;
+
+            List<string> lstTacticType = GetTacticTypeListbyModelId(modelId);
+            List<Plan_Campaign_Program_Tactic> lstTactic = lstPlan_Campaign_Program_Tactic.Where(_tacType => lstTacticType.Contains(_tacType.TacticType.Title)).Select(_tacType => _tacType).ToList();
+
+            //// Update TacticType.
+            foreach (var tactic in lstTactic)
+            {
+                if (tactic != null)
+                {
+                    int newTacticTypeId = db.TacticTypes.Where(tacType => tacType.ModelId == modelId && tacType.Title == tactic.TacticType.Title).Select(tacType => tacType.TacticTypeId).FirstOrDefault();
+                    if (newTacticTypeId > 0)
+                    {
+                        tactic.ModifiedBy = Sessions.User.ID;
+                        tactic.ModifiedDate = DateTime.Now;
+                        tactic.TacticTypeId = newTacticTypeId; //Update TacticTypeId column in Plan_Campaign_Program_Tactic Table based on the new model selected
+                        db.Entry(tactic).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Method to send notification to owner for owner change
+        /// </summary>
+        /// <param name="objPlanModel"></param>
+        /// <param name="oldOwnerId"></param>
+        /// <param name="plan"></param>
+        public void SendNotificationonOwnerchange(InspectModel objPlanModel, int oldOwnerId, Plan plan)
+        {
+            #region "Send Email Notification For Owner changed"
+
+            //Send Email Notification For Owner changed.
+            if (objPlanModel.OwnerId != oldOwnerId && objPlanModel.OwnerId != 0)
+            {
+                if (Sessions.User != null)
+                {
+                    List<string> lstRecepientEmail = new List<string>();
+                    List<User> UsersDetails = new List<BDSService.User>();
+                    List<int> lstOwners = new List<int> { objPlanModel.OwnerId, oldOwnerId, Sessions.User.ID };
+                    try
+                    {
+                        UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetailsEx(lstOwners, Sessions.ApplicationId);
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorSignal.FromCurrentContext().Raise(e);
+                        throw e; //exception handled in parent function SavePlanDetails
+                    }
+
+                    BDSService.User NewOwner = UsersDetails.Where(u => u.ID == objPlanModel.OwnerId).Select(u => u).FirstOrDefault();
+                    BDSService.User ModifierUser = UsersDetails.Where(u => u.ID == Sessions.User.ID).Select(u => u).FirstOrDefault();
+                    if (NewOwner.Email != string.Empty)
+                    {
+                        lstRecepientEmail.Add(NewOwner.Email);
+                    }
+                    string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                    string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+                    string PlanTitle = plan.Title.ToString();
+                    List<int> NewOwnerID = new List<int>();
+                    NewOwnerID.Add(objPlanModel.OwnerId);
+                    //checks if notification setting is on for the user
+                    List<int> List_NotificationUserIds = Common.GetAllNotificationUserIds(NewOwnerID, Enums.Custom_Notification.EntityOwnershipAssigned.ToString().ToLower());
+                    if (List_NotificationUserIds.Count > 0 && objPlanModel.OwnerId != Sessions.User.ID)
+                    {
+                        string strURL = GetNotificationURLbyStatus(plan.PlanId, plan.PlanId, Enums.Section.Plan.ToString().ToLower());
+                        Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, PlanTitle, PlanTitle, PlanTitle, PlanTitle, Enums.Section.Plan.ToString().ToLower(), strURL);
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.ownerchanged, "", objPlanModel.OwnerId);
+
+                    }
+                }
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// Method to het tactic type list from modelId
+        /// </summary>
+        /// <param name="ModelId"></param>
+        /// <returns></returns>
+        public List<string> GetTacticTypeListbyModelId(int ModelId)
+        {
+            List<string> lstTacticType = new List<string>();
+            try
+            {
+                lstTacticType = db.TacticTypes.Where(tacType => tacType.ModelId == ModelId).Select(tacType => tacType.Title).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return lstTacticType;
+        }
+
+        /// <summary>
+        /// Added By: Bhavesh Dobariya.
+        /// Action to create default Plan Improvement Campaign & Program
+        /// </summary>
+        /// <returns>Returns ImprovementPlanCampaignId or -1 if duplicate exists</returns>
+        public int CreatePlanImprovementCampaignAndProgram()
+        {
+            int retVal = -1;
+
+            try
+            {
+                //Fetch Plan details
+                Plan_Improvement_Campaign objPlan = new Plan_Improvement_Campaign();
+                objPlan = db.Plan_Improvement_Campaign.Where(_cmpgn => _cmpgn.ImprovePlanId == Sessions.PlanId).FirstOrDefault();
+                if (objPlan == null)
+                {
+                    // Setup default title for improvement campaign.
+                    string planImprovementCampaignTitle = Common.ImprovementActivities;
+
+                    //// Insert Campaign data to Plan_Improvement_Campaign table.
+                    Plan_Improvement_Campaign picobj = new Plan_Improvement_Campaign();
+                    picobj.ImprovePlanId = Sessions.PlanId;
+                    picobj.Title = planImprovementCampaignTitle;
+                    picobj.CreatedBy = Sessions.User.ID;
+                    picobj.CreatedDate = DateTime.Now;
+                    db.Entry(picobj).State = EntityState.Added;
+                    int result = db.SaveChanges();
+                    retVal = picobj.ImprovementPlanCampaignId;
+                    if (retVal > 0)
+                    {
+                        //// Insert Program data to Plan_Improvement_Campaign_Program table.
+                        Plan_Improvement_Campaign_Program pipobj = new Plan_Improvement_Campaign_Program();
+                        pipobj.CreatedBy = Sessions.User.ID;
+                        pipobj.CreatedDate = DateTime.Now;
+                        pipobj.ImprovementPlanCampaignId = retVal;
+                        // Setup default title for improvement Program.
+                        pipobj.Title = Common.ImprovementProgram;
+                        db.Entry(pipobj).State = EntityState.Added;
+                        result = db.SaveChanges();
+                        retVal = pipobj.ImprovementPlanProgramId;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return retVal;
         }
         #endregion
         #endregion
@@ -6048,7 +6268,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 // Todo: this will be passed based from UI once view by functinality implemented
-                string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months); 
+                string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
                 ViewBag.AllocatedBy = AllocatedBy;
                 // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
                 objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate);
@@ -7963,6 +8183,12 @@ namespace RevenuePlanner.Controllers
                         ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
                         return PartialView("_InspectPopupLineitem", im);
                     }
+                    else if (Convert.ToString(section).Equals(Convert.ToString(Enums.Section.Plan), StringComparison.OrdinalIgnoreCase))
+                    {
+                        ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
+                        return PartialView("_InspectPopupPlan", im);
+                    }
                 }
 
 
@@ -8304,6 +8530,9 @@ namespace RevenuePlanner.Controllers
                         IsPlanEditable = true;
                     }
                 }
+                bool isPublished = im.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
+                ViewBag.IsPublished = isPublished;
+
             }
             if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
             {
@@ -8348,7 +8577,7 @@ namespace RevenuePlanner.Controllers
                 return PartialView("_InspectPopupLineitem", im);
             }
             // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
-            else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
+            else if (Convert.ToString(section).Equals(Convert.ToString(Enums.Section.Plan), StringComparison.OrdinalIgnoreCase))
             {
                 ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
 
@@ -8806,6 +9035,8 @@ namespace RevenuePlanner.Controllers
                     imodel.Budget = objCurrency.GetValueByExchangeRate(double.Parse(Convert.ToString(objPlan.Budget)), PlanExchangeRate);
                     //imodel.GoalValue = objPlan.GoalValue.ToString();
                     //imodel.Budget = objPlan.Budget;
+                    imodel.Year = objPlan.Year;
+                    imodel.Status = objPlan.Status;
                     imodel.AllocatedBy = objPlan.AllocatedBy;
                 }
                 // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
