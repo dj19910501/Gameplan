@@ -8088,7 +8088,7 @@ BEGIN
 		 BEGIN
 			 IF @Entity <> 'Plan' 
 			 BEGIN
-			     SET @UrlString = @Url +'home?currentPlanId='+convert(nvarchar(max), @planId)+'&plan'+@Entity+'Id='+convert(nvarchar(max),@EntityId)+'&activeMenu=Plan'
+			     SET @UrlString = @Url +'home?currentPlanId='+convert(nvarchar(max), @planId)+'&plan'+Replace(@Entity,' ' ,'')+'Id='+convert(nvarchar(max),@EntityId)+'&activeMenu=Plan'
 			 END
 			 ELSE
 			 BEGIN
