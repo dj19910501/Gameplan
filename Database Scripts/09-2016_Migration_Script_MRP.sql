@@ -3257,6 +3257,16 @@ BEGIN
 	DROP PROCEDURE dbo.Sp_GetPlanBudgetDataQuarterly
 END
 GO
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_GetPlanActualDataQuarterly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE dbo.Sp_GetPlanActualDataQuarterly
+END
+GO
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_GetPlanActualDataMonthly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE dbo.Sp_GetPlanActualDataMonthly
+END
+GO
 
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Plan_BudgetQuarterCalculation') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
