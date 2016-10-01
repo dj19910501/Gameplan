@@ -3038,6 +3038,71 @@ namespace RevenuePlanner.Helpers
                 _SuccessColumnView = value;
             }
         }
+        //Added by kausha for #2637 on 30/09/2016
+        private string _ImportValidation;
+        public string ImportValidation
+        {
+            get
+            {
+                return _ImportValidation;
+            }
+            set
+            {
+                _ImportValidation = value;
+            }
+        }
+        private string _InvalidImportData;
+       
+        public string InvalidImportData
+        {
+            get
+            {
+                return _InvalidImportData;
+            }
+            set
+            {
+                _InvalidImportData = value;
+            }
+        }
+        private string _ActivityIdInvalid;
+
+        public string ActivityIdInvalid
+        {
+            get
+            {
+                return _ActivityIdInvalid;
+            }
+            set
+            {
+                _ActivityIdInvalid = value;
+            }
+        }
+        private string _FileUsedMessage;
+
+        public string FileUsedMessage
+        {
+            get
+            {
+                return _FileUsedMessage;
+            }
+            set
+            {
+                _FileUsedMessage = value;
+            }
+        }
+        private string _ImportSuccessMessage;
+
+        public string ImportSuccessMessage
+        {
+            get
+            {
+                return _ImportSuccessMessage;
+            }
+            set
+            {
+                _ImportSuccessMessage = value;
+            }
+        }
         //end
         #endregion
 
@@ -3985,6 +4050,23 @@ namespace RevenuePlanner.Helpers
                                         case "CurrencySaved":
                                             _CurrencySaved = strMsgValue;
                                             break;
+                                        //Added by kausha somaiya for #2637 import plan data
+                                        case "ImportValidation":
+                                            _ImportValidation = strMsgValue;
+                                            break;
+                                        case "InvalidImportData":
+                                            _InvalidImportData = strMsgValue;
+                                            break;
+                                        case "ActivityIdInvalid":
+                                            _ActivityIdInvalid = strMsgValue;
+                                            break;
+                                        case "FileUsedMessage":
+                                            _FileUsedMessage = strMsgValue;
+                                            break;
+                                        case "ImportSuccessMessage":
+                                            _ImportSuccessMessage = strMsgValue;
+                                            break;
+                                        //end
                                         case "ExchangeRateSaved":
                                             _ExchangeRateSaved = strMsgValue;
                                             break;

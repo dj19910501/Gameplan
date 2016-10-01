@@ -12118,53 +12118,71 @@ namespace RevenuePlanner.Controllers
                             dt = GetXLSX(fileLocation);
                             if (dt == null)
                             {
-                                return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                                return Json(new { msg = "error", error = Common.objCached.InvalidImportData }, JsonRequestBehavior.AllowGet);
                             }
                         }
                         //if excel will be blank then following message will be appear.
                         if (dt.Rows.Count == 0 || dt.Rows[0][0] == DBNull.Value)
                         {
-                            return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                            return Json(new { msg = "error", error = Common.objCached.InvalidImportData }, JsonRequestBehavior.AllowGet);
                         }
                         //if ActivityId will be null then following message will be appear.
                         foreach (DataRow row in dt.Rows)
                         {
-                            if (string.IsNullOrEmpty(row["ActivityId"].ToString().Trim()))
+                            if (string.IsNullOrEmpty(Convert.ToString(row["ActivityId"]).Trim()))
                             {
-                                return Json(new { msg = "error", error = "ActivityId must have a proper value." }, JsonRequestBehavior.AllowGet);
+                                return Json(new { msg = "error", error = Common.objCached.ImportValidation.Replace("{0}", "ActivityId") }, JsonRequestBehavior.AllowGet);
+
                             }
                         }
-                        DataTable dtImportBudget = dt.Copy();
-                        DataTable dtImportActual = dt.Copy();
-                        // DataTable dtImportActual = dt;
+
                         StoredProcedure objSp = new StoredProcedure();
                         //Check data is uploaded monthly or quarterly
                         bool isMonthly = false;
-                        string[] columnNames = dtImportBudget.Columns.Cast<DataColumn>()
+                        string[] columnNames = dt.Columns.Cast<DataColumn>()
                                .Select(x => x.ColumnName)
                                .ToArray();
                         if (columnNames.Where(w => w.ToLower().Contains("jan")).Any())
                             isMonthly = true;
                         //Following is method using which we can specify import data as per type.
-                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dtImportBudget, "budget", isMonthly);
+                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dt.Copy(), "budget", isMonthly);
+                        //if type will be null then following message will be appear.
+                        foreach (DataRow row in dtBudget.Rows)
+                        {
+                            if (string.IsNullOrEmpty(Convert.ToString(row["Type"]).Trim()))
+                            {
+                                return Json(new { msg = "error", error = Common.objCached.ImportValidation.Replace("{0}", "Type") }, JsonRequestBehavior.AllowGet);
+                            }
+                        }
+                        //Filter budget data table with  plan,tactic,lineitem,campaign and program.
                         dtBudget = dtBudget.AsEnumerable()
          .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "campaign" || row.Field<String>("type").ToLower() == "program").CopyToDataTable();
 
                         //Filter actual data table with only plan,tactic and lineitem
-                        DataTable dtActual = objcommonimportData.GetPlanBudgetDataByType(dtImportActual, "actual", isMonthly);
+                        DataTable dtActual = objcommonimportData.GetPlanBudgetDataByType(dt.Copy(), "actual", isMonthly);
                         dtActual = dtActual.AsEnumerable()
          .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "lineitem").CopyToDataTable();
-                        DataSet dataResponsebudget = objSp.GetPlanBudgetList(dtBudget, isMonthly, Sessions.User.ID);
-                        DataSet dataResponseactual = objSp.ImportPlanActuals(dtActual, isMonthly, Sessions.User.ID);
 
-                        if (dataResponsebudget == null || dataResponseactual == null)
+                        //Filter plan(cost) data table with only plan,tactic and lineitem
+                        DataTable dtCost = objcommonimportData.GetPlanBudgetDataByType(dt.Copy(), "planned", isMonthly);
+                        dtCost = dtCost.AsEnumerable()
+         .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "lineitem").CopyToDataTable();
+
+                        //Import PlanBudgetData
+                        DataSet dataResponsebudget = objSp.ImportPlanBudgetList(dtBudget, isMonthly, Sessions.User.ID);
+                        //Import PlanActualData
+                        DataSet dataResponseactual = objSp.ImportPlanActualList(dtActual, isMonthly, Sessions.User.ID);
+                        //Import PlanCostData
+                        DataSet dataResponsecost = objSp.ImportPlanCostList(dtCost, isMonthly, Sessions.User.ID);
+
+                        if (dataResponsebudget == null || dataResponseactual == null || dataResponsecost == null)
                         {
-                            return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                            return Json(new { msg = "error", error = Common.objCached.InvalidImportData }, JsonRequestBehavior.AllowGet);
                         }
                         //following message will be displayed if data will not match existing activityid                        
-                        if (dataResponsebudget.Tables[0].Rows.Count > 0 || dataResponseactual.Tables[0].Rows.Count > 0)
+                        if (dataResponsebudget.Tables[0].Rows.Count > 0 || dataResponseactual.Tables[0].Rows.Count > 0 || dataResponsecost.Tables[0].Rows.Count > 0)
                         {
-                            return Json(new { conflict = true, message = "Data that were not part of exported file were not added or updated." }, JsonRequestBehavior.AllowGet);
+                            return Json(new { conflict = true, message = Common.objCached.ActivityIdInvalid }, JsonRequestBehavior.AllowGet);
                         }
                     }
                 }
@@ -12173,17 +12191,18 @@ namespace RevenuePlanner.Controllers
             {
                 if (ex.Message.Contains("process"))
                 {
-                    return Json(new { msg = "error", error = "File is being used by another process." }, JsonRequestBehavior.AllowGet);
+                    return Json(new { msg = "error", error = Common.objCached.FileUsedMessage }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
-                    return Json(new { msg = "error", error = "Invalid data." }, JsonRequestBehavior.AllowGet);
+                    return Json(new { msg = "error", error = Common.objCached.InvalidImportData }, JsonRequestBehavior.AllowGet);
                 }
             }
 
-            return Json(new { conflict = false, message = "File imported successfully." }, JsonRequestBehavior.AllowGet); ;
+            return Json(new { conflict = false, message = Common.objCached.ImportSuccessMessage }, JsonRequestBehavior.AllowGet); ;
 
         }
+
         /// <summary>
         /// Added by Rushil Bhuptani on 16/06/2016 for ticket #2227
         /// Method that store xls file data in dataset.

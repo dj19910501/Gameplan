@@ -3,6 +3,9 @@ var isEditTacticHomeGrid = 0;
 
 ///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
+    //cleare success msg as we want to hide import msg on click of grid or calendar
+    $('#SuccessMsg').css('display', 'none');
+
     $('#exp-serach').css('display', 'none');
     if ($('#btnbudget').hasClass('P-icon-active')) {
         isCalendarView = true;
@@ -56,6 +59,8 @@ function ShowhideDataonGridCalendar() {
 }
 
 $('#btnbudget').click(function () {
+    //cleare success msg as we want to hide import msg on click of grid or calendar
+  $('#SuccessMsg').css('display', 'none');
     isCalendarView = false;
     $('#ChangeView').hide();
     $('#exp-serach').css('display', 'none');
@@ -1455,11 +1460,11 @@ function GlobalSearchonGrid(node, columnName) {
     }
 }
 //insertation start Added following method for open pop up to import file.
+//insertation start Added following method for open pop up to import file.
 function LoadFileInputModelBox() {
 
-
     $('.fileinput-upload-button').hide();
-    // Added by Rushil Bhuptani on 22/06/2016 for #2227 to clear file input on modal hide.
+    // Clear file input on modal hide.
     $('#ImportModal').on('hidden.bs.modal', function () {
         $('#input-43').fileinput('clear');
     });
@@ -1467,7 +1472,7 @@ function LoadFileInputModelBox() {
         $('.fileinput-upload-button').hide();
     });
 
-    // Added by Rushil Bhuptani on 14/06/2016 for #2227 for initializing file input plugin
+    //Initializing file input plugin
 
     $("#input-43").fileinput({
         type: 'POST',
@@ -1478,16 +1483,14 @@ function LoadFileInputModelBox() {
         elErrorContainer: "#errorBlock"
 
     });
-
-    // Added by Rushil Bhuptani on 16/06/2016 for #2227 for showing progress bar while importing file.
-    //$('#input-43').on('filepreupload', function (event, data, previewId, index) {
-    //    myApp.showPleaseWait();
-    //});
-
-    // Added by Rushil Bhuptani on 15/06/2016 for #2227 to refresh grid data after file is uploaded.
+    //howing progress bar while importing file.
+    $('#input-43').on('filepreupload', function (event, data, previewId, index) {
+        myApp.showPleaseWait();
+    });
+    // Refresh budget grid data after file is uploaded.
     $('#input-43').on('fileuploaded', function (event, data, previewId, index) {
 
-        // Added by Rushil Bhuptani on 21/06/2016 for ticket #2267 for showing message for conflicting data.
+        //Showing message for conflicting data.
         if (data.response.conflict == true) {
             ShowMessage(false, data.response.message);
         }
@@ -1495,8 +1498,12 @@ function LoadFileInputModelBox() {
             ShowMessage(false, data.response.message);
         }
         $('#ImportModal').modal('hide');
-        $('#btnbudget').click();
-        $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString());
+        var selectedTimeFrame = $('#ddlUpComingActivites').val();
+        var currentDate = new Date();
+        if (selectedTimeFrame == null || selectedTimeFrame == 'undefined' || selectedTimeFrame == "") {
+            selectedTimeFrame = currentDate.getFullYear().toString();
+        }
+        $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString() + '&year='+selectedTimeFrame.toString());
 
     });
 
@@ -1507,8 +1514,6 @@ function LoadFileInputModelBox() {
         $('.fileinput-upload-button').hide();
     });
 }
-//Following function will be called on click of import bitton to opn pop up for import an excel
-
 ///End
 
 

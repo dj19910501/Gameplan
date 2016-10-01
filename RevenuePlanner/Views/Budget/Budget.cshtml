@@ -39,6 +39,26 @@
                 <strong>Import the file</strong><br />
                 <span>Note:The file format must match the file format of sample file.</span>
             </li>
+            <li>
+                <strong>Actual data import</strong><br />
+                <span>                   
+                    <ul>
+                        <li>Only tactic and line item will be updated when we import data of actual.</li>
+                        <li>Tactic will be updated in case no lineitem available.</li>
+                        <li>Tactic and line item will be updated when tactic status will be approved.</li>
+                    </ul>                
+                  
+                </span>
+            </li>
+            <li>
+                <strong>Planned data import</strong><br />
+                <span>                    
+                    <ul>
+                        <li>Only tactic and line item will be updated when we import data of planned.</li>
+                        <li>Other line item will not be updated.</li>                        
+                    </ul>                         
+                </span>
+            </li>
         </ul>
         <input id="input-43" name="input43[]" type="file" class="file-loading select-file">
         <div id="errorBlock" class="help-block file-error-message"></div>
@@ -145,7 +165,7 @@
         LoadAfterParsing();
         var rowCount = HomeGrid.getRowsNum();
         if (rowCount != undefined && rowCount == 0) {
-            var noplan='@Sessions.IsNoPlanCreated';
+            var noplan = '@Sessions.IsNoPlanCreated';
             if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
                 AddBlankRow();
             }

@@ -466,13 +466,13 @@ namespace RevenuePlanner.Helpers
         /// <param name="isMonthly">Flag to indicate whether data is monthly or quarterly.</param>
         /// <param name="userId">Id of user.</param>
         /// <returns>Dataset with conflicted ActivityIds.</returns>
-        public DataSet GetPlanBudgetList(DataTable dtNew, bool isMonthly, int userId)
+        public DataSet ImportPlanBudgetList(DataTable dtNew, bool isMonthly, int userId)
         {
             DataSet dataset = new DataSet();
             try
             {
-               // DataTable datatable = new DataTable();
-              
+                // DataTable datatable = new DataTable();
+
                 MRPEntities db = new MRPEntities();
                 ///If connection is closed then it will be open
                 var Connection = db.Database.Connection as SqlConnection;
@@ -481,18 +481,18 @@ namespace RevenuePlanner.Helpers
                 SqlCommand command = null;
                 if (!isMonthly)
                 {
-                    command = new SqlCommand("Sp_GetPlanBudgetDataQuarterly", Connection);
+                    command = new SqlCommand("Sp_ImportPlanBudgetDataQuarterly", Connection);
                 }
                 else
                 {
-                    command = new SqlCommand("Sp_GetPlanBudgetDataMonthly", Connection);
+                    command = new SqlCommand("Sp_ImportPlanBudgetDataMonthly", Connection);
                 }
 
                 using (command)
                 {
 
                     command.CommandType = CommandType.StoredProcedure;
-                   // command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
+                    // command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
                     command.Parameters.AddWithValue("@ImportData", dtNew);
                     command.Parameters.AddWithValue("@UserId", userId);
                     SqlDataAdapter adp = new SqlDataAdapter(command);
@@ -502,7 +502,7 @@ namespace RevenuePlanner.Helpers
                     adp.Fill(dataset);
                     if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -510,6 +510,107 @@ namespace RevenuePlanner.Helpers
             }
             return dataset;
         }
+        /// <summary>
+        /// Following method is used to import actuals data 29/09/2016 #2637 Kausha.
+        /// </summary>
+        /// <param name="dtNew"></param>
+        /// <param name="isMonthly"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public DataSet ImportPlanActualList(DataTable dtNew, bool isMonthly, int userId)
+        {
+            DataSet dataset = new DataSet();
+            try
+            {
+                //DataTable datatable = new DataTable();
+
+                MRPEntities db = new MRPEntities();
+                ///If connection is closed then it will be open
+                var Connection = db.Database.Connection as SqlConnection;
+                if (Connection.State == System.Data.ConnectionState.Closed)
+                    Connection.Open();
+                SqlCommand command = null;
+                if (!isMonthly)
+                {
+                    command = new SqlCommand("Sp_ImportPlanActualDataQuarterly", Connection);
+                }
+                else
+                {
+                    command = new SqlCommand("Sp_ImportPlanActualDataMonthly", Connection);
+                }
+
+                using (command)
+                {
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    //  command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
+                    command.Parameters.AddWithValue("@ImportData", dtNew);
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    SqlDataAdapter adp = new SqlDataAdapter(command);
+                    command.CommandTimeout = 0;
+
+
+                    adp.Fill(dataset);
+                    if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return dataset;
+        }
+        /// <summary>
+        /// Following method is used to import actuals data 29/09/2016 #2637 Kausha.
+        /// </summary>
+        /// <param name="dtNew"></param>
+        /// <param name="isMonthly"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public DataSet ImportPlanCostList(DataTable dtNew, bool isMonthly, int userId)
+        {
+            DataSet dataset = new DataSet();
+            try
+            {
+                //DataTable datatable = new DataTable();
+
+                MRPEntities db = new MRPEntities();
+                ///If connection is closed then it will be open
+                var Connection = db.Database.Connection as SqlConnection;
+                if (Connection.State == System.Data.ConnectionState.Closed)
+                    Connection.Open();
+                SqlCommand command = null;
+                if (!isMonthly)
+                {
+                    command = new SqlCommand("Sp_ImportPlanCostDataQuarterly", Connection);
+                }
+                else
+                {
+                    command = new SqlCommand("Sp_ImportPlanCostDataMonthly", Connection);
+                }
+
+                using (command)
+                {
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    //  command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
+                    command.Parameters.AddWithValue("@ImportData", dtNew);
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    SqlDataAdapter adp = new SqlDataAdapter(command);
+                    command.CommandTimeout = 0;
+                    adp.Fill(dataset);
+                    if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return dataset;
+        }
+
         /// <summary>
         /// Following method is used to import actuals data 29/09/2016 #2637 Kausha.
         /// </summary>
