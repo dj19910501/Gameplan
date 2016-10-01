@@ -417,8 +417,8 @@
             //Modified for #1318 by Komal Rawal to handle the Save function
             var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
             var planTacticId = $("#hdnPlanTacticId").val();
-            $("#hdnInspectMode").val('@Enums.InspectPopupMode.Edit.ToString()');
             if ($('#EditForm').hasClass('edit-icon-white')) {
+                $("#hdnInspectMode").val('@Enums.InspectPopupMode.Edit.ToString()');
                 $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
                 $('#EditForm').addClass('Save-icon-white');
                 $("#errorMessage").css("display", "none");

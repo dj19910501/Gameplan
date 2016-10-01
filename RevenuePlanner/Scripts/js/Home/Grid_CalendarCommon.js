@@ -1258,11 +1258,12 @@ function RemoveAllMediaCodeData() {
 //Common Functions
 //Start
 function RefershPlanHeaderCalc() {
-    //if ($('#IsGridView').val().toLowerCase() == "true") {	
  var TimeFrame=$('#ddlUpComingActivites').val();
+    if (TimeFrame == null)
+    {
+        TimeFrame = "thisquarter";
+    }
     GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, TimeFrame);
-    //}
-
 }
 //End
 ///Function for After Link to reload the Grid/Calendar data with New Link Icon 

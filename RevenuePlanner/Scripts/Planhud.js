@@ -73,8 +73,8 @@ function GetHeadsUpData(HeaderUrl, ChartUrl, activemenu, timeframe) {
         }
     });
 
-    GetHeaderData(HeaderUrl, activemenu, timeframe, _filters.selectedPlanIds, _filters.customFieldIds, _filters.OwnerIds, _filters.TacticTypeids, _filters.StatusIds);
-    GetNumberOfActivityPerMonByPlanId(ChartUrl, activemenu, timeframe, _filters.selectedPlanIds, _filters.customFieldIds, _filters.OwnerIds, _filters.TacticTypeids, _filters.StatusIds);
+   GetHeaderData(HeaderUrl, activemenu, timeframe, _filters.selectedPlanIds, _filters.customFieldIds, _filters.OwnerIds, _filters.TacticTypeids, _filters.StatusIds);
+   GetNumberOfActivityPerMonByPlanId(ChartUrl, activemenu, timeframe, _filters.selectedPlanIds, _filters.customFieldIds, _filters.OwnerIds, _filters.TacticTypeids, _filters.StatusIds);
 }
 
 
@@ -304,19 +304,18 @@ function BindUpcomingActivites(SelectedPlanIds) {
             IsCalender: isCalendarView
         },
         success: function (data) {
-            BindUpcomingActivies(data);
             var upcomingvalues = [];
             $.each($("#ddlUpComingActivites option"), function () {
                 upcomingvalues.push(this.value.toString());
             });
+
             if (upcomingvalues.indexOf(currentval) > 0) {
                 $.each($("#ddlUpComingActivites option"), function () {
                     $(this).removeAttr('selected');
                 });
                 $("#ddlUpComingActivites option[value='" + currentval + "']").attr('selected', 'selected');
-                $("#ddlUpComingActivites").selectbox('detach');
-                $("#ddlUpComingActivites").selectbox("attach");
             }
+            BindUpcomingActivies(data);
         }
     });
 }

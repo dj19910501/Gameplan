@@ -243,7 +243,6 @@
     var IsManageviewClick = false;
     var IsBudgetGrid = false;
     var isCalendarView = false;
-    var SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
     var ExportSelectedIds = {
         TaskID: [],
         Title: [],
@@ -424,6 +423,7 @@
         $("#ddlTabViewBy").multiselect();
         LoadFilter();
         $("#ddlUpComingActivites").change(function () {
+            RefershPlanHeaderCalc();
             if (IsBudgetGrid) {
                 $('#btnbudget').trigger('click');
             }
@@ -451,9 +451,8 @@
                     GetOwnerListForFilter(filters.PlanIDs);
                     GetLastSetofViews($('#FilterPresetName').val());
                     BindUpcomingActivites(filters.PlanIDs);
-                    SelectedTimeFrameOption = $('#ddlUpComingActivites').val();
                     BindViewSelections(urlContent + 'Home/GetViewBylistData');
-                    GetHeadsUpData('@Url.Action("GetHeaderforPlanByMultiplePlanIDs", "Plan")', '@Url.Action("GetActivityDistributionchart", "Home")', '@Enums.ActiveMenu.Home.ToString().ToLower()', SelectedTimeFrameOption)
+                    RefershPlanHeaderCalc();
                     GetMultiplePlanNames();
                     GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
                     if (IsGridView) {

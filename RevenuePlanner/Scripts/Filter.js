@@ -1003,8 +1003,7 @@ function UpdateResult() {
     else {
         BindPlanCalendar();
     }
-    var TimeFrame = $('#ddlUpComingActivites').val();
-    GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs', urlContent + 'Home/GetActivityDistributionchart', secHome, TimeFrame)
+    RefershPlanHeaderCalc();
     UpdateSelectedFilters();
     if (SavePresetValue == false) {
         SaveLastSetofViews();
