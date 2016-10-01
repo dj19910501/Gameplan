@@ -4244,7 +4244,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetPackageTacticDetails(string viewBy, string TacticIds = "", string TacticTaskColor = "", bool IsGridView = false)
         {
             var PlanTacticListforpackageing = (List<Custom_Plan_Campaign_Program_Tactic>)objCache.Returncache(Enums.CacheObject.PlanTacticListforpackageing.ToString());
-
+            var Listofdata = new object();
             if (PlanTacticListforpackageing == null || PlanTacticListforpackageing.Count == 0)
             {
                 var PlanId = string.Join(",", Sessions.PlanPlanIds);
@@ -4256,11 +4256,13 @@ namespace RevenuePlanner.Controllers
                 PlanTacticListforpackageing = customtacticList;
             }
 
-            if (IsGridView == false)
-            {
                 if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+               
+            if (IsGridView == false)
+            {
+
+                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
                         TaskId = string.Format("L{0}_C{1}_P{2}_T{3}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
@@ -4273,88 +4275,10 @@ namespace RevenuePlanner.Controllers
                         AnchorTacticId = tactic.AnchorTacticId,
                         CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
-
-                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
-                }
-                else if (viewBy.Equals(PlanGanttTypes.Stage.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                    {
-                        TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.StageId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                        Title = tactic.Title,
-                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                        ColorCode = TacticTaskColor,
-                        OwnerName = GetOwnerName(tactic.CreatedBy),
-                        ROITacticType = tactic.AssetType,
-                        CalendarEntityType = "Tactic",
-                        AnchorTacticId = tactic.AnchorTacticId,
-                        CsvId = "Tactic_" + tactic.PlanTacticId,
-                    });
-
-                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
-
-                }
-                else if (viewBy.Equals(PlanGanttTypes.Status.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                    {
-                        TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.Status, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                        Title = tactic.Title,
-                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                        ColorCode = TacticTaskColor,
-                        OwnerName = GetOwnerName(tactic.CreatedBy),
-                        ROITacticType = tactic.AssetType,
-                        CalendarEntityType = "Tactic",
-                        AnchorTacticId = tactic.AnchorTacticId,
-                        CsvId = "Tactic_" + tactic.PlanTacticId,
-                    });
-
-                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
-
-                }
-                else if (viewBy.Equals(Enums.DictPlanGanttTypes[PlanGanttTypes.ROIPackage.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                    {
-                        TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.AnchorTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                        Title = tactic.Title,
-                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                        ColorCode = TacticTaskColor,
-                        OwnerName = GetOwnerName(tactic.CreatedBy),
-                        ROITacticType = tactic.AssetType,
-                        CalendarEntityType = "Tactic",
-                        AnchorTacticId = tactic.AnchorTacticId,
-                        CsvId = "Tactic_" + tactic.PlanTacticId,
-                    });
-
-                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
-
                 }
                 else
                 {
-                    var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                    {
-                        TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.PlanTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                        Title = tactic.Title,
-                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                        ColorCode = TacticTaskColor,
-                        OwnerName = GetOwnerName(tactic.CreatedBy),
-                        ROITacticType = tactic.AssetType,
-                        CalendarEntityType = "Tactic",
-                        AnchorTacticId = tactic.AnchorTacticId,
-                        CsvId = "Tactic_" + tactic.PlanTacticId,
-                    });
-
-                    return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            else
-            {
-                var Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                 {
                     TacticId = tactic.PlanTacticId,
                     TaskId = "__" + tactic.PlanProgramId + "_" + tactic.PlanTacticId,
@@ -4368,11 +4292,83 @@ namespace RevenuePlanner.Controllers
                     CsvId = "Tactic_" + tactic.PlanTacticId,
                 });
 
+
+                }
+
+                }
+                else if (viewBy.Equals(PlanGanttTypes.Stage.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    {
+                        TacticId = tactic.PlanTacticId,
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.StageId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                        Title = tactic.Title,
+                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                        ColorCode = TacticTaskColor,
+                        OwnerName = GetOwnerName(tactic.CreatedBy),
+                        ROITacticType = tactic.AssetType,
+                        CalendarEntityType = "Tactic",
+                        AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
+                    });
+
+
+                }
+                else if (viewBy.Equals(PlanGanttTypes.Status.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    {
+                        TacticId = tactic.PlanTacticId,
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.Status, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                        Title = tactic.Title,
+                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                        ColorCode = TacticTaskColor,
+                        OwnerName = GetOwnerName(tactic.CreatedBy),
+                        ROITacticType = tactic.AssetType,
+                        CalendarEntityType = "Tactic",
+                        AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
+                    });
+
+
+                }
+                else if (viewBy.Equals(Enums.DictPlanGanttTypes[PlanGanttTypes.ROIPackage.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    {
+                        TacticId = tactic.PlanTacticId,
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.AnchorTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                        Title = tactic.Title,
+                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                        ColorCode = TacticTaskColor,
+                        OwnerName = GetOwnerName(tactic.CreatedBy),
+                        ROITacticType = tactic.AssetType,
+                        CalendarEntityType = "Tactic",
+                        AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
+                    });
+
+
+                }
+                else
+                {
+                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
+                    {
+                        TacticId = tactic.PlanTacticId,
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.PlanTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                        Title = tactic.Title,
+                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                        ColorCode = TacticTaskColor,
+                        OwnerName = GetOwnerName(tactic.CreatedBy),
+                        ROITacticType = tactic.AssetType,
+                        CalendarEntityType = "Tactic",
+                        AnchorTacticId = tactic.AnchorTacticId,
+                        CsvId = "Tactic_" + tactic.PlanTacticId,
+                    });
+
+                }
+
                 return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
-            }
-
-
-
         }
 
         #endregion

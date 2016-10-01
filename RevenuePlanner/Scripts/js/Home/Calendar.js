@@ -109,7 +109,7 @@ function SetGanttData(resultdata) {
         gantt.clearAll();
     }
     
-    gantt.config.select_task = true;
+    gantt.config.select_task = false;
     var currentDate = new Date();
     if (timeframe == null || timeframe == 'undefined' || timeframe == "") {
         timeframe = currentDate.getFullYear().toString();
