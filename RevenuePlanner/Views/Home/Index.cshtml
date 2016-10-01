@@ -380,8 +380,9 @@
     });
 
 
-    $(document).ready(function () {
-        ///Added by dhvani to open inpsect popup for alert URL -- PL #2534
+        $(document).ready(function () {
+          $('.plan').addClass('active');//Select Plans menu after login for ticket - 2570 
+        ///Added by Dhvani to open inpsect popup for alert URL -- PL #2534
         //START CODE
         if ('@ShowInspectPopup'.toLowerCase() == 'true') {
             if ($("#hdnshowInspectForPlanTacticId").val() != 0)
