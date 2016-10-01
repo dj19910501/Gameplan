@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace RevenuePlanner.Models
 {
@@ -290,6 +291,16 @@ namespace RevenuePlanner.Models
         public int? LinkedTacticId { get; set; }
         public Custom_Plan_Campaign_Program_Tactic CustomTactic { get; set; }
     }
+
+    // Add By Nishant Sheth
+    // Desc :: Get the Revenue / MQL values 
+    public class ReveneueMqlData
+    {
+        public decimal Value { get; set; }
+        public string ParentUniqueId { get; set; }
+        public string UniqueId { get; set; }
+    }
+
     // Add By Nishant Sheth
     // Desc :: Store Progess details for Plan/Campaign/Program ticket #1798
     public class ProgressList
@@ -397,15 +408,69 @@ namespace RevenuePlanner.Models
         public string UniqueId { get; set; }
         public string ParentUniqueId { get; set; }
         public string EntityType { get; set; }
-        public Nullable<Int64> ParentEntityId { get; set; }
+        private Int64? _ParentEntityId;
+        public Nullable<Int64> ParentEntityId
+        {
+            get
+            {
+                return this._ParentEntityId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._ParentEntityId = 0;
+                }
+                else
+                {
+                    this._ParentEntityId = value;
+                }
+            }
+        }
         public string AssetType { get; set; }
         public string TacticType { get; set; }
         public Nullable<DateTime> StartDate { get; set; }
         public Nullable<DateTime> EndDate { get; set; }
         public string EntityTitle { get; set; }
-        public Nullable<Int32> LineItemTypeId { get; set; }
+        private Int32? _LineItemTypeId;
+        public Nullable<Int32> LineItemTypeId
+        {
+            get
+            {
+                return this._LineItemTypeId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._LineItemTypeId = 0;
+                }
+                else
+                {
+                    this._LineItemTypeId = value;
+                }
+            }
+        }
         public string LineItemType { get; set; }
-        public Nullable<int> AnchorTacticID { get; set; }
+        private int? _AnchorTacticID;
+        public Nullable<int> AnchorTacticID
+        {
+            get
+            {
+                return this._AnchorTacticID;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._AnchorTacticID = 0;
+                }
+                else
+                {
+                    this._AnchorTacticID = value;
+                }
+            }
+        }
         public List<Plandataobj> lstdata { get; set; }
         //public Plandataobj objdata { get; set; }
     }
@@ -417,7 +482,25 @@ namespace RevenuePlanner.Models
         public string UniqueId { get; set; }
         public Int64 EntityId { get; set; }
         public string EntityTitle { get; set; }
-        public Nullable<Int64> ParentEntityId { get; set; }
+        private Int64? _ParentEntityId;
+        public Nullable<Int64> ParentEntityId
+        {
+            get
+            {
+                return this._ParentEntityId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._ParentEntityId = 0;
+                }
+                else
+                {
+                    this._ParentEntityId = value;
+                }
+            }
+        }
         public string ParentUniqueId { get; set; }
         public string EntityType { get; set; }
         public string ColorCode { get; set; }
@@ -429,23 +512,204 @@ namespace RevenuePlanner.Models
         public string TaskId { get; set; }
         public string ParentTaskId { get; set; }
         public Int64 PlanId { get; set; }
-        public Nullable<Int64> ModelId { get; set; }
+        private Int64? _ModelId;
+        public Nullable<Int64> ModelId
+        {
+            get
+            {
+                return this._ModelId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._ModelId = 0;
+                }
+                else
+                {
+                    this._ModelId = value;
+                }
+            }
+        }
         public string AssetType { get; set; }
         public string TacticType { get; set; }
-        public Nullable<Int32> TacticTypeId { get; set; }
-        public Nullable<Int32> LineItemTypeId { get; set; }
+        private Int32? _TacticTypeId;
+        public Nullable<Int32> TacticTypeId
+        {
+            get
+            {
+                return this._TacticTypeId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._TacticTypeId = 0;
+                }
+                else
+                {
+                    this._TacticTypeId = value;
+                }
+            }
+        }
+        private Int32? _LineItemTypeId;
+        public Nullable<Int32> LineItemTypeId
+        {
+            get
+            {
+                return this._LineItemTypeId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._LineItemTypeId = 0;
+                }
+                else
+                {
+                    this._LineItemTypeId = value;
+                }
+            }
+        }
         public string LineItemType { get; set; }
-        public Nullable<double> PlannedCost { get; set; }
-        public Nullable<double> ProjectedStageValue { get; set; }
+        private double? _PlannedCost;
+        public Nullable<double> PlannedCost
+        {
+            get
+            {
+                return this._PlannedCost;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._PlannedCost = 0;
+                }
+                else
+                {
+                    this._PlannedCost = value;
+                }
+            }
+        }
+        private double? _ProjectedStageValue;
+        public Nullable<double> ProjectedStageValue
+        {
+            get
+            {
+                return this._ProjectedStageValue;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._ProjectedStageValue = 0;
+                }
+                else
+                {
+                    this._ProjectedStageValue = value;
+                }
+            }
+        }
         public string TargetStageGoal { get; set; }
         public string ProjectedStage { get; set; }
-        public Nullable<Int64> MQL { get; set; }
-        public Nullable<decimal> Revenue { get; set; }
+        private Int64? _MQL;
+        public Nullable<Int64> MQL
+        {
+            get
+            {
+                return this._MQL;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._MQL = 0;
+                }
+                else
+                {
+                    this._MQL = value;
+                }
+            }
+        }
+
+        private decimal? _Revenue;
+        public Nullable<decimal> Revenue
+        {
+            get
+            {
+                return this._Revenue;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._Revenue = 0;
+                }
+                else
+                {
+                    this._Revenue = value;
+                }
+            }
+        }
         public string MachineName { get; set; }
-        public Nullable<int> LinkedPlanId { get; set; }
-        public Nullable<int> LinkedTacticId { get; set; }
+        public int? _LinkedPlanId;
+        public Nullable<int> LinkedPlanId
+        {
+            get
+            {
+                return this._LinkedPlanId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._LinkedPlanId = 0;
+                }
+                else
+                {
+                    this._LinkedPlanId = value;
+                }
+            }
+        }
+        public int? _LinkedTacticId;
+        public Nullable<int> LinkedTacticId
+        {
+            get
+            {
+                return this._LinkedTacticId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._LinkedTacticId = 0;
+                }
+                else
+                {
+                    this._LinkedTacticId = value;
+                }
+            }
+        }
         public string LinkedPlanName { get; set; }
-        public Nullable<int> AnchorTacticID { get; set; }
+        private int? _AnchorTacticID;
+        public Nullable<int> AnchorTacticID
+        {
+            get
+            {
+                return this._AnchorTacticID;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._AnchorTacticID = 0;
+                }
+                else
+                {
+                    this._AnchorTacticID = value;
+                }
+            }
+        }
         public string PackageTacticIds { get; set; }
         public string PlanYear { get; set; }
     }
@@ -485,9 +749,45 @@ namespace RevenuePlanner.Models
     // Get list of Entity custom field values
     public class GridCustomFieldEntityValues
     {
-        public Nullable<Int64> EntityId { get; set; }
+        private Int64? _EntityId;
+        public Nullable<Int64> EntityId
+        {
+            get
+            {
+                return this._EntityId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._EntityId = 0;
+                }
+                else
+                {
+                    this._EntityId = value;
+                }
+            }
+        }
         public string EntityType { get; set; }
-        public Nullable<int> CustomFieldId { get; set; }
+        private int? _CustomFieldId;
+        public Nullable<int> CustomFieldId
+        {
+            get
+            {
+                return this._CustomFieldId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._CustomFieldId = 0;
+                }
+                else
+                {
+                    this._CustomFieldId = value;
+                }
+            }
+        }
         public string Value { get; set; }
         public string UniqueId { get; set; }
     }
