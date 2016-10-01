@@ -83,6 +83,8 @@ namespace RevenuePlanner.Models
         public string MachineName { get; set; }
         public double UnallocatedBudget { get; set; }
         public string PlanYear { get; set; }
+        public string AssetType { get; set; }
+        public Nullable<int> AnchorTacticID { get; set; }
 
     }
 
