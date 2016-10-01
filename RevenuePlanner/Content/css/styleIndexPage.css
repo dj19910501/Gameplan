@@ -1451,7 +1451,7 @@ footer a {
 	color: #9c9fa0;
 	font-size: 18px;
 }
-.task-tbl .grid_Search .fa{font-size: 16px;}
+.task-tbl .grid_Search .fa{font-size: 15px;}
 .task-tbl .grid_add:hover .fa.fa-plus-circle, 
 .task-tbl .gantt_add:hover .fa, 
 .task-tbl .grid_Search:hover .fa {

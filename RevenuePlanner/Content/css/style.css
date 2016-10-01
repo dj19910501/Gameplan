@@ -13399,11 +13399,11 @@ input.serach-input {
  .manageviewicon .fa{color:#ccc}
  /*div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa{color:#F8710E}*/
  /* #2335 issue of tabIndex focus on Inspect window */
-/*.inspect-column-parent div:focus a.dropdown_new_btn{
+.inspect-column-parent div:focus a.dropdown_new_btn{
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.043) inset, 0 0 5px rgba(0, 0, 0, 0.2) !important; 
     outline: 0 none; 
 } 
-.inspect-column-parent div:focus{outline:0 none}*/
+.inspect-column-parent div:focus{outline:0 none}
 
 
 /* =================== LIneitem Grid CSS in Ispect Window ========================= */
