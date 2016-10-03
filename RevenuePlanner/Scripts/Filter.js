@@ -899,6 +899,15 @@ function SavePreset() {
 var isFiltered = false;
 var SavePresetValue = false;
 function UpdatePlan() {
+
+    $('#txtGlobalSearch').val('');
+    if ($('#ExpClose').css('display') == 'block')
+    {
+        $('#ExpSearch').css('display', 'block');
+        $('#ExpClose').css('display', 'none');
+    }
+ 
+
     IsUpdate = true;
     isRequest = false;
 
@@ -1097,9 +1106,15 @@ function ApplyFilters() {
         data: {
         },
         success: function (result) {
+
         }
     });
-    UpdateResult();
+    $('#txtGlobalSearch').val('');
+    if ($('#ExpClose').css('display') == 'block') {
+        $('#ExpSearch').css('display', 'block');
+        $('#ExpClose').css('display', 'none');
+    }
+     UpdateResult();
 }
 
 var IsPlanChange = false;

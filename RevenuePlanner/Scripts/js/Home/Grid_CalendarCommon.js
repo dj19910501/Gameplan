@@ -5,6 +5,9 @@ var isEditTacticHomeGrid = 0;
 $('#btngridcalendar').click(function () {
     //cleare success msg as we want to hide import msg on click of grid or calendar
     $('#SuccessMsg').css('display', 'none');
+    if ($('#errorMsg').css('display') == 'block') {
+        $('#errorMsg').css('display', 'none');
+    }
 
     $('#exp-serach').css('display', 'none');
     if ($('#btnbudget').hasClass('P-icon-active')) {
@@ -60,7 +63,10 @@ function ShowhideDataonGridCalendar() {
 
 $('#btnbudget').click(function () {
     //cleare success msg as we want to hide import msg on click of grid or calendar
-  $('#SuccessMsg').css('display', 'none');
+    $('#SuccessMsg').css('display', 'none');
+    if ($('#errorMsg').css('display') == 'block') {
+        $('#errorMsg').css('display', 'none');
+    }
     isCalendarView = false;
     IsGridView = false;
     $('#IsGridView').val('false');
@@ -1341,10 +1347,12 @@ function ConfirmLinkTactic() {
 
 //set value of dropdown in search criteria
 $(".searchDropdown li a").click(function () {
+    var searchColumn = $(this).text();
     $("#txtGlobalSearch").val("");
     $("#searchCriteria").text($(this).text()[0]);
-    $("#searchCriteria").val($(this).text());
-    $("#txtGlobalSearch").attr('Placeholder', $(this).text())
+    $("#searchCriteria").val(searchColumn.replace(" ",''));
+    $("#txtGlobalSearch").attr('Placeholder', $(this).text());
+    BindHomeGrid();
 });
 
 //Search button click
@@ -1375,6 +1383,10 @@ $('#ExpClose').click(function () {
 $('#txtGlobalSearch').on('keyup', function (event) {
     if (event.which == 13 || $('#txtGlobalSearch').val().trim() == "") {
         $('#ExpSearch').click();
+    }
+    else {
+        $('#ExpClose').css('display', 'none');
+        $('#ExpSearch').css('display', 'block');
     }
 });
 //Added by Dhvani to maintain dop-down for Global search
@@ -1452,10 +1464,10 @@ function GlobalSearchonGrid(node, columnName) {
     var colindex = 0;
     var text = node;
     HomeGrid.setFiltrationLevel(-2);
-    if (columnName.toLowerCase().toString() == ActivityName) {
+    if (columnName.toUpperCase().toString() == glblsrchActivityName) {
         colindex = HomeGrid.getColIndexById(TaskNameId);
     }
-    else if (columnName.toLowerCase().toString() == ExternalName) {
+    else if (columnName.toUpperCase().toString() == glblsrchExternalName) {
         colindex = HomeGrid.getColIndexById(MachineNameId);
     }
     HomeGrid.filterTreeBy(colindex, function (data) {
@@ -1463,7 +1475,7 @@ function GlobalSearchonGrid(node, columnName) {
     });
     if (HomeGrid.rowsBuffer.length <= 0) {
         $('#txtGlobalSearch').val("");
-        BindHomeGrid();
+        //BindHomeGrid();
         $('#txtGlobalSearch').val(node.trim());
         $("#errorMsg").css("display", "block");
         $("#spanMsgError").empty();
