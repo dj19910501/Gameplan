@@ -7879,9 +7879,9 @@ UNION ALL
 		,TacticCustomName MachineName
 		,CreatedBy
 		,NULL LineItemTypeId
-		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
-		,Cost
 		,IsAfterApproved
+		,CASE WHEN CONVERT(VARCHAR(50),CreatedBy)=@UserID THEN 1 ELSE 0 END IsOwner
+		,Cost		
 		,Budget
 		,NULL PlanYear
 		--Y represent year and number represent month of the year. If number is greater than 12 then its consider as next year month e.g. Y13 is Jan month for next year
@@ -8027,6 +8027,7 @@ UNION ALL
 									,[ActualY13], [ActualY14], [ActualY15], [ActualY16],[ActualY17], [ActualY18], [ActualY19], [ActualY20],[ActualY21], [ActualY22], [ActualY23], [ActualY24])
 				)LineItemMain
 END
+
 
 GO
 /****** Object:  StoredProcedure [dbo].[GridCustomFieldData]    Script Date: 09/30/2016 15:51:28 ******/
