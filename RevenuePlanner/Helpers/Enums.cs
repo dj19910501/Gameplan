@@ -1721,6 +1721,11 @@ namespace RevenuePlanner.Helpers
            {"TargetStageGoal","Target Stage Goal"}
        };
         //end
+        public enum TacticDates
+        {
+            StartDate,
+            EndDate
+        }
     }
 
     #region Authorization

@@ -181,6 +181,7 @@ namespace RevenuePlanner.Helpers
         public const string YearlyBudgetForEntity = "BudgetYear";
         public const string MonthlyCostForEntity = "CostMonth";
         public const string YearlyCostForEntity = "CostYear";
+        public const string PeriodPrefix = "Y";
 
         public static List<string> TOPRevenueColumnList = new List<string>() { "Name", "Revenue", "Trend" };
         public static List<string> TOPPerformanceColumnList = new List<string>() { "Name", "Proj. vs Goal", "Trend" };
@@ -9269,6 +9270,20 @@ namespace RevenuePlanner.Helpers
             }
             catch { throw; }
             return dtCosts;
+        }
+
+        /// <summary>
+        /// Get months of the quarter
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static List<string> GetMonthsOfQuarters(int MonthNumber)
+        {
+            List<string> QuarterMonths = new List<string>();
+            // Add respective 3 months for quarter 
+            QuarterMonths.Add(PeriodPrefix + Convert.ToString(MonthNumber));
+            QuarterMonths.Add(PeriodPrefix + Convert.ToString(MonthNumber + 1));
+            QuarterMonths.Add(PeriodPrefix + Convert.ToString(MonthNumber + 2));
+            return QuarterMonths;
         }
 
     }

@@ -20,12 +20,8 @@ namespace RevenuePlanner.Services
 
         void SaveTotalLineItemCost(int EntityId, double newCost);
 
-        void SaveLineItemMonthlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
+        void SaveLineItemCostAllocation(int EntityId, double monthlycost, string month, int UserId, string AllocatedBy, bool isLinkedLineItem = false);
 
-        void SaveLineItemQuarterlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
-
-        void SaveTacticMonthlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
-
-        void SaveTacticQuarterlyCostAllocation(int EntityId, double monthlycost, string month, int UserId);
+        void SaveTacticCostAllocation(int EntityId, double monthlycost, string month, int UserId, string AllocatedBy, bool isLinkedTactic = false);
     }
 }

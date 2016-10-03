@@ -117,6 +117,9 @@ namespace RevenuePlanner.Models
         public int? LineItemTypeId { get; set; }
 
         public double PlannedCost { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public Dictionary<string, double> MonthlyCosts { get; set; }
     }
 
     public class BudgetModelReport

@@ -239,41 +239,6 @@ namespace RevenuePlanner.Helpers
             return dtPlanBudgetHirarchy;
         }
 
-        /// <summary>
-        /// 
-        /// This function returns datatable which contains details reg. plan, campaign, program, tactic and line item's planned cost and actual 
-        /// </summary>
-        /// <param name="PlanId">int unique planid of plan which data will be return</param>
-        /// <param name="budgetTab">string which contains value like Planned or Actual</param>
-        /// <returns></returns>
-        public DataTable GetLineItemCostAllocation(int LineItemId)
-        {
-            DataTable dtPlanHirarchy = new DataTable();
-
-            MRPEntities db = new MRPEntities();
-            ///If connection is closed then it will be open
-            var Connection = db.Database.Connection as SqlConnection;
-            if (Connection.State == System.Data.ConnectionState.Closed)
-                Connection.Open();
-            SqlCommand command = null;
-
-            command = new SqlCommand("LineItem_Cost_Allocation", Connection);
-
-            using (command)
-            {
-
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@PlanTacticId", LineItemId);
-                command.Parameters.AddWithValue("@UserId", Sessions.User.ID);
-                SqlDataAdapter adp = new SqlDataAdapter(command);
-                command.CommandTimeout = 0;
-                adp.Fill(dtPlanHirarchy);
-                if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
-            }
-
-            return dtPlanHirarchy;
-        }
-
         // Get Tactic line ite,
         public List<Plan_Campaign_Program_Tactic_LineItem> GetTacticLineItemList(string tacticId)
         {

@@ -6261,7 +6261,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="customFieldIds"></param>
         /// <param name="budgetTab"></param>
         /// <returns>Returns partial view</returns>
-        public PartialViewResult LoadLineItemTabFromTacticPopup(int tacticId, bool isLocked = true, bool IsPlanCreateAll = false)
+        public PartialViewResult LoadLineItemTabFromTacticPopup(int tacticId)
         {
             BudgetDHTMLXGridModel objGridData = new BudgetDHTMLXGridModel();
             PlanExchangeRate = Sessions.PlanExchangeRate;
@@ -6286,19 +6286,20 @@ namespace RevenuePlanner.Controllers
             try
             {
                 int EntityId = Convert.ToInt32(entityId);   // this is tactic or line item id
-                if (string.Compare(section, Enums.Section.LineItem.ToString(), true) == 0)
+                string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
+                if (isquarter)
+                {
+                    AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.quarters);
+                }
+                if (string.Compare(section, Convert.ToString(Enums.Section.LineItem), true) == 0)
                 {
                     if (isTotalCost)
                     {
                         objPlanTactic.SaveTotalLineItemCost(EntityId, allocatedcost);
                     }
-                    else if (isquarter)
-                    {
-                        objPlanTactic.SaveLineItemQuarterlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
-                    }
                     else
                     {
-                        objPlanTactic.SaveLineItemMonthlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
+                        objPlanTactic.SaveLineItemCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID, AllocatedBy);
                     }
                 }
                 else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
@@ -6307,13 +6308,9 @@ namespace RevenuePlanner.Controllers
                     {
                         objPlanTactic.SaveTotalTacticCost(EntityId, allocatedcost);
                     }
-                    else if (isquarter)
-                    {
-                        objPlanTactic.SaveTacticQuarterlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
-                    }
                     else
                     {
-                        objPlanTactic.SaveTacticMonthlyCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID);
+                        objPlanTactic.SaveTacticCostAllocation(EntityId, allocatedcost, month, Sessions.User.ID, AllocatedBy);
                     }
                 }
                 return Json(new { isSuccess = true });

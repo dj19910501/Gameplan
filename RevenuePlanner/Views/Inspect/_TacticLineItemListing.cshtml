@@ -100,24 +100,6 @@ else
     var TaskNameColIndex;
     var arrDetailedGrids = [];
 
-    var arrFullMonthNames = { 'JAN': 'January' ,
-        'FEB': 'February' ,
-        'MAR': 'March' ,
-        'APR': 'April' ,
-        'MAY': 'May' ,
-        'JUN': 'June' ,
-        'JUL': 'July' ,
-        'AUG': 'August' ,
-        'SEP': 'September' ,
-        'OCT': 'October' ,
-        'NOV': 'November' ,
-        'DEC': 'December',
-        'Q1': 'Quarter 1',
-        'Q2': 'Quarter 2',
-        'Q3': 'Quarter 3',
-        'Q4': 'Quarter 4'
-    }
-
     function BindLineItemGrid() {
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid)';
         var mainGridData = JsonModel;
@@ -138,14 +120,7 @@ else
         LineItemGrid.setColumnIds('@Model.ColumnIds');
         
         LineItemGrid.init();
-        setTimeout(function () {
-            LineItemGrid.loadOpenStates();
-        }, 500);
-        setTimeout(function () {
-            LineItemGrid.setSizes();
-        }, 200);
         LineItemGrid.enableAutoHeight(true);
-        
         LineItemGrid.parse(GridDataLineItemGrid, "json");
         ActivityIdColIndex = LineItemGrid.getColIndexById("id");
         PlannedCostColIndex = LineItemGrid.getColIndexById("plannedcost");
@@ -207,7 +182,8 @@ else
                         isTotalCost = true;
                     }
                     else {
-                        month = arrFullMonthNames[LineItemGrid.getColLabel(cellInd)];   // Get full name of month from initial (JAN -> January)
+                        // Get column name e.g. JAN-2016
+                        month = LineItemGrid.getColLabel(cellInd);
                     }
                     var plannedcost = LineItemGrid.cells(rowId, cellInd).getValue(); // updated cell value
                 
