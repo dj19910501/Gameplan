@@ -1189,6 +1189,47 @@ namespace RevenuePlanner.Helpers
             November,
             December
         }
+
+        /// <summary>
+        /// 12 months enum for get short name of month in budgeting
+        /// <CreatedBy>Nandish Shah</CreatedBy>
+        /// <CreatedDate>10/03/2016</CreatedDate>
+        /// </summary>
+        public enum ShortMonths
+        {
+            Jan,
+            Feb,
+            Mar,
+            Apr,
+            May,
+            Jun,
+            Jul,
+            Aug,
+            Sep,
+            Oct,
+            Nov,
+            Dec
+        }
+
+        public static Dictionary<string, string> monthList = new Dictionary<string, string>() {
+                {Enums.ShortMonths.Jan.ToString(), "Y1" },
+                {Enums.ShortMonths.Feb.ToString(), "Y2" },
+                {Enums.ShortMonths.Mar.ToString(), "Y3" },
+                {Enums.ShortMonths.Apr.ToString(), "Y4" },
+                {Enums.ShortMonths.May.ToString(), "Y5" },
+                {Enums.ShortMonths.Jun.ToString(), "Y6" },
+                {Enums.ShortMonths.Jul.ToString(), "Y7" },
+                {Enums.ShortMonths.Aug.ToString(), "Y8" },
+                {Enums.ShortMonths.Sep.ToString(), "Y9" },
+                {Enums.ShortMonths.Oct.ToString(), "Y10" },
+                {Enums.ShortMonths.Nov.ToString(), "Y11" },
+                {Enums.ShortMonths.Dec.ToString(), "Y12" },
+                {Enums.Quarter.Q1.ToString(), "Y1" },
+                {Enums.Quarter.Q2.ToString(), "Y4" },
+                {Enums.Quarter.Q3.ToString(), "Y7" },
+                {Enums.Quarter.Q4.ToString(), "Y10" }
+                };
+
         public static Dictionary<int, string> YearMonths = new Dictionary<int, string>()
         {
             {1,"January"},

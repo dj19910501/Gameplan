@@ -4694,28 +4694,23 @@ namespace RevenuePlanner.Controllers
         /// <param name="month">month of budget</param>
         /// <param name="inputs">values of budget for month/year</param>
         /// <returns>json flag for success or failure</returns>
+        
+        // This method will need to be refactored as part of ticket#2680
         public JsonResult SaveBudgetCell(string entityId, string section, string month, string inputs, bool isquarter)
         {
-            Dictionary<string, string> monthList = new Dictionary<string, string>() {
-                {Enums.Months.January.ToString(), "Y1" },
-                {Enums.Months.February.ToString(), "Y2" },
-                {Enums.Months.March.ToString(), "Y3" },
-                {Enums.Months.April.ToString(), "Y4" },
-                {Enums.Months.May.ToString(), "Y5" },
-                {Enums.Months.June.ToString(), "Y6" },
-                {Enums.Months.July.ToString(), "Y7" },
-                {Enums.Months.August.ToString(), "Y8" },
-                {Enums.Months.September.ToString(), "Y9" },
-                {Enums.Months.October.ToString(), "Y10" },
-                {Enums.Months.November.ToString(), "Y11" },
-                {Enums.Months.December.ToString(), "Y12" },
-                {"Quarter 1", "Y1" },
-                {"Quarter 2", "Y4" },
-                {"Quarter 3", "Y7" },
-                {"Quarter 4", "Y10" }
-                };
             try
             {
+                string MonthName = string.Empty;
+                string CellYear = string.Empty;
+                if (!string.IsNullOrEmpty(month))
+                {
+                    string[] MonthYear = month.Split('-');
+                    if (MonthYear != null && MonthYear.Count() > 1)
+                    {
+                        MonthName = MonthYear[0];
+                        CellYear = MonthYear[1];
+                    }
+                }
                 int EntityId = Convert.ToInt32(entityId);
                 var popupValues = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(inputs);
                 double monthlyBudget = popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).Any() && popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).FirstOrDefault().Value != "" ? Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).FirstOrDefault().Value) : popupValues.Where(popup => popup.Key == Common.MonthlyBudgetForEntity).FirstOrDefault().Value == "" ? 0 : -1;
@@ -4724,7 +4719,15 @@ namespace RevenuePlanner.Controllers
                 {
                     if (monthlyBudget >= 0 && yearlyBudget >= 0)
                     {
-                        string period = monthList[month].ToString();
+                        string period = Enums.monthList[MonthName].ToString();
+                        string PlanYear = GetPlanYear(section, EntityId);
+                        
+                        int PlanYearDiff = Convert.ToInt32(CellYear) - Convert.ToInt32(PlanYear);
+                        if (PlanYearDiff > 0)
+                        {
+                            int MonthCnt = Convert.ToInt32(period.Replace(PeriodChar, ""));
+                            period = "Y" + Convert.ToString(MonthCnt + (PlanYearDiff * 12));
+                        }
                         if (string.Compare(section, Enums.Section.Plan.ToString(), true) == 0)
                         {
                             var objPlan = db.Plans.Where(p => p.PlanId == EntityId && p.IsDeleted.Equals(false)).FirstOrDefault();
@@ -5339,28 +5342,23 @@ namespace RevenuePlanner.Controllers
         /// <param name="month">month of budget</param>
         /// <param name="inputs">values of budget for month/year</param>
         /// <returns>json flag for success or failure</returns>
+
+        // This method will need to be refactored as part of ticket#2679
         public JsonResult SavePlannedCell(string entityId, string section, string month, string inputs, string tab, bool isquarter)
         {
-            Dictionary<string, string> monthList = new Dictionary<string, string>() {
-                {Enums.Months.January.ToString(), "Y1" },
-                {Enums.Months.February.ToString(), "Y2" },
-                {Enums.Months.March.ToString(), "Y3" },
-                {Enums.Months.April.ToString(), "Y4" },
-                {Enums.Months.May.ToString(), "Y5" },
-                {Enums.Months.June.ToString(), "Y6" },
-                {Enums.Months.July.ToString(), "Y7" },
-                {Enums.Months.August.ToString(), "Y8" },
-                {Enums.Months.September.ToString(), "Y9" },
-                {Enums.Months.October.ToString(), "Y10" },
-                {Enums.Months.November.ToString(), "Y11" },
-                {Enums.Months.December.ToString(), "Y12" },
-                {"Quarter 1", "Y1" },
-                {"Quarter 2", "Y4" },
-                {"Quarter 3", "Y7" },
-                {"Quarter 4", "Y10" }
-                };
             try
             {
+                string MonthName = string.Empty;
+                string CellYear = string.Empty;
+                if (!string.IsNullOrEmpty(month))
+                {
+                    string[] MonthYear = month.Split('-');
+                    if (MonthYear != null && MonthYear.Count() > 1)
+                    {
+                        MonthName = MonthYear[0];
+                        CellYear = MonthYear[1];
+                    }
+                }
                 int EntityId = Convert.ToInt32(entityId);
                 var popupValues = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(inputs);
 
@@ -5368,7 +5366,14 @@ namespace RevenuePlanner.Controllers
                 double yearlycost = popupValues.Where(popup => popup.Key == Common.YearlyCostForEntity).Any() && popupValues.Where(popup => popup.Key == Common.YearlyCostForEntity).FirstOrDefault().Value != "" ? Convert.ToDouble(popupValues.Where(popup => popup.Key == Common.YearlyCostForEntity).FirstOrDefault().Value) : popupValues.Where(popup => popup.Key == Common.YearlyCostForEntity).FirstOrDefault().Value == "" ? 0 : -1;
                 if (popupValues.Where(popup => popup.Key == Common.MonthlyCostForEntity).Any())
                 {
-                    string period = monthList[month].ToString();
+                    string period = Enums.monthList[MonthName].ToString();
+                    string PlanYear = GetPlanYear(section, EntityId);
+                    int PlanYearDiff = Convert.ToInt32(CellYear) - Convert.ToInt32(PlanYear);
+                    if (PlanYearDiff > 0)
+                    {
+                        int MonthCnt = Convert.ToInt32(period.Replace(PeriodChar, ""));
+                        period = "Y" + Convert.ToString(MonthCnt + (PlanYearDiff * 12));
+                    }
                     if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
                     {
                         if (tab == Enums.BudgetTab.Planned.ToString())
@@ -7164,6 +7169,55 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
             return Json(new { isSuccess = false });
+        }
+
+        /// <summary>
+        /// <createdby>Nandish Shah</createdby>
+        /// Get Plan Year based on Section
+        /// </summary>
+        /// <returns>jPlane Year</returns>
+        private string GetPlanYear(string section, int EntityId)
+        {
+            string PlanYear = string.Empty;
+            if (string.Compare(section, Enums.Section.Plan.ToString(), true) == 0)
+            {
+                PlanYear = db.Plans.Where(p => p.PlanId == EntityId && p.IsDeleted.Equals(false)).Select(p => p.Year).FirstOrDefault();
+            }
+            else if (string.Compare(section, Enums.Section.Campaign.ToString(), true) == 0)
+            {
+                PlanYear = (from pc in db.Plan_Campaign
+                            join p in db.Plans on pc.PlanId equals p.PlanId
+                            where pc.PlanCampaignId == EntityId && p.IsDeleted == false && pc.IsDeleted == false
+                            select p.Year).FirstOrDefault();
+            }
+            else if (string.Compare(section, Enums.Section.Program.ToString(), true) == 0)
+            {
+                PlanYear = (from pcp in db.Plan_Campaign_Program
+                            join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                            join p in db.Plans on pc.PlanId equals p.PlanId
+                            where pcp.PlanProgramId == EntityId && p.IsDeleted == false && pc.IsDeleted == false
+                            select p.Year).FirstOrDefault();
+            }
+            else if (string.Compare(section, Enums.Section.Tactic.ToString(), true) == 0)
+            {
+                PlanYear = (from pcpt in db.Plan_Campaign_Program_Tactic
+                            join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                            join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                            join p in db.Plans on pc.PlanId equals p.PlanId
+                            where pcpt.PlanTacticId == EntityId && p.IsDeleted == false && pc.IsDeleted == false
+                            select p.Year).FirstOrDefault();
+            }
+            else if (string.Compare(section, Enums.Section.LineItem.ToString(), true) == 0)
+            {
+                PlanYear = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
+                            join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                            join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                            join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                            join p in db.Plans on pc.PlanId equals p.PlanId
+                            where pcptl.PlanLineItemId == EntityId && p.IsDeleted == false && pc.IsDeleted == false
+                            select p.Year).FirstOrDefault();
+            }
+            return PlanYear;
         }
         #endregion
 

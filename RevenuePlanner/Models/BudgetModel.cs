@@ -86,6 +86,7 @@ namespace RevenuePlanner.Models
         public string AssetType { get; set; }
         public Nullable<int> AnchorTacticID { get; set; }
         public string TaskId { get; set; }
+        public double UnallocatedCost { get; set; }
 
     }
 

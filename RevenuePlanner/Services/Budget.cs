@@ -29,15 +29,15 @@ namespace RevenuePlanner.Services
         private const string Open = "1";
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
-        public const string FixHeader = "ActivityId,Type,machinename,,,,,,";
+        public const string FixHeader = "ActivityId,Type,machinename,,,,,,,";
         public const string EndColumnsHeader = ",";
-        public const string FixColumnIds = "ActivityId,Type,MachineName,colourcode,TaskName,Buttons,BudgetCost,PlannedCost,ActualCost";
+        public const string FixColumnIds = "ActivityId,Type,MachineName,colourcode,LineItemTypeId,TaskName,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",Budget";
-        public const string FixColType = "ro,ro,ro,ro,tree,ro,ed,ed,ed";
+        public const string FixColType = "ro,ro,ro,ro,ro,tree,ro,ed,ed,ed";
         public const string EndColType = ",ro";
-        public const string FixcolWidth = "100,100,100,10,302,75,100,100,100";
+        public const string FixcolWidth = "100,100,100,10,100,302,75,100,100,100";
         public const string EndcolWidth = ",100";
-        public const string FixColsorting = "na,na,na,na,na,na,na,na,na";
+        public const string FixColsorting = "na,na,na,na,na,na,na,na,na,na";
         public const string EndColsorting = ",na";
         public const string QuarterPrefix = "Q";
         public const string DhtmlxColSpan = "#cspan";
@@ -176,6 +176,7 @@ namespace RevenuePlanner.Services
                     TotalUnallocatedBudget = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnallocatedBudget"])), PlanExchangeRate),
                     TotalActuals = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalAllocationActual"])), PlanExchangeRate),
                     TotalAllocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Cost"])), PlanExchangeRate),
+                    UnallocatedCost = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["TotalUnAllocationCost"])), PlanExchangeRate),
                     IsOwner = Convert.ToBoolean(row["IsOwner"]),
                     CreatedBy = int.Parse(row["CreatedBy"].ToString()),
                     LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
@@ -304,6 +305,11 @@ namespace RevenuePlanner.Services
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
+            //Add LineItemTypeId into dhtmlx model
+            BudgetDataObj.value = Convert.ToString(Entity.LineItemTypeId);
+            BudgetDataObjList.Add(BudgetDataObj);
+
+            BudgetDataObj = new Budgetdataobj();
             //Add title of plan entity into dhtmlx model
          
             if (Entity.AnchorTacticID != null && Entity.AnchorTacticID > 0 && !string.IsNullOrEmpty(Entity.Id))
@@ -332,6 +338,10 @@ namespace RevenuePlanner.Services
             //Set monthly/quarterly allocation of budget,actuals and planned for plan
             BudgetDataObjList = CampaignMonth(model, EntityType, Entity.ParentActivityId,
                     BudgetDataObjList, AllocatedBy, Entity.ActivityId, IsNextYear,IsMultiyearPlan);
+            BudgetDataObj = new Budgetdataobj();
+            //Add UnAllocated Cost into dhtmlx model
+            BudgetDataObj.value = Convert.ToString(Entity.UnallocatedCost);
+            BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
             //Add unAllocated budget into dhtmlx model
@@ -682,6 +692,7 @@ namespace RevenuePlanner.Services
             attachHeader.Add("Type");
             attachHeader.Add("Machine Name" + manageviewicon);
             attachHeader.Add(""); //Colour column added by Rahul Shah for PL #2605
+            attachHeader.Add("");
             //Assgin "Activity" as header to get header name in export to excel.
             attachHeader.Add("Activity");
             attachHeader.Add("");
@@ -748,6 +759,15 @@ namespace RevenuePlanner.Services
                     colSorting = colSorting + ",str,str,str";
                 }
             }
+
+            setHeader = setHeader + ",";
+            columnIds = columnIds + "," + "UnAllocatedCost";
+            colType = colType + ",ro";
+            width = width + ",100";
+            colSorting = colSorting + ",str";
+            attachHeader.Add("UnAllocated Cost");
+
+
             objBudgetDHTMLXGrid.SetHeader = setHeader + EndColumnsHeader;
             objBudgetDHTMLXGrid.ColType = colType + EndColType;
             objBudgetDHTMLXGrid.Width = width + EndcolWidth;
@@ -1209,24 +1229,16 @@ namespace RevenuePlanner.Services
                         lineDiff.CNov = l.MonthValues.CNov - lines.Sum(lmon => (double?)lmon.MonthValues.CNov) ?? 0;
                         lineDiff.CDec = l.MonthValues.CDec - lines.Sum(lmon => (double?)lmon.MonthValues.CDec) ?? 0;
 
-                        lineDiff.CJan = lineDiff.CJan < 0 ? 0 : lineDiff.CJan;
-                        lineDiff.CFeb = lineDiff.CFeb < 0 ? 0 : lineDiff.CFeb;
-                        lineDiff.CMar = lineDiff.CMar < 0 ? 0 : lineDiff.CMar;
-                        lineDiff.CApr = lineDiff.CApr < 0 ? 0 : lineDiff.CApr;
-                        lineDiff.CMay = lineDiff.CMay < 0 ? 0 : lineDiff.CMay;
-                        lineDiff.CJun = lineDiff.CJun < 0 ? 0 : lineDiff.CJun;
-                        lineDiff.CJul = lineDiff.CJul < 0 ? 0 : lineDiff.CJul;
-                        lineDiff.CAug = lineDiff.CAug < 0 ? 0 : lineDiff.CAug;
-                        lineDiff.CSep = lineDiff.CSep < 0 ? 0 : lineDiff.CSep;
-                        lineDiff.COct = lineDiff.COct < 0 ? 0 : lineDiff.COct;
-                        lineDiff.CNov = lineDiff.CNov < 0 ? 0 : lineDiff.CNov;
-                        lineDiff.CDec = lineDiff.CDec < 0 ? 0 : lineDiff.CDec;
-
+                        
                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthValues = lineDiff;
 
                         double allocated = l.TotalAllocatedCost - lines.Sum(l1 => l1.TotalAllocatedCost);
-                        allocated = allocated < 0 ? 0 : allocated;
                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().TotalAllocatedCost = allocated;
+
+                        // Calculate Balance UnAllocated Cost
+                        double BalanceUnallocatedCost = l.UnallocatedCost - lines.Sum(lmon => lmon.UnallocatedCost);
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().UnallocatedCost = BalanceUnallocatedCost;
+
                     }
                     else
                     {
@@ -1241,16 +1253,18 @@ namespace RevenuePlanner.Services
         //This function sum up the total of planned and actuals cell of budget to child to parent
         private List<PlanBudgetModel> CalculateBottomUp(List<PlanBudgetModel> model, string ParentActivityType, string ChildActivityType, int ViewBy)
         {
-            int _ViewById = ViewBy;
-            int weightage = 100;
+            double totalMonthCostSum = 0;
+            int _ViewById = ViewBy;            
 
-            if (ParentActivityType == ActivityType.ActivityTactic)
-            {
                 foreach (PlanBudgetModel l in model.Where(_mdl => _mdl.ActivityType == ParentActivityType))
                 {
                     //// check if ViewBy is Campaign selected then set weightage value to 100;
+                    int weightage = 100;
                     if (_ViewById > 0)
-                        weightage = l.Weightage/100;
+                    {
+                        weightage = l.Weightage;
+                    }
+                    weightage=weightage/100;
 
                     BudgetMonth parent = new BudgetMonth();
                     parent.AJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJan * weightage)) ?? 0;
@@ -1266,6 +1280,8 @@ namespace RevenuePlanner.Services
                     parent.ANov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ANov * weightage)) ?? 0;
                     parent.ADec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ADec * weightage)) ?? 0;
 
+                if (ParentActivityType != ActivityType.ActivityTactic)
+                {
                     parent.CJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJan * weightage)) ?? 0;
                     parent.CFeb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CFeb * weightage)) ?? 0;
                     parent.CMar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CMar * weightage)) ?? 0;
@@ -1278,6 +1294,23 @@ namespace RevenuePlanner.Services
                     parent.COct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.COct * weightage)) ?? 0;
                     parent.CNov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CNov * weightage)) ?? 0;
                     parent.CDec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CDec * weightage)) ?? 0;
+                    totalMonthCostSum = parent.CJan + parent.CFeb + parent.CMar + parent.CApr + parent.CMay + parent.CJun + parent.CJul + parent.CAug + parent.CSep + parent.COct + parent.CNov + parent.CDec;
+                }
+                else
+                {
+                    parent.CJan = l.MonthValues.CJan;
+                    parent.CFeb = l.MonthValues.CFeb;
+                    parent.CMar = l.MonthValues.CMar;
+                    parent.CApr = l.MonthValues.CApr;
+                    parent.CMay = l.MonthValues.CMay;
+                    parent.CJun = l.MonthValues.CJun;
+                    parent.CJul = l.MonthValues.CJul;
+                    parent.CAug = l.MonthValues.CAug;
+                    parent.CSep = l.MonthValues.CSep;
+                    parent.COct = l.MonthValues.COct;
+                    parent.CNov = l.MonthValues.CNov;
+                    parent.CDec = l.MonthValues.CDec;
+                }
 
                     parent.Jan = l.MonthValues.Jan;
                     parent.Feb = l.MonthValues.Feb;
@@ -1292,10 +1325,15 @@ namespace RevenuePlanner.Services
                     parent.Nov = l.MonthValues.Nov;
                     parent.Dec = l.MonthValues.Dec;
 
-                    model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthValues = parent;
-                    model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().TotalAllocatedCost = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalAllocatedCost) ?? 0;
-                    model.Where(_mdl => _mdl.ActivityId == l.ActivityId).FirstOrDefault().TotalActuals = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalActuals) ?? 0;
+                PlanBudgetModel Entity= model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault();
+                    Entity.MonthValues = parent;
+                if (l.ActivityType != ActivityType.ActivityTactic)
+                {
+                    Entity.TotalAllocatedCost = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalAllocatedCost) ?? 0;
+                    Entity.UnallocatedCost = Entity.TotalAllocatedCost - totalMonthCostSum;
                 }
+                Entity.TotalActuals = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalActuals) ?? 0;
+                //}
             }
 
             return model;

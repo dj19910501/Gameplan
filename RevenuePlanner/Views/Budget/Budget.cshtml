@@ -139,10 +139,11 @@
         var machineNameindex = HomeGrid.getColIndexById("MachineName");
         var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
         var colTypeIndex = HomeGrid.getColIndexById("Type");
-        TaskNameColIndex = HomeGrid.getColIndexById("taskname")
+        var LineItemTypeIdIndex = HomeGrid.getColIndexById("LineItemTypeId");
         HomeGrid.setColumnHidden(ActivityIdindex, true);
         HomeGrid.setColumnHidden(machineNameindex, true);
         HomeGrid.setColumnHidden(colTypeIndex, true);
+        HomeGrid.setColumnHidden(LineItemTypeIdIndex, true);
         var ColumnsToView = '@Model.HiddenTab';
         var selectedTab = ColumnsToView.split(',');
         for (var i = 0; i < selectedTab.length; i++) {
@@ -178,7 +179,7 @@
             HomeGrid.detachEvent(eventidonedit);
         }
         eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
-        SetselectedRow();
+        //SetselectedRow();
     }
 
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
@@ -237,13 +238,14 @@
                         Month = HomeGrid.getColLabel(cellInd);
                     }
                 }
+                var IsTotalCost = false;
                 if (Tab.toLowerCase() == 'actual') {
                     var ActualCostColIndex = HomeGrid.getColIndexById("ActualCost");
                     YearCost = HomeGrid.cells(rowId, ActualCostColIndex).cell.innerText;
                     MonthCost = nValue;
                 }
                 else if (Tab.toLowerCase() == 'planned') {
-                    var PlannedCostColIndex = HomeGrid.getColIndexById("plannedcost");
+                    var PlannedCostColIndex = HomeGrid.getColIndexById("PlannedCost");
                     YearCost = HomeGrid.cells(rowId, PlannedCostColIndex).cell.innerText;
                     MonthCost = nValue;
                 }
@@ -258,6 +260,7 @@
                     YearCost = nValue;
                 }
                 else if (Tab.toLowerCase() == 'planned cost') {
+                    IsTotalCost = true;
                     Tab = "Planned";
                     MonthCost = '';
                     YearCost = nValue;
@@ -268,50 +271,208 @@
                     YearCost = nValue;
                 }
                 SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost);
+                if (Tab.toLowerCase() == "planned") {
+
+                    var TypeIndex = HomeGrid.getColIndexById("Type");
+                    var Type = HomeGrid.cells(rowId, TypeIndex).getValue();
+                    if (IsTotalCost) {
+                        if (Type.toLowerCase() == 'tactic') {
+                            //Tactic Planned Cost Change
+                            SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), true);
+                        }
+                        else if (Type.toLowerCase() == 'lineitem') {
+                            //LineItem Planned Cost Change
+                            SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), true);
+                        }
+                    }
+                    else {
+                        if (Type.toLowerCase() == 'tactic') {
+                            //Tactic Monthly Planned Cost Change
+                            SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), false);
+                        }
+                        else if (Type.toLowerCase() == 'lineitem') {
+                            //LineItem Monthly Planned Cost Change
+                            SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), false);
+                        }
+                    }
+                }
+                else if (Tab.toLowerCase() == "actual") {
+                    //Actual Cost Change
+                    SetActualCost(rowId, cellInd, nValue, oValue);
+                }
             }
             return true;
         }
     }
 
+    function SetActualCost(rowId, cellInd, nValue, oValue) {
+        var TotalActualIndex = HomeGrid.getColIndexById("ActualCost");
+        var TotalActualCost = parseInt(HomeGrid.cells(rowId, TotalActualIndex).getValue());
+        var AmtDiff = parseInt(nValue) - parseInt(oValue);
+        var SetAmtDiff = parseInt(TotalActualCost) + parseInt(AmtDiff);
+        HomeGrid.cells(rowId, TotalActualIndex).setValue(SetAmtDiff);
+
+        //Roll Up Function
+        RollUpActualCost(rowId, cellInd, AmtDiff);
+    }
+
+    function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
+        //Total Planned Cost
+        var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedCost");
+        var UnAllocatedTotalCost = parseInt(HomeGrid.cells(rowId, UnAllocatedIndex).getValue());
+        var AmtDiff = parseInt(nValue) - parseInt(oValue);
+        var SetAmtDiff = parseInt(UnAllocatedTotalCost) + parseInt(AmtDiff);
+        if (!IsTotalCost) {
+            SetAmtDiff = parseInt(UnAllocatedTotalCost) - parseInt(AmtDiff);
+        }
+        HomeGrid.cells(rowId, UnAllocatedIndex).setValue(SetAmtDiff);
+        var ChildNodeIds = HomeGrid.getSubItems(rowId);
+        if (Type.toLowerCase() == 'lineitem') {
+            var GetParentId = HomeGrid.getParentId(rowId);
+            ChildNodeIds = HomeGrid.getSubItems(GetParentId);
+        }
+        var arrChildNodeIds = ChildNodeIds.split(',');
+        var ActivityTypeIndex = HomeGrid.getColIndexById("LineItemTypeId");
+
+        for (var i = 0; i < arrChildNodeIds.length; i++) {
+            var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
+            if (ActivityId == '') {
+                //Balance Planned Cost
+                SetBalanceCost(arrChildNodeIds[i], cellInd, Type, AmtDiff);
+
+                //Balance UnAllocated Cost
+                SetBalanceCost(arrChildNodeIds[i], UnAllocatedIndex, Type, AmtDiff);
+            }
+        }
+        //Roll Up Function
+        if (Type.toLowerCase() != 'lineitem') {
+            RollUpCost(rowId, cellInd, AmtDiff, IsTotalCost);
+        }
+    }
+
+    function SetBalanceCost(arrChildNodeId, cellInd, Type, AmtDiff) {
+        var BalanceCost = parseInt(HomeGrid.cells(arrChildNodeId, cellInd).getValue());
+        var SetAmtDiff = 0;
+        if (Type.toLowerCase() == 'tactic') {
+            SetAmtDiff = parseInt(BalanceCost) + parseInt(AmtDiff);
+        }
+        else if (Type.toLowerCase() == 'lineitem') {
+            SetAmtDiff = parseInt(BalanceCost) - parseInt(AmtDiff);
+        }
+        HomeGrid.cells(arrChildNodeId, cellInd).setValue(SetAmtDiff);
+    }
+
+    function RollUpCost(rowId, cellInd, AmtDiff, IsTotalCost) {
+        var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedCost");
+        var ParentId = HomeGrid.getParentId(rowId);
+        while (ParentId != null && ParentId != '') {
+            var ParentCost = parseInt(HomeGrid.cells(ParentId, cellInd).getValue());
+            var ParentAmtDiff = parseInt(ParentCost) + parseInt(AmtDiff);
+            HomeGrid.cells(ParentId, cellInd).setValue(ParentAmtDiff);
+
+            //Parent UnAllocated Cost
+            var UnAllocatedTotalCost = parseInt(HomeGrid.cells(ParentId, UnAllocatedIndex).getValue());
+            var SetAmtDiff = parseInt(UnAllocatedTotalCost) + parseInt(AmtDiff);
+            if (!IsTotalCost) {
+                SetAmtDiff = parseInt(UnAllocatedTotalCost) - parseInt(AmtDiff);
+            }
+            HomeGrid.cells(ParentId, UnAllocatedIndex).setValue(SetAmtDiff);
+
+            ParentId = HomeGrid.getParentId(ParentId);
+        }
+    }
+
+    function RollUpActualCost(rowId, cellInd, AmtDiff) {
+        var TotalActualIndex = HomeGrid.getColIndexById("ActualCost");
+        var ParentId = HomeGrid.getParentId(rowId);
+        while (ParentId != null && ParentId != '') {
+            var ParentCost = parseInt(HomeGrid.cells(ParentId, cellInd).getValue());
+            var ParentAmtDiff = parseInt(ParentCost) + parseInt(AmtDiff);
+            HomeGrid.cells(ParentId, cellInd).setValue(ParentAmtDiff);
+
+            //Parent Total Cost
+            var TotalActualCost = parseInt(HomeGrid.cells(ParentId, TotalActualIndex).getValue());
+            var SetAmtDiff = parseInt(TotalActualCost) + parseInt(AmtDiff);
+            HomeGrid.cells(ParentId, TotalActualIndex).setValue(SetAmtDiff);
+
+            ParentId = HomeGrid.getParentId(ParentId);
+        }
+    }
+
     function SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost) {
-        var entityId = EntityId;
-        var section = Section;
-        var month = Month;
-        var tab = Tab;
         var isquarter = false;
+        var FunctionParam;
+        var isTotalCost = false;
         if ('@isquarter'.toLowerCase() == 'true') {
             isquarter = true;
         }
-        var inputArr = [];
-        if (MonthCost != null && MonthCost != '') {
-            inputArr.push({
-                key: 'CostYear',
-                Value: SetValueByExchangeRate(YearCost.replace(/,/g, ""))
-            });
-            inputArr.push({
-                key: 'CostMonth',
-                Value: SetValueByExchangeRate(MonthCost.replace(/,/g, ""))
-            });
+        
+        if (Tab.toLowerCase() == 'planned') {
+            var monthlyplannedcost;
+            if (MonthCost != null && MonthCost != '') {
+                monthlyplannedcost = SetValueByExchangeRate(MonthCost.replace(/,/g, ""));
+            }
+            else {
+                isTotalCost = true;
+                monthlyplannedcost = SetValueByExchangeRate(YearCost.replace(/,/g, ""));
+            }
+            FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&allocatedcost=' + monthlyplannedcost + '&tab=' + Tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost;
         }
         else {
-            inputArr.push({
-                key: 'BudgetYear',
-                Value: SetValueByExchangeRate(YearCost.replace(/,/g, ""))
-            });
+            var inputArr = [];
+            var jsonInputs;
+            var MonthlyKeyText;
+            var TotalKeyText;
+
+            if (Tab.toLowerCase() == 'budget') {
+                MonthlyKeyText = 'BudgetMonth';
+                TotalKeyText = 'BudgetYear';
+            }
+            else {
+                MonthlyKeyText = 'CostMonth';
+                TotalKeyText = 'CostYear';
+            }
+            if (MonthCost != null && MonthCost != '') {
+                inputArr.push({
+                    key: TotalKeyText,
+                    Value: SetValueByExchangeRate(YearCost.replace(/,/g, ""))
+                });
+                inputArr.push({
+                    key: MonthlyKeyText,
+                    Value: SetValueByExchangeRate(MonthCost.replace(/,/g, ""))
+                });
+            }
+            else {
+                inputArr.push({
+                    key: TotalKeyText,
+                    Value: SetValueByExchangeRate(YearCost.replace(/,/g, ""))
+                });
+            }
+            jsonInputs = JSON.stringify(inputArr);
+
+            if (Tab.toLowerCase() == 'budget') {
+                FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&inputs=' + jsonInputs + '&isquarter=' + isquarter;
+            }
+            else {
+                FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&inputs=' + jsonInputs + '&tab=' + Tab + '&isquarter=' + isquarter;
+            }            
         }
-        var jsonInputs = JSON.stringify(inputArr);
+
         var URL;
         if (Tab.toLowerCase() == 'budget') {
             URL = '@Url.Content("~/Plan/SaveBudgetCell/")';
         }
-        else {
+        else if (Tab.toLowerCase() == 'planned') {
+            URL = '@Url.Content("~/Inspect/SaveLineItemCostAllocation/")';
+        }
+        else if (Tab.toLowerCase() == 'actual') {
             URL = '@Url.Content("~/Plan/SavePlannedCell/")';
         }
         $.ajax({
             type: 'POST',
             url: URL,
             dataType: "json",
-            data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&inputs=' + jsonInputs + '&tab=' + tab + '&isquarter=' + isquarter,
+            data: FunctionParam,
             success: function (data) {
 
                 if (data.isSuccess == true) {
