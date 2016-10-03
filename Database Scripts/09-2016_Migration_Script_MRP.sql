@@ -7657,7 +7657,7 @@ GO
 -- Create date: 09/08/2016
 -- Description:	This store proc. return data for budget tab for repective plan, campaign, program and tactic
 -- =============================================
-ALTER PROCEDURE [dbo].[GetPlanBudget]--[GetPlanBudget_V5] '20212,20203,19569'
+ALTER PROCEDURE [dbo].[GetPlanBudget]--[GetPlanBudget] '20212,20203,19569',null.null.null
 	(
 	@PlanId NVARCHAR(MAX),
 	@ownerIds nvarchar(max)='',
@@ -7677,14 +7677,16 @@ DECLARE @tmp TABLE
 			EntityType NVARCHAR(50),
 			StartDate DATETIME,
 			EndDate DATETIME,
-			ColorCode NVARCHAR(50)
+			ColorCode NVARCHAR(50),
+			TaskId NVARCHAR(50)
 )
 
 INSERT INTO @tmp
-SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode FROM fnGetFilterEntityHierarchy(@PlanId,@ownerIds,@tactictypeIds,@statusIds,@TimeFrame,@isGrid)
+SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode,TaskId FROM fnGetFilterEntityHierarchy(@PlanId,@ownerIds,@tactictypeIds,@statusIds,@TimeFrame,@isGrid)
 --SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode FROM fnGetFilterEntityHierarchy(@PlanId,@ownerIds,@tactictypeIds,@statusIds)
 
 SELECT		Id
+			,TaskId
 			,ActivityId
 			,ActivityType
 			,Title
@@ -7719,6 +7721,7 @@ SELECT		Id
 		FROM 
 				(SELECT 
 					P.PlanId Id
+					,H.TaskId
 					,H.EntityId ActivityId
 					,P.Title
 					,'plan' as ActivityType
@@ -7744,8 +7747,9 @@ SELECT		Id
 				)PLNMain
 UNION ALL
 SELECT 
-		Id,
-		ActivityId
+		Id
+		,TaskId
+		,ActivityId
 		,ActivityType
 		,Title
 		,ParentActivityId
@@ -7777,6 +7781,7 @@ SELECT
 	 FROM
 			(SELECT 
 				PC.PlanCampaignId Id	
+				,H.TaskId
 				,H.EntityId ActivityId
 				,PC.Title
 				,'campaign' as ActivityType
@@ -7801,8 +7806,9 @@ SELECT
 			)CampaignMain
 UNION ALL
 	SELECT 
-		Id,
-		ActivityId
+		Id
+		,TaskId
+		,ActivityId
 		,ActivityType
 		,Title
 		,ParentActivityId
@@ -7834,6 +7840,7 @@ UNION ALL
 	 FROM
 			(SELECT 
 				PCP.PlanProgramId Id
+				,H.TaskId
 				,H.EntityId ActivityId
 				,PCP.Title
 				,'program' as ActivityType
@@ -7858,8 +7865,9 @@ UNION ALL
 			)ProgramMain
 UNION ALL
 	SELECT 
-		Id,
-		ActivityId
+		Id
+		,TaskId
+		,ActivityId
 		,ActivityType
 		,Title
 		,ParentActivityId
@@ -7897,6 +7905,7 @@ UNION ALL
 	 FROM
 			(SELECT
 				PCPT.PlanTacticId Id 
+				,H.TaskId
 				,H.EntityId ActivityId
 				,PCPT.Title
 				,'tactic' as ActivityType
@@ -7945,8 +7954,9 @@ UNION ALL
 
 UNION ALL
 	SELECT 
-		Id,
-		ActivityId
+		Id
+		,TaskId
+		,ActivityId
 		,ActivityType
 		,Title
 		,ParentActivityId
@@ -7981,6 +7991,7 @@ UNION ALL
 			+ISNULL([ActualY13],0)+ ISNULL([ActualY14],0)+ ISNULL([ActualY15],0)+ ISNULL([ActualY16],0)+ISNULL([ActualY17],0)+ ISNULL([ActualY18],0)+ ISNULL([ActualY19],0)+ ISNULL([ActualY20],0)+ISNULL([ActualY21],0)+ ISNULL([ActualY22],0)+ ISNULL([ActualY23],0)+ ISNULL([ActualY24],0)TotalAllocationActuals
 	 FROM
 		 (SELECT	PCPTL.PlanLineItemId Id
+					,H.TaskId
 					,H.EntityId ActivityId
 					,PCPTL.Title
 					,'lineitem' as ActivityType

@@ -167,6 +167,7 @@ namespace RevenuePlanner.Services
                 model = DtBudget.AsEnumerable().Select(row => new PlanBudgetModel
                 {
                     Id = Convert.ToString(row["Id"]),
+                    TaskId = Convert.ToString(row["TaskId"]),
                     ActivityId = Convert.ToString(row["ActivityId"]),
                     ActivityName = Convert.ToString(row["Title"]),
                     ActivityType = Convert.ToString(row["ActivityType"]),
@@ -512,7 +513,7 @@ namespace RevenuePlanner.Services
                 }
 
                 gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
-                gridjsonlistPlanObj.id = ActivityType.ActivityPlan + "_" + HttpUtility.HtmlEncode(bm.ActivityId);
+                gridjsonlistPlanObj.id = bm.TaskId;//ActivityType.ActivityPlan + "_" + HttpUtility.HtmlEncode(bm.ActivityId);
                 gridjsonlistPlanObj.open = Open;
 
                 string OwnerName = string.Empty;
@@ -536,7 +537,7 @@ namespace RevenuePlanner.Services
                     )
                 {
                     CampaignRowsObj = new BudgetDHTMLXGridDataModel();
-                    CampaignRowsObj.id = ActivityType.ActivityCampaign + "_" + HttpUtility.HtmlEncode(bmc.ActivityId);
+                    CampaignRowsObj.id = bmc.TaskId;//ActivityType.ActivityCampaign + "_" + HttpUtility.HtmlEncode(bmc.ActivityId);
                     CampaignRowsObj.open = null;
 
                     bool IsCampCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmc.CreatedBy == UserID || lstSubordinatesIds.Contains(bmc.CreatedBy)) ? true : false : true;
@@ -561,7 +562,7 @@ namespace RevenuePlanner.Services
                                     p.ParentActivityId == bmc.ActivityId).OrderBy(p => p.ActivityName))
                     {
                         ProgramRowsObj = new BudgetDHTMLXGridDataModel();
-                        ProgramRowsObj.id = ActivityType.ActivityProgram + "_" + HttpUtility.HtmlEncode(bmp.ActivityId);
+                        ProgramRowsObj.id = bmp.TaskId;//ActivityType.ActivityProgram + "_" + HttpUtility.HtmlEncode(bmp.ActivityId);
                         ProgramRowsObj.open = null;
 
                         bool IsProgCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmp.CreatedBy == UserID || lstSubordinatesIds.Contains(bmp.CreatedBy)) ? true : false : true;
@@ -586,7 +587,7 @@ namespace RevenuePlanner.Services
                                         p.ParentActivityId == bmp.ActivityId).OrderBy(p => p.ActivityName).OrderBy(p => p.ActivityName))
                         {
                             TacticRowsObj = new BudgetDHTMLXGridDataModel();
-                            TacticRowsObj.id = ActivityType.ActivityTactic + "_" + HttpUtility.HtmlEncode(bmt.ActivityId);
+                            TacticRowsObj.id = bmt.TaskId;//ActivityType.ActivityTactic + "_" + HttpUtility.HtmlEncode(bmt.ActivityId);
                             TacticRowsObj.open = null;
 
                             bool IsTacCreateAll = IsPlanCreateAll == false ? (bmt.CreatedBy == UserID || lstSubordinatesIds.Contains(bmt.CreatedBy)) ? true : false : true;
@@ -620,7 +621,7 @@ namespace RevenuePlanner.Services
                                             p.ParentActivityId == bmt.ActivityId).OrderBy(p => p.ActivityName))
                             {
                                 LineRowsObj = new BudgetDHTMLXGridDataModel();
-                                LineRowsObj.id = ActivityType.ActivityLineItem + "_" + HttpUtility.HtmlEncode(bml.ActivityId);
+                                LineRowsObj.id = bml.TaskId;//ActivityType.ActivityLineItem + "_" + HttpUtility.HtmlEncode(bml.ActivityId);
                                 LineRowsObj.open = null;
 
                                 bool IsLinItmCreateAll = IsPlanCreateAll == false ? (bml.CreatedBy == UserID || lstSubordinatesIds.Contains(bml.CreatedBy)) ? true : false : true;
