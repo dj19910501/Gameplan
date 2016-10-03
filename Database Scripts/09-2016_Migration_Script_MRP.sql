@@ -1331,7 +1331,7 @@ AS
 BEGIN
 	DECLARE @AggregateValue float = 1
 	DECLARE @value INT = 0 
-	IF (@EntityType=''Tactic'')
+	IF (@EntityType=''Tactic'' and @StageMinLevel <= @StageMaxLevel)
 	BEGIN
 		SELECT @AggregateValue *= (Ms.Value/100) FROM Model_Stage MS WITH (NOLOCK)
 			CROSS APPLY (SELECT S.StageId FROM Stage S WITH (NOLOCK) WHERE S.[Level] >= @StageMinLevel AND S.[Level] < @StageMaxLevel 
@@ -1364,7 +1364,7 @@ AS
 BEGIN
 	DECLARE @AggregateValue float = 1
 	DECLARE @value INT = 0 
-	IF (@EntityType=''Tactic'')
+	IF (@EntityType=''Tactic'' and @StageMinLevel <= @StageMaxLevel)
 	BEGIN
 		SELECT @AggregateValue *= (Ms.Value/100) FROM Model_Stage MS WITH (NOLOCK)
 			CROSS APPLY (SELECT S.StageId FROM Stage S WITH (NOLOCK) WHERE S.[Level] >= @StageMinLevel AND S.[Level] < @StageMaxLevel 

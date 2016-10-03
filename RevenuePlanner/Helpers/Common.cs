@@ -3072,10 +3072,6 @@ namespace RevenuePlanner.Helpers
                 List<int> impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
                 List<Plan_Improvement_Campaign_Program_Tactic> improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => impprogramlist.Contains(imp.ImprovementPlanProgramId) && imp.IsDeleted == false).ToList();
 
-                List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = sp.GetLineItemList(string.Join(",", planIds));
-
-
-
 
                 Double MQLs = 0;
                 List<Custom_Plan_Campaign_Program_Tactic> planTacticIds = new List<Custom_Plan_Campaign_Program_Tactic>();
@@ -3116,8 +3112,7 @@ namespace RevenuePlanner.Helpers
 
                     if (planTacticIds.Count() > 0)
                     {
-                        List<int> tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
-                        TotalBudget += LineItemList.Where(l => tacticIds.Contains(l.PlanTacticId)).Sum(l => l.Cost);
+                        TotalBudget += planTacticsList.Where(t => t.PlanId == plan.PlanId).Sum(l => l.Cost);
                     }
 
 
