@@ -681,7 +681,8 @@ namespace RevenuePlanner.Services
             attachHeader.Add("Type");
             attachHeader.Add("Machine Name" + manageviewicon);
             attachHeader.Add(""); //Colour column added by Rahul Shah for PL #2605
-            attachHeader.Add("");
+            //Assgin "Activity" as header to get header name in export to excel.
+            attachHeader.Add("Activity");
             attachHeader.Add("");
             attachHeader.Add("Total Budget" + manageviewicon);
             attachHeader.Add("Planned Cost" + manageviewicon);

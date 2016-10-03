@@ -1266,15 +1266,15 @@ function ExportToExcel(isHoneyComb) {
         //Show/Hide columns as per export requirements
         HomeGrid.setColumnHidden(iconColumnIndex, true);
         HomeGrid.setColumnHidden(colourCodeIndex, true);
-        HomeGrid.setColumnHidden(machineNameIndex, true);
-        HomeGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
+        //HomeGrid.setColumnHidden(machineNameIndex, true);        
+        HomeGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
         HomeGrid.collapseAll();
         //load users current strate of tree
         HomeGrid.loadOpenStates("plangridState");
         //Show/Hide columns as per export requirements
         HomeGrid.setColumnHidden(iconColumnIndex, false);
         HomeGrid.setColumnHidden(colourCodeIndex, false);
-        HomeGrid.setColumnHidden(machineNameIndex, false);
+        //.setColumnHidden(machineNameIndex, false);
         if (rowIdArray != undefined) {
             $.each(rowIdArray, function (key) {
                 HomeGrid.setRowHidden(rowIdArray[key], false);
@@ -1355,7 +1355,7 @@ function ExportToExcel(isHoneyComb) {
         exportGrid.setColumnHidden(iconIndex, true);
 
         exportGrid.expandAll();
-        exportGrid.toExcel("http://dhtmlxgrid.appspot.com/export/excel");
+        exportGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
         //if (rowIdArray != undefined) {
         //    $.each(rowIdArray, function (key) {
         //        exportGrid.setRowHidden(rowIdArray[key], false);

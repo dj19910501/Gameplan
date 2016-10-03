@@ -658,7 +658,8 @@ namespace RevenuePlanner.Services
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName),
                 sort = "str",
                 width = 330,
-                value = string.Empty
+                //Assgin "Activity" as header to get header name in export to excel.
+                value = "Activity"
             });
 
             lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), new PlanHead
