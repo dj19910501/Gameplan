@@ -201,6 +201,7 @@ BEGIN
 		WHERE dbo.Plan_Campaign_Program_Tactic_Actual.PlanTacticId = T.PlanTacticId
 			  AND dbo.Plan_Campaign_Program_Tactic_Actual.StageTitle = V.StageTitle
 			  AND dbo.Plan_Campaign_Program_Tactic_Actual.Period = [INT].Period(T.StartDate, V.ModifiedDate) 
+			  AND T.StartDate <= V.ModifiedDate
 
 		SET @Updated = @@ROWCOUNT;
 
