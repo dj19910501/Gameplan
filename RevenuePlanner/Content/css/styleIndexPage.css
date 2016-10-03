@@ -1637,7 +1637,7 @@ footer a {
 
 /* #2624 Revert changes so Hide all new css here */
 /* ============== Inspection Window new style ================= */ 
-#modal-container-186470 {
+/*#modal-container-186470 {
 	padding: 0;  background:rgba(255, 255, 255, 0.2) none repeat scroll 0 0;
 }
 .headerfix-wraper {
@@ -1666,7 +1666,7 @@ footer a {
 .slideLeft#content_wraper  .partial_wrapper.new-wrapper{
 	width: 75.5%
 } /* When sidbar Hide */
-.pop-body-wraper {
+/*.pop-body-wraper {
     float: left;
     height: auto !important;
     margin: 0 auto;
@@ -1689,7 +1689,7 @@ footer a {
     display: table;
     margin: 0;
     width: 100%;
-}
+}*/
 .modal-popup-title {
     border-bottom: 1px solid #ccc;
     margin: 0;
@@ -1718,7 +1718,7 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
     padding: 0;
 }
 .inspect-column-parent{padding:0 8px !important}
-.headefix .close-x-big-icon {
+/*.headefix .close-x-big-icon {
     background-size: 21px auto !important;
     border: 0 none;
     outline: 0 none !important;
@@ -1744,11 +1744,11 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
 }
 .partial_wrapper.new-wrapper .headefix .close-x-big-icon:after{
     content: "\f057";
-}
-.headefix > .title-simple > span{
+}*/
+/*.headefix > .title-simple > span{
     float: right;
     margin-right: 18px;
-}
+}*/
 /* ============== Inspection Window new style End ================= */ 
 #multipleselect_ddlTabViewBy{max-width:250px !important}
 #MessageDisplay{ 
