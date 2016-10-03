@@ -7100,6 +7100,13 @@ footer a {
 	padding: 0 !important;
 	font-weight: bold;
 }
+.sidebar-section h2 > span:first-child{
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    float:left
+}
 .indicator {
 	display: block;
 	margin-right: 5px;
@@ -7185,8 +7192,11 @@ li.close-list {
 	padding: 15px 0;
 }
 .gantt_grid .gantt_row.gantt_selected, .gantt_grid_data .gantt_row.odd.gantt_selected {
-	background-color: #fff3a1 !important;
+	background-color: #f2f2f2 !important;/*fff3a1*/
 }
+.gantt_grid_data .gantt_row.gantt_selected, 
+.gantt_grid_data .gantt_row.odd.gantt_selected, 
+.gantt_task_row.gantt_selected{background-color: #f2f2f2 !important;}
 .ActiveFilter {
 	color: #3e3f37; /* Edited for #2219 - Bhumika */
 	font-size: 17px;

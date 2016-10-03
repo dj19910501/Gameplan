@@ -1516,3 +1516,9 @@ div.dhx_modal_cover {
     border-width: 0;
 }
 /*.gantt_task_line.gantt_task_inline_color.improvement{border-color: #27a4e5;}*//* #F8710E - #2312 *//* Revetred color for #2446*/
+.gantt_grid_data .gantt_row.odd:hover, .gantt_grid_data .gantt_row:hover {
+    background-color: #f2f2f2;
+}
+.gantt_grid .gantt_row.gantt_selected, .gantt_grid_data .gantt_row.odd.gantt_selected {
+    background-color: #f2f2f2 !important;
+}
