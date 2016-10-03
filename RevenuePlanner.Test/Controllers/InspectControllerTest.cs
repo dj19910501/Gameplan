@@ -1213,15 +1213,18 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             InspectController controller = new InspectController();
             int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac.PlanTacticId).FirstOrDefault();
-
-            JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(tacticId), Convert.ToString(Enums.EntityType.Tactic), Convert.ToString(Enums.Months.January), 5000, Convert.ToString(Enums.BudgetTab.Planned), false, false) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-            Assert.IsNotNull(result.Data);
-            RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
-            object resultvalue = serializedData["isSuccess"];
-            Assert.AreEqual("true", Convert.ToString(resultvalue), true);
+            Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
+                            Select(tac => tac).FirstOrDefault();
+            if (objTactic != null)
+            {
+                string strPeriod = "JAN-" + Convert.ToString(objTactic.StartDate.Year);
+                JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(objTactic.PlanTacticId), Convert.ToString(Enums.EntityType.Tactic), strPeriod, 5000, Convert.ToString(Enums.BudgetTab.Planned), false, false) as JsonResult;
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
+                Assert.IsNotNull(result.Data);
+                RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
+                object resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", Convert.ToString(resultvalue), true);
+            }
         }
 
         /// <summary>
@@ -1235,15 +1238,18 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             InspectController controller = new InspectController();
             int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac.PlanTacticId).FirstOrDefault();
-
-            JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(tacticId), Convert.ToString(Enums.EntityType.Tactic), Enums.Quarters[Convert.ToString(Enums.QuarterWithSpace.Quarter1)], 5000, Convert.ToString(Enums.BudgetTab.Planned), true, false) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-            Assert.IsNotNull(result.Data);
-            RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
-            object resultvalue = serializedData["isSuccess"];
-            Assert.AreEqual("true", Convert.ToString(resultvalue), true);
+            Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
+                            Select(tac => tac).FirstOrDefault();
+            if (objTactic != null)
+            {
+                string strPeriod = "Q1-" + Convert.ToString(objTactic.StartDate.Year);
+                JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(objTactic.PlanTacticId), Convert.ToString(Enums.EntityType.Tactic), strPeriod, 5000, Convert.ToString(Enums.BudgetTab.Planned), true, false) as JsonResult;
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
+                Assert.IsNotNull(result.Data);
+                RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
+                object resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", Convert.ToString(resultvalue), true);
+            }
         }
 
         /// <summary>
@@ -1257,15 +1263,18 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             InspectController controller = new InspectController();
             int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            int lineItemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac.PlanTacticId).FirstOrDefault();
-
-            JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(lineItemId), Convert.ToString(Enums.EntityType.Lineitem), Convert.ToString(Enums.Months.January), 5000, Convert.ToString(Enums.BudgetTab.Planned), false, false) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-            Assert.IsNotNull(result.Data);
-            RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
-            object resultvalue = serializedData["isSuccess"];
-            Assert.AreEqual("true", Convert.ToString(resultvalue), true);
+            Plan_Campaign_Program_Tactic_LineItem objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(UserId)).
+                            Select(line => line).FirstOrDefault();
+            if (objLineItem != null)
+            {
+                string strPeriod = "JAN-" + Convert.ToString(objLineItem.Plan_Campaign_Program_Tactic.StartDate.Year);
+                JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(objLineItem.PlanLineItemId), Convert.ToString(Enums.EntityType.Lineitem), strPeriod, 5000, Convert.ToString(Enums.BudgetTab.Planned), false, false) as JsonResult;
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
+                Assert.IsNotNull(result.Data);
+                RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
+                object resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", Convert.ToString(resultvalue), true);
+            }
         }
 
         /// <summary>
@@ -1279,15 +1288,20 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             InspectController controller = new InspectController();
             int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            int lineItemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac.PlanTacticId).FirstOrDefault();
-
-            JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(lineItemId), Convert.ToString(Enums.EntityType.Lineitem), Enums.Quarters[Convert.ToString(Enums.QuarterWithSpace.Quarter1)], 5000, Convert.ToString(Enums.BudgetTab.Planned), true, false) as JsonResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-            Assert.IsNotNull(result.Data);
-            RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
-            object resultvalue = serializedData["isSuccess"];
-            Assert.AreEqual("true", Convert.ToString(resultvalue), true);
+            Plan_Campaign_Program_Tactic_LineItem objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(UserId)).
+                            Select(line => line).FirstOrDefault();
+            JsonResult result;
+            RouteValueDictionary serializedData = null;
+            if (objLineItem != null)
+            {
+                string strPeriod = "Q1-" + Convert.ToString(objLineItem.Plan_Campaign_Program_Tactic.StartDate.Year);
+                result = controller.SaveLineItemCostAllocation(Convert.ToString(objLineItem.PlanLineItemId), Convert.ToString(Enums.EntityType.Lineitem), strPeriod, 5000, Convert.ToString(Enums.BudgetTab.Planned), true, false) as JsonResult;
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
+                Assert.IsNotNull(result.Data);
+                serializedData = new RouteValueDictionary(result.Data);
+                object resultvalue = serializedData["isSuccess"];
+                Assert.AreEqual("true", Convert.ToString(resultvalue), true);
+            }
         }
 
         /// <summary>
