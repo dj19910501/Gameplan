@@ -175,6 +175,13 @@ namespace RevenuePlanner.Services
                 //Get list of entities for plan grid
                 List<GridDefaultModel> GridHireachyData = GetGridDefaultData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds);
 
+               //Filter custom field
+                if (GridHireachyData != null && GridHireachyData.Count > 0 && !string.IsNullOrEmpty(customFieldIds))
+                {
+                GridHireachyData = FilterCustomField(GridHireachyData, customFieldIds);
+                }
+               
+
                 // Update Plan Start and end date
                 GridHireachyData = UpdatePlanStartEndDate(GridHireachyData);
             // Get List of custom fields and it's entity's values
@@ -1069,15 +1076,10 @@ namespace RevenuePlanner.Services
         /// </summary>
         private string GetMqlTitle(int ClientId)
         {
-            string MQLTitle = Convert.ToString(Enums.PlanGoalType.MQL);
+            string MQLTitle = string.Empty;
+            string MQLCode = Convert.ToString(Enums.PlanGoalType.MQL).ToLower();
             // Get MQL title label client wise
-            List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == ClientId && stage.IsDeleted == false)
-                .Select(stage => stage).ToList();
-            if (!(stageList.Count > 0))
-            {
-                MQLTitle = stageList.Where(stage => stage
-                       .Code.ToLower() == Convert.ToString(Enums.PlanGoalType.MQL).ToLower()).Select(stage => stage.Title).FirstOrDefault();
-            }
+            MQLTitle = objDbMrpEntities.Stages.Where(stage => stage.Code.ToLower() == MQLCode && stage.IsDeleted == false && stage.ClientId == ClientId).Select(stage => stage.Title).FirstOrDefault();
             return MQLTitle;
         }
         #endregion
@@ -1436,6 +1438,52 @@ namespace RevenuePlanner.Services
 
         #endregion
         #endregion
+
+        private List<GridDefaultModel> FilterCustomField(List<GridDefaultModel> allData, string fltrCustomfields)
+        {
+            List<GridDefaultModel> resultData = new List<GridDefaultModel>();
+            try
+            {
+                if (allData != null && allData.Count > 0)
+                {
+                    #region "Declare & Initialize local Variables"
+                    List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                    List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                    string tacticType = Enums.EntityType.Tactic.ToString().ToUpper();
+                    string[] filteredCustomFields = string.IsNullOrWhiteSpace(fltrCustomfields) ? null : fltrCustomfields.Split(',');
+                    List<GridDefaultModel> tacData = allData.Where(tac => tac.EntityType != null && tac.EntityType.ToUpper() == tacticType).ToList();
+                    List<int> lstTacticIds = tacData.Select(tactic => (int)tactic.EntityId).ToList();
+                    #endregion
+
+                    resultData = allData.Where(tac => tac.EntityType != null && tac.EntityType.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
+                    if (filteredCustomFields != null)
+                    {
+                        string[] splittedCustomField;
+                        // Splitting filter Customfield values Ex. 71_104 to CustomFieldId: 71 & OptionId: 104
+                        foreach (string customField in filteredCustomFields)
+                        {
+                            splittedCustomField = new string[2];
+                            splittedCustomField = customField.Split('_');
+                            lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                            lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                        };
+
+                        lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds); // Filter Tactics list by selected Custofields in filter. 
+                        tacData = tacData.Where(tactic => lstTacticIds.Contains((int)tactic.EntityId)).ToList();
+                    }
+                    //// get Allowed Entity Ids
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
+                    tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains((int)tactic.EntityId)).ToList();    //filter tactics with allowed entity.
+                    resultData.AddRange(tacData);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return resultData;
+        }
+
         #endregion
 
         #region "Calendar Related Functions"
