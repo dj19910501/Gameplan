@@ -1338,9 +1338,9 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.IsModelIntegrated = true;
                     //Begin added by Brad Gray 7/28/2015 PL#1374, #1373
-                    IntegrationInstance intInstanceProjMgmt = objModel.IntegrationInstance4;
+                    IntegrationInstance intInstanceProjMgmt = objModel.IntegrationInstance6;
                     bool isIntegratedWithWorkFront = false;
-                    var Marketoinstance = objModel.IntegrationInstance4;
+                    var Marketoinstance = objModel.IntegrationInstance6;
 
                     List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
                     if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString()))
@@ -1474,8 +1474,8 @@ namespace RevenuePlanner.Controllers
             if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null || objModel.IntegrationInstanceMarketoID != null)
             {
                 ViewBag.IsModelIntegrated = true;
-                var intInstanceProjMgmt = objModel.IntegrationInstance4;
-                var Marketoinstance = objModel.IntegrationInstance4;
+                var intInstanceProjMgmt = objModel.IntegrationInstance6;
+                var Marketoinstance = objModel.IntegrationInstance6;
                 bool isIntegratedWithWorkFront = false;
                 bool isIntegratedWithMarketo = false;
                 List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
