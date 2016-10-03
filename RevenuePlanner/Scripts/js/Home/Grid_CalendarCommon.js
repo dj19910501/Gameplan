@@ -1582,18 +1582,17 @@ function BindViewSelections(strUrl) {
 
 // ViewBy Change Event.
 $("#ddlTabViewBy").change(function () {
-
     if ($('#IsGridView').val().toLowerCase() == "false") {
         BindPlanCalendar();
         $('.export-dd').find('#ExportXls').hide();
         $('.export-dd').find('#ExportPDf').show();
-        $('#divupcomingact').hide();
+        $('#divupcomingact').show();
         $("#GridGanttContent").show();
         $("#divgridview").hide();
     } else {
         LoadPlanGrid();
         $("#GridGanttContent").hide();
-        $('#divupcomingact').show();
+        $('#divupcomingact').hide();
         $("#divgridview").show();
         $('.export-dd').find('#ExportXls').show();
         $('.export-dd').find('#ExportPDf').hide();
