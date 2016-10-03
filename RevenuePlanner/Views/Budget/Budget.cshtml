@@ -107,12 +107,7 @@
 
         HomeGrid.setEditable(true);
         HomeGrid.init();
-        setTimeout(function () {
-            HomeGrid.loadOpenStates("gridOpenplangridState");
-        }, 500);
-        setTimeout(function () {
-            HomeGrid.setSizes();
-        }, 200);
+      
         var mainGridData = JsonModel;
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
@@ -179,7 +174,11 @@
             HomeGrid.detachEvent(eventidonedit);
         }
         eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
-        //SetselectedRow();
+        SetselectedRow();
+        if ($("#gridbox").find(".rowselected").length >= 1) {
+            var scrolltop = $(".rowselected").offset().top;
+            $(window).scrollTop(scrolltop - 150);
+        }
     }
 
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {

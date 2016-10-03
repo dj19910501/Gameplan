@@ -18,6 +18,7 @@ $('#btngridcalendar').click(function () {
     else {
         if ($('#IsGridView').val().toLowerCase() == "false") {
             isCalendarView = false;
+            SetcookieforSaveState();
             LoadPlanGrid();
             $('#IsGridView').val('true');
 
@@ -30,7 +31,19 @@ $('#btngridcalendar').click(function () {
     }
     ShowhideDataonGridCalendar();
 });
+//load context from calendar to grid:Context management #2677
+function SetcookieforSaveState()
+{
+    var c = [];
+    gantt.eachTask(function (task) {
 
+        if (task.$open == true) {
+            c.push(task.id)
+        }
+    });
+    var d = "gridOpenplangridState=" + c.join("|") + "; ";
+    document.cookie = d
+}
 function ShowhideDataonGridCalendar() {
     if ($('#IsGridView').val().toLowerCase() == "true") {
         $("#GridGanttContent").empty();

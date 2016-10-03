@@ -23,6 +23,7 @@ var scrollstate = 0;
 var bodyscrollpos = 0;
 
 var type = 'Tactic';    //TODO: Set Fix value. //Need to talk 
+var arrOpenTask = [];
 
 function BindPlanCalendar() {
     var strURL = urlContent + 'Home/LoadPlanCalendar/';
@@ -308,15 +309,25 @@ else if ( $.isNumeric(timeframe)) {
         }
         gantt.parse(tasks);
     }
-
+    GetOpenCloseState();
     gantt.eachTask(function (task) {
 
         // Planning Window doesnt remember previous view
+       if (arrOpenTask == null || arrOpenTask == 'undefined' || arrOpenTask.length == 0) {
         if (arrClosedTask.indexOf(task.id) > -1) {
             gantt.getTask(task.id).$open = false;
         }
         else {
             gantt.getTask(task.id).$open = true;
+        }
+        }
+        else {
+            if (arrOpenTask.indexOf(task.id) > -1) {
+                gantt.getTask(task.id).$open = true;
+            }
+            else {
+                gantt.getTask(task.id).$open = false;
+            }
         }
         //CountTacticForRenderChart(task.id, '');
     });
@@ -331,6 +342,32 @@ else if ( $.isNumeric(timeframe)) {
     }, 250);
 
     gantt.refreshData();   // Refresh Gantt to expand all tasks.
+    //set selected task from grid to calendar #2677
+    //if (selectedTaskID != "") {
+     
+    //    gantt.selectTask(selectedTaskID);
+    //    // var taskobj = gantt.getTask("L20212_C27321_P34566_T133644");
+    //    var selectedobj = $(".gantt_row.gantt_selected");
+    //    if (selectedobj != null && selectedobj != 'undefined' && selectedobj.length>0) {
+    //        var top = $($(".gantt_row.gantt_selected")).offset().top;
+    //        // var top = $(taskobj).offset().top
+    //        $(".gantt_data_area").scrollTop(top - 100);
+    //    }
+
+    //}
+}
+//method to get open close state to load context from grid to calendar #2677
+function GetOpenCloseState() {
+    var cookie = document.cookie;
+    if (cookie.indexOf("gridOpenplangridState") > -1) {
+        var cookies = cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            if (cookies[i].indexOf("gridOpenplangridState") > -1) {
+                var cookievalue = cookies[i].split('=')[1];
+                 arrOpenTask = cookievalue.split('|');
+            }
+        }
+    }
 }
 //To resolve extra space
 function CalGanntHeight() {
