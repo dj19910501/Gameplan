@@ -8271,11 +8271,11 @@ namespace RevenuePlanner.Controllers
                 {
                     Plan plan = db.Plans.Where(_plan => _plan.PlanId == id).ToList().FirstOrDefault();
                     oldOwnerId = plan.CreatedBy;
-                    if (UpdateColumn == "Task Name")
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString())
                     {
                         plan.Title = UpdateVal.Trim();
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
 
                         plan.CreatedBy = Convert.ToInt32(UpdateVal);
@@ -8289,13 +8289,13 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
 
-                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                        if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                             SendEmailnotification(plan.PlanId, id, oldOwnerId, Convert.ToInt32(UpdateVal), plan.Title, plan.Title, plan.Title, plan.Title, Enums.Section.Plan.ToString().ToLower(), "", UpdateColumn);
 
                     }
 
                     var OwnerName = "";
-                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
                         OwnerName = GetOwnerName(UpdateVal);
                     }
@@ -8317,7 +8317,7 @@ namespace RevenuePlanner.Controllers
                         linkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault(); // Get LinkedTactic object
 
                     // update tactic detail
-                    if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString())
                     {
                         var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
                                       join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
@@ -8356,7 +8356,7 @@ namespace RevenuePlanner.Controllers
                         }
 
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["startdate"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString())
                     {
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
@@ -8412,7 +8412,7 @@ namespace RevenuePlanner.Controllers
                             //db.SaveChanges();
                         }
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["enddate"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString())
                     {
                         //  var pstartdate = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(pcpobj.PlanProgramId)).FirstOrDefault().StartDate;
                         if (!string.IsNullOrEmpty(UpdateVal))
@@ -8470,7 +8470,7 @@ namespace RevenuePlanner.Controllers
                             //db.SaveChanges();
                         }
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["tacticplancost"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString())
                     {
                         // Add By Nishant Sheth #2497
                         // Convert value from other currency to USD
@@ -8481,7 +8481,7 @@ namespace RevenuePlanner.Controllers
                         tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == id).ToList();
                         UpdateTacticPlannedCost(ref pcpobj, ref linkedTactic, ref totalLineitemCost, UpdateVal, tblTacticLineItem, linkedTacticId, yearDiff);
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["tactictype"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString())
                     {
                         int tactictypeid = Convert.ToInt32(UpdateVal);
                         int oldTactictypeId = pcpobj.TacticTypeId;
@@ -8604,14 +8604,14 @@ namespace RevenuePlanner.Controllers
                         }
                         #endregion
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["targetstagegoal"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString())
                     {
                         pcpobj.ProjectedStageValue = Convert.ToDouble(UpdateVal);
                         if (linkedTacticId > 0)
                             linkedTactic.ProjectedStageValue = pcpobj.ProjectedStageValue;
 
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
 
                         pcpobj.CreatedBy = Convert.ToInt32(UpdateVal);
@@ -8697,7 +8697,7 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
 
-                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                        if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                         {
                             UpdateValue = UpdateVal;
                         }
@@ -8729,7 +8729,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                         //// Calculate TotalLineItem cost.
-                        if (UpdateColumn == Enums.PlanGrid_Column["tacticplancost"] || UpdateColumn == Enums.PlanGrid_Column["tactictype"])
+                        if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString())
                         {
                             Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
                             if (objOtherLineItem == null)
@@ -8820,14 +8820,14 @@ namespace RevenuePlanner.Controllers
                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                     //Added By Komal Rawal to update owner in HoneyComb
                     var OwnerName = "";
-                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
                         OwnerName = GetOwnerName(UpdateVal);
                     }
                     //Added By Viral on 04/22/2016 for PL 2112
                     string noneAllocated = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
                     string defaultAllocated = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
-                    if (UpdateColumn == Enums.PlanGrid_Column["tactictype"])
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString())
                     {
                         tacticCost = (pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpobj.PlanTacticId && s.IsDeleted == false)).Count() > 0
                                                                     && pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != noneAllocated && pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != defaultAllocated
@@ -8846,7 +8846,7 @@ namespace RevenuePlanner.Controllers
                 {
                     Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
                     oldOwnerId = pcpobj.CreatedBy;
-                    if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString())
                     {
                         var pcpvar = (from pcp in db.Plan_Campaign_Program
                                       join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
@@ -8862,7 +8862,7 @@ namespace RevenuePlanner.Controllers
                         else
                             pcpobj.Title = UpdateVal;
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["startdate"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString())
                     {
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
@@ -8874,7 +8874,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["enddate"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString())
                     {
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
@@ -8885,7 +8885,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
 
                         pcpobj.CreatedBy = Convert.ToInt32(UpdateVal);
@@ -8899,7 +8899,7 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
 
-                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                        if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                         {
                             UpdateValue = UpdateVal;
                         }
@@ -8910,7 +8910,7 @@ namespace RevenuePlanner.Controllers
 
                     //Added By Komal Rawal to update owner in HoneyComb
                     var OwnerName = "";
-                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
                         OwnerName = GetOwnerName(UpdateVal);
                     }
@@ -8926,7 +8926,7 @@ namespace RevenuePlanner.Controllers
 
                     Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(id) && pcobjw.IsDeleted.Equals(false)).FirstOrDefault();
                     oldOwnerId = pcobj.CreatedBy;
-                    if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString())
                     {
                         var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower())
                             && !plancampaign.PlanCampaignId.Equals(id))).FirstOrDefault();
@@ -8940,19 +8940,19 @@ namespace RevenuePlanner.Controllers
                         else
                             pcobj.Title = UpdateVal;
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["startdate"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString())
                     {
                         if (!string.IsNullOrEmpty(UpdateVal))
                             pcobj.StartDate = Convert.ToDateTime(UpdateVal);
 
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["enddate"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString())
                     {
                         if (!string.IsNullOrEmpty(UpdateVal))
                             pcobj.EndDate = Convert.ToDateTime(UpdateVal);
 
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
 
                         pcobj.CreatedBy = Convert.ToInt32(UpdateVal);
@@ -8965,7 +8965,7 @@ namespace RevenuePlanner.Controllers
 
                     if (result > 0)
                     {
-                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                        if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                         {
                             UpdateValue = UpdateVal;
                         }
@@ -8975,7 +8975,7 @@ namespace RevenuePlanner.Controllers
 
                     //Added By Komal Rawal to update owner in HoneyComb
                     var OwnerName = "";
-                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
                         OwnerName = GetOwnerName(UpdateVal);
                     }
@@ -9017,7 +9017,7 @@ namespace RevenuePlanner.Controllers
 
                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                     double tacticostNew = objTactic.Plan_Campaign_Program_Tactic_Cost.Select(tactic => tactic.Value).Sum();
-                    if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString())
                     {
                         //// Get Linked Tactic duplicate record.
                         Plan_Campaign_Program_Tactic_LineItem dupLinkedLineItem = null;
@@ -9057,7 +9057,7 @@ namespace RevenuePlanner.Controllers
                                 linkedLineItem.Title = UpdateVal.Trim();
                         }
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["tactictype"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString())
                     {
                         int lineitemTypeid = Convert.ToInt32(UpdateVal);
                         objLineitem.LineItemTypeId = lineitemTypeid;
@@ -9078,7 +9078,7 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["tacticplancost"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString())
                     {
                         // Modified by Arpita Soni for Ticket #2634 on 09/23/2016
                         double newLineItemCost = 0;
@@ -9089,7 +9089,7 @@ namespace RevenuePlanner.Controllers
 
                         objLineitem.Cost = newLineItemCost;
                     }
-                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
                         objLineitem.CreatedBy = Convert.ToInt32(UpdateVal);
                     }
@@ -9105,7 +9105,7 @@ namespace RevenuePlanner.Controllers
                         linkedLineItem.ModifiedDate = DateTime.Now;
                         //Modified By Komal Rawal for #1974
                         //Desc: To Enable edit owner feature from Lineitem popup
-                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                        if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                         {
                             linkedLineItem.CreatedBy = Convert.ToInt32(UpdateVal);
                         }
@@ -9120,7 +9120,7 @@ namespace RevenuePlanner.Controllers
                     //Added by Rahul Shah on 17/03/2016 for PL #2068
                     if (result > 0)
                     {
-                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                        if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                             SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, oldOwnerId, Convert.ToInt32(UpdateVal), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString(), UpdateColumn);
                     }
                     

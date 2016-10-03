@@ -3,7 +3,7 @@ var eventidonedit = 0;
 var eventidonbeforedrag = 0;
 var eventidonscroll = 0;
 var editidonOpenEnd = 0;
-
+var updatetype = 0;
 var progid = 0;
 var campid = 0;
 var planid = 0;
@@ -53,6 +53,8 @@ $(".grid_ver_scroll").scroll(function () {
 
 ///Get GridColumn Index and Hide Column
 function GridHideColumn() {
+    StartDateColIndex = HomeGrid.getColIndexById(StartDateId);
+    EndDateColIndex = HomeGrid.getColIndexById(EndDateId);
     TaskNameColIndex = HomeGrid.getColIndexById(TaskNameId);
     PlannedCostColIndex = HomeGrid.getColIndexById(PlannedCostId);
     AssetTypeColIndex = HomeGrid.getColIndexById(AssetTypeId);
@@ -171,15 +173,7 @@ function LoadAfterParsing() {
             }
         }
     });
-
-    $(".grid_Search").off("click");
-    $(".grid_Search").click(function (e) {
-        inspectCloseFocus = $(this).position().top;
-        var id = $(this).parent().prev().html();
-        var type = $(this).attr('id');
-        gridSearchFlag = 1;
-        DisplayEditablePopup(id, type);
-    });
+   
     SetselectedRow();
 
     if (editidonOpenEnd != 0) {
@@ -190,20 +184,13 @@ function LoadAfterParsing() {
         setTimeout(function () {
             HomeGrid.saveOpenStates("plangridState");
         }, 1000);
-        $(".grid_Search").off("click");
-        $(".grid_Search").click(function (e) {
-            inspectCloseFocus = $(this).position().top;
-            var id = $(this).parent().prev().html();
-            var type = $(this).attr('id');
-            gridSearchFlag = 1;
-            DisplayEditablePopup(id, type);
-
-        });
+       
         var childItems = HomeGrid.getAllSubItems(rowid);
         if (childItems != undefined && childItems != null && childItems != "") {
-            childItems = childItems.split(',').filter(function (tac) {
-                return tac.indexOf('tact') > -1;
-            });
+            //childItems = childItems.split(',').filter(function (tac) {
+            //    return tac.indexOf('tact') > -1;
+            //});
+            childItems = childItems.split(',');
             $.each(childItems, function (item) {
                 var objHoneyComb = $(HomeGrid.getRowById(childItems[item])).find('div[id=TacticAdd]');
                 var altIdForTac = objHoneyComb.attr('altid');
@@ -406,7 +393,7 @@ function ExportCSVHoneyCombSp() {
 }
 
 function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
-    var updatetype = rowId.split(".")[0];
+    updatetype = HomeGrid.cells(rowId, ActivitypeHidden).getValue();
     var Id;
     var UpdateColumn;
     var UpdateVal;
@@ -431,7 +418,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             TacticName = nValue;
         }
     }
-    UpdateColumn = HomeGrid.getColLabel(Colind, 0);
+    UpdateColumn = HomeGrid.getColumnId(Colind, 0);
     if (stage == 0) {
         ///TODO : Uncomment After bunding Tactic/Line Item type Drop-down list
         //if (Colind == TypeColIndex) {
@@ -503,7 +490,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             }
         }
         $(".dhx_combo_edit").off("keydown");
-        if (UpdateColumn == "Planned Cost" || UpdateColumn == "Target Stage Goal") {
+        if (UpdateColumn == PlannedCostId || UpdateColumn == TargetStageGoalId) {
 
             $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
             HomeGrid.editor.obj.onkeypress = function (e) {
@@ -516,19 +503,20 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 }
             }
         }
-        if (UpdateColumn == "Target Stage Goal") {
+        if (UpdateColumn == TargetStageGoalId) {
             var psv = HomeGrid.cells(rowId, TargetStageGoalColIndex).getValue().split(" ");
             this.editor.obj.value = (psv[0].replace(/,/g, ""));
         }
     }
     if (stage == 2) {
+        AssignParentIds(rowId);
         if (nValue != null && nValue != "") {
             var NewValue = htmlDecode(nValue);
-            var TaskID = HomeGrid.cells(rowId, 3).getValue();
+            var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
             var oldAssetType = HomeGrid.cells(rowId, AssetTypeColIndex).getValue();
             if (UpdateColumn == "" || UpdateColumn == null)
-                UpdateColumn = HomeGrid.getColLabel(Colind, 0);
-            if (UpdateColumn == "Task Name") {
+                UpdateColumn = HomeGrid.getColumnId(Colind, 0);
+            if (UpdateColumn == TaskNameId) {
                 if (CheckHtmlTag(nValue) == false) {
                     alert(TitleContainHTMLString);
                     return false;
@@ -546,16 +534,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 }
 
             }
-            var sdateindex = HomeGrid.getColIndexById(StartDateId);
-            var edateindex = HomeGrid.getColIndexById(EndDateId);
-            var idindex = HomeGrid.getColIndexById('id');
-            var costindex = HomeGrid.getColIndexById(PlannedCostId);
-            var stageindex = HomeGrid.getColIndexById(TargetStageGoalId);
-            Id = HomeGrid.cells(rowId, idindex).getValue();
-            if (UpdateColumn == "Start Date") {
-                var startyear = new Date(HomeGrid.cells("plan." + rowId.split(".")[1], sdateindex).getValue()).getFullYear();
-                var edate = HomeGrid.cells(rowId, edateindex).getValue();
-                if (!CheckDateYear(nValue, hdnYear, StartDateCurrentYear)) return false;
+            Id = HomeGrid.cells(rowId, GridHiddenId).getValue();
+            if (UpdateColumn == StartDateId) {
+                var startyear = new Date(HomeGrid.cells(planid, StartDateColIndex).getValue()).getFullYear();
+                var edate = HomeGrid.cells(rowId, EndDateColIndex).getValue();
+                if (!CheckDateYear(nValue, startyear, StartDateCurrentYear)) return false;
                 if (!validateDateCompare(nValue, edate, DateComapreValidation)) return false;
 
                 if (updatetype == "prog") {
@@ -575,11 +558,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 nValue = formatDate(nValue);
                 oValue = formatDate(oValue);
             }
-            if (UpdateColumn == "End Date") {
-                var endyear = new Date(HomeGrid.cells("plan." + rowId.split(".")[1], edateindex).getValue()).getFullYear();
-                var sdate = HomeGrid.cells(rowId, sdateindex).getValue();
+            if (UpdateColumn == EndDateId) {
+                var endyear = new Date(HomeGrid.cells(planid, StartDateColIndex).getValue()).getFullYear();
+                var sdate = HomeGrid.cells(rowId, StartDateColIndex).getValue();
 
-                if (!CheckDateYear(nValue, hdnYear, EndDateCurrentYear)) return false;
+                if (!CheckDateYear(nValue, endyear, EndDateCurrentYear)) return false;
                 if (!validateDateCompare(sdate, nValue, DateComapreValidation)) return false;
 
                 if (updatetype == "prog") {
@@ -599,7 +582,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 nValue = formatDate(nValue);
                 oValue = formatDate(oValue);
             }
-            if (UpdateColumn.toString().trim() == "Target Stage Goal") {
+            if (UpdateColumn.toString().trim() == TargetStageGoalId) {
                 var splitoval = oValue.split(" ");
                 if (nValue != splitoval[0].replace(/,/g, "")) {
                     var tactictypeindex = HomeGrid.getColIndexById('tactictype');
@@ -610,7 +593,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 else
                     return false;
             }
-            if (UpdateColumn == "Type" && updatetype == "tact") {
+            if (UpdateColumn == TacticTypeId && updatetype == "tact") {
                 var tacticTypeId = nValue;
                 var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');
                 //var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticType))'); ///TODO : Uncomment After bunding Tactic/Line Item type Drop-down list
@@ -643,7 +626,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         url: urlContent + 'Plan/LoadTacticTypeValue',
                         data: { tacticTypeId: tacticTypeId },
                         success: function (data) {
-                            var TaskID = HomeGrid.cells(rowId, 3).getValue();
+                            var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
                             if (ExportSelectedIds.TaskID.length > 0) {
                                 var OldValue = $("div[taskId='" + TaskID + "']").attr('TacticType')
                                 var TacticTypeIndex = ExportSelectedIds.TacticType.indexOf(OldValue);
@@ -675,17 +658,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 if (actval == null || actval == "")
                     actval = oValue;
                 if (nValue != oValue && nValue != actval) {
-
                     UpdateVal = nValue;
-                    tactid = HomeGrid.getParentId(rowId);
-                    progid = HomeGrid.getParentId(tactid);
-                    campid = HomeGrid.getParentId(progid);
-                    planid = HomeGrid.getParentId(campid);
                     var TotalRowIds = HomeGrid.getAllSubItems(tactid);
                     $.ajax({
                         type: 'POST',
                         url: urlContent + 'Plan/SaveGridDetail',
-                        data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
+                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                         dataType: 'json',
                         success: function (states) {
                             if (states.errormsg != null && states.errormsg.trim() != "") {
@@ -693,7 +671,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 HomeGrid.cells(rowId, cellInd).setValue(oValue);
                                 return false;
                             }
-                            else if (UpdateColumn == "Planned Cost") {
+                            else if (UpdateColumn == PlannedCostId) {
                                 diff = parseInt(nValue) - parseInt(oValue);
                                 diffLineAndTactic = states.lineItemCost - states.tacticCost
                                 if (states.lineItemCost > states.tacticCost) {
@@ -724,12 +702,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         }
                                     }
                                 }
-                                ChangeTabView('liGrid');
+                                LoadPlanGrid();
                                 ItemIndex = HomeGrid.getRowIndex(tactid);
                                 state0 = ItemIndex;
                                 HomeGrid.cells(rowId, PlannedCostColIndex).setValue((nValue));
                             }
-                            else if (UpdateColumn == "Type")
+                            else if (UpdateColumn == TacticTypeId)
                                 HomeGrid.cells(rowId, cellInd).setAttribute("actval", nValue);
                         }
                     });
@@ -737,7 +715,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 return true;
             }
             if (htmlDecode(nValue) != oValue) {
-                if (UpdateColumn != "Type" && UpdateColumn.toString().trim() != "Target Stage Goal") {
+                if (UpdateColumn != TacticTypeId && UpdateColumn.toString().trim() != TargetStageGoalId) {
                     progid = HomeGrid.getParentId(rowId);
                     campid = HomeGrid.getParentId(progid);
                     planid = HomeGrid.getParentId(campid);
@@ -746,10 +724,10 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     $.ajax({
                         type: 'POST',
                         url: urlContent + 'Plan/SaveGridDetail',
-                        data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
+                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                         dataType: 'json',
                         success: function (states) {
-                            var TaskID = HomeGrid.cells(rowId, 3).getValue();
+                            var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
                             var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
 
                             if (ExportSelectedIds.TaskID.length > 0) {
@@ -764,44 +742,27 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                             if ((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" && states.OwnerName != null) {
                                 if (planid != 0 && planid != null && planid != undefined) {
-                                    var PlanID = HomeGrid.cells(planid, 3).getValue();
-                                }
-                                else if (campid != 0 && campid != null && campid != undefined) {
-                                    var PlanID = HomeGrid.cells(campid, 3).getValue();
-                                }
-                                else {
-                                    if (progid != 0 && progid != null && progid != undefined) {
-                                        var PlanID = HomeGrid.cells(progid, 3).getValue();
-                                    }
-                                    else {
-                                        var PlanID = HomeGrid.cells(rowId, 3).getValue();
-                                    }
-                                }
-                                $("#ulSelectedOwner li input[type=checkbox]").each(function () {
-                                    if ($(this).attr('checked') != 'checked') {
-                                        filters.tempOwnerIds.push($(this).attr("id"));
-                                    }
-                                });
-                                GetTacticTypelist(PlanID, false);
-                                GetOwnerListForFilter(PlanID, false);
+                                    GetTacticTypelist(planid, false);
+                                    GetOwnerListForFilter(planid, false);
                                 SaveLastSetofViews();
+                            }
                             }
                             if (states.errormsg != null && states.errormsg.trim() != "") {
                                 alert(states.errormsg.trim());
                                 HomeGrid.cells(rowId, cellInd).setValue(oValue);
                                 return false;
                             }
-                            if (UpdateColumn == "Start Date") {
+                            if (UpdateColumn == StartDateId) {
                                 if (states.IsExtended) {
                                     alert("Since the Tactic is link to another Plan, it cannot be extended");
                                     HomeGrid.cells(rowId, cellInd).setValue(oValue);
                                     return false;
                                 }
-                                var EndDate = HomeGrid.cells(rowId, 5).getValue();
-                                var EndYear = EndDate.split('/')[2];
-                                var StartYear = nValue.split('/')[2];
+                                var EndDate = HomeGrid.cells(rowId, EndDateColIndex).getValue();
+                                var EndYear = new Date(EndDate).getFullYear();
+                                var StartYear = new Date(nValue).getFullYear();
                                 var YearDiff = EndYear - StartYear;
-                                var oldvalueofEndYear = oValue.split('/')[2];
+                                var oldvalueofEndYear = new Date(oValue).getFullYear(); //oValue.split('/')[2];
                                 var _yrDiff = oldvalueofEndYear - StartYear;
 
                                 if (YearDiff > 0) {
@@ -825,10 +786,10 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "False")
                                     }
                                 }
-                                ComapreDate(updatetype, rowId, sdateindex, nValue, UpdateColumn);
+                                ComapreDate(updatetype, rowId, StartDateColIndex, nValue, UpdateColumn);
                             }
 
-                            if (UpdateColumn == "End Date") {
+                            if (UpdateColumn == EndDateId) {
 
                                 if (states.IsExtended) {
                                     alert("Since the Tactic is link to another Plan, it cannot be extended");
@@ -836,10 +797,10 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                     return false;
                                 }
                                 var StartDate = HomeGrid.cells(rowId, 4).getValue();
-                                var StartYear = StartDate.split('/')[2];
-                                var EndYear = nValue.split('/')[2];
+                                var StartYear = new Date(StartDate).getFullYear(); //StartDate.split('/')[2];
+                                var EndYear = new Date(nValue).getFullYear();  //nValue.split('/')[2];
                                 var YearDiff = EndYear - StartYear;
-                                var oldvalueofEndYear = oValue.split('/')[2];
+                                var oldvalueofEndYear = new Date(oValue).getFullYear(); //oValue.split('/')[2];
                                 var _yrDiff = oldvalueofEndYear - StartYear;
                                 if (YearDiff > 0) {
                                     var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
@@ -861,9 +822,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "False")
                                     }
                                 }
-                                ComapreDate(updatetype, rowId, edateindex, nValue, UpdateColumn);
+                                ComapreDate(updatetype, rowId, EndDateColIndex, nValue, UpdateColumn);
                             }
-                            if (UpdateColumn == "Planned Cost") {
+                            if (UpdateColumn == PlannedCostId) {
                                 if (nValue < states.lineItemCost) {
                                     HomeGrid.cells(rowId, PlannedCostColIndex).setValue((oValue));
                                 }
@@ -892,15 +853,15 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         }
                                     }
                                 }
-                                ChangeTabView('liGrid');
+                                LoadPlanGrid();
                                 ItemIndex = HomeGrid.getRowIndex(rowId);
                                 state0 = ItemIndex;
                             }
-                            if (UpdateColumn == "Owner") {
+                            if (UpdateColumn == OwnerId) {
                                 CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
 
                             }
-                            if (UpdateColumn == "Task Name") {
+                            if (UpdateColumn == TaskNameId) {
                                 $('#txtGlobalSearch').val("");
                                 $('#ExpClose').css('display', 'none');
                                 $('#ExpSearch').css('display', 'block');
@@ -941,6 +902,29 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
 }
 
+function AssignParentIds(rowId) {
+    if (updatetype.toLowerCase() == secTactic) {
+        progid = HomeGrid.getParentId(rowId);
+        campid = HomeGrid.getParentId(progid);
+        planid = HomeGrid.getParentId(campid);
+    }
+    else if (updatetype.toLowerCase() == secLineItem) {
+        tactid = HomeGrid.getParentId(rowId);
+        progid = HomeGrid.getParentId(tactid);
+        campid = HomeGrid.getParentId(progid);
+        planid = HomeGrid.getParentId(campid);
+    }
+    else if (updatetype.toLowerCase() == secProgram) {
+        campid = HomeGrid.getParentId(rowId);
+        planid = HomeGrid.getParentId(campid);
+    }
+    else if (updatetype.toLowerCase() == secCampaign) {
+        planid = HomeGrid.getParentId(rowId);
+    }
+    else if (updatetype.toLowerCase() == secPlan) {
+        planid = HomeGrid.getParentId(rowId);
+    }
+}
 function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
     $.ajax({
         type: 'POST',
@@ -950,17 +934,17 @@ function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
         success: function (data) {
             if (data.IsLocked == "1") {
                 HomeGrid.cells(rowId, TaskNameColIndex).setAttribute("locked", data.IsLocked);
-                HomeGrid.cells(rowId, 4).setAttribute("locked", data.IsLocked);
-                HomeGrid.cells(rowId, 5).setAttribute("locked", data.IsLocked);
+                HomeGrid.cells(rowId, StartDateColIndex).setAttribute("locked", data.IsLocked);
+                HomeGrid.cells(rowId, EndDateColIndex).setAttribute("locked", data.IsLocked);
                 HomeGrid.cells(rowId, PlannedCostColIndex).setAttribute("locked", data.IsLocked);
                 HomeGrid.cells(rowId, AssetTypeColIndex).setAttribute("locked", data.IsLocked);
                 HomeGrid.cells(rowId, TypeColIndex).setAttribute("locked", data.IsLocked);
                 HomeGrid.cells(rowId, OwnerColIndex).setAttribute("locked", data.IsLocked);
                 HomeGrid.cells(rowId, TargetStageGoalColIndex).setAttribute("locked", data.IsLocked);
                 HomeGrid.setCellTextStyle(rowId, TaskNameColIndex, data.cellTextColor);
-                HomeGrid.setCellTextStyle(rowId, 2, data.cellTextColor);
-                HomeGrid.setCellTextStyle(rowId, 4, data.cellTextColor);
-                HomeGrid.setCellTextStyle(rowId, 5, data.cellTextColor);
+                //HomeGrid.setCellTextStyle(rowId, 2, data.cellTextColor);
+                HomeGrid.setCellTextStyle(rowId, StartDateColIndex, data.cellTextColor);
+                HomeGrid.setCellTextStyle(rowId, EndDateColIndex, data.cellTextColor);
                 HomeGrid.setCellTextStyle(rowId, PlannedCostColIndex, data.cellTextColor);
                 HomeGrid.setCellTextStyle(rowId, AssetTypeColIndex, data.cellTextColor);
                 HomeGrid.setCellTextStyle(rowId, TypeColIndex, data.cellTextColor);
@@ -1029,12 +1013,12 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                 dataType: 'json',
 
                 success: function (states) {
-                    if (UpdateColumn == "Target Stage Goal") {
+                    if (UpdateColumn == TargetStageGoalId) {
                         var psv = HomeGrid.getUserData(rowid, "stage");
                         HomeGrid.cells(rowid, TargetStageGoalColIndex).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
                     }
 
-                    if (UpdateColumn == "Type") {
+                    if (UpdateColumn == TacticTypeId) {
                         var PlanIds = HomeGrid.cells(planid, 3).getValue()
                         $("#ulTacticType li input[type=checkbox]").each(function () {
                             var chkid = $(this).attr("id");
@@ -1110,7 +1094,7 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
         var Campstartdate = new Date(formatDate(HomeGrid.cells(campid, dateindex).getValue()));
         var Planstartdate = new Date(formatDate(HomeGrid.cells(planid, dateindex).getValue()));
 
-        if (Updatecolumn == "Start Date") {
+        if (Updatecolumn == StartDateId) {
             if (ProgstartDate > newDate)
                 HomeGrid.cells(progid, dateindex).setValue(formatDate(nValue));
             if (Campstartdate > newDate) {
@@ -1138,7 +1122,7 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
             });
 
         }
-        else if (Updatecolumn == "End Date") {
+        else if (Updatecolumn == EndDateId) {
             if (ProgstartDate < newDate)
                 HomeGrid.cells(progid, dateindex).setValue(formatDate(nValue));
             if (Campstartdate < newDate) {
@@ -1172,7 +1156,7 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
         var campaignid = HomeGrid.cells(campid, 3).getValue();
         var Campstartdate = new Date(formatDate(HomeGrid.cells(campid, dateindex).getValue()));
         var Planstartdate = new Date(formatDate(HomeGrid.cells(planid, dateindex).getValue()));
-        if (Updatecolumn == "Start Date") {
+        if (Updatecolumn == StartDateId) {
             if (Campstartdate > newDate) {
                 HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
             }
@@ -1195,7 +1179,7 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
                 error: function (ts) { }
             });
         }
-        else if (Updatecolumn == "End Date") {
+        else if (Updatecolumn == EndDateId) {
             if (Campstartdate < newDate) {
                 HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
             }
@@ -1222,12 +1206,12 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
     else if (updatetype == "camp") {
         planid = HomeGrid.getParentId(rowId);
         var Planstartdate = new Date(formatDate(HomeGrid.cells(planid, dateindex).getValue()));
-        if (Updatecolumn == "Start Date") {
+        if (Updatecolumn == StartDateId) {
             if (Planstartdate > newDate) {
                 HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
             }
         }
-        else if (Updatecolumn == "End Date") {
+        else if (Updatecolumn == EndDateId) {
             if (Planstartdate < newDate) {
                 HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
             }

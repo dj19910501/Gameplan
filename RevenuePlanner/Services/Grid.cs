@@ -549,7 +549,7 @@ namespace RevenuePlanner.Services
 
             lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost), new PlanHead
             {
-                type = "ron",
+                type = "ed",
                 align = "center",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost),
                 sort = "int",
@@ -589,7 +589,7 @@ namespace RevenuePlanner.Services
 
             lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal), new PlanHead
             {
-                type = "ron",
+                type = "ed",
                 align = "center",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal),
                 sort = "int",
@@ -873,7 +873,7 @@ namespace RevenuePlanner.Services
             {
                 throw;
             }
-            return new PlanDHTMLXGridDataModel { id = (Row.EntityType + "_" + Row.EntityId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, bgColor = string.Empty, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId) };
+            return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, bgColor = string.Empty, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId) };
         }
         #endregion
 
@@ -1340,10 +1340,10 @@ namespace RevenuePlanner.Services
                 " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
 
-            string addColumn = @" <div class=grid_Search id=Plan title='View'> <i Class='fa fa-external-link-square'> </i> </div>" +
+            string addColumn = @" <div class=grid_Search id=Plan onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" +
                 grid_add
                 + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb' id=Plan dhtmlxrowid='"
-                + Row.EntityType + "_" + Row.EntityId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.Owner)
+                + Row.TaskId + "' TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.Owner)
                 + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode + "' altId=" + Row.EntityId
                 + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>";
             return addColumn;
@@ -1361,10 +1361,9 @@ namespace RevenuePlanner.Services
                 " per=" + Convert.ToString(IsEditable).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
 
-            string addColumn =@" <div class=grid_Search id=CP title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
+            string addColumn = @" <div class=grid_Search id=CP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add
-                + "<div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' dhtmlxrowid='" + Row.EntityType
-                + "_" + Row.EntityId + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '"
+                + "<div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title = 'Add to Honeycomb' dhtmlxrowid='" + Row.TaskId + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '"
                 + Convert.ToString(Row.Owner) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;"))
                 + "' altId=" + Row.AltId + " per=" + Convert.ToString(IsEditable).ToLower() + "' taskId= " + Row.EntityId + " csvId=Campaign_" + Row.EntityId + "></div>";
             return addColumn;
@@ -1381,7 +1380,7 @@ namespace RevenuePlanner.Services
                 grid_add = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Row.AltId +
                 " per=" + Convert.ToString(IsEditable).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
-            string addColumn = @" <div class=grid_Search id=PP title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
+            string addColumn = @" <div class=grid_Search id=PP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add
                 + " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Add to Honeycomb' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId
                 + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.Owner)
@@ -1402,7 +1401,7 @@ namespace RevenuePlanner.Services
                 " per=" + IsEditable.ToString().ToLower() + "  LinkTacticper ='" + false + "' LinkedTacticId = '" + 0
                 + "' tacticaddId='" + Row.EntityId + "' title=Add><i class='fa fa-plus-circle'></i></div>";
             }
-            string addColumn = @" <div class=grid_Search id=TP title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
+            string addColumn = @" <div class=grid_Search id=TP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add
                 + " <div class=honeycombbox-icon-gantt id=Tactic onclick=javascript:AddRemoveEntity(this)  title = 'Add to Honeycomb'  pcptid = " + Row.TaskId
                 + " anchortacticid='" + Row.AnchorTacticID + "' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "'  roitactictype='" + Row.AssetType
@@ -1430,7 +1429,7 @@ namespace RevenuePlanner.Services
                 + " lt=" + LineItemTypeId
                 + " dt=" + HttpUtility.HtmlEncode(Row.EntityTitle) + " per=" + Convert.ToString(IsEditable).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
-            string addColumn =@" <div class=grid_Search id=LP title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
+            string addColumn = @" <div class=grid_Search id=LP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add;
             return addColumn;
         }
@@ -1598,7 +1597,7 @@ namespace RevenuePlanner.Services
                     lstCustomFieldData.Add(
                         new Plandataobj
                         {
-                            locked = objHomeGrid.lockedstateone,
+                            locked = objHomeGrid.lockedstatezero,
                             value = DataValue,
                             style = objHomeGrid.stylecolorblack
                         });

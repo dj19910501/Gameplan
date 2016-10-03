@@ -260,6 +260,14 @@ function loadInspectPopup(id, section, tabValue, mode, parentId) {
         }
     });
 }
+///Added by Rahul Shah to open Inpection window on click ok ViewIcon for Plan Grid
+function DisplayPopup(item) {
+    inspectCloseFocus = $(item).position().top;
+    var id = $(item).parent().prev().html();
+    var type = $(item).attr('id');
+    gridSearchFlag = 1;
+    DisplayEditablePopup(id, type);
+}
 
 function DisplayPopUpMenu(obj, e) {
     gridSearchFlag = 1;
