@@ -839,6 +839,10 @@ namespace RevenuePlanner.Models
         public int id { get; set; } //generid id field including user ID but all are integers - zz
         public string value { get; set; }
     }
+    public class PlanOptionsTacticType : PlanOptions
+    {
+        public int PlanId { get; set; } 
+    }
     // Add By Nishant Sheth 
     // #1765 - to add list of monthly period.
     public class listMonthDynamic

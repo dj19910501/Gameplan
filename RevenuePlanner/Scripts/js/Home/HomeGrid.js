@@ -68,7 +68,7 @@ function GridHideColumn() {
     MachineNameHidden = HomeGrid.getColIndexById(MachineNameId);
     HomeGrid.setColumnHidden(GridHiddenId, true);
     HomeGrid.setColumnHidden(ActivitypeHidden, true);
-    HomeGrid.setColumnHidden(MachineNameHidden, true);   
+    HomeGrid.setColumnHidden(MachineNameHidden, true);
 }
 ///
 
@@ -166,14 +166,14 @@ function LoadAfterParsing() {
             var drag_id = id.toString().split("_");
             if (drag_id.length > 0) {
                 if (drag_id[0].toString().toLowerCase() != secTactic) return false;
-        var locked = HomeGrid.cells(id, TaskNameColIndex).getAttribute("locked");
-        if ((locked != null && locked != "") && locked == "1")
-            return false;
-        return true;
+                var locked = HomeGrid.cells(id, TaskNameColIndex).getAttribute("locked");
+                if ((locked != null && locked != "") && locked == "1")
+                    return false;
+                return true;
             }
         }
     });
-   
+
     SetselectedRow();
 
     if (editidonOpenEnd != 0) {
@@ -184,7 +184,7 @@ function LoadAfterParsing() {
         setTimeout(function () {
             HomeGrid.saveOpenStates("plangridState");
         }, 1000);
-       
+
         var childItems = HomeGrid.getAllSubItems(rowid);
         if (childItems != undefined && childItems != null && childItems != "") {
             //childItems = childItems.split(',').filter(function (tac) {
@@ -257,55 +257,55 @@ function doOnDrag(sid, tid) {
             dragSourcetype = sourceId[0];
             dragTargettype = targetedId[0];
             if (dragSourcetype.toLowerCase() == secTactic) {
-        if (dragSourcePtype == dragTargettype) {
-                    var splanid = HomeGrid.getParentId(HomeGrid.getParentId(HomeGrid.getParentId((dragSourcetype + "_" + sourceId[1]))));                    
+                if (dragSourcePtype == dragTargettype) {
+                    var splanid = HomeGrid.getParentId(HomeGrid.getParentId(HomeGrid.getParentId((dragSourcetype + "_" + sourceId[1]))));
                     var dplanid = HomeGrid.getParentId(HomeGrid.getParentId((dragTargettype + "_" + targetedId[1])));
-            var parentid = HomeGrid.getParentId(sid);
-            if (dplanid == splanid) {
-                if (parentid != tid) {
-                    var DestinationMember = new Array();
-                    DestinationMember = HomeGrid.getAllSubItems(tid).split(',');
+                    var parentid = HomeGrid.getParentId(sid);
+                    if (dplanid == splanid) {
+                        if (parentid != tid) {
+                            var DestinationMember = new Array();
+                            DestinationMember = HomeGrid.getAllSubItems(tid).split(',');
 
-                    var sourseid = HomeGrid.cells(sid, HomeGrid.getColIndexById('id')).getValue();
-                    var destinatinId = HomeGrid.cells(tid, HomeGrid.getColIndexById('id')).getValue();
-                    var tacticname = HomeGrid.cells(sid, TaskNameColIndex).getValue();
-                    var dtactictitle = "";
+                            var sourseid = HomeGrid.cells(sid, HomeGrid.getColIndexById('id')).getValue();
+                            var destinatinId = HomeGrid.cells(tid, HomeGrid.getColIndexById('id')).getValue();
+                            var tacticname = HomeGrid.cells(sid, TaskNameColIndex).getValue();
+                            var dtactictitle = "";
 
-                    for (a in DestinationMember) {
-                        if (DestinationMember[a].toString() != "" && DestinationMember[a].toString() != null) {
-                            dtactictitle = HomeGrid.cells(DestinationMember[a].toString(), TaskNameColIndex).getValue();
-                            if (dtactictitle == tacticname) {
-                                alert("Tactic with same title already exist in Targeted Program.");
-                                return false;
+                            for (a in DestinationMember) {
+                                if (DestinationMember[a].toString() != "" && DestinationMember[a].toString() != null) {
+                                    dtactictitle = HomeGrid.cells(DestinationMember[a].toString(), TaskNameColIndex).getValue();
+                                    if (dtactictitle == tacticname) {
+                                        alert("Tactic with same title already exist in Targeted Program.");
+                                        return false;
+                                    }
+                                }
                             }
+                            ProgarmName = HomeGrid.cells(tid, TaskNameColIndex).getValue();
+                            $("#lipname").html(ProgarmName);
+                            $("#hdnsourceid").val(sourseid);
+                            $("#hdndestid").val(destinatinId);
+                            $("#divMovetacticPopup").modal('show');
+                            RemoveAllHoneyCombData();
+                        }
+                        else {
+                            ProgarmName = HomeGrid.cells(tid, TaskNameColIndex).getValue();
+                            alert("Tactic is already in " + ProgarmName + ".");
                         }
                     }
-                    ProgarmName = HomeGrid.cells(tid, TaskNameColIndex).getValue();
-                    $("#lipname").html(ProgarmName);
-                    $("#hdnsourceid").val(sourseid);
-                    $("#hdndestid").val(destinatinId);
-                    $("#divMovetacticPopup").modal('show');
-                    RemoveAllHoneyCombData();
+                    else
+                        alert("Tactic can move only to same plan program."); return false;
                 }
                 else {
-                    ProgarmName = HomeGrid.cells(tid, TaskNameColIndex).getValue();
-                    alert("Tactic is already in " + ProgarmName + ".");
+                    var stype = GetItemType(sid.split(".")[0].toString());
+                    var dtype = GetItemType(dragTargettype.toString());
+                    alert(stype + " can not move to " + dtype); return false;
                 }
             }
-            else
-                alert("Tactic can move only to same plan program."); return false;
+            else {
+                alert("Only tactic can Move.");
+                return false;
+            }
         }
-        else {
-            var stype = GetItemType(sid.split(".")[0].toString());
-            var dtype = GetItemType(dragTargettype.toString());
-            alert(stype + " can not move to " + dtype); return false;
-        }
-    }
-    else {
-        alert("Only tactic can Move.");
-        return false;
-    }
-}
     }
 }
 
@@ -418,31 +418,35 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             TacticName = nValue;
         }
     }
+    AssignParentIds(rowId);
     UpdateColumn = HomeGrid.getColumnId(Colind, 0);
     if (stage == 0) {
         ///TODO : Uncomment After bunding Tactic/Line Item type Drop-down list
-        //if (Colind == TypeColIndex) {
-        //    if (updatetype == "line") {
-        //        var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
-        //        if (actval == "") {
-        //            return false;
-        //        }
-        //        var combo = HomeGrid.getCombo(cellInd);
-        //        var lineitemtype = lineitemtype;
-        //        combo.clear();
-        //        $.each(lineitemtype, function (i, item) {
-        //            combo.put(item.LineItemTypeId, item.Title);
-        //        });
-        //    }
-        //    else {
-        //        var combo = HomeGrid.getCombo(cellInd);
-        //        var tacticTypelist = tacticTypelist;
-        //        combo.clear();
-        //        $.each(tacticTypelist, function (i, item) {
-        //            combo.put(item.TacticTypeId, item.Title);
-        //        });
-        //    }
-        //}
+        if (Colind == TypeColIndex) {
+            if (updatetype == "line") {
+                //var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+                //if (actval == "") {
+                //    return false;
+                //}
+                //var combo = HomeGrid.getCombo(cellInd);
+                //var lineitemtype = lineitemtype;
+                //combo.clear();
+                //$.each(lineitemtype, function (i, item) {
+                //    combo.put(item.LineItemTypeId, item.Title);
+                //});
+            }
+            else {
+                var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
+                var combo = HomeGrid.getCombo(cellInd);
+                var tacticTypelist1 = tacticTypelistTest;
+                combo.clear();
+                $.each(tacticTypelist1, function (i, item) {
+                    if (item.PlanId == _planid) {
+                       combo.put(item.id, item.value);
+                    }
+                });
+            }
+        }
         //added by devanshi #2598
         var customcolId = HomeGrid.getColumnId(cellInd);
         if (customcolId.indexOf("custom_") >= 0) {
@@ -509,7 +513,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
     }
     if (stage == 2) {
-        AssignParentIds(rowId);
+
         if (nValue != null && nValue != "") {
             var NewValue = htmlDecode(nValue);
             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
@@ -744,8 +748,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 if (planid != 0 && planid != null && planid != undefined) {
                                     GetTacticTypelist(planid, false);
                                     GetOwnerListForFilter(planid, false);
-                                SaveLastSetofViews();
-                            }
+                                    SaveLastSetofViews();
+                                }
                             }
                             if (states.errormsg != null && states.errormsg.trim() != "") {
                                 alert(states.errormsg.trim());

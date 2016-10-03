@@ -19,5 +19,7 @@ namespace RevenuePlanner.Services
         List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string timeframe, string planYear, string viewby);
         List<calendarDataModel> SetOwnerNameAndPermission(List<calendarDataModel> lstCalendarDataModel);
         // End: Calendar related functions
+
+        List<PlanOptionsTacticType> GetTacticTypeListForHeader(string strPlanIds, int ClientId);
     }
 }

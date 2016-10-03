@@ -33,6 +33,8 @@ namespace RevenuePlanner.Services
         double PlanExchangeRate = 1; // set currency plan exchange rate. it's variable value update from 'GetPlanGrid' method
         string PlanCurrencySymbol = "$"; // set currency symbol. it's variable value update from 'GetPlanGrid' method
         public string ColumnManagmentIcon = Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon);
+        int _ClientId;
+        int _UserId;
         #endregion
 
         // Constructor
@@ -157,6 +159,8 @@ namespace RevenuePlanner.Services
         /// </summary>
         public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId)
         {
+            _ClientId = ClientId;
+            _UserId = UserId;
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
                 PlanExchangeRate = ExchangeRate; // Set client currency plan exchange rate 
                 PlanCurrencySymbol = CurrencySymbol; // Set user currency symbol
@@ -591,6 +595,7 @@ namespace RevenuePlanner.Services
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Owner),
                 sort = "sort_Owner",
                 width = 115,
+                options = GetOwnerListForHeader(),
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Owner) + ColumnManagmentIcon
             });
 
@@ -1564,6 +1569,44 @@ namespace RevenuePlanner.Services
         }
 
         #endregion
+
+        /// <summary>
+        /// This is owner list (client wise) used in plan grid, this list will be bind in grid header and will be available at the time of cell editing
+        /// </summary>
+        /// <returns></returns>
+        private List<PlanOptions> GetOwnerListForHeader()
+        {
+            IBDSService objAuthService = new BDSServiceClient();
+            List<User> lstUsers = objAuthService.GetUserListByClientIdEx(_ClientId);
+            List<int> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(_ClientId, lstUsers.Where(i => i.IsDeleted == false).ToList());
+            return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(tacttype => new PlanOptions
+            {
+                id = tacttype.ID,
+                value = tacttype.FirstName
+            }).ToList().OrderBy(tactype => tactype.value).ToList(); ;
+        }
+        /// <summary>
+        /// This is tactic type list (client wise) used in plan grid
+        /// </summary>
+        /// <returns></returns>
+        public List<PlanOptionsTacticType> GetTacticTypeListForHeader(string strPlanIds, int ClientId)
+        {
+            List<int> lstPlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
+
+            List<PlanOptionsTacticType> lstTacticTypes = (from tactictypes in objDbMrpEntities.TacticTypes
+                                                          join model in objDbMrpEntities.Models on tactictypes.ModelId equals model.ModelId
+                                                          join plan in objDbMrpEntities.Plans on model.ModelId equals plan.ModelId
+                                                          where (tactictypes.IsDeleted == null || tactictypes.IsDeleted == false) && tactictypes.IsDeployedToModel
+                                                          && model.ClientId == ClientId && model.IsDeleted == false && lstPlanIds.Contains(plan.PlanId)
+                                                          select new PlanOptionsTacticType
+                                                          {
+                                                              PlanId = plan.PlanId,
+                                                              id = tactictypes.TacticTypeId,
+                                                              value = tactictypes.Title
+                                                          }
+                                 ).ToList();
+            return lstTacticTypes;
+        }
     }
 
     #region Pivot Custom fields list for each entities
