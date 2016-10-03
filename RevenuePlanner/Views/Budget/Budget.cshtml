@@ -178,6 +178,7 @@
             HomeGrid.detachEvent(eventidonedit);
         }
         eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
+        SetselectedRow();
     }
 
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {

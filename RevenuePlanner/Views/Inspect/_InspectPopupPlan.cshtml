@@ -58,33 +58,26 @@
     <div class="headefix">
 
         <h2 class="title-simple source-sans-prolight">
-
-
             <span>
-               
                 @if (IsPlanEditable && planDetails.PlanId!=0)
                 {
                     <div id="divDeletePlan" style="float: right;" class="delete-btn-tab">
                         <button type="button" id="deletePlan" class="delete-btn-gray">Delete</button>
                     </div>
                 }
-
-                   @if (IsPlanCreateAuthorized && InspectMode == Enums.InspectPopupMode.Edit.ToString())
-                            {
-                <div style="float: right; position: relative;">
-                    <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" class="add-icon-white btn-blue btn-large"></span>
-                    <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
-                        <ul style="margin: 0;">
-                            @*Modified by Rahul Shah on 12/04/2016 for PL #2038*@
-                            <li id="NewPlanfromPopup" class="new-prog">New Plan</li>
-                            <li id="ClonePlan" class="copy-camp">Copy Plan</li>
-                            <li id="NewCampaign" class="new-prog">New Campaign</li>
-                         
-                                
-                            
-                        </ul>
-                    </div>
-                </div>
+                @if (IsPlanCreateAuthorized && InspectMode == Enums.InspectPopupMode.Edit.ToString())
+                    {
+                        <div style="float: right; position: relative;">
+                            <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" class="add-icon-white btn-blue btn-large"></span>
+                            <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
+                                <ul style="margin: 0;">
+                                    @*Modified by Rahul Shah on 12/04/2016 for PL #2038*@
+                                    <li id="NewPlanfromPopup" class="new-prog">New Plan</li>
+                                    <li id="ClonePlan" class="copy-camp">Copy Plan</li>
+                                    <li id="NewCampaign" class="new-prog">New Campaign</li>
+                                </ul>
+                            </div>
+                        </div>
                    }
                 @if (IsPlanEditable || (InspectMode == Enums.InspectPopupMode.Add.ToString() && IsPlanCreateAuthorized))
                 {
@@ -107,17 +100,13 @@
                 }
                 @if (IsPlanEditable && !IsPlanPublished)
                 {
-                    @*<button id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular publish-plan-btn" type="button" style="min-width: 90%">
-                Publish Plan
-            </button>*@
-                    <div style="float: right;">
-                        <button type="button" id="BtnPublishPlan" class="btn-blue btn-large">Publish Plan</button>
+                   
+                    <div style="float:right;" class="margin-right10">
+                        <button type="button" id="BtnPublishPlan" class="btn btn-blue">Publish Plan</button>
                     </div>
                 }
 
             </span>
-
-
 
             <button class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></button> @*Modified by Bhumika #2003 from "buttom" to "button"  *@
 
@@ -544,9 +533,8 @@
         if (activeTab != null && activeTab != undefined && activeTab != '') {
             returnpara = SaveAllData(activeTab);
         }
-        if (returnpara) { 
-            var url = '@Url.Action("CreatePlan", "Plan")';
-            displayconfirm(url);
+        if (returnpara) {
+            loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", "0", '@RequestedModule');
         }
     });
     $('#BtnPublishPlan').click(function () {

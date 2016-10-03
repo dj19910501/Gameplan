@@ -208,6 +208,11 @@ namespace RevenuePlanner.Services
                 }
                 else
                 {
+                    if (IsSelectall)
+                    {
+                        SelectedCustomfieldID.Add(Convert.ToString(Enums.Budgetcolumn.Planned));
+                        IsSelectall = false;
+                    }
                     allattributeList = Enum.GetNames(typeof(Enums.Budgetcolumn)).ToList().Select(row => new ColumnViewEntity
                     {
                         EntityType = row,

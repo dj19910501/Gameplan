@@ -180,43 +180,7 @@ function LoadAfterParsing() {
         gridSearchFlag = 1;
         DisplayEditablePopup(id, type);
     });
-    var idcoluIndex = HomeGrid.getColIndexById('id');
-    if (isCopyTacticHomeGrid != 0) {
-        $('#txtGlobalSearch').val("");
-        $('#ExpClose').css('display', 'none');
-        $('#ExpSearch').css('display', 'block');
-       var selectedcell = HomeGrid.findCell(isCopyTacticHomeGrid, idcoluIndex, true);
-        var id = selectedcell[0];
-        var rowid;
-        if (id != undefined && id != 'undefined') {
-            rowid = id[0];
-
-            var SourcePtype = (rowid).split(".")[0];
-            HomeGrid.openItem(rowid);
-
-            ItemIndex = HomeGrid.getRowIndex(rowid);
-            state0 = ItemIndex;
-            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
-        }
-        selectedTaskID = rowid;
-        isCopyTacticHomeGrid = 0;
-        isCopyTactic = 0;
-    }
-    else if (isEditTacticHomeGrid != 0) {
-        var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, idcoluIndex, true);
-        var id = selectedcell[0];
-        var rowid;
-        if (id != undefined && id != 'undefined') {
-            rowid = id[0];
-            HomeGrid.openItem(HomeGrid.getParentId(rowid));
-            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
-            ItemIndex = HomeGrid.getRowIndex(rowid);
-            state0 = ItemIndex;
-        }
-        selectedTaskID = rowid;
-        isEditTacticHomeGrid = 0;
-        isEditTactic = 0;
-    }
+    SetselectedRow();
 
     if (editidonOpenEnd != 0) {
         HomeGrid.detachEvent(editidonOpenEnd);

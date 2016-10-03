@@ -62,6 +62,8 @@ $('#btnbudget').click(function () {
     //cleare success msg as we want to hide import msg on click of grid or calendar
   $('#SuccessMsg').css('display', 'none');
     isCalendarView = false;
+    IsGridView = false;
+    $('#IsGridView').val('false');
     $('#ChangeView').hide();
     $('#exp-serach').css('display', 'none');
     LoadBudgetGrid();
@@ -788,7 +790,12 @@ function CloseIconClick() {
             $('#ExpClose').css('display', 'none');
             $('#ExpSearch').css('display', 'block');
         }
-
+        if (isDataModified) {
+            if (gridSearchFlag == 1) {
+                isCopyTacticHomeGrid = isCopyTactic;
+                isEditTacticHomeGrid = isEditTactic;
+            }
+        }
         if ($('#IsGridView').val().toLowerCase() == "true") {
             if (isDataModified) {
                 if (gridSearchFlag == 1) {
@@ -817,6 +824,9 @@ function CloseIconClick() {
                     GlobalSearch();
                 }
             } else {
+                if (IsBudgetGrid) {
+                    LoadBudgetGrid();
+                }
                 $('#divPlanEditButtonHome').click();
             }
         }
@@ -2389,7 +2399,13 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
 function RefreshCurrentTab()
 {
     LoadFilter();
+    if (!IsBudgetGrid) {
     BindPlanCalendar();
+    }
+    else if (IsBudgetGrid) {
+        LoadBudgetGrid();
+    }
+
 }
 
 ///Added by dhvani to open inspect popup for URL -- PL #2534
@@ -2421,5 +2437,40 @@ function ShowInspectForPlanId() {
     if (hdnShowInspectForPlanId.val() != 0) {
         ShowModel(null, true);
         $('#hdnShowInspectForPlanId').val(0);
+    }
+}
+function SetselectedRow()
+{
+    var idcoluIndex = HomeGrid.getColIndexById('id');
+
+    if (isCopyTacticHomeGrid != 0) {
+        var selectedcell = HomeGrid.findCell(isCopyTacticHomeGrid, idcoluIndex, true);
+        var id = selectedcell[0];
+        var rowid;
+        if (id != undefined && id != 'undefined') {
+            rowid = id[0];
+            HomeGrid.openItem(rowid);
+            ItemIndex = HomeGrid.getRowIndex(rowid);
+            state0 = ItemIndex;
+            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+        }
+        selectedTaskID = rowid;
+        //isCopyTacticHomeGrid = 0;
+        //isCopyTactic = 0;
+    }
+    else if (isEditTacticHomeGrid != 0) {
+        var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, idcoluIndex, true);
+        var id = selectedcell[0];
+        var rowid;
+        if (id != undefined && id != 'undefined') {
+            rowid = id[0];
+            HomeGrid.openItem(HomeGrid.getParentId(rowid));
+            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+            ItemIndex = HomeGrid.getRowIndex(rowid);
+            state0 = ItemIndex;
+        }
+        selectedTaskID = rowid;
+        //isEditTacticHomeGrid = 0;
+        //isEditTactic = 0;
     }
 }

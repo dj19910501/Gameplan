@@ -109,7 +109,7 @@
         }
 
     });
-   
+
     function CheckDependendCheckbox(e) {
         var attributeid = $(e).val();
 
@@ -177,7 +177,12 @@
                 success: function (data) {
                     if (data.Success != null && data.Success == true) {
                         $('#CreateNewView').hide();
-                        LoadPlanGridFromCache(); // Method for refesh plan grid view columns data // Add By Nishant Sheth
+                        if (Isgrid.toLocaleLowerCase() == "true") {
+                            LoadPlanGridFromCache(); // Method for refesh plan grid view columns data // Add By Nishant Sheth
+                        }
+                        else {
+                            LoadBudgetGrid();
+                        }
                     }
                     if (data.Success != null && data.Success == false && data.ErrorMessage != null) {
                         $("#errorMessage1").css("display", "block");
