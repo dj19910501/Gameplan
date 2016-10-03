@@ -1,3 +1,116 @@
+--This function is somehow missing from migration script. It's needed in order to migrate a fresh db from production. 
+--We do need to test migration of a fresh db backup from production. zz 
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[dbo].[fnGetFilterEntityHierarchy]'))
+	DROP FUNCTION [dbo].[fnGetFilterEntityHierarchy]
+GO
+
+CREATE FUNCTION [dbo].[fnGetFilterEntityHierarchy]
+(
+	@planIds varchar(max)='',
+	@ownerIds nvarchar(max)='',
+	@tactictypeIds varchar(max)='',
+	@statusIds varchar(max)='',
+	@TimeFrame varchar(20)='',
+	@isGrid bit=0
+)
+
+RETURNS @Entities TABLE (
+			UniqueId		NVARCHAR(30), 
+			EntityId		BIGINT,
+			EntityTitle		NVARCHAR(1000),
+			ParentEntityId	BIGINT, 
+			ParentUniqueId	NVARCHAR(30),
+			EntityType		NVARCHAR(15), 
+			ColorCode		NVARCHAR(7),
+			[Status]		NVARCHAR(15), 
+			StartDate		DATETIME, 
+			EndDate			DATETIME, 
+			CreatedBy		INT,
+			AltId			NVARCHAR(500),
+			TaskId			NVARCHAR(500),
+			ParentTaskId	NVARCHAR(500),
+			PlanId			BIGINT,
+			ModelId			BIGINT
+		)
+AS
+BEGIN
+
+
+Declare @entTactic varchar(8)='Tactic'
+Declare @entLineItem varchar(10)='LineItem'
+
+Declare @HierarchyEntities TABLE (
+			UniqueId		NVARCHAR(30), 
+			EntityId		BIGINT,
+			EntityTitle		NVARCHAR(1000),
+			ParentEntityId	BIGINT, 
+			ParentUniqueId	NVARCHAR(30),
+			EntityType		NVARCHAR(15), 
+			ColorCode		NVARCHAR(7),
+			[Status]		NVARCHAR(15), 
+			StartDate		DATETIME, 
+			EndDate			DATETIME, 
+			CreatedBy		INT,
+			AltId			NVARCHAR(500),
+			TaskId			NVARCHAR(500),
+			ParentTaskId	NVARCHAR(500),
+			PlanId			BIGINT,
+			ModelId			BIGINT
+		)
+
+INSERT INTO @HierarchyEntities 
+
+SELECT 
+UniqueId		
+,EntityId		
+,EntityTitle		
+,ParentEntityId	
+,ParentUniqueId	
+,EntityType		
+,ColorCode		
+,[Status]		
+,StartDate		
+,EndDate			
+,CreatedBy		
+,AltId			
+,TaskId			
+,ParentTaskId	
+,PlanId			
+,ModelId
+
+FROM fnGetEntitieHirarchyByPlanId(@planIds,@TimeFrame,@isGrid)
+
+	-- Fill the table variable with the rows for your result set
+	
+	;WITH FilteredEnt AS(
+Select * from @HierarchyEntities
+)
+,tac as (
+	Select distinct ent.* 
+	FROM FilteredEnt as ent
+	Join [Plan_Campaign_Program_Tactic] as tac on ent.EntityId = tac.PlanTacticId and ent.EntityType=@entTactic AND tac.[Status] IN (select val from comma_split(@statusIds,',')) and  tac.[CreatedBy] IN (select case when val = '' then null else Convert(int,val) end from comma_split(@ownerIds,','))
+	Join [TacticType] as typ on tac.TacticTypeId = typ.TacticTypeId and typ.IsDeleted='0' and typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,','))
+	where ent.EntityType = @entTactic
+)
+,line as (
+	SELECT ent.* 
+	FROM FilteredEnt as ent
+	JOIN tac on ent.ParentEntityId = tac.EntityId and ent.EntityType=@entLineItem
+
+)
+
+INSERT INTO @Entities
+select * from FilteredEnt where EntityType not in ('Tactic','LineItem')
+union all
+SELECT * FROM tac 
+union all
+select * from line
+
+RETURN
+
+END
+GO
+
 --refs #2666 - re-order the insert columns due to column position shift 
 IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[dbo].[UpdateTacticInstanceTacticId_Comment_API]'))
 	DROP PROCEDURE [dbo].[UpdateTacticInstanceTacticId_Comment_API]
