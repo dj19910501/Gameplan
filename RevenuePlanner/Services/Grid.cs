@@ -157,7 +157,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Get plan grid data with default and custom fields columns 
         /// </summary>
-        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId)
+        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds)
         {
             _ClientId = ClientId;
             _UserId = UserId;
@@ -191,6 +191,9 @@ namespace RevenuePlanner.Services
             // Get List of custom fields and it's entity's values
             GridCustomColumnData ListOfCustomData = GridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds, ref customColumnslist);
 
+            List<Int64> lsteditableEntityIds = GetEditableTacticIds(GridHireachyData, ListOfCustomData, UserId, ClientId);
+            // Set Row wise permission
+            GridHireachyData = GridRowPermission(GridHireachyData, objPermission, lstSubordinatesIds, lsteditableEntityIds, UserId);
             // Add Plan grid default column data to cache object
             objCache.AddCache(Convert.ToString(Enums.CacheObject.ListPlanGridDefaultData), GridHireachyData);
 
@@ -230,6 +233,48 @@ namespace RevenuePlanner.Services
             objPlanMainDHTMLXGrid.rows = griditems;
             return objPlanMainDHTMLXGrid;
         }
+
+        /// <summary>
+        /// Get llist of Editable tactic ids list
+        /// </summary>
+        private List<Int64> GetEditableTacticIds(List<GridDefaultModel> GridHireachyData, GridCustomColumnData ListOfCustomData, int UserId, int ClientId)
+        {
+            List<int> lstTacticIds = GridHireachyData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower()).Select(a => int.Parse(a.EntityId.ToString())).ToList();
+
+            List<CustomField_Entity> customfieldEntitylist = new List<CustomField_Entity>();
+            // Split the comma separated values to list
+            var lstCommaSplitCustomfield = ListOfCustomData.CustomFieldValues.Where(a => a.Value != null).Select(a => new
+            {
+                CustomFieldId = a.CustomFieldId,
+                EntityId = a.EntityId,
+                ListofValues = a.Value.Split(',')
+            }).ToList();
+
+            // Add item to custom field entity list
+            int ParseCustomValue = 0;
+            foreach (var data in lstCommaSplitCustomfield.Where(a => a.ListofValues.Count() > 1).ToList())
+            {
+                foreach (var val in data.ListofValues)
+                {
+                    int.TryParse(val, out ParseCustomValue);
+                    customfieldEntitylist.Add(new CustomField_Entity { CustomFieldId = int.Parse(data.CustomFieldId.ToString()), EntityId = int.Parse(data.EntityId.ToString()), Value = ParseCustomValue.ToString() });
+                }
+            }
+
+            // Add items which have only single value for entity
+            customfieldEntitylist.AddRange(lstCommaSplitCustomfield.Where(a => a.ListofValues.Count() == 1)
+                .Select(a => new CustomField_Entity { CustomFieldId = int.Parse(a.CustomFieldId.ToString()), EntityId = int.Parse(a.EntityId.ToString()), Value = Convert.ToString(a.ListofValues[0]) }).ToList());
+
+            ListOfCustomData.CustomFieldValues.Where(a => a.EntityId != null && a.CustomFieldId != null)
+            .Select(a => new CustomField_Entity { CustomFieldId = int.Parse(a.CustomFieldId.ToString()), EntityId = int.Parse(a.EntityId.ToString()), Value = a.Value }).ToList();
+
+            // Get list of editable list of tactic ids for permission
+            List<Int64> lsteditableEntityIds = Common.GetEditableTacticList(UserId, ClientId, lstTacticIds, false, customfieldEntitylist)
+                .Select(a => Int64.Parse(a.ToString())).ToList();
+
+            return lsteditableEntityIds;
+        }
+
 
         /// <summary>
         /// Update plan start and end date based on campaign start date and end date
@@ -923,6 +968,179 @@ namespace RevenuePlanner.Services
 
         #endregion
 
+        #region Check Row wise Permission
+
+        private List<GridDefaultModel> GridRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, List<Int64> lsteditableEntityIds, int UserId)
+        {
+            #region set plan permission
+            lstData = GridPlanRowPermission(lstData, objPermission, lstSubordinatesIds, UserId);
+            #endregion
+
+            #region set campaign permission
+            lstData = GridCampaignRowPermission(lstData, objPermission, lstSubordinatesIds, UserId);
+            #endregion
+
+            #region set program permission
+            lstData = GridProgramRowPermission(lstData, objPermission, lstSubordinatesIds, UserId);
+            #endregion
+
+            #region set tactic permission
+            lstData = GridTacticRowPermission(lstData, objPermission, lstSubordinatesIds, lsteditableEntityIds, UserId);
+            #endregion
+
+            #region set line item permission
+            lstData = GridLineItemRowPermission(lstData, objPermission, lstSubordinatesIds, UserId);
+            #endregion
+
+            return lstData;
+        }
+
+        /// <summary>
+        /// Set grid plan row permission
+        /// </summary>
+        private List<GridDefaultModel> GridPlanRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, int UserId)
+        {
+            if (objPermission.PlanCreate == true)
+            {
+                // Update create plan permission 
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower()).ToList()
+                    .ForEach(a => a.IsCreatePermission = true);
+            }
+            else
+            {
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() &&
+                    (lstSubordinatesIds.Contains(a.Owner) || a.Owner == UserId))
+                    .ToList().ForEach(a => a.IsCreatePermission = true);
+            }
+            // Update row permission for plan for created by
+            lstData.Where(a => a.Owner == UserId).ToList().ForEach(a => a.IsRowPermission = true);
+
+            if (objPermission.PlanEditAll == true)
+            {
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower()).ToList()
+                    .ForEach(a => a.IsRowPermission = true);
+            }
+
+            if (objPermission.PlanEditSubordinates == true)
+            {
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() && lstSubordinatesIds.Contains(a.Owner))
+                    .ToList().ForEach(a => a.IsRowPermission = true);
+            }
+            return lstData;
+        }
+
+        /// <summary>
+        /// Set grid campaign row permission
+        /// </summary>
+        private List<GridDefaultModel> GridCampaignRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, int UserId)
+        {
+            if (objPermission.PlanCreate == false)
+            {
+                // Update create campaign permission 
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower() &&
+                    (a.Owner == UserId || lstSubordinatesIds.Contains(a.Owner))).ToList()
+                    .ForEach(a => a.IsCreatePermission = true);
+            }
+            else
+            {
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower())
+                    .ToList().ForEach(a => a.IsCreatePermission = true);
+            }
+
+            // Update campaign edit permission
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower() && a.Owner == UserId).ToList()
+                .ForEach(a => a.IsRowPermission = true);
+            return lstData;
+        }
+
+        /// <summary>
+        /// Set grid program row permission
+        /// </summary>
+        private List<GridDefaultModel> GridProgramRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, int UserId)
+        {
+            if (objPermission.PlanCreate == false)
+            {
+                // Update create program permission 
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower() &&
+                    (a.Owner == UserId || lstSubordinatesIds.Contains(a.Owner))).ToList()
+                    .ForEach(a => a.IsCreatePermission = true);
+            }
+            else
+            {
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower())
+                    .ToList().ForEach(a => a.IsCreatePermission = true);
+            }
+            //Update program edit permission
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower() && a.Owner == UserId).ToList()
+               .ForEach(a => a.IsRowPermission = true);
+            return lstData;
+        }
+
+        /// <summary>
+        /// Set grid tactic row permission
+        /// </summary>
+        private List<GridDefaultModel> GridTacticRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, List<Int64> lsteditableEntityIds, int UserId)
+        {
+            if (objPermission.PlanCreate == false)
+            {
+                // Update create tactic permission 
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower() &&
+                    (a.Owner == UserId || lstSubordinatesIds.Contains(a.Owner))).ToList()
+                    .ForEach(a => a.IsCreatePermission = true);
+            }
+            else
+            {
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
+                    .ToList().ForEach(a => a.IsCreatePermission = true);
+            }
+            //Update tactic edit permission
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower() &&
+                   (a.Owner == UserId || lstSubordinatesIds.Contains(a.Owner))).ToList()
+                   .ForEach(a => a.IsRowPermission = true);
+
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower()
+                && lstSubordinatesIds.Contains(a.Owner)
+                && lsteditableEntityIds.Contains(a.EntityId))
+                .ToList().ForEach(a => a.IsRowPermission = true);
+            return lstData;
+        }
+
+        /// <summary>
+        /// Set grid line item row permission
+        /// </summary>
+        private List<GridDefaultModel> GridLineItemRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, int UserId)
+        {
+            if (objPermission.PlanCreate == false)
+            {
+                // Update line item create permission 
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower() &&
+                    (a.Owner == UserId || lstSubordinatesIds.Contains(a.Owner))).ToList()
+                    .ForEach(a => a.IsCreatePermission = true);
+            }
+            else
+            {
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
+                    .ToList().ForEach(a => a.IsCreatePermission = true);
+            }
+            //Update line item edit permission
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower() && a.Owner == UserId).ToList()
+                   .ForEach(a => a.IsRowPermission = true);
+
+            // Update line item edit permission if tactic is editable
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
+                .ToList().ForEach(a =>
+                {
+                    var IsTacticEditable = lstData.Where(ab => ab.UniqueId == a.ParentUniqueId).Select(ab => ab.IsRowPermission).FirstOrDefault();
+                    if (IsTacticEditable != null)
+                    {
+                        a.IsRowPermission = IsTacticEditable;
+                    }
+                });
+            return lstData;
+        }
+
+        #endregion
+
         #region Method to convert number in k, m formate
 
         /// <summary>
@@ -1191,6 +1409,19 @@ namespace RevenuePlanner.Services
                 if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName), true) == 0)
                 {
                     string Roistring = string.Empty;
+                    string IsEditable = string.Empty;
+                    string cellTextColor = string.Empty;
+
+                    if (objres.IsRowPermission == true)
+                    {
+                        IsEditable = objHomeGridProp.lockedstatezero;
+                        cellTextColor = objHomeGridProp.stylecolorblack;
+                    }
+                    else
+                    {
+                        IsEditable = objHomeGridProp.lockedstateone;
+                        cellTextColor = objHomeGridProp.stylecolorgray;
+                    }
 
                     if (string.Compare(objres.EntityType, Convert.ToString(Enums.EntityType.Tactic), true) == 0)
                     {
@@ -1219,7 +1450,9 @@ namespace RevenuePlanner.Services
                     }
                     lstPlanData.Add(new Plandataobj
                     {
-                        value = Roistring + HttpUtility.HtmlEncode(objres.EntityTitle) //Set Entity title
+                        value = Roistring + HttpUtility.HtmlEncode(objres.EntityTitle), //Set Entity title
+                        locked = IsEditable,
+                        style = cellTextColor
                     });
                 }
                 if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add), true) == 0)
@@ -1271,6 +1504,9 @@ namespace RevenuePlanner.Services
 
             int.TryParse(GetvalueFromObject(RowData, "AnchorTacticID"), out AnchorTacticID);
             objres.AnchorTacticID = AnchorTacticID;
+
+            objres.IsCreatePermission = bool.Parse(GetvalueFromObject(RowData, "IsCreatePermission"));
+            objres.IsRowPermission = bool.Parse(GetvalueFromObject(RowData, "IsRowPermission"));
             return objres;
         }
 
@@ -1358,14 +1594,14 @@ namespace RevenuePlanner.Services
 
         // Set the Plan add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string PlanAddString(PlanGridColumnData Row, bool IsEditable = true)
+        private string PlanAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             string grid_add = string.Empty;
-            if (IsEditable)
+            if (Row.IsCreatePermission == true)
             {
                 grid_add = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId +
-                " per=" + Convert.ToString(IsEditable).ToLower() +
+                " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() +
                 " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
 
@@ -1380,54 +1616,54 @@ namespace RevenuePlanner.Services
 
         // Set the Campaign add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string CampaignAddString(PlanGridColumnData Row, bool IsEditable = true)
+        private string CampaignAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             string grid_add = string.Empty;
-            if (IsEditable)
+            if (Row.IsCreatePermission == true)
             {
                 grid_add = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) id=Campaign alt=" + Row.AltId +
-                " per=" + Convert.ToString(IsEditable).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
+                " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
 
             string addColumn = @" <div class=grid_Search id=CP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add
                 + "<div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title = 'Select' dhtmlxrowid='" + Row.TaskId + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '"
                 + Convert.ToString(Row.Owner) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;"))
-                + "' altId=" + Row.AltId + " per=" + Convert.ToString(IsEditable).ToLower() + "' taskId= " + Row.EntityId + " csvId=Campaign_" + Row.EntityId + "></div>";
+                + "' altId=" + Row.AltId + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + "' taskId= " + Row.EntityId + " csvId=Campaign_" + Row.EntityId + "></div>";
             return addColumn;
         }
 
         // Set the program add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string ProgroamAddString(PlanGridColumnData Row, bool IsEditable = true)
+        private string ProgroamAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             string grid_add = string.Empty;
-            if (IsEditable)
+            if (Row.IsCreatePermission == true)
             {
                 grid_add = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Row.AltId +
-                " per=" + Convert.ToString(IsEditable).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
+                " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
             string addColumn = @" <div class=grid_Search id=PP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add
                 + " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Select' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId
                 + "' TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.Owner)
                 + "'  TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "'  altId=_" + Row.AltId +
-                " per=" + IsEditable.ToString().ToLower() + "'  taskId= " + Row.EntityId + " csvId=Program_" + Row.EntityId + "></div>";
+                " per=" + Row.IsCreatePermission.ToString().ToLower() + "'  taskId= " + Row.EntityId + " csvId=Program_" + Row.EntityId + "></div>";
             return addColumn;
         }
 
         // Set the tactic add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string TacticAddString(PlanGridColumnData Row, bool IsEditable = true)
+        private string TacticAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             string grid_add = string.Empty;
-            if (IsEditable)
+            if (Row.IsCreatePermission == true)
             {
                 grid_add = "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Row.ParentEntityId + "_" + Row.EntityId +
-                " per=" + IsEditable.ToString().ToLower() + "  LinkTacticper ='" + false + "' LinkedTacticId = '" + 0
+                " per=" + Row.IsCreatePermission.ToString().ToLower() + "  LinkTacticper ='" + false + "' LinkedTacticId = '" + 0
                 + "' tacticaddId='" + Row.EntityId + "' title=Add><i class='fa fa-plus-circle'></i></div>";
             }
             string addColumn = @" <div class=grid_Search id=TP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
@@ -1436,17 +1672,17 @@ namespace RevenuePlanner.Services
                 + " anchortacticid='" + Row.AnchorTacticID + "' dhtmlxrowid='" + Row.EntityType + "_" + Row.EntityId + "'  roitactictype='" + Row.AssetType
                 + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode
                 + "'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.Owner) + "' altId=__" + Row.ParentEntityId + "_" + Row.EntityId
-                + " per=" + IsEditable.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>";
+                + " per=" + Row.IsCreatePermission.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>";
             return addColumn;
         }
 
         // Set the line item add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string LineItemAddString(PlanGridColumnData Row, bool IsEditable = true)
+        private string LineItemAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             string grid_add = string.Empty;
-            if (IsEditable)
+            if (Row.IsCreatePermission == true)
             {
                 int LineItemTypeId = 0;
                 if (Row.LineItemType != null)
@@ -1456,7 +1692,7 @@ namespace RevenuePlanner.Services
 
                 grid_add = "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + Row.ParentEntityId + "_" + Row.EntityId
                 + " lt=" + LineItemTypeId
-                + " dt=" + HttpUtility.HtmlEncode(Row.EntityTitle) + " per=" + Convert.ToString(IsEditable).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
+                + " dt=" + HttpUtility.HtmlEncode(Row.EntityTitle) + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
             }
             string addColumn = @" <div class=grid_Search id=LP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add;

@@ -476,6 +476,10 @@ namespace RevenuePlanner.Models
                 }
             }
         }
+        //Permission variables
+        public bool IsCreatePermission { get; set; }
+        public bool IsRowPermission { get; set; }
+
         public List<Plandataobj> lstdata { get; set; }
         //public Plandataobj objdata { get; set; }
     }
@@ -717,6 +721,10 @@ namespace RevenuePlanner.Models
         }
         public string PackageTacticIds { get; set; }
         public string PlanYear { get; set; }
+
+        //Permission variables
+        public bool IsCreatePermission { get; set; }
+        public bool IsRowPermission { get; set; }
     }
 
     // Add By Nishant Sheth
