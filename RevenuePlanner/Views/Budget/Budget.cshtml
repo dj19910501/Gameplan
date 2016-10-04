@@ -167,6 +167,7 @@
                 AddBlankRow();
             }
         }
+        SetTooltip();
     });
 
     function LoadAfterParsing() {
@@ -538,5 +539,6 @@
         HomeGrid.addRow("newRow_0", rawdata);
         HomeGrid.cells("newRow_0", addcolindex).setValue("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id='Plan' alt='000' per='true' title='Add'><i class='fa fa-plus-circle'></i></div>");
         HomeGrid.setCellTextStyle("newRow_0", taskcolindex, "color:gray;font-style: italic;");
-    }
+    }    
 </script>
+

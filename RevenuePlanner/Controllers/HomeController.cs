@@ -60,7 +60,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
        
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false, bool ShowPopup = false)
         {
             var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
             var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
@@ -161,8 +161,9 @@ namespace RevenuePlanner.Controllers
            
             ViewBag.RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
             //set value to show inspect popup for url sent in email 
-            if (currentPlanId > 0)
+            if (currentPlanId > 0 && ShowPopup)
             {
+                ViewBag.ShowInspectPopup = true;
                 currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
             }
             else if (currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
@@ -175,10 +176,10 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ShowInspectPopup = false;
                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
             }
-            else
-            {
-                ViewBag.ShowInspectPopup = true;
-            }
+            //else 
+            //{
+            //    ViewBag.ShowInspectPopup = true;
+            //}
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
 

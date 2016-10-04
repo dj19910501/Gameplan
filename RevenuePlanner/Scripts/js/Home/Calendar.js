@@ -342,19 +342,8 @@ else if ( $.isNumeric(timeframe)) {
     }, 250);
 
     gantt.refreshData();   // Refresh Gantt to expand all tasks.
-    //set selected task from grid to calendar #2677
-    //if (selectedTaskID != "") {
-     
-    //    gantt.selectTask(selectedTaskID);
-    //    // var taskobj = gantt.getTask("L20212_C27321_P34566_T133644");
-    //    var selectedobj = $(".gantt_row.gantt_selected");
-    //    if (selectedobj != null && selectedobj != 'undefined' && selectedobj.length>0) {
-    //        var top = $($(".gantt_row.gantt_selected")).offset().top;
-    //        // var top = $(taskobj).offset().top
-    //        $(".gantt_data_area").scrollTop(top - 100);
-    //    }
-
-    //}
+    
+    SetTooltip();
 }
 //method to get open close state to load context from grid to calendar #2677
 function GetOpenCloseState() {
