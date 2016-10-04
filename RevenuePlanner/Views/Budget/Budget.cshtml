@@ -89,6 +89,8 @@
         header = $('<div/>').html(header.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         header = (header.toString().replace(/&amp;/g, '&'));
         HomeGrid.setHeader(header);
+        //assigned header to export to excel
+        gridheader = header;
         HomeGrid.setColTypes('@Model.ColType');
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');

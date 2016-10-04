@@ -1230,6 +1230,7 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
 function ExportToExcel(isHoneyComb) {
+  
     //start  
     var rowIdArray = [];
     var HoneyCombSelectedArray = [];
@@ -1326,12 +1327,15 @@ function ExportToExcel(isHoneyComb) {
         //get following columns index which need to show/hide in export
         var ActivityIdIndex = exportGrid.getColIndexById("ActivityId");
         var TypeIndex = exportGrid.getColIndexById("Type");
-        var machineNameIndex = exportGrid.getColIndexById("machinename");
+        var machineNameIndex = exportGrid.getColIndexById("MachineName");
         var colourCodeIndex = exportGrid.getColIndexById("colourcode");
         var iconIndex = exportGrid.getColIndexById("Buttons");
+        var lineItemTypeIdIndex = exportGrid.getColIndexById("LineItemTypeId");
+        
 
         if (isHoneyComb) {
             HomeGrid.forEachRow(function (id) {
+              
                 var d = HomeGrid.cells(id, iconIndex).getValue();
                 if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
                     exportGrid.setRowHidden(id, true);
@@ -1345,6 +1349,8 @@ function ExportToExcel(isHoneyComb) {
         exportGrid.setColumnHidden(machineNameIndex, true);
         exportGrid.setColumnHidden(colourCodeIndex, true);
         exportGrid.setColumnHidden(iconIndex, true);
+        //hide lineitemtypeid column index
+        exportGrid.setColumnHidden(lineItemTypeIdIndex, true);
 
         exportGrid.expandAll();
         exportGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
