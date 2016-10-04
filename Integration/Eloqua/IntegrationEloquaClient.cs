@@ -47,7 +47,7 @@ namespace Integration.Eloqua
 
         private Dictionary<string, string> _mappingTactic { get; set; }
         private Dictionary<string, string> _mappingImprovementTactic { get; set; }
-        private Dictionary<Guid, string> _mappingUser { get; set; }
+        private Dictionary<int, string> _mappingUser { get; set; }
         private List<CustomFiledMapping> _mappingCustomFields { get; set; }  // Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
         private List<CampaignNameConvention> SequencialOrderedTableList { get; set; }
         private List<string> IntegrationInstanceTacticIds { get; set; }
@@ -549,7 +549,7 @@ namespace Integration.Eloqua
                 //}
 
                 BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-                _mappingUser = objBDSservice.GetUserListByClientIdEx(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
+                _mappingUser = objBDSservice.GetUserListByClientIdEx(_clientId).Select(u => new { u.ID, u.FirstName, u.LastName }).ToDictionary(u => u.ID, u => u.FirstName + " " + u.LastName);
 
                 if (_CustomNamingPermissionForInstance)
                 {
@@ -1763,7 +1763,7 @@ namespace Integration.Eloqua
                     value = Convert.ToString(propInfo.GetValue(((T)obj), null));
                     if (mapping.Key == createdBy)
                     {
-                        value = _mappingUser[Guid.Parse(value)];
+                        value = _mappingUser[Convert.ToInt32(value)];
                     }
                     else if (mapping.Key == statDate || mapping.Key == endDate || mapping.Key == effectiveDate)
                     {

@@ -52,7 +52,7 @@ namespace Integration.Salesforce
         private Dictionary<string, string> _mappingImprovementCampaign { get; set; }
         private Dictionary<string, string> _mappingImprovementProgram { get; set; }
         private Dictionary<string, string> _mappingImprovementTactic { get; set; }
-        private Dictionary<Guid, string> _mappingUser { get; set; }
+        private Dictionary<int, string> _mappingUser { get; set; }
         private List<CustomFiledMapping> _mappingCustomFields { get; set; }  // Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
         private List<CampaignNameConvention> SequencialOrderedTableList { get; set; }
         private int _integrationInstanceId { get; set; }
@@ -3843,7 +3843,7 @@ namespace Integration.Salesforce
                 try
                 {
                     BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-                    _mappingUser = objBDSservice.GetUserListByClientIdEx(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
+                    _mappingUser = objBDSservice.GetUserListByClientIdEx(_clientId).Select(u => new { u.ID, u.FirstName, u.LastName }).ToDictionary(u => u.ID, u => u.FirstName + " " + u.LastName);
 
                     if (_CustomNamingPermissionForInstance)
                     {
@@ -6979,7 +6979,7 @@ namespace Integration.Salesforce
                         }
                         else if (mapping.Key == createdBy)
                         {
-                            value = _mappingUser[Guid.Parse(value)];
+                            value = _mappingUser[Convert.ToInt32(value)];
                             int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
                             value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
                         }
