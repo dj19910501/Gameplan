@@ -3,13 +3,7 @@
 @using RevenuePlanner.Helpers
 
 @{
-    //string AllocatedBy = ViewBag.AllocatedBy;
-    //string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
-    bool isquarter = false;
-    //if (AllocatedBy.ToLower() == strQuarters)
-    //{
-    //    isquarter = true;
-    //}
+    bool isquarter = ViewBag.isquarter;
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
@@ -199,9 +193,12 @@
             var Month = '';
             var YearCost;
             var MonthCost;
-            var Tab = HomeGrid.getColLabel(cellInd, 1);
+            var BudgetHdr = HomeGrid.getColLabel(cellInd, 0);
+            if (BudgetHdr.indexOf("-")) {
+                Tab = BudgetHdr.split(' ')[1];
+            }            
 
-            var TaskNameId = HomeGrid.getColIndexById("taskname");
+            var TaskNameId = HomeGrid.getColIndexById("TaskName");
             var TypeIndex = HomeGrid.getColIndexById("Type");
 
             if (TaskNameId == cellInd) {
@@ -226,17 +223,7 @@
             }
             else {
                 if (Tab.toLowerCase() == 'actual' || Tab.toLowerCase() == 'planned' || Tab.toLowerCase() == 'budget') {
-                    if (HomeGrid.getColLabel(cellInd) == "") {
-                        if (HomeGrid.getColLabel(cellInd - 1) == "") {
-                            Month = HomeGrid.getColLabel(cellInd - 2);
-                        }
-                        else {
-                            Month = HomeGrid.getColLabel(cellInd - 1);
-                        }
-                    }
-                    else {
-                        Month = HomeGrid.getColLabel(cellInd);
-                    }
+                    Month = BudgetHdr.split(' ')[0];
                 }
                 var IsTotalCost = false;
                 if (Tab.toLowerCase() == 'actual') {

@@ -12408,7 +12408,16 @@ namespace RevenuePlanner.Controllers
             IBudget Iobj = new RevenuePlanner.Services.Budget();
             int UserID = Sessions.User.ID;
             int ClientId = Sessions.User.CID;
-            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds); 
+            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds);
+            string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+            if (year.ToLower() == strThisMonth.ToLower())
+            {
+                ViewBag.isquarter = false;
+            }
+            else
+            {
+                ViewBag.isquarter = true;
+            }
             return PartialView("~/Views/Budget/Budget.cshtml", budgetModel);
 
         }

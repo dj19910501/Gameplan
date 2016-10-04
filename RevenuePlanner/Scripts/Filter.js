@@ -68,6 +68,7 @@ function OnYearChange(obj) {
     });
     years = years.slice(0, -1);
     if (years != null && years != "") {
+        filters.SelectedYears = [];
         filters.SelectedYears.push(years);
     }
     LoadPlanData(years);
@@ -370,6 +371,7 @@ function GetLastSetofViews(presetName) {
                     if (data.StatusNAmes.length != 0 && data.StatusNAmes.length != undefined) {
                         $("#ulStatus li input[type=checkbox]").removeAttr('checked');
                         $("#ulStatus li ").removeClass("close-list");
+                        filters.StatusIds = [];
                         for (i = 0 ; i < data.StatusNAmes.length; i++) {
                             $("#ulStatus li input[type=checkbox]").each(function () {
                                 var Value = $(this).attr("id");
@@ -397,6 +399,7 @@ function GetLastSetofViews(presetName) {
                 }
                 var AutoSelectedCustomField = 0;
                 if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
+                    filters.customFieldIds = [];
                     for (i = 0 ; i < data.Customfields.length; i++) {
                         var CustomFieldId = data.Customfields[i].ID.split('_')[1];
                         var CustomFieldValues = data.Customfields[i].Value;
@@ -494,6 +497,7 @@ function GetLastSetofViews(presetName) {
                 }
                 if (data.Years != null) {
                     if (data.Years.length != 0 && data.Years.length != undefined) {
+                        filters.SelectedYears = [];
                         $("#ulSelectedYear li input[type=checkbox]").removeAttr('checked');
                         $("#ulSelectedYear li ").removeClass("close-list");
                         for (i = 0 ; i < data.Years.length; i++) {
@@ -1244,4 +1248,47 @@ function SaveAsPreset() {
         $("#PlanModulesSection").css("display", "none");
         $("#Filtersidebar").css("display", "none");
     }
+}
+
+function toggleOwner(obj) {
+    GetLastview = false;
+    var id = $(obj).attr('id');
+    if ($(obj).is(':checked')) {
+        $("#liOwner" + id).addClass("close-list");
+    }
+    else {
+        $("#liOwner" + id).removeClass("close-list");
+    }
+    filters.OwnerIds = [];
+    $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+        var chkid = $(this).attr("id");
+        if ($(this).is(':checked')) {
+            filters.OwnerIds.push(chkid);
+        }
+    });
+    checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
+    $('#cOwnercount').text(checkedOwnercount);
+}
+
+function toggleTacticType(obj) {
+    GetLastview = false;
+    var id = $(obj).attr('id').toString().replace("CbTT", "");
+    if ($(obj).is(':checked')) {
+        $("#liTT" + id).addClass("close-list");
+    }
+    else {
+        $("#liTT" + id).removeClass("close-list");
+    }
+
+    filters.TacticTypeids = [];
+    $("#ulTacticType li input[type=checkbox]").each(function () {
+        var chkid = $(this).attr("id");
+        if ($(this).is(':checked')) {
+            filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+        }
+    });
+    checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
+    $('#cTTcount').text(checkedTTcount);
+
+
 }

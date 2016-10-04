@@ -26,17 +26,18 @@ namespace RevenuePlanner.Services
             objColumnView = new ColumnView();
             objCurrency = new RevenuePlanner.Services.Currency();
         }
+        private const string manageviewicon = "<a href=javascript:void(0) onclick=OpenCreateNew(false) class=manageviewicon  title='Open Column Management'><i class='fa fa-edit'></i></a>";
         private const string Open = "1";
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
-        public const string FixHeader = "ActivityId,Type,machinename,,,,,,,";
+        public const string FixHeader = "ActivityId,Type,machinename,,,,,Total Budget" + manageviewicon + ",Planned Cost" + manageviewicon + ",Total Actual" + manageviewicon;
         public const string EndColumnsHeader = ",Unallocated Budget";
         public const string FixColumnIds = "ActivityId,Type,MachineName,colourcode,LineItemTypeId,TaskName,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",Budget";
         public const string FixColType = "ro,ro,ro,ro,ro,tree,ro,ed,ed,ed";
         public const string EndColType = ",ro";
-        public const string FixcolWidth = "100,100,100,10,100,302,75,100,100,100";
-        public const string EndcolWidth = ",100";
+        public const string FixcolWidth = "100,100,100,10,100,302,75,100,110,100";
+        public const string EndcolWidth = ",150";
         public const string FixColsorting = "na,na,na,na,na,na,na,na,na,na";
         public const string EndColsorting = ",na";
         public const string QuarterPrefix = "Q";
@@ -688,10 +689,11 @@ namespace RevenuePlanner.Services
             colType = FixColType;
             width = FixcolWidth;
             colSorting = FixColsorting;
+            string headerYear = firstYear;//column header year text which will bind with respective header
             if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
                 int quarterCounter = 1;
-                string headerYear = firstYear;//column header year text which will bind with respective header
+                
                 int multiYearCounter = 23;//If budget data need to show with multi year then set header for multi quarter
                 if (!isMultiYear)
                 {
@@ -716,7 +718,7 @@ namespace RevenuePlanner.Services
 
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
                     colType = colType + ",ed,ed,ed";
-                    width = width + ",100,100,100";
+                    width = width + ",130,130,130";
                     colSorting = colSorting + ",str,str,str";
 
                     if (quarterCounter == 4)//Check if queter counter reach to last quarter then reset it
@@ -736,13 +738,13 @@ namespace RevenuePlanner.Services
                 {
                     DateTime dt = new DateTime(2012, i, 1);
 
-                    setHeader = setHeader + "," + dt.ToString("MMM").ToUpper() + ",#cspan,#cspan";
+                    setHeader = setHeader + "," + dt.ToString("MMM").ToUpper() + "-" + headerYear + " Budget " + manageviewicon
+                                        + "," + dt.ToString("MMM").ToUpper() + "-" + headerYear + " Planned " + manageviewicon
+                                        + "," + dt.ToString("MMM").ToUpper() + "-" + headerYear + " Actual " + manageviewicon;
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
-                    attachHeader.Add(ColBudget + manageviewicon);
-                    attachHeader.Add(ColPlanned + manageviewicon);
-                    attachHeader.Add(ColActual + manageviewicon);
+                    
                     colType = colType + ",ed,ed,ed";
-                    width = width + ",100,100,100";
+                    width = width + ",130,130,130";
                     colSorting = colSorting + ",str,str,str";
                 }
             }
@@ -750,7 +752,7 @@ namespace RevenuePlanner.Services
             setHeader = setHeader + ",UnAllocated Cost";
             columnIds = columnIds + "," + "UnAllocatedCost";
             colType = colType + ",ro";
-            width = width + ",100";
+            width = width + ",150";
             colSorting = colSorting + ",str";
            
 
@@ -800,7 +802,7 @@ namespace RevenuePlanner.Services
             return BudgetDataObjList;
         }
 
-        private List<Budgetdataobj> CampaignMonth(List<PlanBudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string activityId, bool isNextYearPlan,bool IsMulityearPlan)
+        private List<Budgetdataobj> CampaignMonth(List<PlanBudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string activityId, bool isNextYearPlan, bool IsMulityearPlan)
         {
             PlanBudgetModel Entity = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
             bool isTactic = activityType == Helpers.ActivityType.ActivityTactic ? true : false;
@@ -809,14 +811,14 @@ namespace RevenuePlanner.Services
             {
                 if (!isNextYearPlan)
                 {
-                BudgetDataObjList = CampignMonthlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList);
-            }
+                    BudgetDataObjList = CampignMonthlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList);
+                }
             }
             else
             {
                 if (!isNextYearPlan)
                 {
-                    BudgetDataObjList = CampignQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList,IsMulityearPlan);
+                    BudgetDataObjList = CampignQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, IsMulityearPlan);
                 }
                 else
                 {
@@ -915,7 +917,7 @@ namespace RevenuePlanner.Services
             return BudgetDataObjList;
         }
 
-        private List<Budgetdataobj> CampignQuarterlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList,bool IsMultiYearPlan)
+        private List<Budgetdataobj> CampignQuarterlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList, bool IsMultiYearPlan)
         {
             int multiYearCounter = 23;
             if (!isMultiYear)
@@ -935,7 +937,7 @@ namespace RevenuePlanner.Services
                     objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jan + Entity.MonthValues.Feb + Entity.MonthValues.Mar);
                     objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan + Entity.MonthValues.CFeb + Entity.MonthValues.CMar);
                     objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan + Entity.MonthValues.AFeb + Entity.MonthValues.AMar);
-                    
+
                 }
                 else if (i == 4)
                 {
@@ -955,29 +957,29 @@ namespace RevenuePlanner.Services
                     objCostMonth.value = Convert.ToString(Entity.MonthValues.COct + Entity.MonthValues.CNov + Entity.MonthValues.CDec);
                     objActualMonth.value = Convert.ToString(Entity.MonthValues.AOct + Entity.MonthValues.ANov + Entity.MonthValues.ADec);
                 }
-                else if (i==13)
+                else if (i == 13)
                 {
-                    objBudgetMonth.value = IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.Jan + Entity.NextYearMonthValues.Feb + Entity.NextYearMonthValues.Mar):"---";
-                    objCostMonth.value = IsMultiYearPlan?Convert.ToString(Entity.NextYearMonthValues.CJan + Entity.NextYearMonthValues.CFeb + Entity.NextYearMonthValues.CMar):"---";
+                    objBudgetMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.Jan + Entity.NextYearMonthValues.Feb + Entity.NextYearMonthValues.Mar) : "---";
+                    objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CJan + Entity.NextYearMonthValues.CFeb + Entity.NextYearMonthValues.CMar) : "---";
                     objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.AJan + Entity.NextYearMonthValues.AFeb + Entity.NextYearMonthValues.AMar) : "---";
                 }
-                else if (i==16)
+                else if (i == 16)
                 {
-                    objBudgetMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.Apr + Entity.NextYearMonthValues.May + Entity.NextYearMonthValues.Jun):"---";
-                    objCostMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.CApr + Entity.NextYearMonthValues.CMay + Entity.NextYearMonthValues.CJun):"---";
-                    objActualMonth.value = IsMultiYearPlan?Convert.ToString(Entity.NextYearMonthValues.AApr + Entity.NextYearMonthValues.AMay + Entity.NextYearMonthValues.AJun):"---";
+                    objBudgetMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.Apr + Entity.NextYearMonthValues.May + Entity.NextYearMonthValues.Jun) : "---";
+                    objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CApr + Entity.NextYearMonthValues.CMay + Entity.NextYearMonthValues.CJun) : "---";
+                    objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.AApr + Entity.NextYearMonthValues.AMay + Entity.NextYearMonthValues.AJun) : "---";
                 }
-                else if (i==19)
+                else if (i == 19)
                 {
-                    objBudgetMonth.value = IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.Jul + Entity.NextYearMonthValues.Aug + Entity.NextYearMonthValues.Sep):"---";
-                    objCostMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.CJul + Entity.NextYearMonthValues.CAug + Entity.NextYearMonthValues.CSep):"---";
-                    objActualMonth.value = IsMultiYearPlan?Convert.ToString(Entity.NextYearMonthValues.AJul + Entity.NextYearMonthValues.AAug + Entity.NextYearMonthValues.ASep):"---";
+                    objBudgetMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.Jul + Entity.NextYearMonthValues.Aug + Entity.NextYearMonthValues.Sep) : "---";
+                    objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CJul + Entity.NextYearMonthValues.CAug + Entity.NextYearMonthValues.CSep) : "---";
+                    objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.AJul + Entity.NextYearMonthValues.AAug + Entity.NextYearMonthValues.ASep) : "---";
                 }
-                else if (i==22)
+                else if (i == 22)
                 {
-                    objBudgetMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.Oct + Entity.NextYearMonthValues.Nov + Entity.NextYearMonthValues.Dec):"---";
-                    objCostMonth.value = IsMultiYearPlan?Convert.ToString(Entity.NextYearMonthValues.COct + Entity.NextYearMonthValues.CNov + Entity.NextYearMonthValues.CDec):"---";
-                    objActualMonth.value =IsMultiYearPlan? Convert.ToString(Entity.NextYearMonthValues.AOct + Entity.NextYearMonthValues.ANov + Entity.NextYearMonthValues.ADec):"---";
+                    objBudgetMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.Oct + Entity.NextYearMonthValues.Nov + Entity.NextYearMonthValues.Dec) : "---";
+                    objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.COct + Entity.NextYearMonthValues.CNov + Entity.NextYearMonthValues.CDec) : "---";
+                    objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.AOct + Entity.NextYearMonthValues.ANov + Entity.NextYearMonthValues.ADec) : "---";
                 }
                 BudgetDataObjList.Add(objBudgetMonth);
                 BudgetDataObjList.Add(objCostMonth);
@@ -1012,7 +1014,7 @@ namespace RevenuePlanner.Services
                     objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jan + Entity.MonthValues.Feb + Entity.MonthValues.Mar);
                     objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan + Entity.MonthValues.CFeb + Entity.MonthValues.CMar);
                     objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan + Entity.MonthValues.AFeb + Entity.MonthValues.AMar);
-                    
+
                 }
                 else if (i == 16)
                 {
