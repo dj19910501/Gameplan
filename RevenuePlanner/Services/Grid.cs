@@ -159,7 +159,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Get plan grid data with default and custom fields columns 
         /// </summary>
-        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds,string viewBy)
+        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy)
         {
             _ClientId = ClientId;
             _UserId = UserId;
@@ -221,7 +221,7 @@ namespace RevenuePlanner.Services
             }
 
             // Get selected columns data
-            List<PlanGridColumnData> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns,viewBy)).ToList();
+            List<PlanGridColumnData> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
 
             // Merge header of plan grid with custom fields
             ListOfDefaultColumnHeader.AddRange(GridCustomHead(ListOfCustomData.CustomFields, customColumnslist));
@@ -352,7 +352,7 @@ namespace RevenuePlanner.Services
             }
 
             // Get selected columns data
-            List<PlanGridColumnData> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns,viewBy)).ToList();
+            List<PlanGridColumnData> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
 
             // Get List of custom fields and it's entity's values
             GridCustomColumnData ListOfCustomData = (GridCustomColumnData)objCache.Returncache(Convert.ToString(Enums.CacheObject.ListPlanGridCustomColumnData));
@@ -1011,21 +1011,23 @@ namespace RevenuePlanner.Services
             else
             {
                 lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() &&
-                    ( ( (a.Owner.HasValue) && lstSubordinatesIds.Contains(a.Owner.Value)) || a.Owner == UserId))
+                    (((a.Owner.HasValue) && lstSubordinatesIds.Contains(a.Owner.Value)) || a.Owner == UserId))
                     .ToList().ForEach(a => a.IsCreatePermission = true);
             }
             // Update row permission for plan for created by
-            lstData.Where(a => a.Owner == UserId).ToList().ForEach(a => a.IsRowPermission = true);
 
-            if (objPermission.PlanEditAll == true)
+            if (lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() && a.Owner == UserId).Any())
+            {
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() && a.Owner == UserId).ToList().ForEach(a => a.IsRowPermission = true);
+            }
+            else if (objPermission.PlanEditAll == true)
             {
                 lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower()).ToList()
                     .ForEach(a => a.IsRowPermission = true);
             }
-
-            if (objPermission.PlanEditSubordinates == true)
+            else if (objPermission.PlanEditSubordinates == true)
             {
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower()  && ((a.Owner.HasValue) && lstSubordinatesIds.Contains(a.Owner.Value)) )
+                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() && ((a.Owner.HasValue) && lstSubordinatesIds.Contains(a.Owner.Value)))
                     .ToList().ForEach(a => a.IsRowPermission = true);
             }
             return lstData;
@@ -1116,7 +1118,7 @@ namespace RevenuePlanner.Services
             {
                 // Update line item create permission 
                 lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower() &&
-                    ((a.Owner.HasValue) && ( (a.Owner.Value == UserId) || lstSubordinatesIds.Contains(a.Owner.Value)))).ToList()
+                    ((a.Owner.HasValue) && ((a.Owner.Value == UserId) || lstSubordinatesIds.Contains(a.Owner.Value)))).ToList()
                     .ForEach(a => a.IsCreatePermission = true);
             }
             else
@@ -1362,17 +1364,18 @@ namespace RevenuePlanner.Services
                         IsEditable = objHomeGridProp.lockedstateone;
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
-                    if ((pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate)) && 
-                            (objres.EntityType.ToUpper().ToString() == Enums.EntityType.Lineitem.ToString().ToUpper()) || 
-                            ( (viewBy.ToUpper() != PlanGanttTypes.Tactic.ToString().ToUpper()) && (objres.EntityType.ToUpper().ToString() == viewBy.ToUpper()) ) 
+                    if ((pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate)) &&
+                            (objres.EntityType.ToUpper().ToString() == Enums.EntityType.Lineitem.ToString().ToUpper()) ||
+                            ((viewBy.ToUpper() != PlanGanttTypes.Tactic.ToString().ToUpper()) && (objres.EntityType.ToUpper().ToString() == viewBy.ToUpper()))
                            )
                     {
                         objPlanData.value = "-";
                         objPlanData.actval = "-";
                     }
-                    else {
-                    objPlanData.value = GetvalueFromObject(RowData, pair.Name);
-                    objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                    else
+                    {
+                        objPlanData.value = GetvalueFromObject(RowData, pair.Name);
+                        objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
                         if (objres.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
                         {
                             if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
@@ -1438,7 +1441,7 @@ namespace RevenuePlanner.Services
                         }
                         objPlanData.style = cellTextColor;
 
-                }
+                    }
                 }
                 lstPlanData.Add(objPlanData);
             }
@@ -1594,8 +1597,8 @@ namespace RevenuePlanner.Services
             objres.TacticType = GetvalueFromObject(RowData, "TacticType");
             if (objres.EntityType.ToString().ToUpper() != Enums.EntityType.Lineitem.ToString().ToUpper())
             {
-            objres.StartDate = Convert.ToDateTime(GetvalueFromObject(RowData, "StartDate"));
-            objres.EndDate = Convert.ToDateTime(GetvalueFromObject(RowData, "EndDate"));
+                objres.StartDate = Convert.ToDateTime(GetvalueFromObject(RowData, "StartDate"));
+                objres.EndDate = Convert.ToDateTime(GetvalueFromObject(RowData, "EndDate"));
             }
             objres.Status = GetvalueFromObject(RowData, "Status");
             objres.EntityTitle = GetvalueFromObject(RowData, "EntityTitle");
