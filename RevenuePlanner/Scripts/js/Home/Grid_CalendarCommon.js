@@ -8,6 +8,11 @@ $('#btngridcalendar').click(function () {
     if ($('#errorMsg').css('display') == 'block') {
         $('#errorMsg').css('display', 'none');
     }
+    // get scroll set of selected row from grid to calendar
+    scrollstate = {
+        y: HomeGrid.objBox.scrollTop,
+        x: HomeGrid.objBox.scrollLeft,
+    }
 
     $('#exp-serach').css('display', 'none');
     if ($('#btnbudget').hasClass('P-icon-active')) {
@@ -17,6 +22,7 @@ $('#btngridcalendar').click(function () {
     }
     else {
         if ($('#IsGridView').val().toLowerCase() == "false") {
+            scrollstate = gantt.getScrollState();
             isCalendarView = false;
             SetcookieforSaveState();
             LoadPlanGrid();
@@ -31,6 +37,7 @@ $('#btngridcalendar').click(function () {
     }
     RefershPlanHeaderCalc();
     ShowhideDataonGridCalendar();
+    GlobalSearch();
 });
 //load context from calendar to grid:Context management #2677
 function SetcookieforSaveState()
@@ -68,7 +75,7 @@ function ShowhideDataonGridCalendar() {
         $('#btngridcalendar').addClass('P-icon-active');
     }
     $('#divgridview').removeClass('budget-grid');
-    $('#txtGlobalSearch').val('');
+   // $('#txtGlobalSearch').val('');
     IsBudgetGrid = false;
     $('#ImportBtn').parent().removeClass('round-corner');
     $('#ImportBtn').hide();
@@ -88,11 +95,13 @@ $('#btnbudget').click(function () {
     $('#exp-serach').css('display', 'none');
     LoadBudgetGrid();
     ShowHideDataonBudgetScreen();
+    GlobalSearch();
+
 });
 
 function ShowHideDataonBudgetScreen() {
     $('#ImportBtn').parent().addClass('round-corner');
-    $('#txtGlobalSearch').val('');
+   // $('#txtGlobalSearch').val('');
     IsBudgetGrid = true;
     $('#divupcomingact').show();
     $('#btngridcalendar').removeClass('P-icon-active');
@@ -1416,10 +1425,11 @@ function OpenDropdown() {
 }
 var SearchTextforcal = ""
 function GlobalSearch() {
+    var SearchText = $('#txtGlobalSearch').val();
+    if (SearchText != "" && SearchText != 'undefined') {
     if ($('#IsGridView').val() == 'True' || IsBudgetGrid) {
 
         var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
-        var SearchText = $('#txtGlobalSearch').val();
         GlobalSearchonGrid(SearchText, SearchDDLValue);
     }
     else {
@@ -1477,7 +1487,7 @@ function GlobalSearch() {
             task.$open = true;
         });
         gantt.render(); // To expand in gantt
-
+        }
     }
 }
 

@@ -7578,7 +7578,7 @@ BEGIN
 							,ProgramPlannedCost.PlannedCost FROM Program_PlannedCost ProgramPlannedCost WHERE 
 							Hireachy.EntityType='Program'
 								AND Hireachy.EntityId=ProgramPlannedCost.PlanProgramId)ProgramPlannedCost
-	
+	Order by Hireachy.EntityTitle
 END
 
 GO
@@ -8261,7 +8261,7 @@ BEGIN
 
   
 /* Start - Added by Arpita Soni for Ticket #2622 on 10/03/2016 */
-
+Go
 -- DROP AND CREATE STORED PROCEDURE [dbo].[LineItem_Cost_Allocation]
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'LineItem_Cost_Allocation') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
