@@ -50,7 +50,7 @@ BEGIN
 			   FROM  [dbo].Alerts al
 			   INNER JOIN dbo.[Alert_Rules] AS ar ON ar.RuleId = al.RuleId  AND ar.UserId = al.UserId
 			   LEFT JOIN dbo.Stage ON Stage.Code = ar.Indicator  AND ar.ClientId = Stage.ClientId
-			   LEFT JOIN dbo.vClientWise_EntityList as vw on vw.EntityId = ar.EntityId 
+			   LEFT JOIN dbo.vClientWise_EntityList as vw on vw.EntityId = ar.EntityId and vw.Entity = ar.EntityType
 			   WHERE al.DisplayDate <= GETDATE() AND (isnull(al.IsEmailSent,'') <> 'Success') AND (ar.UserEmail IS NOT NULL AND  ar.UserEmail <> '')
   
     
@@ -109,7 +109,7 @@ BEGIN
 		
         Set @subject = @EntityTitle + ' is performing ' + @SubjectComparision 
 
-		SET @body = @EntityTitle + '''s <b>' + @Indicator +' </b> is '+ @Comparision + ' ' + CONVERT(nvarchar(50),@IndicatorGoal) +'% of the goal as of <b>'+ CONVERT(VARCHAR(11),@DisplayDate,106)  + '</b><br><br>Item : ' +  @EntityTitle + '<br>Plan Name : '+ @PlanName 
+		SET @body = 'Hi, <br><br>'+ @EntityTitle + '''s <b>' + @Indicator +' </b> is '+ @Comparision + ' ' + CONVERT(nvarchar(50),@IndicatorGoal) +'% of the goal as of <b>'+ CONVERT(VARCHAR(11),@DisplayDate,106)  + '</b><br><br>Item : ' +  @EntityTitle + '<br>Plan Name : '+ @PlanName 
 	    
 		IF (@ActualGoal IS NOT NULL AND @ActualGoal <> '' )
 		SET @body = @body +  '<br>Goal : $'+ cast(Format(@ActualGoal, '##,##0') as varchar) 
@@ -122,16 +122,18 @@ BEGIN
 		 BEGIN
 			 IF @Entity <> 'Plan' 
 			 BEGIN
-			     SET @UrlString = @Url +'/home?currentPlanId='+convert(nvarchar(max), @planId)+'&plan'+@Entity+'Id='+convert(nvarchar(max),@EntityId)+'&activeMenu=Plan'
+			 print @Entity
+			     SET @UrlString = @Url +'home?currentPlanId='+convert(nvarchar(max), @planId)+'&plan'+ Replace(@Entity,' ' ,'')+'Id='+convert(nvarchar(max),@EntityId)+'&activeMenu=Home&ShowPopup=true'
 			 END
 			 ELSE
 			 BEGIN
-			     SET @UrlString = @Url +'/home?currentPlanId='+convert(nvarchar(max), @planId)+'&activeMenu=Plan'
+			     SET @UrlString = @Url +'home?currentPlanId='+convert(nvarchar(max), @planId)+'&activeMenu=Home&ShowPopup=true'
 			 END
 		 END
 
 		set @body = @body + '<br><br><html><body> URL : <a href=' + @UrlString +'>'+@UrlString+'</a></body></html>' 
 
+		set @body = @body + '<br> Thank you,<br>Hive9 Plan Admin.'
         
         EXEC @hr = sp_oamethod @imsg, 'configuration.fields.update', null
         EXEC @hr = sp_oasetproperty @imsg, 'to', @Email
@@ -174,4 +176,3 @@ BEGIN
   DEALLOCATE Cur_Mail
   END
   END
-  Go
