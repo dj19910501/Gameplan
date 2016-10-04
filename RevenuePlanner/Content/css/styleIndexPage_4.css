@@ -117,7 +117,7 @@ a:hover, a:focus {
 	display: inline-block;
 	margin-right: 0;
 }
-
+.no-edit, .no-edit span{color:#a2a2a2 !important}
 .sbHolder {
 	-moz-border-bottom-colors: none;
 	-moz-border-left-colors: none;
@@ -1180,8 +1180,10 @@ span.filter-count, span.filter-count > span {
 	color: inherit;
 }
 .P-icon-active, .new-btn-plan-left:hover, .new-btn-plan-right:hover {
-	background-color: #f0f0f0 !important;
-	color: inherit !important;
+	/*background-color: #f0f0f0 !important;
+	color: inherit !important;*/
+    background-color: #abd7e1 !important;
+    color: #fff !important;
 }
 .viewby-wrap {
 	float: left;
@@ -1402,26 +1404,26 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td:hover .fa {
     } 
 /*============= Footer Css ===================== */
 footer {
-	width: 50%;
+	display:none
+}
+.footer {
+	width:calc(100% - 291px);
 	text-align: center;
-	position: fixed;
+	position: absolute;
     bottom: 0;
     right:0;
     left:0;
-    margin:auto;
+    margin:5px auto 5px 281px;
     z-index:0;
 }
-footer > span {
+.footer > span {
 	background: transparent none repeat scroll 0 0;
     border-top:none;
 	color: #3e3f37;
 	display: inline-block;
-	float: right;
 	font-size: 12px;
-	padding: 8px 0;
-	width: 100%;
 }
-footer a {
+.footer a {
 	color: #3e3f37;
 	margin: 0 5px;
 	text-decoration: underline;
@@ -1444,42 +1446,48 @@ footer a {
     right: -8px;
     top: -11px;
 }
-.changeView .fa{  color: #3e3f37;font-size: 22px;}
+.changeView .fa{  color: #3e3f37;font-size: 22px; background: #fff none repeat scroll 0 0;}
 .task-tbl #divgridview table, 
 .task-tbl #GridGanttContent .gantt_container,
 .task-tbl #GridGanttContent .gantt_container .gantt_tree_content{font-family:'source_sans_proregular', Arial, sans-serif !important; font-size:14px; font-weight:normal !important}
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td{font-family:'source_sans_proregular', Arial, sans-serif !important;font-size:13px;}
-.task-tbl .grid_add, .task-tbl .gantt_add,
-.task-tbl .grid_Search{
-	background-image: none;
-	width: 22px;
-	cursor: pointer;
+.grid_add,  .gantt_add,
+.grid_Search{
+background-image: none ;
+width: 22px;
+cursor: pointer;
 }
-.task-tbl .grid_add .fa.fa-plus-circle, .task-tbl .gantt_add .fa,
-.task-tbl .grid_Search .fa{
-	color: #9c9fa0;
-	font-size: 18px;
+.grid_add .fa.fa-plus-circle,  .gantt_add .fa,
+.grid_Search .fa{
+color: #9c9fa0;
+font-size: 18px;
 }
-.task-tbl .grid_Search .fa{font-size: 15px;}
-.task-tbl .grid_add:hover .fa.fa-plus-circle, 
-.task-tbl .gantt_add:hover .fa, 
-.task-tbl .grid_Search:hover .fa {
-	color: #89CEDE;
+.grid_Search .fa{font-size: 15px;}
+.grid_add:hover .fa.fa-plus-circle, 
+.gantt_add:hover .fa, 
+.grid_Search:hover .fa {
+color: #89CEDE;
 }
 /* For odd row color */
-.task-tbl #divgridview.budget-grid .odd_dhx_skyblue,
+/*.task-tbl #divgridview.budget-grid .odd_dhx_skyblue,*/
 .task-tbl .gantt_task_row.odd {background:#f2f2f2}
 
  .task-tbl #divgridview .obj .uneven {
         background-color: #f2f2f2;
     }
-.task-tbl #divgridview  #gridbox  div:first-child .obj .uneven, 
+/*.task-tbl #divgridview  #gridbox  div:first-child .obj .uneven, 
 .task-tbl #divgridview.budget-grid div#gridbox .gridbox.gridbox_dhx_skyblue table.obj .odd_dhx_skyblue{
     background:#fff !important;
+}*/
+#divgridview #gridbox div:nth-child(2) > .objbox table.obj tr:nth-child(odd){
+    background-color: #fff;
+}
+#divgridview  #gridbox div:nth-child(2) > .objbox table.obj tr:nth-child(even){
+    background:#f2f2f2 !important;
 }
 /* =============== Calendar View CSS =============== */
 .task-tbl #divgridview, .task-tbl #GridGanttContent {
-    overflow:hidden !important;width: 100%;margin:0; height:64vh; 
+    overflow:hidden !important;width: 100%;margin:0; height:63vh; 
 }
 .task-tbl #GridGanttContent .gantt-padding.lenght-div{min-height:100% !important;}
 .task-tbl .calendar-gant-table{height:100% !important}
@@ -1508,7 +1516,7 @@ footer a {
 
 /* =========== Grid and Budget  View CSS ======== */
 .task-tbl #divgridview .xhdr, .task-tbl #divgridview .hdr{ height: 54px !important; }
-.task-tbl #divgridview.budget-grid .xhdr, .task-tbl #divgridview.budget-grid .hdr{ height: auto !important; }
+.task-tbl #divgridview.budget-grid .xhdr, .task-tbl #divgridview.budget-grid .hdr{ height: 54px !important; }
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr{height:auto !important; }
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td {
     vertical-align: middle;
@@ -1536,16 +1544,19 @@ footer a {
 .task-tbl #gridbox.financeReportGrid div.objbox table tr td{text-align:center}
 .task-tbl .market-activity-main .btn-dropdwn{position: absolute; top: 40px; z-index: 11;}
 
-#divgridview.budget-grid #gridbox table.hdr tr td{padding:0 !important; line-height: 13px !important;}
+/*#divgridview.budget-grid #gridbox table.hdr tr td{padding:0 !important; line-height: 13px !important;}*/
 #divgridview.budget-grid #gridbox table.hdr tr:nth-child(2), #divgridview.budget-grid #gridbox div:nth-child(2) table.hdr tr:nth-child(2) {
-    height: 19px !important;
-    line-height: 19px !important
+    /*height: 19px !important;*/
+    /*line-height: 19px !important*/
 }
 #divgridview.budget-grid #gridbox table.hdr tr:nth-child(3), #divgridview.budget-grid #gridbox div:nth-child(2) table.hdr tr:nth-child(3) {
-    height: 35px !important;
+    /*height: 35px !important;*/
     line-height: 13px !important
 }
-#divgridview.budget-grid #gridbox table.hdr{height:auto !important}
+/*#divgridview.budget-grid #gridbox table.hdr{height:auto !important}*/
+
+#divgridview  #gridbox div:nth-child(2) > .objbox table.obj{width:100% !important}/* specilly applied on Budget grid*/
+
 /* ============== Search box CSS ================ */
 /*#divgridview .xhdr{ height: 37px !important; }*/
 
@@ -1698,7 +1709,8 @@ footer a {
 .modal-popup-title h2 {margin: 0 0 0 4%;}
 
 h2.title-simple .Save-icon-white.btn-blue, 
-h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
+h2.title-simple .add-icon-white.btn-blue,
+h2.title-simple button {margin-bottom:0}
 
 .modal-popup-title h2 input{
     color: #4d4d4d;
@@ -1752,24 +1764,56 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
 /* ============== Inspection Window new style End ================= */ 
 #multipleselect_ddlTabViewBy{max-width:250px !important}
 #MessageDisplay{ 
-    margin: 0 auto;
+    margin: 0 auto 0 40px;
     position: absolute;
-    width: calc(100% - 292px);
+    width: calc(100% - 332px);
     z-index: 1;
 }
 
+.dhx_clist {
+    border: 1px solid #aaa !important;
+    border-radius: 5px;
+    max-height: 250px;
+    overflow: auto;
+    padding: 2px 2px 4px 10px !important;
+    width: 150px;
+    z-index: 300;
+}
+.dhx_clist label {
+    padding-left: 20px;
+    text-align: left;
+    font-family: source_sans_prosemibold,Arial,sans-serif;
+    font-size: 13px ;
+    line-height: 20px;
+    color:#333;
+    margin-bottom: 0;
+}
+.dhx_clist input {
+    float: left;
+}
+.dhx_clist > div >input[type="button"] {
+    margin:5px auto 0 15px;
+    backface-visibility: hidden;
+    color: #f4f5ed;
+    text-shadow: none !important;
+    background: #89cede none repeat scroll 0 0;
+    border: medium none !important;
+    box-shadow: none;
+    display: block;
+    border-radius:4px;
+}
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
 .task-tbl #divgridview, 
 .task-tbl #GridGanttContent {
-    height: 59.5vh; 
+    height: 58vh; 
 }
 /*.partial_wrapper.new-wrapper{height:61%}*/
 }
 @media screen and ( max-height: 600px ){
     .task-tbl #divgridview, 
     .task-tbl #GridGanttContent {
-    height: 48.5vh; 
+    height: 47.5vh; 
 }
     }
 @media (max-width: 1550px) {
@@ -1836,7 +1880,7 @@ h2.title-simple .add-icon-white.btn-blue {margin-bottom:0}
         overflow-x: auto !important;
         overflow-y: auto !important;
     }*/
-    footer{display:none}
+   
 }
 @media (max-width: 1279px) {
     body {

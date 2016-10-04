@@ -7192,11 +7192,11 @@ li.close-list {
 	padding: 15px 0;
 }
 .gantt_grid .gantt_row.gantt_selected, .gantt_grid_data .gantt_row.odd.gantt_selected {
-	background-color: #f2f2f2 !important;/*fff3a1*/
+	background-color: #ABD7E1 !important;/*fff3a1*/
 }
 .gantt_grid_data .gantt_row.gantt_selected, 
 .gantt_grid_data .gantt_row.odd.gantt_selected, 
-.gantt_task_row.gantt_selected{background-color: #f2f2f2 !important;}
+.gantt_task_row.gantt_selected{background-color: #ABD7E1 !important;}
 .ActiveFilter {
 	color: #3e3f37; /* Edited for #2219 - Bhumika */
 	font-size: 17px;
@@ -13470,7 +13470,10 @@ input.serach-input {
     padding: 0 15px;
      margin-bottom: 0;
 }
-
+ .ddlViewByLineItems {
+        float: right;
+        margin: 0 12px 10px 0;
+    }
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
@@ -15120,7 +15123,3 @@ tbody.column2 {
 	display: block;
 }
 
- .ddlViewByLineItems {
-        float: right;
-        margin: 0 12px 10px 0;
-    }

@@ -32,7 +32,7 @@
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 <!-- Stylesheet Only For Homepage -->
 @section FilterEx{
-    <link href="~/Content/css/styleIndexPage.css" rel="stylesheet" />
+    <link href="~/Content/css/styleIndexPage_4.css" rel="stylesheet" />
 }
 
 @* Sidebar Section Start *@
@@ -188,6 +188,9 @@
     </div>
 </div>
 <div id="dvCopyEntity"></div>
+<div class="footer">
+    <span class="source-sans-proregular">Copyright &copy; @System.DateTime.Now.Year.ToString() Hive9, Inc. All rights reserved.<a href="http://www.hive9.com/ssa-sla" target="_blank">Terms of Use</a></span>
+</div>
 @Html.Partial("~/Views/Plan/_PlanGridVariable.cshtml")
 @Html.Partial("~/Views/Home/_CalExportPDFHeaderHtml.cshtml")
 <div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
