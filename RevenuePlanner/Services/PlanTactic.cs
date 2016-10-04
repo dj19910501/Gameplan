@@ -484,15 +484,15 @@ namespace RevenuePlanner.Services
                 ActivityId = Convert.ToString(row["ActivityId"]),   // Activity id for the entity
                 ParentActivityId = Convert.ToString(row["ParentActivityId"]),  // Activity Id of parent entity
                 ActivityName = Convert.ToString(row["ActivityName"]),   // Title of the activity
-                PlannedCost = row["Cost"] != null ? objCurrency.GetValueByExchangeRate(Convert.ToDouble(row["Cost"]),PlanExchangeRate) : 0,  // Planned cost for the entity
+                PlannedCost = row["Cost"] != DBNull.Value ? objCurrency.GetValueByExchangeRate(Convert.ToDouble(row["Cost"]),PlanExchangeRate) : 0,  // Planned cost for the entity
                 StartDate = Convert.ToDateTime(row["StartDate"]),   // tactic start date
                 EndDate = Convert.ToDateTime(row["EndDate"]),       // tactic end date
                 MonthlyCosts = SetMonthlyCostsToModel(row, allocatedBy,PlanExchangeRate),   // list of months/quarters cost based on allocated by
-                CreatedBy = Convert.ToInt32(row["CreatedBy"]),  // owner of the entity
+                CreatedBy = row["CreatedBy"] == DBNull.Value ? 0: Convert.ToInt32(row["CreatedBy"]),  // owner of the entity
                 isEditable = false,  // set default permission false
                 ActivityType = Convert.ToString(row["ActivityType"]),
-                LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
-                LinkTacticId = Convert.ToInt32(row["LinkTacticId"]),
+                LineItemTypeId = row["LineItemTypeId"] == DBNull.Value ? 0: Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
+                LinkTacticId = row["LinkTacticId"] == DBNull.Value ? 0: Convert.ToInt32(row["LinkTacticId"]),
             }).ToList();
             return model;
         }
