@@ -8252,7 +8252,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="StatusIds">Status Ids</param>
         /// <param name="customFieldIds">customField Ids</param>
         /// <returns>returns partial view HomeGrid</returns>
-        public ActionResult GetHomeGridData(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
+        public ActionResult GetHomeGridData(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy)
         {
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             try
@@ -8265,10 +8265,13 @@ namespace RevenuePlanner.Controllers
                 objPermission.PlanEditAll = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 objPermission.PlanEditSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 #endregion
+				
+				 if (string.IsNullOrEmpty(viewBy))
+                    viewBy = PlanGanttTypes.Tactic.ToString();
 
                 ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID);
                 ViewBag.TacticTypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds);
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds, viewBy);
             }
             catch (Exception objException)
             {
@@ -8286,12 +8289,12 @@ namespace RevenuePlanner.Controllers
         /// Get home grid data from cache memory 
         /// </summary>
         /// <returns></returns>
-        public ActionResult GetHomeGridDataFromCache()
+        public ActionResult GetHomeGridDataFromCache(string viewBy)
         {
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             try
             {
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGridDataFromCache(Sessions.User.CID, Sessions.User.ID);
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGridDataFromCache(Sessions.User.CID, Sessions.User.ID, viewBy);
             }
             catch (Exception objException)
             {

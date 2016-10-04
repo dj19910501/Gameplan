@@ -164,6 +164,8 @@ var gridname;
 //Function To Call HomeGrid Data for Selected Plan
 function LoadPlanGrid() {
     filters = GetFilterIds();
+    var viewBy = $('#ddlTabViewBy').val();
+  
     $.ajax({
         url: urlContent + 'Plan/GetHomeGridData/',
         data: {
@@ -171,8 +173,8 @@ function LoadPlanGrid() {
             ownerIds: filters.OwnerIds.toString(),
             TacticTypeid: filters.TacticTypeids.toString(),
             StatusIds: filters.StatusIds.toString(),
-            customFieldIds: filters.customFieldIds.toString()
-
+            customFieldIds: filters.customFieldIds.toString(),
+            viewBy: viewBy
         },
         success: function (result) {
             $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596

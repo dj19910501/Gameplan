@@ -371,7 +371,8 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
             PlanController controller = new PlanController();
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            var result = controller.GetHomeGridDataFromCache() as ActionResult;
+            string viewBy = PlanGanttTypes.Tactic.ToString();
+            var result = controller.GetHomeGridDataFromCache(viewBy) as ActionResult;
             // data object should not be null in json result
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
             Assert.IsNotNull(result);
@@ -396,10 +397,11 @@ namespace RevenuePlanner.Test.Controllers
             string TacticTypeIds = string.Join(",", lstTacticTypeIds);
             List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
             string StatusIds = string.Join(",", lstStatus);
+            string viewBy = PlanGanttTypes.Tactic.ToString();
             // Call the GetHomeGridData method for set Cache memory data
-            controller.GetHomeGridData(PlanId, OwnerIds, TacticTypeIds, StatusIds, string.Empty);
-            
-            var result = controller.GetHomeGridDataFromCache() as ActionResult; // Call cache memory data method for grid data
+            controller.GetHomeGridData(PlanId, OwnerIds, TacticTypeIds, StatusIds, string.Empty, viewBy);
+
+            var result = controller.GetHomeGridDataFromCache(viewBy) as ActionResult; // Call cache memory data method for grid data
             // Data object should not be null in json result
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
             Assert.IsNotNull(result);
@@ -424,7 +426,8 @@ namespace RevenuePlanner.Test.Controllers
             string TacticTypeIds = string.Join(",", lstTacticTypeIds);
             List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
             string StatusIds = string.Join(",", lstStatus);
-            var result = controller.GetHomeGridData(PlanId, OwnerIds, TacticTypeIds, StatusIds, string.Empty) as ActionResult;
+            string viewBy = PlanGanttTypes.Tactic.ToString();
+            var result = controller.GetHomeGridData(PlanId, OwnerIds, TacticTypeIds, StatusIds, string.Empty, viewBy) as ActionResult;
             // data object should not be null in json result
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
             Assert.IsNotNull(result);
@@ -443,7 +446,7 @@ namespace RevenuePlanner.Test.Controllers
             PlanController controller = new PlanController();
             controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             string EmptyString = string.Empty;
-            var result = controller.GetHomeGridData(EmptyString, EmptyString, EmptyString, EmptyString, EmptyString) as ActionResult;
+            var result = controller.GetHomeGridData(EmptyString, EmptyString, EmptyString, EmptyString, EmptyString, EmptyString) as ActionResult;
             // data object should not be null in json result
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
             Assert.IsNotNull(result);

@@ -643,7 +643,11 @@ END
 END
 
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 09/30/2016 19:11:17 ******/
+/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 10/04/2016 4:04:28 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnViewByEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[fnViewByEntityHierarchy]
+GO
+/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 10/04/2016 4:04:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -688,7 +692,7 @@ AS
 BEGIN
 
 	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Tactic'')	
-	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Status'')
+	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Status'',''2016'',0)
 	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Stage'')
 	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''TacticCustom71'')
 	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''ProgramCustom18'')
@@ -697,7 +701,7 @@ BEGIN
 	-- Declare Local variables
 	BEGIN
 			Declare @stage varchar(10)=''Stage''
-			Declare @ROIPackage varchar(20)=''ROIPackage''
+			Declare @ROIPackage varchar(20)=''ROI Package''
 			Declare @Status varchar(20)=''Status''
 			Declare @custom varchar(50)=''Custom''
 			
@@ -828,7 +832,7 @@ BEGIN
 				-- Insert Entity and ViewBy value mapping records to local table for further process.
 				Insert Into @tblEntityViewByMapping(EntityId,ViewByValue)
 				Select Distinct H.EntityId,Cast(ROI.AnchorTacticID as varchar)  FROM @vwEntities as H
-				JOIN ROI_PackageDetail as ROI ON H.EntityId = ROI.AnchorTacticID
+				JOIN ROI_PackageDetail as ROI ON H.EntityId = ROI.PlanTacticId
 				WHERE H.EntityType=@entType
 			END
 	
@@ -996,9 +1000,18 @@ BEGIN
 				END
 			END
 	
-			-- Update Plan ParentTaskId value
-			Update @ResultViewByHierarchyEntities set ParentTaskId = ''Z''+ViewByTitle 
-			WHERE	EntityType=@entPlan
+			-- Update Unique & ParentUniqueId
+			Update @ResultViewByHierarchyEntities SET UniqueId=''Z''+ViewByTitle+''_''+UniqueId,ParentUniqueId=''Z''+ViewByTitle+''_''+ParentUniqueId
+			where EntityType <> @ViewBy
+
+
+			-- Update Plan ParentUniqueId & ParentTaskID value
+			Update @ResultViewByHierarchyEntities set ParentTaskId = ''Z''+ViewByTitle,ParentUniqueId = ''Z''+ViewByTitle 
+			WHERE	EntityType=@entPlan 
+
+			-- Update UniqueId value
+			Update @ResultViewByHierarchyEntities set UniqueId = TaskId 
+			WHERE  EntityType = @ViewBy
 	
 			-- Insert data to result set.
 			Insert INTO @ResultEntities (
@@ -7436,9 +7449,15 @@ END
 Go
 
 
-
-/****** Object:  StoredProcedure [dbo].[GetGridData]    Script Date: 09/30/2016 15:51:28 ******/
-
+/****** Object:  StoredProcedure [dbo].[GetGridData]    Script Date: 10/04/2016 4:10:59 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridData]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetGridData]
+GO
+/****** Object:  StoredProcedure [dbo].[GetGridData]    Script Date: 10/04/2016 4:10:59 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridData]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetGridData] AS' 
@@ -7457,6 +7476,7 @@ ALTER PROCEDURE [dbo].[GetGridData]
 		,@OwnerIds NVARCHAR(MAX) = ''
 		,@TacticTypeIds varchar(max)=''
 		,@StatusIds varchar(max)=''
+		,@ViewBy varchar(max)=''
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -7528,7 +7548,7 @@ BEGIN
 						FOR XML PATH('')), 2,900000
 					))AS PackageTacticIds 
 				,PlanDetail.PlanYear
-				FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds,@TimeFrame,@Isgrid) Hireachy 
+				FROM [dbo].fnViewByEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds,@ViewBy,@TimeFrame,@Isgrid) Hireachy
 				LEFT JOIN Model M ON Hireachy.ModelId = M.ModelId
 				LEFT JOIN Plan_Campaign_Program_Tactic Tactic ON Hireachy.EntityType='Tactic'
 					AND Hireachy.EntityId = Tactic.PlanTacticId
@@ -7578,10 +7598,12 @@ BEGIN
 							,ProgramPlannedCost.PlannedCost FROM Program_PlannedCost ProgramPlannedCost WHERE 
 							Hireachy.EntityType='Program'
 								AND Hireachy.EntityId=ProgramPlannedCost.PlanProgramId)ProgramPlannedCost
-	Order by Hireachy.EntityTitle
+	
 END
 
+
 GO
+
 /****** Object:  StoredProcedure [dbo].[GetPlanBudget]    Script Date: 09/30/2016 15:51:28 ******/
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPlanBudget]') AND type in (N'P', N'PC'))

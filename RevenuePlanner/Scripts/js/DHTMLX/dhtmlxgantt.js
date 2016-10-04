@@ -675,6 +675,9 @@ gantt._render_grid_item = function (item) {
                     }
                     // #1780
                 }
+                else {
+                    value = "";
+                }
             }
             else {
                 //(value = col.template ? col.template(columns) : columns[col.name],

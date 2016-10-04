@@ -76,8 +76,12 @@ function GridHideColumn() {
 // Start Function for Load home grid from cache data
 // Add By Nishant Sheth
 function LoadPlanGridFromCache() {
+    var viewBy = $('#ddlTabViewBy').val();
     $.ajax({
         url: urlContent + 'Plan/GetHomeGridDataFromCache/',
+        data:{
+            viewBy: viewBy
+        },
         success: function (result) {
             var gridhtml = NodatawithfilterGrid;
             gridhtml += result;

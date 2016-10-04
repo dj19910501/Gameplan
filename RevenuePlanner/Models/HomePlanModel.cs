@@ -404,11 +404,12 @@ namespace RevenuePlanner.Models
     // Class for get dynamic column values of grid data
     public class PlanGridColumnData
     {
-        public Int64 EntityId { get; set; }
-        public Int32 Owner { get; set; }
+        public Int64? EntityId { get; set; }
+        public Int32? Owner { get; set; }
         public string AltId { get; set; }
         public string ColorCode { get; set; }
         public string TaskId { get; set; }
+        public string ParentTaskId { get; set; }
         public string UniqueId { get; set; }
         public string ParentUniqueId { get; set; }
         public string EntityType { get; set; }
@@ -489,7 +490,7 @@ namespace RevenuePlanner.Models
     public class GridDefaultModel
     {
         public string UniqueId { get; set; }
-        public Int64 EntityId { get; set; }
+        public Int64? EntityId { get; set; }
         public string EntityTitle { get; set; }
         private Int64? _ParentEntityId;
         public Nullable<Int64> ParentEntityId
@@ -516,11 +517,11 @@ namespace RevenuePlanner.Models
         public string Status { get; set; }
         public Nullable<DateTime> StartDate { get; set; }
         public Nullable<DateTime> EndDate { get; set; }
-        public Int32 Owner { get; set; }
+        public Int32? Owner { get; set; }
         public string AltId { get; set; }
         public string TaskId { get; set; }
         public string ParentTaskId { get; set; }
-        public Int64 PlanId { get; set; }
+        public Int64? PlanId { get; set; }
         private Int64? _ModelId;
         public Nullable<Int64> ModelId
         {
