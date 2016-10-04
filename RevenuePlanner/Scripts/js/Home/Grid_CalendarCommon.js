@@ -114,7 +114,7 @@ $('#ChangeView').click(function () {
 //Added by Rahul Shah to call budget data 
 function LoadBudgetGrid() {
     filters = GetFilterIds(); 
-    BindUpcomingActivites(filters.PlanIDs.toString())
+   // BindUpcomingActivites(filters.PlanIDs.toString())
  var selectedTimeFrame = $('#ddlUpComingActivites').val();
     var currentDate = new Date();
     if (selectedTimeFrame == null || selectedTimeFrame == 'undefined' || selectedTimeFrame == "") {
@@ -1161,8 +1161,15 @@ function AddRemoveEntity(item) {
     else {
                 $("#totalEntity").text(ExportSelectedIds.TaskID.length);
                 $(".honeycombbox").show();
-        $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
-        $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
+               //Added following condition to hide show export to pdf and xls option as per grid and calendar view
+                if (isCalendarView) {
+                    $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
+                    $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
+                }
+                else {
+                    $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
+                    $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
+                }
     }
 }
 //End
@@ -2504,5 +2511,585 @@ function SetselectedRow()
         selectedTaskID = rowid;
         //isEditTacticHomeGrid = 0;
         //isEditTactic = 0;
+    }
+}
+//Following function is used to export to pdf from honeComb
+function CallPdfHoneyComb() {
+   
+    var isQuater = $("#ddlUpComingActivites").val();
+    PdfFilters.SelectedPlans = [];
+    $.each(filters.PlanIDs, function () {
+        PdfFilters.SelectedPlans.push(this);
+    });
+    PdfFilters.OwnerIds = [];
+    $.each(filters.OwnerIds, function () {
+        PdfFilters.OwnerIds.push(this);
+    });
+    PdfFilters.TacticTypeids = [];
+    $.each(filters.TacticTypeids, function () {
+        PdfFilters.TacticTypeids.push(this);
+    });
+    PdfFilters.StatusIds = [];
+    $.each(filters.StatusIds, function () {
+        PdfFilters.StatusIds.push(this);
+    });
+    //PdfFilters.SelectedPlans = filters.SelectedPlans;
+    PdfFilters.customFieldIds = filters.customFieldIds;
+    var isAvailablerecord = false;
+    // Modified By Nishant Sheth
+    // Desc :: To resolve the #1981 code review points to resolve click on clear filters and
+    if (PdfFilters.SelectedPlans.toString().trim().length > 0 && activeMenu == 'home') {
+        isAvailablerecord = true;
+    }
+    else {
+        if ($("#CurrentPlanId").val() > 0 && activeMenu != 'home') {
+            isAvailablerecord = true;
+        }
+    }
+    if (isAvailablerecord) {
+        var GanttTaskDataforHoney = {
+            data: new Array()
+        };// Added By Rahul Shah For HoneyComp Pdf
+        var GanttTaskDataNew = GanttTaskData;
+        var defaultParentArr = {
+            index: [],
+            parent: [],
+            tacticId: [],
+
+        }
+        if (ExportSelectedIds.TaskID.length <= 0) {
+            ExportSelectedIds.TaskID = ExportSelectedIdsafterSearch.TaskID;
+        }
+        var Status = "";
+      
+        var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
+        for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
+            if (GanttTaskDataNew.data[i].type != undefined) {
+                if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
+
+                    Status = GanttTaskDataNew.data[i].Status;
+                }
+            }
+            for (var j = 0; j < ExportSelectedIds.TaskID.length; j++) {
+                if (GanttTaskDataNew.data[i].id == ExportSelectedIds.TaskID[j]) {
+
+                    GetParentIdRecursive(GanttTaskDataNew.data[i].id);
+
+                    //defaultParentArr.index.push(i);
+
+                    //defaultParentArr.parent.push(GanttTaskDataNew.data[i].parent);
+                    //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].parent = 0;
+                    //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
+                    if (GanttTaskDataNew.data[i].type != undefined) {
+                        if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
+
+                            //TotalTact = TotalTact + 1;
+                            //TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
+                            // Add BY Nishant Sheth
+                            //Desc:: resolve the issue with view by dropdown
+                            var name_Id = GanttTaskDataNew.data[i].id.split('_');
+                            var name = name_Id[0];
+                            var PlanId;
+                            var CampaignId;
+                            var ProgramId;
+                            var TacticId;
+                            var ImpTacticId;
+                            var LineId;
+                            if (name_Id.length == 1) {
+                                PlanId = name_Id[0].replace("L", "");
+                            }
+                            else if (name_Id.length == 2) {
+                                // Chaneg By Nishant Sheth
+                                // Desc:: To resolve issue with change view by dropdown
+                                var nameindex = name.indexOf("Z");
+                                if (nameindex >= 0) {
+                                    PlanId = name_Id[1].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                } else {
+                                    PlanId = name_Id[0].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                }
+                            }
+                            else if (name_Id.length == 3) {
+                                // Chaneg By Nishant Sheth
+                                // Desc:: To resolve issue with change view by dropdown
+                                var nameindex = name.indexOf("Z");
+                                if (nameindex >= 0) {
+                                    PlanId = name_Id[1].replace("L", "");
+                                    CampaignId = name_Id[2].replace("C", "");
+                                    //ProgramId = name_Id[2].replace("P", "");
+                                } else {
+                                    PlanId = name_Id[0].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                    ProgramId = name_Id[2].replace("P", "");
+                                }
+                            }
+                            else if (name_Id.length == 4) {
+                                // Chaneg By Nishant Sheth
+                                // Desc:: To resolve issue with change view by dropdown
+                                var nameindex = name.indexOf("Z");
+                                if (nameindex >= 0) {
+                                    PlanId = name_Id[1].replace("L", "");
+                                    CampaignId = name_Id[2].replace("C", "");
+                                    ProgramId = name_Id[3].replace("P", "");
+                                    //TacticId = name_Id[3].replace("T", "");
+                                } else {
+                                    PlanId = name_Id[0].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                    ProgramId = name_Id[2].replace("P", "");
+                                    TacticId = name_Id[3].replace("T", "");
+                                }
+                            }
+                            else {
+
+                                // Chaneg By Nishant Sheth
+                                // Desc:: To resolve issue with change view by dropdown
+                                var nameindex = name.indexOf("Z");
+                                if (nameindex >= 0) {
+                                    PlanId = name_Id[1].replace("L", "");
+                                    CampaignId = name_Id[2].replace("C", "");
+                                    ProgramId = name_Id[3].replace("P", "");
+                                    TacticId = name_Id[4].replace("T", "");
+                                    //LineId = name_Id[4];
+                                } else {
+                                    PlanId = name_Id[0].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                    ProgramId = name_Id[2].replace("P", "");
+                                    TacticId = name_Id[3].replace("T", "");
+                                    LineId = name_Id[4];
+                                }
+                            }
+
+                            defaultParentArr.tacticId.push(TacticId);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (var p = 0; p < selectedIds.length; p++) {
+
+            var taskdata = gantt.getTask(selectedIds[p]);
+            GanttTaskDataforHoney.data.push(taskdata);
+            GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
+        }
+
+        var tacticids = defaultParentArr.tacticId;
+        gantt.clearAll();
+        gantt.init("gantt_honey");
+        gantt.parse(GanttTaskDataforHoney);
+        gantt.refreshData();
+        var htmltestdiv = '';
+        htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Calendar</h2>';
+        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
+        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+        htmltestdiv += isQuater + '</span>';
+        htmltestdiv += '</p>';
+     
+        var innerfiltervalueplan = "";
+        var isselectedplan = true;
+        var DropDownPlan = true;
+        $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                isselectedplan = true;
+            }
+        });
+        if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
+            $.each(PdfFilters.SelectedPlans, function () {
+                // Export pdf issue for plan name display undefined
+                innerfiltervalueplan += " " + $("#" + this).parent().parent("#ulSelectedPlans").children().children("#" + this).parent().attr('title') + ",";
+            });
+        }
+
+        if (PdfFilters.SelectedPlans.toLocaleString().trim().length > 0) {
+            DropDownPlan = false;
+        }
+
+        if (innerfiltervalueplan != undefined && innerfiltervalueplan != 'undefined' && innerfiltervalueplan != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Plan: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueplan = DropDownPlan == true ? innerfiltervalueplan : innerfiltervalueplan.substring(0, innerfiltervalueplan.length - 1);
+            htmltestdiv += innerfiltervalueplan + '</span>';
+            htmltestdiv += '</p>';
+        }
+        var Parentid = "";
+
+        $.each($('#divCustomFieldsFilter').find('.dropdown-section'), function () {
+
+            var headertitle = $(this).find("h2 span").text();
+            var innerfiltervalue = "";
+
+            Parentid = this.id;
+            var sl = Parentid.lastIndexOf('-');
+            Parentid = Parentid.substring(sl + 1, sl.length).toString();
+
+            if (PdfFilters.customFieldIds.length > 0) {
+
+                var a = PdfFilters.customFieldIds;
+                $.each(a, function () {
+                    if (this != null && this != undefined && this != 'undefined') {
+
+                        var liId = this.toString();
+                        var splitIds = liId.split('_');
+                        if (Parentid == splitIds[0].toString()) {
+                            var actualId = "#li_" + Parentid + "_" + splitIds[1];
+                            var chkid = $(actualId).attr("title");
+                            innerfiltervalue += " " + chkid + ",";
+                        }
+
+                    }
+                });
+                if (innerfiltervalue != undefined && innerfiltervalue != 'undefined' && innerfiltervalue != '') {
+                    htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                    htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
+                    htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                    innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
+                    htmltestdiv += innerfiltervalue + '</span>';
+                    htmltestdiv += '</p>';
+                }
+            }
+
+        });
+
+        var innerfiltervalueOwner = "";
+        var isselectedOwner = true;
+        if (PdfFilters.OwnerIds.toString().trim().length > 0) {
+            $.each(PdfFilters.OwnerIds, function () {
+                innerfiltervalueOwner += " " + $("#ulSelectedOwner").find('#liOwner' + this).attr("title") + ",";
+
+            });
+        }
+
+        if (innerfiltervalueOwner != undefined && innerfiltervalueOwner != 'undefined' && innerfiltervalueOwner != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Owner: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueOwner = innerfiltervalueOwner.substring(0, innerfiltervalueOwner.length - 1);
+            htmltestdiv += innerfiltervalueOwner + '</span>';
+            htmltestdiv += '</p>';
+        }
+
+        var innerfiltervalueTacticType = "";
+        var isselectedTacticType = true;
+        if (PdfFilters.TacticTypeids.length > 0) {
+            $.each(PdfFilters.TacticTypeids, function () {
+                innerfiltervalueTacticType += " " + $("#ulTacticType").find('#liTT' + this).attr("title") + ",";
+
+            });
+        }
+
+        if (innerfiltervalueTacticType != undefined && innerfiltervalueTacticType != 'undefined' && innerfiltervalueTacticType != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Tactic Type: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueTacticType = innerfiltervalueTacticType.substring(0, innerfiltervalueTacticType.length - 1);
+            htmltestdiv += innerfiltervalueTacticType + '</span>';
+            htmltestdiv += '</p>';
+        }
+
+        var innerfiltervalueStatus = "";
+        var isselectedStatus = true;
+        if (PdfFilters.StatusIds.length > 0) {
+            $.each(PdfFilters.StatusIds, function () {
+                innerfiltervalueStatus += " " + $("#ulStatus").find('#' + this).parent().find("span").text() + ",";
+
+            });
+        }
+
+        if (innerfiltervalueStatus != undefined && innerfiltervalueStatus != 'undefined' && innerfiltervalueStatus != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Status: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueStatus = innerfiltervalueStatus.substring(0, innerfiltervalueStatus.length - 1);
+            htmltestdiv += innerfiltervalueStatus + '</span>';
+            htmltestdiv += '</p>';
+        }
+        $("#filterdiv").html('');
+        $("#filterdiv").append(htmltestdiv);
+
+        var originurl = document.location.origin;
+        var mypathurl = document.location.pathname.split('/')[1];
+        var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
+
+        //$("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
+        $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
+            $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
+
+            $("#mqlmaindiv").css("background-position", "right bottom");
+            $("#mqlmaindiv").css("background-repeat", "no-repeat");
+        });
+
+        $("#DivBullhornbg").parent().find('.bullhorn-bg-disabled').each(function () {
+            $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg-disabled.png')");
+
+            $("#mqlmaindiv").css("background-position", "right bottom");
+            $("#mqlmaindiv").css("background-repeat", "no-repeat");
+        });
+
+        $("#DivBullhornbg").parent().find('.bulldoller-bg').each(function () {
+
+            $("#budgetmaindiv").css("background-image", "url('" + urlpdf + "Content/images/icon-dollar.png')");
+
+            $("#budgetmaindiv").css("background-position", "right bottom");
+            $("#budgetmaindiv").css("background-repeat", "no-repeat");
+        });
+        var TotalTact = 0;
+        var TotalCost = 0;
+        var TotalMql = "";
+        var ChartHtml = "";
+        var Canvas = "";
+        var stryear = isQuater;
+
+        $.ajax({
+            type: 'POST',
+            async: false,
+            url: urlContent + 'Home/GetHeaderDataforHoneycombPDF/',
+            data: {
+                TactIds: tacticids.toString(),
+                //strParam: planyear.toString()
+                strParam: stryear.toString()
+            },
+            success: function (data) {
+
+                $("#pdfchart").find('.dhx_canvas_text').remove();
+                $("#pdfchart").find("canvas").remove();
+                setpdfgraphdata(data.lstchart);
+                TotalMql = data.TotalMql;
+                TotalCost = data.TotalCost;
+                TotalTact = data.TotalCount;
+                ChartHtml = $("#chartCanvas").html();
+                Canvas = $("#chartpdf").find(".dhx_canvas_text");
+            },
+            error: function () {
+            }
+        });
+        $("#mqllabeltest").text($("#pmqlLabel").text());
+        $("#budgetlabeltest").text($("#pcostLabel").text());
+
+        if (Status != undefined && Status != null) {
+            if (Status.toUpperCase().toString() == "DRAFT") {
+                $("#mqlspanvalue").text($("#pMQLs").text());
+                $("#budgetspanvalue").text($("#pbudget").text());
+            }
+            else {
+                $("#HoneyMQLs").text(TotalMql);
+                SetPriceValue("#HoneyMQLs")
+                $("#mqlspanvalue").text($("#HoneyMQLs").text());
+                $("#honeybudget").text(TotalCost);
+                SetBudget("#honeybudget")
+                $("#budgetspanvalue").text($("#honeybudget").text());
+            }
+        }
+        $("#ptacticcounttest").text(TotalTact);
+
+        if (isQuater.split('-').length > 1) {
+
+            $("#AttachChartCanvas").html('');
+            $("#legendchart").show();
+            var ChartHtml = $("#chartCanvasmultiyear").html();
+            var Chartlegend = $("#legendchart").html();
+            var Canvas = $("#chartpdf").find(".dhx_canvas_text");
+            var i = 0;
+            var AttachChartHtml = '';
+            AttachChartHtml = ChartHtml;
+            var leAlignment = 15;
+            var z = 20;
+            var colorchart = "#C633C9;";
+            $.each(Canvas, function () {
+                if (i > 7) {
+
+                    var left = $(this).css('left');
+                    var leftvalue = "";
+                    var top = $(this).css('top');
+                    var text = $(this).text();
+                    var BarHeight = 55 - parseInt(top);
+                    if (parseInt(left) > 60) {
+                        colorchart = "#407B22;";
+                    }
+                    AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                    AttachChartHtml += text;
+                    AttachChartHtml += "<div style='width:5px;background-color:" + colorchart + " height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                    //AttachChartHtml += "<div id='legend'></div>"
+                    AttachChartHtml += "</div>";
+                }
+
+                i++;
+            });
+
+            $("#firstyear").text(isQuater.split('-')[0]);
+            $("#secondyear").text(isQuater.split('-')[1]);
+            //AttachChartHtml += Chartlegend;
+            $("#AttachChartCanvasmultiyear").html('');
+            $("#AttachChartCanvasmultiyear").html(AttachChartHtml);
+            //$("#AttachChartCanvasmultiyear").css('margin-left', '60px');
+        }
+        else {
+            $("#legendchart").hide();
+            $("#AttachChartCanvasmultiyear").html('');
+            ChartHtml = $("#chartCanvas").html();
+            Canvas = $("#chartpdf").find(".dhx_canvas_text");
+            var i = 0;
+            var AttachChartHtml = ChartHtml;
+            $.each(Canvas, function () {
+
+                if (i > 4) {
+                    var left = $(this).css('left');
+                    var top = $(this).css('top');
+                    var text = $(this).text();
+                    var BarHeight = 55 - parseInt(top);
+                    AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                    AttachChartHtml += text;
+                    AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                    AttachChartHtml += "</div>";
+                }
+                i++;
+            });
+
+            $("#AttachChartCanvas").html('');
+            $("#AttachChartCanvas").html(AttachChartHtml);
+        }
+        $("#testdiv #mqlspanpercentage").hide();
+        $('#AttachChartCanvas').css('margin-left', '55px');
+        var headerhtml = $("#testdiv").html();
+
+        var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
+
+        var datestart;
+        var dateend;
+
+        if ($.isNumeric(isQuater)) {
+            datestart = "01-01-" + isQuater;
+            dateend = "01-01-" + (parseInt(isQuater) + 1).toString();
+        }
+        else if (isQuater == 'thismonth') {
+            var date = new Date(), m = date.getMonth();
+            datestart = "01-" + (m + 1).toString() + "-" + date.getFullYear().toString();
+            dateend = "01-" + (m + 2).toString() + "-" + date.getFullYear().toString();
+            $('#mainpdfdiv').css('width', '1000px');
+            var headerhtml = $("#testdiv").html();
+        }
+        else if (isQuater == 'thisquarter') {
+            var startDate = getQarterStartDate();
+            var m = startDate.getMonth();
+            datestart = "01-" + (m + 1).toString() + "-" + startDate.getFullYear().toString();
+            dateend = "01-" + (m + 4).toString() + "-" + startDate.getFullYear().toString();
+            $('#mainpdfdiv').css('width', '1000px');
+            var headerhtml = $("#testdiv").html();
+        }
+        else {
+            //added by Rahul Shah on 18/12/2015 for PL #1766
+            var PlanYears = isQuater.split("-");
+            var yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
+            datestart = "01-01-" + isQuater.split("-")[0];
+            dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
+            //Added by Rahul Shah for PL #1813
+
+            // $('#AttachChartCanvas').css('margin-left', '160px');
+            $('#mainpdfdiv').css('width', '');
+            var headerhtml = $("#testdiv").html();
+        }
+        gantt.getGridColumn("colorcode").hide = true; 
+        gantt.exportToPDF({
+            header: headerhtml,
+            start: datestart,
+            end: dateend
+
+        });
+
+        //for (var m = 0; m < defaultParentArr.index.length; m++) {
+        //    var indexdef = defaultParentArr.index[m];
+        //    var parentdef = defaultParentArr.parent[m];
+        //    GanttTaskData.data[indexdef].parent = parentdef;
+        //}
+        selectedIds = [];
+    
+        GanttTaskDataforHoney.data = new Array();
+        gantt.clearAll();
+        gantt.init("gantt_here");
+        gantt.parse(GanttTaskData);
+        gantt.getGridColumn("colorcode").hide = false;
+        gantt.refreshData();
+
+    }
+    else {
+        $('#cErrorInspectPopup').html('No plan selected to export the data in .pdf'); //PL #1595 - Dashrath Prajapati
+        $('#errorMessageInspectPopup').css("display", "block");
+        $('#errorMessageInspectPopup').removeClass('message-position');
+    }
+}
+var selectedIds =[];
+function GetParentIdRecursive(id) {
+    
+    var checkindexselected = selectedIds.indexOf(id);
+    if (!(checkindexselected >= 0)) {
+        selectedIds.push(id);
+        var getparentid = gantt.getParent(id);
+        if (getparentid != 0) {
+            return GetParentIdRecursive(getparentid);
+        }
+    }
+
+}
+function setpdfgraphdata(lstchart) {
+    
+    //$(".dhx_chart_legend").html('');
+    // $(".dhx_chart_legend").hide();
+    var legendvalue = "";
+    var activityyear = $('select#ddlUpComingActivites option:selected').val();
+    if (activityyear.split('-').length > 1) {
+        legendvalue = [{ text: activityyear.split('-')[0], color: "#c633c9" }, { text: activityyear.split('-')[1], color: "#407B22" }];
+    }
+    else {
+        legendvalue = [];
+    }
+    var barChart2 = new dhtmlXChart({
+        view: "bar",
+        container: "chartpdf",
+        value: "#NoOfActivity#",
+        label: "#NoOfActivity#",
+        color: "#Color#",
+        radius: 3,
+        padding: {
+            top: 25,
+            bottom: 16,
+            right: 00,
+            left: 00
+
+        },
+        xAxis: {
+            template: "#Month#"
+        },
+        legend: {
+            width: 3,
+            align: "right",
+            valign: "middle",
+            marker: {
+                type: "round",
+                width: 8
+            },
+            values: legendvalue
+        },
+    });
+    barChart2.parse(lstchart, "json");
+    $('.dhx_chart_legend').css({ 'left': '100px', 'top': '21px' });
+
+    var dhtml_length = $('.dhx_chart_legend').length;
+    if (activityyear.split('-').length > 1) {
+        var i = 0;
+        var leftcss;
+        $(".dhx_canvas_text").each(function () {
+            i++;
+            if (i > 8) {
+                leftcss = parseInt($(this).css('left'));
+                $(this).css('left', (leftcss - 1));
+            }
+            else {
+                leftcss = parseInt($(this).css('left'));
+                $(this).css('left', (leftcss + 7));
+            }
+
+        });
     }
 }
