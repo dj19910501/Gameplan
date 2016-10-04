@@ -6261,17 +6261,21 @@ namespace RevenuePlanner.Controllers
         /// <param name="customFieldIds"></param>
         /// <param name="budgetTab"></param>
         /// <returns>Returns partial view</returns>
-        public PartialViewResult LoadLineItemTabFromTacticPopup(int tacticId)
+        public PartialViewResult LoadLineItemTabFromTacticPopup(int tacticId, string AllocatedBy)
         {
             BudgetDHTMLXGridModel objGridData = new BudgetDHTMLXGridModel();
             PlanExchangeRate = Sessions.PlanExchangeRate;
             try
             {
-                // Todo: this will be passed based from UI once view by functinality implemented
-                string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
                 ViewBag.AllocatedBy = AllocatedBy;
                 // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
                 objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate);
+                
+                //// Set View By Allocated values.
+                List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
+                lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Convert.ToString(Enums.PlanAllocatedBy.months) });
+                lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Convert.ToString(Enums.PlanAllocatedBy.quarters) });
+                ViewBag.ViewByAllocated = lstViewByAllocated;
             }
             catch (Exception objException)
             {
@@ -6286,6 +6290,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 int EntityId = Convert.ToInt32(entityId);   // this is tactic or line item id
+                allocatedcost = objCurrency.SetValueByExchangeRate(allocatedcost, PlanExchangeRate);
                 string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
                 if (isquarter)
                 {

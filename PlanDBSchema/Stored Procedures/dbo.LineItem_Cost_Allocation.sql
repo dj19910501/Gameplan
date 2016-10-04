@@ -26,6 +26,7 @@ BEGIN
 	,Cost
 	,StartDate
 	,EndDate
+	,LinkTacticId
 	,ISNULL([Y1],0) [Y1],ISNULL([Y2],0) [Y2],ISNULL([Y3],0) [Y3],ISNULL([Y4],0) [Y4],ISNULL([Y5],0) [Y5],ISNULL([Y6],0) [Y6],
 	ISNULL([Y7],0) [Y7],ISNULL([Y8],0) [Y8],ISNULL([Y9],0) [Y9],ISNULL([Y10],0) [Y10],ISNULL([Y11],0) [Y11],ISNULL([Y12],0) [Y12],
 	ISNULL([Y13],0) [Y13],ISNULL([Y14],0) [Y14],ISNULL([Y15],0) [Y15],ISNULL([Y16],0) [Y16],ISNULL([Y17],0) [Y17],
@@ -39,7 +40,7 @@ BEGIN
 			,'cpt_'+CAST(PT.PlanTacticId AS NVARCHAR(20)) ActivityId
 			,PT.Title AS ActivityName
 			,'tactic' ActivityType
-			,NULL ParentActivityId
+			,PT.PlanProgramId AS ParentActivityId
 			,PT.CreatedBy 
 			,PT.Cost
 			,PTCst.Period as Period
@@ -47,6 +48,7 @@ BEGIN
 			,0 LineItemTypeId
 			,PT.StartDate 
 			,PT.EndDate
+			,PT.LinkedTacticId AS LinkTacticId
 		FROM Plan_Campaign_Program_Tactic PT
 		LEFT JOIN Plan_Campaign_Program_Tactic_Cost PTCst ON PT.PlanTacticId=PTCst.PlanTacticId
 		WHERE PT.IsDeleted = 0 AND PT.PlanTacticId = @PlanTacticId
@@ -66,6 +68,7 @@ BEGIN
 			,PL.LineItemTypeId as LineItemTypeId
 			,PT.StartDate 
 			,PT.EndDate
+			,0 AS LinkTacticId
 		FROM Plan_Campaign_Program_Tactic_LineItem PL
 		INNER JOIN Plan_Campaign_Program_Tactic PT ON PL.PlanTacticId = PT.PlanTacticId 
 		LEFT JOIN Plan_Campaign_Program_Tactic_LineItem_Cost PLC ON PL.PlanLineItemId = PLC.PlanLineItemId

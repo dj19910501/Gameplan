@@ -2,7 +2,7 @@
 @model RevenuePlanner.Models.BudgetDHTMLXGridModel
 @{
     var countrows = Model.Grid.rows.Count;
-    var isQuarter = ViewBag.AllocatedBy;
+    string SelectedViewBy = ViewBag.AllocatedBy;
 }
 <style>
     .tooltip {
@@ -13,6 +13,12 @@
 <!-- Added by Arpita Soni for Ticket #2237 on 06/13/2016 -->
 @if (countrows > 0)
 {
+     <div class="ddlViewByLineItems">
+         @Html.Label("View By:", new { id = "lblViewBy",style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important" })
+    <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
+                    @Html.DropDownList("ddlAllocateViewByLineItems",new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", SelectedViewBy), new { @class = "ddlStyleReport hide" })
+               </span>
+         </div>
     <div id="lineItemGrid" class="gridViewGrid"></div>
 }
 else
@@ -27,8 +33,7 @@ else
 
 <script type="text/javascript">
     var LineItemGrid;
-    var tacticId = 0;
-    var lineItemId = 0;
+    var AllocatedBy = '@Convert.ToString(Enums.PlanAllocatedBy.months)'
     $(document).ready(function () {
         $('#liLine_Items').removeClass("pull-left");
         $('#liLine_Items').addClass("active pull-left");
@@ -60,6 +65,13 @@ else
             DisplayEditablePopup(id, type);
         });
         SetTooltip();
+        $("#ddlAllocatedBySelectBox select").selectbox();
+        
+        $(".sbSelector").click(function () {
+            $(".ui-multiselect-menu").each(function () {
+                $(this).css("display", "none");
+            });
+        });
     });
 
     function SetTooltip() {
@@ -150,7 +162,7 @@ else
             }
         }
         if (stage == 2) {   // Stage == 2 - Means perform focus out event
-            if (nValue != null && nValue != "") {
+            if (nValue != null && nValue.trim() != "") {
                 var entityId = LineItemGrid.cells(rowId, 0).getValue(); 
                 var section = "lineitem";
                 var isTotalCost = false;
@@ -160,7 +172,7 @@ else
                 }
                 if(cellInd == TaskNameColIndex){
                     // Get column name for edit
-                    var UpdateColumn = LineItemGrid.getColLabel(cellInd, 0);
+                    var UpdateColumn = '@Enums.HomeGrid_Default_Hidden_Columns.TaskName';
                     $.ajax({
                         type: 'POST',
                         url: urlContent + 'Plan/SaveGridDetail',
@@ -189,7 +201,7 @@ else
                 
                     var tab = 'Planned';
                     var isquarter = false;
-                    if('@isQuarter' == 'quarters') {
+                    if('@SelectedViewBy' == 'quarters') {
                         isquarter = true;
                     }
                     var allocatedcost = SetValueByExchangeRate(plannedcost.replace(/,/g, ""))
@@ -201,23 +213,32 @@ else
                         data: 'entityId=' + entityId + '&section=' + section + '&month=' + month + '&allocatedcost=' + allocatedcost + '&tab=' + tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost,
                         success: function (data) {
                             if (data.isSuccess == true) {
+                                var decimal_points = 0;
+                                nValue = nValue.replace(/,/g, "");
+                                if(parseFloat(nValue) % 1 != 0){
+                                    decimal_points = 2;
+                                }
+
                                 // format current cell value
-                                LineItemGrid.cells(rowId, cellInd).setValue(number_format(nValue, 0, '.', ','));
+                                LineItemGrid.cells(rowId, cellInd).setValue(number_format(nValue, decimal_points, '.', ','));
 
                                 // Start - Update balance row value on edit (vertical calculation)
                                 var rows_count = LineItemGrid.getRowsNum();
                                 var balance_rowid = LineItemGrid.getRowId(rows_count - 1);
                                 // always first row is for tactic so get tactic cost value
                                 var first_rowid = LineItemGrid.getRowId(0);
-                                var tac_cost = parseInt(LineItemGrid.cells(first_rowid, cellInd).getValue().replace(',','')); 
+                                var tac_cost = parseFloat(LineItemGrid.cells(first_rowid, cellInd).getValue().replace(',','')); 
                                 var lineitem_cost = 0;
                                 for(var i = 1 ; i < rows_count - 1; i++) { // sum of line item cost
                                     var row_id = LineItemGrid.getRowId(i);
-                                    lineitem_cost = lineitem_cost + parseInt(LineItemGrid.cells(row_id, cellInd).getValue().replace(',',''));
+                                    lineitem_cost = lineitem_cost + parseFloat(LineItemGrid.cells(row_id, cellInd).getValue().replace(/,/g, ""));
                                 }
                                 var balance_cost = tac_cost - lineitem_cost;
+                                if(balance_cost % 1 != 0){
+                                    decimal_points = 2;
+                                }
                                 // set balance line item cost 
-                                LineItemGrid.cells(balance_rowid, cellInd).setValue(number_format(balance_cost, 0, '.', ','));
+                                LineItemGrid.cells(balance_rowid, cellInd).setValue(number_format(balance_cost, decimal_points, '.', ','));
                                 // End - Update balance row value on edit 
 
                                 UpdateUnallocatedColumnValues(rowId);   // update unallocated cost column for edited row
@@ -234,25 +255,45 @@ else
             else {
                 return false;
             }
-    }
-    return true;
+        }
+        return true;
     }
     function UpdateUnallocatedColumnValues(rowId) {
         // Update Unallocated column value on edit 
         var cols_count = LineItemGrid.getColumnCount();
         // always first row is for tactic so get tactic cost value
-        var planned_cost = parseInt(LineItemGrid.cells(rowId, PlannedCostColIndex).getValue().replace(',','')); 
+        var planned_cost = parseFloat(LineItemGrid.cells(rowId, PlannedCostColIndex).getValue().replace(/,/g, "")); 
         var allocated_cost = 0;
         for (var j = PlannedCostColIndex + 1; j <= cols_count - 2; j++) { // sum of line item cost
-            allocated_cost = allocated_cost + parseInt(LineItemGrid.cells(rowId, j).getValue().replace(',',''));
+            allocated_cost = allocated_cost + parseFloat(LineItemGrid.cells(rowId, j).getValue().replace(/,/g, ""));
         }
-        var unallocated = planned_cost  - allocated_cost;
+        var unallocated = planned_cost - allocated_cost;
+        var decimal_points = 0;
+        if(unallocated % 1 != 0) {
+            decimal_points = 2;
+        }
+
         // set balance line item cost 
-        LineItemGrid.cells(rowId, cols_count - 1).setValue(number_format(unallocated, 0, '.', ','));
+        LineItemGrid.cells(rowId, cols_count - 1).setValue(number_format(unallocated, decimal_points, '.', ','));
     }
-$(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
-    var $checkbox = $(this).find('input[type=checkbox]')
-    $checkbox.bootstrapToggle('toggle')
-    e.preventDefault()
-});    
+    $("#ddlAllocateViewByLineItems").change(function () {
+        var AllocatedBy = $("#ddlAllocateViewByLineItems").val();
+        UpdateViewByForLineIitemsGrid(AllocatedBy);
+    });
+
+    $(".grid_Search").off("click");
+    $(".grid_Search").click(function (e) {
+        inspectCloseFocus = $(this).position().top;
+        var EntityIdWithSection = $(this).parent().parent().find('td:first').html().split(';');
+        var id = EntityIdWithSection[0];
+        var type = $(this).attr('id');
+        gridSearchFlag = 1;
+        DisplayEditablePopup(id, type);
+    });
+
+    $(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
+        var $checkbox = $(this).find('input[type=checkbox]')
+        $checkbox.bootstrapToggle('toggle')
+        e.preventDefault()
+    });    
 </script>

@@ -15120,3 +15120,7 @@ tbody.column2 {
 	display: block;
 }
 
+ .ddlViewByLineItems {
+        float: right;
+        margin: 0 12px 10px 0;
+    }

@@ -6,6 +6,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Web;
 
 namespace RevenuePlanner.Services
@@ -84,18 +85,19 @@ namespace RevenuePlanner.Services
         /// </summary>
         private BudgetDHTMLXGridModel GenerateHeaderStringForInspectPopup(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid)
         {
-            objBudgetDHTMLXGrid.SetHeader = "ActivityId,Task Name,Planned Cost";         // header values for the grid
+            objBudgetDHTMLXGrid.SetHeader = "ActivityId,Task Name,,Planned Cost";         // header values for the grid
             objBudgetDHTMLXGrid.ColAlign = objHomeGridProperty.alignleft + commaString +
                                             objHomeGridProperty.alignleft + commaString +
                                             objHomeGridProperty.aligncenter;             // alignment for the column
 
-            objBudgetDHTMLXGrid.ColumnIds = "activityid,taskname,plannedcost";           // ids of the columns
+            objBudgetDHTMLXGrid.ColumnIds = "activityid,taskname,icons,plannedcost";           // ids of the columns
             objBudgetDHTMLXGrid.ColType = objHomeGridProperty.typero + commaString +
-                                            objHomeGridProperty.typetree + commaString +
-                                            objHomeGridProperty.typeEdn;                  // types of the columns
+                                          objHomeGridProperty.typetree + commaString +
+                                          objHomeGridProperty.typero + commaString +
+                                          objHomeGridProperty.typeEdn;                  // types of the columns
 
-            objBudgetDHTMLXGrid.Width = "0,200,80";                                      // width of the columns
-            objBudgetDHTMLXGrid.ColSorting = "na,na,na";                                 // sorting options for the column
+            objBudgetDHTMLXGrid.Width = "0,200,60,80";                                      // width of the columns
+            objBudgetDHTMLXGrid.ColSorting = "na,na,na,na";                                 // sorting options for the column
 
             if (String.Compare(AllocatedBy, Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.quarters)], true) == 0)
             {
@@ -251,6 +253,10 @@ namespace RevenuePlanner.Services
             objTacticData.value = HttpUtility.HtmlEncode(tacticModel.ActivityName).Replace("'", "&#39;");   // HttpUtility.HtmlEncode handles all character except ' so need to be replaced
             lstTacticData.Add(objTacticData);
 
+            objTacticData = new Budgetdataobj();    // Add Icons column value
+            objTacticData.value = Convert.ToString(BindIconsForTactic(tacticModel));
+            lstTacticData.Add(objTacticData);
+
             objTacticData = new Budgetdataobj();    // Add Planned Cost column value
             objTacticData.value = tacticModel.PlannedCost.ToString(formatThousand);
             objTacticData.locked = tacticModel.isEditable ? objHomeGridProperty.lockedstatezero : objHomeGridProperty.lockedstateone;
@@ -281,6 +287,51 @@ namespace RevenuePlanner.Services
         }
 
         /// <summary>
+        /// Bind icons column for tactic
+        /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
+        /// </summary>
+        /// <param name="Entity"></param>
+        /// <returns></returns>
+        private StringBuilder BindIconsForTactic(BudgetModel Entity)
+        {
+            StringBuilder strIconsData = new StringBuilder();
+            //LinkTactic Permission based on Entity Year
+            bool LinkTacticPermission = ((Entity.EndDate.Year - Entity.StartDate.Year) > 0) ? true : false;
+            string LinkedTacticId = Entity.LinkTacticId == 0 ? "null" : Convert.ToString(Entity.LinkTacticId);
+
+            // Magnifying Glass to open Inspect Popup
+            strIconsData.Append("<div class=grid_Search id=TP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>");
+
+            // Add Button
+            strIconsData.Append("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId));
+            strIconsData.Append(" per=true LinkTacticper =" + Convert.ToString(LinkTacticPermission) + " LinkedTacticId = " + Convert.ToString(LinkedTacticId));
+            strIconsData.Append(" tacticaddId=" + Convert.ToString(Entity.ActivityId) + "><i class='fa fa-plus-circle' aria-hidden='true'></i></div>");
+
+            return strIconsData;
+        }
+
+        /// <summary>
+        /// Bind icons column for line item
+        /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
+        /// </summary>
+        /// <param name="Entity"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private StringBuilder BindIconsForLineItem(BudgetModel Entity)
+        {
+            StringBuilder strIconsData = new StringBuilder();
+
+            // Magnifying Glass to open Inspect Popup
+            strIconsData.Append("<div class=grid_Search id=LP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>");
+
+            // Add Button
+            strIconsData.Append("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId));
+            strIconsData.Append(" lt=" + ((Entity.LineItemTypeId == null) ? 0 : Entity.LineItemTypeId) + " per=true");
+            strIconsData.Append(" dt=" + Convert.ToString(Entity.ActivityName) + " ><i class='fa fa-plus-circle' aria-hidden='true'></i></div>");
+            return strIconsData;
+        }
+
+        /// <summary>
         /// Bind data for each line item
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -305,6 +356,10 @@ namespace RevenuePlanner.Services
                 objLineItemData.style = objHomeGridProperty.stylecolorgray;
             }
             objLineItemData.value = HttpUtility.HtmlEncode(ActivityName).Replace("'", "&#39;");
+            lstLineItemData.Add(objLineItemData);
+
+            objLineItemData = new Budgetdataobj();  // Add Icons to the column
+            objLineItemData.value = modelEntity.LineItemTypeId != null ? Convert.ToString(BindIconsForLineItem(modelEntity)) : "";
             lstLineItemData.Add(objLineItemData);
 
             objLineItemData = new Budgetdataobj();  // Add Planned Cost to the column
@@ -429,14 +484,15 @@ namespace RevenuePlanner.Services
                 ActivityId = Convert.ToString(row["ActivityId"]),   // Activity id for the entity
                 ParentActivityId = Convert.ToString(row["ParentActivityId"]),  // Activity Id of parent entity
                 ActivityName = Convert.ToString(row["ActivityName"]),   // Title of the activity
-                PlannedCost = row["Cost"] != null ? Convert.ToDouble(row["Cost"]) : 0,  // Planned cost for the entity
+                PlannedCost = row["Cost"] != null ? objCurrency.GetValueByExchangeRate(Convert.ToDouble(row["Cost"]),PlanExchangeRate) : 0,  // Planned cost for the entity
                 StartDate = Convert.ToDateTime(row["StartDate"]),   // tactic start date
                 EndDate = Convert.ToDateTime(row["EndDate"]),       // tactic end date
-                MonthlyCosts = SetMonthlyCostsToModel(row, allocatedBy),   // list of months/quarters cost based on allocated by
+                MonthlyCosts = SetMonthlyCostsToModel(row, allocatedBy,PlanExchangeRate),   // list of months/quarters cost based on allocated by
                 CreatedBy = Convert.ToInt32(row["CreatedBy"]),  // owner of the entity
                 isEditable = false,  // set default permission false
                 ActivityType = Convert.ToString(row["ActivityType"]),
-                LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"]))
+                LineItemTypeId = Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
+                LinkTacticId = Convert.ToInt32(row["LinkTacticId"]),
             }).ToList();
             return model;
         }
@@ -445,7 +501,7 @@ namespace RevenuePlanner.Services
         /// Generate dictionary with cost and respective months including multi year
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Dictionary<string, double> SetMonthlyCostsToModel(DataRow row, string allocatedBy)
+        private Dictionary<string, double> SetMonthlyCostsToModel(DataRow row, string allocatedBy, double PlanExchangeRate)
         {
             Dictionary<string, double> dictMonthlyCosts = new Dictionary<string, double>();
             string Period = string.Empty;   // variable for month name text to get cost value e.g. Y13
@@ -467,7 +523,7 @@ namespace RevenuePlanner.Services
                         QuartersList = Common.GetMonthsOfQuarters(i + baseyear);            // Get months for the quarter
                         QuartersList.ForEach(x => SumOfMonths = SumOfMonths + Convert.ToDouble(row[x]));    // Summed up months values
                         QuarterLabel = "Q" + Convert.ToString(quarterCounter) + "-" + Convert.ToString(tacticYears[key]);
-                        dictMonthlyCosts.Add(QuarterLabel, SumOfMonths);
+                        dictMonthlyCosts.Add(QuarterLabel, objCurrency.GetValueByExchangeRate(SumOfMonths, PlanExchangeRate));
                         quarterCounter++;
                     }
                     baseyear = baseyear + Convert.ToInt32(Enums.QuarterMonthDigit.Month);   // Add total no. of months(12) for second year
@@ -482,7 +538,7 @@ namespace RevenuePlanner.Services
                     {
                         dtDate = new DateTime(tacticYears[key], i, 1);
                         Period = Common.PeriodPrefix + Convert.ToString(i + baseyear);
-                        dictMonthlyCosts.Add(dtDate.ToString("MMM-yyyy"), Convert.ToDouble(row[Period]));   // For JAN-2017 -> Y13
+                        dictMonthlyCosts.Add(dtDate.ToString("MMM-yyyy"), objCurrency.GetValueByExchangeRate(Convert.ToDouble(row[Period]),PlanExchangeRate));   // For JAN-2017 -> Y13
                     }
                     baseyear = baseyear + Convert.ToInt32(Enums.QuarterMonthDigit.Month);   // Add total no. of months(12) for second year
                 }
@@ -911,7 +967,7 @@ namespace RevenuePlanner.Services
                 }
             }
             // Convert MAR-2017 to Y15 
-            string period = GetPeriodBasedOnEditedMonth(month, startDateYear);
+            string period = GetPeriodBasedOnEditedMonth(month, startDateYear, isSourceLineItem);
             Plan_Campaign_Program_Tactic_Cost objTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault();
             if (objTacCost != null)
             {

@@ -1195,8 +1195,8 @@ namespace RevenuePlanner.Test.Controllers
             int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
             int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
                             Select(tac => tac.PlanTacticId).FirstOrDefault();
-
-            var result = controller.LoadLineItemTabFromTacticPopup(tacticId) as PartialViewResult;
+            string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
+            var result = controller.LoadLineItemTabFromTacticPopup(tacticId, AllocatedBy) as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_TacticLineItemListing", result.ViewName);
 

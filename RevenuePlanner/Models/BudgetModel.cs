@@ -116,6 +116,7 @@ namespace RevenuePlanner.Models
         public bool isAfterApproved { get; set; }
         public int? LineItemTypeId { get; set; }
 
+        public int LinkTacticId { get; set; }
         public double PlannedCost { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
