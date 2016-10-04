@@ -1332,6 +1332,8 @@ namespace RevenuePlanner.Services
             Plandataobj objPlanData = new Plandataobj();
             List<Plandataobj> lstPlanData = new List<Plandataobj>();
             Type type = RowData.GetType();
+            string IsEditable = string.Empty;
+            string cellTextColor = string.Empty;
 
             // Set attribute values for add columns string as html and maintain hierarchy
             objres = InsertAttributeValueforAddColumns(RowData, objres);
@@ -1350,6 +1352,16 @@ namespace RevenuePlanner.Services
                 if (pair.Property != null)
                 {
                     objres.EntityType = GetvalueFromObject(RowData, "EntityType");
+                    if (objres.IsRowPermission == true)
+                    {
+                        IsEditable = objHomeGridProp.lockedstatezero;
+                        cellTextColor = objHomeGridProp.stylecolorblack;
+                    }
+                    else
+                    {
+                        IsEditable = objHomeGridProp.lockedstateone;
+                        cellTextColor = objHomeGridProp.stylecolorgray;
+                    }
                     if ((pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate)) && 
                             (objres.EntityType.ToUpper().ToString() == Enums.EntityType.Lineitem.ToString().ToUpper()) || 
                             ( (viewBy.ToUpper() != PlanGanttTypes.Tactic.ToString().ToUpper()) && (objres.EntityType.ToUpper().ToString() == viewBy.ToUpper()) ) 
@@ -1361,6 +1373,71 @@ namespace RevenuePlanner.Services
                     else {
                     objPlanData.value = GetvalueFromObject(RowData, pair.Name);
                     objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                        if (objres.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
+                        {
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
+                            {
+                                objPlanData.locked = objHomeGridProp.lockedstateone;
+                            }
+                            else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.MQL.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Revenue.ToString())
+                            {
+                                objPlanData.locked = string.Empty;
+                            }
+                            else
+                            {
+                                objPlanData.locked = IsEditable;
+                            }
+                        }
+                        else if (objres.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
+                        {
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString())
+                            {
+                                objPlanData.locked = !string.IsNullOrEmpty(objres.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
+                            }
+                            else
+                            {
+                                objPlanData.locked = IsEditable;
+                            }
+                        }
+                        else if (objres.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower())
+                        {
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.MQL.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Revenue.ToString())
+                            {
+                                objPlanData.locked = string.Empty;
+                            }
+                            else
+                            {
+                                objPlanData.locked = IsEditable;
+                            }
+                        }
+                        else if (objres.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower())
+                        {
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.MQL.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Revenue.ToString())
+                            {
+                                objPlanData.locked = string.Empty;
+                            }
+                            else
+                            {
+                                objPlanData.locked = IsEditable;
+                            }
+                        }
+                        else if (objres.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower())
+                        {
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.MQL.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Revenue.ToString())
+                            {
+                                objPlanData.locked = string.Empty;
+                            }
+                            else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString())
+                            {
+                                objPlanData.locked = objHomeGridProp.lockedstateone;
+                            }
+                            else
+                            {
+                                objPlanData.locked = IsEditable;
+                            }
+                        }
+                        objPlanData.style = cellTextColor;
+
                 }
                 }
                 lstPlanData.Add(objPlanData);
@@ -1414,6 +1491,7 @@ namespace RevenuePlanner.Services
                 if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName), true) == 0)
                 {
                     string Roistring = string.Empty;
+                    string Linkedstring = string.Empty;
                     string IsEditable = string.Empty;
                     string cellTextColor = string.Empty;
 
@@ -1431,31 +1509,45 @@ namespace RevenuePlanner.Services
                     if (string.Compare(objres.EntityType, Convert.ToString(Enums.EntityType.Tactic), true) == 0)
                     {
                         // Get Anchor Tactic Id
-                        string AnchorTacticId = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType()
-                                        .GetProperty("AnchorTacticID")
-                                        .GetValue(RowData, new object[0])));
+                        string AnchorTacticId = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType().GetProperty("AnchorTacticID").GetValue(RowData, new object[0])));
 
                         // Get Tactic Id
-                        string EntityId = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType()
-                                        .GetProperty("EntityId")
-                                        .GetValue(RowData, new object[0])));
+                        string EntityId = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType().GetProperty("EntityId").GetValue(RowData, new object[0])));
 
                         if (!string.IsNullOrEmpty(AnchorTacticId) && !string.IsNullOrEmpty(EntityId))
                         {
                             if (string.Compare(AnchorTacticId, EntityId, true) == 0) // If Anchor tacticid and Entity id both same then set ROI package icon
                             {
                                 // Get list of package tactic ids
-                                string PackageTacticIds = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType()
-                                        .GetProperty("PackageTacticIds")
-                                        .GetValue(RowData, new object[0])));
+                                string PackageTacticIds = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType().GetProperty("PackageTacticIds").GetValue(RowData, new object[0])));
 
                                 Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id=pkgIcon onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids=" + PackageTacticIds + "><i class='fa fa-object-group'></i></div>";
                             }
                         }
+                        DateTime TacticStartDate = Convert.ToDateTime(Convert.ToString(RowData.GetType().GetProperty("StartDate").GetValue(RowData, new object[0])));
+                        DateTime TacticEndDate = Convert.ToDateTime(Convert.ToString(RowData.GetType().GetProperty("EndDate").GetValue(RowData, new object[0])));
+
+                        bool IsExtendedTactic = (TacticEndDate.Year - TacticStartDate.Year) > 0 ? true : false;
+
+                        int? LinkedTacticId = int.Parse(Convert.ToString(RowData.GetType().GetProperty("LinkedTacticId")
+                                        .GetValue(RowData, new object[0])));
+                        if (LinkedTacticId == 0)
+                        {
+                            LinkedTacticId = null;
+                        }
+                        string LinkedPlanName = Convert.ToString(RowData.GetType().GetProperty("LinkedPlanName")
+                                                                .GetValue(RowData, new object[0]));
+                        Linkedstring = ((IsExtendedTactic == true && LinkedTacticId == null) ?
+                                                        "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" :
+                                                        ((IsExtendedTactic == true && LinkedTacticId != null) || (LinkedTacticId != null)) ? "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='"
+                                                      + (!string.IsNullOrEmpty(LinkedPlanName) ? null
+                                                        : HttpUtility.HtmlEncode(LinkedPlanName).Replace("'", "&#39;"))
+                                                       + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "");
+
                     }
                     lstPlanData.Add(new Plandataobj
                     {
-                        value = Roistring + HttpUtility.HtmlEncode(objres.EntityTitle), //Set Entity title
+                        value = Roistring + Linkedstring + HttpUtility.HtmlEncode(objres.EntityTitle), //Set Entity title
                         locked = IsEditable,
                         style = cellTextColor
                     });
