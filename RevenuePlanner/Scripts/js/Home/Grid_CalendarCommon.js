@@ -29,6 +29,7 @@ $('#btngridcalendar').click(function () {
             BindPlanCalendar();
         }
     }
+    RefershPlanHeaderCalc();
     ShowhideDataonGridCalendar();
 });
 //load context from calendar to grid:Context management #2677
