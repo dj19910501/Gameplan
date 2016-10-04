@@ -2955,7 +2955,7 @@ namespace RevenuePlanner.Helpers
 
         //Added by Komal Rawal on 12/09/2016
         //Desc : to get header values as per new UI.
-        public static HomePlanModelHeader GetPlanHeaderValueForPlans(List<int> planIds, string activeMenu, string year, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds)
+        public static HomePlanModelHeader GetPlanHeaderValueForPlans(List<int> planIds, string activeMenu, string year, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds,bool IsGridView = false)
         {
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             CacheObject dataCache = new CacheObject();
@@ -2997,13 +2997,34 @@ namespace RevenuePlanner.Helpers
             DataSet dsPlanCampProgTac = new DataSet();
             dsPlanCampProgTac = (DataSet)dataCache.Returncache(Enums.CacheObject.dsPlanCampProgTac.ToString());
             List<Plan> planList = dataCache.Returncache(Enums.CacheObject.Plan.ToString()) as List<Plan>;
-            List<int> planData = planList.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == year).Select(a => a.PlanId).ToList();
             planIds = planList.Select(a => a.PlanId).ToList();
             //get campaign list as per plan
             List<Plan_Campaign> campplist = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]).Where(campaign => (!((campaign.EndDate < StartDate) || (campaign.StartDate > EndDate))) && planIds.Contains(campaign.PlanId)).ToList();
             List<int> campplanid = campplist.Select(a => a.PlanId).ToList();
             List<int> filterOwner = new List<int>();
             filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Int32.Parse(owner)).ToList();
+
+
+            if (campplist.Count > 0)
+            {
+                //  if plan is multiyear then data should be according to that in grid view
+                if (IsGridView == true)
+                {
+                    int StartYear = campplist.Select(camp => camp.StartDate.Year).Min();
+                    int EndYear = campplist.Select(camp => camp.EndDate.Year).Max();
+
+                    if (EndYear != StartYear)
+                    {
+                        year = StartYear + "-" + EndYear;
+                    }
+                    else
+                    {
+                        year = Convert.ToString(StartYear);
+
+                    }
+                    Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
+                }
+            }
 
             if (planList != null && planList.Count > 0)
             {
@@ -3090,6 +3111,9 @@ namespace RevenuePlanner.Helpers
                 int MainModelId = 0;
                 List<ModelStageRelationList> modleStageRelationList = new List<ModelStageRelationList>();
                 List<Plan_Improvement_Campaign_Program_Tactic> impList = new List<Plan_Improvement_Campaign_Program_Tactic>();
+
+               
+
                 foreach (var plan in planList)
                 {
                     planTacticIds = planTacticsList.Where(t => t.PlanId == plan.PlanId).Select(tactic => tactic).ToList();

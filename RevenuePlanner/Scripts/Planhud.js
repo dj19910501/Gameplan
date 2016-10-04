@@ -91,6 +91,7 @@ function GetHeaderData(url, activemenu, timeframe, selectedPlanIds, Customid, Ow
             OwnerIds: OwnerId.toString(),
             TacticTypeids: Tacticids.toString(),
             StatusIds: StatusId.toString(),
+            IsGridView:$('#IsGridView').val().toString(),
         },
         dataType: "json",
         success: function (data) {
@@ -153,6 +154,7 @@ function GetNumberOfActivityPerMonByPlanId(url, activemenu, timeframe, selectedP
             OwnerIds: OwnerId.toString(),
             TacticTypeids: Tacticids.toString(),
             StatusIds: StatusId.toString(),
+            IsGridView: $('#IsGridView').val().toString(),
 
         },
         dataType: "json",

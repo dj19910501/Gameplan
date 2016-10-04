@@ -564,7 +564,7 @@ namespace RevenuePlanner.Controllers
         //Add by Komal Rawal on 12/09/2016
         //Desc : To get header values.
       
-        public async Task<JsonResult> GetActivityDistributionchart(string planid, string strtimeframe, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public async Task<JsonResult> GetActivityDistributionchart(string planid, string strtimeframe, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "" ,bool IsGridView = false)
         {
 
             List<int> filteredPlanIds = new List<int>();
@@ -622,6 +622,29 @@ namespace RevenuePlanner.Controllers
                 }
                 filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
                     campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
+
+
+            if (lstCampaign.Count > 0)
+            {
+                //  if plan is multiyear then activity distribution chart should be according to that in grid view
+                if (IsGridView == true)
+                {
+                    int StartYear = lstCampaign.Select(camp => camp.StartDate.Year).Min();
+                    int EndYear = lstCampaign.Select(camp => camp.EndDate.Year).Max();
+
+                    if (EndYear != StartYear)
+                    {
+                        strtimeframe = StartYear + "-" + EndYear;
+                        IsMultiYearPlan = true;
+                    }
+                    else
+                    {
+                        strtimeframe = Convert.ToString(StartYear);
+                        Common.GetPlanGanttStartEndDate(planYear, strtimeframe, ref CalendarStartDate, ref CalendarEndDate);
+                    }
+
+                }
+            }
 
             //// Get planyear of the selected Plan
             if (strtimeframe.Contains("-") || IsMultiYearPlan)
