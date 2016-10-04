@@ -326,6 +326,11 @@
                     <ul class="scroll-list" id="ulSelectedOwner">                        
                     </ul>
                     <div class="list-tab">   
+                        <ul id="ulOwnerAllModule" style="display: none;">
+                            <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                            <li>|</li>
+                            <li><a onclick="BulkOwnerOperation(false)">clear</a></li>
+                        </ul>
                         <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>                     
                     </div>
                 </div>
@@ -340,6 +345,11 @@
                     <ul class="scroll-list" id="ulTacticType">
                     </ul>
                     <div class="list-tab">
+                        <ul id="TacticTypeAllModule" style="display: none;">
+                            <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                            <li>|</li>
+                            <li><a onclick="BulkTTOperation(false)">clear</a></li>
+                        </ul>
                         <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
                     </div>
                 </div>
