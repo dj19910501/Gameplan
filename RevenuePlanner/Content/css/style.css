@@ -13474,6 +13474,8 @@ input.serach-input {
         float: right;
         margin: 0 12px 10px 0;
     }
+
+ #planHeader > div:nth-child(2){margin-left:0 !important}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
@@ -13519,9 +13521,9 @@ finance_grid_add {
 
 @media (max-width: 1527px) {
 /* Added for #2621 New Homepage HTML */
-.full-width-header .white-chart {
+/*.full-width-header .white-chart {
 	width: 19.4%;
-}
+}*/
 .white-chart.activity-distribute {
 	width: 25%;
 }
@@ -13529,9 +13531,9 @@ finance_grid_add {
 
 @media (max-width: 1427px) {
 /* #2621 */
-.full-width-header .white-chart {
+/*.full-width-header .white-chart {
 	width: 19.4%;
-}
+}*/
 .white-chart.activity-distribute {
 	width: 24%;
 }
@@ -13767,10 +13769,10 @@ finance_grid_add {
 
 @media (max-width: 1427px) {
 /* #2621 */
-.full-width-header .white-chart {
+/*.full-width-header .white-chart {
 	width: 18.8%;
 }
-}
+}*/
 
 @media (max-width: 1306px) {
 .nav-tabs .title-header h2 {
@@ -13935,9 +13937,9 @@ html, body {
 	float: left;
 	max-width: 615px;
 }
-.full-width-header .white-chart {
+/*.full-width-header .white-chart {
 	width: 19.6%;
-}
+}*/
 .white-chart.activity-distribute {
 	width: 156px;
 }
@@ -14029,10 +14031,10 @@ html, body {
 }
 /* End by Mukesh Rawat 15-9-2015*/
     /*start by bheru 15-9-2015 for responsive*/
-.light-blue-chart .white-chart {
+/*.light-blue-chart .white-chart {
 	height: 93px;
 	width: 101px;
-}
+}*/
 .full-width-header .white-chart #chart2 {
 	margin-top: 41px !important;
 	width: 101px !important;
@@ -14734,7 +14736,7 @@ div.dropdown-info-user {
 .planheader-title h2 {
 	font-size: 29px !important;
 }
-.plancart-box {
+/*.plancart-box {
 	display: inline-block;
 	text-align: center;
 	width: 100%;
@@ -14743,7 +14745,7 @@ div.dropdown-info-user {
 	float: none;
 	display: inline-block;
 	vertical-align: text-top;
-}
+}*/
 .user_title p:last-child {
 	margin-top: 0px;
 }
