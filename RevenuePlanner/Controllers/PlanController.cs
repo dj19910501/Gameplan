@@ -29,7 +29,7 @@ using System.Runtime.CompilerServices;
 /*
  * Added By :
  * Added Date :
- * Description : Plan related events and methos
+ * Description : Plan related events and methods
  */
 
 namespace RevenuePlanner.Controllers
@@ -8257,9 +8257,18 @@ namespace RevenuePlanner.Controllers
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             try
             {
+                #region Set Permission
+                EntityPermission objPermission = new EntityPermission();
+                List<int> lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);
+
+                objPermission.PlanCreate = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                objPermission.PlanEditAll = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                objPermission.PlanEditSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                #endregion
+
                 ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID);
                 ViewBag.TacticTypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID);
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds);
             }
             catch (Exception objException)
             {
