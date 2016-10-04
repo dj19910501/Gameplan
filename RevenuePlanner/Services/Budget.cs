@@ -30,7 +30,7 @@ namespace RevenuePlanner.Services
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
         public const string FixHeader = "ActivityId,Type,machinename,,,,,,,";
-        public const string EndColumnsHeader = ",";
+        public const string EndColumnsHeader = ",Unallocated Budget";
         public const string FixColumnIds = "ActivityId,Type,MachineName,colourcode,LineItemTypeId,TaskName,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",Budget";
         public const string FixColType = "ro,ro,ro,ro,ro,tree,ro,ed,ed,ed";
@@ -688,18 +688,6 @@ namespace RevenuePlanner.Services
             colType = FixColType;
             width = FixcolWidth;
             colSorting = FixColsorting;
-            attachHeader.Add("ActivityId");
-            attachHeader.Add("Type");
-            attachHeader.Add("Machine Name" + manageviewicon);
-            attachHeader.Add(""); //Colour column added by Rahul Shah for PL #2605
-            attachHeader.Add("");
-            //Assgin "Activity" as header to get header name in export to excel.
-            attachHeader.Add("Activity");
-            attachHeader.Add("");
-            attachHeader.Add("Total Budget" + manageviewicon);
-            attachHeader.Add("Planned Cost" + manageviewicon);
-            attachHeader.Add("Total Actual" + manageviewicon);
-
             if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToLower())
             {
                 int quarterCounter = 1;
@@ -721,11 +709,10 @@ namespace RevenuePlanner.Services
                     {
                         dt = new DateTime(2012, i - 12, 1);
                     }
-                    setHeader = setHeader + ",Q" + quarterCounter.ToString() + "-"+headerYear+",#cspan,#cspan";
-                    attachHeader.Add(ColBudget + manageviewicon);
-                    attachHeader.Add(ColPlanned + manageviewicon);
-                    attachHeader.Add(ColActual + manageviewicon);
-
+                    setHeader = setHeader + ",Q" + quarterCounter.ToString() + "-" + headerYear + " Budget " + manageviewicon
+                                        + ",Q" + quarterCounter.ToString() + "-" + headerYear + " Planned " + manageviewicon
+                                     + ",Q" + quarterCounter.ToString() + "-" + headerYear + " Actual " + manageviewicon;
+                   
 
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
                     colType = colType + ",ed,ed,ed";
@@ -760,12 +747,12 @@ namespace RevenuePlanner.Services
                 }
             }
 
-            setHeader = setHeader + ",";
+            setHeader = setHeader + ",UnAllocated Cost";
             columnIds = columnIds + "," + "UnAllocatedCost";
             colType = colType + ",ro";
             width = width + ",100";
             colSorting = colSorting + ",str";
-            attachHeader.Add("UnAllocated Cost");
+           
 
 
             objBudgetDHTMLXGrid.SetHeader = setHeader + EndColumnsHeader;
@@ -773,9 +760,7 @@ namespace RevenuePlanner.Services
             objBudgetDHTMLXGrid.Width = width + EndcolWidth;
             objBudgetDHTMLXGrid.ColSorting = colSorting + EndColsorting;
             objBudgetDHTMLXGrid.ColumnIds = columnIds + EndColumnIds;
-            attachHeader.Add("Unallocated Budget" + manageviewicon);
-
-            objBudgetDHTMLXGrid.AttachHeader = attachHeader;
+          
             return objBudgetDHTMLXGrid;
         }
 

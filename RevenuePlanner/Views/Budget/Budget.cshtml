@@ -76,6 +76,7 @@
     var colSorting;
     var ColumnIds;
     var attachHeader;
+    var header;
     var eventidonedit = 0;
     $(document).ready(function () {
         $('#divgridview').addClass('budget-grid');
@@ -90,11 +91,10 @@
         colType = '@Model.ColType';
         colSorting = '@Model.ColSorting';
         budgetWidth = '@Model.Width';
-        HomeGrid.setHeader('@Model.SetHeader');
-        attachHeader = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.AttachHeader)';
-        attachHeader = $('<div/>').html(attachHeader.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        attachHeader = (attachHeader.toString().replace(/&amp;/g, '&'));
-        HomeGrid.attachHeader(JSON.parse(attachHeader));
+        header = '@Model.SetHeader';
+        header = $('<div/>').html(header.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        header = (header.toString().replace(/&amp;/g, '&'));
+        HomeGrid.setHeader(header);
         HomeGrid.setColTypes('@Model.ColType');
         HomeGrid.setInitWidths('@Model.Width');
         HomeGrid.setColSorting('@Model.ColSorting');
