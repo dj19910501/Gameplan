@@ -7604,8 +7604,6 @@ END
 
 GO
 
-/****** Object:  StoredProcedure [dbo].[GetPlanBudget]    Script Date: 09/30/2016 15:51:28 ******/
-
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPlanBudget]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetPlanBudget] AS' 
@@ -7616,13 +7614,14 @@ GO
 -- Create date: 09/08/2016
 -- Description:	This store proc. return data for budget tab for repective plan, campaign, program and tactic
 -- =============================================
-ALTER PROCEDURE [dbo].[GetPlanBudget]--[GetPlanBudget] '20212,20203,19569',null.null.null
+ALTER PROCEDURE [dbo].[GetPlanBudget]--[GetPlanBudget] '20212,20203,19569'
 	(
 	@PlanId NVARCHAR(MAX),
 	@ownerIds nvarchar(max)='',
 	@tactictypeIds varchar(max)='',
 	@statusIds varchar(max)='',
 	@UserID INT = 0,
+	@ViewBy varchar(500)='',
 	@TimeFrame VARCHAR(20)='',
 	@isGrid bit=0
 	)
@@ -7637,15 +7636,65 @@ DECLARE @tmp TABLE
 			StartDate DATETIME,
 			EndDate DATETIME,
 			ColorCode NVARCHAR(50),
-			TaskId NVARCHAR(50)
+			TaskId NVARCHAR(500),
+			ParentTaskId NVARCHAR(500),
+			EntityTitle NVARCHAR(1000)
+)
+
+Declare @ViewbyTable TABLE
+(
+	EntityTitle NVARCHAR(1000),
+	EntityType NVARCHAR(50),
+	TaskId NVARCHAR(500)
 )
 
 INSERT INTO @tmp
-SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode,TaskId FROM fnGetFilterEntityHierarchy(@PlanId,@ownerIds,@tactictypeIds,@statusIds,@TimeFrame,@isGrid)
---SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode FROM fnGetFilterEntityHierarchy(@PlanId,@ownerIds,@tactictypeIds,@statusIds)
+SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode,TaskId,ParentTaskId,EntityTitle FROM fnViewByEntityHierarchy(@PlanId,@ownerIds,@tactictypeIds,@statusIds,@ViewBy,@TimeFrame,@isGrid)
+
+INSERT INTO @ViewbyTable
+SELECT EntityTitle,EntityType,TaskId FROM @tmp WHERE EntityType NOT IN ('Plan','Campaign','Program','Tactic','LineItem')
+
+
+
+SELECT		 0 Id
+			,TaskId
+			,NULL ParentTaskId
+			,NULL ActivityId
+			,EntityType ActivityType
+			,EntityTitle Title
+			,NULL ParentActivityId
+			,GETDATE() StartDate
+			,GETDATE() EndDate
+			,NULL ColorCode
+			,0 LinkTacticId
+			,0 TacticTypeId
+			,NULL MachineName
+			,0 CreatedBy
+			,NULL LineItemTypeId
+			,0 IsAfterApproved
+			,0 IsOwner
+			,0 Cost
+			,0 Budget
+			,0 PlanYear
+			--Y represent year and number represent month of the year. If number is greater than 12 then its consider as next year month e.g. Y13 is Jan month for next year
+			,NULL [Y1],NULL [Y2],NULL [Y3],NULL [Y4],NULL [Y5],NULL [Y6],NULL [Y7],NULL [Y8],NULL [Y9],NULL [Y10],NULL [Y11],NULL [Y12]
+			,NULL [Y13],NULL [Y14],NULL [Y15],NULL [Y16],NULL [Y17],NULL [Y18],NULL [Y19],NULL [Y20],NULL [Y21],NULL [Y22],NULL [Y23],NULL [Y24]
+
+			,0 TotalUnallocatedBudget
+			--Viewby entity has no cost at table level so it default set to null
+			,NULL [CostY1], NULL [CostY2], NULL [CostY3], NULL [CostY4],NULL [CostY5], NULL [CostY6], NULL [CostY7], NULL [CostY8],NULL [CostY9], NULL [CostY10], NULL [CostY11], NULL [CostY12]
+			,NULL [CostY13], NULL [CostY14], NULL [CostY15], NULL [CostY16],NULL [CostY17], NULL [CostY18], NULL [CostY19], NULL [CostY20],NULL [CostY21], NULL [CostY22], NULL [CostY23], NULL [CostY24]
+			,0 TotalUnAllocationCost
+			--Plan entity has no actual at table level so it default set to null
+			,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY10], NULL [ActualY11], NULL [ActualY12]
+			,NULL [ActualY13], NULL [ActualY14], NULL [ActualY15], NULL [ActualY16],NULL [ActualY17], NULL [ActualY18], NULL [ActualY19], NULL [ActualY20],NULL [ActualY21], NULL [ActualY22], NULL [ActualY23], NULL [ActualY24]
+			,0 TotalAllocationActual
+			FROM @ViewbyTable
+UNION ALL
 
 SELECT		Id
 			,TaskId
+			,ParentTaskId
 			,ActivityId
 			,ActivityType
 			,Title
@@ -7681,6 +7730,7 @@ SELECT		Id
 				(SELECT 
 					P.PlanId Id
 					,H.TaskId
+					,H.ParentTaskId
 					,H.EntityId ActivityId
 					,P.Title
 					,'plan' as ActivityType
@@ -7700,7 +7750,7 @@ SELECT		Id
 				)Pln
 				PIVOT
 				(
-					sum(value)
+					MAX(value)
 					for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
 									,[Y13], [Y14], [Y15], [Y16],[Y17], [Y18], [Y19], [Y20],[Y21], [Y22], [Y23], [Y24])
 				)PLNMain
@@ -7708,6 +7758,7 @@ UNION ALL
 SELECT 
 		Id
 		,TaskId
+		,ParentTaskId
 		,ActivityId
 		,ActivityType
 		,Title
@@ -7741,6 +7792,7 @@ SELECT
 			(SELECT 
 				PC.PlanCampaignId Id	
 				,H.TaskId
+				,H.ParentTaskId
 				,H.EntityId ActivityId
 				,PC.Title
 				,'campaign' as ActivityType
@@ -7759,7 +7811,7 @@ SELECT
 			)Campaign
 			PIVOT
 			(
-				sum(value)
+				MAX(value)
 				for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
 								,[Y13], [Y14], [Y15], [Y16],[Y17], [Y18], [Y19], [Y20],[Y21], [Y22], [Y23], [Y24])
 			)CampaignMain
@@ -7767,6 +7819,7 @@ UNION ALL
 	SELECT 
 		Id
 		,TaskId
+		,ParentTaskId
 		,ActivityId
 		,ActivityType
 		,Title
@@ -7800,6 +7853,7 @@ UNION ALL
 			(SELECT 
 				PCP.PlanProgramId Id
 				,H.TaskId
+				,H.ParentTaskId
 				,H.EntityId ActivityId
 				,PCP.Title
 				,'program' as ActivityType
@@ -7818,7 +7872,7 @@ UNION ALL
 			)Program
 			PIVOT
 			(
-				sum(value)
+				MAX(value)
 				for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
 								,[Y13], [Y14], [Y15], [Y16],[Y17], [Y18], [Y19], [Y20],[Y21], [Y22], [Y23], [Y24])
 			)ProgramMain
@@ -7826,6 +7880,7 @@ UNION ALL
 	SELECT 
 		Id
 		,TaskId
+		,ParentTaskId
 		,ActivityId
 		,ActivityType
 		,Title
@@ -7865,6 +7920,7 @@ UNION ALL
 			(SELECT
 				PCPT.PlanTacticId Id 
 				,H.TaskId
+				,H.ParentTaskId
 				,H.EntityId ActivityId
 				,PCPT.Title
 				,'tactic' as ActivityType
@@ -7894,19 +7950,19 @@ UNION ALL
 			)Tactic
 			PIVOT
 			(
-				sum(value)
+				MAX(value)
 				for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12]
 								,[Y13], [Y14], [Y15], [Y16],[Y17], [Y18], [Y19], [Y20],[Y21], [Y22], [Y23], [Y24])
 			)TacticMain
 			PIVOT
 			(
-				sum(CValue)
+				MAX(CValue)
 				for CPeriod in ([CostY1], [CostY2], [CostY3], [CostY4],[CostY5], [CostY6], [CostY7], [CostY8],[CostY9], [CostY10], [CostY11], [CostY12]
 								,[CostY13], [CostY14], [CostY15], [CostY16],[CostY17], [CostY18], [CostY19], [CostY20],[CostY21], [CostY22], [CostY23], [CostY24])
 			)TacticMain1
 			PIVOT
 			(
-				sum(AValue)
+				MAX(AValue)
 				for APeriod in ([ActualY1], [ActualY2], [ActualY3], [ActualY4],[ActualY5], [ActualY6], [ActualY7], [ActualY8],[ActualY9], [ActualY10], [ActualY11], [ActualY12]
 								,[ActualY13], [ActualY14], [ActualY15], [ActualY16],[ActualY17], [ActualY18], [ActualY19], [ActualY20],[ActualY21], [ActualY22], [ActualY23], [ActualY24])
 			)TacticMain2
@@ -7915,6 +7971,7 @@ UNION ALL
 	SELECT 
 		Id
 		,TaskId
+		,ParentTaskId
 		,ActivityId
 		,ActivityType
 		,Title
@@ -7951,6 +8008,7 @@ UNION ALL
 	 FROM
 		 (SELECT	PCPTL.PlanLineItemId Id
 					,H.TaskId
+					,H.ParentTaskId
 					,H.EntityId ActivityId
 					,PCPTL.Title
 					,'lineitem' as ActivityType
@@ -7975,17 +8033,18 @@ UNION ALL
 				)LineItem
 				PIVOT
 				(
-				 sum(CValue)
+				 MAX(CValue)
 				  for CPeriod in ([CostY1], [CostY2], [CostY3], [CostY4],[CostY5], [CostY6], [CostY7], [CostY8],[CostY9], [CostY10], [CostY11], [CostY12]
 									,[CostY13], [CostY14], [CostY15], [CostY16],[CostY17], [CostY18], [CostY19], [CostY20],[CostY21], [CostY22], [CostY23], [CostY24])
 				)LineItemMain
 				PIVOT
 				(
-				 sum(AValue)
+				 MAX(AValue)
 				  for APeriod in ([ActualY1], [ActualY2], [ActualY3], [ActualY4],[ActualY5], [ActualY6], [ActualY7], [ActualY8],[ActualY9], [ActualY10], [ActualY11], [ActualY12]
 									,[ActualY13], [ActualY14], [ActualY15], [ActualY16],[ActualY17], [ActualY18], [ActualY19], [ActualY20],[ActualY21], [ActualY22], [ActualY23], [ActualY24])
 				)LineItemMain
 END
+
 
 
 GO

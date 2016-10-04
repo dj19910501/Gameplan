@@ -130,6 +130,7 @@ function LoadBudgetGrid() {
     if (selectedTimeFrame == null || selectedTimeFrame == 'undefined' || selectedTimeFrame == "") {
         selectedTimeFrame = currentDate.getFullYear().toString();
     }
+    var viewBy = $('#ddlTabViewBy').val();
     $.ajax({
         url: urlContent + 'Plan/GetBudgetData/',
         data: {
@@ -138,7 +139,8 @@ function LoadBudgetGrid() {
             TacticTypeids: filters.TacticTypeids.toString(),
             StatusIds: filters.StatusIds.toString(),
             customFieldIds: filters.customFieldIds.toString() ,
-            year:selectedTimeFrame.toString()
+            year: selectedTimeFrame.toString(),
+            ViewBy:viewBy
 
         },
         success: function (result) {
@@ -1622,7 +1624,16 @@ $("#ddlTabViewBy").change(function () {
         $('#divupcomingact').show();
         $("#GridGanttContent").show();
         $("#divgridview").hide();
-    } else {
+    }
+    else if (IsBudgetGrid)
+    {
+        isCalendarView = false;
+        $('#ChangeView').hide();
+        $('#exp-serach').css('display', 'none');
+        LoadBudgetGrid();
+        ShowHideDataonBudgetScreen();
+    }
+     else {
         LoadPlanGrid();
         $("#GridGanttContent").hide();
         $('#divupcomingact').hide();

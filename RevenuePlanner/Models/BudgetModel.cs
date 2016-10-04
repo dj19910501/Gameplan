@@ -55,6 +55,7 @@ namespace RevenuePlanner.Models
     public class PlanBudgetModel
     {
         public string Id { get; set; }
+        public string ParentId { get; set; }
         public string ActivityId { get; set; }
         public string ActivityName { get; set; }
         public string ActivityType { get; set; }

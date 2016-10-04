@@ -207,7 +207,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="StatusIds">Status Id filter which will apply on budget hierarchy only for tactic</param>
         /// <param name="Year">selected year from timeframe to filter plan data</param>
         /// <returns></returns>
-        public DataTable GetBudget(string PlanIds, int UserId, string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string Year = "")
+        public DataTable GetBudget(string PlanIds, int UserId,string viewBy, string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string Year = "")
         {
             DataTable dtPlanBudgetHirarchy = new DataTable();
 
@@ -230,6 +230,7 @@ namespace RevenuePlanner.Helpers
                 command.Parameters.AddWithValue("@statusIds", StatusIds);
                 command.Parameters.AddWithValue("@UserID", UserId);
                 command.Parameters.AddWithValue("@TimeFrame", Year);
+                command.Parameters.AddWithValue("@ViewBy", viewBy);
                 SqlDataAdapter adp = new SqlDataAdapter(command);
                 command.CommandTimeout = 0;
                 adp.Fill(dtPlanBudgetHirarchy);

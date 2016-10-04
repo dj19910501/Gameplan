@@ -12403,12 +12403,16 @@ namespace RevenuePlanner.Controllers
         /// <param name="StatusIds">filter status ids</param>
         /// <param name="Year">selected year of plans from timeframe </param>
         /// <returns></returns>
-        public ActionResult GetBudgetData(string PlanIds, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "",string year="")
+        public ActionResult GetBudgetData(string PlanIds,string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "")
         {
             IBudget Iobj = new RevenuePlanner.Services.Budget();
             int UserID = Sessions.User.ID;
-            int ClientId = Sessions.User.CID;
-            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, Enums.ViewBy.Campaign, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds);
+            int ClientId = Sessions.User.CID;  
+           if (string.IsNullOrEmpty(ViewBy))
+            {
+                ViewBy = PlanGanttTypes.Tactic.ToString();
+            }
+            BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, ViewBy, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds);
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
             if (year.ToLower() == strThisMonth.ToLower())
             {
