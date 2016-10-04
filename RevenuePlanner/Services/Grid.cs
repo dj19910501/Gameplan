@@ -558,6 +558,16 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.EndDate) + ColumnManagmentIcon
             });
 
+            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Status), new PlanHead
+            {
+                type = "ro",
+                align = "center",
+                id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Status),
+                sort = "str",
+                width = 150,
+                value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Status) + ColumnManagmentIcon
+            });
+
             lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost), new PlanHead
             {
                 type = "ed",
@@ -1119,8 +1129,16 @@ namespace RevenuePlanner.Services
                 objPlanData = new Plandataobj();
                 if (pair.Property != null)
                 {
+                    objres.EntityType = GetvalueFromObject(RowData, "EntityType");
+                    if ((pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate)) && objres.EntityType.ToUpper().ToString() == Enums.EntityType.Lineitem.ToString().ToUpper())
+                    {
+                        objPlanData.value = "-";
+                        objPlanData.actval = "-";
+                    }
+                    else {
                     objPlanData.value = GetvalueFromObject(RowData, pair.Name);
                     objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                }
                 }
                 lstPlanData.Add(objPlanData);
             }
@@ -1239,8 +1257,12 @@ namespace RevenuePlanner.Services
 
             objres.AssetType = GetvalueFromObject(RowData, "AssetType");
             objres.TacticType = GetvalueFromObject(RowData, "TacticType");
+            if (objres.EntityType.ToString().ToUpper() != Enums.EntityType.Lineitem.ToString().ToUpper())
+            {
             objres.StartDate = Convert.ToDateTime(GetvalueFromObject(RowData, "StartDate"));
             objres.EndDate = Convert.ToDateTime(GetvalueFromObject(RowData, "EndDate"));
+            }
+            objres.Status = GetvalueFromObject(RowData, "Status");
             objres.EntityTitle = GetvalueFromObject(RowData, "EntityTitle");
 
             int.TryParse(GetvalueFromObject(RowData, "LineItemTypeId"), out LineItemTypeId);

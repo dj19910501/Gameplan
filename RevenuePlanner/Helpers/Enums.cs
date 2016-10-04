@@ -732,6 +732,8 @@ namespace RevenuePlanner.Helpers
             StartDate,
             [Description("End Date")]
             EndDate,
+            [Description("Status")]
+            Status,
             [Description("Planned Cost")]
             PlannedCost,
             [Description("Tactic Category")]
@@ -1714,6 +1716,7 @@ namespace RevenuePlanner.Helpers
           // {"taskname","Task Name"},
            {"StartDate","Start Date"},
            {"EndDate","End Date"},
+           {"Status","Status"},
            {"PlannedCost","Planned Cost"},
            {"AssetType","Tactic Category"},
            {"TacticType","Type"},

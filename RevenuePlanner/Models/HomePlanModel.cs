@@ -435,6 +435,7 @@ namespace RevenuePlanner.Models
         public string TacticType { get; set; }
         public Nullable<DateTime> StartDate { get; set; }
         public Nullable<DateTime> EndDate { get; set; }
+        public string Status { get; set; }
         public string EntityTitle { get; set; }
         private Int32? _LineItemTypeId;
         public Nullable<Int32> LineItemTypeId
