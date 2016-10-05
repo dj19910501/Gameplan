@@ -32,7 +32,7 @@
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 <!-- Stylesheet Only For Homepage -->
 @section FilterEx{
-    <link href="~/Content/css/styleIndexPage_05.css" rel="stylesheet" />
+    <link href="~/Content/css/styleIndexPage.css" rel="stylesheet" />
 }
 
 @* Sidebar Section Start *@
@@ -188,9 +188,9 @@
     </div>
 </div>
 <div id="dvCopyEntity"></div>
-<div class="footer">
+@*<div class="footer">
     <span class="source-sans-proregular">Copyright &copy; @System.DateTime.Now.Year.ToString() Hive9, Inc. All rights reserved.<a href="http://www.hive9.com/ssa-sla" target="_blank">Terms of Use</a></span>
-</div>
+</div>*@
 @Html.Partial("~/Views/Plan/_PlanGridVariable.cshtml")
 @Html.Partial("~/Views/Home/_CalExportPDFHeaderHtml.cshtml")
 <div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
@@ -318,6 +318,7 @@
     // Added by Bhumika to resize Grid and calendar when sidebar hide - Code copied from Index-original.cshtml
     $('.sidebar-toogle a').toggle(
     function () {
+        //debugger
         ///new code
         var ganttwidth = $("#gantt_here").width();
         var totalWidth = ganttwidth - 230;
