@@ -20,10 +20,15 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class HomeControllerTest
     {
+        HomeController objHomeController = new HomeController();
         [TestInitialize]
         public void LoadCacheMessage()
         {
             HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            
+            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
+            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
         }
         #region PL#1134 Multi select: Home/Plan page changes for custom fields
 
@@ -1097,34 +1102,35 @@ namespace RevenuePlanner.Test.Controllers
 
         /// <summary>
         /// To Get Plan Data for Home Screen.
-        /// <author>Rahul Shah</author>
-        /// <createddate>04Jul2016</createddate>
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "LoadPlanCalendar" action in Home controller.
         /// </summary>
         [TestMethod]
         public void LoadPlanCalendar()
         {
-            var routes = new RouteCollection();
             Console.WriteLine("Get Calendar Screen.\n");
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            PartialViewResult result = objHomeController.LoadPlanCalendar() as PartialViewResult;
 
-            var result = objHomeController.LoadPlanCalendar() as PartialViewResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
+            // Verify result return view name or not.
             Assert.IsNotNull(result.ViewName);
 
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName:  " + result.ViewName);
         }
 
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "GetCalendarData" action in Home controller.
+        /// Test case passes all required valid parameters values and verify that it pass or not.
+        /// </summary>
         [TestMethod]
         public void GetCalendarData()
         {
             Console.WriteLine("Get Calendar Data.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
             #region "Set Status"
@@ -1164,22 +1170,25 @@ namespace RevenuePlanner.Test.Controllers
             // Execute actual controller function.
             result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
 
-            // log resultset
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
-
             // Verify result is null to check whether test case fail or not.
             Assert.IsNotNull(result, "Success");
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
         }
-        // Test case with all empty parameter 
+
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "GetCalendarData" action in Home controller.
+        /// Test case with all empty parameter .
+        /// </summary>
         [TestMethod]
         public void GetCalendarDataEmptyParameter()
         {
             Console.WriteLine("Get Calendar Data.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
             #region "Set Status"
@@ -1216,23 +1225,25 @@ namespace RevenuePlanner.Test.Controllers
             // Execute actual controller function.
             result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
 
-            // log resultset
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
-
             // Verify result is null to check whether test case fail or not.
             Assert.IsNotNull(result, "Success");
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
         }
 
-        // Test case with empty Time Frame
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "GetCalendarData" action in Home controller.
+        /// Test case with empty Time Frame.
+        /// </summary>
         [TestMethod]
         public void GetCalendarDataWithEmptyTimeFrame()
         {
             Console.WriteLine("Get Calendar Data.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
             #region "Set Status"
@@ -1272,23 +1283,25 @@ namespace RevenuePlanner.Test.Controllers
             // Execute actual controller function.
             result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
 
-            // log resultset
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
-
             // Verify result is null to check whether test case fail or not.
             Assert.IsNotNull(result, "Success");
-        }
 
-        // Test case with empty CustomFields
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
+        }
+        
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "GetCalendarData" action in Home controller.
+        /// Test case with empty CustomFields
+        /// </summary>
         [TestMethod]
         public void GetCalendarDataWithEmptyCustomFields()
         {
             Console.WriteLine("Get Calendar Data.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
             #region "Set Status"
@@ -1328,24 +1341,26 @@ namespace RevenuePlanner.Test.Controllers
             // Execute actual controller function.
             result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
 
-            // log resultset
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
-
             // Verify result is null to check whether test case fail or not.
             Assert.IsNotNull(result, "Success");
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
         }
 
         #region "PlanCalendar related TestCases With differnt ViewBy Parameter"
-        // Test case with  Viewby value - Custom
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "GetCalendarData" action in Home controller.
+        /// Test case with  Viewby value - Custom
+        /// </summary>
         [TestMethod]
         public void GetCalendarDataViewByValueCustom()
         {
             Console.WriteLine("Get Calendar Data.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
             #region "Set Status"
@@ -1385,23 +1400,26 @@ namespace RevenuePlanner.Test.Controllers
             // Execute actual controller function.
             result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
 
-            // log resultset
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
-
             // Verify result is null to check whether test case fail or not.
             Assert.IsNotNull(result, "Success");
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
         }
 
-        // Test case with  Viewby value - Status
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "GetCalendarData" action in Home controller.
+        /// Test case with  Viewby value - Status
+        /// </summary>
+        
         [TestMethod]
         public void GetCalendarDataViewByValueStatus()
         {
             Console.WriteLine("Get Calendar Data.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
             #region "Set Status"
@@ -1441,23 +1459,26 @@ namespace RevenuePlanner.Test.Controllers
             // Execute actual controller function.
             result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
 
-            // log resultset
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
-
             // Verify result is null to check whether test case fail or not.
             Assert.IsNotNull(result, "Success");
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
         }
 
-        // Test case with  Viewby value - ROIPackage
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "GetCalendarData" action in Home controller.
+        /// Test case with  Viewby value - ROIPackage
+        /// </summary>
+        
         [TestMethod]
         public void GetCalendarDataViewByCustomValueROIPackage()
         {
             Console.WriteLine("Get Calendar Data.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
             #region "Set Status"
@@ -1497,23 +1518,25 @@ namespace RevenuePlanner.Test.Controllers
             // Execute actual controller function.
             result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
 
-            // log resultset
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
-
             // Verify result is null to check whether test case fail or not.
             Assert.IsNotNull(result, "Success");
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
         }
 
-        // Test case with  Viewby value - Stage
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "GetCalendarData" action in Home controller.
+        /// Test case with  Viewby value - Stage
+        /// </summary>
         [TestMethod]
         public void GetCalendarDataViewByCustomValueStage()
         {
             Console.WriteLine("Get Calendar Data.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
             #region "Set Status"
@@ -1553,23 +1576,25 @@ namespace RevenuePlanner.Test.Controllers
             // Execute actual controller function.
             result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
 
-            // log resultset
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
-
             // Verify result is null to check whether test case fail or not.
             Assert.IsNotNull(result, "Success");
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
         }
 
-        // Test case with  Viewby value - Tactic
+        /// <summary>
+        /// To Get Plan Data for Home Screen.
+        /// <author>Viral Kadiya</author>
+        /// <createddate>01oct2016</createddate>
+        /// This test case execute "GetCalendarData" action in Home controller.
+        /// Test case with  Viewby value - Tactic
+        /// </summary>
         [TestMethod]
         public void GetCalendarDataViewByCustomValueTactic()
         {
             Console.WriteLine("Get Calendar Data.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            HomeController objHomeController = new HomeController();
-            objHomeController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objHomeController);
-            objHomeController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             JsonResult result = null;
 
             #region "Set Status"
@@ -1609,11 +1634,11 @@ namespace RevenuePlanner.Test.Controllers
             // Execute actual controller function.
             result = objHomeController.GetCalendarData(CommaSeparatedPlanId, Ownerids, tactictypeids, Status, CommaSeparatedCustomFields, timeframe, ViewBy);
 
-            // log resultset
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
-
             // Verify result is null to check whether test case fail or not.
             Assert.IsNotNull(result, "Success");
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value. result: " + result);
         }
 
         #endregion
