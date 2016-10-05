@@ -491,14 +491,22 @@ namespace RevenuePlanner.Services
                     bool isViewby = true;
                     BudgetviewbyDataList = SetBudgetDhtmlxFormattedValues(model, bmViewby, string.Empty, EntityType, AllocatedBy, false, false, bmViewby.ActivityId, false, isViewby);
                     gridViewbyData.data = BudgetviewbyDataList;
-                    gridjsonlistViewby.Add(GenerateHierarchy(model, UserID, ClientId, Year, AllocatedBy, isViewby, bmViewby.ActivityId));
+                    List<BudgetDHTMLXGridDataModel> gridJsondata = GenerateHierarchy(model, UserID, ClientId, Year, AllocatedBy, isViewby, bmViewby.ActivityId);
+                    foreach (BudgetDHTMLXGridDataModel item in gridJsondata)
+                    {
+                        gridjsonlistViewby.Add(item);
+                    }
                     gridViewbyData.rows = gridjsonlistViewby;
                     gridjsonlist.Add(gridViewbyData);
                 }
             }
             else
             {
-                gridjsonlist.Add(GenerateHierarchy(model, UserID, ClientId, Year, AllocatedBy, false));
+                List<BudgetDHTMLXGridDataModel> gridJsondata = GenerateHierarchy(model, UserID, ClientId, Year, AllocatedBy, false);
+                foreach (BudgetDHTMLXGridDataModel item in gridJsondata)
+                {
+                    gridjsonlist.Add(item);
+                }
             }
 
             //Set plan entity in the dhtmlx formated model at top level of the hierarchy using loop
@@ -507,7 +515,7 @@ namespace RevenuePlanner.Services
             objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;
             return objBudgetDHTMLXGrid;
         }
-        private BudgetDHTMLXGridDataModel GenerateHierarchy(List<PlanBudgetModel> model, int UserID, int ClientId, string Year, string AllocatedBy, bool isViewBy, string ParentId = "")
+        private List< BudgetDHTMLXGridDataModel> GenerateHierarchy(List<PlanBudgetModel> model, int UserID, int ClientId, string Year, string AllocatedBy, bool isViewBy, string ParentId = "")
         {
             List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
@@ -536,7 +544,7 @@ namespace RevenuePlanner.Services
             lstTacticTypeTitle = objDbMrpEntities.TacticTypes.Where(tt => TacticTypeIds.Contains(tt.TacticTypeId) && tt.IsDeleted == false).ToDictionary(tt => tt.TacticTypeId, tt => tt.Title);
             foreach (PlanBudgetModel bm in model.Where(p => p.ActivityType == ActivityType.ActivityPlan && (!isViewBy || p.ParentActivityId == ParentId)).OrderBy(p => p.ActivityName))
             {
-
+                gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
                 if (IsPlanCreateAll == false)
                 {
                     if (bm.CreatedBy == UserID || lstSubordinatesIds.Contains(bm.CreatedBy))
@@ -709,8 +717,9 @@ namespace RevenuePlanner.Services
                 //set campaign row data as child to respective plan
                 gridjsonlistPlanObj.rows = CampaignRowsObjList;
                 //gridjsonlist.Add(gridjsonlistPlanObj);
+                gridjsonlist.Add(gridjsonlistPlanObj);
             }
-            return gridjsonlistPlanObj;
+            return gridjsonlist;
         }
         private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string Year)
         {
