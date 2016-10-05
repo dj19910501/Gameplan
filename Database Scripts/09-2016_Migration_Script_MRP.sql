@@ -7634,6 +7634,7 @@ BEGIN
 							,ProgramPlannedCost.PlannedCost FROM Program_PlannedCost ProgramPlannedCost WHERE 
 							Hireachy.EntityType='Program'
 								AND Hireachy.EntityId=ProgramPlannedCost.PlanProgramId)ProgramPlannedCost
+	Order by Hireachy.EntityTitle
 	
 END
 

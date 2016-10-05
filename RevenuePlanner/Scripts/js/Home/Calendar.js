@@ -409,7 +409,6 @@ function getQuarterStartDate() {
 }
 
 gantt.attachEvent("onTaskOpened", function (id) {
-
     arrClosedTask = jQuery.grep(arrClosedTask, function (value) {
         return value != id;
     });
@@ -447,6 +446,8 @@ function manageAddPopup()
     $(".gantt_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
     });
+    isCopyTacticHomeGrid = 0;
+    isEditTacticHomeGrid = 0;
 }
 
 function AttachEventToTactic() {

@@ -42,6 +42,7 @@ var $doc = $(document);
 $doc.click(function () {
     $('#popupType').css('display', 'none');
     $('#dhx_combo_select').css('display', 'none');
+    $('.dhx_clist').css('display', 'none');
 });
 
 $(document).mouseup(function (e) {
@@ -50,6 +51,7 @@ $(document).mouseup(function (e) {
 });
 $(".grid_ver_scroll").scroll(function () {
     $('#popupType').css('display', 'none');
+    $('.dhx_clist').css('display', 'none');
 });
 
 ///Get GridColumn Index and Hide Column
@@ -162,6 +164,7 @@ function LoadAfterParsing() {
         $(".dhx_combo_select").css("display", "none");
         $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
         $("#popupType").css("display", "none");
+        $('.dhx_clist').css('display', 'none');
     });
     if (eventidonbeforedrag != 0) {
         HomeGrid.detachEvent(eventidonbeforedrag);
@@ -444,17 +447,18 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             var iddetail = customcolId.replace("custom_", "");
             var id = iddetail.split(':')[0];
             var clistitem = [];            
+            var type = HomeGrid.getColType(cellInd);
             if (type == "clist") {
                 var customoption = customfieldOptionList;
                 function filterbyname(obj) {
-                    if (obj.CustomFieldId == id)
+                    if (obj.customFieldId == id)
                         return true;
                     else
                         return false;
                 }
                 d = customoption.filter(filterbyname);
                 $.each(d, function (i, item) {
-                    clistitem.push(item.OptionValue);
+                    clistitem.push(item.value);
                 });
                 HomeGrid.registerCList(cellInd, clistitem);
             }

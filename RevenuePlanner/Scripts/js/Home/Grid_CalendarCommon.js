@@ -115,7 +115,11 @@ function ShowHideDataonBudgetScreen() {
     $('.export-dd').find('#ExportPDf').hide();
 }
 
-$('#ChangeView').click(function () {   
+$('#ChangeView').click(function () {
+    if (isCalendarView) {
+        SetcookieforSaveState();
+        scrollstate = gantt.getScrollState();
+    }
     LoadPlanGrid();
     $('#IsGridView').val('true');
     ShowhideDataonGridCalendar();
@@ -2504,8 +2508,11 @@ function ShowInspectForPlanId() {
 }
 function SetselectedRow()
 {
-    var idcoluIndex = HomeGrid.getColIndexById('id');
-
+    var idcoluIndex = '';
+    if ($('#IsGridView').val().toLowerCase()=='true')
+        idcoluIndex = HomeGrid.getColIndexById('id');
+    else
+        idcoluIndex = HomeGrid.getColIndexById('ActivityId');
     if (isCopyTacticHomeGrid != 0) {
         var selectedcell = HomeGrid.findCell(isCopyTacticHomeGrid, idcoluIndex, true);
         var id = selectedcell[0];
