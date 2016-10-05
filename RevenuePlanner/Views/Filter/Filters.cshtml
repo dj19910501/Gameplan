@@ -81,9 +81,9 @@
         <div id="accordion-SelectedPlanFilter" class="dropdown-section accordion">
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <h2 id="PlanFilterHeader" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedPlanFilter" href="#accordion-element-SelectedPlanFilter">@Enums.FilterLabel.Active_Plans.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i></h2>
+                    <h2 id="PlanFilterHeader" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedPlanFilter" href="#accordion-element-SelectedPlanFilter">@Enums.FilterLabel.Active_Plans.ToString().Replace("_", " ")<i class="indicator fa fa-angle-down pull-right"></i></h2>
                 </div>
-                <div id="accordion-element-SelectedPlanFilter" class="accordion-body in collapse">
+                <div id="accordion-element-SelectedPlanFilter" class="accordion-body collapse">
                     <ul class="scroll-list singleselect" id="ulSelectedPlanFilter">
                         @*@if (activeMenu.ToLower() != Enums.ActiveMenu.Plan.ToString().ToLower())
                             {*@
@@ -226,9 +226,9 @@
         <div id="accordion-SelectedFilter" class="dropdown-section accordion">
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@Enums.FilterLabel.Active_Attributes.ToString().Replace("_", " ")<i class="indicator fa fa-angle-up pull-right"></i></h2>
+                    <h2 id="aYear" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-SelectedFilter" href="#accordion-element-SelectedFilter">@Enums.FilterLabel.Active_Attributes.ToString().Replace("_", " ")<i class="indicator fa fa-angle-down pull-right"></i></h2>
                 </div>
-                <div id="accordion-element-SelectedFilter" class="accordion-body in collapse">
+                <div id="accordion-element-SelectedFilter" class="accordion-body collapse">
                     <ul class="scroll-list singleselect" id="ulSelectedFilter">
                         @if (Model.lstCustomFields != null)
                         {

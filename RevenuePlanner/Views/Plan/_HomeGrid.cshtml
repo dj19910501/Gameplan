@@ -146,23 +146,9 @@
         colSplitId = HomeGrid.getColIndexById(AddId);
         HomeGrid.splitAt(colSplitId + 1);        
         MoveColumn(); ///Calling Move column function       
-        HomeGrid.collapseAll();
+        
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
-        //var cookie = document.cookie;
-        //if (cookie.indexOf("gridOpenplangridState") > -1) {
-        //    var cookies = cookie.split(';');
-        //    for (var i = 0; i < cookies.length; i++) {
-        //        if (cookies[i] == "gridOpenplangridState") {
-        //            if (cookies[i].indexOf("|") > -1) {
-        //                cookies[i] = "gridOpenplangridState=plan.1";
-        //                document.cookie = "gridOpenplangridState=plan.1";
-        //            }
-        //        }
-        //    }
-        //}
-        //else {
-        //    document.cookie = "gridOpengridbox=plan.1";
-        //}
+        
         setTimeout(function () {
             HomeGrid.loadOpenStates("plangridState");
         }, 500);
