@@ -717,12 +717,15 @@ function CallPDF() {
                         }
                     });
                     if (innerfiltervalue != undefined && innerfiltervalue != 'undefined' && innerfiltervalue != '') {
-                        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
-                        htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
-                        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
-                        innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
-                        htmltestdiv += innerfiltervalue + '</span>';
-                        htmltestdiv += '</p>';
+                        //Added following for #2592 feedback point, idf any value will not be selected in custom field then it will not be display as per other filter.
+                        if (innerfiltervalue.indexOf("undefined") <= 0) {
+                            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                            htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
+                            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                            innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
+                            htmltestdiv += innerfiltervalue + '</span>';
+                            htmltestdiv += '</p>';
+                        }
                     }
                 }
             });
