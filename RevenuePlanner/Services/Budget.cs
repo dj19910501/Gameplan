@@ -45,6 +45,7 @@ namespace RevenuePlanner.Services
         public const string ColBudget = "Budget";
         public const string ColActual = "Actual";
         public const string ColPlanned = "Planned";
+        public const string NotEditableCellStyle = "color:#a2a2a2 !important;";
         public bool isMultiYear = false;
 
 
@@ -327,6 +328,11 @@ namespace RevenuePlanner.Services
             {
             BudgetDataObj.value = HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;");
             }
+            if (Entity.ActivityType == ActivityType.ActivityLineItem && Entity.LineItemTypeId == null)
+            {
+                BudgetDataObj.locked = CellLocked;
+                BudgetDataObj.style = NotEditableCellStyle;
+            }
             BudgetDataObjList.Add(BudgetDataObj);
 
             //Set icon of magnifying glass and honey comb for plan entity with respective ids
@@ -349,11 +355,13 @@ namespace RevenuePlanner.Services
                     BudgetDataObjList, AllocatedBy, Entity.ActivityId, IsNextYear,IsMultiyearPlan,isViewBy);
             BudgetDataObj = new Budgetdataobj();
             //Add UnAllocated Cost into dhtmlx model
+            BudgetDataObj.style = NotEditableCellStyle;
             BudgetDataObj.value = Convert.ToString(Entity.UnallocatedCost);
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
             //Add unAllocated budget into dhtmlx model
+            BudgetDataObj.style = NotEditableCellStyle;
             BudgetDataObj.value = Convert.ToString(Entity.UnallocatedBudget);
             BudgetDataObjList.Add(BudgetDataObj);
 
@@ -444,7 +452,7 @@ namespace RevenuePlanner.Services
                 IconsData += " altId=__" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId) + " ColorCode=" + Convert.ToString(Entity.ColorCode);
                 IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Convert.ToString(Entity.ActivityId) + " csvId=Tactic_" + Convert.ToString(Entity.ActivityId) + " ></div>";
             }
-            else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityLineItem.ToLower())
+            else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityLineItem.ToLower() && Entity.LineItemTypeId!=null)
             {
                 // Magnifying Glass to open Inspect Popup
                 IconsData = "<div class=grid_Search id=LP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
@@ -782,7 +790,7 @@ namespace RevenuePlanner.Services
                 }
             }
 
-            setHeader = setHeader + ",UnAllocated Cost";
+            setHeader = setHeader + ",Unallocated Planned Cost";
             columnIds = columnIds + "," + "UnAllocatedCost";
             colType = colType + ",ro";
             width = width + ",150";
@@ -815,6 +823,7 @@ namespace RevenuePlanner.Services
                 {
                     objTotalBudget.value = "---";//Set values for Total budget
                     objTotalBudget.locked = CellLocked;
+                        objTotalBudget.style = NotEditableCellStyle;
                 }
                 else
                 {
@@ -824,19 +833,24 @@ namespace RevenuePlanner.Services
 
                 objTotalActual.value = Convert.ToString(Entity.TotalActuals);//Set values for Total actual
                 objTotalActual.locked = CellLocked;
+                    objTotalActual.style = NotEditableCellStyle;
 
                 bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && Entity.LineItemTypeId == null;
                 objTotalCost.value = Convert.ToString(Entity.TotalAllocatedCost);
                 objTotalCost.locked = Entity.isCostEditable && !isOtherLineItem ? CellNotLocked : CellLocked;
+                    objTotalCost.style = Entity.isCostEditable && !isOtherLineItem ? string.Empty : NotEditableCellStyle;
                 }
                 else
                 {
                     objTotalBudget.value = "---";//Set values for Total budget
                     objTotalBudget.locked = CellLocked;
+                    objTotalBudget.style = NotEditableCellStyle;
                     objTotalActual.value = "---";
                     objTotalActual.locked = CellLocked;
+                    objTotalActual.style = NotEditableCellStyle;
                     objTotalCost.value = "---";
                     objTotalCost.locked = CellLocked;
+                    objTotalCost.style = NotEditableCellStyle;
                 }
 
                 BudgetDataObjList.Add(objTotalBudget);
@@ -885,6 +899,9 @@ namespace RevenuePlanner.Services
                 objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
                 objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
                 objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                    objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
+                    objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
+                    objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
                 if (i == 1)
                 {
                     objBudgetMonth.value = Convert.ToString(Entity.MonthValues.Jan);
@@ -987,8 +1004,11 @@ namespace RevenuePlanner.Services
                 Budgetdataobj objCostMonth = new Budgetdataobj();
                 Budgetdataobj objActualMonth = new Budgetdataobj();
                 objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
                 objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
                 objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
                 if (!isViewby)
                 {
                 if (i == 1)
@@ -1069,16 +1089,23 @@ namespace RevenuePlanner.Services
                 objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
                 objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
                 objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                    objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
+                    objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
+                    objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+
                 if (i < 13)
                 {
                     objBudgetMonth.value = "---";
                     objBudgetMonth.locked = CellLocked;
+                        objBudgetMonth.style = NotEditableCellStyle;
 
                     objCostMonth.value = "---";
                     objCostMonth.locked = CellLocked;
+                        objCostMonth.style = NotEditableCellStyle;
 
                     objActualMonth.value = "---";
                     objActualMonth.locked = CellLocked;
+                        objActualMonth.style = NotEditableCellStyle;
                 }
                 else if (i == 13)
                 {
