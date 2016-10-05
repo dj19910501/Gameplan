@@ -157,6 +157,7 @@
             }
             setTimeout(function () {
                 HomeGrid.loadOpenStates("plangridState");
+                HomeGrid.objBox.scrollTop = scrollstate.y + 150;
             }, 1000);
             setTimeout(function () {
                 HomeGrid.setSizes();

@@ -717,6 +717,7 @@
                         var requestedModule = $("#hdnRedirectType").val();
                         if (planCampaignId == '0') {
                             planCampaignId = data.CampaignID;
+                            isCopyTactic=planCampaignId;
                         }
                         $("#hdnPlanCampaignId").val(planCampaignId);
                         $("#successMessage").css("display", "block");
