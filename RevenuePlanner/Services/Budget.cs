@@ -383,7 +383,7 @@ namespace RevenuePlanner.Services
                 // Add Button
                 if (IsAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Plan alt=" + Entity.ActivityId + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " >";
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Plan alt=" + Entity.Id + " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " >";
                     IconsData += "<i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
                 }
 
@@ -401,7 +401,7 @@ namespace RevenuePlanner.Services
                 // Add Button
                 if (IsAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Campaign alt=" + Entity.ParentActivityId + "_" + Entity.ActivityId;
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Campaign alt=" + Entity.ParentId + "_" + Entity.Id;
                     IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ><i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
                 }
 
@@ -419,7 +419,7 @@ namespace RevenuePlanner.Services
                 // Add Button
                 if (IsAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Program alt=_" + Entity.ParentActivityId + "_" + Entity.ActivityId;
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Program alt=_" + Entity.ParentId + "_" + Entity.Id;
                     IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ><i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
                 }
 
@@ -441,9 +441,9 @@ namespace RevenuePlanner.Services
                 // Add Button
                 if (IsAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Tactic alt=__" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId);
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) title=Add  id=Tactic alt=__" + Convert.ToString(Entity.ParentId) + "_" + Convert.ToString(Entity.Id);
                     IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " LinkTacticper =" + Convert.ToString(LinkTacticPermission) + " LinkedTacticId = " + Convert.ToString(LinkedTacticId);
-                    IconsData += " tacticaddId=" + Convert.ToString(Entity.ActivityId) + "><i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
+                    IconsData += " tacticaddId=" + Convert.ToString(Entity.Id) + "><i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
                 }
 
                 // HoneyComb Button
@@ -453,7 +453,7 @@ namespace RevenuePlanner.Services
                 IconsData += "' altId=" + Convert.ToString(DhtmlxGridRowId) + " ColorCode=" + Convert.ToString(Entity.ColorCode);
                 IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Convert.ToString(Entity.Id) + " csvId=Tactic_" + Convert.ToString(Entity.Id) + " ></div>";
             }
-            else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityLineItem.ToLower())
+            else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityLineItem.ToLower() && Entity.LineItemTypeId != null)
             {
                 // Magnifying Glass to open Inspect Popup
                 IconsData = "<div class=grid_Search id=LP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
@@ -461,7 +461,7 @@ namespace RevenuePlanner.Services
                 // Add Button
                 if (IsAddEntityRights)
                 {
-                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  title=Add  id=Line alt=___" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId);
+                    IconsData += "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  title=Add  id=Line alt=___" + Convert.ToString(Entity.ParentId) + "_" + Convert.ToString(Entity.Id);
                     IconsData += " lt=" + ((Entity.LineItemTypeId == null) ? 0 : Entity.LineItemTypeId) + " per=" + Convert.ToString(IsAddEntityRights).ToLower();
                     IconsData += " dt=" + Convert.ToString(Entity.ActivityName) + " ><i class='fa fa-plus-circle' aria-hidden='true'></i></div>";
                 }
