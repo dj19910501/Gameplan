@@ -192,8 +192,10 @@ namespace RevenuePlanner.Services
                     LinkTacticId = Convert.ToInt32(row["LinkTacticId"]),
                     TacticTypeId = Convert.ToInt32(Convert.ToString(row["TacticTypeId"])),
                     PlanYear = Convert.ToString(row["PlanYear"]),
-                    //AssetType = Convert.ToString(row["ROITacticType"]), //Uncomment this when data is passed from sp.
-                    //AnchorTacticID = Convert.ToInt32(Convert.ToString(row["IsAnchorTacticId"])),
+                    AssetType = Convert.ToString(row["ROITacticType"]), //Uncomment this when data is passed from sp.
+                    AnchorTacticID = Convert.ToInt32(Convert.ToString(row["IsAnchorTacticId"])),
+                    CalendarHoneycombpackageIDs = Convert.ToString(row["CalendarHoneycombpackageIDs"]),
+
                     MonthValues = new BudgetMonth()
                     {
                         //Budget Month Allocation
@@ -292,7 +294,7 @@ namespace RevenuePlanner.Services
             List<Budgetdataobj> BudgetDataObjList = new List<Budgetdataobj>();
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             string Roistring = string.Empty;
-            var PackageTacticIds = string.Empty;
+	        var PackageTacticIds = Entity.CalendarHoneycombpackageIDs;
             BudgetDataObj.value = Entity.Id;
             BudgetDataObjList.Add(BudgetDataObj);
 
@@ -316,14 +318,12 @@ namespace RevenuePlanner.Services
             BudgetDataObj = new Budgetdataobj();
             //Add title of plan entity into dhtmlx model
 
-            if (Entity.AnchorTacticID != null && Entity.AnchorTacticID > 0 && !string.IsNullOrEmpty(Entity.Id))
-            {
-                if (Convert.ToString(Entity.AnchorTacticID) == Entity.Id) // If Anchor tacticid and Entity id both same then set ROI package icon
+            if (Entity.AnchorTacticID != null && Entity.AnchorTacticID > 0 && !string.IsNullOrEmpty(Entity.Id) && Convert.ToString(Entity.AnchorTacticID) == Entity.Id)
                 {
                     // Get list of package tactic ids
-                    Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id=pkgIcon onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids=" + PackageTacticIds + "><i class='fa fa-object-group'></i></div>";
-                    BudgetDataObj.value = Roistring + HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;");
-                }
+                     Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
+                    //Roistring = "<div class=package-icon package-icon-grid style=cursor:pointer title=Package id=pkgIcon onclick=OpenHoneyComb(this) pkgtacids=" + PackageTacticIds + "><i class=fa fa-object-group></i></div>";
+                    BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring).Replace("'", "&#39;") + HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;");
             }
             else
             {
@@ -388,10 +388,10 @@ namespace RevenuePlanner.Services
                 }
 
                 // HoneyComb Button
-                IconsData += " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title=Select  id=Plan dhtmlxrowid=" + Convert.ToString(DhtmlxGridRowId) + " TacticType= " + doubledesh;
-                IconsData += " OwnerName= '" + Convert.ToString(OwnerName) + "' TaskName=" + Convert.ToString(Entity.ActivityName) + " altId=" + Entity.ActivityId;
-                IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ColorCode=" + Convert.ToString(Entity.ColorCode) + " taskId=" + Convert.ToString(Entity.ActivityId);
-                IconsData += " csvId=Plan_" + Convert.ToString(Entity.ActivityId) + " ></div>";
+                IconsData += " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title=Select  id=Plan  TacticType= " + doubledesh;
+                IconsData += " OwnerName= '" + Convert.ToString(OwnerName) + "' TaskName='" + Convert.ToString(Entity.ActivityName) + "' altId=" + Convert.ToString(DhtmlxGridRowId);
+                IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " ColorCode=" + Convert.ToString(Entity.ColorCode) + " taskId=" + Convert.ToString(Entity.Id);
+                IconsData += " csvId=Plan_" + Convert.ToString(Entity.Id) + " ></div>";
             }
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityCampaign.ToLower())
             {
@@ -406,10 +406,10 @@ namespace RevenuePlanner.Services
                 }
 
                 // HoneyComb Button
-                IconsData += " <div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title=Select  dhtmlxrowid=" + Convert.ToString(DhtmlxGridRowId) + " TacticType= " + doubledesh;
-                IconsData += " OwnerName= '" + Convert.ToString(OwnerName) + "' TaskName=" + (Convert.ToString(Entity.ActivityName));
-                IconsData += " altId=" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId) + " per=" + Convert.ToString(IsAddEntityRights).ToLower();
-                IconsData += " ColorCode=" + Convert.ToString(Entity.ColorCode) + " taskId= " + Convert.ToString(Entity.ActivityId) + " csvId=Campaign_" + Entity.ActivityId + "></div>";
+                IconsData += " <div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title=Select   TacticType= " + doubledesh;
+                IconsData += " OwnerName= '" + Convert.ToString(OwnerName) + "' TaskName='" + (Convert.ToString(Entity.ActivityName));
+                IconsData += "' altId=" + Convert.ToString(DhtmlxGridRowId) + " per=" + Convert.ToString(IsAddEntityRights).ToLower();
+                IconsData += " ColorCode=" + Convert.ToString(Entity.ColorCode) + " taskId= " + Convert.ToString(Entity.Id) + " csvId=Campaign_" + Entity.Id + "></div>";
             }
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityProgram.ToLower())
             {
@@ -424,10 +424,10 @@ namespace RevenuePlanner.Services
                 }
 
                 // HoneyComb Button
-                IconsData += " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this) title=Select  dhtmlxrowid=" + Convert.ToString(DhtmlxGridRowId) + " TacticType= " + doubledesh;
-                IconsData += " OwnerName= '" + Convert.ToString(OwnerName) + "' TaskName=" + (Convert.ToString(Entity.ActivityName));
-                IconsData += " altId=_" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId) + " ColorCode=" + Convert.ToString(Entity.ColorCode);
-                IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Convert.ToString(Entity.ActivityId) + " csvId=Program_" + Convert.ToString(Entity.ActivityId) + " ></div>";
+                IconsData += " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this) title=Select  TacticType= " + doubledesh;
+                IconsData += " OwnerName= '" + Convert.ToString(OwnerName) + "' TaskName='" + (Convert.ToString(Entity.ActivityName));
+                IconsData += "' altId=" + Convert.ToString(DhtmlxGridRowId) + " ColorCode=" + Convert.ToString(Entity.ColorCode);
+                IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Convert.ToString(Entity.Id) + " csvId=Program_" + Convert.ToString(Entity.Id) + " ></div>";
             }
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityTactic.ToLower())
             {
@@ -447,13 +447,13 @@ namespace RevenuePlanner.Services
                 }
 
                 // HoneyComb Button
-                IconsData += " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title=Select  id=Tactic pcptid = " + Convert.ToString(pcptid) + " dhtmlxrowid=" + Convert.ToString(DhtmlxGridRowId);
+                IconsData += " <div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) title=Select  id=Tactic ";
                 IconsData += " TacticType= '" + Convert.ToString(TacticType) + "' OwnerName= '" + Convert.ToString(OwnerName) + "' roitactictype='" + Entity.AssetType + "' anchortacticid='" + Entity.AnchorTacticID + "'  ";
-                IconsData += " TaskName=" + (Convert.ToString(Entity.ActivityName));
-                IconsData += " altId=__" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId) + " ColorCode=" + Convert.ToString(Entity.ColorCode);
-                IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Convert.ToString(Entity.ActivityId) + " csvId=Tactic_" + Convert.ToString(Entity.ActivityId) + " ></div>";
+                IconsData += " TaskName='" + (Convert.ToString(Entity.ActivityName));
+                IconsData += "' altId=" + Convert.ToString(DhtmlxGridRowId) + " ColorCode=" + Convert.ToString(Entity.ColorCode);
+                IconsData += " per=" + Convert.ToString(IsAddEntityRights).ToLower() + " taskId=" + Convert.ToString(Entity.Id) + " csvId=Tactic_" + Convert.ToString(Entity.Id) + " ></div>";
             }
-            else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityLineItem.ToLower() && Entity.LineItemTypeId != null)
+            else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityLineItem.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
                 IconsData = "<div class=grid_Search id=LP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";

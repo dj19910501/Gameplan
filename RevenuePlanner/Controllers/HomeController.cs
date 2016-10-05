@@ -4283,9 +4283,6 @@ namespace RevenuePlanner.Controllers
                 if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                
-            if (IsGridView == false)
-            {
-
                     Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                     {
                         TacticId = tactic.PlanTacticId,
@@ -4299,25 +4296,6 @@ namespace RevenuePlanner.Controllers
                         AnchorTacticId = tactic.AnchorTacticId,
                         CsvId = "Tactic_" + tactic.PlanTacticId,
                     });
-                }
-                else
-                {
-                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                {
-                    TacticId = tactic.PlanTacticId,
-                    TaskId = "__" + tactic.PlanProgramId + "_" + tactic.PlanTacticId,
-                    PCPTId = string.Format("L{0}_C{1}_P{2}_T{3}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                    Title = tactic.Title,
-                    TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                    ColorCode = TacticTaskColor,
-                    OwnerName = GetOwnerName(tactic.CreatedBy),
-                    ROITacticType = tactic.AssetType,
-                    AnchorTacticId = tactic.AnchorTacticId,
-                    CsvId = "Tactic_" + tactic.PlanTacticId,
-                });
-
-
-                }
 
                 }
                 else if (viewBy.Equals(PlanGanttTypes.Stage.ToString(), StringComparison.OrdinalIgnoreCase))

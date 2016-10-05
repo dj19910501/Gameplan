@@ -89,6 +89,8 @@ namespace RevenuePlanner.Models
         public string TaskId { get; set; }
         public double UnallocatedCost { get; set; }
 
+        public string CalendarHoneycombpackageIDs { get; set; }
+
     }
 
     public class BudgetModel

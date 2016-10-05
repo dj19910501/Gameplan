@@ -3131,13 +3131,13 @@ gantt._render_data = function () {
                 if (AnchorTaskIdsList.Value[index] != undefined && AnchorTaskIdsList.Value[index] != 'undefined' && AnchorTaskIdsList.Value[index] != null && AnchorTaskIdsList.Value[index] != [] && AnchorTaskIdsList.Value[index] != "") {
                     if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
 
-                        AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>");
+                        AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids='" + AnchorTaskIdsList.Value[index] + "' ><i class='fa fa-object-group'></i></div>");
                     }
                     else
                     {
                         AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
                         AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                        AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                        AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids='" + AnchorTaskIdsList.Value[index] + "' ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
                     }
                     TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
                 }
@@ -8695,12 +8695,12 @@ gantt.scrollTo = function (left, top) {
                         if (AnchorTaskIdsList.Value[index] != undefined && AnchorTaskIdsList.Value[index] != 'undefined' && AnchorTaskIdsList.Value[index] != null && AnchorTaskIdsList.Value[index] != [] && AnchorTaskIdsList.Value[index] != "") {
                             if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
 
-                                AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>");
+                                AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids='" + AnchorTaskIdsList.Value[index] + "' ><i class='fa fa-object-group'></i></div>");
                             }
                             else {
                                 AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
                                 AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                                AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + AnchorTaskIdsList.Value[index] + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                                AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids='" + AnchorTaskIdsList.Value[index] + "' ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
                             }
                             TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
                         }
@@ -10152,7 +10152,7 @@ if (!gantt.templates) gantt.templates = {};
                         }
                         if (item.IsAnchorTacticId == item.PlanTacticId)
                         {
-                            return "<div class='unlink-icon' style='margin-right: 2px;' id = '" + Id + "' LinkedPlanName = '" + htmlEncode(item.LinkedPlanName).replace("'", "&#39;") + "'>" + Tooltip + "<i class= '" + Class + "'></i></div><div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + item.CalendarHoneycombpackageIDs + " ><i class='fa fa-object-group'></i></div>";
+                            return "<div class='unlink-icon' style='margin-right: 2px;' id = '" + Id + "' LinkedPlanName = '" + htmlEncode(item.LinkedPlanName).replace("'", "&#39;") + "'>" + Tooltip + "<i class= '" + Class + "'></i></div><div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids='" + item.CalendarHoneycombpackageIDs + "' ><i class='fa fa-object-group'></i></div>";
                         }
                         else
                         {

@@ -36,6 +36,7 @@ $('#btngridcalendar').click(function () {
             BindPlanCalendar();
         }
     }
+    RemoveAllHoneyCombData();
     RefershPlanHeaderCalc();
     ShowhideDataonGridCalendar();
     GlobalSearch();
@@ -94,7 +95,8 @@ $('#btnbudget').click(function () {
     $('#IsGridView').val('false');
     $('#ChangeView').hide();
     $('#exp-serach').css('display', 'none');
-    HomeGrid.saveOpenStates("plangridState");
+    HomeGrid.saveOpenStates("plangridState");		 
+    RemoveAllHoneyCombData();
     LoadBudgetGrid();
     ShowHideDataonBudgetScreen();
     GlobalSearch();
@@ -953,7 +955,7 @@ $("#honeycomb").popover({
             for (i = 0; i < (ExportSelectedIds.TaskID.length) ; i++) {
                 if (isCalendarView == false) {
                    if (ExportSelectedIds.ROITacticType[i] == AssetType) {
-                            htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '" dhtmlxrowid="' + ExportSelectedIds.DhtmlxRowId[i] + '"  csvid="' + ExportSelectedIds.CsvId[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"> <div class="row-fluid"> ' +
+                        htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '" EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  dhtmlxrowid="' + ExportSelectedIds.TaskID[i] + '"  csvid="' + ExportSelectedIds.CsvId[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"> <div class="row-fluid"> ' +
                             ' <div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"> ' +
                             ' <h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5> ' +
                             ' <p class="metadata"> ' +
@@ -964,7 +966,7 @@ $("#honeycomb").popover({
                             ' </div></div></div>';
                         }
                         else {
-                            htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '" dhtmlxrowid="' + ExportSelectedIds.DhtmlxRowId[i] + '"  csvid="' + ExportSelectedIds.CsvId[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"> <div class="row-fluid"> ' +
+                        htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '" EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  dhtmlxrowid="' + ExportSelectedIds.TaskID[i] + '"  csvid="' + ExportSelectedIds.CsvId[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"> <div class="row-fluid"> ' +
                                 ' <div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"> ' +
                                 ' <h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5> ' +
                                 ' <p class="metadata"> ' +
@@ -1003,7 +1005,6 @@ function RemoveAllHoneyCombData() {
         PlanFlag: [],
         CsvId: [],
         ROITacticType: [],
-        DhtmlxRowId: [],
         AnchorTacticId: [],
         CalendarEntityType: [],
     };
@@ -1028,7 +1029,6 @@ function AddRemoveEntity(item) {
                 ExportSelectedIds.PlanFlag.splice(index, 1);
                 ExportSelectedIds.CsvId.splice(index, 1);
                 ExportSelectedIds.ROITacticType.splice(index, 1);
-                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
                 ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 ExportSelectedIds.CalendarEntityType.splice(index, 1);
             }
@@ -1051,7 +1051,6 @@ function AddRemoveEntity(item) {
             }
             else {
                                     ExportSelectedIds.PlanFlag.push('Grid');
-                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
 
             }
         }
@@ -1069,7 +1068,6 @@ function AddRemoveEntity(item) {
                 ExportSelectedIds.PlanFlag.splice(index, 1);
                 ExportSelectedIds.CsvId.splice(index, 1);
                 ExportSelectedIds.ROITacticType.splice(index, 1);
-                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
                 ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 ExportSelectedIds.CalendarEntityType.splice(index, 1);
             }
@@ -1092,7 +1090,6 @@ function AddRemoveEntity(item) {
         }
         else {
                 ExportSelectedIds.PlanFlag.push('Grid');
-                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
             }
         }
     }
@@ -1110,7 +1107,6 @@ function AddRemoveEntity(item) {
                 ExportSelectedIds.PlanFlag.splice(index, 1);
                 ExportSelectedIds.CsvId.splice(index, 1);
             ExportSelectedIds.ROITacticType.splice(index, 1);
-            ExportSelectedIds.DhtmlxRowId.splice(index, 1);
             ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 ExportSelectedIds.CalendarEntityType.splice(index, 1);
             }
@@ -1133,7 +1129,6 @@ function AddRemoveEntity(item) {
         }
         else {
                 ExportSelectedIds.PlanFlag.push('Grid');
-                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
             }
         }
     }
@@ -1159,7 +1154,6 @@ function AddRemoveEntity(item) {
                 ExportSelectedIds.PlanFlag.splice(index, 1);
                 ExportSelectedIds.CsvId.splice(index, 1);
             ExportSelectedIds.ROITacticType.splice(index, 1);
-                ExportSelectedIds.DhtmlxRowId.splice(index, 1);
             ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 ExportSelectedIds.CalendarEntityType.splice(index, 1);
             }
@@ -1181,7 +1175,6 @@ function AddRemoveEntity(item) {
             }
             else {
                 ExportSelectedIds.PlanFlag.push('Grid');
-                ExportSelectedIds.DhtmlxRowId.push($(item).attr('dhtmlxrowid'));
             }
         }
     }
@@ -1723,7 +1716,6 @@ function CallPackageHoneyComb() {
     var PlanIds = [];
 
     if (countElements > 0) {
-     //   if (isCalendarView == false) {
         $('.popover-content').find(".hc-block").each(function () {
                 var ROITacticType = $(this).attr('roitactictype');
                 var ExistingAnchorTacticId = $(this).attr('anchortacticid');
@@ -1732,12 +1724,10 @@ function CallPackageHoneyComb() {
 
                 if (ROITacticType.toLowerCase() == AssetType.toLowerCase()) {
                     anchorTacticId = Csvid[1];
-                    if (isCalendarView == false)
-                    {
+                if (isCalendarView == false) {
                         dhtmlxrowid = $(this).attr('dhtmlxrowid');
                     }
-                    else
-                    {
+                else {
                         AnchorTaskId = $(this).attr('EntityTaskId');
                         var index = AnchorTaskIdsList.Id.indexOf(AnchorTaskId);
                         if (index >= 0) {
@@ -1749,6 +1739,21 @@ function CallPackageHoneyComb() {
                     
                     hasAnchorTactic++;
                 }
+            if (EntityType.toLowerCase() == EntityTypeTactic.toLowerCase()) {
+                var TaskId = $(this).attr('EntityTaskId');
+                var ListIds = TaskId.split('_');
+                $.each(ListIds, function (index, Id) {
+                    if (Id.indexOf('L') >= 0) {
+                        var TacticPlanId = Id.replace("L", "");
+                        var PlanIndex = PlanIds.indexOf(TacticPlanId);
+                        if (PlanIndex < 0) {
+                            PlanIds.push(TacticPlanId);
+                        }
+
+                    }
+
+                });
+            }
                 if (EntityType.toLowerCase() != EntityTypeTactic.toLowerCase()) {
                     isOnlyTactics = false;
                 }
@@ -1762,63 +1767,6 @@ function CallPackageHoneyComb() {
             });
 
             AnchorTaskIdsList.Value.push(promotionTacticIds.toString());
-
-       // }   // To Do so commented for now
-        //else {
-        //    $('.popover-content').find(".hc-block").each(function () {
-        //        debugger;
-        //        var ROITacticType = $(this).attr('roitactictype');
-        //        var EntityType = $(this).attr('EntityType');
-        //        var ExistingAnchorTacticId = $(this).attr('anchortacticid');
-        //        var TacticId = 0;
-        //        if (EntityType.toLowerCase() == 'tactic') {
-        //            var TaskId = $(this).attr('EntityTaskId');
-        //            var ListIds = TaskId.split('_');
-        //            $.each(ListIds, function (index, Id) {
-        //                if (Id.indexOf('T') >= 0) {
-        //                    TacticId = Id.replace("T", "");
-        //                }
-        //                else if (Id.indexOf('L') >= 0) {
-        //                    var TacticPlanId = Id.replace("L", "");
-        //                    var PlanIndex = PlanIds.indexOf(TacticPlanId);
-        //                    if (PlanIndex < 0) {
-        //                        PlanIds.push(TacticPlanId);
-        //                    }
-
-        //                }
-
-        //            });
-        //        }
-        //        if (ROITacticType.toLowerCase() == AssetType.toLowerCase()) {
-        //            anchorTacticId = TacticId;
-        //            hasAnchorTactic++;
-        //            AnchorTaskId = $(this).attr('EntityTaskId');
-        //            var index = AnchorTaskIdsList.Id.indexOf(AnchorTaskId);
-        //            if (index >= 0) {
-        //                AnchorTaskIdsList.Id.splice(index, 1);
-        //                AnchorTaskIdsList.Value.splice(index, 1);
-        //            }
-        //            AnchorTaskIdsList.Id.push(AnchorTaskId);
-        //        }
-
-        //        if (EntityType.toLowerCase() != EntityTypeTactic.toLowerCase()) {
-        //            isOnlyTactics = false;
-        //        }
-        //        else {
-        //            promotionTacticIds.push(TacticId);
-        //        }
-
-        //        if ((!IsPackageView && ExistingAnchorTacticId != "0") || (IsPackageView && ExistingAnchorTacticId != "0" && ExistingAnchorTacticId != anchorTacticId)) {
-        //            IsAlreadyPackaged.push($(this).find('h5').text());
-        //        }
-
-        //    });
-        //    //End
-
-        //    AnchorTaskIdsList.Value.push(promotionTacticIds.toString());
-
-
-        //}
     }
     if (hasAnchorTactic != 1 || !isOnlyTactics || IsAlreadyPackaged.length > 0 || PlanIds.length > 1) {
         // All errors as per validation
@@ -1853,8 +1801,7 @@ function CallPackageHoneyComb() {
             success: function (data) {
                 if (isCalendarView == true) {
                     var TaskHtml = $("div[task_id='" + AnchorTaskId + "']");
-                    if (TaskHtml.length > 0)
-                    {
+                    if (TaskHtml.length > 0) {
                         TaskHtml = $("div[task_id='" + AnchorTaskId + "']")[0];
                         var length = TaskHtml.childNodes.length;
                     }
@@ -1873,12 +1820,12 @@ function CallPackageHoneyComb() {
                         }
                         if (BlankDiv != null && BlankDiv != 'undefined' && BlankDiv != undefined) {
 
-                            AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + promotionTacticIds + " ><i class='fa fa-object-group'></i></div>");
+                            AllCHildNodes = AllCHildNodes.replace(BlankDiv.outerHTML, "<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids='" + promotionTacticIds + "' ><i class='fa fa-object-group'></i></div>");
                         }
                         else {
                             AllCHildNodes = AllCHildNodes.replace(LastChildNode, "");
                             AllCHildNodes = AllCHildNodes.replace(FileNode, "");
-                            AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids=" + promotionTacticIds + " ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
+                            AllCHildNodes = AllCHildNodes.concat("<div class='unlink-icon ROIPackage' onclick='OpenHoneyComb(this)' style='cursor:pointer' pkgtacids='" + promotionTacticIds + "' ><i class='fa fa-object-group'></i></div>" + FileNode + LastChildNode);
                         }
                         TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
                     }
@@ -1897,12 +1844,12 @@ function CallPackageHoneyComb() {
                     var Index = getvalue.indexOf("pkgIcon");
                     if (Index <= -1) {
                         // Add package icon on the grid when new package is created
-                        var PkgIconDiv = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer' onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
+                        var PkgIconDiv = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer' onclick=OpenHoneyComb(this) pkgtacids='" + promotionTacticIds.toString() + "'><i class='fa fa-object-group'></i></div>";
                         HomeGrid.cells(rowId, TaskNameColIndex).setValue(PkgIconDiv + getvalue);
                     }
                     else if (Index > -1) {
                         // Bind updated items to package icon into grid
-                        var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids=" + promotionTacticIds.toString() + "><i class='fa fa-object-group'></i></div>";
+                        var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids='" + promotionTacticIds.toString() + "'><i class='fa fa-object-group'></i></div>";
                         var oldValue = $(getvalue).get(0).outerHTML;
                         getvalue = getvalue.replace(oldValue, newValue);
                         HomeGrid.cells(rowId, TaskNameColIndex).setValue(getvalue);
@@ -1958,7 +1905,7 @@ function CallUnPackageHoneyComb() {
                 if (isCalendarView == false) {
                     // Remove package icon from the grid
                     var rowObject = $('.honeycombbox-icon-gantt[taskid=' + anchorTacticId + ']');
-                    var rowId = $(rowObject).attr('dhtmlxrowid');
+                    var rowId = $(rowObject).attr('altid');
                     var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
 
                     var Index = getvalue.indexOf("pkgIcon");
@@ -2094,7 +2041,6 @@ function CloseIcon(item) {
             ExportSelectedIds.PlanFlag.splice(index, 1);
             ExportSelectedIds.CsvId.splice(index, 1);
             ExportSelectedIds.ROITacticType.splice(index, 1);
-            ExportSelectedIds.DhtmlxRowId.splice(index, 1);
             ExportSelectedIds.AnchorTacticId.splice(index, 1);
             ExportSelectedIds.CalendarEntityType.splice(index, 1);
         }
@@ -2123,7 +2069,6 @@ function CloseIcon(item) {
             ExportSelectedIds.PlanFlag.splice(index, 1);
             ExportSelectedIds.CsvId.splice(index, 1);
             ExportSelectedIds.ROITacticType.splice(index, 1);
-            ExportSelectedIds.DhtmlxRowId.splice(index, 1);
             ExportSelectedIds.AnchorTacticId.splice(index, 1);
             ExportSelectedIds.CalendarEntityType.splice(index, 1);
         }
@@ -2173,7 +2118,7 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
             if (IsPromotion) {
                 if (Index > -1) {
                     // Bind updated items to package icon into grid
-                    var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids=" + data.remainItems.toString() + "><i class='fa fa-object-group'></i></div>";
+                    var newValue = "<div id=pkgIcon class='package-icon package-icon-grid' style='cursor:pointer'  onclick=OpenHoneyComb(this) pkgtacids='" + data.remainItems.toString() + "'><i class='fa fa-object-group'></i></div>";
                     var oldValue = $(getvalue).get(0).outerHTML;
                     getvalue = getvalue.replace(oldValue, newValue);
                     HomeGrid.cells(dhtmlxrowid, TaskNameColIndex).setValue(getvalue);
@@ -2380,8 +2325,7 @@ function OpenHoneyComb(obj) {
     var TacticColorCode;
     for (i = 0; i < currentPkgIds.length; i++) {
         var rowObject = $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']');
-        if (rowObject.length > 1)
-        {
+        if (rowObject.length > 1) {
             $('.honeycombbox-icon-gantt[taskid=' + currentPkgIds[i] + ']').each(function () {
                 if ($(this).is(':visible') == true) {
                     rowObject = $(this);
@@ -2431,8 +2375,8 @@ function OpenHoneyComb(obj) {
                                     ExportSelectedIds.CsvId.push(Data.CsvId);
                                     ExportSelectedIds.ROITacticType.push(Data.ROITacticType);
                                     ExportSelectedIds.AnchorTacticId.push(Data.AnchorTacticId);
-                                    if (Data.PCPTId != undefined && Data.PCPTId != null && Data.PCPTId != "") {
-                                        ExpandTacticsForSelectedPackage(Data.PCPTId);
+                                    if (Data.TaskId != undefined && Data.TaskId != null && Data.TaskId != "") {
+                                        ExpandTacticsForSelectedPackage(Data.TaskId);
                                     }
                                     $("div[altid='" + Data.TaskId + "']").addClass("honeycombbox-icon-gantt-Active");
                                 }
@@ -2488,15 +2432,14 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
     if (arrEntityIds != null && arrEntityIds.length > 2) {
         CampaignId = arrEntityIds[1].replace('C', '');
         ProgramId = arrEntityIds[2].replace('P', '');
-        var divCamp = $('div[taskid="' + CampaignId + '"]').attr('dhtmlxrowid');
+        var divCamp = $('div[taskid="' + CampaignId + '"]').attr('altId');
         HomeGrid.openItem(divCamp);
-        var divProg = $('div[taskid="' + ProgramId + '"]').attr('dhtmlxrowid');
+        var divProg = $('div[taskid="' + ProgramId + '"]').attr('altId');
         HomeGrid.openItem(divProg);
     }
 }
 // Method to refresh calender after popup close-- #2587
-function RefreshCurrentTab()
-{
+function RefreshCurrentTab() {
     LoadFilter();
     if (!IsBudgetGrid) {
     BindPlanCalendar();

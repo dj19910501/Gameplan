@@ -105,8 +105,8 @@
             HomeGrid.enableAutoHeight(false);
             HomeGrid.enableAutoWidth(false);
 
-            var TaskNameIndex = HomeGrid.getColIndexById("taskname");
-            HomeGrid.setColumnMinWidth("300", TaskNameIndex);
+        TaskNameColIndex = HomeGrid.getColIndexById("TaskName");
+        HomeGrid.setColumnMinWidth("300", TaskNameColIndex);
 
             HomeGrid.setEditable(true);
             HomeGrid.init();
