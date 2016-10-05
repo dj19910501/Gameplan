@@ -21,5 +21,6 @@ namespace RevenuePlanner.Services
         // End: Calendar related functions
 
         List<PlanOptionsTacticType> GetTacticTypeListForHeader(string strPlanIds, int ClientId);
+        List<PlanOptionsTacticType> GetLineItemTypeListForHeader(string strPlanIds, int ClientId);
     }
 }

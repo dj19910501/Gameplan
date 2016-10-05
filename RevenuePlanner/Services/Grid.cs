@@ -1371,31 +1371,36 @@ namespace RevenuePlanner.Services
                     {
                         objPlanData.value = "-";
                         objPlanData.actval = "-";
+                        objPlanData.locked = objHomeGridProp.lockedstateone;
                     }
                     else
                     {
                         objPlanData.value = GetvalueFromObject(RowData, pair.Name);
                         objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
-                        if (objres.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
-                        {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
-                            {
-                                objPlanData.locked = objHomeGridProp.lockedstateone;
-                            }
-                            else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.MQL.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Revenue.ToString())
-                            {
-                                objPlanData.locked = string.Empty;
-                            }
-                            else
-                            {
-                                objPlanData.locked = IsEditable;
-                            }
-                        }
-                        else if (objres.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
+                        //if (objres.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
+                        //{
+                        //    if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
+                        //    {
+                        //        objPlanData.locked = objHomeGridProp.lockedstateone;
+                        //    }
+                        //    else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.MQL.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Revenue.ToString())
+                        //    {
+                        //        objPlanData.locked = string.Empty;
+                        //    }
+                        //    else
+                        //    {
+                        //        objPlanData.locked = IsEditable;
+                        //    }
+                        //}
+                        if (objres.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
                         {
                             if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString())
                             {
                                 objPlanData.locked = !string.IsNullOrEmpty(objres.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
+                            }
+                            else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString()) {
+
+                                objPlanData.locked = objHomeGridProp.lockedstateone;
                             }
                             else
                             {
@@ -1404,9 +1409,9 @@ namespace RevenuePlanner.Services
                         }
                         else if (objres.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower())
                         {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.MQL.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Revenue.ToString())
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString())
                             {
-                                objPlanData.locked = string.Empty;
+                                objPlanData.locked = objHomeGridProp.lockedstateone;
                             }
                             else
                             {
@@ -1415,9 +1420,9 @@ namespace RevenuePlanner.Services
                         }
                         else if (objres.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower())
                         {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.MQL.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Revenue.ToString())
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString())
                             {
-                                objPlanData.locked = string.Empty;
+                                objPlanData.locked = objHomeGridProp.lockedstateone;
                             }
                             else
                             {
@@ -1426,11 +1431,7 @@ namespace RevenuePlanner.Services
                         }
                         else if (objres.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower())
                         {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.MQL.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Revenue.ToString())
-                            {
-                                objPlanData.locked = string.Empty;
-                            }
-                            else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString())
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString())
                             {
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
                             }
@@ -1990,10 +1991,10 @@ namespace RevenuePlanner.Services
             IBDSService objAuthService = new BDSServiceClient();
             List<User> lstUsers = objAuthService.GetUserListByClientIdEx(_ClientId);
             List<int> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(_ClientId, lstUsers.Where(i => i.IsDeleted == false).ToList());
-            return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(tacttype => new PlanOptions
+            return lstUsers.Where(u => lstClientUsers.Contains(u.ID)).Select(owner => new PlanOptions
             {
-                id = tacttype.ID,
-                value = tacttype.FirstName
+                id = owner.ID,
+                value = owner.FirstName + " " + owner.LastName
             }).ToList().OrderBy(tactype => tactype.value).ToList(); ;
         }
         /// <summary>
@@ -2020,6 +2021,30 @@ namespace RevenuePlanner.Services
                                                           }
                                  ).ToList();
             return lstTacticTypes;
+        }
+        /// <summary>
+        /// This is Line Item type list (client wise) used in plan grid
+        /// </summary>
+        /// <returns></returns>
+        public List<PlanOptionsTacticType> GetLineItemTypeListForHeader(string strPlanIds, int ClientId)
+        {
+            List<int> lstPlanIds = new List<int>();
+            if (!string.IsNullOrEmpty(strPlanIds))
+            {
+                lstPlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
+            }
+            List<PlanOptionsTacticType> lstLineItemTypes = (from lineitemtypes in objDbMrpEntities.LineItemTypes
+                                                          join model in objDbMrpEntities.Models on lineitemtypes.ModelId equals model.ModelId
+                                                          join plan in objDbMrpEntities.Plans on model.ModelId equals plan.ModelId
+                                                          where (lineitemtypes.IsDeleted == false) && model.ClientId == ClientId && model.IsDeleted == false && lstPlanIds.Contains(plan.PlanId)
+                                                          select new PlanOptionsTacticType
+                                                          {
+                                                              PlanId = plan.PlanId,
+                                                              id = lineitemtypes.LineItemTypeId,
+                                                              value = lineitemtypes.Title
+                                                          }
+                                 ).ToList();
+            return lstLineItemTypes;
         }
     }
 

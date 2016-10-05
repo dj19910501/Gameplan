@@ -417,20 +417,16 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     if (stage == 0) {
         ///TODO : Uncomment After bunding Tactic/Line Item type Drop-down list
         if (Colind == TypeColIndex) {
-            if (updatetype == "line") {
-                //var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
-                //if (actval == "") {
-                //    return false;
-                //}
-                //var combo = HomeGrid.getCombo(cellInd);
-                //var lineitemtype = lineitemtype;
-                //combo.clear();
-                //$.each(lineitemtype, function (i, item) {
-                //    combo.put(item.LineItemTypeId, item.Title);
-                //});
-            }
-            else {
                 var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
+            if (updatetype.toLowerCase() == secLineItem) {                
+                var combo = HomeGrid.getCombo(cellInd);
+                var LineItemTypelist = LineItemTypelistTest;
+                combo.clear();
+                $.each(LineItemTypelist, function (i, item) {
+                    combo.put(item.id, item.value);
+                });
+            }
+            else {               
                 var combo = HomeGrid.getCombo(cellInd);
                 var tacticTypelist1 = tacticTypelistTest;
                 combo.clear();
@@ -456,11 +452,16 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     else
                         return false;
                 }
+                if (customoption != null && customoption != undefined && customoption != "") {
                 d = customoption.filter(filterbyname);
                 $.each(d, function (i, item) {
                     clistitem.push(item.value);
                 });
                 HomeGrid.registerCList(cellInd, clistitem);
+            }
+                else {
+                    return false;
+                }                
             }
         }
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
@@ -556,6 +557,10 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 nValue = formatDate(nValue);
                 oValue = formatDate(oValue);
             }
+            if (UpdateColumn == PlannedCostId) {
+                nValue = nValue.replace(CurrencySybmol, '');
+                oValue = oValue.replace(CurrencySybmol, '');
+            }
             if (UpdateColumn == EndDateId) {
                 var endyear = new Date(HomeGrid.cells(planid, StartDateColIndex).getValue()).getFullYear();
                 var sdate = HomeGrid.cells(rowId, StartDateColIndex).getValue();
@@ -600,25 +605,33 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     var customvalue = nValue.split(',');
                     _customFieldValues = [];
                     if (customvalue.length > 0) {
-                        var weight = weightage / customvalue.length;
+                        var TotalSelectedData = customvalue.length;
+                        var inputValues = parseInt(100 / TotalSelectedData);
+                        var residual = parseInt(100 % TotalSelectedData);
+                        var checkedResidualDiff = TotalSelectedData - residual;
+                        var res_counter = 0;
                         $.each(customvalue, function (key) {
+                            res_counter += 1;
+                            if (res_counter <= checkedResidualDiff && checkedResidualDiff != _customFieldValues.length - 1) {
+                                weight = inputValues;
+                            }
+                            else {
+                                weight = inputValues + 1;
+                            }
                             _customFieldValues.push({
                                 customFieldId: id,
                                 Value: htmlEncode(customvalue[key]),
                                 Weight: weight,
                                 CostWeight: weight
-                            })
                         });                                                
-                    }
-                    else {
-
+                        });
                     }
                     _customFieldValues = JSON.stringify(_customFieldValues);                  
                 }
-                else
+                else {
                     return false;
             }
-
+            }
             if (UpdateColumn == TacticTypeId && updatetype.toLowerCase() == secTactic.toLowerCase()) {                                
                 var tacticTypeId = nValue;
                 var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');

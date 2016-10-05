@@ -8271,6 +8271,7 @@ namespace RevenuePlanner.Controllers
 
                 ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID);
                 ViewBag.TacticTypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
+                ViewBag.LineItemTypelist = objGrid.GetLineItemTypeListForHeader(planIds, Sessions.User.CID);
                 objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds, viewBy);
             }
             catch (Exception objException)

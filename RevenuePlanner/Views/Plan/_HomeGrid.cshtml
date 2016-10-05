@@ -37,8 +37,8 @@
     gridname = "home";
     var HomeGrid;
 
-    var tacticTypelistTest = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); //ToDo : Made required changes to bind Tactic Type Dropdown list on edit tactic type.
-    @*var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');*@ //ToDo : Made required changes to bind Line Item Type Dropdown list on edit Line Item type.
+    var tacticTypelistTest = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); 
+    var LineItemTypelistData = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.LineItemTypelist))');
     var customfieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.CustomAttributOption))'); // added by devanshi
 
     var IslineItemDelete = false;
@@ -48,6 +48,7 @@
     var GridHiddenId = 0;
     var ActivitypeHidden = 0;
     var MachineNameHidden = 0;
+    var TaskNameColIndex = 0;
     var PlannedCostColIndex = 0;
     var AssetTypeColIndex = 0;
     var TypeColIndex = 0;
