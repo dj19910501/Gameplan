@@ -103,7 +103,7 @@ namespace RevenuePlanner.Services
 
         #endregion
 
-        public List<ColumnViewEntity> GetCustomfieldModel(int ClientId, bool IsGrid, out bool IsSelectall,int UserId)
+        public List<ColumnViewEntity> GetCustomfieldModel(int ClientId, bool IsGrid, out bool IsSelectall, int UserId)
         {
             List<CustomAttribute> BasicFields = new List<CustomAttribute>();
             List<ColumnViewEntity> allattributeList = new List<ColumnViewEntity>();
@@ -135,13 +135,13 @@ namespace RevenuePlanner.Services
                     {
                         //Getting xml data to list
                         XDocument doc = XDocument.Parse(attributexml);
-                       List<AttributeDetail> items = (from r in doc.Root.Elements("attribute")
-                                     select new AttributeDetail
-                                     {
-                                         AttributeType = (string)r.Attribute("AttributeType"),
-                                         AttributeId = (string)r.Attribute("AttributeId"),
-                                         ColumnOrder = (string)r.Attribute("ColumnOrder") 
-                                     }).ToList();
+                        List<AttributeDetail> items = (from r in doc.Root.Elements("attribute")
+                                                       select new AttributeDetail
+                                                       {
+                                                           AttributeType = (string)r.Attribute("AttributeType"),
+                                                           AttributeId = (string)r.Attribute("AttributeId"),
+                                                           ColumnOrder = (string)r.Attribute("ColumnOrder")
+                                                       }).ToList();
                         SelectedCustomfieldID = items.Select(a => a.AttributeId).ToList();
                     }
                 }
@@ -192,11 +192,11 @@ namespace RevenuePlanner.Services
 
                         BasicFields.AddRange(columnattribute);
                     }
-                 
+
                     //adding all attributes to single list.
                     allattributeList = BasicFields.GroupBy(a => a.EntityType, StringComparer.OrdinalIgnoreCase).Select(a => new ColumnViewEntity
                     {
-                        EntityType = new CultureInfo("en-US").TextInfo.ToTitleCase(a.Key),
+                        EntityType = new CultureInfo("en-US").TextInfo.ToTitleCase(a.Key),
                         AttributeList = BasicFields.Where(atr => atr.EntityType.ToLower() == a.Key.ToLower()).Select(atr => new ColumnViewAttribute
                         {
                             CustomFieldId = atr.CustomFieldId,
@@ -220,7 +220,7 @@ namespace RevenuePlanner.Services
                     }).ToList();
                 }
             }
-            catch 
+            catch
             {
                 throw;
             }
@@ -266,7 +266,7 @@ namespace RevenuePlanner.Services
                     columnview.BudgetAttribute = xmlElements;
                 objDbMrpEntities.Entry(columnview).State = EntityState.Added;
                 objDbMrpEntities.SaveChanges();
-               result= columnview.ViewId;
+                result = columnview.ViewId;
             }
             catch
             {
@@ -301,9 +301,9 @@ namespace RevenuePlanner.Services
             return items;
         }
 
-        public List<CustomfieldOption> GetCustomFiledOptionList(int clientID)
+        public List<CustomFieldOptionModel> GetCustomFiledOptionList(int clientID)
         {
-            List<CustomfieldOption> optionlist = new List<CustomfieldOption>();
+            List<CustomFieldOptionModel> optionlist = new List<CustomFieldOptionModel>();
             try
             {
                 DataTable dtColumnAttribute = GetCustomFieldList(clientID);
@@ -319,14 +319,20 @@ namespace RevenuePlanner.Services
                         CustomfiledType = Convert.ToString(row["CustomFieldType"])
 
                     }).ToList();
+                    List<CustomFieldDependency> DependencyList = objDbMrpEntities.CustomFieldDependencies.Where(a => a.IsDeleted == false).Select(a => a).ToList();
 
                     List<int> customfieldid = columnattribute.Select(a => Convert.ToInt32(a.CustomFieldId)).ToList();
-                    optionlist = objDbMrpEntities.CustomFieldOptions.Where(a => a.CustomField.ClientId == clientID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).Select(a => new CustomfieldOption
-                     {
-                         CustomFieldId = a.CustomFieldId,
-                         CustomFieldOptionId = a.CustomFieldOptionId,
-                         OptionValue = (a.Value)
-                     }).ToList();
+                    List<CustomFieldOption> optlist = objDbMrpEntities.CustomFieldOptions.Where(a => a.CustomField.ClientId == clientID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).ToList();
+
+                    optionlist = optlist.Select(o => new CustomFieldOptionModel
+                        {
+                            ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
+                            ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).ToList(),
+                            customFieldOptionId = o.CustomFieldOptionId,
+                            ChildOptionIds = DependencyList.Where(Child => Child.ParentOptionId == o.CustomFieldOptionId).Select(list => list.ChildOptionId).ToList(),
+                            value = o.Value,
+                            customFieldId = o.CustomFieldId
+                        }).OrderBy(o => o.value).ToList();
                 }
             }
             catch
@@ -335,5 +341,6 @@ namespace RevenuePlanner.Services
             }
             return optionlist;
         }
+       
     }
 }
