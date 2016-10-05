@@ -31,7 +31,7 @@ $('#btngridcalendar').click(function () {
         } else {
             isCalendarView = true;
             $('#IsGridView').val('false');
-            HomeGrid.saveOpenStates("plangridState");
+           HomeGrid.saveOpenStates("plangridState");
             BindUpcomingActivites(filters.PlanIDs.toString())
             BindPlanCalendar();
         }
@@ -94,6 +94,7 @@ $('#btnbudget').click(function () {
     $('#IsGridView').val('false');
     $('#ChangeView').hide();
     $('#exp-serach').css('display', 'none');
+    HomeGrid.saveOpenStates("plangridState");
     LoadBudgetGrid();
     ShowHideDataonBudgetScreen();
     GlobalSearch();
@@ -121,8 +122,19 @@ $('#ChangeView').click(function () {
         SetcookieforSaveState();
         scrollstate = gantt.getScrollState();
     }
+    else {
+        HomeGrid.saveOpenStates("plangridState");
+    }
     LoadPlanGrid();
     $('#IsGridView').val('true');
+    IsBudgetGrid = false;
+    if ($('#errorMsg').css('display') == 'block') {
+        $('#errorMsg').css('display', 'none');
+    }
+    if ($('#ExpClose').css('display') == 'block') {
+        $('#ExpClose').css('display', 'none');
+        $('#ExpSearch').css('display', 'block');
+    }
     ShowhideDataonGridCalendar();
 });
 
@@ -1391,7 +1403,23 @@ $(".searchDropdown li a").click(function () {
     $("#searchCriteria").text($(this).text()[0]);
     $("#searchCriteria").val(searchColumn.replace(" ",''));
     $("#txtGlobalSearch").attr('Placeholder', $(this).text());
+    if ($('#errorMsg').css('display') == 'block') {
+        $('#errorMsg').css('display', 'none');
+    }
+    if ($('#ExpClose').css('display') == 'block') {
+        $('#ExpSearch').css('display', 'block');
+        $('#ExpClose').css('display', 'none');
+    }
+    if ($('#btnbudget').hasClass('P-icon-active')) {
+        LoadBudgetGrid();
+    }
+    else if($('#btngridcalendar').addClass('P-icon-active'))
+    {
+        BindPlanCalendar();
+    }
+    else{
     BindHomeGrid();
+}
 });
 
 //Search button click
@@ -1415,6 +1443,9 @@ $('#ExpClose').click(function () {
     $('#ExpClose').css('display', 'none');
     GlobalSearch();
     $('#ExpSearch').css('display', 'block');
+    if ($('#errorMsg').css('display') == 'block') {
+        $('#errorMsg').css('display', 'none');
+    }
 
 });
 
@@ -1435,7 +1466,7 @@ function OpenDropdown() {
 var SearchTextforcal = ""
 function GlobalSearch() {
     var SearchText = $('#txtGlobalSearch').val();
-    if (SearchText != "" && SearchText != 'undefined') {
+   // if (SearchText != "" && SearchText != 'undefined') {
     if ($('#IsGridView').val() == 'True' || IsBudgetGrid) {
 
         var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
@@ -1497,7 +1528,7 @@ function GlobalSearch() {
         });
         gantt.render(); // To expand in gantt
         }
-    }
+    //}
 }
 
 function GlobalSearchonGrid(node, columnName) {
