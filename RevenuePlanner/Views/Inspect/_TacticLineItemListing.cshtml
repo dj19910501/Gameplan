@@ -13,12 +13,12 @@
 <!-- Added by Arpita Soni for Ticket #2237 on 06/13/2016 -->
 @if (countrows > 0)
 {
-     <div class="ddlViewByLineItems">
-         @Html.Label("View By:", new { id = "lblViewBy",style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important" })
-    <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
-                    @Html.DropDownList("ddlAllocateViewByLineItems",new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", SelectedViewBy), new { @class = "ddlStyleReport hide" })
-               </span>
-         </div>
+    <div class="ddlViewByLineItems">
+        @Html.Label("View By:", new { id = "lblViewBy", style = "font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important" })
+        <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px; line-height: 1.1;">
+            @Html.DropDownList("ddlAllocateViewByLineItems", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", SelectedViewBy), new { @class = "ddlStyleReport hide" })
+        </span>
+    </div>
     <div id="lineItemGrid" class="gridViewGrid"></div>
 }
 else
@@ -27,12 +27,15 @@ else
 }
 
 <div class="market-activity-main">
-    <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 11;" id="popupLineitemIP">
+    <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 9999;" id="popupLineitemIP">
     </div>
 </div>
 
 <script type="text/javascript">
     var LineItemGrid;
+    var ParentId;
+    var EntityId;
+    var Type;
     var AllocatedBy = '@Convert.ToString(Enums.PlanAllocatedBy.months)'
     $(document).ready(function () {
         $('#liLine_Items').removeClass("pull-left");
@@ -291,9 +294,133 @@ else
         DisplayEditablePopup(id, type);
     });
 
-    $(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
-        var $checkbox = $(this).find('input[type=checkbox]')
-        $checkbox.bootstrapToggle('toggle')
-        e.preventDefault()
-    });    
+    $(document).on("click", '#NewLineItemGrid', function (event) {
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        var returnpara = true;
+        // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
+        var activeTab = $("#InspectTab li.active a").text().replace(" ", "_");
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            returnpara = SaveAllData(activeTab);
+        }
+        if (returnpara) {
+            loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", ParentId, '');
+    }
+    });
+
+$(document).on("click", '#CloneLineItemGrid', function (event) {
+    event.stopImmediatePropagation();
+    event.stopPropagation();
+    var activeTab = "Line_Items";
+    var returnpara = true;
+    if (activeTab != null && activeTab != undefined && activeTab != '') {
+        returnpara = SaveAllData(activeTab);
+    }
+    if (returnpara) {
+        isDataModified = true;
+        var idPlanProgram = $("#hdnPlanLineItemID").val();
+        var Title = '';
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/Clone")',
+            data: {
+                CloneType: "@Enums.Section.LineItem",
+                Id: EntityId,
+                title: Title,
+                CalledFromBudget: '',
+                RequsetedModule: ''
+            },
+            success: function (data) {
+                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else if (data.IsSuccess) {
+                    var currentTab = "Line_Items";
+                    var lineItemId = data.Id;
+                    var expandplanLineItemId = data.expand;
+                    loadInspectPopup(tacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", 0, '');
+                       
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.msg);
+                    $("#errorMessage").css("display", "none");
+                    return true;
+                }
+                else {
+                    $("#successMessageViewProgram").slideUp(50);
+                    $("#errorMessageEditProgram").slideDown(400);
+                    $("#spanMessageEditProgram").empty();
+                    $("#spanMessageEditProgram").val(data.msg);
+                    return false;
+                }
+            }
+        });
+    }
+});
+function OpenLineItemGridPopup(obj, e) {
+    var arrTacticAndLineItemIds = $(obj).attr('alt').replace('cpt_','').replace('cptl_','').split('_');
+
+    ParentId = arrTacticAndLineItemIds[0];
+    EntityId = arrTacticAndLineItemIds[1];
+        
+    var lineItemType = $(obj).attr('lt');
+    Type = $(obj).attr('id');
+    var LinkTacticPermission = $(obj).attr('linktacticper');
+    var LinkedTacticId = $(obj).attr('linkedtacticid');
+        
+    if (lineItemType == "0") {
+        ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItemGrid'>New Line Item</li> </ul>";
+    }
+    else {
+        ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItemGrid'>New Line Item</li> <li class='new-prog' id='CloneLineItemGrid'>Copy Line Item</li>  </ul>";
+    }
+       
+    $('#popupLineitemIP').html(ul);
+
+    if ($('#popupLineitemIP').css('display') == 'none') {
+        $('#popupLineitemIP').css('display', 'block')
+    }
+    else {
+        $('#popupLineitemIP').css('display', 'none')
+    }
+    var left = e.pageX - 10;
+    var target = $(e.target);
+        
+    var targetOffset = 0;
+    targetOffset = target.offset().top - 35;
+    var scrollPosition = $(window).scrollTop();
+
+    if ($('#popupLineitemIP').css('display') != 'none') {
+        if (scrollPosition <= targetOffset) {
+            $('#popupLineitemIP').css({
+                //'display': 'block',
+                'top': targetOffset,
+                'left': left,
+            });
+        }
+        else {
+            var targetHeight = target.height();
+            var targetBottomOffset =0;
+            if($('#IsGridView').val() == 'True'){
+                //var contentHeight = $('#popupLineitemIP').outerHeight();
+                targetBottomOffset = targetOffset + targetHeight; // - contentHeight;
+            }
+            else{
+                var contentHeight = $('#popupLineitemIP').outerHeight();
+                targetBottomOffset = targetOffset + targetHeight - contentHeight;
+            }
+            $('#popupLineitemIP').css({
+                // 'display': 'block',
+                'top': targetBottomOffset,
+                'left': left,
+            });
+        }
+    }
+}
+$(document).on('click.bs.toggle', 'div[data-toggle^=toggle]', function(e) {
+    var $checkbox = $(this).find('input[type=checkbox]')
+    $checkbox.bootstrapToggle('toggle')
+    e.preventDefault()
+});    
 </script>
+

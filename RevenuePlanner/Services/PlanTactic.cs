@@ -254,7 +254,7 @@ namespace RevenuePlanner.Services
             lstTacticData.Add(objTacticData);
 
             objTacticData = new Budgetdataobj();    // Add Icons column value
-            objTacticData.value = Convert.ToString(BindIconsForTactic(tacticModel));
+            objTacticData.value = "";
             lstTacticData.Add(objTacticData);
 
             objTacticData = new Budgetdataobj();    // Add Planned Cost column value
@@ -287,30 +287,6 @@ namespace RevenuePlanner.Services
         }
 
         /// <summary>
-        /// Bind icons column for tactic
-        /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
-        /// </summary>
-        /// <param name="Entity"></param>
-        /// <returns></returns>
-        private StringBuilder BindIconsForTactic(BudgetModel Entity)
-        {
-            StringBuilder strIconsData = new StringBuilder();
-            //LinkTactic Permission based on Entity Year
-            bool LinkTacticPermission = ((Entity.EndDate.Year - Entity.StartDate.Year) > 0) ? true : false;
-            string LinkedTacticId = Entity.LinkTacticId == 0 ? "null" : Convert.ToString(Entity.LinkTacticId);
-
-            // Magnifying Glass to open Inspect Popup
-            strIconsData.Append("<div class=grid_Search id=TP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>");
-
-            // Add Button
-            strIconsData.Append("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId));
-            strIconsData.Append(" per=true LinkTacticper =" + Convert.ToString(LinkTacticPermission) + " LinkedTacticId = " + Convert.ToString(LinkedTacticId));
-            strIconsData.Append(" tacticaddId=" + Convert.ToString(Entity.ActivityId) + "><i class='fa fa-plus-circle' aria-hidden='true'></i></div>");
-
-            return strIconsData;
-        }
-
-        /// <summary>
         /// Bind icons column for line item
         /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
         /// </summary>
@@ -325,7 +301,7 @@ namespace RevenuePlanner.Services
             strIconsData.Append("<div class=grid_Search id=LP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>");
 
             // Add Button
-            strIconsData.Append("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId));
+            strIconsData.Append("<div class=grid_add onclick=javascript:OpenLineItemGridPopup(this,event)  id=Line alt=" + Convert.ToString(Entity.ParentActivityId) + "_" + Convert.ToString(Entity.ActivityId));
             strIconsData.Append(" lt=" + ((Entity.LineItemTypeId == null) ? 0 : Entity.LineItemTypeId) + " per=true");
             strIconsData.Append(" dt=" + Convert.ToString(Entity.ActivityName) + " ><i class='fa fa-plus-circle' aria-hidden='true'></i></div>");
             return strIconsData;
@@ -491,7 +467,7 @@ namespace RevenuePlanner.Services
                 CreatedBy = row["CreatedBy"] == DBNull.Value ? 0: Convert.ToInt32(row["CreatedBy"]),  // owner of the entity
                 isEditable = false,  // set default permission false
                 ActivityType = Convert.ToString(row["ActivityType"]),
-                LineItemTypeId = row["LineItemTypeId"] == DBNull.Value ? 0: Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
+                LineItemTypeId = row["LineItemTypeId"] == DBNull.Value ? null: Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
                 LinkTacticId = row["LinkTacticId"] == DBNull.Value ? 0: Convert.ToInt32(row["LinkTacticId"]),
             }).ToList();
             return model;
