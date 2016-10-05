@@ -1052,6 +1052,15 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
+        /// Enum for Grid Column Type
+        /// Added By : Mitesh Vaishnav for PL ticket #718
+        /// </summary>
+        public enum ColumnType
+        {
+            ed,
+            combo
+        }
+        /// <summary>
         /// Enum for custom field entity type
         /// Added by Mitesh Vaishnav for PL ticket #718
         /// </summary>

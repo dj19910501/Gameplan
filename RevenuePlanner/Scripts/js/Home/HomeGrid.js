@@ -20,6 +20,7 @@ var newTactVal = 0;
 var value;
 var TacticName;
 var ExportToCsv = false;
+var _customFieldValues = [];
 var NodatawithfilterGrid = '<div id="NodatawithfilterGrid" style="display:none;">' +
     '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' + '<br/></div>';
 function SetTooltip() {
@@ -166,10 +167,11 @@ function LoadAfterParsing() {
         HomeGrid.detachEvent(eventidonbeforedrag);
     }
     eventidonbeforedrag = HomeGrid.attachEvent("onBeforeDrag", function (id) {
-        if (id != "" && id != undefined) {
-            var drag_id = id.toString().split("_");
+        if (id != "" && id != undefined) {           
+            var drag_id = HomeGrid.cells(id, GridHiddenId).getValue();
+            var drag_Type = HomeGrid.cells(id, ActivitypeHidden).getValue();
             if (drag_id.length > 0) {
-                if (drag_id[0].toString().toLowerCase() != secTactic) return false;
+                if (drag_Type.toLowerCase() != secTactic) return false;
                 var locked = HomeGrid.cells(id, TaskNameColIndex).getAttribute("locked");
                 if ((locked != null && locked != "") && locked == "1")
                     return false;
@@ -253,17 +255,18 @@ function doOnDrag(sid, tid) {
     var dragSourcetype = ''
     var dragTargettype = ''
     if (sid != "" && tid != "" && sid != undefined && tid != undefined) {
-        var sourcePId = HomeGrid.getParentId(sid).split("_");
-        var sourceId = sid.split("_");
-        var targetedId = tid.split("_");
+        var sourceId = HomeGrid.cells(sid, GridHiddenId).getValue();
+        var targetedId = HomeGrid.cells(tid, GridHiddenId).getValue();
+        var sourceProwId = HomeGrid.getParentId(sid);
+        var sourcePId = HomeGrid.cells(sourceProwId, GridHiddenId).getValue();
         if (sourcePId.length > 0 && sourceId.length > 0 && targetedId.length > 0) {
-            dragSourcePtype = sourcePId[0];
-            dragSourcetype = sourceId[0];
-            dragTargettype = targetedId[0];
+            dragSourcePtype = HomeGrid.cells(sourceProwId, ActivitypeHidden).getValue();
+            dragSourcetype = HomeGrid.cells(sid, ActivitypeHidden).getValue();
+            dragTargettype = HomeGrid.cells(tid, ActivitypeHidden).getValue();
             if (dragSourcetype.toLowerCase() == secTactic) {
                 if (dragSourcePtype == dragTargettype) {
-                    var splanid = HomeGrid.getParentId(HomeGrid.getParentId(HomeGrid.getParentId((dragSourcetype + "_" + sourceId[1]))));
-                    var dplanid = HomeGrid.getParentId(HomeGrid.getParentId((dragTargettype + "_" + targetedId[1])));
+                    var splanid = HomeGrid.getParentId(HomeGrid.getParentId(HomeGrid.getParentId(sid)));
+                    var dplanid = HomeGrid.getParentId(HomeGrid.getParentId(tid));
                     var parentid = HomeGrid.getParentId(sid);
                     if (dplanid == splanid) {
                         if (parentid != tid) {
@@ -300,9 +303,7 @@ function doOnDrag(sid, tid) {
                         alert("Tactic can move only to same plan program."); return false;
                 }
                 else {
-                    var stype = GetItemType(sid.split(".")[0].toString());
-                    var dtype = GetItemType(dragTargettype.toString());
-                    alert(stype + " can not move to " + dtype); return false;
+                    alert(dragSourcetype + " can not move to " + dragTargettype); return false;
                 }
             }
             else {
@@ -311,21 +312,6 @@ function doOnDrag(sid, tid) {
             }
         }
     }
-}
-
-function GetItemType(val) {
-    var itemType = "";
-    if (val.toString() == "tact")
-        itemType = "Tactic";
-    else if (val.toString() == "prog")
-        itemType = "Program";
-    else if (val.toString() == "camp")
-        itemType = "Campaign";
-    else if (val.toString() == "plan")
-        itemType = "Plan";
-    else if (val.toString() == "line")
-        itemType = "LineItem";
-    return itemType;
 }
 
 function SaveMoveTactic() {
@@ -396,13 +382,14 @@ function ExportCSVHoneyCombSp() {
     HomeGrid.setColumnHidden(2, false);
 }
 
-function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {   
     updatetype = HomeGrid.cells(rowId, ActivitypeHidden).getValue();
     var Id;
     var UpdateColumn;
     var UpdateVal;
     var Colind = this.cell.cellIndex;
     var lineItemFlag = 0;
+    var type = HomeGrid.getColType(cellInd);
     $(".popover").removeClass('in').addClass('out'); //Close Honey comb popup on edit cell. to display edited data in honeycomb
     if (stage == 0) {
         var newvalue = HomeGrid.cells(rowId, cellInd).getValue();
@@ -456,8 +443,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         if (customcolId.indexOf("custom_") >= 0) {
             var iddetail = customcolId.replace("custom_", "");
             var id = iddetail.split(':')[0];
-            var clistitem = [];
-            var type = HomeGrid.getColType(cellInd);
+            var clistitem = [];            
             if (type == "clist") {
                 var customoption = customfieldOptionList;
                 function filterbyname(obj) {
@@ -480,7 +466,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             return false;
     }
     if (stage == 1) {
-        if (updatetype == "line") {
+        if (updatetype == secLineItem.toLowerCase()) {
             var oldval = HomeGrid.cells(rowId, cellInd).getValue();
             var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
             if (cellInd != 1) {
@@ -549,11 +535,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 if (!CheckDateYear(nValue, startyear, StartDateCurrentYear)) return false;
                 if (!validateDateCompare(nValue, edate, DateComapreValidation)) return false;
 
-                if (updatetype == "prog") {
+                if (updatetype.toLowerCase() == secProgram.toLowerCase()) {
                     var tsdate = HomeGrid.getUserData(rowId, "tsdate");
                     if (!validateDateCompare(nValue, tsdate, TacticStartDateCompareWithParentStartDate)) return false;
                 }
-                if (updatetype == "camp") {
+                if (updatetype.toLowerCase() == secCampaign.toLowerCase()) {
                     var psdate = HomeGrid.getUserData(rowId, "psdate");
                     var tsdate = HomeGrid.getUserData(rowId, "tsdate");
                     if (!validateDateCompare(nValue, psdate, ProgramStartDateCompareWithParentStartDate)) {
@@ -573,11 +559,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 if (!CheckDateYear(nValue, endyear, EndDateCurrentYear)) return false;
                 if (!validateDateCompare(sdate, nValue, DateComapreValidation)) return false;
 
-                if (updatetype == "prog") {
+                if (updatetype.toLowerCase() == secProgram.toLowerCase()) {
                     var tedate = HomeGrid.getUserData(rowId, "tedate");
                     if (!validateDateCompare(tedate, nValue, TacticEndDateCompareWithParentEndDate)) return false;
                 }
-                if (updatetype == "camp") {
+                if (updatetype.toLowerCase() == secCampaign.toLowerCase()) {
                     var pedate = HomeGrid.getUserData(rowId, "pedate");
                     var tedate = HomeGrid.getUserData(rowId, "tedate");
                     if (!validateDateCompare(pedate, nValue, ProgramEndDateCompareWithParentEndDate)) {
@@ -601,10 +587,38 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 else
                     return false;
             }
-            if (UpdateColumn == TacticTypeId && updatetype == "tact") {
+            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {                              
+                var customcolId = UpdateColumn;
+                var iddetail = customcolId.replace("custom_", "");
+                var id = iddetail.split(':')[0];
+                var weightage = 100;
+                if (nValue != null && nValue != undefined && nValue != oValue) {
+                    var customvalue = nValue.split(',');
+                    _customFieldValues = [];
+                    if (customvalue.length > 0) {
+                        var weight = weightage / customvalue.length;
+                        $.each(customvalue, function (key) {
+                            _customFieldValues.push({
+                                customFieldId: id,
+                                Value: htmlEncode(customvalue[key]),
+                                Weight: weight,
+                                CostWeight: weight
+                            })
+                        });                                                
+                    }
+                    else {
+
+                    }
+                    _customFieldValues = JSON.stringify(_customFieldValues);                  
+                }
+                else
+                    return false;
+            }
+
+            if (UpdateColumn == TacticTypeId && updatetype.toLowerCase() == secTactic.toLowerCase()) {                                
                 var tacticTypeId = nValue;
                 var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');
-                //var arrTacTypes = JSON.parse('@Html.Raw(Json.Encode(lstTacticType))'); ///TODO : Uncomment After bunding Tactic/Line Item type Drop-down list
+                var arrTacTypes = tacticTypelistTest;
                 var newAssetType = arrTacTypes.filter(function (v) {
                     return v.TacticTypeId == tacticTypeId;
                 });
@@ -661,7 +675,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     return true;
                 }
             }
-            if (updatetype == "line") {
+            if (updatetype.toLowerCase() == secLineItem.toLowerCase()) {
                 var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
                 if (actval == null || actval == "")
                     actval = oValue;
@@ -732,7 +746,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     $.ajax({
                         type: 'POST',
                         url: urlContent + 'Plan/SaveGridDetail',
-                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
+                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id), CustomFieldInput: _customFieldValues, ColumnType: type.toString() },
                         dataType: 'json',
                         success: function (states) {
                             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
@@ -750,8 +764,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                             if ((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" && states.OwnerName != null) {
                                 if (planid != 0 && planid != null && planid != undefined) {
-                                    GetTacticTypelist(planid, false);
-                                    GetOwnerListForFilter(planid, false);
+                                    GetTacticTypelist(filters.PlanIDs);
+                                    GetOwnerListForFilter(filters.PlanIDs);
                                     SaveLastSetofViews();
                                 }
                             }
@@ -774,7 +788,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 var _yrDiff = oldvalueofEndYear - StartYear;
 
                                 if (YearDiff > 0) {
-                                    var getvalue = HomeGrid.cells(rowId, 1).getValue();
+                                    var getvalue = HomeGrid.cells(rowId, TaskNameColIndex).getValue();
                                     var Index = getvalue.indexOf("unlink-icon");
                                     if (Index <= -1) {
                                         var UnLinkIconDiv = "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
@@ -937,7 +951,7 @@ function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
     $.ajax({
         type: 'POST',
         url: urlContent + 'Plan/CheckPermissionByOwner',
-        data: { NewOwnerID: NewOwner, UpdateType: GetItemType(updatetype), updatedid: parseInt(updateid) },
+        data: { NewOwnerID: NewOwner, UpdateType: updatetype, updatedid: parseInt(updateid) },
         dataType: 'json',
         success: function (data) {
             if (data.IsLocked == "1") {
@@ -1017,7 +1031,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
             $.ajax({
                 type: 'POST',
                 url: urlContent + 'Plan/SaveGridDetail',
-                data: { UpdateType: GetItemType("tact"), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(TacticID) },
+                data: { UpdateType: 'Tactic', UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(TacticID) },
                 dataType: 'json',
 
                 success: function (states) {
@@ -1035,7 +1049,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                             }
 
                         });
-                        GetTacticTypelist(PlanIds, false);
+                        GetTacticTypelist(filters.PlanIDs, false);
                         SaveLastSetofViews();
                         var tacCost = 0;
                         if (states.TacticCost != null && states.TacticCost != 'undefined') {
@@ -1080,7 +1094,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                                 }
                             }
                         }
-                        ChangeTabView('liGrid');
+                        LoadPlanGrid()
                         ItemIndex = HomeGrid.getRowIndex(rowid);
                         state0 = ItemIndex;
                     }
@@ -1092,12 +1106,12 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
 
 function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
     var newDate = new Date(formatDate(nValue));
-    if (updatetype == "tact") {
+    if (updatetype.toLowerCase() == secTactic) {
         progid = HomeGrid.getParentId(rowId);
         campid = HomeGrid.getParentId(progid);
         planid = HomeGrid.getParentId(campid);
-        var programid = HomeGrid.cells(progid, 3).getValue();
-        var campaignid = HomeGrid.cells(campid, 3).getValue();
+        var programid = HomeGrid.cells(progid, GridHiddenId).getValue();
+        var campaignid = HomeGrid.cells(campid, GridHiddenId).getValue();
         var ProgstartDate = new Date(formatDate(HomeGrid.cells(progid, dateindex).getValue()));
         var Campstartdate = new Date(formatDate(HomeGrid.cells(campid, dateindex).getValue()));
         var Planstartdate = new Date(formatDate(HomeGrid.cells(planid, dateindex).getValue()));
@@ -1157,7 +1171,7 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
             });
         }
     }
-    else if (updatetype == "prog") {
+    else if (updatetype.ToLower() == secProgram) {
         campid = HomeGrid.getParentId(rowId);
         planid = HomeGrid.getParentId(campid);
         var programid = HomeGrid.cells(rowId, 3).getValue();
@@ -1211,7 +1225,7 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
             });
         }
     }
-    else if (updatetype == "camp") {
+    else if (updatetype.toLowerCase() == secCampaign) {
         planid = HomeGrid.getParentId(rowId);
         var Planstartdate = new Date(formatDate(HomeGrid.cells(planid, dateindex).getValue()));
         if (Updatecolumn == StartDateId) {

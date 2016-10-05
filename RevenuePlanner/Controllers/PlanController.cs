@@ -8317,7 +8317,7 @@ namespace RevenuePlanner.Controllers
 
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveGridDetail(string UpdateType, string UpdateColumn, string UpdateVal, int id = 0)
+        public ActionResult SaveGridDetail(string UpdateType, string UpdateColumn, string UpdateVal, int id = 0, string CustomFieldInput = "", string ColumnType = "")
         {
             PlanExchangeRate = Sessions.PlanExchangeRate;
             string PeriodChar = "Y";
@@ -8744,6 +8744,74 @@ namespace RevenuePlanner.Controllers
                         }
 
                     }
+                    ///Added by Rahul Shah for Save Custom Field from Plan Grid PL #2594
+                    else if(UpdateColumn.ToString().IndexOf("custom") >= 0) {
+                        if (CustomFieldInput != null && CustomFieldInput != "") {
+                            List<CustomFieldStageWeight> customFields = JsonConvert.DeserializeObject<List<CustomFieldStageWeight>>(CustomFieldInput); //Deserialize Json Data to List.
+                            int CustomFieldId = customFields.Select(cust => cust.CustomFieldId).FirstOrDefault(); // Get Custom Field Id 
+                            List<string> CustomfieldValue = customFields.Select(cust => cust.Value).ToList();// Get Custom Field Option Value
+
+                            Dictionary<int ,string> CustomFieldOptionIds = new Dictionary<int, string>();
+                            CustomFieldOptionIds = db.CustomFieldOptions.Where(log => log.CustomFieldId == CustomFieldId && CustomfieldValue.Contains(log.Value)).ToDictionary(log => log.CustomFieldOptionId, log => log.Value.ToString());// Get Key Value pair for Customfield option id and its value according to Value.
+
+                            List<CustomField_Entity> prevCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == id && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList();
+                            prevCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
+                            if (customFields.Count != 0)
+                            {
+                                CustomField_Entity objcustomFieldEntity;                                
+                                foreach (var item in customFields)
+                                {                                    
+                                    objcustomFieldEntity = new CustomField_Entity();
+                                    objcustomFieldEntity.EntityId = id;
+                                    objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
+                                    if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                    {
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                    }
+                                    else
+                                    {
+                                        objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
+                                    }
+                                    objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                    objcustomFieldEntity.CreatedBy = Sessions.User.ID;
+                                    objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                    objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+                                    db.CustomField_Entity.Add(objcustomFieldEntity);
+                                }                                
+                            }
+
+                    if (linkedTacticId > 0)
+                            {
+                                List<CustomField_Entity> prevLinkCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == linkedTacticId && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList();
+                                prevLinkCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
+
+                                if (customFields.Count != 0)
+                                {
+                                    CustomField_Entity objcustomFieldEntity;
+                                    foreach (var item in customFields)
+                                    {
+                                        objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = linkedTacticId;
+                                        objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
+                                        if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                        {
+                                            objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                        }
+                                        else
+                                        {
+                                            objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
+                                        }
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.ID;
+                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                        objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+                                        db.CustomField_Entity.Add(objcustomFieldEntity);
+                                    }
+                                }
+                            }
+                            db.SaveChanges();
+                        }
+                    }
                     if (linkedTacticId > 0)
                     {
                         linkedTactic.ModifiedBy = Sessions.User.ID;
@@ -8981,6 +9049,46 @@ namespace RevenuePlanner.Controllers
                     {
                         OwnerName = GetOwnerName(UpdateVal);
                     }
+                    ///Added by Rahul Shah for Save Custom Field from Plan Grid PL #2594
+                    else if (UpdateColumn.ToString().IndexOf("custom") >= 0)
+                    {
+                        if (CustomFieldInput != null && CustomFieldInput != "")
+                        {
+                            List<CustomFieldStageWeight> customFields = JsonConvert.DeserializeObject<List<CustomFieldStageWeight>>(CustomFieldInput); //Deserialize Json Data to List.
+                            int CustomFieldId = customFields.Select(cust => cust.CustomFieldId).FirstOrDefault(); // Get Custom Field Id 
+                            List<string> CustomfieldValue = customFields.Select(cust => cust.Value).ToList(); // Get Custom Field Option Value 
+
+                            Dictionary<int, string> CustomFieldOptionIds = new Dictionary<int, string>();
+                            CustomFieldOptionIds = db.CustomFieldOptions.Where(log => log.CustomFieldId == CustomFieldId && CustomfieldValue.Contains(log.Value)).ToDictionary(log => log.CustomFieldOptionId, log => log.Value.ToString()); // Get Key Value pair for Customfield option id and its value according to Value.
+
+                            List<CustomField_Entity> prevCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == id && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList(); 
+                            prevCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
+                            if (customFields.Count != 0)
+                            {
+                                CustomField_Entity objcustomFieldEntity;
+                                foreach (var item in customFields)
+                                {
+                                    objcustomFieldEntity = new CustomField_Entity();
+                                    objcustomFieldEntity.EntityId = id;
+                                    objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
+                                    if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                    {
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                    }
+                                    else
+                                    {
+                                        objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
+                                    }
+                                    objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                    objcustomFieldEntity.CreatedBy = Sessions.User.ID;
+                                    objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                    objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+                                    db.CustomField_Entity.Add(objcustomFieldEntity);
+                                }
+                            }
+                            db.SaveChanges();
+                        }
+                    }
                     return Json(new { OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
                 }
 
@@ -9045,6 +9153,46 @@ namespace RevenuePlanner.Controllers
                     if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                     {
                         OwnerName = GetOwnerName(UpdateVal);
+                    }
+                    ///Added by Rahul Shah for Save Custom Field from Plan Grid PL #2594
+                    else if (UpdateColumn.ToString().IndexOf("custom") >= 0)
+                    {
+                        if (CustomFieldInput != null && CustomFieldInput != "")
+                        {
+                            List<CustomFieldStageWeight> customFields = JsonConvert.DeserializeObject<List<CustomFieldStageWeight>>(CustomFieldInput);
+                            int CustomFieldId = customFields.Select(cust => cust.CustomFieldId).FirstOrDefault();// Get Custom Field Id 
+                            List<string> CustomfieldValue = customFields.Select(cust => cust.Value).ToList(); // Get Custom Field Option Value 
+
+                            Dictionary<int, string> CustomFieldOptionIds = new Dictionary<int, string>();
+                            CustomFieldOptionIds = db.CustomFieldOptions.Where(log => log.CustomFieldId == CustomFieldId && CustomfieldValue.Contains(log.Value)).ToDictionary(log => log.CustomFieldOptionId, log => log.Value.ToString()); // Get Key Value pair for Customfield option id and its value according to Value.
+
+                            List<CustomField_Entity> prevCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == id && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList();
+                            prevCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
+                            if (customFields.Count != 0)
+                            {
+                                CustomField_Entity objcustomFieldEntity;
+                                foreach (var item in customFields)
+                                {
+                                    objcustomFieldEntity = new CustomField_Entity();
+                                    objcustomFieldEntity.EntityId = id;
+                                    objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
+                                    if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                    {
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                    }
+                                    else
+                                    {
+                                        objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
+                                    }
+                                    objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                    objcustomFieldEntity.CreatedBy = Sessions.User.ID;
+                                    objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                    objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+                                    db.CustomField_Entity.Add(objcustomFieldEntity);
+                                }
+                            }
+                            db.SaveChanges();
+                        }
                     }
                     return Json(new { OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
                 }
