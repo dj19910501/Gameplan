@@ -293,7 +293,7 @@ namespace RevenuePlanner.Services
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             string Roistring = string.Empty;
             var PackageTacticIds = string.Empty;
-            BudgetDataObj.value = Entity.Id + ";" + Convert.ToString(EntityType);
+            BudgetDataObj.value = Entity.Id;
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();

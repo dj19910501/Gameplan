@@ -1621,13 +1621,13 @@ function BindViewSelections(strUrl) {
 
 // ViewBy Change Event.
 $("#ddlTabViewBy").change(function () {
-    if ($('#IsGridView').val().toLowerCase() == "false") {
-        BindPlanCalendar();
-        $('.export-dd').find('#ExportXls').hide();
-        $('.export-dd').find('#ExportPDf').show();
-        $('#divupcomingact').show();
-        $("#GridGanttContent").show();
-        $("#divgridview").hide();
+    if ($('#IsGridView').val().toLowerCase() == "true") {
+        LoadPlanGrid();
+        $("#GridGanttContent").hide();
+        $('#divupcomingact').hide();
+        $("#divgridview").show();
+        $('.export-dd').find('#ExportXls').show();
+        $('.export-dd').find('#ExportPDf').hide();
     }
     else if (IsBudgetGrid)
     {
@@ -1637,13 +1637,13 @@ $("#ddlTabViewBy").change(function () {
         LoadBudgetGrid();
         ShowHideDataonBudgetScreen();
     }
-     else {
-        LoadPlanGrid();
-        $("#GridGanttContent").hide();
-        $('#divupcomingact').hide();
-        $("#divgridview").show();
-        $('.export-dd').find('#ExportXls').show();
-        $('.export-dd').find('#ExportPDf').hide();
+    else {
+        BindPlanCalendar();
+        $('.export-dd').find('#ExportXls').hide();
+        $('.export-dd').find('#ExportPDf').show();
+        $('#divupcomingact').show();
+        $("#GridGanttContent").show();
+        $("#divgridview").hide();
     }
 });
 
