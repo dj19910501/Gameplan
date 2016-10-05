@@ -1954,8 +1954,11 @@ namespace RevenuePlanner.Services
         /// <returns></returns>
         public List<PlanOptionsTacticType> GetTacticTypeListForHeader(string strPlanIds, int ClientId)
         {
-            List<int> lstPlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
-
+            List<int> lstPlanIds = new List<int>();
+            if (!string.IsNullOrEmpty(strPlanIds))
+            {
+                 lstPlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
+            }
             List<PlanOptionsTacticType> lstTacticTypes = (from tactictypes in objDbMrpEntities.TacticTypes
                                                           join model in objDbMrpEntities.Models on tactictypes.ModelId equals model.ModelId
                                                           join plan in objDbMrpEntities.Plans on model.ModelId equals plan.ModelId
