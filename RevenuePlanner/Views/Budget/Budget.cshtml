@@ -35,23 +35,23 @@
             </li>
             <li>
                 <strong>Actual data import</strong><br />
-                                
-                    <ul>
-                        <li><span>Only tactic and line item will be updated when we import data of actual.</span></li>
-                        <li><span>Tactic will be updated in case no lineitem available.</span></li>
-                        <li><span>Tactic and line item will be updated when tactic status will be approved.</span></li>
-                    </ul>                
-                  
-                
+
+                <ul>
+                    <li><span>Only tactic and line item will be updated when we import data of actual.</span></li>
+                    <li><span>Tactic will be updated in case no lineitem available.</span></li>
+                    <li><span>Tactic and line item will be updated when tactic status will be approved.</span></li>
+                </ul>
+
+
             </li>
             <li>
                 <strong>Planned data import</strong><br />
-                                 
-                    <ul>
-                        <li><span>Only tactic and line item will be updated when we import data of planned.</span></li>
-                        <li><span>Other line item will not be updated.</span></li>                        
-                    </ul>                         
-                
+
+                <ul>
+                    <li><span>Only tactic and line item will be updated when we import data of planned.</span></li>
+                    <li><span>Other line item will not be updated.</span></li>
+                </ul>
+
             </li>
         </ul>
         <input id="input-43" name="input43[]" type="file" class="file-loading select-file">
@@ -73,97 +73,104 @@
     var header;
     var eventidonedit = 0;
     $(document).ready(function () {
+        var GridRowId = '@Model.Grid.rows[0].id';
         $('#divgridview').addClass('budget-grid');
-        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
-        exportgridData = JsonModel;
-        HomeGrid = new dhtmlXGridObject('gridbox');
-        var imgpath = '@Url.Content("~/codebase/imgs/")';
-        HomeGrid.setImagePath(imgpath);
-        HomeGrid.setImageSize(1, 1);
-        gridheader = '@Model.SetHeader';
-        ColumnIds = '@Model.ColumnIds';
-        colType = '@Model.ColType';
-        colSorting = '@Model.ColSorting';
-        budgetWidth = '@Model.Width';
-        header = '@Model.SetHeader';
-        header = $('<div/>').html(header.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        header = (header.toString().replace(/&amp;/g, '&'));
-        HomeGrid.setHeader(header);
-        //assigned header to export to excel
-        gridheader = header;
-        HomeGrid.setColTypes('@Model.ColType');
-        HomeGrid.setInitWidths('@Model.Width');
-        HomeGrid.setColSorting('@Model.ColSorting');
-        HomeGrid.setColumnIds('@Model.ColumnIds');
-        HomeGrid.enableAutoHeight(false);
-        HomeGrid.enableAutoWidth(false);
+        if (GridRowId != '') {
+            var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
+            exportgridData = JsonModel;
+            HomeGrid = new dhtmlXGridObject('gridbox');
+            var imgpath = '@Url.Content("~/codebase/imgs/")';
+            HomeGrid.setImagePath(imgpath);
+            HomeGrid.setImageSize(1, 1);
+            gridheader = '@Model.SetHeader';
+            ColumnIds = '@Model.ColumnIds';
+            colType = '@Model.ColType';
+            colSorting = '@Model.ColSorting';
+            budgetWidth = '@Model.Width';
+            header = '@Model.SetHeader';
+            header = $('<div/>').html(header.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+            header = (header.toString().replace(/&amp;/g, '&'));
+            HomeGrid.setHeader(header);
+            //assigned header to export to excel
+            gridheader = header;
+            HomeGrid.setColTypes('@Model.ColType');
+            HomeGrid.setInitWidths('@Model.Width');
+            HomeGrid.setColSorting('@Model.ColSorting');
+            HomeGrid.setColumnIds('@Model.ColumnIds');
+            HomeGrid.enableAutoHeight(false);
+            HomeGrid.enableAutoWidth(false);
 
-        var TaskNameIndex = HomeGrid.getColIndexById("taskname");
-        HomeGrid.setColumnMinWidth("300", TaskNameIndex);
+            var TaskNameIndex = HomeGrid.getColIndexById("taskname");
+            HomeGrid.setColumnMinWidth("300", TaskNameIndex);
 
-        HomeGrid.setEditable(true);
-        HomeGrid.init();
-      
-        var mainGridData = JsonModel;
-        mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+            HomeGrid.setEditable(true);
+            HomeGrid.init();
 
-        HomeGrid.parse(GridDataHomeGrid, "json");
+            var mainGridData = JsonModel;
+            mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+            var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
 
-        var colSplitId = HomeGrid.getColIndexById("BudgetCost");
-        HomeGrid.splitAt(colSplitId);
+            HomeGrid.parse(GridDataHomeGrid, "json");
 
-        HomeGrid.attachEvent("onOpenEnd", function (id, state) {
-            $(".grid_Search").off("click");
-            $(".grid_Search").click(function (e) {
-                inspectCloseFocus = $(this).position().top;
-                var EntityIdWithSection = $(this).parent().parent().find('td:first').html().split(';');
-                var id = EntityIdWithSection[0];
-                var type = $(this).attr('id');
-                gridSearchFlag = 1;
-                DisplayEditablePopup(id, type);
+            var colSplitId = HomeGrid.getColIndexById("BudgetCost");
+            HomeGrid.splitAt(colSplitId);
+
+            HomeGrid.attachEvent("onOpenEnd", function (id, state) {
+                $(".grid_Search").off("click");
+                $(".grid_Search").click(function (e) {
+                    inspectCloseFocus = $(this).position().top;
+                    var EntityIdWithSection = $(this).parent().parent().find('td:first').html().split(';');
+                    var id = EntityIdWithSection[0];
+                    var type = $(this).attr('id');
+                    gridSearchFlag = 1;
+                    DisplayEditablePopup(id, type);
+                });
+                setTimeout(function () {
+                    HomeGrid.saveOpenStates("plangridState");
+                }, 500);
             });
-            setTimeout(function () {
-                HomeGrid.saveOpenStates("plangridState");
-            }, 500);
-        });
-        var machineNameindex = HomeGrid.getColIndexById("MachineName");
-        var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
-        var colTypeIndex = HomeGrid.getColIndexById("Type");
-        var LineItemTypeIdIndex = HomeGrid.getColIndexById("LineItemTypeId");
-        HomeGrid.setColumnHidden(ActivityIdindex, true);
-        HomeGrid.setColumnHidden(machineNameindex, true);
-        HomeGrid.setColumnHidden(colTypeIndex, true);
-        HomeGrid.setColumnHidden(LineItemTypeIdIndex, true);
-        var ColumnsToView = '@Model.HiddenTab';
-        var selectedTab = ColumnsToView.split(',');
-        for (var i = 0; i < selectedTab.length; i++) {
-            var sTab = selectedTab[i];
-            if (sTab != '' && sTab != null) {
-                for (var j = 0; j < HomeGrid.getColumnsNum() ; j++) {
-                    var ColumnId = HomeGrid.getColumnId(j);
-                    var YearlyTab = sTab + "Cost";
-                    if (ColumnId == sTab || ColumnId == YearlyTab) {
-                        HomeGrid.setColumnHidden(j, true);
+            var machineNameindex = HomeGrid.getColIndexById("MachineName");
+            var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
+            var colTypeIndex = HomeGrid.getColIndexById("Type");
+            var LineItemTypeIdIndex = HomeGrid.getColIndexById("LineItemTypeId");
+            HomeGrid.setColumnHidden(ActivityIdindex, true);
+            HomeGrid.setColumnHidden(machineNameindex, true);
+            HomeGrid.setColumnHidden(colTypeIndex, true);
+            HomeGrid.setColumnHidden(LineItemTypeIdIndex, true);
+            var ColumnsToView = '@Model.HiddenTab';
+            var selectedTab = ColumnsToView.split(',');
+            for (var i = 0; i < selectedTab.length; i++) {
+                var sTab = selectedTab[i];
+                if (sTab != '' && sTab != null) {
+                    for (var j = 0; j < HomeGrid.getColumnsNum() ; j++) {
+                        var ColumnId = HomeGrid.getColumnId(j);
+                        var YearlyTab = sTab + "Cost";
+                        if (ColumnId == sTab || ColumnId == YearlyTab) {
+                            HomeGrid.setColumnHidden(j, true);
+                        }
                     }
                 }
             }
-        }
-        setTimeout(function () {
-            HomeGrid.loadOpenStates("plangridState");
-        }, 1000);
-        setTimeout(function () {
-            HomeGrid.setSizes();
-        }, 200);
-        LoadAfterParsing();
-        var rowCount = HomeGrid.getRowsNum();
-        if (rowCount != undefined && rowCount == 0) {
-            var noplan = '@Sessions.IsNoPlanCreated';
-            if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
-                AddBlankRow();
+            setTimeout(function () {
+                HomeGrid.loadOpenStates("plangridState");
+            }, 1000);
+            setTimeout(function () {
+                HomeGrid.setSizes();
+            }, 200);
+            LoadAfterParsing();
+            var rowCount = HomeGrid.getRowsNum();
+            if (rowCount != undefined && rowCount == 0) {
+                var noplan = '@Sessions.IsNoPlanCreated';
+                if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
+                    AddBlankRow();
+                }
             }
+            SetTooltip();
         }
-        SetTooltip();
+        else {
+            $('#exp-serach').hide();
+            $('#divgridview').html('<div id="NodatawithfilterBudget"><span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span><br/></div>');
+        }
     });
 
     function LoadAfterParsing() {
@@ -198,7 +205,7 @@
             var BudgetHdr = HomeGrid.getColLabel(cellInd, 0);
             if (BudgetHdr.indexOf("-")) {
                 Tab = BudgetHdr.split(' ')[1];
-            }            
+            }
 
             var TaskNameId = HomeGrid.getColIndexById("TaskName");
             var TypeIndex = HomeGrid.getColIndexById("Type");
@@ -395,7 +402,7 @@
         if ('@isquarter'.toLowerCase() == 'true') {
             isquarter = true;
         }
-        
+
         if (Tab.toLowerCase() == 'planned') {
             var monthlyplannedcost;
             if (MonthCost != null && MonthCost != '') {
@@ -444,7 +451,7 @@
             }
             else {
                 FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&inputs=' + jsonInputs + '&tab=' + Tab + '&isquarter=' + isquarter;
-            }            
+            }
         }
 
         var URL;
@@ -528,6 +535,5 @@
         HomeGrid.addRow("newRow_0", rawdata);
         HomeGrid.cells("newRow_0", addcolindex).setValue("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id='Plan' alt='000' per='true' title='Add'><i class='fa fa-plus-circle'></i></div>");
         HomeGrid.setCellTextStyle("newRow_0", taskcolindex, "color:gray;font-style: italic;");
-    }    
+    }
 </script>
-
