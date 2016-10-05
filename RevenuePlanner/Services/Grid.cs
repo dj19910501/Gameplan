@@ -1858,12 +1858,13 @@ namespace RevenuePlanner.Services
         /// Createdy By: Viral
         /// Created On: 09/19/2016
         // Desc: Return List of Plan, Campaign, Program, Tactic
-        public List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string timeframe, string planYear, string viewby)
+        public List<calendarDataModel> GetPlanCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string planYear, string viewby)
         {
             #region "Declare Variables"
             SqlParameter[] para = new SqlParameter[7];
             List<calendarDataModel> calResultset = new List<calendarDataModel>();   // Return Calendar Result Data Model
             #endregion
+            
             #region "Set SP Parameters"
             para[0] = new SqlParameter() { ParameterName = "planIds", Value = planIds };
             para[1] = new SqlParameter() { ParameterName = "ownerIds", Value = ownerIds };
@@ -1879,6 +1880,12 @@ namespace RevenuePlanner.Services
                 .SqlQuery<calendarDataModel>("spGetPlanCalendarData @planIds,@ownerIds,@tactictypeIds,@statusIds,@timeframe,@planYear,@viewBy", para)
                 .ToList();
             #endregion
+
+            #region "Filter data based on customfields selected under filter"
+            if (calResultset != null && calResultset.Count > 0 && !string.IsNullOrEmpty(customFieldIds))
+                calResultset = FilterCustomField(calResultset, customFieldIds); // Get filtered tactics based on customfield selection under Filter.
+            #endregion
+
             return calResultset;
         }
 
@@ -1929,6 +1936,50 @@ namespace RevenuePlanner.Services
             #endregion
 
             return lstCalendarDataModel;
+        }
+
+        /// <summary>
+        /// Created by: Viral
+        /// Created On: 09/19/2016
+        /// Desc: Filter Calendar Model data based on custom field selected under filter screen. 
+        /// </summary>
+        /// <returns> Return List<calendarDataModel> dataset</returns>
+        private List<calendarDataModel> FilterCustomField(List<calendarDataModel> allData, string fltrCustomfields)
+        {
+            List<calendarDataModel> resultData = new List<calendarDataModel>();
+            if (allData != null && allData.Count > 0)
+            {
+                #region "Declare & Initialize local Variables"
+                List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                string tacticType = Enums.EntityType.Tactic.ToString().ToUpper();
+                string[] filteredCustomFields = string.IsNullOrWhiteSpace(fltrCustomfields) ? null : fltrCustomfields.Split(',');
+                List<calendarDataModel> tacData = allData.Where(tac => tac.type != null && tac.type.ToUpper() == tacticType).ToList();
+                List<int> lstTacticIds = tacData.Select(tactic => tactic.PlanTacticId.Value).ToList();
+                #endregion
+
+                resultData = allData.Where(tac => tac.type != null && tac.type.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
+                if (filteredCustomFields != null)
+                {
+                    string[] splittedCustomField;
+                    // Splitting filter Customfield values Ex. 71_104 to CustomFieldId: 71 & OptionId: 104
+                    foreach (string customField in filteredCustomFields)
+                    {
+                        splittedCustomField = new string[2];
+                        splittedCustomField = customField.Split('_');
+                        lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                        lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                    };
+
+                    lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds); // Filter Tactics list by selected Custofields in filter. 
+                    tacData = tacData.Where(tactic => lstTacticIds.Contains(tactic.PlanTacticId.Value)).ToList();
+                }
+                //// get Allowed Entity Ids
+                List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
+                tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId.Value)).ToList();    //filter tactics with allowed entity.
+                resultData.AddRange(tacData);
+            }
+            return resultData;
         }
 
         #endregion

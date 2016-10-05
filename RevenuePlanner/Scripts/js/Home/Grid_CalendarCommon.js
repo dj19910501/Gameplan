@@ -31,6 +31,7 @@ $('#btngridcalendar').click(function () {
         } else {
             isCalendarView = true;
             $('#IsGridView').val('false');
+            HomeGrid.saveOpenStates("plangridState");
             BindUpcomingActivites(filters.PlanIDs.toString())
             BindPlanCalendar();
         }

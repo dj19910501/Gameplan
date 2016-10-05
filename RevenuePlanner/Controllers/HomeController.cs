@@ -4450,22 +4450,22 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string viewBy)
         {
             #region "Declare local variables"
-            string planYear = "";
-            Services.IGrid objGrid = new Services.Grid();
-            List<calendarDataModel> resultData = new List<calendarDataModel>(); 
-            
-        #endregion
+                string planYear = "";
+                Services.IGrid objGrid = new Services.Grid();
+                List<calendarDataModel> resultData = new List<calendarDataModel>(); 
+            #endregion
 
             try
             {
+                // if viewby value is empty then set default to 'Tactic'
                 if (string.IsNullOrEmpty(viewBy))
                     viewBy = PlanGanttTypes.Tactic.ToString();
-                resultData = objGrid.GetPlanCalendarData(planIds, ownerIds, tactictypeIds, statusIds, timeframe, planYear, viewBy); // Get Calendar data through SP.
 
-                if (resultData != null && resultData.Count > 0 && !string.IsNullOrEmpty(customFieldIds))
-                    resultData = FilterCustomField(resultData, customFieldIds); // Get filtered tactics based on customfield selection under Filter.
+                // Get Calendar data through SP.
+                resultData = objGrid.GetPlanCalendarData(planIds, ownerIds, tactictypeIds, statusIds,customFieldIds, timeframe, planYear, viewBy); 
 
-                resultData = objGrid.SetOwnerNameAndPermission(resultData); // Set Owner Name and permission for each required entity.
+                // Set Owner Name and permission for each required entity.
+                resultData = objGrid.SetOwnerNameAndPermission(resultData); 
             }
             catch (Exception ex)
             {
@@ -4476,56 +4476,7 @@ namespace RevenuePlanner.Controllers
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
         }
-        /// <summary>
-        /// Created by: Viral
-        /// Created On: 09/19/2016
-        /// Desc: Filter Calendar Model data based on custom field selected under filter screen. 
-        /// </summary>
-        /// <returns> Return List<calendarDataModel> dataset</returns>
-        private List<calendarDataModel> FilterCustomField(List<calendarDataModel> allData, string fltrCustomfields)
-        {
-            List<calendarDataModel> resultData = new List<calendarDataModel>();
-            try
-            {
-                if (allData != null && allData.Count > 0)
-                {
-                    #region "Declare & Initialize local Variables"
-                    List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
-                    List<string> lstFilteredCustomFieldOptionIds = new List<string>();
-                    string tacticType = Enums.EntityType.Tactic.ToString().ToUpper();
-                    string[] filteredCustomFields = string.IsNullOrWhiteSpace(fltrCustomfields) ? null : fltrCustomfields.Split(',');
-                    List<calendarDataModel> tacData = allData.Where(tac => tac.type != null && tac.type.ToUpper() == tacticType).ToList();
-                    List<int> lstTacticIds = tacData.Select(tactic => tactic.PlanTacticId.Value).ToList(); 
-                    #endregion
-
-                    resultData = allData.Where(tac => tac.type != null && tac.type.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
-                    if (filteredCustomFields != null)
-                    {
-                        string[] splittedCustomField;
-                        // Splitting filter Customfield values Ex. 71_104 to CustomFieldId: 71 & OptionId: 104
-                        foreach (string customField in filteredCustomFields)
-                        {
-                            splittedCustomField = new string[2];
-                            splittedCustomField = customField.Split('_');
-                            lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
-                            lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
-                        };
-
-                        lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds); // Filter Tactics list by selected Custofields in filter. 
-                        tacData = tacData.Where(tactic => lstTacticIds.Contains(tactic.PlanTacticId.Value)).ToList();
-                    }
-                    //// get Allowed Entity Ids
-                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
-                    tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId.Value)).ToList();    //filter tactics with allowed entity.
-                    resultData.AddRange(tacData);
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex);
-            }
-            return resultData;
-        }
+        
 
         #endregion
 

@@ -79,118 +79,8 @@ END
 
 GO
 
---This function is somehow missing from migration script. It's needed in order to migrate a fresh db from production. 
---We do need to test migration of a fresh db backup from production. zz 
-IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[dbo].[fnGetFilterEntityHierarchy]'))
-	DROP FUNCTION [dbo].[fnGetFilterEntityHierarchy]
-GO
-
-CREATE FUNCTION [dbo].[fnGetFilterEntityHierarchy]
-(
-	@planIds varchar(max)='',
-	@ownerIds nvarchar(max)='',
-	@tactictypeIds varchar(max)='',
-	@statusIds varchar(max)='',
-	@TimeFrame varchar(20)='',
-	@isGrid bit=0
-)
-
-RETURNS @Entities TABLE (
-			UniqueId		NVARCHAR(30), 
-			EntityId		BIGINT,
-			EntityTitle		NVARCHAR(1000),
-			ParentEntityId	BIGINT, 
-			ParentUniqueId	NVARCHAR(30),
-			EntityType		NVARCHAR(15), 
-			ColorCode		NVARCHAR(7),
-			[Status]		NVARCHAR(15), 
-			StartDate		DATETIME, 
-			EndDate			DATETIME, 
-			CreatedBy		INT,
-			AltId			NVARCHAR(500),
-			TaskId			NVARCHAR(500),
-			ParentTaskId	NVARCHAR(500),
-			PlanId			BIGINT,
-			ModelId			BIGINT
-		)
-AS
-BEGIN
 
 
-Declare @entTactic varchar(8)='Tactic'
-Declare @entLineItem varchar(10)='LineItem'
-
-Declare @HierarchyEntities TABLE (
-			UniqueId		NVARCHAR(30), 
-			EntityId		BIGINT,
-			EntityTitle		NVARCHAR(1000),
-			ParentEntityId	BIGINT, 
-			ParentUniqueId	NVARCHAR(30),
-			EntityType		NVARCHAR(15), 
-			ColorCode		NVARCHAR(7),
-			[Status]		NVARCHAR(15), 
-			StartDate		DATETIME, 
-			EndDate			DATETIME, 
-			CreatedBy		INT,
-			AltId			NVARCHAR(500),
-			TaskId			NVARCHAR(500),
-			ParentTaskId	NVARCHAR(500),
-			PlanId			BIGINT,
-			ModelId			BIGINT
-		)
-
-INSERT INTO @HierarchyEntities 
-
-SELECT 
-UniqueId		
-,EntityId		
-,EntityTitle		
-,ParentEntityId	
-,ParentUniqueId	
-,EntityType		
-,ColorCode		
-,[Status]		
-,StartDate		
-,EndDate			
-,CreatedBy		
-,AltId			
-,TaskId			
-,ParentTaskId	
-,PlanId			
-,ModelId
-
-FROM fnGetEntitieHirarchyByPlanId(@planIds,@TimeFrame,@isGrid)
-
-	-- Fill the table variable with the rows for your result set
-	
-	;WITH FilteredEnt AS(
-Select * from @HierarchyEntities
-)
-,tac as (
-	Select distinct ent.* 
-	FROM FilteredEnt as ent
-	Join [Plan_Campaign_Program_Tactic] as tac on ent.EntityId = tac.PlanTacticId and ent.EntityType=@entTactic AND tac.[Status] IN (select val from comma_split(@statusIds,',')) and  tac.[CreatedBy] IN (select case when val = '' then null else Convert(int,val) end from comma_split(@ownerIds,','))
-	Join [TacticType] as typ on tac.TacticTypeId = typ.TacticTypeId and typ.IsDeleted='0' and typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,','))
-	where ent.EntityType = @entTactic
-)
-,line as (
-	SELECT ent.* 
-	FROM FilteredEnt as ent
-	JOIN tac on ent.ParentEntityId = tac.EntityId and ent.EntityType=@entLineItem
-
-)
-
-INSERT INTO @Entities
-select * from FilteredEnt where EntityType not in ('Tactic','LineItem')
-union all
-SELECT * FROM tac 
-union all
-select * from line
-
-RETURN
-
-END
-GO
 
 --refs #2666 - re-order the insert columns due to column position shift 
 IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[dbo].[UpdateTacticInstanceTacticId_Comment_API]'))
@@ -461,11 +351,11 @@ BEGIN
 END
 
 
-/****** Object:  UserDefinedFunction [dbo].[fnGetEntitieHirarchyByPlanId]    Script Date: 09/30/2016 19:11:17 ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetEntitieHirarchyByPlanId]    Script Date: 10/05/2016 5:17:16 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetEntitieHirarchyByPlanId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 DROP FUNCTION [dbo].[fnGetEntitieHirarchyByPlanId]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnGetEntitieHirarchyByPlanId]    Script Date: 09/30/2016 19:11:17 ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetEntitieHirarchyByPlanId]    Script Date: 10/05/2016 5:17:16 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -492,7 +382,8 @@ RETURNS @Entities TABLE (
 			TaskId			NVARCHAR(500),
 			ParentTaskId	NVARCHAR(500),
 			PlanId			BIGINT,
-			ModelId			BIGINT
+			ModelId			BIGINT,
+			ROIPackageIds	Varchar(max)
 		)
 AS
 BEGIN
@@ -519,17 +410,7 @@ BEGIN
 			SET @StartDate= CONVERT(DATETIME,@MinYear+''-01-01 00:00:00'') --Set first date of minimum year
 			SET @EndDate= CONVERT(DATETIME,@MaxYear+''-12-31 00:00:00'')   --Set Last date of maximum year
 		END
-	--ELSE
-	--	BEGIN
-
-	--	SET @MinYear=CONVERT(VARCHAR(10), DATEPART(YEAR,GETDATE()))
-	--	INSERT INTO @TimeFrameDatesAndYear
-	--	SELECT @MinYear
-
-	--	SET @StartDate= CONVERT(DATETIME,@MinYear+''-01-01 00:00:00'') --Set first date of minimum year
-	--	SET @EndDate= CONVERT(DATETIME,@MinYear+''-12-31 00:00:00'')	 --Set Last date of maximum year
-
-	--	END
+	
 
 	;WITH FilteredPlan AS(
 		SELECT ''Plan'' EntityType,''P_'' + CAST(P.PlanId AS NVARCHAR(10)) UniqueId,P.PlanId EntityId, P.Title EntityTitle,NULL ParentEntityId,NULL ParentUniqueId, P.Status, NULL StartDate, NULL EndDate,P.CreatedBy 
@@ -603,6 +484,36 @@ BEGIN
 	SELECT E.UniqueId, E.EntityId,E.EntityTitle, E.ParentEntityId,E.ParentUniqueId,E.EntityType, C.ColorCode,E.Status,E.StartDate,E.EndDate,E.CreatedBy,E.AltId,E.TaskId,E.ParentTaskId,E.PlanId,E.ModelId FROM AllEntities E
 	LEFT JOIN EntityTypeColor C ON C.EntityType = E.EntityType
 
+	
+	
+	-- Update ROIPackageIds column values
+	Declare @entTactic varchar(20)=''Tactic''
+	
+	Declare @tblROI Table(
+	AnchorTacticId int,
+	PackageTacticids varchar(max)
+	)
+		
+	BEGIN			
+		INSERT INTO @tblROI	SELECT H.EntityId,RT.PlanTacticId
+			FROM @Entities as H
+			JOIN (SELECT AnchorTacticID,PlanTacticId=
+			STUFF((SELECT '', '' + Cast(PlanTacticId as varchar)
+			       FROM ROI_PackageDetail b 
+			       WHERE b.AnchorTacticID = a.AnchorTacticID 
+			      FOR XML PATH('''')), 1, 2, '''')
+			FROM @Entities as T1
+			JOIN ROI_PackageDetail as a on T1.EntityId = a.AnchorTacticID and T1.EntityType=@entTactic
+			GROUP BY a.AnchorTacticID
+			) as RT on H.EntityId = RT.AnchorTacticID and H.EntityType=@entTactic
+		
+	
+	
+		Update @Entities
+		SET ROIPackageIds = R.PackageTacticids
+		FROM @Entities as H
+		JOIN @tblROI as R on H.EntityId = R.AnchorTacticId and H.EntityType=@entTactic
+	END
 	RETURN
 END
 
@@ -611,7 +522,138 @@ END
 
 GO
 
-/****** Object:  UserDefinedFunction [dbo].[fnGetPlanGanttStartEndDate]    Script Date: 09/30/2016 19:11:17 ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/05/2016 5:17:16 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetFilterEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[fnGetFilterEntityHierarchy]
+GO
+/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/05/2016 5:17:16 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetFilterEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+BEGIN
+execute dbo.sp_executesql @statement = N'
+
+
+CREATE FUNCTION [dbo].[fnGetFilterEntityHierarchy]
+(
+	@planIds varchar(max)='''',
+	@ownerIds nvarchar(max)='''',
+	@tactictypeIds varchar(max)='''',
+	@statusIds varchar(max)='''',
+	@TimeFrame varchar(20)='''',
+	@isGrid bit=0
+)
+
+RETURNS @Entities TABLE (
+			UniqueId		NVARCHAR(30), 
+			EntityId		BIGINT,
+			EntityTitle		NVARCHAR(1000),
+			ParentEntityId	BIGINT, 
+			ParentUniqueId	NVARCHAR(30),
+			EntityType		NVARCHAR(15), 
+			ColorCode		NVARCHAR(7),
+			[Status]		NVARCHAR(15), 
+			StartDate		DATETIME, 
+			EndDate			DATETIME, 
+			CreatedBy		INT,
+			AltId			NVARCHAR(500),
+			TaskId			NVARCHAR(500),
+			ParentTaskId	NVARCHAR(500),
+			PlanId			BIGINT,
+			ModelId			BIGINT,
+			ROIPackageIds	Varchar(max)
+		)
+AS
+BEGIN
+
+
+Declare @entTactic varchar(8)=''Tactic''
+Declare @entLineItem varchar(10)=''LineItem''
+
+Declare @HierarchyEntities TABLE (
+			UniqueId		NVARCHAR(30), 
+			EntityId		BIGINT,
+			EntityTitle		NVARCHAR(1000),
+			ParentEntityId	BIGINT, 
+			ParentUniqueId	NVARCHAR(30),
+			EntityType		NVARCHAR(15), 
+			ColorCode		NVARCHAR(7),
+			[Status]		NVARCHAR(15), 
+			StartDate		DATETIME, 
+			EndDate			DATETIME, 
+			CreatedBy		INT,
+			AltId			NVARCHAR(500),
+			TaskId			NVARCHAR(500),
+			ParentTaskId	NVARCHAR(500),
+			PlanId			BIGINT,
+			ModelId			BIGINT,
+			ROIPackageIds	Varchar(max)
+		)
+
+INSERT INTO @HierarchyEntities 
+
+SELECT 
+UniqueId		
+,EntityId		
+,EntityTitle		
+,ParentEntityId	
+,ParentUniqueId	
+,EntityType		
+,ColorCode		
+,[Status]		
+,StartDate		
+,EndDate			
+,CreatedBy		
+,AltId			
+,TaskId			
+,ParentTaskId	
+,PlanId			
+,ModelId
+,ROIPackageIds
+
+FROM fnGetEntitieHirarchyByPlanId(@planIds,@TimeFrame,@isGrid)
+
+	-- Fill the table variable with the rows for your result set
+	
+	;WITH FilteredEnt AS(
+Select * from @HierarchyEntities
+)
+,tac as (
+	Select distinct ent.* 
+	FROM FilteredEnt as ent
+	Join [Plan_Campaign_Program_Tactic] as tac on ent.EntityId = tac.PlanTacticId and ent.EntityType=@entTactic AND tac.[Status] IN (select val from comma_split(@statusIds,'','')) and  tac.[CreatedBy] IN (select case when val = '''' then null else Convert(int,val) end from comma_split(@ownerIds,'',''))
+	Join [TacticType] as typ on tac.TacticTypeId = typ.TacticTypeId and typ.IsDeleted=''0'' and typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,'',''))
+	where ent.EntityType = @entTactic
+)
+,line as (
+	SELECT ent.* 
+	FROM FilteredEnt as ent
+	JOIN tac on ent.ParentEntityId = tac.EntityId and ent.EntityType=@entLineItem
+
+)
+
+INSERT INTO @Entities
+select * from FilteredEnt where EntityType not in (''Tactic'',''LineItem'')
+union all
+SELECT * FROM tac 
+union all
+select * from line
+
+RETURN
+
+END
+' 
+END
+
+GO
+
+/****** Object:  UserDefinedFunction [dbo].[fnGetPlanGanttStartEndDate]    Script Date: 10/05/2016 5:17:16 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetPlanGanttStartEndDate]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[fnGetPlanGanttStartEndDate]
+GO
+/****** Object:  UserDefinedFunction [dbo].[fnGetPlanGanttStartEndDate]    Script Date: 10/05/2016 5:17:16 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -619,7 +661,7 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetPlanGanttStartEndDate]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 BEGIN
 execute dbo.sp_executesql @statement = N'
-
+-- select * from [dbo].[fnGetPlanGanttStartEndDate_V](''thismonth'')
 
 CREATE FUNCTION [dbo].[fnGetPlanGanttStartEndDate]
 (
@@ -632,89 +674,68 @@ RETURNS @start_endDate Table(
 AS
 BEGIN
 	
-	--SELECT * from fnGetPlanGanttStartEndDate(''thisyear'')
+	-- This line is keep commented to test this function and verify data from SQL.
+	--SELECT * from fnGetPlanGanttStartEndDate(''thisyear'') 
 
-	Declare @varThisYear varchar(10)=''thisyear''
-	Declare @varThisQuarter varchar(15)=''thisquarter''
-	Declare @varThisMonth varchar(10)=''thismonth''
-	Declare @Start_Date datetime
-	Declare @End_Date datetime
+	-- Declare local variables
+	BEGIN
+		Declare @varThisYear varchar(10)=''thisyear''
+		Declare @varThisQuarter varchar(15)=''thisquarter''
+		Declare @varThisMonth varchar(10)=''thismonth''
+		Declare @Start_Date datetime
+		Declare @End_Date datetime
+	END
 	
-	Declare @startDate datetime
-	Declare @endDate datetime
-
+	-- Check that if timeframe value is blank then set ''thisyear'' as default timeframe for Calendar
 	IF(IsNull(@timeframe,'''')='''')
 	BEGIN
-		SET @timeframe =''thisyear''
+		SET @timeframe =@varThisYear
 	END
 
-	-- Get PlanYear by timeframe.
-	BEGIN
 
-	Declare @planYear varchar(255)
-	Declare @Fyear varchar(10)
-	BEGIN
-		IF(ISNUMERIC(@timeframe) = 1)
-		BEGIN
-			SET @planYear = @timeframe 
-		END
-		ELSE
-		BEGIN
-			Select  @Fyear = val from [dbo].comma_split(@timeframe,''-'')
-			IF(ISNUMERIC(@Fyear) = 1)
-			BEGIN
-				SET @planYear = @Fyear 
-			END
-			ELSE
-			BEGIN
-				SET @planYear = CAST(DATEPART(YYYY,GETDATE()) as varchar(10))
-			END
-		END
-	END
-
-	END
-
-	SET @startDate = GETDATE()
-	SET @endDate = GETDATE()
-
+	-- Check that if timeframe value is ''thisyear'' then set Start Date & End date to ''01/01/2016'' to ''31/12/2016'' respectively
 	IF(@timeframe = @varThisYear)
 	BEGIN
 		SET @Start_Date = DATEFROMPARTS (DATEPART(yyyy,GETDATE()), 1, 1)
-		SET @End_Date = DATEFROMPARTS (DATEPART(yyyy,GETDATE()), 12, 31)	-- .AddTicks(-1);
+		SET @End_Date = DATEFROMPARTS (DATEPART(yyyy,GETDATE()), 12, 31)	
 	END
 	
+	-- Check that if timeframe value is ''thisquarter'' then set Start Date & End date to ''01/07/2016'' to ''30/09/2016'' respectively
 	ELSE IF(@timeframe = @varThisQuarter)
 	BEGIN
 
 		Declare @currentQuarter int 
-		SET @currentQuarter = ((DATEPART(MM,@startDate) - 1) / 3) + 1
+		SET @currentQuarter = ((DATEPART(MM,GETDATE()) - 1) / 3) + 1
 		
-		SET @Start_Date = DATEFROMPARTS (DATEPART(yyyy,@startDate), (@currentQuarter - 1) * 3 + 1, 1)
-		SET @End_Date = DATEADD(DD,-1,DATEADD(MM,3,@Start_Date))		-- .AddTicks(-1); 
+		SET @Start_Date = DATEFROMPARTS (DATEPART(yyyy,GETDATE()), (@currentQuarter - 1) * 3 + 1, 1)
+		SET @End_Date = DATEADD(DD,-1,DATEADD(MM,3,@Start_Date))		
 	END
 	
+	-- Check that if timeframe value is ''thismonth'' then set Start Date & End date to ''01/09/2016'' to ''30/09/2016'' respectively
 	ELSE IF(@timeframe = @varThisMonth)
 	BEGIN
-		SET @Start_Date = DATEFROMPARTS (DATEPART(yyyy,@startDate), DATEPART(MM,GETDATE()), 1)
+		SET @Start_Date = DATEFROMPARTS (DATEPART(yyyy,GETDATE()), DATEPART(MM,GETDATE()), 1)
 		SET @End_Date = DATEADD(DD,-1,DATEADD(MM,1,@Start_Date))
 	END
 
+	-- Check that if timeframe value is ''2016'' then set Start Date & End date to ''01/01/2016'' to ''31/12/2016'' respectively
 	ELSE IF(ISNUMERIC(@timeframe) = 1)
 	BEGIN
 		SET @Start_Date = DATEFROMPARTS (CAST(@timeframe as int), 1, 1)
-		SET @End_Date = DATEFROMPARTS (CAST(@timeframe as int), 12, 31)		-- .AddTicks(-1);
+		SET @End_Date = DATEFROMPARTS (CAST(@timeframe as int), 12, 31)		
 	END
 	
+	-- When timeframe multiyear(ex. 2016-2017) then set Start Date & End date to ''01/01/2016'' to ''31/12/2017'' respectively
 	ELSE
 	BEGIN
 
 		Declare @Year1 int
 		Declare @Year2 int
 		
-		SELECT  @Year1 = MIN(Cast(val as int)), @Year2 = MAX(Cast(val as int)) FROM [dbo].comma_split(@timeframe,''-'')
+		SELECT  @Year1 = MIN(Cast(val as int)), @Year2 = MAX(Cast(val as int)) FROM [dbo].comma_split(@timeframe,''-'')	-- Split timeframe ''2016-2017'' value.
 		
 		SET @Start_Date = DATEFROMPARTS (@Year1, 1, 1)
-		SET @End_Date = DATEFROMPARTS (@Year2 , 12, 31)		-- .AddTicks(-1);
+		SET @End_Date = DATEFROMPARTS (@Year2 , 12, 31)		
 	END
 
 	INSERT INTO @start_endDate  SELECT @Start_Date ,@End_Date 
@@ -724,11 +745,12 @@ END
 END
 
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 10/04/2016 4:04:28 PM ******/
+
+/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 10/05/2016 5:17:16 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnViewByEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 DROP FUNCTION [dbo].[fnViewByEntityHierarchy]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 10/04/2016 4:04:28 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 10/05/2016 5:17:16 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -767,7 +789,8 @@ RETURNS
 			TaskId			NVARCHAR(500),
 			ParentTaskId	NVARCHAR(500),
 			PlanId			BIGINT,
-			ModelId			BIGINT
+			ModelId			BIGINT,
+			ROIPackageIds	Varchar(max)
 		)
 AS
 BEGIN
@@ -815,7 +838,8 @@ BEGIN
 						ParentTaskId	NVARCHAR(500),
 						PlanId			BIGINT,
 						ModelId			BIGINT,
-						ViewByTitle		NVARCHAR(500)
+						ViewByTitle		NVARCHAR(500),
+						ROIPackageIds	Varchar(max)
 					)
 			
 			
@@ -835,7 +859,8 @@ BEGIN
 						TaskId			NVARCHAR(500),
 						ParentTaskId	NVARCHAR(500),
 						PlanId			BIGINT,
-						ModelId			BIGINT
+						ModelId			BIGINT,
+						ROIPackageIds	Varchar(max)
 					)
 			
 					Declare @distViewByValues Table(
@@ -854,8 +879,8 @@ BEGIN
 			BEGIN
 				
 				INSERT Into @ResultEntities(
-							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)		
-				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds)		
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds
 				FROM		fnGetFilterEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@TimeFrame,@isGrid)
 	
 				RETURN
@@ -864,8 +889,8 @@ BEGIN
 			BEGIN
 				-- GET Data with applying required filter and insert into local table to re use for further process.
 				INSERT Into @vwEntities(
-							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)		
-				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds)		
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds
 				FROM		fnGetFilterEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@TimeFrame,@isGrid)
 			END
 	
@@ -975,7 +1000,7 @@ BEGIN
 			SELECT		H.UniqueId ,H.EntityId ,H.EntityTitle ,H.ParentEntityId ,H.ParentUniqueId ,H.EntityType ,H.ColorCode,H.[Status],H.StartDate,H.EndDate,H.CreatedBy,H.AltId			
 						,''Z''+R.ViewByValue+''_''+H.TaskId		
 						,''Z''+R.ViewByValue+''_''+H.ParentTaskId
-						,H.PlanId ,H.ModelId ,R.ViewByValue
+						,H.PlanId ,H.ModelId ,R.ViewByValue, H.ROIPackageIds
 			FROM		@distViewByValues as DV
 			JOIN		@tblEntityViewByMapping as R on DV.ViewById = R.ViewByValue
 			JOIN		@vwEntities as H on R.EntityId = H.EntityId and H.EntityType=@entType
@@ -1005,7 +1030,7 @@ BEGIN
 							SELECT	H.UniqueId ,H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId			
 									,''Z''+C.ViewByTitle+''_''+H.TaskId as TaskId
 									,''Z''+C.ViewByTitle+''_''+H.ParentTaskId as ParentTaskId
-									,H.PlanId, H.ModelId, C.ViewByTitle
+									,H.PlanId, H.ModelId, C.ViewByTitle,H.ROIPackageIds
 							FROM @vwEntities H
 							JOIN @prntEntityTable as C ON H.UniqueId = C.ParentUniqueId
 						
@@ -1018,7 +1043,7 @@ BEGIN
 							SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy ,H.AltId		
 									,''Z''+P.ViewByTitle+''_''+H.TaskId as TaskId
 									,''Z''+P.ViewByTitle+''_''+H.ParentTaskId as ParentTaskId
-									,H.PlanId, H.ModelId, P.ViewByTitle
+									,H.PlanId, H.ModelId, P.ViewByTitle,H.ROIPackageIds
 							FROM @vwEntities H
 							JOIN prnt as P ON H.UniqueId = P.ParentUniqueId
 							
@@ -1028,8 +1053,8 @@ BEGIN
 				
 	
 				INSERT INTO @ResultViewByHierarchyEntities(
-							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle)
-				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle 
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds)
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds 
 				FROM		prnt
 			
 			END
@@ -1043,7 +1068,7 @@ BEGIN
 					(
 						(
 							-- Get Parent records from @ResultViewByHierarchyEntities to create child hierarchy data.
-							SELECT	UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle
+							SELECT	UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds
 							FROM	@ResultViewByHierarchyEntities 
 							WHERE	EntityType=@entType
 						)
@@ -1054,7 +1079,7 @@ BEGIN
 							SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId,
 									Cast(''Z''+C.ViewByTitle+''_''+H.TaskId as nvarchar(500))  as TaskId,
 									C.TaskId as ParentTaskId,
-									H.PlanId, H.ModelId, C.ViewByTitle
+									H.PlanId, H.ModelId, C.ViewByTitle,H.ROIPackageIds
 							FROM	@vwEntities as H
 							JOIN	child C on C.UniqueId = H.ParentUniqueId
 						)
@@ -1063,19 +1088,19 @@ BEGIN
 					--select * from child
 	
 					INSERT INTO @ResultViewByHierarchyEntities (
-								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle)
-					SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle 
+								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds)
+					SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds 
 					FROM		child 
 					WHERE EntityType <> @entType
 				END
 				ELSE
 				BEGIN
 					INSERT INTO @ResultViewByHierarchyEntities (
-								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle)
+								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds)
 				
 					SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId,
 							''Z''+R.ViewByTitle+''_''+H.TaskId,
-							R.TaskId, H.PlanId, H.ModelId, R.ViewByTitle
+							R.TaskId, H.PlanId, H.ModelId, R.ViewByTitle, H.ROIPackageIds
 					FROM	@ResultViewByHierarchyEntities as R
 					JOIN	@vwEntities H on R.UniqueId  = H.ParentUniqueId and R.EntityType=@entType
 				END
@@ -1096,8 +1121,8 @@ BEGIN
 	
 			-- Insert data to result set.
 			Insert INTO @ResultEntities (
-						UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId)
-			SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId
+						UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds)
+			SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds
 			FROM		@ResultViewByHierarchyEntities
 	
 	
@@ -1107,6 +1132,7 @@ END
 END
 
 GO
+
 
 
 --#2666
@@ -2477,11 +2503,11 @@ GO
 
 
 
-/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 09/30/2016 6:31:44 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/05/2016 5:17:16 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGetPlanCalendarData]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[spGetPlanCalendarData]
 GO
-/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 09/30/2016 6:31:44 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/05/2016 5:17:16 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2577,7 +2603,8 @@ BEGIN
 			CreatedBy		INT,
 			TaskId			NVARCHAR(500),
 			ParentTaskId	NVARCHAR(500),
-			PlanId			BIGINT
+			PlanId			BIGINT,
+			ROIPackageIds	Varchar(max)
 		)
 	
 	Declare @varThisYear varchar(10)='thisyear'
@@ -2595,7 +2622,7 @@ BEGIN
 	END
 	
 	INSERT INTO @Entities 
-	SELECT		UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy,TaskId,ParentTaskId,PlanId 
+	SELECT		UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy,TaskId,ParentTaskId,PlanId,ROIPackageIds 
 	FROM		[dbo].fnViewByEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@viewBy,@varCurntTimeframe,@isGrid)
 	
 	-- Get Plan wise MinStartEffective date from Improvement Tactic
@@ -2706,7 +2733,7 @@ BEGIN
 					TP.AssetType as 'ROITacticType',
 					NULL as 'OwnerName',
 					RP.AnchorTacticID as 'IsAnchorTacticId',
-					NULL as  'CalendarHoneycombpackageIDs',
+					ent.ROIPackageIds as  'CalendarHoneycombpackageIDs',
 					Null as 'Permission',
 					ent.PlanId
 			FROM @Entities as ent
@@ -2726,7 +2753,7 @@ BEGIN
 												 THEN DATEDIFF(DAY,CAST([start_date] as datetime),@calEndDate)
 												 ELSE DATEDIFF(DAY,CAST([start_date] as datetime),endDate)
 											 END 
-											 WHERE 1=1
+											 --WHERE 1=1
 		END
 
 		-- Update Progress
@@ -2745,25 +2772,9 @@ BEGIN
 												 WHEN (progress = 1) 
 												 THEN 'stripe' ELSE ''
 											END
-											WHERE 1=1 
+											--WHERE 1=1 
 		END
 		
-		-- Update CalendarHoneycombpackageIDs column values	
-		BEGIN			
-			Update @tblTactics SET CalendarHoneycombpackageIDs= RT.PlanTacticId
-			FROM @tblTactics tac
-			JOIN (SELECT AnchorTacticID,PlanTacticId=
-			STUFF((SELECT ', ' + Cast(PlanTacticId as varchar)
-			       FROM ROI_PackageDetail b 
-			       WHERE b.AnchorTacticID = a.AnchorTacticID 
-			      FOR XML PATH('')), 1, 2, '')
-			FROM @tblTactics as T1
-			JOIN ROI_PackageDetail as a on T1.PlanTacticId = a.AnchorTacticID
-			GROUP BY a.AnchorTacticID
-			) as RT on tac.PlanTacticId = RT.AnchorTacticID
-		END
-
-		--Exec spGetPlanCalendarData '20220','41F64F4B-531E-4CAA-8F5F-328E36D9B202','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','thisyear','','',''
 	END
 	
 	-- Get All Programs
@@ -2847,7 +2858,7 @@ BEGIN
 												 THEN DATEDIFF(DAY,CAST([start_date] as datetime),@calEndDate)
 												 ELSE DATEDIFF(DAY,CAST([start_date] as datetime),endDate)
 											 END 
-											 WHERE 1=1
+											 --WHERE 1=1
 		END
 		
 		-- Get Plan wise MinStartEffective date from Improvement Tactic
@@ -2896,7 +2907,7 @@ BEGIN
 														THEN 'partialStripe' ELSE ''
 													 END
 											END
-											WHERE 1=1 
+											--WHERE 1=1 
 		END
 		
 		--select * from @tblPrograms
@@ -2982,7 +2993,7 @@ BEGIN
 												 THEN DATEDIFF(DAY,CAST([start_date] as datetime),@calEndDate)
 												 ELSE DATEDIFF(DAY,CAST([start_date] as datetime),endDate)
 											 END 
-											 WHERE 1=1
+											 --WHERE 1=1
 		END
 		
 		-- Get Plan wise MinStartEffective date from Improvement Tactic
@@ -3028,7 +3039,7 @@ BEGIN
 											 		THEN 'stripe' ELSE ''
 											 	 END
 											 END
-											 WHERE 1=1 
+											 --WHERE 1=1 
 		END
 		
 		--select * from @tblCampaigns
@@ -3137,7 +3148,7 @@ BEGIN
 												 THEN DATEDIFF(DAY,CAST([start_date] as datetime),@calEndDate)
 												 ELSE DATEDIFF(DAY,CAST([start_date] as datetime),endDate)
 											 END 
-											 WHERE 1=1
+											 --WHERE 1=1
 		END
 
 		-- Calculate Progress for each Plan
@@ -3166,7 +3177,7 @@ BEGIN
 											  WHEN (progress >0) 
 											  THEN ' stripe' ELSE ''
 										END
-										WHERE 1=1 
+										--WHERE 1=1 
 		END
 		
 		--Exec spGetPlanCalendarData '20220','41F64F4B-531E-4CAA-8F5F-328E36D9B202','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','thisyear','','',''
@@ -3246,7 +3257,9 @@ BEGIN
 	--Exec spGetPlanCalendarData '20220','41F64F4B-531E-4CAA-8F5F-328E36D9B202','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','thisyear','','',''
 END
 
+
 GO
+
 
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PublishModel]') AND type in (N'P', N'PC'))
 BEGIN
@@ -7485,11 +7498,11 @@ END
 Go
 
 
-/****** Object:  StoredProcedure [dbo].[GetGridData]    Script Date: 10/04/2016 4:10:59 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetGridData]    Script Date: 10/05/2016 5:17:16 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetGridData]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetGridData]
 GO
-/****** Object:  StoredProcedure [dbo].[GetGridData]    Script Date: 10/04/2016 4:10:59 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetGridData]    Script Date: 10/05/2016 5:17:16 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -7578,11 +7591,7 @@ BEGIN
 				,P.PlanName AS 'LinkedPlanName'
 				,ROI.AnchorTacticID
 				--PackageTacticIds - comma saperated values selected as part of ROI package
-				,(SELECT SUBSTRING((	
-						SELECT ',' + CAST(PlanTacticId AS VARCHAR) FROM ROI_PackageDetail R
-						WHERE ROI.AnchorTacticID = R.AnchorTacticID
-						FOR XML PATH('')), 2,900000
-					))AS PackageTacticIds 
+				,Hireachy.ROIPackageIds AS PackageTacticIds 
 				,PlanDetail.PlanYear
 				FROM [dbo].fnViewByEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds,@ViewBy,@TimeFrame,@Isgrid) Hireachy
 				LEFT JOIN Model M ON Hireachy.ModelId = M.ModelId
@@ -7639,8 +7648,19 @@ BEGIN
 END
 
 
+
 GO
 
+
+/****** Object:  StoredProcedure [dbo].[GetPlanBudget]    Script Date: 10/05/2016 5:17:16 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPlanBudget]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetPlanBudget]
+GO
+/****** Object:  StoredProcedure [dbo].[GetPlanBudget]    Script Date: 10/05/2016 5:17:16 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPlanBudget]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetPlanBudget] AS' 
@@ -7675,7 +7695,8 @@ DECLARE @tmp TABLE
 			ColorCode NVARCHAR(50),
 			TaskId NVARCHAR(500),
 			ParentTaskId NVARCHAR(500),
-			EntityTitle NVARCHAR(1000)
+			EntityTitle NVARCHAR(1000),
+			ROIPackageIds	Varchar(max)
 )
 
 Declare @ViewbyTable TABLE
@@ -7686,7 +7707,7 @@ Declare @ViewbyTable TABLE
 )
 
 INSERT INTO @tmp
-SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode,TaskId,ParentTaskId,EntityTitle FROM fnViewByEntityHierarchy(@PlanId,@ownerIds,@tactictypeIds,@statusIds,@ViewBy,@TimeFrame,@isGrid)
+SELECT EntityId,ParentEntityId,EntityType,StartDate,EndDate,ColorCode,TaskId,ParentTaskId,EntityTitle,ROIPackageIds FROM fnViewByEntityHierarchy(@PlanId,@ownerIds,@tactictypeIds,@statusIds,@ViewBy,@TimeFrame,@isGrid)
 
 INSERT INTO @ViewbyTable
 SELECT EntityTitle,EntityType,TaskId FROM @tmp WHERE EntityType NOT IN ('Plan','Campaign','Program','Tactic','LineItem')
@@ -7726,6 +7747,9 @@ SELECT		 0 Id
 			,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY10], NULL [ActualY11], NULL [ActualY12]
 			,NULL [ActualY13], NULL [ActualY14], NULL [ActualY15], NULL [ActualY16],NULL [ActualY17], NULL [ActualY18], NULL [ActualY19], NULL [ActualY20],NULL [ActualY21], NULL [ActualY22], NULL [ActualY23], NULL [ActualY24]
 			,0 TotalAllocationActual
+			,NULL ROITacticType
+			,0 IsAnchorTacticId
+			,NULL CalendarHoneycombpackageIDs
 			FROM @ViewbyTable
 UNION ALL
 
@@ -7763,6 +7787,9 @@ SELECT		Id
 			,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY10], NULL [ActualY11], NULL [ActualY12]
 			,NULL [ActualY13], NULL [ActualY14], NULL [ActualY15], NULL [ActualY16],NULL [ActualY17], NULL [ActualY18], NULL [ActualY19], NULL [ActualY20],NULL [ActualY21], NULL [ActualY22], NULL [ActualY23], NULL [ActualY24]
 			,0 TotalAllocationActual
+			,NULL ROITacticType
+			,0 IsAnchorTacticId
+			,NULL CalendarHoneycombpackageIDs
 		FROM 
 				(SELECT 
 					P.PlanId Id
@@ -7825,6 +7852,9 @@ SELECT
 		,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY10], NULL [ActualY11], NULL [ActualY12]
 		,NULL [ActualY13], NULL [ActualY14], NULL [ActualY15], NULL [ActualY16],NULL [ActualY17], NULL [ActualY18], NULL [ActualY19], NULL [ActualY20],NULL [ActualY21], NULL [ActualY22], NULL [ActualY23], NULL [ActualY24]
 		,0 TotalAllocationActual
+		,NULL ROITacticType
+		,0 IsAnchorTacticId
+		,NULL CalendarHoneycombpackageIDs
 	 FROM
 			(SELECT 
 				PC.PlanCampaignId Id	
@@ -7886,6 +7916,9 @@ UNION ALL
 		,NULL [ActualY1], NULL [ActualY2], NULL [ActualY3], NULL [ActualY4],NULL [ActualY5], NULL [ActualY6], NULL [ActualY7], NULL [ActualY8],NULL [ActualY9], NULL [ActualY10], NULL [ActualY11], NULL [ActualY12]
 		,NULL [ActualY13], NULL [ActualY14], NULL [ActualY15], NULL [ActualY16],NULL [ActualY17], NULL [ActualY18], NULL [ActualY19], NULL [ActualY20],NULL [ActualY21], NULL [ActualY22], NULL [ActualY23], NULL [ActualY24]
 		,0 TotalAllocationActuals
+		,NULL ROITacticType
+		,0 IsAnchorTacticId
+		,NULL CalendarHoneycombpackageIDs
 	 FROM
 			(SELECT 
 				PCP.PlanProgramId Id
@@ -7953,6 +7986,9 @@ UNION ALL
 		
 		,(ISNULL([ActualY1],0)+ ISNULL([ActualY2],0)+ISNULL( [ActualY3],0)+ ISNULL( [ActualY4],0)+ISNULL( [ActualY5],0) +ISNULL( [ActualY6],0) +ISNULL( [ActualY7],0) +ISNULL( [ActualY8],0) +ISNULL( [ActualY9],0) +ISNULL( [ActualY10],0) +ISNULL( [ActualY11],0) +ISNULL( [ActualY12],0)) 
 			+ISNULL([ActualY13],0)+ ISNULL([ActualY14],0)+ ISNULL([ActualY15],0)+ ISNULL([ActualY16],0)+ISNULL([ActualY17],0)+ ISNULL([ActualY18],0)+ ISNULL([ActualY19],0)+ ISNULL([ActualY20],0)+ISNULL([ActualY21],0)+ ISNULL([ActualY22],0)+ ISNULL([ActualY23],0)+ ISNULL([ActualY24],0) TotalAllocationActuals
+	     ,AssetType ROITacticType
+		,ISNULL(AnchorTacticID,0) IsAnchorTacticId
+		,CalendarHoneycombpackageIDs
 	 FROM
 			(SELECT
 				PCPT.PlanTacticId Id 
@@ -7978,11 +8014,16 @@ UNION ALL
 				,PCPTA.Actualvalue as AValue
 				,'Actual'+PCPTA.Period as APeriod
 				,PCPT.Cost
+				,RPD.AnchorTacticID
+				,TP.AssetType
+				,CalendarHoneycombpackageIDs = H.ROIPackageIds
 			FROM @tmp H
 				INNER JOIN Plan_Campaign_Program_Tactic PCPT ON H.EntityId=PCPT.PlanTacticId 
 				LEFT JOIN Plan_Campaign_Program_Tactic_Budget PCPTB ON PCPT.PlanTacticId=PCPTB.PlanTacticId
 				LEFT JOIN Plan_Campaign_Program_Tactic_Cost PCPTC ON PCPT.PlanTacticId=PCPTC.PlanTacticId
 				LEFT JOIN Plan_Campaign_Program_Tactic_Actual PCPTA ON PCPT.PlanTacticId=PCPTA.PlanTacticId AND PCPTA.StageTitle='Cost'
+				LEFT JOIN ROI_PackageDetail RPD ON RPD.PlanTacticId = PCPT.PlanTacticId
+				INNER JOIN TacticType TP ON (TP.TacticTypeId = PCPT.TacticTypeId)
 			WHERE H.EntityType='Tactic'
 			)Tactic
 			PIVOT
@@ -8042,6 +8083,9 @@ UNION ALL
 		
 		,(ISNULL([ActualY1],0)+ ISNULL([ActualY2],0)+ISNULL( [ActualY3],0)+ ISNULL( [ActualY4],0)+ISNULL( [ActualY5],0) +ISNULL( [ActualY6],0) +ISNULL( [ActualY7],0) +ISNULL( [ActualY8],0) +ISNULL( [ActualY9],0) +ISNULL( [ActualY10],0) +ISNULL( [ActualY11],0) +ISNULL( [ActualY12],0)) 
 			+ISNULL([ActualY13],0)+ ISNULL([ActualY14],0)+ ISNULL([ActualY15],0)+ ISNULL([ActualY16],0)+ISNULL([ActualY17],0)+ ISNULL([ActualY18],0)+ ISNULL([ActualY19],0)+ ISNULL([ActualY20],0)+ISNULL([ActualY21],0)+ ISNULL([ActualY22],0)+ ISNULL([ActualY23],0)+ ISNULL([ActualY24],0)TotalAllocationActuals
+	    ,NULL ROITacticType
+		,0 IsAnchorTacticId
+		,NULL CalendarHoneycombpackageIDs
 	 FROM
 		 (SELECT	PCPTL.PlanLineItemId Id
 					,H.TaskId
@@ -8084,7 +8128,9 @@ END
 
 
 
+
 GO
+
 /****** Object:  StoredProcedure [dbo].[GridCustomFieldData]    Script Date: 09/30/2016 15:51:28 ******/
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GridCustomFieldData]') AND type in (N'P', N'PC'))
