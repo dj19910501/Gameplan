@@ -13931,10 +13931,10 @@ html, body {
 }
 .planheader-right {
 	width: 100%;
-	float: left;
+	float: right;
 }
 .plancart-box {
-	float: left;
+	float: right;
 	max-width: 615px;
 }
 /*.full-width-header .white-chart {
@@ -15117,7 +15117,7 @@ tbody.column2 {
 .ui-multiselect-filter input[type="search"] {
 	height: auto;
 }
-/* Added for #2547 bhumika 30/08/2016 */
+/* Added for #2547 bhumika 30/08/2016  */
 .instruction {
 	color: #aaa;
 	font-size: 12px;
