@@ -8423,8 +8423,7 @@ BEGIN
   DEALLOCATE Cur_Mail
   END
   END
-
-  
+GO
 
 /* Start - Added by Arpita Soni for Ticket #2612 on 09/08/2016 */
 
