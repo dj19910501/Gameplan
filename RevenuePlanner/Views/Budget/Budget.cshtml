@@ -202,9 +202,13 @@
             var Month = '';
             var YearCost;
             var MonthCost;
+            var Tab;
             var BudgetHdr = HomeGrid.getColLabel(cellInd, 0);
-            if (BudgetHdr.indexOf("-")) {
+            if (BudgetHdr.indexOf("-") > -1) {
                 Tab = BudgetHdr.split(' ')[1];
+            }
+            else {
+                Tab = BudgetHdr;
             }
 
             var TaskNameId = HomeGrid.getColIndexById("TaskName");

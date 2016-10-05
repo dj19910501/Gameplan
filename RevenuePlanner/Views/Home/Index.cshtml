@@ -439,6 +439,14 @@
             }
         });
         SetTooltip();
+        function toggleChevron(e) {
+            $(e.target)
+                .prev('.accordion-heading')
+                .find("i.indicator")
+            .toggleClass('fa-angle-down fa-angle-up');
+        }
+        $('.accordion').on('hidden.bs.collapse', toggleChevron);
+        $('.accordion').on('shown.bs.collapse', toggleChevron);
     });
     function LoadFilter() {
         var strURL = '@Url.Content("~/Filter/Index/")';
