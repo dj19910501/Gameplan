@@ -1773,7 +1773,7 @@ h2.title-simple button {margin-bottom:0}
 .dhx_clist {
     border: 1px solid #aaa !important;
     border-radius: 5px;
-    max-height: 250px;
+    max-height: 200px;
     overflow: auto;
     padding: 2px 2px 4px 10px !important;
     width: 150px;

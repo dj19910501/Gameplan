@@ -12740,11 +12740,21 @@ a:focus, a:hover {
 .archive-header h4 {
 	float: left;
 }
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td, #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td {
+#lineItemGrid.gridViewGrid.gridbox.gridbox_dhx_skyblue{border:0 none !important} 
+#lineItemGrid.gridbox_dhx_skyblue.gridbox table.hdr tr:nth-child(2) td{
+    border-top:0 none !important
+}
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td, 
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td, 
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td, 
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td,
+#lineItemGrid.gridbox_dhx_skyblue.gridbox table.hdr td,  
+#lineItemGrid.gridbox_dhx_skyblue.gridbox table.obj tr td {
 	border-left: 0;
 	border-right: 0;
 }
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, #MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td,
+#lineItemGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, #lineItemGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td, #lineItemGrid.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td, #lineItemGrid.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td {
 	background-color: #f7f7f7;
 	border-bottom: 1px solid #d4d4d4;
 	border-right: 0px solid #d4d4d4;
@@ -12757,7 +12767,8 @@ a:focus, a:hover {
 	height: 28px !important;
 	line-height: 28px !important;
 }
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td {
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.obj tr td, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.obj tr td
+/*#lineItemGrid.gridbox_dhx_skyblue.gridbox table.obj tr td, #lineItemGrid.gridbox_dhx_skyblue.gridbox table.obj tr td*/ {
 	padding-left: 25px;
 	padding-right: 15px;
 	-webkit-user-select: unset;
@@ -12767,10 +12778,12 @@ a:focus, a:hover {
 	-o-user-select: unset;
 	user-select: unset;
 }
-#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+#MediaCodeGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell, #divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell,
+#lineItemGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell, #lineItemGrid.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
 	padding-left: 25px !important;
 }
-#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td {
+#divArchiveGrid.gridbox_dhx_skyblue.gridbox table.hdr td,
+#lineItemGrid .gridbox_dhx_skyblue.gridbox table.hdr td{
 	height: auto !important;
 }
 .GenerateMediaCode.btn, .UnarchiveMediaCode.btn {
