@@ -90,6 +90,10 @@ $('#btnbudget').click(function () {
     if ($('#errorMsg').css('display') == 'block') {
         $('#errorMsg').css('display', 'none');
     }
+    scrollstate = {
+    y: HomeGrid.objBox.scrollTop,
+        x: HomeGrid.objBox.scrollLeft,
+    }
     isCalendarView = false;
     IsGridView = false;
     $('#IsGridView').val('false');
@@ -125,6 +129,10 @@ $('#ChangeView').click(function () {
         scrollstate = gantt.getScrollState();
     }
     else {
+        scrollstate = {
+            y: HomeGrid.objBox.scrollTop,
+            x: HomeGrid.objBox.scrollLeft,
+        }
         HomeGrid.saveOpenStates("plangridState");
     }
     LoadPlanGrid();
