@@ -218,7 +218,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Plan/SaveGridDetail/")',
-                    data: { UpdateType: HomeGrid.cells(rowId, TypeIndex).cell.innerText, UpdateColumn: 'Task Name', UpdateVal: nValue, Id: parseInt(EntityId) },
+                    data: { UpdateType: HomeGrid.cells(rowId, TypeIndex).cell.innerText, UpdateColumn: 'TaskName', UpdateVal: nValue, Id: parseInt(EntityId) },
                     dataType: 'json',
                     success: function (states) {
                         if (states.errormsg != null && states.errormsg.trim() != "") {
