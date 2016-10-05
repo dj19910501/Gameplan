@@ -27,8 +27,8 @@ BEGIN
 
 		SET @Updated = @@ROWCOUNT; 
 
-		INSERT INTO  Plan_Campaign_Program_Tactic_LineItem_Actual (Period, Value, CreatedDate, CreatedBy)
-		SELECT	[INT].Period(T.StartDate, V.AccountingDate), V.Amount, GETDATE(), '+STR(@UserId)+'
+		INSERT INTO  Plan_Campaign_Program_Tactic_LineItem_Actual (PlanLineItemId, Period, Value, CreatedDate, CreatedBy)
+		SELECT	V.LineItemId, [INT].Period(T.StartDate, V.AccountingDate), V.Amount, GETDATE(), '+STR(@UserId)+'
 		FROM	'+@DataSource+'  V
 					JOIN Plan_Campaign_Program_Tactic_LineItem L ON L.PlanLineItemId = V.LineItemId
 					JOIN Plan_Campaign_Program_Tactic T ON T.PlanTacticId = L.PlanTacticId
