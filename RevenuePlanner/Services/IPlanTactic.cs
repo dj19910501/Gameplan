@@ -12,7 +12,7 @@ namespace RevenuePlanner.Services
     {
         void AddBalanceLineItem(int tacticId, double Cost, int UserId);
 
-        BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int curTacticId, string AllocatedBy, int UserId, int ClientId, double PlanExchangeRate);
+        BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int curTacticId, string AllocatedBy, int UserId, int ClientId, double PlanExchangeRate, bool IsPlanEditable);
 
         double UpdateBalanceLineItemCost(int PlanTacticId);
 

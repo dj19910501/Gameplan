@@ -1,6 +1,8 @@
 
 /* Start - Added by Arpita Soni for Ticket #2612 on 09/08/2016 */
 
+-- Stored procedure to get tactic and line items cost allocation data for tactic inspect popup
+
 -- DROP AND CREATE STORED PROCEDURE [dbo].[LineItem_Cost_Allocation]
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'LineItem_Cost_Allocation') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
@@ -41,7 +43,7 @@ BEGIN
 			,'cpt_'+CAST(PT.PlanTacticId AS NVARCHAR(20)) ActivityId
 			,PT.Title AS ActivityName
 			,'tactic' ActivityType
-			,'cp_' + CAST(PT.PlanProgramId AS NVARCHAR(25)) AS ParentActivityId
+			,'cp_' + CAST(PT.PlanProgramId AS NVARCHAR(20)) AS ParentActivityId
 			,PT.CreatedBy 
 			,PT.Cost
 			,PTCst.Period as Period
@@ -51,8 +53,8 @@ BEGIN
 			,PT.EndDate
 			,PT.LinkedTacticId AS LinkTacticId
 		FROM Plan_Campaign_Program_Tactic PT
-		LEFT JOIN Plan_Campaign_Program_Tactic_Cost PTCst ON PT.PlanTacticId=PTCst.PlanTacticId
-		WHERE PT.IsDeleted = 0 AND PT.PlanTacticId = @PlanTacticId
+		LEFT JOIN Plan_Campaign_Program_Tactic_Cost PTCst ON PT.PlanTacticId = PTCst.PlanTacticId
+		WHERE PT.PlanTacticId = @PlanTacticId AND PT.IsDeleted = 0 
 
 		UNION ALL
 		-- Line item cost allocation
@@ -61,7 +63,7 @@ BEGIN
 			,'cptl_'+CAST(PL.PlanLineItemId as NVARCHAR(20)) ActivityId
 			,PL.Title as ActivityName
 			,'lineitem' ActivityType
-			,'cpt_'+CAST(PL.PlanTacticId as NVARCHAR(25)) ParentActivityId
+			,'cpt_'+CAST(PL.PlanTacticId as NVARCHAR(20)) ParentActivityId
 			,PL.CreatedBy
 			,PL.Cost
 			,PLC.period as period 

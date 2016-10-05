@@ -47,9 +47,10 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get cost allocation for line items in tactic inspect popup
         /// </summary>
-        public BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int curTacticId, string AllocatedBy, int UserId, int ClientId, double PlanExchangeRate)
+        public BudgetDHTMLXGridModel GetCostAllocationLineItemInspectPopup(int curTacticId, string AllocatedBy, int UserId, int ClientId, double PlanExchangeRate, bool IsPlanEditable)
         {
             DataTable dtCosts = Common.GetTacticLineItemCostAllocation(curTacticId, UserId);    // Get cost allocation and set values to model
+            // Logic to get the tactic for which line items allocation has been fetched and get start and end date
             DataRow objTacticRow = dtCosts.AsEnumerable().Where(x => Convert.ToInt32(x["id"]).Equals(curTacticId)).FirstOrDefault();
             if (objTacticRow != null)
             {
@@ -62,15 +63,12 @@ namespace RevenuePlanner.Services
                 }
             }
             // Set values from datatable to model
-            List<BudgetModel> model = SetAllocationValuesToModel(dtCosts, PlanExchangeRate, AllocatedBy);
-
-            model = SetPermissionForEditable(curTacticId, UserId, ClientId, model);             // Update model with view edit permissions
-            model = ManageBalanceLineItemCost(model);                                           // Update model by setting balance line item costs
+            List<BudgetModel> model = SetAllocationValuesToModel(dtCosts, PlanExchangeRate, AllocatedBy, IsPlanEditable);
 
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel(); //New is required due to access the property
             objBudgetDHTMLXGrid.Grid = new BudgetDHTMLXGrid();
 
-            // Bind header of the grid
+            // Bind header of the line items allocation grid
             objBudgetDHTMLXGrid = GenerateHeaderStringForInspectPopup(AllocatedBy, objBudgetDHTMLXGrid);
 
             // Bind final model grid data with tactic and lineitems
@@ -85,19 +83,14 @@ namespace RevenuePlanner.Services
         /// </summary>
         private BudgetDHTMLXGridModel GenerateHeaderStringForInspectPopup(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid)
         {
-            objBudgetDHTMLXGrid.SetHeader = "ActivityId,Task Name,,Planned Cost";         // header values for the grid
-            objBudgetDHTMLXGrid.ColAlign = objHomeGridProperty.alignleft + commaString +
-                                            objHomeGridProperty.alignleft + commaString +
-                                            objHomeGridProperty.aligncenter;             // alignment for the column
-
-            objBudgetDHTMLXGrid.ColumnIds = "activityid,taskname,icons,plannedcost";           // ids of the columns
-            objBudgetDHTMLXGrid.ColType = objHomeGridProperty.typero + commaString +
-                                          objHomeGridProperty.typetree + commaString +
-                                          objHomeGridProperty.typero + commaString +
-                                          objHomeGridProperty.typeEdn;                  // types of the columns
-
-            objBudgetDHTMLXGrid.Width = "0,200,60,80";                                      // width of the columns
-            objBudgetDHTMLXGrid.ColSorting = "na,na,na,na";                                 // sorting options for the column
+            #region Bind  header part with common columns
+            objBudgetDHTMLXGrid.SetHeader = Common.CommonHeaderForDefaultCols;         // header values for the grid
+            objBudgetDHTMLXGrid.ColAlign = Common.CommonAlignForDefaultCols;           // alignment for the column
+            objBudgetDHTMLXGrid.ColumnIds = Common.CommonColumnIdsForDefaultCols;      // ids of the columns
+            objBudgetDHTMLXGrid.ColType = Common.CommonColTypeForDefaultCols;          // types of the columns
+            objBudgetDHTMLXGrid.Width = Common.CommonWidthForDefaultCols;              // width of the columns
+            objBudgetDHTMLXGrid.ColSorting = Common.CommonColSortingForDefaultCols;    // sorting options for the column
+            #endregion
 
             if (String.Compare(AllocatedBy, Enums.PlanAllocatedByList[Convert.ToString(Enums.PlanAllocatedBy.quarters)], true) == 0)
             {
@@ -131,9 +124,9 @@ namespace RevenuePlanner.Services
                 for (int i = 1; i <= 12; i++)
                 {
                     dt = new DateTime(tacticYears[key], i, 1);
-                    objBudgetDHTMLXGrid.SetHeader += commaString + dt.ToString("MMM-yyyy").ToUpper();
+                    objBudgetDHTMLXGrid.SetHeader += commaString + dt.ToString(Common.MonthlyCostHeaderFormat).ToUpper();
                     objBudgetDHTMLXGrid.ColAlign += commaString + objHomeGridProperty.aligncenter;
-                    objBudgetDHTMLXGrid.ColumnIds += commaString + dt.ToString("MMM-yyyy");
+                    objBudgetDHTMLXGrid.ColumnIds += commaString + dt.ToString(Common.MonthlyCostHeaderFormat);
                     objBudgetDHTMLXGrid.ColType += commaString + objHomeGridProperty.typeEdn;
                     objBudgetDHTMLXGrid.Width += commaString + "80";
                     objBudgetDHTMLXGrid.ColSorting += commaString + "na";
@@ -150,7 +143,7 @@ namespace RevenuePlanner.Services
             foreach (string key in tacticYears.Keys) // For multi year it will bind 8 columns
             {
                 int quarterCounter = 1;
-                for (int i = 1; i <= 11; i += 3)
+                for (int i = 1; i < 11; i += 3)
                 {
                     objBudgetDHTMLXGrid.SetHeader += commaString + "Q" + Convert.ToString(quarterCounter) + "-" + Convert.ToString(tacticYears[key]);
                     objBudgetDHTMLXGrid.ColAlign += commaString + objHomeGridProperty.aligncenter;
@@ -165,42 +158,27 @@ namespace RevenuePlanner.Services
         }
 
         /// <summary>
-        /// Get monthly and quarterly allocated cost for line items and tactic
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private List<Budgetdataobj> CostAllocationForInspectPopup(BudgetModel modelLineItem, string activityType, List<Budgetdataobj> lstBudgetData, string allocatedBy, string activityId)
-        {
-            // Flag to indicate whether line item or tactic
-            bool isLineItem = (activityType == ActivityType.ActivityLineItem) ? true : false;
-            // Flag to indicate whether it is balance line item
-            bool isBalance = (activityType == ActivityType.ActivityLineItem && modelLineItem.LineItemTypeId == null) ? true : false;
-
-            lstBudgetData = GetMonthlyQuarterlyAllocatedPlannedCost(isLineItem, isBalance, modelLineItem, lstBudgetData, allocatedBy);
-            return lstBudgetData;
-        }
-
-        /// <summary>
         /// Get month wise allocated cost
         /// </summary>
-        private List<Budgetdataobj> GetMonthlyQuarterlyAllocatedPlannedCost(bool isLineItem, bool isOtherLineItem, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData, string allocatedBy)
+        private List<Budgetdataobj> GetMonthlyQuarterlyAllocatedPlannedCost(string activityType, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData, string allocatedBy,string lockedstate,string stylecolor)
         {
             double monthlyValue = 0, totalAllocatedCost = 0;
             Budgetdataobj objBudgetData;
-            // Add every months/quarters cost to model object bind the grid
+            // Add every months/quarters cost to model object to bind the grid
             foreach (string month in modelEntity.MonthlyCosts.Keys)
             {
                 monthlyValue = modelEntity.MonthlyCosts[month];
                 objBudgetData = new Budgetdataobj();
                 // Set editable based on permission (balance always remain read only)
-                if (!modelEntity.isEditable || modelEntity.LineItemTypeId == null)
+                if (modelEntity.LineItemTypeId == null)
                 {
                     objBudgetData.locked = objHomeGridProperty.lockedstateone;
                     objBudgetData.style = objHomeGridProperty.stylecolorgray;
                 }
                 else
                 {
-                    objBudgetData.locked = objHomeGridProperty.lockedstatezero;
-                    objBudgetData.style = objHomeGridProperty.stylecolorblack;
+                    objBudgetData.locked = lockedstate;
+                    objBudgetData.style = stylecolor;
                 }
 
                 objBudgetData.value = monthlyValue.ToString(formatThousand);
@@ -237,6 +215,17 @@ namespace RevenuePlanner.Services
             BudgetDHTMLXGridDataModel objTacticRows = new BudgetDHTMLXGridDataModel();
             // Get tactic model 
             BudgetModel tacticModel = model.Where(p => p.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
+            string stylecolor, lockedstate;
+            if (tacticModel.isEditable)
+            {
+                lockedstate = objHomeGridProperty.lockedstatezero;
+                stylecolor = objHomeGridProperty.stylecolorblack;
+            }
+            else
+            {
+                lockedstate = objHomeGridProperty.lockedstateone;
+                stylecolor = objHomeGridProperty.stylecolorgray;
+            }
 
             objTacticRows = new BudgetDHTMLXGridDataModel();    // Add row for tactic into the model
             objTacticRows.id = ActivityType.ActivityTactic + HttpUtility.HtmlEncode(tacticModel.ActivityId);
@@ -251,20 +240,24 @@ namespace RevenuePlanner.Services
 
             objTacticData = new Budgetdataobj();    // Add Activity Name column value
             objTacticData.value = HttpUtility.HtmlEncode(tacticModel.ActivityName).Replace("'", "&#39;");   // HttpUtility.HtmlEncode handles all character except ' so need to be replaced
+            objTacticData.locked = lockedstate;
+            objTacticData.style = stylecolor;
             lstTacticData.Add(objTacticData);
 
             objTacticData = new Budgetdataobj();    // Add Icons column value
             objTacticData.value = "";
+            objTacticData.locked = lockedstate;
+            objTacticData.style = stylecolor;
             lstTacticData.Add(objTacticData);
 
             objTacticData = new Budgetdataobj();    // Add Planned Cost column value
             objTacticData.value = tacticModel.PlannedCost.ToString(formatThousand);
-            objTacticData.locked = tacticModel.isEditable ? objHomeGridProperty.lockedstatezero : objHomeGridProperty.lockedstateone;
-            objTacticData.style = tacticModel.isEditable ? objHomeGridProperty.stylecolorblack : objHomeGridProperty.stylecolorgray;
+            objTacticData.locked = lockedstate;
+            objTacticData.style = stylecolor;
             lstTacticData.Add(objTacticData);
 
             // Add allocated cost data based on monthly/quarterly
-            lstTacticData = CostAllocationForInspectPopup(tacticModel, ActivityType.ActivityTactic, lstTacticData, AllocatedBy, tacticModel.ActivityId);
+            lstTacticData = GetMonthlyQuarterlyAllocatedPlannedCost(ActivityType.ActivityTactic, tacticModel, lstTacticData, AllocatedBy,lockedstate,stylecolor);
 
             objTacticRows.data = lstTacticData; // assigning all columns data to row object
             List<BudgetDHTMLXGridDataModel> lstLineItemRows = new List<BudgetDHTMLXGridDataModel>();
@@ -279,7 +272,7 @@ namespace RevenuePlanner.Services
 
             foreach (BudgetModel bml in model.Where(p => p.ActivityType == ActivityType.ActivityLineItem))
             {
-                lstLineItemRows.Add(BindGridJsonForLineItems(bml.Id, bml.ActivityName, bml.ActivityId, model, AllocatedBy));
+                lstLineItemRows.Add(BindGridJsonForLineItems(bml.Id, bml.ActivityName, bml.ActivityId, model, AllocatedBy, lockedstate, stylecolor));
             }
             objTacticRows.rows = lstLineItemRows;
             lstTacticRows.Add(objTacticRows);
@@ -311,17 +304,18 @@ namespace RevenuePlanner.Services
         /// Bind data for each line item
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private BudgetDHTMLXGridDataModel BindGridJsonForLineItems(string LineItemId, string ActivityName, string ActivityId, List<BudgetModel> model, string AllocatedBy)
+        private BudgetDHTMLXGridDataModel BindGridJsonForLineItems(string LineItemId, string ActivityName, string ActivityId, List<BudgetModel> model, string AllocatedBy, string lockedstate, string stylecolor)
         {
             BudgetDHTMLXGridDataModel objLineItemRows = new BudgetDHTMLXGridDataModel();
 
+            #region Add common columns to the allocation grid
             objLineItemRows.id = ActivityType.ActivityLineItem + HttpUtility.HtmlEncode(ActivityId);
             objLineItemRows.open = null;
-            objLineItemRows.bgColor = "#fff";
+            objLineItemRows.bgColor = objHomeGridProperty.LineItemBackgroundColor;
             List<Budgetdataobj> lstLineItemData = new List<Budgetdataobj>();
+
             Budgetdataobj objLineItemData = new Budgetdataobj();
             BudgetModel modelEntity = model.Where(pl => pl.ActivityType == ActivityType.ActivityLineItem && pl.ActivityId == ActivityId).ToList().FirstOrDefault();
-
             objLineItemData.value = LineItemId; // Add LineItem Id to the column
             lstLineItemData.Add(objLineItemData);
 
@@ -331,7 +325,12 @@ namespace RevenuePlanner.Services
                 objLineItemData.locked = objHomeGridProperty.lockedstateone; // Balance row name should not be editable
                 objLineItemData.style = objHomeGridProperty.stylecolorgray;
             }
-            objLineItemData.value = HttpUtility.HtmlEncode(ActivityName).Replace("'", "&#39;");
+            else
+            {
+                objLineItemData.locked = lockedstate;
+                objLineItemData.style = stylecolor;
+            }
+            objLineItemData.value = HttpUtility.HtmlEncode(ActivityName).Replace("'", "&#39;"); // HttpUtility.HtmlEncode handles all character except ' so need to be replaced
             lstLineItemData.Add(objLineItemData);
 
             objLineItemData = new Budgetdataobj();  // Add Icons to the column
@@ -345,114 +344,25 @@ namespace RevenuePlanner.Services
                 objLineItemData.locked = objHomeGridProperty.lockedstateone;    // Balance row name should not be editable
                 objLineItemData.style = objHomeGridProperty.stylecolorgray;
             }
+            else
+            {
+                objLineItemData.locked = lockedstate;
+                objLineItemData.style = stylecolor;
+            }
             lstLineItemData.Add(objLineItemData);
+            #endregion
 
-            lstLineItemData = CostAllocationForInspectPopup(modelEntity, ActivityType.ActivityLineItem, lstLineItemData, AllocatedBy, ActivityId);
+            //bind monthly/quaterly allocation data for line items to the grid
+            lstLineItemData = GetMonthlyQuarterlyAllocatedPlannedCost(ActivityType.ActivityLineItem, modelEntity, lstLineItemData, AllocatedBy,lockedstate,stylecolor);
 
             objLineItemRows.data = lstLineItemData;
             return objLineItemRows;
         }
 
         /// <summary>
-        /// Set permission for tactic and line items 
-        /// </summary>
-        private List<BudgetModel> SetPermissionForEditable(int curTacticId, int UserId, int ClientId, List<BudgetModel> model)
-        {
-            List<int> lstSubordinatesIds = new List<int>();
-            string EntityTypeTactic = Convert.ToString(Enums.EntityType.Tactic);
-            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-            if (IsTacticAllowForSubordinates)
-            {
-                lstSubordinatesIds = Common.GetAllSubordinates(UserId);
-            }
-            // Get list of custom fields for tactic
-            List<CustomField_Entity> CstFields = objDbMrpEntities.CustomField_Entity.Where(entity => entity.EntityId == curTacticId && entity.CustomField.EntityType.Equals(EntityTypeTactic)).ToList();
-            //Assign respective customfields to tactic
-            foreach (BudgetModel Tactic in model.Where(m => m.ActivityType == ActivityType.ActivityTactic).ToList())
-            {
-                int tempTacticId = Convert.ToInt32(Tactic.Id);
-                Tactic.CustomFieldEntities = CstFields.Where(entity => entity.EntityId == tempTacticId).ToList();
-            }
-
-            string DropDownList = Convert.ToString(Enums.CustomFieldType.DropDownList);
-
-            bool IsCustomFeildExist = Common.IsCustomFeildExist(Convert.ToString(Enums.EntityType.Tactic), ClientId);
-            bool CustomFieldexists = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == ClientId &&
-                                                                        customfield.EntityType.Equals(EntityTypeTactic) &&
-                                                                        customfield.IsRequired &&
-                                                                        customfield.IsDeleted.Equals(false)).Any();
-
-            // Get list of entities
-            List<CustomField_Entity> Entities = objDbMrpEntities.CustomField_Entity.Where(entityid => entityid.EntityId == curTacticId).Select(entityid => entityid).ToList();
-
-            // Get list of all custom fields of type drop down list
-            List<CustomField_Entity> lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == ClientId &&
-                                                                                                        customFieldEntity.CustomField.IsDeleted.Equals(false) &&
-                                                                                                        customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
-                                                                                                        customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
-                                                                                                        customFieldEntity.EntityId == curTacticId)
-                                                                                                .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
-            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId, true);
-            foreach (BudgetModel item in model)
-            {
-                #region Set Permission For Tactic
-                if (item.ActivityType == ActivityType.ActivityTactic)
-                {
-                    // check permission for tactic
-                    if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
-                    {
-                        List<int> planTacticIds = new List<int>();
-                        List<int> lstAllowedEntityIds = new List<int>();
-                        planTacticIds.Add(Convert.ToInt32(item.ActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
-                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
-                        {
-                            item.isEditable = true;
-                        }
-                        else
-                        {
-                            item.isEditable = false;
-                        }
-                    }
-                }
-                #endregion
-
-                #region Set Permission for LineItem
-                else if (item.ActivityType == ActivityType.ActivityLineItem)
-                {
-                    // check permission for line items
-                    int tacticOwner = 0;
-                    List<BudgetModel> tempModel = model.Where(m => m.ActivityId == item.ParentActivityId).ToList();
-                    if (tempModel.Any())
-                    {
-                        tacticOwner = tempModel.FirstOrDefault().CreatedBy;
-                    }
-
-                    if (item.CreatedBy == UserId || tacticOwner == UserId || lstSubordinatesIds.Contains(tacticOwner))
-                    {
-                        List<int> planTacticIds = new List<int>();
-                        List<int> lstAllowedEntityIds = new List<int>();
-                        planTacticIds.Add(Convert.ToInt32(item.ParentActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
-                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
-                        {
-                            item.isEditable = true;
-                        }
-                        else
-                        {
-                            item.isEditable = false;
-                        }
-                    }
-                }
-                #endregion
-            }
-            return model;
-        }
-
-        /// <summary>
         /// Bind allocated cost values to the model
         /// </summary>
-        private List<BudgetModel> SetAllocationValuesToModel(DataTable dtCosts, double PlanExchangeRate, string allocatedBy)
+        private List<BudgetModel> SetAllocationValuesToModel(DataTable dtCosts, double PlanExchangeRate, string allocatedBy, bool IsPlanEditable)
         {
             List<BudgetModel> model = dtCosts.AsEnumerable().Select(row => new BudgetModel
             {
@@ -460,16 +370,19 @@ namespace RevenuePlanner.Services
                 ActivityId = Convert.ToString(row["ActivityId"]),   // Activity id for the entity
                 ParentActivityId = Convert.ToString(row["ParentActivityId"]),  // Activity Id of parent entity
                 ActivityName = Convert.ToString(row["ActivityName"]),   // Title of the activity
-                PlannedCost = row["Cost"] != DBNull.Value ? objCurrency.GetValueByExchangeRate(Convert.ToDouble(row["Cost"]),PlanExchangeRate) : 0,  // Planned cost for the entity
+                PlannedCost = row["Cost"] != DBNull.Value ? objCurrency.GetValueByExchangeRate(Convert.ToDouble(row["Cost"]), PlanExchangeRate) : 0,  // Planned cost for the entity
                 StartDate = Convert.ToDateTime(row["StartDate"]),   // tactic start date
                 EndDate = Convert.ToDateTime(row["EndDate"]),       // tactic end date
-                MonthlyCosts = SetMonthlyCostsToModel(row, allocatedBy,PlanExchangeRate),   // list of months/quarters cost based on allocated by
-                CreatedBy = row["CreatedBy"] == DBNull.Value ? 0: Convert.ToInt32(row["CreatedBy"]),  // owner of the entity
-                isEditable = false,  // set default permission false
+                MonthlyCosts = SetMonthlyCostsToModel(row, allocatedBy, PlanExchangeRate),   // list of months/quarters cost based on allocated by
+                CreatedBy = row["CreatedBy"] == DBNull.Value ? 0 : Convert.ToInt32(row["CreatedBy"]),  // owner of the entity
+                isEditable = IsPlanEditable,  // set default permission false
                 ActivityType = Convert.ToString(row["ActivityType"]),
-                LineItemTypeId = row["LineItemTypeId"] == DBNull.Value ? null: Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
-                LinkTacticId = row["LinkTacticId"] == DBNull.Value ? 0: Convert.ToInt32(row["LinkTacticId"]),
+                LineItemTypeId = row["LineItemTypeId"] == DBNull.Value ? null : Common.ParseIntValue(Convert.ToString(row["LineItemTypeId"])),
+                LinkTacticId = row["LinkTacticId"] == DBNull.Value ? 0 : Convert.ToInt32(row["LinkTacticId"]),
             }).ToList();
+
+            model = ManageBalanceLineItemCost(model);   // Update model by setting balance line item costs
+
             return model;
         }
 
@@ -483,7 +396,8 @@ namespace RevenuePlanner.Services
             string Period = string.Empty;   // variable for month name text to get cost value e.g. Y13
             int baseyear = 0;
 
-            if (String.Compare(allocatedBy, Convert.ToString(Enums.PlanAllocatedBy.quarters)) == 0)
+            //if (String.Compare(allocatedBy, Convert.ToString(Enums.PlanAllocatedBy.quarters)) == 0)
+            if (Convert.ToString(Enums.PlanAllocatedBy.quarters).Equals(allocatedBy))
             {
                 int quarterCounter = 0;
                 double SumOfMonths = 0;
@@ -495,9 +409,10 @@ namespace RevenuePlanner.Services
                     for (int i = 1; i <= Convert.ToInt32(Enums.QuarterMonthDigit.Month); i = i + 3)
                     {
                         SumOfMonths = 0;
-                        Period = Common.PeriodPrefix + Convert.ToString(i + baseyear);      // For Q1-2017 -> Y13
+                        Period = Common.PeriodPrefix + Convert.ToString(i + baseyear);      // When current year is 2016 then For Q1-2017 -> Y13
                         QuartersList = Common.GetMonthsOfQuarters(i + baseyear);            // Get months for the quarter
-                        QuartersList.ForEach(x => SumOfMonths = SumOfMonths + Convert.ToDouble(row[x]));    // Summed up months values
+                        // Sum up month wise values to get the sum of quarter
+                        QuartersList.ForEach(x => SumOfMonths = SumOfMonths + Convert.ToDouble(row[x]));
                         QuarterLabel = "Q" + Convert.ToString(quarterCounter) + "-" + Convert.ToString(tacticYears[key]);
                         dictMonthlyCosts.Add(QuarterLabel, objCurrency.GetValueByExchangeRate(SumOfMonths, PlanExchangeRate));
                         quarterCounter++;
@@ -514,7 +429,8 @@ namespace RevenuePlanner.Services
                     {
                         dtDate = new DateTime(tacticYears[key], i, 1);
                         Period = Common.PeriodPrefix + Convert.ToString(i + baseyear);
-                        dictMonthlyCosts.Add(dtDate.ToString("MMM-yyyy"), objCurrency.GetValueByExchangeRate(Convert.ToDouble(row[Period]),PlanExchangeRate));   // For JAN-2017 -> Y13
+                        // When current year is 2016 then For JAN-2017 -> Y13
+                        dictMonthlyCosts.Add(dtDate.ToString(Common.MonthlyCostHeaderFormat), objCurrency.GetValueByExchangeRate(Convert.ToDouble(row[Period]), PlanExchangeRate));
                     }
                     baseyear = baseyear + Convert.ToInt32(Enums.QuarterMonthDigit.Month);   // Add total no. of months(12) for second year
                 }
@@ -613,7 +529,7 @@ namespace RevenuePlanner.Services
                     return false;
                 }
             }
-            // Convert MAR-2017 to Y15 
+            // When current year is 2016 and edited cell is MAR-2017, then convert it to Y15 
             string period = GetPeriodBasedOnEditedMonth(month, startDateYear, isSourceLineItem);
             Plan_Campaign_Program_Tactic_LineItem_Cost objLineItemCost = objLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault();
             if (objLineItemCost != null)
@@ -649,7 +565,8 @@ namespace RevenuePlanner.Services
                     yearDiff = Convert.ToInt32(monthYear[1]) - baseYear;
                 }
                 monthNumber = DateTime.ParseExact(monthYear[0], "MMM", new CultureInfo("en-US")).Month;
-                period = Common.PeriodPrefix + Convert.ToString((yearDiff * 12) + monthNumber);  // For MAR-2017 -> Y + ((1*12) + 3) = Y15
+                // When current year is 2016 then For MAR-2017 -> Y + ((1*12) + 3) = Y15
+                period = Common.PeriodPrefix + Convert.ToString((yearDiff * 12) + monthNumber);
             }
             return period;
         }
@@ -676,9 +593,10 @@ namespace RevenuePlanner.Services
                 }
                 quarterNumber = Convert.ToInt32(quarterYear[0].Replace("Q", ""));   // For Q1 -> 1 i.e. get number of quarter
 
-                // For Q1-2017 -> Y + ((1*12) + (1*3) - 2) = Y13
+                // When current year is 2016 then For Q1-2017 -> Y + ((1*12) + (1*3) - 2) = Y13
                 monthNumber = (yearDiff * 12) + (quarterNumber * 3) - 2;
-                period = Common.PeriodPrefix + Convert.ToString(monthNumber);       // For Q1-2017 -> Y13
+                // When current year is 2016 then For Q1-2017 -> Y13
+                period = Common.PeriodPrefix + Convert.ToString(monthNumber);
             }
             return monthNumber;
         }
@@ -745,7 +663,7 @@ namespace RevenuePlanner.Services
                 }
             }
 
-            // Convert Q1-2017 to Y15 
+            // When current year is 2016 then For Q1-2017 -> Y13 
             int monthNumber = GetPeriodBasedOnEditedQuarter(quarter, startDateYear, isSourceLineItem);
             string period = Common.PeriodPrefix + Convert.ToString(monthNumber);
             List<string> QuartersList = Common.GetMonthsOfQuarters(monthNumber);
@@ -942,7 +860,7 @@ namespace RevenuePlanner.Services
                     return false;
                 }
             }
-            // Convert MAR-2017 to Y15 
+            // When current year is 2016 and edited cell is MAR-2017, then convert it to Y15 
             string period = GetPeriodBasedOnEditedMonth(month, startDateYear, isSourceLineItem);
             Plan_Campaign_Program_Tactic_Cost objTacCost = objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == period).FirstOrDefault();
             if (objTacCost != null)
@@ -978,7 +896,7 @@ namespace RevenuePlanner.Services
                     return false;
                 }
             }
-            // Convert Q1-2017 to Y15 
+            // When current year is 2016 then For Q1-2017 -> Y13
             int monthNumber = GetPeriodBasedOnEditedQuarter(quarter, startDateYear);
             string period = Common.PeriodPrefix + Convert.ToString(monthNumber);
             List<string> QuartersList = Common.GetMonthsOfQuarters(monthNumber);

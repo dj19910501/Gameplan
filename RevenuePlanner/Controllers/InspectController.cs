@@ -6261,7 +6261,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="customFieldIds"></param>
         /// <param name="budgetTab"></param>
         /// <returns>Returns partial view</returns>
-        public PartialViewResult LoadLineItemTabFromTacticPopup(int tacticId, string AllocatedBy)
+        public PartialViewResult LoadLineItemTabFromTacticPopup(int tacticId, string AllocatedBy, bool IsPlanEditable)
         {
             BudgetDHTMLXGridModel objGridData = new BudgetDHTMLXGridModel();
             PlanExchangeRate = Sessions.PlanExchangeRate;
@@ -6269,7 +6269,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.AllocatedBy = AllocatedBy;
                 // Modified by Arpita Soni for Ticket #2634 on 09/26/2016
-                objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate);
+                objGridData = objPlanTactic.GetCostAllocationLineItemInspectPopup(tacticId, AllocatedBy, Sessions.User.ID, Sessions.User.CID, Sessions.PlanExchangeRate, IsPlanEditable);
                 
                 //// Set View By Allocated values.
                 List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
@@ -6290,11 +6290,16 @@ namespace RevenuePlanner.Controllers
             try
             {
                 int EntityId = Convert.ToInt32(entityId);   // this is tactic or line item id
+                // Converting user preferred value to $ currency
                 allocatedcost = objCurrency.SetValueByExchangeRate(allocatedcost, PlanExchangeRate);
-                string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
+                string AllocatedBy = string.Empty;
                 if (isquarter)
                 {
                     AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.quarters);
+                }
+                else
+                {
+                    AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
                 }
                 if (string.Compare(section, Convert.ToString(Enums.Section.LineItem), true) == 0)
                 {

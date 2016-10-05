@@ -182,6 +182,16 @@ namespace RevenuePlanner.Helpers
         public const string MonthlyCostForEntity = "CostMonth";
         public const string YearlyCostForEntity = "CostYear";
         public const string PeriodPrefix = "Y";
+        public const string MonthlyCostHeaderFormat = "MMM-yyyy";
+
+        // Four columns among that third column is for icons so no header text
+        public const string CommonHeaderForDefaultCols = "ActivityId,Task Name,,Planned Cost";
+        public const string CommonColumnIdsForDefaultCols = "activityid,taskname,icons,plannedcost";
+        public const string CommonAlignForDefaultCols = "left,left,center,left";
+        public const string CommonColTypeForDefaultCols = "ro,tree,ro,edn";
+        public const string CommonWidthForDefaultCols = "0,200,60,80";
+        public const string CommonColSortingForDefaultCols = "na,na,na,na";
+
 
         public static List<string> TOPRevenueColumnList = new List<string>() { "Name", "Revenue", "Trend" };
         public static List<string> TOPPerformanceColumnList = new List<string>() { "Name", "Proj. vs Goal", "Trend" };
@@ -1304,10 +1314,10 @@ namespace RevenuePlanner.Helpers
             {
                 if (!string.IsNullOrEmpty(currentView))
                 {
-                string[] PlanYears = currentView.Split('-');
-                startDate = new DateTime(Convert.ToInt32(PlanYears[0]), 1, 1);
-                endDate = new DateTime(Convert.ToInt32(PlanYears[1]), 12, 31);
-            }
+                    string[] PlanYears = currentView.Split('-');
+                    startDate = new DateTime(Convert.ToInt32(PlanYears[0]), 1, 1);
+                    endDate = new DateTime(Convert.ToInt32(PlanYears[1]), 12, 31);
+                }
                 else
                 {
                     startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
@@ -2955,7 +2965,7 @@ namespace RevenuePlanner.Helpers
 
         //Added by Komal Rawal on 12/09/2016
         //Desc : to get header values as per new UI.
-        public static HomePlanModelHeader GetPlanHeaderValueForPlans(List<int> planIds, string activeMenu, string year, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds,bool IsGridView = false)
+        public static HomePlanModelHeader GetPlanHeaderValueForPlans(List<int> planIds, string activeMenu, string year, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool IsGridView = false)
         {
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             CacheObject dataCache = new CacheObject();
@@ -3112,7 +3122,7 @@ namespace RevenuePlanner.Helpers
                 List<ModelStageRelationList> modleStageRelationList = new List<ModelStageRelationList>();
                 List<Plan_Improvement_Campaign_Program_Tactic> impList = new List<Plan_Improvement_Campaign_Program_Tactic>();
 
-               
+
 
                 foreach (var plan in planList)
                 {
@@ -3280,7 +3290,7 @@ namespace RevenuePlanner.Helpers
                         }
                         else if (allModelIds != null || allModelIds.Count > 0)
                         {
-                          //  return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
+                            //  return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
                             Sessions.IsNoPlanCreated = true;
                             return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Home" };
                         }

@@ -809,9 +809,9 @@
                 isLocked = false;
             }
             var AllocatedBy = '@Convert.ToString(Enums.PlanAllocatedBy.months)'
-            
+            var IsPlanEditable = '@IsPlanEditable'
             url = '@Url.Content("~/Inspect/LoadLineItemTabFromTacticPopup/")';
-            $("#divTab").load(url + '?tacticId=' + id +'&AllocatedBy=' +AllocatedBy, function (response, status, xhr) {
+            $("#divTab").load(url + '?tacticId=' + id +'&AllocatedBy=' +AllocatedBy +'&IsPlanEditable=' +IsPlanEditable, function (response, status, xhr) {
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }
@@ -1369,8 +1369,9 @@
     
     function UpdateViewByForLineIitemsGrid(AllocatedBy){
         var id = $("#hdnPlanTacticId").val();        
+        var IsPlanEditable = '@IsPlanEditable';
         var url = '@Url.Content("~/Inspect/LoadLineItemTabFromTacticPopup/")';
-        $("#divTab").load(url + '?tacticId=' + id +'&AllocatedBy=' +AllocatedBy, function (response, status, xhr) {
+        $("#divTab").load(url + '?tacticId=' + id +'&AllocatedBy=' +AllocatedBy +'&IsPlanEditable=' +IsPlanEditable, function (response, status, xhr) {
             $('#InspectTab').removeClass('SpanDisable');
         });
     }
