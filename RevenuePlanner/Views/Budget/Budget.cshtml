@@ -129,9 +129,9 @@
                     gridSearchFlag = 1;
                     DisplayEditablePopup(id, type);
                 });
-                setTimeout(function () {
-                    HomeGrid.saveOpenStates("plangridState");
-                }, 500);
+                //setTimeout(function () {
+                //    HomeGrid.saveOpenStates("plangridState");
+                //}, 500);
             });
             var machineNameindex = HomeGrid.getColIndexById("MachineName");
             var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
@@ -148,6 +148,9 @@
                 if (sTab != '' && sTab != null) {
                     for (var j = 0; j < HomeGrid.getColumnsNum() ; j++) {
                         var ColumnId = HomeGrid.getColumnId(j);
+                        if (ColumnId == 'UnAllocatedCost') {
+                            ColumnId = 'PlannedCost';
+                        }
                         var YearlyTab = sTab + "Cost";
                         if (ColumnId == sTab || ColumnId == YearlyTab) {
                             HomeGrid.setColumnHidden(j, true);
@@ -155,10 +158,10 @@
                     }
                 }
             }
-            setTimeout(function () {
-                HomeGrid.loadOpenStates("plangridState");
-                HomeGrid.objBox.scrollTop = scrollstate.y + 150;
-            }, 1000);
+            //setTimeout(function () {
+            //    HomeGrid.loadOpenStates("plangridState");
+            //    HomeGrid.objBox.scrollTop = scrollstate.y + 150;
+            //}, 1000);
             setTimeout(function () {
                 HomeGrid.setSizes();
             }, 200);
