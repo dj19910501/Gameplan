@@ -8208,6 +8208,7 @@ SET NOCOUNT ON;
 	,A.CustomFieldId
 	,MAX(A.Value) AS Value
 	,MAX(A.UniqueId) AS UniqueId
+	,MAX(A.Text) AS 'Text'
 	FROM (
 	SELECT CE.CustomFieldId,Hireachy.EntityId
 	,(SELECT SUBSTRING((	
@@ -8218,7 +8219,22 @@ SET NOCOUNT ON;
 						)) AS Value,
 						Hireachy.EntityType
 						,C.CustomFieldType	
-						,C.EntityType +'_'+CAST(CE.EntityId AS VARCHAR) AS 'UniqueId'
+						,Hireachy.EntityType +'_'+CAST(CE.EntityId AS VARCHAR) AS 'UniqueId'
+						,(SELECT SUBSTRING((	
+							SELECT ',' + 
+							CASE WHEN C.CustomFieldType = @CustomFieldTypeText
+								THEN R.Value
+							ELSE 
+								CAST(CCP.Value AS VARCHAR(50)) 
+							END
+							FROM CustomField_Entity R
+							LEFT JOIN CustomFieldOption CCP ON R.Value = CAST(CCP.CustomFieldOptionId AS varchar(50))
+							WHERE R.EntityId = CE.EntityId
+							AND R.CustomFieldId = CE.CustomFieldId
+							AND CE.CustomFieldId = C.CustomFieldId
+							--AND R.Value = CAST(CP.CustomFieldOptionId AS varchar(50))
+							FOR XML PATH('')), 2,900000
+						)) AS 'Text'
 					--FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
 					FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds,@TimeFrame,@Isgrid) Hireachy 
 					CROSS APPLY (SELECT C.CustomFieldId
@@ -8232,7 +8248,7 @@ SET NOCOUNT ON;
 						WHERE C.CustomFieldId = CE.CustomFieldId
 						AND Hireachy.EntityId = CE.EntityId)CE
 					UNION ALL
-					SELECT C.CustomFieldId,NULL,NULL,NULL,CT.CustomFieldType,NULL FROM CustomField C
+					SELECT C.CustomFieldId,NULL,NULL,NULL,CT.CustomFieldType,NULL,NULL FROM CustomField C
 					CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT
 						WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId)CT
 						WHERE C.ClientId = @ClientId

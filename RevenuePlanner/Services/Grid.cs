@@ -408,7 +408,7 @@ namespace RevenuePlanner.Services
 
             EntityCustomDataValues = data.CustomFieldValues.ToPivotList(item => item.CustomFieldId,
                      item => item.UniqueId,
-                        items => items.Max(a => a.Value)
+                        items => items.Max(a => a.Text)
                         , selectedCustomColumns)
                         .ToList();
 
@@ -419,7 +419,7 @@ namespace RevenuePlanner.Services
                 lstCustomPlanData.Add(new Plandataobj
                 {
                     value = string.Empty,
-                    locked = objHomeGridProp.lockedstateone,
+                    locked = objHomeGridProp.lockedstatezero,
                     style = objHomeGridProp.stylecolorblack
                 });
             });
@@ -1398,7 +1398,8 @@ namespace RevenuePlanner.Services
                             {
                                 objPlanData.locked = !string.IsNullOrEmpty(objres.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
                             }
-                            else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString()) {
+                            else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString())
+                            {
 
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
                             }
@@ -1468,21 +1469,21 @@ namespace RevenuePlanner.Services
                         value = objres.EntityType // Set Entity Type like Plan/Campaign etc...
                     });
                 }
-                if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode), true) == 0)
+                else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode), true) == 0)
                 {
                     lstPlanData.Add(new Plandataobj
                     {
                         style = "background-color:#" + objres.ColorCode // Set colour Column
                     });
                 }
-                if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), true) == 0)
+                else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), true) == 0)
                 {
                     lstPlanData.Add(new Plandataobj
                     {
                         value = Convert.ToString(objres.EntityId) // Set column ids
                     });
                 }
-                if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName), true) == 0)
+                else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName), true) == 0)
                 {
 
                     lstPlanData.Add(new Plandataobj
@@ -1492,7 +1493,7 @@ namespace RevenuePlanner.Services
                                                                 .GetValue(RowData, new object[0]))) // set machine name for tactics
                     });
                 }
-                if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName), true) == 0)
+                else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName), true) == 0)
                 {
                     string Roistring = string.Empty;
                     string Linkedstring = string.Empty;
@@ -1547,7 +1548,8 @@ namespace RevenuePlanner.Services
                                                       + (!string.IsNullOrEmpty(LinkedPlanName) ? null
                                                         : HttpUtility.HtmlEncode(LinkedPlanName).Replace("'", "&#39;"))
                                                        + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "");
-
+                        objres.IsExtendTactic = IsExtendedTactic;
+                        objres.LinkedTacticId = LinkedTacticId;
                     }
                     lstPlanData.Add(new Plandataobj
                     {
@@ -1556,7 +1558,7 @@ namespace RevenuePlanner.Services
                         style = cellTextColor
                     });
                 }
-                if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add), true) == 0)
+                else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add), true) == 0)
                 {
                     lstPlanData.Add(new Plandataobj
                     {
@@ -1659,6 +1661,17 @@ namespace RevenuePlanner.Services
                 double PlannedRevenue = 0;
                 double.TryParse(Convert.ToString(Revenue), out PlannedRevenue);
                 objVal = PlanCurrencySymbol + ConvertNumberToRoundFormate(PlannedRevenue);
+            }
+            else if (string.Compare(Convert.ToString(RowData.GetType().GetProperty("EntityType").GetValue(RowData, new object[0])).ToLower(), Enums.EntityType.Lineitem.ToString().ToLower()) == 0)
+            {
+                if (string.Compare(ColumnName, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType), true) == 0)
+                {
+                    objVal = Convert.ToString(RowData.GetType().GetProperty("LineItemType").GetValue(RowData, new object[0]));
+                }
+                else
+                {
+                    objVal = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                }
             }
             else
             {
@@ -1767,7 +1780,7 @@ namespace RevenuePlanner.Services
             if (Row.IsCreatePermission == true)
             {
                 grid_add = "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Row.ParentEntityId + "_" + Row.EntityId +
-                " per=" + Row.IsCreatePermission.ToString().ToLower() + "  LinkTacticper ='" + false + "' LinkedTacticId = '" + 0
+                " per=" + Row.IsCreatePermission.ToString().ToLower() + "  LinkTacticper ='" + Row.IsExtendTactic + "' LinkedTacticId = '" + 0
                 + "' tacticaddId='" + Row.EntityId + "' title=Add><i class='fa fa-plus-circle'></i></div>";
             }
             string addColumn = @" <div class=grid_Search id=TP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
@@ -1785,21 +1798,28 @@ namespace RevenuePlanner.Services
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             string grid_add = string.Empty;
-            if (Row.IsCreatePermission == true)
+            if (!string.IsNullOrEmpty(Row.LineItemType))
             {
-                int LineItemTypeId = 0;
-                if (Row.LineItemType != null)
+                if (Row.IsCreatePermission == true)
                 {
-                    int.TryParse(Convert.ToString(Row.LineItemTypeId), out LineItemTypeId);
-                }
+                    int LineItemTypeId = 0;
+                    if (Row.LineItemType != null)
+                    {
+                        int.TryParse(Convert.ToString(Row.LineItemTypeId), out LineItemTypeId);
+                    }
 
-                grid_add = "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + Row.ParentEntityId + "_" + Row.EntityId
-                + " lt=" + LineItemTypeId
-                + " dt=" + HttpUtility.HtmlEncode(Row.EntityTitle) + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
+                    grid_add = "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + Row.ParentEntityId + "_" + Row.EntityId
+                    + " lt=" + LineItemTypeId
+                    + " dt=" + HttpUtility.HtmlEncode(Row.EntityTitle) + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
+                }
+                string addColumn = @" <div class=grid_Search id=LP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
+                    + grid_add;
+                return addColumn;
             }
-            string addColumn = @" <div class=grid_Search id=LP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
-                + grid_add;
-            return addColumn;
+            else
+            {
+                return string.Empty;
+            }
         }
 
         #endregion
@@ -1862,7 +1882,7 @@ namespace RevenuePlanner.Services
             SqlParameter[] para = new SqlParameter[7];
             List<calendarDataModel> calResultset = new List<calendarDataModel>();   // Return Calendar Result Data Model
             #endregion
-            
+
             #region "Set SP Parameters"
             para[0] = new SqlParameter() { ParameterName = "planIds", Value = planIds };
             para[1] = new SqlParameter() { ParameterName = "ownerIds", Value = ownerIds };
@@ -2006,7 +2026,7 @@ namespace RevenuePlanner.Services
             List<int> lstPlanIds = new List<int>();
             if (!string.IsNullOrEmpty(strPlanIds))
             {
-                 lstPlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
+                lstPlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
             }
             List<PlanOptionsTacticType> lstTacticTypes = (from tactictypes in objDbMrpEntities.TacticTypes
                                                           join model in objDbMrpEntities.Models on tactictypes.ModelId equals model.ModelId
@@ -2034,15 +2054,15 @@ namespace RevenuePlanner.Services
                 lstPlanIds = strPlanIds.Split(',').Select(int.Parse).ToList();
             }
             List<PlanOptionsTacticType> lstLineItemTypes = (from lineitemtypes in objDbMrpEntities.LineItemTypes
-                                                          join model in objDbMrpEntities.Models on lineitemtypes.ModelId equals model.ModelId
-                                                          join plan in objDbMrpEntities.Plans on model.ModelId equals plan.ModelId
-                                                          where (lineitemtypes.IsDeleted == false) && model.ClientId == ClientId && model.IsDeleted == false && lstPlanIds.Contains(plan.PlanId)
-                                                          select new PlanOptionsTacticType
-                                                          {
-                                                              PlanId = plan.PlanId,
-                                                              id = lineitemtypes.LineItemTypeId,
-                                                              value = lineitemtypes.Title
-                                                          }
+                                                            join model in objDbMrpEntities.Models on lineitemtypes.ModelId equals model.ModelId
+                                                            join plan in objDbMrpEntities.Plans on model.ModelId equals plan.ModelId
+                                                            where (lineitemtypes.IsDeleted == false) && model.ClientId == ClientId && model.IsDeleted == false && lstPlanIds.Contains(plan.PlanId)
+                                                            select new PlanOptionsTacticType
+                                                            {
+                                                                PlanId = plan.PlanId,
+                                                                id = lineitemtypes.LineItemTypeId,
+                                                                value = lineitemtypes.Title
+                                                            }
                                  ).ToList();
             return lstLineItemTypes;
         }
@@ -2071,7 +2091,9 @@ namespace RevenuePlanner.Services
             if (source != null)
             {
                 IEnumerable<TColumn> columns = source.Select(columnSelector).Distinct()
-                                        .ToList().Where(a => selectedColumns.Contains(a.ToString())).ToList();
+                                        .ToList().Where(a => selectedColumns.Contains(a.ToString())).ToList()
+                                        .OrderBy(a => selectedColumns.IndexOf(a.ToString()));
+
 
                 cols = (new[] { rowName }).Concat(selectedColumns).ToList();
 

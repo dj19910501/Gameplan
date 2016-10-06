@@ -480,7 +480,8 @@ namespace RevenuePlanner.Models
         //Permission variables
         public bool IsCreatePermission { get; set; }
         public bool IsRowPermission { get; set; }
-
+        public bool IsExtendTactic { get; set; }
+        public int? LinkedTacticId { get; set; }
         public List<Plandataobj> lstdata { get; set; }
         //public Plandataobj objdata { get; set; }
     }
@@ -804,6 +805,7 @@ namespace RevenuePlanner.Models
         }
         public string Value { get; set; }
         public string UniqueId { get; set; }
+        public string Text { get; set; }
     }
 
     // Add By Nishant Sheth
