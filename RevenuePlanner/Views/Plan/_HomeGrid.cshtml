@@ -126,7 +126,13 @@
                     HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(), GridHiddenId)[0][0]);
                 }
             }
-
+            if ($("#gridbox").find(".rowselected").length >= 1) {
+                var scrolltop = $(".rowselected").offset().top;
+                $(window).scrollTop(scrolltop - 100);
+            }
+            else {
+                HomeGrid.objBox.scrollTop = scrollstate.y + 200;
+            }
             
         });
 
@@ -145,13 +151,13 @@
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
         
         setTimeout(function () {
-            HomeGrid.loadOpenStates("plangridState");
+          HomeGrid.loadOpenStates("plangridState");
             if ($("#gridbox").find(".rowselected").length >= 1) {
                 var scrolltop = $(".rowselected").offset().top;
                 $(window).scrollTop(scrolltop - 100);
             }
             else {
-            HomeGrid.objBox.scrollTop = scrollstate.y + 150;
+            HomeGrid.objBox.scrollTop = scrollstate.y + 200;
             }
         }, 500);
         LoadAfterParsing();
