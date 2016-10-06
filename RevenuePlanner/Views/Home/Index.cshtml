@@ -431,7 +431,7 @@
         $("#ddlUpComingActivites").change(function () {
             RefershPlanHeaderCalc();
             if (IsBudgetGrid) {
-                $('#btnbudget').trigger('click');
+                LoadBudgetGrid();
             }
             else if ($('#IsGridView').val().toLowerCase() == "false") {
                 BindPlanCalendar();

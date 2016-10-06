@@ -624,27 +624,7 @@ namespace RevenuePlanner.Controllers
                     campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
 
 
-            if (lstCampaign.Count > 0)
-            {
-                //  if plan is multiyear then activity distribution chart should be according to that in grid view
-                if (IsGridView == true)
-                {
-                    int StartYear = lstCampaign.Select(camp => camp.StartDate.Year).Min();
-                    int EndYear = lstCampaign.Select(camp => camp.EndDate.Year).Max();
-
-                    if (EndYear != StartYear)
-                    {
-                        strtimeframe = StartYear + "-" + EndYear;
-                        IsMultiYearPlan = true;
-                    }
-                    else
-                    {
-                        strtimeframe = Convert.ToString(StartYear);
-                        Common.GetPlanGanttStartEndDate(planYear, strtimeframe, ref CalendarStartDate, ref CalendarEndDate);
-                    }
-
-                }
-            }
+         
 
             //// Get planyear of the selected Plan
             if (strtimeframe.Contains("-") || IsMultiYearPlan)
@@ -2304,10 +2284,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="CurrentTime">Current Time</param>
         /// <returns></returns>
         /// modified by Mitesh vaishnav add flag to check request come from calender view or budget view
-        public JsonResult BindUpcomingActivitesValues(string planids, string fltrYears, bool IsCalender=true)
+        public JsonResult BindUpcomingActivitesValues(string planids, string fltrYears, bool IsBudgetGrid = false)
         {
             //// Fetch the list of Upcoming Activity
-            List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears,IsCalender);
+            List<SelectListItem> objUpcomingActivity = UpComingActivity(planids, fltrYears, IsBudgetGrid);
             objUpcomingActivity = objUpcomingActivity.Where(activity => !string.IsNullOrEmpty(activity.Text)).OrderBy(activity => activity.Text, new AlphaNumericComparer()).ToList();
             return Json(objUpcomingActivity.ToList(), JsonRequestBehavior.AllowGet);
         }
@@ -2317,7 +2297,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="PlanIds">comma sepreated string plan id(s)</param>
         /// <returns>List fo SelectListItem of Upcoming activity</returns>
-        public List<SelectListItem> UpComingActivity(string PlanIds, string fltrYears, bool isCalenderView=true)
+        public List<SelectListItem> UpComingActivity(string PlanIds, string fltrYears, bool IsBudgetGrid = false)
         {
             //// List of plan id(s)
             List<int> planIds = string.IsNullOrWhiteSpace(PlanIds) ? new List<int>() : PlanIds.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -2354,7 +2334,7 @@ namespace RevenuePlanner.Controllers
             string monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
 
             //for calander add this month and this quarter option instead of this year (quarterly) and this year (monthly)
-            if (isCalenderView)
+            if (!IsBudgetGrid)
             {
                 strThisQuarter = Enums.UpcomingActivities.thisquarter.ToString();
                 strThisMonth = Enums.UpcomingActivities.thismonth.ToString();

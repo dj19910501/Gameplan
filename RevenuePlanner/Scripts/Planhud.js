@@ -303,7 +303,7 @@ function BindUpcomingActivites(SelectedPlanIds) {
         data: {
             planids: SelectedPlanIds.toString(),
             fltrYears: years,
-            IsCalender: isCalendarView
+            IsBudgetGrid: IsBudgetGrid
         },
         success: function (data) {
             var upcomingvalues = [];

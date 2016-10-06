@@ -3015,26 +3015,6 @@ namespace RevenuePlanner.Helpers
             filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<int>() : OwnerIds.Split(',').Select(owner => Int32.Parse(owner)).ToList();
 
 
-            if (campplist.Count > 0)
-            {
-                //  if plan is multiyear then data should be according to that in grid view
-                if (IsGridView == true)
-                {
-                    int StartYear = campplist.Select(camp => camp.StartDate.Year).Min();
-                    int EndYear = campplist.Select(camp => camp.EndDate.Year).Max();
-
-                    if (EndYear != StartYear)
-                    {
-                        year = StartYear + "-" + EndYear;
-                    }
-                    else
-                    {
-                        year = Convert.ToString(StartYear);
-
-                    }
-                    Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
-                }
-            }
 
             if (planList != null && planList.Count > 0)
             {

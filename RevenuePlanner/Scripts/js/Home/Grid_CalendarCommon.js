@@ -3,6 +3,8 @@ var isEditTacticHomeGrid = 0;
 
 ///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
+    IsBudgetGrid = false
+    BindUpcomingActivites(filters.PlanIDs.toString())
     //cleare success msg as we want to hide import msg on click of grid or calendar
     $('#SuccessMsg').css('display', 'none');
     if ($('#errorMsg').css('display') == 'block') {
@@ -31,8 +33,7 @@ $('#btngridcalendar').click(function () {
         } else {
             isCalendarView = true;
             $('#IsGridView').val('false');
-           HomeGrid.saveOpenStates("plangridState");
-            BindUpcomingActivites(filters.PlanIDs.toString())
+            HomeGrid.saveOpenStates("plangridState");
             BindPlanCalendar();
         }
     }
@@ -85,6 +86,8 @@ function ShowhideDataonGridCalendar() {
 }
 
 $('#btnbudget').click(function () {
+    IsBudgetGrid = true;
+    BindUpcomingActivites(filters.PlanIDs.toString())
     //cleare success msg as we want to hide import msg on click of grid or calendar
     $('#SuccessMsg').css('display', 'none');
     if ($('#errorMsg').css('display') == 'block') {
@@ -145,6 +148,8 @@ $('#ChangeView').click(function () {
         $('#ExpClose').css('display', 'none');
         $('#ExpSearch').css('display', 'block');
     }
+    BindUpcomingActivites(filters.PlanIDs.toString())
+    RefershPlanHeaderCalc();
     ShowhideDataonGridCalendar();
 });
 
@@ -1654,6 +1659,7 @@ function BindViewSelections(strUrl) {
 
 // ViewBy Change Event.
 $("#ddlTabViewBy").change(function () {
+    RemoveAllHoneyCombData();
     if ($('#IsGridView').val().toLowerCase() == "true") {
         LoadPlanGrid();
         $("#GridGanttContent").hide();
