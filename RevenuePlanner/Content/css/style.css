@@ -13464,10 +13464,6 @@ input.serach-input {
     margin-left: 10px;
 }
 
-/*#lineItemGrid .objbox {
-    overflow-x: hidden !important;
-}*/
-
 #lineItemGrid .rowselected td {
     background: #f2f2f2;
 }

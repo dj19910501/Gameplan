@@ -26,6 +26,7 @@ namespace RevenuePlanner.Services
         private string formatThousand = "#,##0.##";  // format thousand number values with comma
         private string commaString = ",";
         private Dictionary<string, int> tacticYears = new Dictionary<string, int>(); // start and end date years of tactic
+        private string Year = "Year";
         #endregion
 
         /// <summary>
@@ -56,10 +57,18 @@ namespace RevenuePlanner.Services
             {
                 int startYear = Convert.ToDateTime(objTacticRow["StartDate"]).Year;
                 int endYear = Convert.ToDateTime(objTacticRow["EndDate"]).Year;
-                tacticYears.Add(Convert.ToString(Enums.TacticDates.StartDate), Convert.ToDateTime(objTacticRow["StartDate"]).Year);
-                if (endYear - startYear > 0)
+                if (startYear != endYear)
                 {
-                    tacticYears.Add(Convert.ToString(Enums.TacticDates.EndDate), Convert.ToDateTime(objTacticRow["EndDate"]).Year);
+                    // For multi year tactic
+                    for (int year = startYear; year <= endYear; year++)
+                    {
+                        tacticYears.Add(string.Format(Year + "{0}", year), year);
+                    }
+                }
+                else
+                {
+                    // For single year tactic
+                    tacticYears.Add(string.Format(Year + "{0}", startYear), startYear);
                 }
             }
             // Set values from datatable to model
@@ -160,7 +169,7 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get month wise allocated cost
         /// </summary>
-        private List<Budgetdataobj> GetMonthlyQuarterlyAllocatedPlannedCost(string activityType, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData, string allocatedBy,string lockedstate,string stylecolor)
+        private List<Budgetdataobj> GetMonthlyQuarterlyAllocatedPlannedCost(string activityType, BudgetModel modelEntity, List<Budgetdataobj> lstBudgetData, string allocatedBy, string lockedstate, string stylecolor)
         {
             double monthlyValue = 0, totalAllocatedCost = 0;
             Budgetdataobj objBudgetData;
@@ -257,7 +266,7 @@ namespace RevenuePlanner.Services
             lstTacticData.Add(objTacticData);
 
             // Add allocated cost data based on monthly/quarterly
-            lstTacticData = GetMonthlyQuarterlyAllocatedPlannedCost(ActivityType.ActivityTactic, tacticModel, lstTacticData, AllocatedBy,lockedstate,stylecolor);
+            lstTacticData = GetMonthlyQuarterlyAllocatedPlannedCost(ActivityType.ActivityTactic, tacticModel, lstTacticData, AllocatedBy, lockedstate, stylecolor);
 
             objTacticRows.data = lstTacticData; // assigning all columns data to row object
             List<BudgetDHTMLXGridDataModel> lstLineItemRows = new List<BudgetDHTMLXGridDataModel>();
@@ -353,7 +362,7 @@ namespace RevenuePlanner.Services
             #endregion
 
             //bind monthly/quaterly allocation data for line items to the grid
-            lstLineItemData = GetMonthlyQuarterlyAllocatedPlannedCost(ActivityType.ActivityLineItem, modelEntity, lstLineItemData, AllocatedBy,lockedstate,stylecolor);
+            lstLineItemData = GetMonthlyQuarterlyAllocatedPlannedCost(ActivityType.ActivityLineItem, modelEntity, lstLineItemData, AllocatedBy, lockedstate, stylecolor);
 
             objLineItemRows.data = lstLineItemData;
             return objLineItemRows;
@@ -394,7 +403,7 @@ namespace RevenuePlanner.Services
         {
             Dictionary<string, double> dictMonthlyCosts = new Dictionary<string, double>();
             string Period = string.Empty;   // variable for month name text to get cost value e.g. Y13
-            int baseyear = 0;
+            int MonthCounter = 0;   // variable used to set month number as per multi year
 
             //if (String.Compare(allocatedBy, Convert.ToString(Enums.PlanAllocatedBy.quarters)) == 0)
             if (Convert.ToString(Enums.PlanAllocatedBy.quarters).Equals(allocatedBy))
@@ -409,15 +418,15 @@ namespace RevenuePlanner.Services
                     for (int i = 1; i <= Convert.ToInt32(Enums.QuarterMonthDigit.Month); i = i + 3)
                     {
                         SumOfMonths = 0;
-                        Period = Common.PeriodPrefix + Convert.ToString(i + baseyear);      // When current year is 2016 then For Q1-2017 -> Y13
-                        QuartersList = Common.GetMonthsOfQuarters(i + baseyear);            // Get months for the quarter
+                        Period = Common.PeriodPrefix + Convert.ToString(i + MonthCounter);      // When current year is 2016 then For Q1-2017 -> Y13
+                        QuartersList = Common.GetMonthsOfQuarters(i + MonthCounter);            // Get months for the quarter
                         // Sum up month wise values to get the sum of quarter
                         QuartersList.ForEach(x => SumOfMonths = SumOfMonths + Convert.ToDouble(row[x]));
                         QuarterLabel = "Q" + Convert.ToString(quarterCounter) + "-" + Convert.ToString(tacticYears[key]);
                         dictMonthlyCosts.Add(QuarterLabel, objCurrency.GetValueByExchangeRate(SumOfMonths, PlanExchangeRate));
                         quarterCounter++;
                     }
-                    baseyear = baseyear + Convert.ToInt32(Enums.QuarterMonthDigit.Month);   // Add total no. of months(12) for second year
+                    MonthCounter = MonthCounter + Convert.ToInt32(Enums.QuarterMonthDigit.Month);   // Add total no. of months(12) for second year
                 }
             }
             else
@@ -428,11 +437,11 @@ namespace RevenuePlanner.Services
                     for (int i = 1; i <= Convert.ToInt32(Enums.QuarterMonthDigit.Month); i++)
                     {
                         dtDate = new DateTime(tacticYears[key], i, 1);
-                        Period = Common.PeriodPrefix + Convert.ToString(i + baseyear);
+                        Period = Common.PeriodPrefix + Convert.ToString(i + MonthCounter);
                         // When current year is 2016 then For JAN-2017 -> Y13
                         dictMonthlyCosts.Add(dtDate.ToString(Common.MonthlyCostHeaderFormat), objCurrency.GetValueByExchangeRate(Convert.ToDouble(row[Period]), PlanExchangeRate));
                     }
-                    baseyear = baseyear + Convert.ToInt32(Enums.QuarterMonthDigit.Month);   // Add total no. of months(12) for second year
+                    MonthCounter = MonthCounter + Convert.ToInt32(Enums.QuarterMonthDigit.Month);   // Add total no. of months(12) for second year
                 }
             }
             return dictMonthlyCosts;    // Returns dictionary of months/quarters and its values
