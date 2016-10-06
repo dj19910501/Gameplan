@@ -1181,14 +1181,15 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #region Load Line Item Grid in Tactic Inspect Popup
-        /// To Load Line Item Grid in Tactic Inspect Popup
+        ///<summary>
+        /// To load monthly cost allocation in line item grid in inspecttion window
         /// <author>Arpita Soni</author>
         /// <createdDate>09Jun2016</createdDate>
         /// </summary>
         [TestMethod]
-        public void LoadLineItemTabFromTacticPopup()
+        public void LoadMonthlyCostAllocationInspectPopup()
         {
-            Console.WriteLine("To Load Line Item Grid in Tactic Inspect Popup.\n");
+            Console.WriteLine("To load monthly cost allocation in line item grid in inspecttion window.\n");
             MRPEntities db = new MRPEntities();
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             InspectController controller = new InspectController();
@@ -1196,10 +1197,30 @@ namespace RevenuePlanner.Test.Controllers
             int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
                             Select(tac => tac.PlanTacticId).FirstOrDefault();
             string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
-            var result = controller.LoadLineItemTabFromTacticPopup(tacticId, AllocatedBy) as PartialViewResult;
+            var result = controller.LoadLineItemTabFromTacticPopup(tacticId, AllocatedBy, true) as PartialViewResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
             Assert.AreEqual("_TacticLineItemListing", result.ViewName);
+        }
 
+        ///<summary>
+        /// To load quarterly cost allocation in line item grid in inspecttion window
+        /// <author>Arpita Soni</author>
+        /// <createdDate>09Jun2016</createdDate>
+        /// </summary>
+        [TestMethod]
+        public void LoadQuarterlyCostAllocationInspectPopup()
+        {
+            Console.WriteLine("To load quarterly cost allocation in line item grid in inspecttion window.\n");
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            InspectController controller = new InspectController();
+            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
+            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
+                            Select(tac => tac.PlanTacticId).FirstOrDefault();
+            string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.quarters);
+            var result = controller.LoadLineItemTabFromTacticPopup(tacticId, AllocatedBy, true) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
+            Assert.AreEqual("_TacticLineItemListing", result.ViewName);
         }
 
         /// <summary>
