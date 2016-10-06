@@ -60,7 +60,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
        
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false, bool ShowPopup = false)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false, bool ShowPopup = false, bool IsBudgetView = false)
         {
             var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
             var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
@@ -128,6 +128,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.ShowInspectForPlanProgramId = planProgramId;
             ViewBag.IsImprovement = isImprovement;
             ViewBag.GridView = isGridView;
+            ViewBag.BudgetView = IsBudgetView;
             ViewBag.ShowInspectForPlanLineItemId = planLineItemId;
             if (currentPlanId > 0)
             {

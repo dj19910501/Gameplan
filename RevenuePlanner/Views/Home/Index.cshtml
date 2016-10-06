@@ -17,6 +17,7 @@
     var Successmsgduplicate = (string)ViewBag.SuccessMessageDuplicatePlan;
     var errormsgduplicate = (string)ViewBag.ErrorMessageDuplicatePlan;
     var IsGridView = (bool)ViewBag.GridView;
+    bool IsBudgetView = (bool)ViewBag.BudgetView;
     var TacticTaskColor = (string)ViewBag.TacticTaskColor;
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
@@ -391,8 +392,16 @@
     });
 
 
-        $(document).ready(function () {
-          $('.plan').addClass('active');//Select Plans menu after login for ticket - 2570 
+    $(document).ready(function () {
+        var Successmsgduplicate = '@Successmsgduplicate';
+        var Errormsgduplicate = '@errormsgduplicate';
+        if (Successmsgduplicate != "") {
+            ShowMessage(false, Successmsgduplicate, 3000);
+        }
+        if (Errormsgduplicate != "") {
+            ShowMessage(true, Errormsgduplicate, 400);
+        }
+        $('.plan').addClass('active');//Select Plans menu after login for ticket - 2570
         ///Added by Dhvani to open inpsect popup for alert URL -- PL #2534
         //START CODE
         if ('@ShowInspectPopup'.toLowerCase() == 'true') {
@@ -470,8 +479,15 @@
                     RefershPlanHeaderCalc();
                     GetMultiplePlanNames();
                     GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
-                    if (IsGridView) {
+                    if ('@IsBudgetView'.toLowerCase() == 'true') {
+                        IsBudgetGrid = true;
+                        LoadBudgetGrid();
+                    }
+                    else if ('@IsGridView'.toLowerCase() == 'true') {
                         LoadPlanGrid();
+                    }
+                    else {
+                        BindPlanCalendar();
                     }
                 }
             }

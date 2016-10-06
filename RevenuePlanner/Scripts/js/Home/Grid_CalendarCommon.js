@@ -1,7 +1,4 @@
-﻿var isCopyTacticHomeGrid = 0;
-var isEditTacticHomeGrid = 0;
-
-///Manage Calendar/PlanGrid/Budget Icon Click
+﻿///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
     IsBudgetGrid = false
     BindUpcomingActivites(filters.PlanIDs.toString())
@@ -529,6 +526,16 @@ function DisplayPopUpMenu(obj, e) {
     });
 
     $('#ClonePlan1').click(function () {
+        var calledFrom = '';
+        if (IsBudgetGrid) {
+            calledFrom = 'budget';
+        }
+        else if ($('#IsGridView').val().toLowerCase() == 'true') {
+            calledFrom = 'grid';
+        }
+        else {
+            calledFrom = 'calender';
+        }
         var planId = PlanId;
         if (parseInt(planId) > 0) {
             $.ajax({
@@ -537,7 +544,8 @@ function DisplayPopUpMenu(obj, e) {
                 data: {
                     CloneType: planCloneType,
                     Id: PlanId,
-                    title: ''
+                    title: '',
+                    CalledFromBudget: calledFrom
                 },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -606,7 +614,10 @@ function DisplayPopUpMenu(obj, e) {
                     RefershPlanHeaderCalc();
                     isCopyTactic = data.Id;
                     isCopyTacticHomeGrid = isCopyTactic;
-                    if ($('#IsGridView').val().toLowerCase() == "false") {
+                    if (IsBudgetGrid) {
+                        LoadBudgetGrid();
+                    }
+                    else if ($('#IsGridView').val().toLowerCase() == "false") {
                         BindPlanCalendar();
                     }
                     else {

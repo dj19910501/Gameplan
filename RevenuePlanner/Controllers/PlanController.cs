@@ -2842,24 +2842,19 @@ namespace RevenuePlanner.Controllers
                     title = System.Net.WebUtility.HtmlDecode(title);
                     string strMessage = string.Format(Common.objCached.CloneDuplicated, CloneType);     // Modified by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
 
-                    if (!string.IsNullOrEmpty(CalledFromBudget))
+                    bool IsBudgetView = false;
+                    bool isGridView = false;
+                    if (string.Compare(CalledFromBudget, "budget", true) == 0)
                     {
-                        TempData["SuccessMessage"] = strMessage;
-                        TempData["SuccessMessageDeletedPlan"] = "";
-                        //return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
-
-                        string expand = CloneType.ToLower().Replace(" ", "");
-                        if (expand == "campaign")
-                            return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Id, type = CalledFromBudget }), Id = rtResult, msg = strMessage });
-                        else
-                            return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Id, type = CalledFromBudget, expand = expand + Id.ToString() }), Id = rtResult, msg = strMessage });
+                        IsBudgetView = true;
                     }
-                    else
+                    else if (string.Compare(CalledFromBudget, "grid", true) == 0)
                     {
-                        ViewBag.CampaignID = Session["CampaignID"];
-                        TempData["SuccessMessageDeletedPlan"] = strMessage;
-                        return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Id }), planId = Id, Id = rtResult, msg = strMessage });
+                        isGridView = true;
                     }
+                    ViewBag.CampaignID = Session["CampaignID"];
+                    TempData["SuccessMessageDeletedPlan"] = strMessage;
+                    return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Id, IsBudgetView = IsBudgetView, isGridView = isGridView }), planId = Id, Id = rtResult, msg = strMessage });
                 }
                 return Json(new { });
 
