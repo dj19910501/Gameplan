@@ -207,6 +207,7 @@ else
                     if('@SelectedViewBy' == 'quarters') {
                         isquarter = true;
                     }
+                    // Converting user preferred value to $ currency
                     var allocatedcost = SetValueByExchangeRate(plannedcost.replace(/,/g, ""))
                     
                     $.ajax({

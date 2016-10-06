@@ -6290,8 +6290,6 @@ namespace RevenuePlanner.Controllers
             try
             {
                 int EntityId = Convert.ToInt32(entityId);   // this is tactic or line item id
-                // Converting user preferred value to $ currency
-                allocatedcost = objCurrency.SetValueByExchangeRate(allocatedcost, PlanExchangeRate);
                 string AllocatedBy = string.Empty;
                 if (isquarter)
                 {
