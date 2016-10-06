@@ -314,9 +314,7 @@ namespace RevenuePlanner.Services
         {
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             // Get MQL title label client wise
-            List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == ClientId && stage.IsDeleted == false)
-                .Select(stage => stage).ToList();
-            string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Convert.ToString(Enums.PlanGoalType.MQL).ToLower()).Select(stage => stage.Title).FirstOrDefault();
+            string MQLTitle = GetMqlTitle(ClientId);
 
             // Get list of user wise columns or default columns of grid view it's refrencely update from GenerateJsonHeader Method
             List<string> HiddenColumns = new List<string>(); // List of hidden columns of plan grid
@@ -497,8 +495,6 @@ namespace RevenuePlanner.Services
         public List<PlanHead> GenerateJsonHeader(string MQLTitle, ref List<string> HiddenColumns, ref List<string> UserDefinedColumns, ref List<string> customColumnslist, int UserId)
         {
             List<PlanHead> headobjlist = new List<PlanHead>(); // List of headers detail of plan grid
-            List<PlanOptions> lstOwner = new List<PlanOptions>(); // List of owner
-            List<PlanOptions> lstTacticType = new List<PlanOptions>(); // List of tactic type
             try
             {
                 // Get user column view
@@ -517,35 +513,10 @@ namespace RevenuePlanner.Services
                     // Set option values for dropdown columns like Tactic type/ Owner/ Asset type
                     List<PlanHead> lstDefaultColumns = new List<PlanHead>();
 
-                    PlanHead DefaultObjects;
-                    lstHomeGrid_Default_Columns().TryGetValue(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Owner), out DefaultObjects);
-                    DefaultObjects.options = lstOwner;
-
-                    lstHomeGrid_Default_Columns().TryGetValue(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType), out DefaultObjects);
-                    DefaultObjects.options = lstTacticType;
-
-                    lstHomeGrid_Default_Columns().TryGetValue(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType), out DefaultObjects);
-                    DefaultObjects.value = MQLTitle + Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon); // set client wise mql title and column management icon;
-
-                    lstDefaultColumns.AddRange(lstHomeGrid_Default_Columns().Select(a => a.Value).ToList());
-
-                    //Enums.lstHomeGrid_Default_Columns.Select(a => a).ToList()
-                    //    .ForEach(a =>
-                    //    {
-                    //        if (string.Compare(a.Key, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Owner), true) == 0)
-                    //        {
-                    //            a.Value.options = lstOwner;// pass the owner list to plan grid header
-                    //        }
-                    //        if (string.Compare(a.Key, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType), true) == 0)
-                    //        {
-                    //            a.Value.options = lstTacticType; // pass the tactic type list to plan grid header
-                    //        }
-                    //        if (string.Compare(a.Key, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL), true) == 0)
-                    //        {
-                    //            a.Value.value = MQLTitle + Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon); // set client wise mql title and column management icon
-                    //        }
-                    //        lstDefaultColumns.Add(a.Value);
-                    //    });
+                    string MqlString = MQLTitle + Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon); // set client wise mql title and column management icon;
+                    Dictionary<string, PlanHead> DictDefaultCoulmns = lstHomeGrid_Default_Columns();
+                    DictDefaultCoulmns.Where(a => a.Key == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL)).FirstOrDefault().Value.value = MqlString;
+                    lstDefaultColumns.AddRange(DictDefaultCoulmns.Select(a => a.Value).ToList());
 
                     // Update UserDefinedColumns variable with default columns list
                     UserDefinedColumns = lstDefaultColumns.Select(a => a.id).ToList();
@@ -936,11 +907,14 @@ namespace RevenuePlanner.Services
                 }
                 if (lstCustomfieldData == null)
                 {
-                    List<Plandataobj> ItemEmptylist = new List<Plandataobj>();
+                    List<Plandataobj> ItemEmptylist = new List<Plandataobj>(); // Variable for empty list of custom fields value to assign entity 
+                    // Get list of custom fields by entity type
                     List<string> EntityCustomFields = CustomFieldData.CustomFields.Where(a => a.EntityType.ToLower() == Row.EntityType.ToLower()).Select(a => a.CustomFieldId.ToString()).ToList();
+                    // Get list of custom column indexes from custom field list
                     List<int> Colindexes = customColumnslist.Select((s, k) => new { Str = s, Index = k })
                                                 .Where(x => EntityCustomFields.Contains(x.Str))
                                                 .Select(x => x.Index).ToList();
+                    // Set custom field is editable or not for respective entities
                     for (int j = 0; j < EmptyCustomValues.Count; j++)
                     {
                         if (Colindexes.Contains(j))
@@ -952,11 +926,6 @@ namespace RevenuePlanner.Services
                             ItemEmptylist.Add(EmptyCustomValues[j]);
                         }
                     }
-                    //Colindexes.ForEach(a =>
-                    //    {
-                    //        ItemEmptylist[a].locked = objHomeGridProp.lockedstatezero;
-                    //        ItemEmptylist[a].style = objHomeGridProp.stylecolorblack;
-                    //    });
                     lstCustomfieldData = ItemEmptylist;
                 }
 
@@ -2164,7 +2133,9 @@ namespace RevenuePlanner.Services
             {
                 EntityType = Convert.ToString(values.ElementAt<object>(0)).Split('_')[0];
             }
+            // Get list of custom fields by entity type
             List<string> EntityCustomFields = CustomFields.Where(a => a.EntityType.ToLower() == EntityType.ToLower()).Select(a => a.CustomFieldId.ToString()).ToList();
+            // Get list of custom column indexes from custom field list
             IEnumerable<int> Colindexes = columns.Select((s, k) => new { Str = s, Index = k })
                                         .Where(x => EntityCustomFields.Contains(x.Str))
                                         .Select(x => x.Index);
