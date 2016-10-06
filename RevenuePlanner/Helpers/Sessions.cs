@@ -674,5 +674,25 @@ namespace RevenuePlanner.Helpers
             }
 
         }
+        public static bool FirstTimeLogin
+        {
+
+            get
+            {
+                if (HttpContext.Current.Session["FirstTimeLogin"] != null)
+                {
+                    return Convert.ToBoolean(HttpContext.Current.Session["FirstTimeLogin"]);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["FirstTimeLogin"] = value;
+            }
+
+        }
     }
 }

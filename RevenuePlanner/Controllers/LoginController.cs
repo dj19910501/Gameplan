@@ -415,7 +415,7 @@ namespace RevenuePlanner.Controllers
                     //Update last login date for user
 
                     objBDSServiceClient.UpdateLastLoginDateEx(Sessions.User.ID, Sessions.ApplicationId);
-
+                    Sessions.FirstTimeLogin = true;
                     if ((!string.IsNullOrWhiteSpace(returnUrl)) && IsLocalUrl(returnUrl))
                     {
                         return RedirectLocal(returnUrl);

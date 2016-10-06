@@ -7,6 +7,8 @@
     { 
         countrows=Model.rows.Count;
     }
+    bool IsFirstTimeLogin = Sessions.FirstTimeLogin;
+    Sessions.FirstTimeLogin = false;
     //List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);   
 
 }
@@ -31,7 +33,6 @@
         </div>
     </div>
 </div>
-
 <script src="~/Scripts/js/Home/HomeGrid.js"></script>
 <script type="text/javascript">
     gridname = "home";
@@ -131,7 +132,7 @@
                 $(window).scrollTop(scrolltop - 100);
             }
             else {
-                HomeGrid.objBox.scrollTop = scrollstate.y + 200;
+                HomeGrid.objBox.scrollTop = scrollstate.y + 100;
             }
             
         });
@@ -147,19 +148,23 @@
         colSplitId = HomeGrid.getColIndexById(AddId);
         HomeGrid.splitAt(colSplitId + 1);        
         MoveColumn(); ///Calling Move column function       
-        
+        var firsttime = '@IsFirstTimeLogin';
+        if (firsttime.toString().toLowerCase() == 'false') {
+            HomeGrid.collapseAll();
+            setTimeout(function () {
+                HomeGrid.loadOpenStates("plangridState");
+                if ($("#gridbox").find(".rowselected").length >= 1) {
+                    var scrolltop = $(".rowselected").offset().top;
+                    $(window).scrollTop(scrolltop - 100);
+                }
+                else {
+                    HomeGrid.objBox.scrollTop = scrollstate.y + 100;
+                }
+            }, 250);
+        }
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
         
-        setTimeout(function () {
-          HomeGrid.loadOpenStates("plangridState");
-            if ($("#gridbox").find(".rowselected").length >= 1) {
-                var scrolltop = $(".rowselected").offset().top;
-                $(window).scrollTop(scrolltop - 100);
-            }
-            else {
-            HomeGrid.objBox.scrollTop = scrollstate.y + 200;
-            }
-        }, 500);
+        
         LoadAfterParsing();
 
         if (parseInt('@countrows') > 0) {

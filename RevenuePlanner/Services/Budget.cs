@@ -795,7 +795,7 @@ namespace RevenuePlanner.Services
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
 
                     colType = colType + ",ed,ed,ed";
-                    width = width + ",130,130,130";
+                    width = width + ",140,140,140";
                     colSorting = colSorting + ",str,str,str";
                 }
             }
