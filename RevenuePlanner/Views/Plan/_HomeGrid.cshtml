@@ -36,15 +36,14 @@
 <script type="text/javascript">
     gridname = "home";
     var HomeGrid;
-
-    var tacticTypelistTest = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); 
-    var LineItemTypelistData = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.LineItemTypelist))');
+     
+    var tacticTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); 
+    var lineItemTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.LineItemTypelist))');
     var customfieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.CustomAttributOption))'); // added by devanshi
 
     var IslineItemDelete = false;
 
     var colSplitId = 0;
-
     var GridHiddenId = 0;
     var ActivitypeHidden = 0;
     var MachineNameHidden = 0;

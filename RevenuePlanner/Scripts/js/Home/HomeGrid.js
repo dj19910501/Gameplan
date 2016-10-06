@@ -415,29 +415,31 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     AssignParentIds(rowId);
     UpdateColumn = HomeGrid.getColumnId(Colind, 0);
     if (stage == 0) {
-        ///TODO : Uncomment After bunding Tactic/Line Item type Drop-down list
         if (Colind == TypeColIndex) {
                 var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
             if (updatetype.toLowerCase() == secLineItem) {                
                 var combo = HomeGrid.getCombo(cellInd);
-                var LineItemTypelist = LineItemTypelistTest;
                 combo.clear();
-                $.each(LineItemTypelist, function (i, item) {
+                if (lineItemTypefieldOptionList.length > 0) {
+                    $.each(lineItemTypefieldOptionList, function (i, item) {
                     combo.put(item.id, item.value);
                 });
             }
+            }
             else {               
                 var combo = HomeGrid.getCombo(cellInd);
-                var tacticTypelist1 = tacticTypelistTest;
+                //var tacticTypelist1 = TacticTypelistDataforGrid;
                 combo.clear();
-                $.each(tacticTypelist1, function (i, item) {
+                if (tacticTypefieldOptionList.length > 0) {
+                    $.each(tacticTypefieldOptionList, function (i, item) {
                     if (item.PlanId == _planid) {
                        combo.put(item.id, item.value);
                     }
                 });
             }
         }
-        var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+        }
+         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
             return false;
         if (rowId == "newRow_0")
@@ -622,7 +624,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             if (UpdateColumn == TacticTypeId && updatetype.toLowerCase() == secTactic.toLowerCase()) {                                
                 var tacticTypeId = nValue;
                 var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');
-                var arrTacTypes = tacticTypelistTest;
+                var arrTacTypes = tacticTypefieldOptionList;
                 var newAssetType = arrTacTypes.filter(function (v) {
                     return v.TacticTypeId == tacticTypeId;
                 });
