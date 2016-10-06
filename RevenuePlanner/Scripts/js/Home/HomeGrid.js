@@ -1381,7 +1381,7 @@ function ExportToExcel(isHoneyComb) {
     //end
 
 }
-\\function to get dependent custom field options for tactic
+//function to get dependent custom field options for tactic
 function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
 {
     var customoption = customfieldOptionList;
