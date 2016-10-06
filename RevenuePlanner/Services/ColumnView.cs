@@ -29,8 +29,7 @@ namespace RevenuePlanner.Services
             if (Connection.State == System.Data.ConnectionState.Closed)
                 Connection.Open();
             SqlCommand command = null;
-            try
-            {
+          
                 command = new SqlCommand("sp_GetCustomFieldList", Connection);
 
                 using (command)
@@ -42,9 +41,7 @@ namespace RevenuePlanner.Services
                     command.CommandTimeout = 0;
                     adp.Fill(CustomFieldList);
                     if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
-                }
-            }
-            catch { throw; }
+               
             return CustomFieldList;
         }
         #endregion
@@ -53,8 +50,7 @@ namespace RevenuePlanner.Services
         {
             int result = 0;
             string xmlElements = string.Empty;
-            try
-            {
+          
                 User_CoulmnView columnview = new User_CoulmnView();
                 //checks if columnview with the same view name already exists.
                 if (!string.IsNullOrEmpty(ViewName))
@@ -93,11 +89,7 @@ namespace RevenuePlanner.Services
                         result = AddNewColumnView(ViewName, Isgrid, UserId, xmlElements);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-            }
+            
             return result;
         }
 
@@ -110,8 +102,7 @@ namespace RevenuePlanner.Services
             string attributexml = string.Empty;
             List<string> SelectedCustomfieldID = new List<string>();
             IsSelectall = false; //to check if no particular view exist for user then select all the columns by default.
-            try
-            {
+           
                 User_CoulmnView userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
                 if (userview == null)
                 {
@@ -219,19 +210,14 @@ namespace RevenuePlanner.Services
                         EntityIsChecked = SelectedCustomfieldID.Contains(row) ? true : false
                     }).ToList();
                 }
-            }
-            catch
-            {
-                throw;
-            }
+          
             return allattributeList;
         }
 
         public int UpdateColumnView(User_CoulmnView columnview, bool Isgrid, int UserId, string xmlElements)
         {
             int result = 0;
-            try
-            {
+            
                 columnview.ModifyBy = UserId;
                 columnview.ModifyDate = DateTime.Now;
                 columnview.IsDefault = true;
@@ -242,11 +228,7 @@ namespace RevenuePlanner.Services
                 objDbMrpEntities.Entry(columnview).State = EntityState.Modified;
                 objDbMrpEntities.SaveChanges();
                 result = columnview.ViewId;
-            }
-            catch
-            {
-                throw;
-            }
+            
             return result;
         }
 
@@ -254,8 +236,7 @@ namespace RevenuePlanner.Services
         {
             User_CoulmnView columnview = new User_CoulmnView();
             int result = 0;
-            try
-            {
+          
                 columnview.ViewName = ViewName;
                 columnview.CreatedBy = UserId;
                 columnview.CreatedDate = DateTime.Now;
@@ -267,11 +248,7 @@ namespace RevenuePlanner.Services
                 objDbMrpEntities.Entry(columnview).State = EntityState.Added;
                 objDbMrpEntities.SaveChanges();
                 result = columnview.ViewId;
-            }
-            catch
-            {
-                throw;
-            }
+           
             return result;
         }
 
@@ -282,8 +259,7 @@ namespace RevenuePlanner.Services
         public List<AttributeDetail> UserSavedColumnAttribute(XDocument doc)
         {
             List<AttributeDetail> items = new List<AttributeDetail>();
-            try
-            {
+           
                 int colOrder = 0;
                 items = (from r in doc.Root.Elements("attribute")
                          select new AttributeDetail
@@ -293,19 +269,14 @@ namespace RevenuePlanner.Services
                              ColumnOrder = (string)r.Attribute("ColumnOrder")
                          }).OrderBy(col => int.TryParse(col.ColumnOrder, out colOrder))
                            .ToList();
-            }
-            catch
-            {
-                throw;
-            }
+          
             return items;
         }
 
         public List<CustomFieldOptionModel> GetCustomFiledOptionList(int clientID)
         {
             List<CustomFieldOptionModel> optionlist = new List<CustomFieldOptionModel>();
-            try
-            {
+           
                 DataTable dtColumnAttribute = GetCustomFieldList(clientID);
 
                 if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
@@ -334,11 +305,7 @@ namespace RevenuePlanner.Services
                             customFieldId = o.CustomFieldId
                         }).OrderBy(o => o.value).ToList();
                 }
-            }
-            catch
-            {
-                throw;
-            }
+           
             return optionlist;
         }
        
