@@ -193,7 +193,7 @@ function LoadAfterParsing() {
         setTimeout(function () {
             HomeGrid.saveOpenStates("plangridState");
         }, 1000);
-
+        LoadAfterParsing();
         var childItems = HomeGrid.getAllSubItems(rowid);
         if (childItems != undefined && childItems != null && childItems != "") {
             //childItems = childItems.split(',').filter(function (tac) {
@@ -498,7 +498,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
     if (stage == 2) {
 
-        if (nValue != null && nValue != "") {
+        if (nValue != null && nValue != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
             var NewValue = htmlDecode(nValue);
             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
             var oldAssetType = HomeGrid.cells(rowId, AssetTypeColIndex).getValue();

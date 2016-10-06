@@ -8761,38 +8761,11 @@ namespace RevenuePlanner.Controllers
                             {
                                 CustomField_Entity objcustomFieldEntity;                                
                                 foreach (var item in customFields)
-                                {                                    
-                                    objcustomFieldEntity = new CustomField_Entity();
-                                    objcustomFieldEntity.EntityId = id;
-                                    objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
-                                    if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
-                                    {
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
-                                    }
-                                    else
-                                    {
-                                        objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
-                                    }
-                                    objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                    objcustomFieldEntity.CreatedBy = Sessions.User.ID;
-                                    objcustomFieldEntity.Weightage = (byte)item.Weight;
-                                    objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
-                                    db.CustomField_Entity.Add(objcustomFieldEntity);
-                                }                                
-                            }
-
-                    if (linkedTacticId > 0)
-                            {
-                                List<CustomField_Entity> prevLinkCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == linkedTacticId && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList();
-                                prevLinkCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
-
-                                if (customFields.Count != 0)
                                 {
-                                    CustomField_Entity objcustomFieldEntity;
-                                    foreach (var item in customFields)
+                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "" && ColumnType.ToString().ToUpper() != Enums.ColumnType.ed.ToString().ToUpper())
                                     {
                                         objcustomFieldEntity = new CustomField_Entity();
-                                        objcustomFieldEntity.EntityId = linkedTacticId;
+                                        objcustomFieldEntity.EntityId = id;
                                         objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
                                         if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
                                         {
@@ -8807,6 +8780,39 @@ namespace RevenuePlanner.Controllers
                                         objcustomFieldEntity.Weightage = (byte)item.Weight;
                                         objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
                                         db.CustomField_Entity.Add(objcustomFieldEntity);
+                                    }
+                                }                                
+                            }
+
+                    if (linkedTacticId > 0)
+                            {
+                                List<CustomField_Entity> prevLinkCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == linkedTacticId && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList();
+                                prevLinkCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
+
+                                if (customFields.Count != 0)
+                                {
+                                    CustomField_Entity objcustomFieldEntity;
+                                    foreach (var item in customFields)
+                                    {
+                                        if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "")
+                                        {
+                                            objcustomFieldEntity = new CustomField_Entity();
+                                            objcustomFieldEntity.EntityId = linkedTacticId;
+                                            objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
+                                            if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                            {
+                                                objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                            }
+                                            else
+                                            {
+                                                objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
+                                            }
+                                            objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                            objcustomFieldEntity.CreatedBy = Sessions.User.ID;
+                                            objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                            objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+                                            db.CustomField_Entity.Add(objcustomFieldEntity);
+                                        }
                                     }
                                 }
                             }
@@ -9069,22 +9075,25 @@ namespace RevenuePlanner.Controllers
                                 CustomField_Entity objcustomFieldEntity;
                                 foreach (var item in customFields)
                                 {
-                                    objcustomFieldEntity = new CustomField_Entity();
-                                    objcustomFieldEntity.EntityId = id;
-                                    objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
-                                    if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "" && ColumnType.ToString().ToUpper() != Enums.ColumnType.ed.ToString().ToUpper())
                                     {
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                        objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = id;
+                                        objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
+                                        if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                        {
+                                            objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                        }
+                                        else
+                                        {
+                                            objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
+                                        }
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.ID;
+                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                        objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+                                        db.CustomField_Entity.Add(objcustomFieldEntity);
                                     }
-                                    else
-                                    {
-                                        objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
-                                    }
-                                    objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                    objcustomFieldEntity.CreatedBy = Sessions.User.ID;
-                                    objcustomFieldEntity.Weightage = (byte)item.Weight;
-                                    objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
-                                    db.CustomField_Entity.Add(objcustomFieldEntity);
                                 }
                             }
                             db.SaveChanges();
@@ -9174,22 +9183,25 @@ namespace RevenuePlanner.Controllers
                                 CustomField_Entity objcustomFieldEntity;
                                 foreach (var item in customFields)
                                 {
-                                    objcustomFieldEntity = new CustomField_Entity();
-                                    objcustomFieldEntity.EntityId = id;
-                                    objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
-                                    if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "" && ColumnType.ToString().ToUpper() != Enums.ColumnType.ed.ToString().ToUpper())
                                     {
-                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                        objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = id;
+                                        objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
+                                        if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                        {
+                                            objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                        }
+                                        else
+                                        {
+                                            objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
+                                        }
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.ID;
+                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
+                                        objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+                                        db.CustomField_Entity.Add(objcustomFieldEntity);
                                     }
-                                    else
-                                    {
-                                        objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
-                                    }
-                                    objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                    objcustomFieldEntity.CreatedBy = Sessions.User.ID;
-                                    objcustomFieldEntity.Weightage = (byte)item.Weight;
-                                    objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
-                                    db.CustomField_Entity.Add(objcustomFieldEntity);
                                 }
                             }
                             db.SaveChanges();
