@@ -18,10 +18,15 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class InspectControllerTest //: CommonController
     {
+        InspectController objInspectController;
         [TestInitialize]
         public void LoadCacheMessage()
         {
             HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            objInspectController = new InspectController();
+            objInspectController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objInspectController);
+            objInspectController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
         }
         #region Save Plan
         ///// <summary>
@@ -1182,191 +1187,347 @@ namespace RevenuePlanner.Test.Controllers
 
         #region Load Line Item Grid in Tactic Inspect Popup
         ///<summary>
-        /// To load monthly cost allocation in line item grid in inspecttion window
+        /// To load monthly cost allocation in line item grid in inspection window
         /// <author>Arpita Soni</author>
         /// <createdDate>09Jun2016</createdDate>
+        /// This test case execute "LoadLineItemTabFromTacticPopup" action in Inspect controller.
+        /// Test case with AllocatedBy - Months
         /// </summary>
         [TestMethod]
         public void LoadMonthlyCostAllocationInspectPopup()
         {
             Console.WriteLine("To load monthly cost allocation in line item grid in inspecttion window.\n");
             MRPEntities db = new MRPEntities();
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController controller = new InspectController();
-            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac.PlanTacticId).FirstOrDefault();
+            PartialViewResult result = null;
+
+            // Get tactic id
+            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(tac => tac.PlanTacticId).FirstOrDefault();
+
+            // Set Allcated By
             string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
-            var result = controller.LoadLineItemTabFromTacticPopup(tacticId, AllocatedBy, true) as PartialViewResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
-            Assert.AreEqual("_TacticLineItemListing", result.ViewName);
+
+            // Set permission for editable
+            bool IsPlanEditable = true;
+
+            // Execute actual controller function
+            result = objInspectController.LoadLineItemTabFromTacticPopup(tacticId, AllocatedBy, IsPlanEditable) as PartialViewResult;
+
+            // Verify result is null to check whether test case fail or not
+            Assert.IsNotNull(result.ViewName);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName : " + result.ViewName);
         }
 
         ///<summary>
-        /// To load quarterly cost allocation in line item grid in inspecttion window
+        /// To load quarterly cost allocation in line item grid in inspection window
         /// <author>Arpita Soni</author>
         /// <createdDate>09Jun2016</createdDate>
+        /// This test case execute "LoadLineItemTabFromTacticPopup" action in Inspect controller.
+        /// Test case with AllocatedBy - Quarters
         /// </summary>
         [TestMethod]
         public void LoadQuarterlyCostAllocationInspectPopup()
         {
             Console.WriteLine("To load quarterly cost allocation in line item grid in inspecttion window.\n");
             MRPEntities db = new MRPEntities();
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController controller = new InspectController();
-            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac.PlanTacticId).FirstOrDefault();
-            string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.quarters);
-            var result = controller.LoadLineItemTabFromTacticPopup(tacticId, AllocatedBy, true) as PartialViewResult;
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result.ViewName);
-            Assert.AreEqual("_TacticLineItemListing", result.ViewName);
+            PartialViewResult result = null;
+
+            // Get tactic id
+            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(tac => tac.PlanTacticId).FirstOrDefault();
+
+            // Set Allcated By
+            string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
+
+            // Set permission for editable
+            bool IsPlanEditable = true;
+
+            // Execute actual controller function
+            result = objInspectController.LoadLineItemTabFromTacticPopup(tacticId, AllocatedBy, IsPlanEditable) as PartialViewResult;
+
+            // Verify result is null to check whether test case fail or not
+            Assert.IsNotNull(result.ViewName);
+
+            // log resultset
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value ViewName : " + result.ViewName);
         }
 
         /// <summary>
         /// To save monthly tactic cost allocation 
+        /// <author>Arpita Soni</author>
+        /// This test case execute "SaveLineItemCostAllocation" action in Inspect controller.
+        /// Test case with AllocatedBy - Months
         /// </summary>
         [TestMethod]
         public void SaveMonthlyTacticCostAllocation()
         {
             Console.WriteLine("Test case to save monthly tactic cost allocation.\n");
             MRPEntities db = new MRPEntities();
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController controller = new InspectController();
-            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac).FirstOrDefault();
+
+            // Get tactic
+            Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(tac => tac).FirstOrDefault();
+            
             if (objTactic != null)
             {
+                // Set tactic id
+                string TacticId =Convert.ToString(objTactic.PlanTacticId);
+
+                // Set entity type
+                string EntityType = Convert.ToString(Enums.EntityType.Tactic);
+
+                // Set monthly period in which cost needs to be updated
                 string strPeriod = "JAN-" + Convert.ToString(objTactic.StartDate.Year);
-                JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(objTactic.PlanTacticId), Convert.ToString(Enums.EntityType.Tactic), strPeriod, 5000, Convert.ToString(Enums.BudgetTab.Planned), false, false) as JsonResult;
+
+                // Set value of the cost to update
+                double Cost = 5000;
+
+                // Set name of the tab (useful) in case of budget
+                string tab = Convert.ToString(Enums.BudgetTab.Planned);
+
+                // Set whether it is quarter view or not
+                bool IsQuarter = false;
+
+                // Set total planned cost edited or not
+                bool IsTotalCost = false;
+
+                // Execute actual controller function
+                JsonResult result = objInspectController.SaveLineItemCostAllocation(TacticId, EntityType, strPeriod, Cost, tab, IsQuarter, IsTotalCost) as JsonResult;
+
+                // Verify result is null to check whether test case fail or not
+                Assert.IsNotNull(result, "Success");
+                
+                // log resultset
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-                Assert.IsNotNull(result.Data);
-                RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
-                object resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", Convert.ToString(resultvalue), true);
             }
         }
 
         /// <summary>
         /// To save quarterly tactic cost allocation 
+        /// <author>Arpita Soni</author>
+        /// This test case execute "SaveLineItemCostAllocation" action in Inspect controller.
+        /// Test case with AllocatedBy - Quarters
         /// </summary>
         [TestMethod]
         public void SaveQuarterlyTacticCostAllocation()
         {
             Console.WriteLine("Test case to save quarterly tactic cost allocation.\n");
             MRPEntities db = new MRPEntities();
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController controller = new InspectController();
-            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac).FirstOrDefault();
+
+            // Get tactic
+            Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(tac => tac).FirstOrDefault();
+
             if (objTactic != null)
             {
+                // Set tactic id
+                string TacticId = Convert.ToString(objTactic.PlanTacticId);
+
+                // Set entity type
+                string EntityType = Convert.ToString(Enums.EntityType.Tactic);
+
+                // Set monthly period in which cost needs to be updated
                 string strPeriod = "Q1-" + Convert.ToString(objTactic.StartDate.Year);
-                JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(objTactic.PlanTacticId), Convert.ToString(Enums.EntityType.Tactic), strPeriod, 5000, Convert.ToString(Enums.BudgetTab.Planned), true, false) as JsonResult;
+
+                // Set value of the cost to update
+                double Cost = 5000;
+
+                // Set name of the tab (useful) in case of budget
+                string tab = Convert.ToString(Enums.BudgetTab.Planned);
+
+                // Set whether it is quarter view or not
+                bool IsQuarter = true;
+
+                // Set total planned cost edited or not
+                bool IsTotalCost = false;
+
+                // Execute actual controller function
+                JsonResult result = objInspectController.SaveLineItemCostAllocation(TacticId, EntityType, strPeriod, Cost, tab, IsQuarter, IsTotalCost) as JsonResult;
+
+                // Verify result is null to check whether test case fail or not
+                Assert.IsNotNull(result, "Success");
+
+                // log resultset
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-                Assert.IsNotNull(result.Data);
-                RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
-                object resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", Convert.ToString(resultvalue), true);
             }
         }
 
         /// <summary>
         /// To save monthly line item cost allocation 
+        /// <author>Arpita Soni</author>
+        /// This test case execute "SaveLineItemCostAllocation" action in Inspect controller.
+        /// Test case with AllocatedBy - Months
         /// </summary>
         [TestMethod]
         public void SaveMonthlyLineItemCostAllocation()
         {
             Console.WriteLine("Test case to save monthly line item cost allocation.\n");
             MRPEntities db = new MRPEntities();
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController controller = new InspectController();
-            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            Plan_Campaign_Program_Tactic_LineItem objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(line => line).FirstOrDefault();
+
+            // Get line item
+            Plan_Campaign_Program_Tactic_LineItem objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(line => line).FirstOrDefault();
+
             if (objLineItem != null)
             {
+                // Set tactic id
+                string LineItemId = Convert.ToString(objLineItem.PlanLineItemId);
+
+                // Set entity type
+                string EntityType = Convert.ToString(Enums.EntityType.Lineitem);
+
+                // Set monthly period in which cost needs to be updated
                 string strPeriod = "JAN-" + Convert.ToString(objLineItem.Plan_Campaign_Program_Tactic.StartDate.Year);
-                JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(objLineItem.PlanLineItemId), Convert.ToString(Enums.EntityType.Lineitem), strPeriod, 5000, Convert.ToString(Enums.BudgetTab.Planned), false, false) as JsonResult;
-                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-                Assert.IsNotNull(result.Data);
-                RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
-                object resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", Convert.ToString(resultvalue), true);
+
+                // Set value of the cost to update
+                double Cost = 5000;
+
+                // Set name of the tab (useful) in case of budget
+                string tab = Convert.ToString(Enums.BudgetTab.Planned);
+
+                // Set whether it is quarter view or not
+                bool IsQuarter = false;
+
+                // Set total planned cost edited or not
+                bool IsTotalCost = false;
+
+                // Execute actual controller function
+                JsonResult result = objInspectController.SaveLineItemCostAllocation(LineItemId, EntityType, strPeriod, Cost, tab, IsQuarter, IsTotalCost) as JsonResult;
+
+                // Verify result is null to check whether test case fail or not
+                Assert.IsNotNull(result, "Success");
+
+                // log resultset
+                Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);            
             }
         }
 
         /// <summary>
         /// To save quarterly line item cost allocation 
+        /// <author>Arpita Soni</author>
+        /// This test case execute "SaveLineItemCostAllocation" action in Inspect controller.
+        /// Test case with AllocatedBy - Quarters
         /// </summary>
         [TestMethod]
         public void SaveQuarterlyLineItemCostAllocation()
         {
             Console.WriteLine("Test case to save quarterly line item cost allocation.\n");
             MRPEntities db = new MRPEntities();
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController controller = new InspectController();
-            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            Plan_Campaign_Program_Tactic_LineItem objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(line => line).FirstOrDefault();
-            JsonResult result;
-            RouteValueDictionary serializedData = null;
+
+            // Get line item
+            Plan_Campaign_Program_Tactic_LineItem objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(line => line).FirstOrDefault();
+            
             if (objLineItem != null)
             {
+                // Set tactic id
+                string LineItemId = Convert.ToString(objLineItem.PlanLineItemId);
+
+                // Set entity type
+                string EntityType = Convert.ToString(Enums.EntityType.Lineitem);
+
+                // Set monthly period in which cost needs to be updated
                 string strPeriod = "Q1-" + Convert.ToString(objLineItem.Plan_Campaign_Program_Tactic.StartDate.Year);
-                result = controller.SaveLineItemCostAllocation(Convert.ToString(objLineItem.PlanLineItemId), Convert.ToString(Enums.EntityType.Lineitem), strPeriod, 5000, Convert.ToString(Enums.BudgetTab.Planned), true, false) as JsonResult;
+
+                // Set value of the cost to update
+                double Cost = 5000;
+
+                // Set name of the tab (useful) in case of budget
+                string tab = Convert.ToString(Enums.BudgetTab.Planned);
+
+                // Set whether it is quarter view or not
+                bool IsQuarter = true;
+
+                // Set total planned cost edited or not
+                bool IsTotalCost = false;
+
+                // Execute actual controller function
+                JsonResult result = objInspectController.SaveLineItemCostAllocation(LineItemId, EntityType, strPeriod, Cost, tab, IsQuarter, IsTotalCost) as JsonResult;
+
+                // Verify result is null to check whether test case fail or not
+                Assert.IsNotNull(result, "Success");
+
+                // log resultset
                 Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-                Assert.IsNotNull(result.Data);
-                serializedData = new RouteValueDictionary(result.Data);
-                object resultvalue = serializedData["isSuccess"];
-                Assert.AreEqual("true", Convert.ToString(resultvalue), true);
             }
         }
 
         /// <summary>
         /// To save total tactic cost allocation 
+        /// <author>Arpita Soni</author>
+        /// This test case execute "SaveLineItemCostAllocation" action in Inspect controller.
+        /// Test case with IsTotalCost - true
         /// </summary>
         [TestMethod]
         public void SaveTotalTacticCostAllocation()
         {
             Console.WriteLine("Test case to save quarterly tactic cost allocation.\n");
             MRPEntities db = new MRPEntities();
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController controller = new InspectController();
-            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac.PlanTacticId).FirstOrDefault();
+            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(tac => tac.PlanTacticId).FirstOrDefault();
 
-            JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(tacticId), Convert.ToString(Enums.EntityType.Tactic), null, 5000, Convert.ToString(Enums.BudgetTab.Planned), false, true) as JsonResult;
+            // Set entity type
+            string EntityType = Convert.ToString(Enums.EntityType.Tactic);
+
+            // Set monthly period 
+            string strPeriod = string.Empty;
+
+            // Set value of the cost to update
+            double Cost = 5000;
+
+            // Set name of the tab (useful) in case of budget
+            string tab = Convert.ToString(Enums.BudgetTab.Planned);
+
+            // Set whether it is quarter view or not
+            bool IsQuarter = false;
+
+            // Set total planned cost edited or not
+            bool IsTotalCost = true;
+
+            // Execute actual controller function
+            JsonResult result = objInspectController.SaveLineItemCostAllocation(Convert.ToString(tacticId), EntityType, strPeriod, Cost, tab, IsQuarter, IsTotalCost) as JsonResult;
+            
+            // Verify result is null to check whether test case fail or not
+            Assert.IsNotNull(result, "Success");
+
+            // log resultset
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-            Assert.IsNotNull(result.Data);
-            RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
-            object resultvalue = serializedData["isSuccess"];
-            Assert.AreEqual("true", Convert.ToString(resultvalue), true);
         }
 
         /// <summary>
         /// To save monthly line item cost allocation 
+        /// <author>Arpita Soni</author>
+        /// This test case execute "SaveLineItemCostAllocation" action in Inspect controller.
+        /// Test case with IsTotalCost - true
         /// </summary>
         [TestMethod]
         public void SaveTotalLineItemCostAllocation()
         {
             Console.WriteLine("Test case to save monthly line item cost allocation.\n");
             MRPEntities db = new MRPEntities();
-            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            InspectController controller = new InspectController();
-            int UserId = ((RevenuePlanner.BDSService.User)(System.Web.HttpContext.Current.Session["User"])).ID;
-            int lineItemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(UserId)).
-                            Select(tac => tac.PlanTacticId).FirstOrDefault();
+            int lineItemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(tac => tac.PlanTacticId).FirstOrDefault();
 
-            JsonResult result = controller.SaveLineItemCostAllocation(Convert.ToString(lineItemId), Convert.ToString(Enums.EntityType.Lineitem), null, 5000, Convert.ToString(Enums.BudgetTab.Planned), false, true) as JsonResult;
+            // Set entity type
+            string EntityType = Convert.ToString(Enums.EntityType.Lineitem);
+
+            // Set monthly period 
+            string strPeriod = string.Empty;
+
+            // Set value of the cost to update
+            double Cost = 5000;
+
+            // Set name of the tab (useful) in case of budget
+            string tab = Convert.ToString(Enums.BudgetTab.Planned);
+
+            // Set whether it is quarter view or not
+            bool IsQuarter = false;
+
+            // Set total planned cost edited or not
+            bool IsTotalCost = true;
+
+            // Execute actual controller function
+            JsonResult result = objInspectController.SaveLineItemCostAllocation(Convert.ToString(lineItemId), EntityType, strPeriod, Cost, tab, IsQuarter, IsTotalCost) as JsonResult;
+
+            // Verify result is null to check whether test case fail or not
+            Assert.IsNotNull(result, "Success");
+
+            // log resultset
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result : " + result);
-            Assert.IsNotNull(result.Data);
-            RouteValueDictionary serializedData = new RouteValueDictionary(result.Data);
-            object resultvalue = serializedData["isSuccess"];
-            Assert.AreEqual("true", Convert.ToString(resultvalue), true);
         }
         #endregion
 
