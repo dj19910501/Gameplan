@@ -228,7 +228,7 @@ namespace RevenuePlanner.Services
 
             // Generate Hierarchy of Plan grid
             List<PlanDHTMLXGridDataModel> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
-                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate))
+                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist))
                      .ToList();
 
             objPlanMainDHTMLXGrid.head = ListOfDefaultColumnHeader;
@@ -369,7 +369,7 @@ namespace RevenuePlanner.Services
 
             // Generate Hierarchy of Plan grid
             List<PlanDHTMLXGridDataModel> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
-                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate))
+                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist))
                      .ToList();
 
             objPlanMainDHTMLXGrid.head = ListOfDefaultColumnHeader;
@@ -409,7 +409,8 @@ namespace RevenuePlanner.Services
             EntityCustomDataValues = data.CustomFieldValues.ToPivotList(item => item.CustomFieldId,
                      item => item.UniqueId,
                         items => items.Max(a => a.Text)
-                        , selectedCustomColumns)
+                        , selectedCustomColumns
+                        , data.CustomFields)
                         .ToList();
 
             // Create empty list of custom field values for entity where there is no any custom fields value on entity
@@ -419,8 +420,8 @@ namespace RevenuePlanner.Services
                 lstCustomPlanData.Add(new Plandataobj
                 {
                     value = string.Empty,
-                    locked = objHomeGridProp.lockedstatezero,
-                    style = objHomeGridProp.stylecolorblack
+                    locked = objHomeGridProp.lockedstateone,
+                    style = objHomeGridProp.stylecolorgray
                 });
             });
             EmptyCustomValues = lstCustomPlanData;
@@ -910,7 +911,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Generate items for hierarchy 
         /// </summary>
-        PlanDHTMLXGridDataModel CreateItemGrid(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate)
+        PlanDHTMLXGridDataModel CreateItemGrid(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist)
         {
             Planuserdatagrid objUserData = new Planuserdatagrid();
             List<PlanDHTMLXGridDataModel> children = new List<PlanDHTMLXGridDataModel>();
@@ -921,7 +922,7 @@ namespace RevenuePlanner.Services
 
                 // Call recursive if any other child entity
                 children = lstChildren
-                .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate)).ToList();
+                .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist)).ToList();
 
                 EntitydataobjItem = new List<Plandataobj>();
 
@@ -929,9 +930,34 @@ namespace RevenuePlanner.Services
                 List<Plandataobj> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId == (Row.EntityType + "_" + Row.EntityId))
                                            .Select(a => a.CustomFieldData).FirstOrDefault();
 
+                if (Row.EntityType == "Plan")
+                {
+
+                }
                 if (lstCustomfieldData == null)
                 {
-                    lstCustomfieldData = EmptyCustomValues;
+                    List<Plandataobj> ItemEmptylist = new List<Plandataobj>();
+                    List<string> EntityCustomFields = CustomFieldData.CustomFields.Where(a => a.EntityType.ToLower() == Row.EntityType.ToLower()).Select(a => a.CustomFieldId.ToString()).ToList();
+                    List<int> Colindexes = customColumnslist.Select((s, k) => new { Str = s, Index = k })
+                                                .Where(x => EntityCustomFields.Contains(x.Str))
+                                                .Select(x => x.Index).ToList();
+                    for (int j = 0; j < EmptyCustomValues.Count; j++)
+                    {
+                        if (Colindexes.Contains(j))
+                        {
+                            ItemEmptylist.Add(new Plandataobj { value = string.Empty, locked = objHomeGridProp.lockedstatezero, style = objHomeGridProp.stylecolorblack });
+                        }
+                        else
+                        {
+                            ItemEmptylist.Add(EmptyCustomValues[j]);
+                        }
+                    }
+                    //Colindexes.ForEach(a =>
+                    //    {
+                    //        ItemEmptylist[a].locked = objHomeGridProp.lockedstatezero;
+                    //        ItemEmptylist[a].style = objHomeGridProp.stylecolorblack;
+                    //    });
+                    lstCustomfieldData = ItemEmptylist;
                 }
 
                 // Set the values of row
@@ -2081,7 +2107,8 @@ namespace RevenuePlanner.Services
         Func<T, TColumn> columnSelector,
         Expression<Func<T, TRow>> rowSelector,
         Func<IEnumerable<T>, TData> dataSelector,
-         List<string> selectedColumns
+         List<string> selectedColumns,
+            List<GridCustomFields> CustomFields
             )
         {
 
@@ -2112,7 +2139,7 @@ namespace RevenuePlanner.Services
                 {
                     var items = row.Values.Cast<object>().ToList();
                     items.Insert(0, row.Key);
-                    CustomfieldPivotData obj = GetAnonymousObject(cols, items);
+                    CustomfieldPivotData obj = GetAnonymousObject(cols, items, CustomFields);
                     arr.Add(obj);
                 }
             }
@@ -2124,11 +2151,23 @@ namespace RevenuePlanner.Services
         /// get values for pivoting entities
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static dynamic GetAnonymousObject(IEnumerable<string> columns, IEnumerable<object> values)
+        private static dynamic GetAnonymousObject(IEnumerable<string> columns, IEnumerable<object> values, List<GridCustomFields> CustomFields)
         {
             CustomfieldPivotData objCustomPivotData = new CustomfieldPivotData();
             List<Plandataobj> lstCustomFieldData = new List<Plandataobj>();
             int i;
+            string EntityType = string.Empty;
+            string lockedval = string.Empty;
+            string styleval = string.Empty;
+
+            if (values != null)
+            {
+                EntityType = Convert.ToString(values.ElementAt<object>(0)).Split('_')[0];
+            }
+            List<string> EntityCustomFields = CustomFields.Where(a => a.EntityType.ToLower() == EntityType.ToLower()).Select(a => a.CustomFieldId.ToString()).ToList();
+            IEnumerable<int> Colindexes = columns.Select((s, k) => new { Str = s, Index = k })
+                                        .Where(x => EntityCustomFields.Contains(x.Str))
+                                        .Select(x => x.Index);
             for (i = 0; i < columns.Count(); i++)
             {
                 if (i == 0)
@@ -2146,12 +2185,23 @@ namespace RevenuePlanner.Services
                             DataValue = Convert.ToString(values.ElementAt<object>(i));
                         }
                     }
+                    if (Colindexes.Contains(i))
+                    {
+                        lockedval = objHomeGrid.lockedstatezero;
+                        styleval = objHomeGrid.stylecolorblack;
+                    }
+                    else
+                    {
+                        lockedval = objHomeGrid.lockedstateone;
+                        styleval = objHomeGrid.stylecolorgray;
+                        DataValue = string.Empty;
+                    }
                     lstCustomFieldData.Add(
                         new Plandataobj
                         {
-                            locked = objHomeGrid.lockedstatezero,
+                            locked = lockedval,
                             value = DataValue,
-                            style = objHomeGrid.stylecolorblack
+                            style = styleval
                         });
                 }
             }
