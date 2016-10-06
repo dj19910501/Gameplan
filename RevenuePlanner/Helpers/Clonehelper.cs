@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Web;
 using RevenuePlanner.Models;
 using Elmah;
+using RevenuePlanner.Services;
 
 namespace RevenuePlanner.Helpers
 {
@@ -13,6 +14,8 @@ namespace RevenuePlanner.Helpers
     {
         #region Variables
         private string PeriodChar = "Y";
+        IPlanTactic objPlanTactic = new PlanTactic();
+
         #endregion
         public MRPEntities db = new MRPEntities();
 
@@ -812,66 +815,8 @@ namespace RevenuePlanner.Helpers
                         db.SaveChanges();
 
                     }
-                    //#2538 Clone issue with 0 cost create other line item
-                    #region "Add tactic cost value"
-                    Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == objPlanCampaignProgramTacticLineItem.PlanTacticId).FirstOrDefault();    //objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic;
-                    int startmonth = objTactic.StartDate.Month;
-
-                    List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                    // Modified By Nishant Sheth
-                    // #2538 Not get deleted line items from table
-                    tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId
-                        && lineItem.IsDeleted == false).ToList();
-                    List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItemsrc = tblTacticLineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId
-                                ).ToList();
-
-
-                    List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCostsrc = tblTacticLineItemsrc.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
-                    var lineitemidlistsrc = objtotalLineitemCostsrc.Select(lineitem => lineitem.PlanLineItemId).ToList();
-                    List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlistsrc = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => lineitemidlistsrc.Contains(lic.PlanLineItemId)).ToList();
-
-
-                    List<Plan_Campaign_Program_Tactic_Cost> tacticostslist = objTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
-                    double tacticost = tacticostslist.Sum(ta => ta.Value);
-                    double lineItemtotalCost = lineitemcostlistsrc.Sum(line => line.Value);
-                    if (tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
-                    {
-                        var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
-
-                        if (lineItemtotalCost > tacticost)
-                        {
-                            tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = lineItemtotalCost;
-                            // Add By Nishant sheth
-                            // #2538 : Modfied tactic cost entity values
-                            tacticostslist.ForEach(a =>
-                            {
-                                db.Entry(a).State = EntityState.Modified;
-                            });
-                            if (objTactic.Cost < lineItemtotalCost)
-                            {
-                                objTactic.Cost = objTactic.Cost + (lineItemtotalCost - tacticmonthcost);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //double tacticlineitemcostmonth = lineitemcostlistsrc.Where(lineitem => lineitem.PlanLineItemId != ID && lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value) + lCost;
-                        Plan_Campaign_Program_Tactic_Cost objtacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                        objtacticCost.PlanTacticId = objTactic.PlanTacticId;
-                        objtacticCost.Period = PeriodChar + startmonth;
-                        objtacticCost.Value = lineItemtotalCost;
-                        objtacticCost.CreatedBy = Sessions.User.ID;
-                        objtacticCost.CreatedDate = DateTime.Now;
-                        db.Entry(objtacticCost).State = EntityState.Added;
-                        objTactic.Cost = objTactic.Cost + lineItemtotalCost;
-                    }
-
-                    #endregion
-
-                    db.Entry(objTactic).State = EntityState.Modified;
-                    int result = db.SaveChanges();
-                    //CostCalculacation(TacticId);
-                    Common.InsertChangeLog(planid, null, returnFlag, objPlanCampaignProgramTacticLineItem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added, "", objPlanCampaignProgramTacticLineItem.CreatedBy);
+                    // Added by Arpita Soni for Ticket #2634 - line item cost allocation
+                    objPlanTactic.UpdateBalanceLineItemCost(TacticId);
                 }
 
                 return returnFlag;
