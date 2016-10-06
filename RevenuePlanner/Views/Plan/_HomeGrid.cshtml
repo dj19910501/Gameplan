@@ -116,7 +116,6 @@
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
         HomeGrid.attachEvent("onDistributedEnd", function () {
-            HomeGrid.loadOpenStates("plangridState");
             LoadAfterParsing();
             if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
                 HomeGrid.showRow(HomeGrid.getRowId(state0));
@@ -129,10 +128,7 @@
                 }
             }
 
-            if ($("#gridbox").find(".rowselected").length >= 1) {
-                var scrolltop = $(".rowselected").offset().top;
-                $(window).scrollTop(scrolltop - 100);
-            }
+            
         });
 
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
@@ -151,7 +147,13 @@
         
         setTimeout(function () {
             HomeGrid.loadOpenStates("plangridState");
+            if ($("#gridbox").find(".rowselected").length >= 1) {
+                var scrolltop = $(".rowselected").offset().top;
+                $(window).scrollTop(scrolltop - 100);
+            }
+            else {
             HomeGrid.objBox.scrollTop = scrollstate.y + 150;
+            }
         }, 500);
         LoadAfterParsing();
 

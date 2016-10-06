@@ -129,9 +129,11 @@
                     gridSearchFlag = 1;
                     DisplayEditablePopup(id, type);
                 });
-                //setTimeout(function () {
-                //    HomeGrid.saveOpenStates("plangridState");
-                //}, 500);
+                isCopyTacticHomeGrid = 0;
+                isEditTacticHomeGrid = 0;
+                setTimeout(function () {
+                    HomeGrid.saveOpenStates("plangridState");
+                }, 500);
             });
             var machineNameindex = HomeGrid.getColIndexById("MachineName");
             var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
@@ -158,13 +160,20 @@
                     }
                 }
             }
+           
             //setTimeout(function () {
-            //    HomeGrid.loadOpenStates("plangridState");
-            //    HomeGrid.objBox.scrollTop = scrollstate.y + 150;
-            //}, 1000);
+            //    HomeGrid.setSizes();
+            //}, 200);
             setTimeout(function () {
-                HomeGrid.setSizes();
-            }, 200);
+                HomeGrid.loadOpenStates("plangridState");
+                if ($("#gridbox").find(".rowselected").length >= 1) {
+                    var scrolltop = $(".rowselected").offset().top;
+                    $(window).scrollTop(scrolltop - 100);
+                }
+                else {
+                    HomeGrid.objBox.scrollTop = scrollstate.y + 150;
+                }
+            }, 500);
             LoadAfterParsing();
             var rowCount = HomeGrid.getRowsNum();
             if (rowCount != undefined && rowCount == 0) {
@@ -187,10 +196,7 @@ function LoadAfterParsing() {
     }
     eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
     SetselectedRow();
-    if ($("#gridbox").find(".rowselected").length >= 1) {
-        var scrolltop = $(".rowselected").offset().top;
-        $(window).scrollTop(scrolltop - 150);
-    }
+   
 }
 
 function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {

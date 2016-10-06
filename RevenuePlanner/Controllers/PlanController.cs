@@ -12574,7 +12574,34 @@ namespace RevenuePlanner.Controllers
             return PartialView("~/Views/Budget/Budget.cshtml", budgetModel);
 
         }
-
-
+        /// <summary>
+        /// Method to get dependant custom field option for plan grid
+        /// Added by : devanshi
+        /// </summary>
+        /// <param name="customfieldId"></param>
+        /// <param name="entityid"></param>
+        /// <param name="parentoptionId"></param>
+        /// <returns></returns>
+        public JsonResult GetdependantOptionlist(int customfieldId, int entityid, List<int> parentoptionId)
+        {
+            List<CustomField_Entity> entitycustomfieldvalue = db.CustomField_Entity.Where(a => a.EntityId == entityid).ToList();
+            List<CustomFieldDependency> dependancy = db.CustomFieldDependencies.Where(a=>a.ChildCustomFieldId==customfieldId).ToList();
+            List<Options> CustomFieldOptionList = new List<Options>();
+            if (entitycustomfieldvalue != null && parentoptionId != null && parentoptionId.Count > 0)
+            {
+                foreach (int parentoptid in parentoptionId)
+                {
+                    var isexist = entitycustomfieldvalue.Where(a => a.Value == Convert.ToString(parentoptid)).Any();
+                    if(isexist)
+                    {
+                        CustomFieldOptionList.AddRange(dependancy.Where(a => a.ParentOptionId == parentoptid).Select(a => new Options
+                        {
+                            value = a.CustomFieldOption.Value
+                        }).ToList());
+                    }
+                }
+            }
+            return Json(new { optionlist = CustomFieldOptionList }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

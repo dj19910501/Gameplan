@@ -437,6 +437,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 });
             }
         }
+        var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+        if ((locked != null && locked != "") && locked == "1")
+            return false;
+        if (rowId == "newRow_0")
+            return false;
         //added by devanshi #2598
         var customcolId = HomeGrid.getColumnId(cellInd);
         if (customcolId.indexOf("custom_") >= 0) {
@@ -444,31 +449,13 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             var id = iddetail.split(':')[0];
             var clistitem = [];            
             var type = HomeGrid.getColType(cellInd);
+            var entityid=HomeGrid.cells(rowId, GridHiddenId).getValue();
             if (type == "clist") {
-                var customoption = customfieldOptionList;
-                function filterbyname(obj) {
-                    if (obj.customFieldId == id)
-                        return true;
-                    else
-                        return false;
-                }
-                if (customoption != null && customoption != undefined && customoption != "") {
-                d = customoption.filter(filterbyname);
-                $.each(d, function (i, item) {
-                    clistitem.push(item.value);
-                });
-                HomeGrid.registerCList(cellInd, clistitem);
-            }
-                else {
-                    return false;
-                }                
-            }
+              
+                    GetCustomfieldOptionlist(id, entityid, cellInd);
+             
+           }
         }
-        var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
-        if ((locked != null && locked != "") && locked == "1")
-            return false;
-        if (rowId == "newRow_0")
-            return false;
     }
     if (stage == 1) {
         if (updatetype == secLineItem.toLowerCase()) {
@@ -1394,4 +1381,61 @@ function ExportToExcel(isHoneyComb) {
     //end
 
 }
+\\function to get dependent custom field options for tactic
+function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
+{
+    var customoption = customfieldOptionList;
+    var optionlist;
+    var clistitem = [];
+    function filterbyparent(obj) {
+        if (obj.customFieldId == customFieldId && obj.ParentOptionId!=null && obj.ParentOptionId.length>0)
+            return true;
+        else
+            return false;
+    }
+    d = customoption.filter(filterbyparent);
+    
+    if(d!=null && d.length>0)
+    {
+        var parentoptid = d[0].ParentOptionId;
+        //ajax call
+        $.ajax({
+            url: urlContent + 'Plan/GetdependantOptionlist/',
+            traditional: true,
+            data: {
+                customfieldId: customFieldId,
+                entityid: entityid,
+                parentoptionId: (parentoptid)
+            },
+            success: function (data) {
+                if (data != null && data.optionlist != null && data.optionlist.length>0)
+                    optionlist = data.optionlist;
+                if (optionlist != null && optionlist.length > 0) {
+                    $.each(optionlist, function (i, item) {
+                        clistitem.push(item.value);
+                    });
+                    HomeGrid.registerCList(cellInd, clistitem);
+                }
+                else
+                    return false;
+                }
+        });
+    }
+    else {
+        function filterbyId(obj) {
+            if (obj.customFieldId == customFieldId)
+                return true;
+            else
+                return false;
+        }
+        optionlist = customoption.filter(filterbyId);
+        $.each(optionlist, function (i, item) {
+            clistitem.push(item.value);
+        });
+        HomeGrid.registerCList(cellInd, clistitem);
+    }
+   
+       
+    
 
+}
