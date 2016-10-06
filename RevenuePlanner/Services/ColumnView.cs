@@ -41,7 +41,7 @@ namespace RevenuePlanner.Services
                     command.CommandTimeout = 0;
                     adp.Fill(CustomFieldList);
                     if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
-               
+                }
             return CustomFieldList;
         }
         #endregion
