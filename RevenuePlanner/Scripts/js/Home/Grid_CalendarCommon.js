@@ -336,6 +336,13 @@ function DisplayPopup(item) {
     gridSearchFlag = 1;
     DisplayEditablePopup(id, type);
 }
+function DisplayPopupforBudget(item) {
+    inspectCloseFocus = $(item).position().top;
+    var id = $(item).parent().parent().find('td:first').html();
+    var type = $(item).attr('id');
+    gridSearchFlag = 1;
+    DisplayEditablePopup(id, type);
+}
 
 function DisplayPopUpMenu(obj, e) {
     gridSearchFlag = 1;

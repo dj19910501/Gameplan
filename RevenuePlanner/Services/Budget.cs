@@ -380,7 +380,7 @@ namespace RevenuePlanner.Services
             if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityPlan.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=Plan title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=Plan onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -398,7 +398,7 @@ namespace RevenuePlanner.Services
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityCampaign.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=CP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=CP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -416,7 +416,7 @@ namespace RevenuePlanner.Services
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityProgram.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=PP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=PP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -438,7 +438,7 @@ namespace RevenuePlanner.Services
                 string LinkedTacticId = Entity.LinkTacticId == 0 ? "null" : Entity.LinkTacticId.ToString();
 
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=TP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=TP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -458,7 +458,7 @@ namespace RevenuePlanner.Services
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityLineItem.ToLower() && Entity.LineItemTypeId != null)
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=LP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=LP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)

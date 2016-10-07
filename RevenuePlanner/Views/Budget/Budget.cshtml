@@ -14,6 +14,7 @@
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
 @*Added Following js and css for fileuload control*@
 <script src="@Url.Content("~/Scripts/js/fileinput.js")"></script>
+<script src="@Url.Content("~/Scripts/js/Home/Grid_CalendarCommon.js")"></script>
 @Styles.Render("~/Content/css/GetCSSBudget")
 <div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
 @*Insertation start for #2623 popup for import multiple plan*@
@@ -122,14 +123,6 @@
             HomeGrid.splitAt(colSplitId);
 
             HomeGrid.attachEvent("onOpenEnd", function (id, state) {
-                $(".grid_Search").off("click");
-                $(".grid_Search").click(function (e) {
-                    inspectCloseFocus = $(this).position().top;
-                    var id = $(this).parent().parent().find('td:first').html();
-                    var type = $(this).attr('id');
-                    gridSearchFlag = 1;
-                    DisplayEditablePopup(id, type);
-                });
                 isCopyTacticHomeGrid = 0;
                 isEditTacticHomeGrid = 0;
                 setTimeout(function () {
@@ -538,15 +531,6 @@ function SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost) {
     });
 }
 
-$(".grid_Search").off("click");
-$(".grid_Search").click(function (e) {
-    inspectCloseFocus = $(this).position().top;
-    var EntityIdWithSection = $(this).parent().parent().find('td:first').html();
-    var id = EntityIdWithSection[0];
-    var type = $(this).attr('id');
-    gridSearchFlag = 1;
-    DisplayEditablePopup(id, type);
-});
 function showModal() {
     LoadFileInputModelBox();
     $('#ImportModal').modal('show');
