@@ -929,84 +929,84 @@ namespace RevenuePlanner.Services
                     if (i == 1)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jan) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Jan < Entity.ChildMonthValues.Jan ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style =  !isLineItem && Entity.MonthValues.Jan < Entity.ChildMonthValues.Jan ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan);
                     }
                     else if (i == 2)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Feb) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Feb < Entity.ChildMonthValues.Feb ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Feb < Entity.ChildMonthValues.Feb? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CFeb);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AFeb);
                     }
                     else if (i == 3)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Mar) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Mar < Entity.ChildMonthValues.Mar ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Mar < Entity.ChildMonthValues.Mar? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CMar);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AMar);
                     }
                     else if (i == 4)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Apr) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Apr < Entity.ChildMonthValues.Apr ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Apr < Entity.ChildMonthValues.Apr? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CApr);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AApr);
                     }
                     else if (i == 5)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.May) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.May < Entity.ChildMonthValues.May ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.May < Entity.ChildMonthValues.May? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CMay);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AMay);
                     }
                     else if (i == 6)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jun) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Jun < Entity.ChildMonthValues.Jun ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jun < Entity.ChildMonthValues.Jun? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CJun);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AJun);
                     }
                     else if (i == 7)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jul) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Jul < Entity.ChildMonthValues.Jul ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jul < Entity.ChildMonthValues.Jul? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CJul);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AJul);
                     }
                     else if (i == 8)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Aug) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Aug < Entity.ChildMonthValues.Aug ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Aug < Entity.ChildMonthValues.Aug? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CAug);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AAug);
                     }
                     else if (i == 9)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Sep) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Sep < Entity.ChildMonthValues.Sep ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Sep < Entity.ChildMonthValues.Sep? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CSep);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ASep);
                     }
                     else if (i == 10)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Oct) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Oct < Entity.ChildMonthValues.Oct ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Oct < Entity.ChildMonthValues.Oct? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.COct);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AOct);
                     }
                     else if (i == 11)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Nov) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Nov < Entity.ChildMonthValues.Nov ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Nov < Entity.ChildMonthValues.Nov? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CNov);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ANov);
                     }
                     else if (i == 12)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Dec) : ThreeDash;
-                        objBudgetMonth.style = Entity.MonthValues.Dec < Entity.ChildMonthValues.Dec ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Dec < Entity.ChildMonthValues.Dec ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CDec);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ADec);
                     }
