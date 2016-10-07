@@ -357,7 +357,7 @@ function SetColumUpdatedValue(CellInd, diff) {
 }
 
 
-function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {   
+function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     updatetype = HomeGrid.cells(rowId, ActivitypeHidden).getValue();
     var Id;
     var UpdateColumn;
@@ -471,9 +471,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     if (stage == 2) {
 
         if (nValue != null && nValue != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
+            var oldAssetType = '';
             var NewValue = htmlDecode(nValue);
             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
-            var oldAssetType = HomeGrid.cells(rowId, AssetTypeColIndex).getValue();
+            if (AssetTypeColIndex != undefined) {
+                oldAssetType = HomeGrid.cells(rowId, AssetTypeColIndex).getValue();
+            }
             if (UpdateColumn == "" || UpdateColumn == null)
                 UpdateColumn = HomeGrid.getColumnId(Colind, 0);
             if (UpdateColumn == TaskNameId) {
@@ -1340,7 +1343,7 @@ function ExportToExcel(isHoneyComb) {
 }
 //function to get dependent custom field options for tactic
 function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
-{
+{    
     var customoption = customfieldOptionList;
     var optionlist;
     var clistitem = [];
