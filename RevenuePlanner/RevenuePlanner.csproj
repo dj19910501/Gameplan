@@ -571,10 +571,12 @@
     <Content Include="Content\images\meter-icon.png" />
     <Content Include="Content\images\modal-flag.png" />
     <Content Include="Content\images\mrp-logo.png" />
+    <Content Include="Content\images\orange-corner-budget.png" />
     <Content Include="Content\images\owner.png" />
     <Content Include="Content\images\photo-user.jpg" />
     <Content Include="Content\images\plan-icon.png" />
     <Content Include="Content\images\r.png" />
+    <Content Include="Content\images\red-corner-budget.png" />
     <Content Include="Content\images\Remove-icon-blue.png" />
     <Content Include="Content\images\Remove-icon-hover.png" />
     <Content Include="Content\images\Remove-icon-white.png" />
