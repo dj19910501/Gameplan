@@ -187,6 +187,8 @@ namespace RevenuePlanner.Services
                 GridHireachyData = FilterCustomField(GridHireachyData, customFieldIds);
             }
 
+            //set owner name 
+            GridHireachyData =  SetOwnerName(GridHireachyData);
 
             // Update Plan Start and end date
             GridHireachyData = UpdatePlanStartEndDate(GridHireachyData);
@@ -1587,6 +1589,7 @@ namespace RevenuePlanner.Services
             objres.UniqueId = GetvalueFromObject(RowData, "UniqueId");
             objres.ParentUniqueId = GetvalueFromObject(RowData, "ParentUniqueId");
             objres.EntityType = GetvalueFromObject(RowData, "EntityType");
+            objres.OwnerName = GetvalueFromObject(RowData, "OwnerName");
 
             Int64.TryParse(GetvalueFromObject(RowData, "ParentEntityId"), out ParentEntityId);
             objres.ParentEntityId = ParentEntityId;
@@ -1721,7 +1724,7 @@ namespace RevenuePlanner.Services
 
             string addColumn = @" <div class=grid_Search id=Plan onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" +
                 grid_add
-                + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Select' id=Plan TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.Owner)
+                + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Select' id=Plan TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.OwnerName)
                 + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode + "' altId=" + Row.TaskId
                 + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>";
             return addColumn;
@@ -1742,7 +1745,7 @@ namespace RevenuePlanner.Services
             string addColumn = @" <div class=grid_Search id=CP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add
                 + "<div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '"
-                + Convert.ToString(Row.Owner) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;"))
+                + Convert.ToString(Row.OwnerName) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;"))
                 + "' altId=" + Row.TaskId + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + "' taskId= " + Row.EntityId + " csvId=Campaign_" + Row.EntityId + "></div>";
             return addColumn;
         }
@@ -1760,7 +1763,7 @@ namespace RevenuePlanner.Services
             }
             string addColumn = @" <div class=grid_Search id=PP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add
-                + " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.Owner)
+                + " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.OwnerName)
                 + "'  TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "'  altId= " + Row.TaskId +
                 " per=" + Row.IsCreatePermission.ToString().ToLower() + "'  taskId= " + Row.EntityId + " csvId=Program_" + Row.EntityId + "></div>";
             return addColumn;
@@ -1782,7 +1785,7 @@ namespace RevenuePlanner.Services
                 + grid_add
                 + " <div class=honeycombbox-icon-gantt id=Tactic onclick=javascript:AddRemoveEntity(this)  title = 'Select' anchortacticid='" + Row.AnchorTacticID + "' roitactictype='" + Row.AssetType
                 + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode
-                + "'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.Owner) + "' altId=" + Row.TaskId
+                + "'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.OwnerName) + "' altId=" + Row.TaskId
                 + " per=" + Row.IsCreatePermission.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>";
             return addColumn;
         }
@@ -1863,6 +1866,32 @@ namespace RevenuePlanner.Services
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return resultData;
+        }
+
+       
+        // Desc: Set Owner Name  of entity
+        public List<GridDefaultModel> SetOwnerName(List<GridDefaultModel> lstGridDataModel)
+        {
+            #region "Get OwnerName"
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            Dictionary<int, User> lstUsersData = new Dictionary<int, BDSService.User>();
+            objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ForEach(u => lstUsersData.Add(u.ID, u)); // Get User list by Client ID.
+        #endregion
+
+            #region "Set Owner Name "
+            KeyValuePair<int, User> usr;
+            foreach (GridDefaultModel data in lstGridDataModel)
+            {
+                #region "Set Owner Name"
+                usr = lstUsersData.Where(u => data.Owner.HasValue && u.Key == data.Owner.Value).FirstOrDefault();
+                if (usr.Value != null)
+                    data.OwnerName = string.Format("{0} {1}", Convert.ToString(usr.Value.FirstName), Convert.ToString(usr.Value.LastName)); // Set Owner Name in format like: 'FirstName LastName'
+                #endregion
+             
+            }
+            #endregion
+
+            return lstGridDataModel;
         }
 
         #endregion

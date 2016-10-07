@@ -899,7 +899,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         }
                     });
                 }
-                if (cellInd == 1) {
+                if (cellInd == 3) {
                     if (value != undefined && value != "undefined" && value != null && value.trim() != '') {
                         HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
                     }
@@ -913,7 +913,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 });
                 return true;
             }
-            if (cellInd == 1) {
+            if (cellInd == 3) {
                 if (value != undefined && value != "undefined" && value != null) {
                     HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
                 }

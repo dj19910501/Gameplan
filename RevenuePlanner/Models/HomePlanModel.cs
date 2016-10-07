@@ -412,6 +412,9 @@ namespace RevenuePlanner.Models
         public string ParentTaskId { get; set; }
         public string UniqueId { get; set; }
         public string ParentUniqueId { get; set; }
+
+        public string OwnerName { get; set; }
+
         public string EntityType { get; set; }
         private Int64? _ParentEntityId;
         public Nullable<Int64> ParentEntityId
@@ -723,6 +726,8 @@ namespace RevenuePlanner.Models
         }
         public string PackageTacticIds { get; set; }
         public string PlanYear { get; set; }
+
+        public string OwnerName { get; set; }
 
         //Permission variables
         public bool IsCreatePermission { get; set; }

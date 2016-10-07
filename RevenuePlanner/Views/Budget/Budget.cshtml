@@ -198,15 +198,33 @@ function LoadAfterParsing() {
    
 }
 
+var value;
+var TacticName;
 function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     if (stage == 0) { // Stage == 0 Means Click on Cell
-
+        var newvalue = HomeGrid.cells(rowId, cellInd).getValue();
+        if (newvalue.indexOf("</div>") > -1) {
+            if (newvalue.split("</div>").length > 2) {
+                value = newvalue.split("</div>")[0] + '</div>' + newvalue.split("</div>")[1];
+                TacticName = newvalue.split("</div>")[2];
+            }
+            else {
+                value = newvalue.split("</div>")[0];
+                TacticName = newvalue.split("</div>")[1];
+            }
+        }
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
             return false;
         if (rowId == "newRow_0")
             return false;
     }
+    else {
+        if (nValue != undefined) {
+            TacticName = nValue;
+        }
+    }
+
     //if (stage == 1) { } // Stage == 1 - Means Perform Event on Cell -  Keydown, etc. This is currently not used but if required we can use this flag.
     if (stage == 2) { // Stage == 2 - Means perform focus out event
         var EntityId = HomeGrid.cells(rowId, 0).cell.innerText;
@@ -313,6 +331,16 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 SetActualCost(rowId, cellInd, nValue, oValue);
             }
         }
+        if (cellInd == 5) {
+            if (value != undefined && value != "undefined" && value != null) {
+                HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
+            }
+            else {
+                HomeGrid.cells(rowId, cellInd).setValue(TacticName);
+            }
+        }
+        value = "";
+
         return true;
     }
 }
