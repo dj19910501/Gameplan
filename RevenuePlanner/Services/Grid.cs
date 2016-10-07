@@ -612,7 +612,7 @@ namespace RevenuePlanner.Services
 
             lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost), new PlanHead
             {
-                type = "ed",
+                type = "edn",
                 align = "center",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost),
                 sort = "int",
