@@ -74,6 +74,7 @@ namespace RevenuePlanner.Test.MockHelpers
             string password = Convert.ToString(ConfigurationManager.AppSettings["Password"]);
             Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
             string singlehash = DataHelper.ComputeSingleHash(password);
+            double DefaultPlanExchangeRate = 1;
 
 
             HttpContext.Current = MockHelpers.FakeHttpContext();
@@ -81,7 +82,6 @@ namespace RevenuePlanner.Test.MockHelpers
             HttpContext.Current.Session["User"] = objBDSServiceClient.ValidateUser(applicationId, userName, singlehash);
 
             HttpContext.Current.Session["Permission"] = objBDSServiceClient.GetPermission(applicationId, ((RevenuePlanner.BDSService.User)(HttpContext.Current.Session["User"])).RoleId);
-
 
             Message msg = new Message();
             var xmlMsgFilePath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath");
@@ -119,6 +119,17 @@ namespace RevenuePlanner.Test.MockHelpers
             return db.Budget_Detail.Where(p => p.IsDeleted == false).Select(p => p.Id).FirstOrDefault();
         }
 
+
+        /// <summary>
+        /// Get single published plan id.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetMultiYearPlanId()
+        {
+            return db.Plan_Campaign.Where(c => (c.EndDate.Year - c.StartDate.Year) > 0 && c.IsDeleted==false && c.Plan.IsDeleted==false).Select(c => c.PlanId).FirstOrDefault();
+            //return db.Plans.Where(p => p.IsDeleted == false && p.Plan_Campaign.Where(c=>(c.EndDate.Year- c.StartDate.Year)>0)).Select(p => p.PlanId).FirstOrDefault();
+        }
+
         /// <summary>
         /// Get Budget parent id with pass BudgetDetailId
         /// </summary>
@@ -150,6 +161,17 @@ namespace RevenuePlanner.Test.MockHelpers
         {
             string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
             return Convert.ToString(db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published).Select(p => p.Year).FirstOrDefault());
+        }
+
+        /// <summary>
+        /// Get Plan Year by plan id
+        /// </summary>
+        /// <returns>plan year e.g. 2015</returns>
+        /// 
+        public static string GetPlanYear(int planId)
+        {
+            string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
+            return Convert.ToString(db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published && p.PlanId==planId).Select(p => p.Year).FirstOrDefault());
         }
 
         /// <summary>

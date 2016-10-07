@@ -1620,6 +1620,11 @@ namespace RevenuePlanner.Services
             return model;
         }
 
+        /// <summary>
+        /// Added by Mitesh Vaishnav For PL ticket 2642
+        /// </summary>
+        /// <param name="Year">Timeframe year e.g. 2015-2016</param>
+        /// <returns> This function returns first year from passed timeframe</returns>
         private string GetInitialYearFromTimeFrame(string Year)
         {
             if (!string.IsNullOrEmpty(Year))

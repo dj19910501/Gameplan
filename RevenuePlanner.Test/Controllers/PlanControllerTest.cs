@@ -20,10 +20,15 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class PlanControllerTest
     {
+        PlanController objPlanController = new PlanController();
         [TestInitialize]
         public void LoadCacheMessage()
         {
             HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
         }
         // Test Methods according to Old UI
         #region PL #975 Plans need to be able to have a goal of 0
@@ -2086,9 +2091,6 @@ namespace RevenuePlanner.Test.Controllers
             var routes = new RouteCollection();
             Console.WriteLine("Get Budget Allocation.\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objPlanController.Url = new UrlHelper(
             new RequestContext(
@@ -2097,10 +2099,18 @@ namespace RevenuePlanner.Test.Controllers
             routes
             );
             int PlanId = DataHelper.GetPlanId();
-            var result = objPlanController.GetBudgetData(PlanId.ToString(), string.Empty, string.Empty, string.Empty, string.Empty) as PartialViewResult;
+            string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(PlanId));
+            int ModelId = DataHelper.GetPlanModelId(PlanId);
+            List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
+            string TacticTypeIds = string.Join(",", lstTacticTypeIds);
+            List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
+            string StatusIds = string.Join(",", lstStatus);
+            string PlanYear=DataHelper.GetPlanYear(PlanId);
+            string viewby = PlanGanttTypes.Tactic.ToString();
+            var result = objPlanController.GetBudgetData(PlanId.ToString(),viewby,OwnerIds,TacticTypeIds,StatusIds,string.Empty,PlanYear) as PartialViewResult;
 
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
             Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
 
         }
 
@@ -2115,9 +2125,6 @@ namespace RevenuePlanner.Test.Controllers
             var routes = new RouteCollection();
             Console.WriteLine("Get Monthly Budget Allocation .\n");
             MRPEntities db = new MRPEntities();
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController objPlanController = new PlanController();
-            objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
             objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             objPlanController.Url = new UrlHelper(
             new RequestContext(
@@ -2126,15 +2133,60 @@ namespace RevenuePlanner.Test.Controllers
             routes
             );
             int PlanId = DataHelper.GetPlanId();
+            string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(PlanId));
+            int ModelId = DataHelper.GetPlanModelId(PlanId);
+            List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
+            string TacticTypeIds = string.Join(",", lstTacticTypeIds);
+            List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
+            string StatusIds = string.Join(",", lstStatus);
+            string viewby = PlanGanttTypes.Tactic.ToString();
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
             string monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
-            var result = objPlanController.GetBudgetData(PlanId.ToString(), string.Empty, string.Empty, string.Empty, monthText) as PartialViewResult;
+            var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, monthText) as PartialViewResult;
 
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
             Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
+
+        }
+
+        /// <summary>
+        /// To get budget allocated data
+        /// <author>Mitesh Vaishnav</author>
+        /// <createddate>22Sept2016</createddate>
+        /// </summary>
+        [TestMethod]
+        public void Get_Budget_Allocation_Multiyear()
+        {
+            var routes = new RouteCollection();
+            Console.WriteLine("Get multiyear Budget Allocation .\n");
+            MRPEntities db = new MRPEntities();
+            objPlanController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
+            objPlanController.Url = new UrlHelper(
+            new RequestContext(
+            objPlanController.HttpContext, new RouteData()
+            ),
+            routes
+            );
+            int PlanId = DataHelper.GetMultiYearPlanId();
+            string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(PlanId));
+            int ModelId = DataHelper.GetPlanModelId(PlanId);
+            List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
+            string TacticTypeIds = string.Join(",", lstTacticTypeIds);
+            List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
+            string StatusIds = string.Join(",", lstStatus);
+            string viewby = PlanGanttTypes.Tactic.ToString();
+            string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
+            string PlanYear = DataHelper.GetPlanYear(PlanId);
+            string NextYear =Convert.ToString(Convert.ToInt32(PlanYear) + 1);
+            var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, PlanYear+"-"+NextYear) as PartialViewResult;
+
+            Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
 
         }
         #endregion
+
+
 
         #region "Import data for plan budget"
         /// <summary>
