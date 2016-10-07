@@ -1248,7 +1248,7 @@ function ExportToExcel(isHoneyComb) {
             });
         }
         //save users current strate of tree
-        HomeGrid.saveOpenStates();
+        HomeGrid.saveOpenStates("plangridState");
         HomeGrid.expandAll();
         //Show/Hide columns as per export requirements
         HomeGrid.setColumnHidden(iconColumnIndex, true);

@@ -2778,7 +2778,9 @@ function CallPdfHoneyComb() {
 
         $.each($('#divCustomFieldsFilter').find('.dropdown-section'), function () {
 
-            var headertitle = $(this).find("h2 span").text();
+            //var headertitle = $(this).find("h2 span").text();
+            //Added by kausha to resolved issue of feedpoint #2592
+            var headertitle = $(this).find("h2 span.sidebar_label").text() + " " + $(this).find("h2 span.filter-count").text();
             var innerfiltervalue = "";
 
             Parentid = this.id;
