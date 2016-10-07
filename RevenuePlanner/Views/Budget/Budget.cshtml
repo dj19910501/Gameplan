@@ -187,6 +187,9 @@
             $('#exp-serach').hide();
             $('#divgridview').html('<div id="NodatawithfilterBudget"><span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span><br/></div>');
         }
+        if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+            GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
+        }
     });
 
 function LoadAfterParsing() {

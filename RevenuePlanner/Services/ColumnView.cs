@@ -175,7 +175,7 @@ namespace RevenuePlanner.Services
                         CustomAttribute revenuefield = new CustomAttribute
                          {
                              EntityType = "Common",
-                             CustomFieldId = Convert.ToString(Enums.PlanGoalType.Revenue).ToLower(),
+                             CustomFieldId = Convert.ToString(Enums.PlanGoalType.Revenue),
                              CutomfieldName = Convert.ToString(Enums.PlanGoalType.Revenue),
                              ParentID = 0
                          };

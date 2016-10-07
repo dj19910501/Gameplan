@@ -37,7 +37,6 @@ $('#btngridcalendar').click(function () {
     RemoveAllHoneyCombData();
     RefershPlanHeaderCalc();
     ShowhideDataonGridCalendar();
-    GlobalSearch();
 });
 //load context from calendar to grid:Context management #2677
 function SetcookieforSaveState()
@@ -75,7 +74,11 @@ function ShowhideDataonGridCalendar() {
         $('#btngridcalendar').addClass('P-icon-active');
     }
     $('#divgridview').removeClass('budget-grid');
-   // $('#txtGlobalSearch').val('');
+    $('#txtGlobalSearch').val('');
+    if ($('#ExpClose').css('display') == 'block') {
+        $('#ExpClose').css('display', 'none');
+        $('#ExpSearch').css('display', 'block');
+    }
     IsBudgetGrid = false;
     $('#ImportBtn').parent().removeClass('round-corner');
     $('#ImportBtn').hide();
@@ -87,6 +90,7 @@ $('#btnbudget').click(function () {
     BindUpcomingActivites(filters.PlanIDs.toString())
     //cleare success msg as we want to hide import msg on click of grid or calendar
     $('#SuccessMsg').css('display', 'none');
+    $('#errorMsg').css('display', 'none');
     if ($('#errorMsg').css('display') == 'block') {
         $('#errorMsg').css('display', 'none');
     }
@@ -103,7 +107,6 @@ $('#btnbudget').click(function () {
     RemoveAllHoneyCombData();
     LoadBudgetGrid();
     ShowHideDataonBudgetScreen();
-    GlobalSearch();
 
 });
 
@@ -1430,7 +1433,7 @@ $(".searchDropdown li a").click(function () {
     if ($('#btnbudget').hasClass('P-icon-active')) {
         LoadBudgetGrid();
     }
-    else if($('#btngridcalendar').addClass('P-icon-active'))
+    else if ($('#btngridcalendar').addClass('P-icon-active') && isCalendarView==true)
     {
         BindPlanCalendar();
     }
@@ -1484,7 +1487,7 @@ var SearchTextforcal = ""
 function GlobalSearch() {
     var SearchText = $('#txtGlobalSearch').val();
    // if (SearchText != "" && SearchText != 'undefined') {
-    if ($('#IsGridView').val() == 'True' || IsBudgetGrid) {
+    if ($('#IsGridView').val().toLowerCase() == 'true' || IsBudgetGrid) {
 
         var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
         GlobalSearchonGrid(SearchText, SearchDDLValue);
@@ -1530,7 +1533,7 @@ function GlobalSearch() {
 
             if ($('#txtGlobalSearch').val().length > 0) {
                 SearchTextforcal = $('#txtGlobalSearch').val().trim();
-                $('#txtGlobalSearch').val("");
+                 $('#txtGlobalSearch').val("");
                 GlobalSearch();
                 $('#txtGlobalSearch').val(SearchTextforcal);
                 $('#SuccessMsg').css('display', 'none');

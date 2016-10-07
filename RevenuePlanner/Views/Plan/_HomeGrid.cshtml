@@ -160,7 +160,7 @@
                 else {
                     HomeGrid.objBox.scrollTop = scrollstate.y + 100;
                 }
-            }, 250);
+            }, 500);
         }
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
         
@@ -178,6 +178,7 @@
                 AddBlankRow();
                 $("#gridbox").show();
                 $("#goalwrapper").show();
+                $('#ExpClose').css('display', 'none');
                 $("#NodatawithfilterGrid").hide();
             }
             else {

@@ -72,6 +72,7 @@ var viewBy = $('#ddlTabViewBy').val();
             } else {
                 $('#NodatawithfilterCalendar').show();
                 $('#ChangeView').hide();
+                $('#ExpClose').css('display', 'none');
             }
 
         }
