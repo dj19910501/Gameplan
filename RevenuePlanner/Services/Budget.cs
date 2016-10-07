@@ -46,7 +46,7 @@ namespace RevenuePlanner.Services
         public const string ColActual = "Actual";
         public const string ColPlanned = "Planned";
         public const string NotEditableCellStyle = "color:#a2a2a2 !important;";
-        public const string RedCornerStyle="background: rgba(0, 0, 0, 0) url(../content/images/red-corner-budget.png) no-repeat scroll right top;";
+        public const string RedCornerStyle = "background: rgba(0, 0, 0, 0) url(../content/images/red-corner-budget.png) no-repeat scroll right top;";
         public const string OrangeCornerStyle = "background: rgba(0, 0, 0, 0) url(../content/images/orange-corner-budget.png) no-repeat scroll right top;";
         public const string ThreeDash = "---";
         public bool isMultiYear = false;
@@ -296,7 +296,7 @@ namespace RevenuePlanner.Services
             List<Budgetdataobj> BudgetDataObjList = new List<Budgetdataobj>();
             Budgetdataobj BudgetDataObj = new Budgetdataobj();
             string Roistring = string.Empty;
-	        var PackageTacticIds = Entity.CalendarHoneycombpackageIDs;
+            var PackageTacticIds = Entity.CalendarHoneycombpackageIDs;
             BudgetDataObj.value = Entity.Id;
             BudgetDataObjList.Add(BudgetDataObj);
 
@@ -321,11 +321,11 @@ namespace RevenuePlanner.Services
             //Add title of plan entity into dhtmlx model
 
             if (Entity.AnchorTacticID != null && Entity.AnchorTacticID > 0 && !string.IsNullOrEmpty(Entity.Id) && Convert.ToString(Entity.AnchorTacticID) == Entity.Id)
-                {
-                    // Get list of package tactic ids
-                     Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
-                    //Roistring = "<div class=package-icon package-icon-grid style=cursor:pointer title=Package id=pkgIcon onclick=OpenHoneyComb(this) pkgtacids=" + PackageTacticIds + "><i class=fa fa-object-group></i></div>";
-                    BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring).Replace("'", "&#39;") + HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;");
+            {
+                // Get list of package tactic ids
+                Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
+                //Roistring = "<div class=package-icon package-icon-grid style=cursor:pointer title=Package id=pkgIcon onclick=OpenHoneyComb(this) pkgtacids=" + PackageTacticIds + "><i class=fa fa-object-group></i></div>";
+                BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring).Replace("'", "&#39;") + HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;");
             }
             else
             {
@@ -380,7 +380,7 @@ namespace RevenuePlanner.Services
             if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityPlan.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=Plan onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=Plan title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -398,7 +398,7 @@ namespace RevenuePlanner.Services
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityCampaign.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=CP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=CP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -416,7 +416,7 @@ namespace RevenuePlanner.Services
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityProgram.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=PP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=PP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -438,7 +438,7 @@ namespace RevenuePlanner.Services
                 string LinkedTacticId = Entity.LinkTacticId == 0 ? "null" : Entity.LinkTacticId.ToString();
 
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=TP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=TP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -458,7 +458,7 @@ namespace RevenuePlanner.Services
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityLineItem.ToLower() && Entity.LineItemTypeId != null)
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=LP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=LP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -517,7 +517,7 @@ namespace RevenuePlanner.Services
             objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;
             return objBudgetDHTMLXGrid;
         }
-        private List< BudgetDHTMLXGridDataModel> GenerateHierarchy(List<PlanBudgetModel> model, int UserID, int ClientId, string Year, string AllocatedBy, bool isViewBy, string ParentId = "")
+        private List<BudgetDHTMLXGridDataModel> GenerateHierarchy(List<PlanBudgetModel> model, int UserID, int ClientId, string Year, string AllocatedBy, bool isViewBy, string ParentId = "")
         {
             List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
             BudgetDHTMLXGridDataModel gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
@@ -929,77 +929,77 @@ namespace RevenuePlanner.Services
                     if (i == 1)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jan) : ThreeDash;
-                        objBudgetMonth.style =  !isLineItem && Entity.MonthValues.Jan < Entity.ChildMonthValues.Jan ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jan < Entity.ChildMonthValues.Jan ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan);
                     }
                     else if (i == 2)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Feb) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Feb < Entity.ChildMonthValues.Feb? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Feb < Entity.ChildMonthValues.Feb ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CFeb);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AFeb);
                     }
                     else if (i == 3)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Mar) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Mar < Entity.ChildMonthValues.Mar? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Mar < Entity.ChildMonthValues.Mar ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CMar);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AMar);
                     }
                     else if (i == 4)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Apr) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Apr < Entity.ChildMonthValues.Apr? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Apr < Entity.ChildMonthValues.Apr ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CApr);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AApr);
                     }
                     else if (i == 5)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.May) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.May < Entity.ChildMonthValues.May? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.May < Entity.ChildMonthValues.May ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CMay);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AMay);
                     }
                     else if (i == 6)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jun) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jun < Entity.ChildMonthValues.Jun? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jun < Entity.ChildMonthValues.Jun ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CJun);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AJun);
                     }
                     else if (i == 7)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jul) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jul < Entity.ChildMonthValues.Jul? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jul < Entity.ChildMonthValues.Jul ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CJul);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AJul);
                     }
                     else if (i == 8)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Aug) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Aug < Entity.ChildMonthValues.Aug? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Aug < Entity.ChildMonthValues.Aug ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CAug);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AAug);
                     }
                     else if (i == 9)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Sep) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Sep < Entity.ChildMonthValues.Sep? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Sep < Entity.ChildMonthValues.Sep ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CSep);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ASep);
                     }
                     else if (i == 10)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Oct) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Oct < Entity.ChildMonthValues.Oct? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Oct < Entity.ChildMonthValues.Oct ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.COct);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AOct);
                     }
                     else if (i == 11)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Nov) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Nov < Entity.ChildMonthValues.Nov? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Nov < Entity.ChildMonthValues.Nov ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CNov);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ANov);
                     }
@@ -1054,7 +1054,7 @@ namespace RevenuePlanner.Services
                     if (i == 1)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jan + Entity.MonthValues.Feb + Entity.MonthValues.Mar) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.Jan + Entity.ChildMonthValues.Feb + Entity.ChildMonthValues.Mar) ? objBudgetMonth.style+OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.Jan + Entity.ChildMonthValues.Feb + Entity.ChildMonthValues.Mar) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan + Entity.MonthValues.CFeb + Entity.MonthValues.CMar);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan + Entity.MonthValues.AFeb + Entity.MonthValues.AMar);
 
@@ -1529,7 +1529,7 @@ namespace RevenuePlanner.Services
                 parent.Nov = l.MonthValues.Nov;
                 parent.Dec = l.MonthValues.Dec;
 
-                childBudget.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Jan )) ?? 0;
+                childBudget.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Jan)) ?? 0;
                 childBudget.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Feb)) ?? 0;
                 childBudget.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Mar)) ?? 0;
                 childBudget.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Apr)) ?? 0;
