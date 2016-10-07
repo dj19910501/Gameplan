@@ -1357,7 +1357,11 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
     
     if(d!=null && d.length>0)
     {
-        var parentoptid = d[0].ParentOptionId;
+        var parentoptid = [];
+        $.each(d, function (i, item) {
+            if (parentoptid.indexOf(item.ParentOptionId[0]) < 0)
+                parentoptid.push(item.ParentOptionId[0]);
+        });
         //ajax call
         $.ajax({
             url: urlContent + 'Plan/GetdependantOptionlist/',

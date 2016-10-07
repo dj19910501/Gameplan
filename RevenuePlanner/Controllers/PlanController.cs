@@ -1772,7 +1772,7 @@ namespace RevenuePlanner.Controllers
                 int returnValue = db.SaveChanges();
                 Common.InsertChangeLog(Sessions.PlanId, 0, Sessions.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.published, "", plan.CreatedBy);
                 ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
-                return Json(new { activeMenu = Enums.ActiveMenu.Plan.ToString(), currentPlanId = Sessions.PlanId }, JsonRequestBehavior.AllowGet);
+                return Json(new { activeMenu = Enums.ActiveMenu.Plan.ToString(), currentPlanId = Sessions.PlanId, succmsg=Common.objCached.ModelPublishSuccess }, JsonRequestBehavior.AllowGet);
             }
             catch
             {
@@ -12601,7 +12601,7 @@ namespace RevenuePlanner.Controllers
                     var isexist = entitycustomfieldvalue.Where(a => a.Value == Convert.ToString(parentoptid)).Any();
                     if(isexist)
                     {
-                        CustomFieldOptionList.AddRange(dependancy.Where(a => a.ParentOptionId == parentoptid).Select(a => new Options
+                        CustomFieldOptionList.AddRange(dependancy.Where(a => a.ParentOptionId == parentoptid && a.IsDeleted==false).Select(a => new Options
                         {
                             value = a.CustomFieldOption.Value
                         }).ToList());
