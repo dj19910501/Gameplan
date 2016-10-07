@@ -107,7 +107,7 @@ a:hover, a:focus {
 	min-width: 1280px; /* Edited for #2219 - Bhumika - bgcolor removed */
 }
 .midl-wrap { /* Class Added for #2219 - Bhumika */
-	/*display: table;*/ display: block;
+	display: table; /*display: block;*/
 	height: 100%;
 }
 /* 27-10-2015 for ticket 1713 by bheru start*/
@@ -116,8 +116,9 @@ a:hover, a:focus {
 	max-width: 280px;
 	height: 100%; /* Edited for #2219 - Bhumika */
 	vertical-align: top;
-	float: left;/*float: none;
-    display: table-cell;*/
+	/*float: left;*/
+    float: none;
+    display: table-cell;
 }
 .WelcomeMessageBorder {
 	border-bottom: 2px solid #cecece;
@@ -133,7 +134,9 @@ a:hover, a:focus {
 	vertical-align: top;
 	border-left: 1px solid #ccc;
 	border-bottom: 1px solid #ccc;
-	float: left;/*display: table-cell;*/
+	/*float: left;*/
+    float: none;
+    display: table-cell;
 }
 /* 27-10-2015 for ticket 1713 by bheru start*/
 #header .title {
@@ -7203,7 +7206,7 @@ li.close-list {
 }
 .NoDataFound {
 	border-top: 1px solid grey;
-	padding-top: 10px;
+	padding-top: 18px;/* Changed from 10px*/
 	padding-left: 30px;
 	font-size: 20px;
 }
@@ -12556,7 +12559,8 @@ a:focus, a:hover {
 /* Breadcrum For custome report page style  #2264 */
 .breadcrum-wrap {
 	float: left;
-	margin-left: 15px;
+	/*margin-left: 15px;*/
+    margin-left: 32px;
 }
 .breadcrum-wrap .breadcrumb {
 	font-size: inherit;
@@ -13485,6 +13489,68 @@ input.serach-input {
     }
 
  #planHeader > div:nth-child(2){margin-left:0 !important}
+
+
+ /*  New style added according to StyleIndexpage CSS to match design with new Homepage */
+ #sidebar {
+	vertical-align: top;
+	width: 280px;
+	border-right: 1px solid #ccc;
+    height: 100%;
+	/*bottom: 0;
+    top:0;
+	padding-top: 120px;	
+	position: absolute;*/
+	/*overflow-x:hidden;*/
+	/*overflow-y: auto;*/
+	transition: width 0.1s ease-in-out 0.1s;
+	background: #f0f0f0;
+}
+#content_wraper {
+	background: #fff none repeat scroll 0 0;
+	border-bottom: 0 solid #ccc;
+	border-left: 0 none;
+	/*display: inline-block;*/
+	/*float: left;*/
+    /*margin: 0 0 0 280px;*/
+	height: 100% !important;	
+    margin:0;
+	min-height: 300px;
+	vertical-align: top;
+	width: calc(100% - 281px);
+	transition: margin 0.1s ease-in-out 0.1s;
+}
+.sidebar-toogle {
+	left: 279px;
+    padding: 5px 0;
+    position: absolute;
+    top: 108px;
+}
+.sidebar-toogle a.sidebar-filter-icon {
+	background: #89cede none repeat scroll 0 0;
+	border-radius: 0 4px 4px 0;
+	color: #fff;
+	font-size: 25px;
+	padding: 4px 8px;
+	position: absolute;
+	right: -37px;
+	top: 8px;
+}
+/* When hide sidebar below styles applied */
+#sidebar.slideLeft {
+	width: 0 !important;   
+}
+#content_wraper.slideLeft {
+	margin-left: 0 !important;
+	width: 100% !important;
+}
+.slideLeft #divsidebartoggle.padding-content{padding:0 !important}
+.slideLeft .sidebar-toogle{left: 0;}
+
+/* ******************** */
+
+
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
@@ -15120,8 +15186,8 @@ tbody.column2 {
 /*End by Mukesh CSS 28-9-2015*/
 
 }
-/*End by Device 320 Mukesh 25-9-2015*/
-/************************************************ Responsive css End here **********************************************************/
+/* End by Device 320 Mukesh 25-9-2015 */
+/* *********************************************** Responsive css End here ********************************************************* */
 /* TO over write Plugin css which are run by bundling */
 .ui-multiselect-filter input[type="search"] {
 	height: auto;

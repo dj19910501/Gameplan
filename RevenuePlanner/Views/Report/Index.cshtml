@@ -80,7 +80,9 @@
 
 
 </style>
-
+<div class="sidebar-toogle">
+    <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true" title="Show/Hide Filters"></i></a>
+</div>
 @section Sidebar
 {
 @*modified by Rahul Shah for Pl #1837*@
@@ -108,11 +110,13 @@
 </div>
     @*Add By Nishant Sheth 
     // Desc :: #1958 Add hide icon to hide side bar*@
-<div class="padding-content padding-bottom0 sidebar-toogle-wrapper" id="divsidebartoggle">
-    <div class="sidebar-toogle">
+@*<div class="padding-content padding-bottom0 sidebar-toogle-wrapper" id="divsidebartoggle">*@
+    @*<div class="sidebar-toogle">
         <a href="#">&nbsp;<span><< hide</span></a>
-    </div>
-</div>
+    </div>*@
+@*</div>*@
+    
+
     <div class="padding-content padding-bottom0 sidebar-toogle-wrapper" id="btnreportSection">
 
         <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
@@ -1473,7 +1477,8 @@
 
                     if (data.ViewName != null && data.ViewName != "" && data.ViewName != undefined) {
                         $("#content_SaveFilters").css("display", "none");
-                        $('#divsidebartoggle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
+                        //$('#divsidebartoggle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
+                        $('.sidebar-toogle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
                         $("#btnreportSection").css("display", "block");
                         $("#Filtersidebar").css("display", "block");
                         $("#errorMessageMainSidebar").css("display", "none");
@@ -3419,7 +3424,7 @@
         }
         else {
             $("#content_SaveFilters").css("display", "block");
-            $('#divsidebartoggle').css('display', 'none');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
+            $('.sidebar-toogle').css('display', 'none');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
             $("#btnreportSection").css("display", "none");
             $("#Filtersidebar").css("display", "none");
 
@@ -3470,11 +3475,11 @@
                 if (data != null) {
                     $('#DefaultFilters').css('display', 'block');
                     $('#DefaultFilters').html(data);
-                    $('#divsidebartoggle').css('display', 'none');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
+                    $('.sidebar-toogle').css('display', 'none');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
                 }
                 else {
                     $('#DefaultFilters').css('display', 'none');
-                    $('#divsidebartoggle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
+                    $('.sidebar-toogle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
                 }
 
 
@@ -3483,7 +3488,7 @@
         });
         $("#successMessageSidebar").css("display", "none");
         $("#DefaultFilters").css("display", "block");
-        $('#divsidebartoggle').css('display', 'none');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
+        $('.sidebar-toogle').css('display', 'none');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
         $("#btnreportSection").css("display", "none");
         $("#Filtersidebar").css("display", "none");
         //  $("#displaydata").css("display", "none");
@@ -3523,30 +3528,28 @@
         $("#successMessageLoadPreset").css("display", "none");
         $("#content_SaveFilters").css("display", "none");
         $("#DefaultFilters").css("display", "none");
-        $('#divsidebartoggle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
+        $('.sidebar-toogle').css('display', 'block');//Add By nishant sheth // Desc :: To hide toggle button for preset save filter view
         $("#btnreportSection").css("display", "block");
         $("#Filtersidebar").css("display", "block");
     }
     //Add By Nishant Sheth
     //// Desc :: #1958 Add hide icon to hide side bar
-    $('.sidebar-toogle a').toggle(
 
-function () {
-    $('#sidebar').css({
-        'position': 'relative',
-        'left': 'auto',
-        'width': '50px',
-        'background': 'transparent',
-
+    $('.sidebar-toogle a').click(function () {
+        $("#sidebar").toggleClass("slideLeft");
+        $("#content_wraper").toggleClass("slideLeft");
     });
+    $('.sidebar-toogle a').toggle(function () {
+    
     $(".sidebar-toogle-wrapper h4.text-shadow-black").css("display", "none");
     $(".sidebar-section").css("display", "none");
-    $('.sidebar-toogle a').html(">>").css('letter-spacing', '-1px');
-
+   // $('.sidebar-toogle a').html(">>").css('letter-spacing', '-1px');
+    
     $(".wraper-btns").css("display", "none");
-    $("#content_wraper").css('width', 'calc(100% - 52px)'); // #2331 issue
-    $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
-    $('.sidebar-toogle').css('border-bottom-width', '0');
+    $("#btnreportSection").css("display", "none");
+    //$("#content_wraper").css('width', 'calc(100% - 52px)'); // #2331 issue
+   // $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
+   // $('.sidebar-toogle').css('border-bottom-width', '0');
     ///Add By Nishant Sheth
     // Desc :: To handle the gridview resize with hide toggle button #1958
     var ganttwidth = $("#gridbox").width();
@@ -3572,20 +3575,15 @@ function () {
     });
 
 }, function () {
-    $('#sidebar').css({
-        'position': 'static',
-        'left': 'auto',
-        //'background': '#e9e9e9 none repeat scroll 0 0', /* Commented for #2219 - Bhumika */
-        'width': '280px',
-
-    });
-    $('.sidebar-toogle a').html("<< hide").css('letter-spacing', '0px');
+   
+   // $('.sidebar-toogle a').html("<< hide").css('letter-spacing', '0px');
     $(".sidebar-toogle-wrapper h4.text-shadow-black").css("display", "block");
     $(".sidebar-section").css("display", "block");
     $(".wraper-btns").css("display", "block");
-    $("#content_wraper").css('width', 'calc(100% - 282px)'); //  removed bgcolor, width change for #2219 + #2331- Bhumika
-    $('#sidebar.sidebar').css({ 'width': '280px'});
-    $('.sidebar-toogle').css('border-bottom-width', '1px');
+    $("#btnreportSection").css("display", "block");
+   // $("#content_wraper").css('width', 'calc(100% - 282px)'); //  removed bgcolor, width change for #2219 + #2331- Bhumika
+   // $('#sidebar.sidebar').css({ 'width': '280px'});
+   // $('.sidebar-toogle').css('border-bottom-width', '1px');
     ///Add By Nishant Sheth
     // Desc :: To handle the gridview resize with hide toggle button #1958
     var ganttwidth = $("#gridbox").width();

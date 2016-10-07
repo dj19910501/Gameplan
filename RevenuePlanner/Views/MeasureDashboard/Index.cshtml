@@ -22,13 +22,18 @@
 
 @Scripts.Render("~/bundles/DateRangeJs")
 @Scripts.Render("~/bundles/GetJSReport")
+
+<div class="sidebar-toogle">
+    <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true" title="Show/Hide Filters"></i></a>
+</div>
+
 @section Sidebar
 {
-    <div class="padding-content padding-bottom0 sidebar-toogle-wrapper" id="divsidebartoggle">
+    @*<div class="padding-content padding-bottom0 sidebar-toogle-wrapper" id="divsidebartoggle">
         <div class="sidebar-toogle">
             <a href="#">&nbsp;<span><< hide</span></a>
         </div>
-    </div>
+    </div>*@  @*placement of toggle is changed now*@
 
     <div id="Filtersidebar" class="span2 sidebar">
         <div class="sidebar-section scroll-section">
@@ -294,24 +299,23 @@
                 $(this).next('div').addClass('collapse');
             }
         });
-        $('.sidebar-toogle a').toggle(
 
-    function () {
-        $('#sidebar').css({
-            'position': 'relative',
-            'left': 'auto',
-            'width': '50px',
-            'background': 'transparent',
-
+        $('.sidebar-toogle a').click(function () {
+            $("#sidebar").toggleClass("slideLeft");
+            $("#content_wraper").toggleClass("slideLeft");
         });
+
+        $('.sidebar-toogle a').toggle(function () {
+        
         $(".sidebar-toogle-wrapper h4.text-shadow-black").css("display", "none");
         $(".sidebar-section").css("display", "none");
-        $('.sidebar-toogle a').html(">>").css('letter-spacing', '-1px');
+        //$('.sidebar-toogle a').html(">>").css('letter-spacing', '-1px');
 
         $(".wraper-btns").css("display", "none");
-        $("#content_wraper").css('width', 'calc(100% - 52px)');
-        $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
-        $('.sidebar-toogle').css('border-bottom-width', '0');
+        $("#btnreportSection").css("display", "none");
+       // $("#content_wraper").css('width', 'calc(100% - 52px)');
+       // $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
+       // $('.sidebar-toogle').css('border-bottom-width', '0');
         var ganttwidth = $("#gridbox").width();
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
             var ganttwidth = $("#gridbox").width();
@@ -333,19 +337,14 @@
         });
 
     }, function () {
-        $('#sidebar').css({
-            'position': 'static',
-            'left': 'auto',
-            'width': '280px',
-
-        });
-        $('.sidebar-toogle a').html("<< hide").css('letter-spacing', '0px');
+        //$('.sidebar-toogle a').html("<< hide").css('letter-spacing', '0px');
         $(".sidebar-toogle-wrapper h4.text-shadow-black").css("display", "block");
         $(".sidebar-section").css("display", "block");
         $(".wraper-btns").css("display", "block");
-        $("#content_wraper").css('width', 'calc(100% - 282px)');
-        $('#sidebar.sidebar').css({ 'width': '280px' });
-        $('.sidebar-toogle').css('border-bottom-width', '1px');
+        $("#btnreportSection").css("display", "block");
+        //$("#content_wraper").css('width', 'calc(100% - 282px)');
+       // $('#sidebar.sidebar').css({ 'width': '280px' });
+        //$('.sidebar-toogle').css('border-bottom-width', '1px');
         var ganttwidth = $("#gridbox").width();
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
             var ganttwidth = $("#gridbox").width();
