@@ -889,9 +889,13 @@ namespace RevenuePlanner.Services
                 {
                     BudgetDataObjList = CampignQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, IsMulityearPlan, isViewBy);
                 }
-                else
+                else if (!isMultiYear)
                 {
                     BudgetDataObjList = CampignNextYearQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, isViewBy);
+                }
+                else
+                {
+                    BudgetDataObjList = CampignMulitYearQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, isViewBy);
                 }
             }
             return BudgetDataObjList;
@@ -1087,7 +1091,7 @@ namespace RevenuePlanner.Services
             return BudgetDataObjList;
         }
 
-        private List<Budgetdataobj> CampignNextYearQuarterlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList, bool isViewBy = false)
+        private List<Budgetdataobj> CampignMulitYearQuarterlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList, bool isViewBy = false)
         {
             for (int i = 1; i <= 23; i += 3)
             {
@@ -1152,6 +1156,52 @@ namespace RevenuePlanner.Services
                     objCostMonth.value = ThreeDash;
                     objActualMonth.value = ThreeDash;
                 }
+                BudgetDataObjList.Add(objBudgetMonth);
+                BudgetDataObjList.Add(objCostMonth);
+                BudgetDataObjList.Add(objActualMonth);
+            }
+            return BudgetDataObjList;
+        }
+
+        private List<Budgetdataobj> CampignNextYearQuarterlyAllocation(PlanBudgetModel Entity, bool isTactic, bool isLineItem, List<Budgetdataobj> BudgetDataObjList, bool IsMultiYearPlan, bool isViewby = false)
+        {
+            for (int i = 13; i <= 23; i += 3)
+            {
+                Budgetdataobj objBudgetMonth = new Budgetdataobj();
+                Budgetdataobj objCostMonth = new Budgetdataobj();
+                Budgetdataobj objActualMonth = new Budgetdataobj();
+                objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
+                objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
+                objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+                if (i == 13)
+                {
+                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Jan + Entity.NextYearMonthValues.Feb + Entity.NextYearMonthValues.Mar) : ThreeDash;
+                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CJan + Entity.NextYearMonthValues.CFeb + Entity.NextYearMonthValues.CMar);
+                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.AJan + Entity.NextYearMonthValues.AFeb + Entity.NextYearMonthValues.AMar);
+
+                }
+                else if (i == 16)
+                {
+                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Apr + Entity.NextYearMonthValues.May + Entity.NextYearMonthValues.Jun) : ThreeDash;
+                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CApr + Entity.NextYearMonthValues.CMay + Entity.NextYearMonthValues.CJun);
+                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.AApr + Entity.NextYearMonthValues.AMay + Entity.NextYearMonthValues.AJun);
+                }
+                else if (i == 19)
+                {
+                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Jul + Entity.NextYearMonthValues.Aug + Entity.NextYearMonthValues.Sep) : ThreeDash;
+                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CJul + Entity.NextYearMonthValues.CAug + Entity.NextYearMonthValues.CSep);
+                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.AJul + Entity.NextYearMonthValues.AAug + Entity.NextYearMonthValues.ASep);
+                }
+                else if (i == 22)
+                {
+                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Oct + Entity.NextYearMonthValues.Nov + Entity.NextYearMonthValues.Dec) : ThreeDash;
+                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.COct + Entity.NextYearMonthValues.CNov + Entity.NextYearMonthValues.CDec);
+                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.AOct + Entity.NextYearMonthValues.ANov + Entity.NextYearMonthValues.ADec);
+                }
+
                 BudgetDataObjList.Add(objBudgetMonth);
                 BudgetDataObjList.Add(objCostMonth);
                 BudgetDataObjList.Add(objActualMonth);

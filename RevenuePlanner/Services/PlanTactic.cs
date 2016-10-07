@@ -906,7 +906,7 @@ namespace RevenuePlanner.Services
                 }
             }
             // When current year is 2016 then For Q1-2017 -> Y13
-            int monthNumber = GetPeriodBasedOnEditedQuarter(quarter, startDateYear);
+            int monthNumber = GetPeriodBasedOnEditedQuarter(quarter, startDateYear,isSourceLineItem);
             string period = Common.PeriodPrefix + Convert.ToString(monthNumber);
             List<string> QuartersList = Common.GetMonthsOfQuarters(monthNumber);
 
