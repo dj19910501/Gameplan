@@ -72,7 +72,7 @@ var viewBy = $('#ddlTabViewBy').val();
             } else {
                 $('#NodatawithfilterCalendar').show();
                 $('#ChangeView').hide();
-                $('#ExpClose').css('display', 'none');
+                $('#exp-serach').css('display', 'none');
             }
 
         }
