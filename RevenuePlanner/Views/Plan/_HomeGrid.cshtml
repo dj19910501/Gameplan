@@ -184,8 +184,8 @@
             $("#gridbox").hide();
             $("#goalwrapper").hide();
             $("#NodatawithfilterGrid").show();
-            $('#exp-serach').css('display', 'none');
         }
+            $('#exp-serach').hide();
         }
         if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
             GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));

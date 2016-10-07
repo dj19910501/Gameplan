@@ -71,7 +71,7 @@ var viewBy = $('#ddlTabViewBy').val();
                 $('#ChangeView').show();
             } else {
                 $('#NodatawithfilterCalendar').show();
-                $('#ChangeView').hide();
+                $('#ChangeView').show();
                 $('#exp-serach').css('display', 'none');
             }
 

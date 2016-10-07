@@ -356,34 +356,6 @@ function SetColumUpdatedValue(CellInd, diff) {
     }
 }
 
-///Export Functionality
-///Start
-function ExportToCsvSp() {
-    HomeGrid.setColumnHidden(2, true);
-    HomeGrid.expandAll();
-    HomeGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
-    HomeGrid.collapseAll();
-    HomeGrid.setColumnHidden(2, false);
-}
-
-function ExportCSVHoneyCombSp() {
-    HomeGrid.setColumnHidden(2, true);
-    var rowIdArray = [];
-    HomeGrid.forEachRow(function (id) {
-        var d = HomeGrid.cells(id, 2).getValue();
-        if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
-            HomeGrid.setRowHidden(id, true);
-            rowIdArray.push(id);
-        }
-    });
-    HomeGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
-    if (rowIdArray != undefined) {
-        $.each(rowIdArray, function (key) {
-            HomeGrid.setRowHidden(rowIdArray[key], false);
-        });
-    }
-    HomeGrid.setColumnHidden(2, false);
-}
 
 function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {   
     updatetype = HomeGrid.cells(rowId, ActivitypeHidden).getValue();
@@ -1047,7 +1019,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                     }
 
                     if (UpdateColumn == TacticTypeId) {
-                        var PlanIds = HomeGrid.cells(planid, 3).getValue()
+                        var PlanIds = HomeGrid.cells(planid, GridHiddenId).getValue()
                         $("#ulTacticType li input[type=checkbox]").each(function () {
                             var chkid = $(this).attr("id");
                             if ($(this).attr('checked') != 'checked') {
@@ -1250,7 +1222,6 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
 function ExportToExcel(isHoneyComb) {
-  
     //start  
     var rowIdArray = [];
     var HoneyCombSelectedArray = [];
@@ -1301,12 +1272,9 @@ function ExportToExcel(isHoneyComb) {
                     HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).setValue(columnText.replace("honeycombbox-icon-gantt", "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active"));
                 }
             });
-
         }
-
     }
     else if (gridname.toLowerCase() == "budget") {
-
         var exportGrid = new dhtmlXGridObject('gridExport');
         var JsonExportModel = exportgridData;
         exportGrid.setImagePath(imgPath);
@@ -1314,7 +1282,6 @@ function ExportToExcel(isHoneyComb) {
         exportGrid.enableAutoHeight(true);
         exportGrid.enableAutoWidth(false);
         exportGrid.setColumnIds(ColumnIds);
-
         if (gridname != undefined) {
             if (gridname.toLowerCase() == 'budget') {
                 if (gridheader != undefined)
@@ -1331,15 +1298,12 @@ function ExportToExcel(isHoneyComb) {
                     attachHeader = (attachHeader.toString().replace(/&amp;/g, '&'));
                     exportGrid.attachHeader(JSON.parse(attachHeader));
                 }
-
             }
         }
         exportGrid.init();
         setTimeout(function () {
             exportGrid.setSizes();
         }, 200);
-
-
         var mainGridData = JsonExportModel;
         mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
@@ -1351,8 +1315,6 @@ function ExportToExcel(isHoneyComb) {
         var colourCodeIndex = exportGrid.getColIndexById("colourcode");
         var iconIndex = exportGrid.getColIndexById("Buttons");
         var lineItemTypeIdIndex = exportGrid.getColIndexById("LineItemTypeId");
-        
-
         if (isHoneyComb) {
             HomeGrid.forEachRow(function (id) {
               
@@ -1374,14 +1336,7 @@ function ExportToExcel(isHoneyComb) {
 
         exportGrid.expandAll();
         exportGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
-        //if (rowIdArray != undefined) {
-        //    $.each(rowIdArray, function (key) {
-        //        exportGrid.setRowHidden(rowIdArray[key], false);
-        //    });
-        //}       
     }
-    //end
-
 }
 //function to get dependent custom field options for tactic
 function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
@@ -1436,8 +1391,5 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
         });
         HomeGrid.registerCList(cellInd, clistitem);
     }
-   
-       
-    
 
 }

@@ -73,6 +73,8 @@ function ShowhideDataonGridCalendar() {
         isCalendarView = true;
         $('#btngridcalendar').addClass('P-icon-active');
     }
+    $('#SuccessMsg').css('display', 'none');
+    $('#ErrorMsg').css('display', 'none');
     $('#divgridview').removeClass('budget-grid');
     $('#txtGlobalSearch').val('');
     if ($('#ExpClose').css('display') == 'block') {
@@ -89,8 +91,7 @@ $('#btnbudget').click(function () {
     IsBudgetGrid = true;
     BindUpcomingActivites(filters.PlanIDs.toString())
     //cleare success msg as we want to hide import msg on click of grid or calendar
-    $('#SuccessMsg').css('display', 'none');
-    $('#errorMsg').css('display', 'none');
+  
     if ($('#errorMsg').css('display') == 'block') {
         $('#errorMsg').css('display', 'none');
     }
@@ -114,6 +115,8 @@ function ShowHideDataonBudgetScreen() {
     $('#ImportBtn').parent().addClass('round-corner');
    // $('#txtGlobalSearch').val('');
     IsBudgetGrid = true;
+    $('#SuccessMsg').css('display', 'none');
+    $('#ErrorMsg').css('display', 'none');
     $('#divupcomingact').show();
     $('#btngridcalendar').removeClass('P-icon-active');
     $('#btnbudget').addClass('P-icon-active');
@@ -1538,9 +1541,11 @@ function GlobalSearch() {
                 $('#txtGlobalSearch').val(SearchTextforcal);
                 $('#SuccessMsg').css('display', 'none');
                 $("#spanMsgSuccess").empty();
+                if ($('#NodatawithfilterGrid').is(':hidden')) {
                 $("#errorMsg").css("display", "block");
                 $("#spanMsgError").empty();
                 $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+                }
             }
         }
         gantt.eachTask(function (task) {
@@ -1568,9 +1573,12 @@ function GlobalSearchonGrid(node, columnName) {
         $('#txtGlobalSearch').val("");
         //BindHomeGrid();
         $('#txtGlobalSearch').val(node.trim());
+
+        if ($('#NodatawithfilterGrid').is(':hidden')) {
         $("#errorMsg").css("display", "block");
         $("#spanMsgError").empty();
         $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+        }
         $(window).scrollTop(0);
     }
     else {
