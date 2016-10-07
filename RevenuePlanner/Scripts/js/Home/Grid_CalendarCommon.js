@@ -693,7 +693,10 @@ function DisplayPopUpMenu(obj, e) {
                     RefershPlanHeaderCalc();
                     isCopyTactic = data.Id;
                     isCopyTacticHomeGrid = isCopyTactic;
-                    if ($('#IsGridView').val().toLowerCase() == "false") {
+                    if (IsBudgetGrid) {
+                        LoadBudgetGrid();
+                    }
+                    else if ($('#IsGridView').val().toLowerCase() == "false") {
                         BindPlanCalendar();
                     }
                     else {
@@ -770,7 +773,10 @@ function DisplayPopUpMenu(obj, e) {
                     RefershPlanHeaderCalc();
                     isCopyTactic = data.Id;
                     isCopyTacticHomeGrid = isCopyTactic;
-                    if ($('#IsGridView').val().toLowerCase() == "false") {
+                    if (IsBudgetGrid) {
+                        LoadBudgetGrid();
+                    }
+                    else if ($('#IsGridView').val().toLowerCase() == "false") {
                         BindPlanCalendar();
                     }
                     else {
@@ -836,7 +842,12 @@ function DisplayPopUpMenu(obj, e) {
                     isCopyTacticHomeGrid = isCopyTactic;
                     isError = false;
                     ShowMessage(isError, data.msg);
-                    LoadPlanGrid();
+                    if (IsBudgetGrid) {
+                        LoadBudgetGrid();
+                    }
+                    else {
+                        LoadPlanGrid();
+                    }
                     return;
                 }
                 else {
