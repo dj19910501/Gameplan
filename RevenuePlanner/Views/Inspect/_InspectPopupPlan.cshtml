@@ -331,6 +331,14 @@
 
             }
             updatePlanNameDrp();
+            $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                $(this).attr('checked', 'checked');
+                $(this).parent().addClass("close-list");
+            });
+            $('#accordion-Status').find("input[type=checkbox]").each(function () {
+                $(this).attr('checked', 'checked');
+                $(this).parent().addClass("close-list");
+            });            
         }
     });
 
