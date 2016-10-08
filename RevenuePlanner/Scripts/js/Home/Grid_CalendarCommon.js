@@ -1458,7 +1458,8 @@ $(".searchDropdown li a").click(function () {
     {
         BindPlanCalendar();
     }
-    else{
+    else {
+        $('#btngridcalendar').removeClass('P-icon-active');
     BindHomeGrid();
 }
 });
@@ -1550,26 +1551,27 @@ function GlobalSearch() {
                 return false;
             }
         });
-        if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
-
-            if ($('#txtGlobalSearch').val().length > 0) {
-                SearchTextforcal = $('#txtGlobalSearch').val().trim();
-                 $('#txtGlobalSearch').val("");
-                GlobalSearch();
-                $('#txtGlobalSearch').val(SearchTextforcal);
-                $('#SuccessMsg').css('display', 'none');
-                $("#spanMsgSuccess").empty();
-                if ($('#NodatawithfilterGrid').is(':hidden')) {
-                $("#errorMsg").css("display", "block");
-                $("#spanMsgError").empty();
-                $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
-                }
-            }
-        }
+        
         gantt.eachTask(function (task) {
             task.$open = true;
         });
         gantt.render(); // To expand in gantt
+        if ($(gantt.$grid_data).find('.gantt_row').length <= 0) {
+            if ($('#txtGlobalSearch').val().length > 0) {
+                SearchTextforcal = $('#txtGlobalSearch').val().trim();
+                $('#txtGlobalSearch').val("");
+                GlobalSearch();
+                $('#txtGlobalSearch').val(SearchTextforcal);
+                $('#SuccessMsg').css('display', 'none');
+                $("#spanMsgSuccess").empty();
+                //  if ($('#NodatawithfilterGrid').is(':hidden')) {
+                $("#errorMsg").css("display", "block");
+                $("#spanMsgError").empty();
+                $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+                //}
+                gantt.render();
+            }
+        }
         }
     //}
 }

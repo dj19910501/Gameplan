@@ -62,8 +62,8 @@ namespace RevenuePlanner.Controllers
 
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false, bool ShowPopup = false, bool IsBudgetView = false)
         {
-            var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
-            var RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
+            Guid AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+            Guid RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
             Sessions.User.RoleId = RoleId;
             Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
             Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
