@@ -3117,7 +3117,7 @@ gantt._render_data = function () {
                 var length = TaskHtml.childNodes.length;
             }
             if (TaskHtml != undefined && TaskHtml != 'undefined' && TaskHtml != null && length > 1) {
-                var LastChildNode = TaskHtml.getElementsByClassName("gantt_tree_content").item(0).outerHTMLL;
+                var LastChildNode = TaskHtml.getElementsByClassName("gantt_tree_content").item(0).outerHTML;
                 var FileNode = TaskHtml.getElementsByClassName("gantt_file").item(0).outerHTML;
                 var AllCHildNodes = TaskHtml.childNodes[1].innerHTML;
                 var IsPAckageExists = TaskHtml.getElementsByClassName("ROIPackage").item(0);
@@ -3148,14 +3148,8 @@ gantt._render_data = function () {
                     AllCHildNodes = AllCHildNodes.concat("<div class='gantt_tree_icon gantt_blank'></div>" + FileNode + LastChildNode);
                     TaskHtml.childNodes[1].innerHTML = AllCHildNodes;
                 }
-
-
-
             }
         });
-
-
-
     }
 
     if (AddRemovePackageItems != null && AddRemovePackageItems != [] && AddRemovePackageItems != "") {
@@ -8669,7 +8663,7 @@ gantt.scrollTo = function (left, top) {
                         TaskHtml = $("div[task_id='" + AnchorID + "']")[0];
                         var length = TaskHtml.childNodes.length;
                     }
-                    if (TaskHtml != undefined && TaskHtml != 'undefined' && TaskHtml != null && length>1) {
+                    if (TaskHtml != undefined && TaskHtml != 'undefined' && TaskHtml != null && length > 1) {
                         var LastChildNode = TaskHtml.getElementsByClassName("gantt_tree_content").item(0).outerHTML;
                         var FileNode = TaskHtml.getElementsByClassName("gantt_file").item(0).outerHTML;
                         var AllCHildNodes = TaskHtml.childNodes[1].innerHTML;

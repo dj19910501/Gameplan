@@ -194,7 +194,7 @@ namespace RevenuePlanner.Services
                     LinkTacticId = Convert.ToInt32(row["LinkTacticId"]),
                     TacticTypeId = Convert.ToInt32(Convert.ToString(row["TacticTypeId"])),
                     PlanYear = Convert.ToString(row["PlanYear"]),
-                    AssetType = Convert.ToString(row["ROITacticType"]), //Uncomment this when data is passed from sp.
+                    AssetType = Convert.ToString(row["ROITacticType"]),
                     AnchorTacticID = Convert.ToInt32(Convert.ToString(row["IsAnchorTacticId"])),
                     CalendarHoneycombpackageIDs = Convert.ToString(row["CalendarHoneycombpackageIDs"]),
 
@@ -324,7 +324,7 @@ namespace RevenuePlanner.Services
             {
                 // Get list of package tactic ids
                 Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
-                //Roistring = "<div class=package-icon package-icon-grid style=cursor:pointer title=Package id=pkgIcon onclick=OpenHoneyComb(this) pkgtacids=" + PackageTacticIds + "><i class=fa fa-object-group></i></div>";
+              
                      BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring.Replace("'", "&#39;").Replace("\"", "&#34;")) + HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
             }
             else
