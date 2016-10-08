@@ -8452,7 +8452,12 @@ li.close-list {
 	overflow-y: scroll !important;
 	border-bottom: 2px solid #d4d4d4;
 }
-
+/* added by devanshi for #2587*/
+  #multipleselect_ddlOwner{left:0 !important; top:26px !important; width: 90%;}
+    .calendar_div{padding:0}
+    .plan-desc{padding:0 25px 0 20px}
+    #btnMultiselect_ddlOwner{background: #dff0f8 none repeat scroll 0 0 !important;}
+    /*end*/
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
 .chrome-ie-height-720px {
 	min-height: 720px !important;

@@ -440,7 +440,9 @@
                                     $("#hdnBudgetingCurrentPlanId").val(planId)
                                 }
                                 else {
-                                    RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, 0);
+                                    //RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, 0);
+                                    loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", "0", '@RequestedModule');
+
                                 }
 
                                 $("#successMessage").css("display", "block");
@@ -546,7 +548,14 @@
         }
     });
     $('#BtnPublishPlan').click(function () {
-        publishPlan();
+        var returnpara = true;        
+        var activeTab = $("#InspectTab li.active a").text();
+        if (activeTab != null && activeTab != undefined && activeTab != '') {
+            returnpara = SaveAllData(activeTab);
+        }
+        if (returnpara) {
+            publishPlan();
+        }
     });
 
     function publishPlan() {
@@ -569,23 +578,12 @@
                         ShowError(data.errormsg);
                     }
                     else if (data.activeMenu != undefined && data.currentPlanId != undefined) {
-                        var url = '@Url.Content("~/Home/Index")';
-
-                        var queryStringArr = [];
-
-                        queryStringArr.push(
-                         {
-                             key: 'ActiveMenu',
-                             Value: data.activeMenu
-                         });
-
-                        queryStringArr.push(
-                         {
-                             key: 'currentPlanId',
-                             Value: data.currentPlanId
-                         });
-
-                        formSubmitEvent(url, queryStringArr);
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        var successmessage = "Plan "+$("#txtTitle").val()+" Published Successfully.";
+                        $("#spanMessageSuccess").text(successmessage);
+                        $('#BtnPublishPlan').css("display", "none");
+                      
                     }
 
                 }

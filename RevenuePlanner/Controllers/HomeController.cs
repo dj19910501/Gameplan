@@ -38,7 +38,7 @@ namespace RevenuePlanner.Controllers
         StoredProcedure objSp = new StoredProcedure();// Add By Nishant Sheth // Desc:: For get values with storedprocedure
 
         #endregion
-      
+
         //public ActionResult IndexNewDesign() // Added by Bhumika for new HTML #2621 Remove when task finished 
         //{
         //    return View();
@@ -59,7 +59,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planProgramId">planProgramId used for notification email shared link</param>
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
-       
+
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false, bool ShowPopup = false, bool IsBudgetView = false)
         {
             var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
@@ -135,7 +135,7 @@ namespace RevenuePlanner.Controllers
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.ID);
                 var objPlan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId == currentPlanId);
 
-                if (objPlan.CreatedBy == Sessions.User.ID) 
+                if (objPlan.CreatedBy == Sessions.User.ID)
                 {
                     IsPlanEditable = true;
                 }
@@ -154,12 +154,10 @@ namespace RevenuePlanner.Controllers
                 Plan Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(currentPlanId));
                 isPublished = Plan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
 
-
-
             }
             ViewBag.IsPlanEditable = IsPlanEditable;
             ViewBag.IsPublished = isPublished;
-           
+
             ViewBag.RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
             //set value to show inspect popup for url sent in email 
             if (currentPlanId > 0 && ShowPopup)
@@ -177,10 +175,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ShowInspectPopup = false;
                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
             }
-            //else 
-            //{
-            //    ViewBag.ShowInspectPopup = true;
-            //}
+          
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
 
@@ -195,284 +190,12 @@ namespace RevenuePlanner.Controllers
                 TempData["ErrorMessage"] = string.Empty;
             }
 
-            HomePlanModel planmodel = new Models.HomePlanModel();
-            List<int> modelIds = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.CID) && model.IsDeleted == false).Select(m => m.ModelId).ToList();
-            
-            List<Plan> activePlan = objDbMrpEntities.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
 
-            Plan currentPlan = new Plan();
-            Plan latestPlan = new Plan();
-            string currentYear = DateTime.Now.Year.ToString();
-            string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-            if (activePlan.Count() > 0)
-            {
-                IsPlanEditable = true;
-                ViewBag.IsPlanEditable = IsPlanEditable;
-                latestPlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
-                List<Plan> fiterActivePlan = new List<Plan>();
-                fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
-                if (fiterActivePlan != null && fiterActivePlan.Any())
-                {
-                    latestPlan = fiterActivePlan.Where(plan => plan.Status.Equals(planPublishedStatus)).OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
-                }
-                if (currentPlanId != 0)
-                {
-                    currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).FirstOrDefault();
-                    if (currentPlan == null)
-                    {
-                        currentPlan = latestPlan;
-                        currentPlanId = currentPlan.PlanId;
-                    }
-                }
-                else if (!Common.IsPlanPublished(Sessions.PlanId))
-                {
-                    if (Sessions.PublishedPlanId == 0)
-                    {
-                        fiterActivePlan = new List<Plan>();
-                        fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
-                        if (fiterActivePlan != null && fiterActivePlan.Any())
-                        {
-                            currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
-                        }
-                        else
-                        {
-                            currentPlan = latestPlan;
-                        }
-                    }
-                    else
-                    {
-                        currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PublishedPlanId)).OrderBy(plan => plan.Title).FirstOrDefault();
-                        if (currentPlan == null)
-                        {
-                            currentPlan = latestPlan;
-                        }
-                    }
-                }
-                else
-                {
-                    if (Sessions.PlanId == 0)
-                    {
-                        fiterActivePlan = new List<Plan>();
-                        fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
-                        if (fiterActivePlan != null && fiterActivePlan.Any())
-                        {
-                            currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
-                        }
-                        else
-                        {
-                            currentPlan = latestPlan;
-                        }
+            ViewBag.IsPlanEditable = IsPlanEditable;
 
-                    }
-                    else
-                    {
-                        currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PlanId)).FirstOrDefault();
-                        if (currentPlan == null)
-                        {
-                            currentPlan = latestPlan;
-                        }
 
-                    }
-                }
-                if (currentPlan != null)
-                {
-                    isPublished = currentPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString()); //Added by Dashrath Prajapati-PL #1758 Publish Plan: Unable to Publish Draft Plan 
-                    ViewBag.IsPublished = isPublished;
-                }
-            }
-            var Label = Enums.FilterLabel.Plan.ToString();
-            var FilterName = Sessions.FilterPresetName;
-            var SetOFLastViews = new List<Plan_UserSavedViews>();
-            if (Sessions.PlanUserSavedViews == null)
-            {
-                SetOFLastViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
-            }
-            else
-            {
-                if (FilterName != null && FilterName != "")
-                {
-                    SetOFLastViews = Sessions.PlanUserSavedViews.ToList();
+            return View();
 
-                }
-                else
-                {
-                    SetOFLastViews = Sessions.PlanUserSavedViews.Where(view => view.ViewName == null).ToList();
-                }
-            }
-            var SetOfPlanSelected = SetOFLastViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.ID).ToList();
-            Common.PlanUserSavedViews = SetOFLastViews; 
-            if (Enums.ActiveMenu.Home.Equals(activeMenu))
-            {
-                var LastSetOfPlanSelected = new List<string>();
-                var LastSetOfYearSelected = new List<string>();
-                var Yearlabel = Enums.FilterLabel.Year.ToString();
-                var SetofLastYearsSelected = SetOFLastViews.Where(view => view.FilterName == Yearlabel && view.Userid == Sessions.User.ID).ToList();
-                var FinalSetOfPlanSelected = "";
-                var FinalSetOfYearsSelected = "";
-                if (FilterName != null && FilterName != "")
-                {
-                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == FilterName).Select(View => View.FilterValues).FirstOrDefault();
-                    FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.ViewName == FilterName).Select(View => View.FilterValues).FirstOrDefault();
-                }
-                else
-                {
-                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.IsDefaultPreset == true).Select(View => View.FilterValues).FirstOrDefault();
-                    if (FinalSetOfPlanSelected == null)
-                    {
-                        FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-                    }
-
-                    FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.IsDefaultPreset == true).Select(View => View.FilterValues).FirstOrDefault();
-                    if (FinalSetOfYearsSelected == null)
-                    {
-                        FinalSetOfYearsSelected = SetofLastYearsSelected.Where(view => view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-                    }
-
-                }
-                if (FinalSetOfPlanSelected != null)
-                {
-                    LastSetOfPlanSelected = FinalSetOfPlanSelected.Split(',').ToList();
-                }
-
-                if (FinalSetOfYearsSelected != null)
-                {
-                    LastSetOfYearSelected = FinalSetOfYearsSelected.Split(',').ToList();
-                }
-
-                activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
-                var SelectedYear = activePlan.Where(plan => plan.PlanId == currentPlan.PlanId).Select(plan => plan.Year).ToList();
-                if (LastSetOfYearSelected.Count > 0)
-                {
-                    SelectedYear = activePlan.Where(plan => LastSetOfYearSelected.Contains(plan.Year.ToString())).Select(plan => plan.Year).Distinct().ToList();
-                    if (SelectedYear.Count == 0)
-                    {
-                        SelectedYear = LastSetOfYearSelected;
-                    }
-                }
-                else
-                {
-                    if (LastSetOfPlanSelected.Count > 0)
-                    {
-                        SelectedYear = activePlan.Where(plan => LastSetOfPlanSelected.Contains(plan.PlanId.ToString())).Select(plan => plan.Year).Distinct().ToList();
-                    }
-                }
-
-                var uniqueplanids = activePlan.Select(p => p.PlanId).Distinct().ToList();
-
-                var CampPlans = objDbMrpEntities.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId))
-                    .Select(camp => new
-                    {
-                        PlanId = camp.PlanId,
-                        StartYear = camp.StartDate.Year,
-                        EndYear = camp.EndDate.Year,
-                        StartDate = camp.StartDate,
-                        EndDate = camp.EndDate
-                    })
-                    .ToList();
-
-                var CampPlanIds = CampPlans.Where(camp => SelectedYear.Contains(camp.StartDate.Year.ToString()) || SelectedYear.Contains(camp.EndDate.Year.ToString()))
-                    .Select(camp => camp.PlanId).Distinct().ToList();
-
-                var PlanIds = activePlan.Where(plan => SelectedYear.Contains(plan.Year))
-                 .Select(plan => plan.PlanId).Distinct().ToList();
-                var allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
-                var YearWiseListOfPlans = activePlan.Where(list => allPlanIds.Contains(list.PlanId)).ToList();
-
-                planmodel.lstPlan = YearWiseListOfPlans.Select(plan => new PlanListModel
-                {
-                    PlanId = plan.PlanId,
-                    Title = HttpUtility.HtmlDecode(plan.Title),
-                    Checked = LastSetOfPlanSelected.Count.Equals(0) ? plan.PlanId == currentPlan.PlanId ? "checked" : "" : LastSetOfPlanSelected.Contains(plan.PlanId.ToString()) ? "checked" : "",
-                    Year = plan.Year
-
-                }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
-
-                List<SelectListItem> lstYear = new List<SelectListItem>();               
-                var StartYears = CampPlans.Select(camp => camp.StartYear)
-             .Distinct().ToList();
-
-                var EndYears = CampPlans.Select(camp => camp.EndYear)
-                    .Distinct().ToList();
-
-                var PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
-                var yearlist = PlanYears;
-                SelectListItem objYear = new SelectListItem();
-                foreach (int years in yearlist)
-                {
-                    string yearname = Convert.ToString(years);
-                    objYear = new SelectListItem();
-
-                    objYear.Text = years.ToString();
-
-                    objYear.Value = yearname;
-                    objYear.Selected = SelectedYear.Contains(years.ToString()) ? true : false;
-                    lstYear.Add(objYear);
-                }
-                ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
-               
-                if (LastSetOfPlanSelected.Count() == 1)
-                {
-                    if (LastSetOfPlanSelected.Contains(currentPlan.PlanId.ToString()) == false)
-                    {
-                        var LastViewedPlan = activePlan.Where(plan => LastSetOfPlanSelected.Contains(plan.PlanId.ToString())).Select(plan => plan).FirstOrDefault();
-                        currentPlan = LastViewedPlan;
-
-                    }
-                }
-            }
-            if (activePlan.Count() > 0 && currentPlan!=null)
-            {
-                try
-                {
-                    //// added by Nirav for plan consistency on 14 apr 2014
-                    planmodel.PlanTitle = currentPlan.Title;
-                    planmodel.PlanId = currentPlan.PlanId;
-                    // planmodel.objplanhomemodelheader = new HomePlanModelHeader();
-                    planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(currentPlan.PlanId, onlyplan: true);
-
-                    Sessions.PlanId = planmodel.PlanId;
-                    GetCustomAttributesIndex(ref planmodel);                    
-                    if (ViewBag.ShowInspectPopup != null)
-                    {
-                        if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0)
-                        {
-                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, currentPlanId, planLineItemId);
-                            ViewBag.ShowInspectPopup = isCustomRestrictionPass;
-                            if (isCustomRestrictionPass.Equals(false))
-                            {
-                                ViewBag.ShowInspectPopupErrorMessage = Common.objCached.CustomRestrictionFailedForInspectPopup.ToString();
-                            }
-                        }
-                    }                    
-                }
-                catch (Exception objException)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(objException);                    
-                    if (objException is System.ServiceModel.EndpointNotFoundException)
-                    {
-                        return RedirectToAction("ServiceUnavailable", "Login");
-                    }
-                }
-                return View("Index", planmodel);
-            }
-            else
-            {
-                //// Start - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
-                if (ViewBag.ShowInspectPopup != null)
-                {
-                    if ((bool)ViewBag.ShowInspectPopup == false)
-                    {
-                        TempData["ErrorMessage"] = ViewBag.ShowInspectPopupErrorMessage;
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;
-                    }
-                }
-                //// End - Added by Sohel Pathan on 15/12/2014 for PL ticket #1021
-
-                return View("Index", planmodel);
-            }
         }
 
         /// <summary>
@@ -564,8 +287,8 @@ namespace RevenuePlanner.Controllers
 
         //Add by Komal Rawal on 12/09/2016
         //Desc : To get header values.
-      
-        public async Task<JsonResult> GetActivityDistributionchart(string planid, string strtimeframe, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "" ,bool IsGridView = false)
+
+        public async Task<JsonResult> GetActivityDistributionchart(string planid, string strtimeframe, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool IsGridView = false)
         {
 
             List<int> filteredPlanIds = new List<int>();
@@ -584,7 +307,7 @@ namespace RevenuePlanner.Controllers
             {
                 planYear = DateTime.Now.Year.ToString();
             }
-           
+
             if (string.IsNullOrEmpty(strtimeframe))
             {
                 List<Plan> lstPlans = new List<Plan>();
@@ -610,22 +333,22 @@ namespace RevenuePlanner.Controllers
             }
             List<Plan> planData = Common.GetSpPlanList(dsPlanCampProgTac.Tables[0]);
             List<Plan_Campaign> lstCampaign = Common.GetSpCampaignList(dsPlanCampProgTac.Tables[1]);
-       
+
             bool IsMultiYearPlan = false;
-          
-                List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
-              
-                List<int> planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
 
-                if (planList.Count == 0)
-                {
-                    campplanid = lstCampaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && planIds.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
-                }
-                filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
-                    campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
+            List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
+
+            List<int> planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
+
+            if (planList.Count == 0)
+            {
+                campplanid = lstCampaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && planIds.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
+            }
+            filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
+                campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
 
 
-         
+
 
             //// Get planyear of the selected Plan
             if (strtimeframe.Contains("-") || IsMultiYearPlan)
@@ -636,7 +359,7 @@ namespace RevenuePlanner.Controllers
 
                 return Json(new { lstchart = lstActivityChartyears.ToList(), strparam = strtimeframe }, JsonRequestBehavior.AllowGet);
             }
-          
+
             var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
                                                    campplanid.Count > 0 ? campplanid.Contains(tactic.PlanId) : filteredPlanIds.Contains(tactic.PlanId) &&
                                                    tactic.EndDate > CalendarStartDate &&
@@ -680,7 +403,7 @@ namespace RevenuePlanner.Controllers
                 });
 
             }
-     
+
             if ((filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0))
             {
                 lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
@@ -702,7 +425,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-      
+
             //// Prepare an array of month as per selected dropdown paramter
             int[] monthArray = new int[12];
 
@@ -717,7 +440,7 @@ namespace RevenuePlanner.Controllers
 
                 int currentMonth = DateTime.Now.Month, monthNo = 0;
                 DateTime startDate, endDate;
-           
+
                 int TacticCount = objPlan_Campaign_Program_Tactic.Count;
                 for (int tactic = 0; tactic < TacticCount; tactic++)
                 {
@@ -777,12 +500,12 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (strtimeframe.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        
+
                         endDate = new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month));
                         differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM-yyyy"));
 
                         List<string> thismonthdifferenceItem = new List<string>();
-                      
+
                         thismonthdifferenceItem = differenceItems.ToList();
                         int thismonthdifferenceItemCount = thismonthdifferenceItem.Count;
                         for (int monthdiffer = 0; monthdiffer < thismonthdifferenceItemCount; monthdiffer++)
@@ -802,7 +525,7 @@ namespace RevenuePlanner.Controllers
                                         monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
                                     }
                                 }
-                              
+
                             }
                         }
                     }
@@ -813,22 +536,22 @@ namespace RevenuePlanner.Controllers
                             if (currentMonth == 1 || currentMonth == 2 || currentMonth == 3)
                             {
                                 monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q1), startDate, endDate, monthArray);
-                             
+
                             }
                             else if (currentMonth == 4 || currentMonth == 5 || currentMonth == 6)
                             {
                                 monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q2), startDate, endDate, monthArray);
-                              
+
                             }
                             else if (currentMonth == 7 || currentMonth == 8 || currentMonth == 9)
                             {
                                 monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q3), startDate, endDate, monthArray);
-                              
+
                             }
                             else if (currentMonth == 10 || currentMonth == 11 || currentMonth == 12)
                             {
                                 monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q4), startDate, endDate, monthArray);
-                              
+
                             }
                         }
                     }
@@ -874,7 +597,7 @@ namespace RevenuePlanner.Controllers
                 lstActivityChart.Add(objActivityChart);
             }
             await Task.Delay(1);
-      
+
             return Json(new { lstchart = lstActivityChart.ToList(), strtimeframe = strtimeframe }, JsonRequestBehavior.AllowGet); //Modified BY Komal rawal for #1929 proper Hud chart and count
         }
 
@@ -4261,97 +3984,97 @@ namespace RevenuePlanner.Controllers
                 PlanTacticListforpackageing = customtacticList;
             }
 
-                if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+
+                Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                 {
-               
-                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                    {
-                        TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("L{0}_C{1}_P{2}_T{3}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                        Title = tactic.Title,
-                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                        ColorCode = TacticTaskColor,
-                        OwnerName = GetOwnerName(tactic.CreatedBy),
-                        ROITacticType = tactic.AssetType,
-                        CalendarEntityType = "Tactic",
-                        AnchorTacticId = tactic.AnchorTacticId,
-                        CsvId = "Tactic_" + tactic.PlanTacticId,
-                    });
+                    TacticId = tactic.PlanTacticId,
+                    TaskId = string.Format("L{0}_C{1}_P{2}_T{3}", tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                    Title = tactic.Title,
+                    TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                    ColorCode = TacticTaskColor,
+                    OwnerName = GetOwnerName(tactic.CreatedBy),
+                    ROITacticType = tactic.AssetType,
+                    CalendarEntityType = "Tactic",
+                    AnchorTacticId = tactic.AnchorTacticId,
+                    CsvId = "Tactic_" + tactic.PlanTacticId,
+                });
 
-                }
-                else if (viewBy.Equals(PlanGanttTypes.Stage.ToString(), StringComparison.OrdinalIgnoreCase))
+            }
+            else if (viewBy.Equals(PlanGanttTypes.Stage.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                 {
-                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                    {
-                        TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.StageId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                        Title = tactic.Title,
-                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                        ColorCode = TacticTaskColor,
-                        OwnerName = GetOwnerName(tactic.CreatedBy),
-                        ROITacticType = tactic.AssetType,
-                        CalendarEntityType = "Tactic",
-                        AnchorTacticId = tactic.AnchorTacticId,
-                        CsvId = "Tactic_" + tactic.PlanTacticId,
-                    });
+                    TacticId = tactic.PlanTacticId,
+                    TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.StageId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                    Title = tactic.Title,
+                    TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                    ColorCode = TacticTaskColor,
+                    OwnerName = GetOwnerName(tactic.CreatedBy),
+                    ROITacticType = tactic.AssetType,
+                    CalendarEntityType = "Tactic",
+                    AnchorTacticId = tactic.AnchorTacticId,
+                    CsvId = "Tactic_" + tactic.PlanTacticId,
+                });
 
 
-                }
-                else if (viewBy.Equals(PlanGanttTypes.Status.ToString(), StringComparison.OrdinalIgnoreCase))
+            }
+            else if (viewBy.Equals(PlanGanttTypes.Status.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                 {
-                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                    {
-                        TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.Status, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                        Title = tactic.Title,
-                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                        ColorCode = TacticTaskColor,
-                        OwnerName = GetOwnerName(tactic.CreatedBy),
-                        ROITacticType = tactic.AssetType,
-                        CalendarEntityType = "Tactic",
-                        AnchorTacticId = tactic.AnchorTacticId,
-                        CsvId = "Tactic_" + tactic.PlanTacticId,
-                    });
+                    TacticId = tactic.PlanTacticId,
+                    TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.Status, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                    Title = tactic.Title,
+                    TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                    ColorCode = TacticTaskColor,
+                    OwnerName = GetOwnerName(tactic.CreatedBy),
+                    ROITacticType = tactic.AssetType,
+                    CalendarEntityType = "Tactic",
+                    AnchorTacticId = tactic.AnchorTacticId,
+                    CsvId = "Tactic_" + tactic.PlanTacticId,
+                });
 
 
-                }
-                else if (viewBy.Equals(Enums.DictPlanGanttTypes[PlanGanttTypes.ROIPackage.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
+            }
+            else if (viewBy.Equals(Enums.DictPlanGanttTypes[PlanGanttTypes.ROIPackage.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                 {
-                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                    {
-                        TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.AnchorTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                        Title = tactic.Title,
-                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                        ColorCode = TacticTaskColor,
-                        OwnerName = GetOwnerName(tactic.CreatedBy),
-                        ROITacticType = tactic.AssetType,
-                        CalendarEntityType = "Tactic",
-                        AnchorTacticId = tactic.AnchorTacticId,
-                        CsvId = "Tactic_" + tactic.PlanTacticId,
-                    });
+                    TacticId = tactic.PlanTacticId,
+                    TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.AnchorTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                    Title = tactic.Title,
+                    TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                    ColorCode = TacticTaskColor,
+                    OwnerName = GetOwnerName(tactic.CreatedBy),
+                    ROITacticType = tactic.AssetType,
+                    CalendarEntityType = "Tactic",
+                    AnchorTacticId = tactic.AnchorTacticId,
+                    CsvId = "Tactic_" + tactic.PlanTacticId,
+                });
 
 
-                }
-                else
+            }
+            else
+            {
+                Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
                 {
-                    Listofdata = PlanTacticListforpackageing.Where(id => TacticIds.Contains(id.PlanTacticId.ToString())).Select(tactic => new
-                    {
-                        TacticId = tactic.PlanTacticId,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.PlanTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
-                        Title = tactic.Title,
-                        TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
-                        ColorCode = TacticTaskColor,
-                        OwnerName = GetOwnerName(tactic.CreatedBy),
-                        ROITacticType = tactic.AssetType,
-                        CalendarEntityType = "Tactic",
-                        AnchorTacticId = tactic.AnchorTacticId,
-                        CsvId = "Tactic_" + tactic.PlanTacticId,
-                    });
+                    TacticId = tactic.PlanTacticId,
+                    TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tactic.PlanTacticId, tactic.PlanId, tactic.PlanCampaignId, tactic.PlanProgramId, tactic.PlanTacticId),
+                    Title = tactic.Title,
+                    TacticTypeValue = tactic.TacticTypeTtile != "" ? tactic.TacticTypeTtile : "null",
+                    ColorCode = TacticTaskColor,
+                    OwnerName = GetOwnerName(tactic.CreatedBy),
+                    ROITacticType = tactic.AssetType,
+                    CalendarEntityType = "Tactic",
+                    AnchorTacticId = tactic.AnchorTacticId,
+                    CsvId = "Tactic_" + tactic.PlanTacticId,
+                });
 
-                }
+            }
 
-                return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
+            return Json(new { Listofdata = Listofdata }, JsonRequestBehavior.AllowGet);
         }
 
         #endregion
@@ -4397,8 +4120,8 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public PartialViewResult LoadPlanCalendar()
         {
-                return PartialView("_PlanCalendar");
-            }
+            return PartialView("_PlanCalendar");
+        }
         /// <summary>
         /// Created by: Viral
         /// Created On: 09/19/2016
@@ -4409,9 +4132,9 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string viewBy)
         {
             #region "Declare local variables"
-                string planYear = "";
-                Services.IGrid objGrid = new Services.Grid();
-                List<calendarDataModel> resultData = new List<calendarDataModel>(); 
+            string planYear = "";
+            Services.IGrid objGrid = new Services.Grid();
+            List<calendarDataModel> resultData = new List<calendarDataModel>();
             #endregion
 
             try
@@ -4421,10 +4144,10 @@ namespace RevenuePlanner.Controllers
                     viewBy = PlanGanttTypes.Tactic.ToString();
 
                 // Get Calendar data through SP.
-                resultData = objGrid.GetPlanCalendarData(planIds, ownerIds, tactictypeIds, statusIds,customFieldIds, timeframe, planYear, viewBy); 
+                resultData = objGrid.GetPlanCalendarData(planIds, ownerIds, tactictypeIds, statusIds, customFieldIds, timeframe, planYear, viewBy);
 
                 // Set Owner Name and permission for each required entity.
-                resultData = objGrid.SetOwnerNameAndPermission(resultData); 
+                resultData = objGrid.SetOwnerNameAndPermission(resultData);
             }
             catch (Exception ex)
             {
@@ -4435,7 +4158,7 @@ namespace RevenuePlanner.Controllers
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
         }
-        
+
 
         #endregion
 
@@ -4455,7 +4178,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
-               ErrorSignal.FromCurrentContext().Raise(ex);
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return Json(lstViewBy, JsonRequestBehavior.AllowGet);
         }

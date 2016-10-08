@@ -25,112 +25,117 @@
 }
 @Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
 @Html.HiddenFor(model => model.GoalType, new { id = "GoalType" })
-
+<style>
+    #multipleselect_ddlOwner{left:0 !important; top:26px !important; width: 90%;}
+    .calendar_div{padding:0}
+    .plan-desc{padding:0 25px 0 20px}
+    #btnMultiselect_ddlOwner{background: #dff0f8 none repeat scroll 0 0 !important;}
+</style>
 @using (Html.BeginForm())
 {
-   
-        @Html.HiddenFor(model => model.Title)
-        <table>
-            <tbody>
-                <tr>
-                    <td>
-                        <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment n1-form-main">
-                            <div class="bold font_size16 plan-defination">Plan definition</div>
-                            <div id="divPlanDefinationEnabled" class="plan-text">
-                                I'm using the
-                                @{
-        if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()) && IsModelCreateEditAuthorized)
-                            {
-                        @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
-                        <span id="ModelTitle" class="source-sans-proregular"></span>
-                            }
-                            else
-                            {
-                        <span id="ModelTitle" class="source-sans-proregular">@Model.ModelTitle</span>
-                                }
-                                }
-                                model to create a plan 
-                                @*<span id="spandef">@Model.Title</span>*@
-                                in
-                                @{
-                            if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
-                            {
-                        @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
-                            }
-                            else
-                            {
-                        <span id="spandef">@Model.Year</span>
-                            }
-                                }
-                                with a
-                                @{
-                            if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
-                            {
-                        @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType })
-                            }
-                            else
-                            {
-                        <span id="spandef">@Model.GoalType</span>
-                            }
-                                }
-                                goal of
-                                <span id="revenueSign">@CurrencySymbol</span>
-                              
-                                @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @goalvalue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })
-                                and a budget of
-                                @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>" + CurrencySymbol + "800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat" })
-                                <span id="spanZeroBudget" class="source-sans-prosemibold" style="display: none;">none</span> .
-                                <div class="nl-overlay"></div>
 
-                            </div>
-                            <div id="divBudgetSummary">
-                                Based on my goal, this plan will require
-                                <span id="input1" class="source-sans-prosemibold"></span>
-                                <span id="msg1" class="source-sans-prosemibold"></span>
-                                <span id="conjuntionWord">and </span>
-                                <span id="input2" class="source-sans-prosemibold"></span>
-                                <span id="msg2" class="source-sans-prosemibold"></span>
-                                with an<span class="source-sans-prosemibold"> average deal size of</span>
-                                <span id="averageDealSize" class="source-sans-prosemibold">@Model.AverageDealSize</span>.
-                            </div>
-                            <div>
-                                This plan is owned by
-                                @{
-                            if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
-                            {
-                        @Html.DropDownListFor(m => Model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "select", new { datadefault = "SelectOwner", @class = "myValue  hide", placeholder = @Model.Owner })
+    @Html.HiddenFor(model => model.Title)
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment n1-form-main">
+                        <div class="bold font_size16 plan-defination">Plan definition</div>
+                        <div id="divPlanDefinationEnabled" class="plan-text">
+                            I'm using the
+                            @{
+    if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()) && IsModelCreateEditAuthorized)
+    {
+        @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
+                                <span id="ModelTitle" class="source-sans-proregular"></span>
+    }
+    else
+    {
+        <span id="ModelTitle" class="source-sans-proregular">@Model.ModelTitle</span>
+    }
                             }
-                            else
-                            {
-                        <span id="spandef">@Model.Owner</span>
+                            model to create a plan
+                            @*<span id="spandef">@Model.Title</span>*@
+                            in
+                            @{
+    if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
+    {
+        @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
+    }
+    else
+    {
+        <span id="spandef">@Model.Year</span>
+    }
                             }
-                                }
+                            with a
+                            @{
+    if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
+    {
+        @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType })
+    }
+    else
+    {
+        <span id="spandef">@Model.GoalType</span>
+    }
+                            }
+                            goal of
+                            <span id="revenueSign">@CurrencySymbol</span>
 
-                            </div>
-                        @if (!string.IsNullOrEmpty(Model.Description))
+                            @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @goalvalue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })
+                            and a budget of
+                            @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>" + CurrencySymbol + "800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat" })
+                            <span id="spanZeroBudget" class="source-sans-prosemibold" style="display: none;">none</span> .
+                            <div class="nl-overlay"></div>
+
+                        </div>
+                        <div id="divBudgetSummary">
+                            Based on my goal, this plan will require
+                            <span id="input1" class="source-sans-prosemibold"></span>
+                            <span id="msg1" class="source-sans-prosemibold"></span>
+                            <span id="conjuntionWord">and </span>
+                            <span id="input2" class="source-sans-prosemibold"></span>
+                            <span id="msg2" class="source-sans-prosemibold"></span>
+                            with an<span class="source-sans-prosemibold"> average deal size of</span>
+                            <span id="averageDealSize" class="source-sans-prosemibold">@Model.AverageDealSize</span>.
+                        </div>
+                    </div>
+                    <div class="span6 plan-desc" id="inspect-modal-left-column1">
+                        <p>@Html.Raw("Description")</p>
+                        @Html.TextArea("Description", HttpUtility.HtmlDecode(Model.Description), new { id = "txtDescription", @class = "span12 text-area-size input-setup light-blue-background", style = "height:92px;" })    @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
+
+                    </div>
+
+                    <div class="span3 calendar_div" id="inspect-modal-left-column2">
+                        <p>@Html.Raw("Owner")<span class="required-asterisk">*</span></p>
+                        @if (String.IsNullOrEmpty(strPlanId) || strPlanId == "0" || (InspectMode == Enums.InspectPopupMode.Edit.ToString()))
                         {
-                            @Html.TextBoxFor(model => model.Description, new { placeholder = @Model.Description, id = "txtDescription" })
-
+                            <span style="min-width: 100%; position: relative;display:block;">
+                                @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { datadefault = "SelectOwner", @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                            </span>
                         }
                         else
                         {
-                            @Html.TextBoxFor(model => model.Description, new { placeholder = "Add Description Here", id = "txtDescription" })
+                            @Html.TextBox("txtOwner", Model.Owner, new { @class = "span12 input-small truncate light-blue-background", style = "background:#F2F2F2;", @readonly = "true" })
                         }
-                            <script>
+                    </div>
+
+                    
+
+                    <script>
                         var nlform = new NLForm(document.getElementById('nl-form'));
-                            </script>
+                    </script>
 
-                        </div>
-                    </td>
 
-                    @Html.HiddenFor(model => model.ModelId)
-                    @Html.HiddenFor(model => model.PlanId)
-                    @Html.HiddenFor(model => model.TotalAllocatedCampaignBudget)
-                </tr>
-            </tbody>
-        </table>
-  
-  
+                </td>
+
+                @Html.HiddenFor(model => model.ModelId)
+                @Html.HiddenFor(model => model.PlanId)
+                @Html.HiddenFor(model => model.TotalAllocatedCampaignBudget)
+            </tr>
+        </tbody>
+    </table>
+
+
 }
 <script>
     var CurrencySymbol = '@CurrencySymbol';
@@ -138,12 +143,24 @@
     $('#InspectTab').removeClass('SpanDisable');
 
     $(document).ready(function () {
+
+        $('#ddlOwner').multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+            CustomName: '@Common.CustomTitle'
+        }).multiselectfilter();
+        $('#ddlOwner').next().css('width', '95%');
+        $('#ddlOwner').next().css('min-height', '30px');
+        var spanOwner = $('#multipleselect_ddlOwner');
+        $('#btnMultiselect_ddlOwner').after(spanOwner);
+
         var hdnPlanId = $("#hdnPlanId").val();
         var goalType = $("#GoalType").val();
         if (hdnPlanId != 0) {
             $('#divBudgetSummary').show();
             var modelId = 0;
-          
+
             var goalValue = $("#GoalValue").val();
 
             if ($('#ModelId').val() != '')
@@ -152,7 +169,7 @@
             if (goalType != '')
                 calculateBudget(modelId, goalType, goalValue);
 
-           
+
         }
         else {
             $('#divBudgetSummary').hide();
@@ -249,7 +266,7 @@
     }
 
     function SetupPlanSave() {
-     
+
         var returnparameter = false;
         var iserror = false;
         $('.nl-field').each(function () {
@@ -302,7 +319,15 @@
         else {
             $("#errorMessage").css("display", "none");
         }
+        var OwnerValue = $('#ddlOwner').val();
+        if (OwnerValue == "") {
+            $('#btnMultiselect_ddlOwner').addClass("error");
+            iserror = true;
 
+        }
+        else {
+            $('#btnMultiselect_ddlOwner').removeClass("error");
+        }
         var regex = /(>|<)/m;
 
         var descriptionvalue = $("#txtDescription").val();
