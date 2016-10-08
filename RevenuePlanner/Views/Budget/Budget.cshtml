@@ -219,9 +219,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         if (nValue != undefined) {
             TacticName = nValue;
         }
-    }
-
-    //if (stage == 1) { } // Stage == 1 - Means Perform Event on Cell -  Keydown, etc. This is currently not used but if required we can use this flag.
+    }   
     if (stage == 2) { // Stage == 2 - Means perform focus out event
         var EntityId = HomeGrid.cells(rowId, 0).cell.innerText;
         var Section = HomeGrid.cells(rowId, 1).cell.innerText;
