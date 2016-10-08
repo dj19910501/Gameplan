@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Web;
 
 namespace RevenuePlanner.Services
@@ -734,11 +735,11 @@ namespace RevenuePlanner.Services
                 lastYear = Convert.ToString(Convert.ToInt32(firstYear) + 1);
             }
 
-            string setHeader = string.Empty, colType = string.Empty, width = string.Empty, colSorting = string.Empty, columnIds = string.Empty;
+            StringBuilder setHeader = new StringBuilder();
+            string colType = string.Empty, width = string.Empty, colSorting = string.Empty, columnIds = string.Empty;
             string manageviewicon = "<a href=javascript:void(0) onclick=OpenCreateNew(false) class=manageviewicon  title='Open Column Management'><i class='fa fa-edit'></i></a>";
-            List<string> attachHeader = new List<string>();
 
-            setHeader = FixHeader;
+            setHeader.Append(FixHeader);
             columnIds = FixColumnIds;
             colType = FixColType;
             width = FixcolWidth;
@@ -765,9 +766,11 @@ namespace RevenuePlanner.Services
                     {
                         dt = new DateTime(2012, i - 12, 1);
                     }
-                    setHeader = setHeader + ",Q" + quarterCounter.ToString() + "-" + headerYear + " Budget " + manageviewicon
-                                        + ",Q" + quarterCounter.ToString() + "-" + headerYear + " Planned " + manageviewicon
-                                     + ",Q" + quarterCounter.ToString() + "-" + headerYear + " Actual " + manageviewicon;
+                    setHeader.Append(",Q").Append(quarterCounter.ToString()).Append("-").Append(headerYear)
+                  .Append(" Budget ").Append(manageviewicon).Append(",Q").Append(quarterCounter.ToString())
+                  .Append("-").Append(headerYear).Append(" Planned ").Append(manageviewicon)
+                  .Append(",Q").Append(quarterCounter.ToString()).Append("-").Append(headerYear)
+                  .Append(" Actual ").Append(manageviewicon);
 
 
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
@@ -791,11 +794,29 @@ namespace RevenuePlanner.Services
                 for (int monthNo = 1; monthNo <= 12; monthNo++)
                 {
                     DateTime dt = new DateTime(2012, monthNo, 1);
+                  
+                    setHeader.Append(",")
+                    .Append(dt.ToString("MMM").ToUpper())
+                    .Append("-")
+                    .Append(headerYear)
+                    .Append(" Budget ")
 
-                    setHeader = setHeader + "," + dt.ToString("MMM").ToUpper() + "-" + headerYear + " Budget " + manageviewicon
-                                        + "," + dt.ToString("MMM").ToUpper() + "-" + headerYear + " Planned " + manageviewicon
-                                        + "," + dt.ToString("MMM").ToUpper() + "-" + headerYear + " Actual " + manageviewicon;
-                    columnIds = columnIds + "," + "Budget,Planned,Actual";
+                    .Append(manageviewicon)
+                    .Append(",")
+                    .Append(dt.ToString("MMM").ToUpper())
+                    .Append("-")
+                    .Append(headerYear)
+
+                    .Append(" Planned ")
+                    .Append(manageviewicon)
+                    .Append(",")
+                    .Append(dt.ToString("MMM").ToUpper())
+                    .Append("-")
+
+                    .Append(headerYear)
+                    .Append(" Actual ")
+                    .Append(manageviewicon);
+
 
                     colType = colType + ",ed,ed,ed";
                     width = width + ",140,140,140";
@@ -811,6 +832,7 @@ namespace RevenuePlanner.Services
 
             return objBudgetDHTMLXGrid;
         }
+
 
         private List<Budgetdataobj> CampaignBudgetSummary(List<PlanBudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string activityId, bool isViewby = false)
         {
