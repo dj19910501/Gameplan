@@ -106,6 +106,7 @@ $('#btnbudget').click(function () {
     $('#exp-serach').css('display', 'none');
     HomeGrid.saveOpenStates("plangridState");		 
     RemoveAllHoneyCombData();
+    RefershPlanHeaderCalc();
     LoadBudgetGrid();
     ShowHideDataonBudgetScreen();
 
