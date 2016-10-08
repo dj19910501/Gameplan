@@ -735,6 +735,15 @@ namespace RevenuePlanner.Models
     }
 
     // Add By Nishant Sheth
+    // Class for grid row permission for edit or not
+    public class EntityPermissionRowWise
+    {
+        public string EntityType { get; set; }
+        public string EntityId { get; set; }
+        public bool IsRowPermission { get; set; }
+        public string LineItemType { get; set; }
+    }
+    // Add By Nishant Sheth
     // Class For User default Permission
     public class EntityPermission
     {
@@ -858,7 +867,7 @@ namespace RevenuePlanner.Models
     }
     public class PlanOptionsTacticType : PlanOptions
     {
-        public int PlanId { get; set; } 
+        public int PlanId { get; set; }
     }
     // Add By Nishant Sheth 
     // #1765 - to add list of monthly period.

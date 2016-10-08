@@ -7579,13 +7579,7 @@ BEGIN
 						THEN Tactic.Cost 
 							WHEN EntityType = 'LineItem' 
 								THEN LineItem.Cost
-							WHEN EntityType='Program'
-								THEN ProgramPlannedCost.PlannedCost
-							WHEN EntityType='Campaign'
-								THEN CampaignPlannedCost.PlannedCost
-							WHEN EntityType='Plan'
-								THEN PlanPlannedCost.PlannedCost
-					END AS PlannedCost
+				END AS PlannedCost
 				,Tactic.ProjectedStageValue 
 				,Stage.Title AS 'ProjectedStage'
 				,NULL AS 'TargetStageGoal'
@@ -7637,18 +7631,6 @@ BEGIN
 					WHERE Hireachy.EntityType='Tactic') AS MQL
 	OUTER APPLY (SELECT Value FROM dbo.fnGetRevueneByEntityTypeAndEntityId(Hireachy.EntityType,@ClientId,Stage.[Level],@StageRevenueMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue,M.AverageDealSize) Revenue
 					WHERE Hireachy.EntityType='Tactic') AS Revenue
-	OUTER APPLY (SELECT PlanPlannedCost.PlanId
-						,PlanPlannedCost.PlannedCost FROM Plan_PlannedCost PlanPlannedCost WHERE 
-						Hireachy.EntityType='Plan'
-							AND Hireachy.EntityId=PlanPlannedCost.PlanId)PlanPlannedCost
-	OUTER APPLY (SELECT CampaignPlannedCost.PlanCampaignId
-							,CampaignPlannedCost.PlannedCost FROM Campaign_PlannedCost CampaignPlannedCost WHERE 
-							Hireachy.EntityType='Campaign'
-								AND Hireachy.EntityId=CampaignPlannedCost.PlanCampaignId)CampaignPlannedCost
-	OUTER APPLY (SELECT ProgramPlannedCost.PlanProgramId
-							,ProgramPlannedCost.PlannedCost FROM Program_PlannedCost ProgramPlannedCost WHERE 
-							Hireachy.EntityType='Program'
-								AND Hireachy.EntityId=ProgramPlannedCost.PlanProgramId)ProgramPlannedCost
 	Order by Hireachy.EntityTitle
 	
 END
@@ -8157,6 +8139,7 @@ ALTER PROCEDURE [dbo].[GridCustomFieldData]
 	,@OwnerIds NVARCHAR(MAX) = ''
 	,@TacticTypeIds varchar(max)=''
 	,@StatusIds varchar(max)=''
+	,@UserId int = 0
 AS
 BEGIN
 
@@ -8230,21 +8213,33 @@ SET NOCOUNT ON;
 							CASE WHEN C.CustomFieldType = @CustomFieldTypeText
 								THEN R.Value
 							ELSE 
-								CAST(CCP.Value AS VARCHAR(50)) 
-							END
+								CASE WHEN C.IsRequired=1
+										THEN (SELECT SUBSTRING((SELECT ','+MAX(CPInner.Value)
+													FROM CustomFieldOption CPInner
+												INNER JOIN CustomRestriction CR ON 
+												CR.CustomFieldId = CPInner.CustomFieldId
+												AND CR.CustomFieldOptionId = CPInner.CustomFieldOptionId
+												AND R.Value = CAST(CR.CustomFieldOptionId AS varchar(50))
+												AND CR.UserId=@UserId AND CR.Permission=2
+												WHERE CR.Permission=2
+												GROUP BY CPInner.CustomFieldId
+												FOR XML PATH('')),2,90000))
+										ELSE 
+											CAST(CCP.Value AS VARCHAR(50)) 
+										END
+								END
 							FROM CustomField_Entity R
 							LEFT JOIN CustomFieldOption CCP ON R.Value = CAST(CCP.CustomFieldOptionId AS varchar(50))
 							WHERE R.EntityId = CE.EntityId
 							AND R.CustomFieldId = CE.CustomFieldId
 							AND CE.CustomFieldId = C.CustomFieldId
-							--AND R.Value = CAST(CP.CustomFieldOptionId AS varchar(50))
 							FOR XML PATH('')), 2,900000
 						)) AS 'Text'
-					--FROM dbo.fnGetEntitieHirarchyByPlanId(@PlanId) Hireachy 
 					FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds,@TimeFrame,@Isgrid) Hireachy 
 					CROSS APPLY (SELECT C.CustomFieldId
 										,C.EntityType
-										,CT.CustomFieldType FROM CustomField C
+										,CT.CustomFieldType
+										,C.IsRequired FROM CustomField C
 							CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT
 								WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId)CT
 							WHERE Hireachy.EntityType = C.EntityType AND C.ClientId = @ClientId
