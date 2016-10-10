@@ -207,7 +207,7 @@ namespace RevenuePlanner.Services
             List<Int64> lsteditableEntityIds = GetEditableTacticIds(GridHireachyData, ListOfCustomData, UserId, ClientId);
             // Set Row wise permission
             GridHireachyData = GridRowPermission(GridHireachyData, objPermission, lstSubordinatesIds, lsteditableEntityIds, UserId);
-            
+
             List<EntityPermissionRowWise> EntityRowPermission = GridHireachyData.Select(a => new EntityPermissionRowWise
             {
                 IsRowPermission = a.IsRowPermission,
@@ -341,9 +341,11 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get plan grid data from cache memory
         /// </summary>
-        public PlanMainDHTMLXGrid GetPlanGridDataFromCache(int ClientId, int UserId, string viewBy)
+        public PlanMainDHTMLXGrid GetPlanGridDataFromCache(int ClientId, int UserId, string viewBy, string CurrencySymbol, double ExchangeRate)
         {
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            PlanExchangeRate = ExchangeRate; // Set client currency plan exchange rate 
+            PlanCurrencySymbol = CurrencySymbol; // Set user currency symbol
             // Get MQL title label client wise
             string MQLTitle = GetMqlTitle(ClientId);
 
@@ -1228,7 +1230,7 @@ namespace RevenuePlanner.Services
         /// Method for convert number to formatted string
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string FormatNumber<T>(T number, int maxDecimals = 0)
+        private string FormatNumber<T>(T number, int maxDecimals = 1)
         {
             return Regex.Replace(String.Format("{0:n" + maxDecimals + "}", number),
                                  @"[" + System.Globalization.NumberFormatInfo.CurrentInfo.NumberDecimalSeparator + "]?0+$", "");
@@ -1702,7 +1704,7 @@ namespace RevenuePlanner.Services
                 string MQL = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
                 double PlannedMQL = 0;
                 double.TryParse(Convert.ToString(MQL), out PlannedMQL);
-                objVal = FormatNumber(PlannedMQL, 0);
+                objVal = FormatNumber(PlannedMQL, 1);
             }
             else if (string.Compare(ColumnName, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue), true) == 0)
             {

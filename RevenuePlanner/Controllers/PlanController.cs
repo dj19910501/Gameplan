@@ -8229,7 +8229,7 @@ namespace RevenuePlanner.Controllers
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
             try
             {
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGridDataFromCache(Sessions.User.CID, Sessions.User.ID, viewBy);
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGridDataFromCache(Sessions.User.CID, Sessions.User.ID, viewBy, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate);
             }
             catch (Exception objException)
             {

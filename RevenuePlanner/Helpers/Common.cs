@@ -2970,7 +2970,7 @@ namespace RevenuePlanner.Helpers
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             CacheObject dataCache = new CacheObject();
             StoredProcedure sp = new StoredProcedure();
-
+            PlanExchangeRate = Sessions.PlanExchangeRate;
             MRPEntities db = new MRPEntities();
             int Year;
             DateTime StartDate;
