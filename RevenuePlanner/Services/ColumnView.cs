@@ -276,7 +276,7 @@ namespace RevenuePlanner.Services
         public List<CustomFieldOptionModel> GetCustomFiledOptionList(int clientID)
         {
             List<CustomFieldOptionModel> optionlist = new List<CustomFieldOptionModel>();
-           
+            List<CustomFieldOption> finalOptionsList = new List<CustomFieldOption>();
                 DataTable dtColumnAttribute = GetCustomFieldList(clientID);
 
                 if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
@@ -287,7 +287,8 @@ namespace RevenuePlanner.Services
                         CustomFieldId = Convert.ToString(row["CustomFieldId"]),
                         CutomfieldName = Convert.ToString(row["Name"]),
                         ParentID = Convert.ToInt32(row["ParentId"]),
-                        CustomfiledType = Convert.ToString(row["CustomFieldType"])
+                        CustomfiledType = Convert.ToString(row["CustomFieldType"]),
+                        IsRequired=Convert.ToBoolean(row["IsRequired"])
 
                     }).ToList();
                     List<CustomFieldDependency> DependencyList = objDbMrpEntities.CustomFieldDependencies.Where(a => a.IsDeleted == false).Select(a => a).ToList();
@@ -298,8 +299,14 @@ namespace RevenuePlanner.Services
                     List<int> customfieldid = columnattribute.Select(a => Convert.ToInt32(a.CustomFieldId)).ToList();
                     List<CustomFieldOption> optlist = objDbMrpEntities.CustomFieldOptions.Where(a => a.CustomField.ClientId == clientID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).ToList();
                     List<int> enitablerestrictionoptionId = lstEditableRestrictions.Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
-                    optlist = optlist.Where(opt => enitablerestrictionoptionId.Contains(opt.CustomFieldOptionId)).ToList();
-                    optionlist = optlist.Select(o => new CustomFieldOptionModel
+                    foreach (CustomAttribute item in columnattribute)
+                    {
+                        int cutomid = Convert.ToInt32(item.CustomFieldId);
+                        if (item.IsRequired)
+                            finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid && enitablerestrictionoptionId.Contains(opt.CustomFieldOptionId)).ToList();
+                        else
+                            finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid).ToList();
+                        var customoptionlist = finalOptionsList.Where(opt => opt.CustomFieldId == cutomid).Select(o => new CustomFieldOptionModel
                         {
                             ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
                             ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).ToList(),
@@ -308,10 +315,15 @@ namespace RevenuePlanner.Services
                             value = o.Value,
                             customFieldId = o.CustomFieldId
                         }).OrderBy(o => o.value).ToList();
+                        optionlist.AddRange(customoptionlist);
+                    }
+                   
+                   
                 }
            
             return optionlist;
         }
+
        
     }
 }

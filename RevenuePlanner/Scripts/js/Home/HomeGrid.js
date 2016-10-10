@@ -194,6 +194,8 @@ function LoadAfterParsing() {
             HomeGrid.saveOpenStates("plangridState");
         }, 1000);
         LoadAfterParsing();
+        isCopyTacticHomeGrid = 0;
+        isEditTacticHomeGrid = 0;
         var childItems = HomeGrid.getAllSubItems(rowid);
         if (childItems != undefined && childItems != null && childItems != "") {
             //childItems = childItems.split(',').filter(function (tac) {
@@ -387,6 +389,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     AssignParentIds(rowId);
     UpdateColumn = HomeGrid.getColumnId(Colind, 0);
     if (stage == 0) {
+        var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+        if ((locked != null && locked != "") && locked == "1")
+            return false;
+        if (rowId == "newRow_0")
+            return false;
         if (Colind == TypeColIndex) {
                 var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
             if (updatetype.toLowerCase() == secLineItem) {                
@@ -411,11 +418,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             }
         }
         }
-         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
-        if ((locked != null && locked != "") && locked == "1")
-            return false;
-        if (rowId == "newRow_0")
-            return false;
+        
         //added by devanshi #2598
         var customcolId = HomeGrid.getColumnId(cellInd);
         if (customcolId.indexOf("custom_") >= 0) {
@@ -433,7 +436,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         opencombobox();
     }
     if (stage == 1) {
-        if (updatetype == secLineItem.toLowerCase()) {
+        if (updatetype.toLowerCase() == secLineItem.toLowerCase() || updatetype.toLowerCase() == 'tactic') {
             var oldval = HomeGrid.cells(rowId, cellInd).getValue();
             var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
             if (cellInd != 1) {

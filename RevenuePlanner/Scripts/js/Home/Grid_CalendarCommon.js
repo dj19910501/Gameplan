@@ -7,16 +7,15 @@ $('#btngridcalendar').click(function () {
     if ($('#errorMsg').css('display') == 'block') {
         $('#errorMsg').css('display', 'none');
     }
-    // get scroll set of selected row from grid to calendar
-    scrollstate = {
-        y: HomeGrid.objBox.scrollTop,
-        x: HomeGrid.objBox.scrollLeft,
-    }
-
     $('#exp-serach').css('display', 'none');
     if ($('#btnbudget').hasClass('P-icon-active')) {
         isCalendarView = true;
         $('#IsGridView').val('false');
+        // get scroll set of selected row from grid to calendar
+        scrollstate = {
+            y: HomeGrid.objBox.scrollTop,
+            x: HomeGrid.objBox.scrollLeft,
+        }
         BindPlanCalendar();
     }
     else {
@@ -31,6 +30,11 @@ $('#btngridcalendar').click(function () {
             isCalendarView = true;
             $('#IsGridView').val('false');
             HomeGrid.saveOpenStates("plangridState");
+            // get scroll set of selected row from grid to calendar
+            scrollstate = {
+                y: HomeGrid.objBox.scrollTop,
+                x: HomeGrid.objBox.scrollLeft,
+            }
             BindPlanCalendar();
         }
     }
@@ -71,6 +75,7 @@ function ShowhideDataonGridCalendar() {
         $("#GridGanttContent").show();
         $("#divgridview").hide();
         isCalendarView = true;
+        $('#IsGridView').val('false');
         $('#btngridcalendar').addClass('P-icon-active');
     }
     $('#SuccessMsg').css('display', 'none');
@@ -95,9 +100,11 @@ $('#btnbudget').click(function () {
     if ($('#errorMsg').css('display') == 'block') {
         $('#errorMsg').css('display', 'none');
     }
-    scrollstate = {
-    y: HomeGrid.objBox.scrollTop,
-        x: HomeGrid.objBox.scrollLeft,
+    if (IsGridView) {
+        scrollstate = {
+            y: HomeGrid.objBox.scrollTop,
+            x: HomeGrid.objBox.scrollLeft,
+        }
     }
     isCalendarView = false;
     IsGridView = false;

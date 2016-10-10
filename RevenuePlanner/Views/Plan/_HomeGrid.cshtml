@@ -36,7 +36,6 @@
 <script src="~/Scripts/js/Home/HomeGrid.js"></script>
 <script type="text/javascript">
     gridname = "home";
-    var HomeGrid;
      
     var tacticTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); 
     var lineItemTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.LineItemTypelist))');
@@ -132,7 +131,9 @@
                 $(window).scrollTop(scrolltop - 100);
             }
             else {
-                HomeGrid.objBox.scrollTop = scrollstate.y + 100;
+                if (scrollstate != null && scrollstate != undefined ) {
+                    HomeGrid.objBox.scrollTop = scrollstate.y + 100;
+                    }
             }
             
         });

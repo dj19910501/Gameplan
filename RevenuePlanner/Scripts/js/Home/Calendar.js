@@ -343,14 +343,13 @@ else if ( $.isNumeric(timeframe)) {
     AttachEventToTactic();
     AttachEventToonTaskRowClick();
     //GlobalSearch();
+  
+    gantt.refreshData();   // Refresh Gantt to expand all tasks.
+    if (scrollstate != null && scrollstate != undefined ) {
 
-    setTimeout(function () {
         var _scrollY = scrollstate.y
         gantt.scrollTo(0, _scrollY);
-    }, 250);
-
-    gantt.refreshData();   // Refresh Gantt to expand all tasks.
-    
+    }
     SetTooltip();
 }
 //method to get open close state to load context from grid to calendar #2677

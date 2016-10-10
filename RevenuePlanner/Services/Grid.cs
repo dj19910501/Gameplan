@@ -1448,7 +1448,33 @@ namespace RevenuePlanner.Services
                     else
                     {
                         objPlanData.value = GetvalueFromObject(RowData, pair.Name);
-                        objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                        // set ids for line item type and tactic type
+                        if (objres.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
+                        {
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString()) // Consider as line item type
+                            {
+                                objPlanData.actval = GetvalueFromObject(RowData, "LineItemTypeId");
+                            }
+                            else
+                            {
+                                objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                            }
+                        }
+                        else if (objres.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
+                        {
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString())
+                            {
+                                objPlanData.actval = GetvalueFromObject(RowData, "TacticTypeId");
+                            }
+                            else
+                            {
+                                objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                            }
+                        }
+                        else
+                        {
+                            objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                        }
 
                         if (objres.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
                         {
