@@ -5446,7 +5446,8 @@ IF ( LOWER(@Type)='lineitem')
 			IF Exists (select top 1 PlanLineItemId from [Plan_Campaign_Program_Tactic_LineItem] where PlanLineItemId =  @EntityId)
 			BEGIN		
 
-
+			IF((SELECT ISNULL(LineItemTypeId,0) from Plan_Campaign_Program_tactic_Lineitem Where PlanLineItemId=@EntityId) != 0)
+			BEGIN
 
 			--Y1
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y1')
@@ -5595,6 +5596,9 @@ IF ( LOWER(@Type)='lineitem')
 				   INSERT  INTO Plan_Campaign_Program_Tactic_LineItem_Actual  VALUES (@EntityId,'Y12', (SELECT DEC from #TempDiffer WHERE ActivityId = @EntityId),GETDATE(),@UserId)					
 				END
 		 
+
+			END
+
 			END
 		END
  set @cnt = @cnt + 1
@@ -6983,6 +6987,9 @@ IF (LOWER(@Type)='lineitem')
 		IF Exists (select top 1 PlanTacticId from Plan_Campaign_Program_Tactic_LineItem where PlanLineItemId =  @EntityId)
 			BEGIN
 			
+			IF((SELECT ISNULL(LineItemTypeId,0) from Plan_Campaign_Program_tactic_Lineitem Where PlanLineItemId=@EntityId) != 0)
+			BEGIN
+
 			IF Exists (select top 1 PlanTacticId from Plan_Campaign_Program_Tactic where  PlanTacticId =(select PlanTacticId from Plan_Campaign_Program_Tactic_LineItem where PlanLineItemId= @EntityId) and [Status] IN('In-Progress','Complete','Approved'))
 			BEGIN
 
@@ -7105,6 +7112,8 @@ IF (LOWER(@Type)='lineitem')
 			
 			
 				
+		END
+
 		END
 	END
 
