@@ -3145,62 +3145,62 @@ namespace RevenuePlanner.Controllers
                 {
                     if (bm.ActivityType == ActivityType.ActivityLineItem || bm.ActivityType == ActivityType.ActivityTactic)
                     {
-                        bm.MonthActual.Jan = bm.MonthActual.Jan + bm.MonthActual.Feb + bm.MonthActual.Mar;
-                        bm.MonthActual.Apr = bm.MonthActual.Apr + bm.MonthActual.May + bm.MonthActual.Jun;
-                        bm.MonthActual.Jul = bm.MonthActual.Jul + bm.MonthActual.Aug + bm.MonthActual.Sep;
-                        bm.MonthActual.Oct = bm.MonthActual.Oct + bm.MonthActual.Nov + bm.MonthActual.Dec;
-                        bm.MonthActual.Feb = 0;
-                        bm.MonthActual.Mar = 0;
-                        bm.MonthActual.May = 0;
-                        bm.MonthActual.Jun = 0;
-                        bm.MonthActual.Aug = 0;
-                        bm.MonthActual.Sep = 0;
-                        bm.MonthActual.Nov = 0;
-                        bm.MonthActual.Dec = 0;
+                        bm.MonthActual.BudgetY1 = bm.MonthActual.BudgetY1 + bm.MonthActual.BudgetY2 + bm.MonthActual.BudgetY3;
+                        bm.MonthActual.BudgetY4 = bm.MonthActual.BudgetY4 + bm.MonthActual.BudgetY5 + bm.MonthActual.BudgetY6;
+                        bm.MonthActual.BudgetY7 = bm.MonthActual.BudgetY7 + bm.MonthActual.BudgetY8 + bm.MonthActual.BudgetY9;
+                        bm.MonthActual.BudgetY10 = bm.MonthActual.BudgetY10 + bm.MonthActual.BudgetY11 + bm.MonthActual.BudgetY12;
+                        bm.MonthActual.BudgetY2 = 0;
+                        bm.MonthActual.BudgetY3 = 0;
+                        bm.MonthActual.BudgetY5 = 0;
+                        bm.MonthActual.BudgetY6 = 0;
+                        bm.MonthActual.BudgetY8 = 0;
+                        bm.MonthActual.BudgetY9 = 0;
+                        bm.MonthActual.BudgetY11 = 0;
+                        bm.MonthActual.BudgetY12 = 0;
 
-                        bm.MonthPlanned.Jan = bm.MonthPlanned.Jan + bm.MonthPlanned.Feb + bm.MonthPlanned.Mar;
-                        bm.MonthPlanned.Apr = bm.MonthPlanned.Apr + bm.MonthPlanned.May + bm.MonthPlanned.Jun;
-                        bm.MonthPlanned.Jul = bm.MonthPlanned.Jul + bm.MonthPlanned.Aug + bm.MonthPlanned.Sep;
-                        bm.MonthPlanned.Oct = bm.MonthPlanned.Oct + bm.MonthPlanned.Nov + bm.MonthPlanned.Dec;
-                        bm.MonthPlanned.Feb = 0;
-                        bm.MonthPlanned.Mar = 0;
-                        bm.MonthPlanned.May = 0;
-                        bm.MonthPlanned.Jun = 0;
-                        bm.MonthPlanned.Aug = 0;
-                        bm.MonthPlanned.Sep = 0;
-                        bm.MonthPlanned.Nov = 0;
-                        bm.MonthPlanned.Dec = 0;
+                        bm.MonthPlanned.BudgetY1 = bm.MonthPlanned.BudgetY1 + bm.MonthPlanned.BudgetY2 + bm.MonthPlanned.BudgetY3;
+                        bm.MonthPlanned.BudgetY4 = bm.MonthPlanned.BudgetY4 + bm.MonthPlanned.BudgetY5 + bm.MonthPlanned.BudgetY6;
+                        bm.MonthPlanned.BudgetY7 = bm.MonthPlanned.BudgetY7 + bm.MonthPlanned.BudgetY8 + bm.MonthPlanned.BudgetY9;
+                        bm.MonthPlanned.BudgetY10 = bm.MonthPlanned.BudgetY10 + bm.MonthPlanned.BudgetY11 + bm.MonthPlanned.BudgetY12;
+                        bm.MonthPlanned.BudgetY2 = 0;
+                        bm.MonthPlanned.BudgetY3 = 0;
+                        bm.MonthPlanned.BudgetY5 = 0;
+                        bm.MonthPlanned.BudgetY6 = 0;
+                        bm.MonthPlanned.BudgetY8 = 0;
+                        bm.MonthPlanned.BudgetY9 = 0;
+                        bm.MonthPlanned.BudgetY11 = 0;
+                        bm.MonthPlanned.BudgetY12 = 0;
 
                         if (bm.ActivityType == ActivityType.ActivityTactic)
                         {
-                            bm.MonthAllocated.Jan = bm.MonthAllocated.Jan + bm.MonthAllocated.Feb + bm.MonthAllocated.Mar;
-                            bm.MonthAllocated.Apr = bm.MonthAllocated.Apr + bm.MonthAllocated.May + bm.MonthAllocated.Jun;
-                            bm.MonthAllocated.Jul = bm.MonthAllocated.Jul + bm.MonthAllocated.Aug + bm.MonthAllocated.Sep;
-                            bm.MonthAllocated.Oct = bm.MonthAllocated.Oct + bm.MonthAllocated.Nov + bm.MonthAllocated.Dec;
-                            bm.MonthAllocated.Feb = 0;
-                            bm.MonthAllocated.Mar = 0;
-                            bm.MonthAllocated.May = 0;
-                            bm.MonthAllocated.Jun = 0;
-                            bm.MonthAllocated.Aug = 0;
-                            bm.MonthAllocated.Sep = 0;
-                            bm.MonthAllocated.Nov = 0;
-                            bm.MonthAllocated.Dec = 0;
+                            bm.MonthAllocated.BudgetY1 = bm.MonthAllocated.BudgetY1 + bm.MonthAllocated.BudgetY2 + bm.MonthAllocated.BudgetY3;
+                            bm.MonthAllocated.BudgetY4 = bm.MonthAllocated.BudgetY4 + bm.MonthAllocated.BudgetY5 + bm.MonthAllocated.BudgetY6;
+                            bm.MonthAllocated.BudgetY7 = bm.MonthAllocated.BudgetY7 + bm.MonthAllocated.BudgetY8 + bm.MonthAllocated.BudgetY9;
+                            bm.MonthAllocated.BudgetY10 = bm.MonthAllocated.BudgetY10 + bm.MonthAllocated.BudgetY11 + bm.MonthAllocated.BudgetY12;
+                            bm.MonthAllocated.BudgetY2 = 0;
+                            bm.MonthAllocated.BudgetY3 = 0;
+                            bm.MonthAllocated.BudgetY5 = 0;
+                            bm.MonthAllocated.BudgetY6 = 0;
+                            bm.MonthAllocated.BudgetY8 = 0;
+                            bm.MonthAllocated.BudgetY9 = 0;
+                            bm.MonthAllocated.BudgetY11 = 0;
+                            bm.MonthAllocated.BudgetY12 = 0;
                         }
                     }
                     else
                     {
-                        bm.MonthAllocated.Jan = bm.MonthAllocated.Jan + bm.MonthAllocated.Feb + bm.MonthAllocated.Mar;
-                        bm.MonthAllocated.Apr = bm.MonthAllocated.Apr + bm.MonthAllocated.May + bm.MonthAllocated.Jun;
-                        bm.MonthAllocated.Jul = bm.MonthAllocated.Jul + bm.MonthAllocated.Aug + bm.MonthAllocated.Sep;
-                        bm.MonthAllocated.Oct = bm.MonthAllocated.Oct + bm.MonthAllocated.Nov + bm.MonthAllocated.Dec;
-                        bm.MonthAllocated.Feb = 0;
-                        bm.MonthAllocated.Mar = 0;
-                        bm.MonthAllocated.May = 0;
-                        bm.MonthAllocated.Jun = 0;
-                        bm.MonthAllocated.Aug = 0;
-                        bm.MonthAllocated.Sep = 0;
-                        bm.MonthAllocated.Nov = 0;
-                        bm.MonthAllocated.Dec = 0;
+                        bm.MonthAllocated.BudgetY1 = bm.MonthAllocated.BudgetY1 + bm.MonthAllocated.BudgetY2 + bm.MonthAllocated.BudgetY3;
+                        bm.MonthAllocated.BudgetY4 = bm.MonthAllocated.BudgetY4 + bm.MonthAllocated.BudgetY5 + bm.MonthAllocated.BudgetY6;
+                        bm.MonthAllocated.BudgetY7 = bm.MonthAllocated.BudgetY7 + bm.MonthAllocated.BudgetY8 + bm.MonthAllocated.BudgetY9;
+                        bm.MonthAllocated.BudgetY10 = bm.MonthAllocated.BudgetY10 + bm.MonthAllocated.BudgetY11 + bm.MonthAllocated.BudgetY12;
+                        bm.MonthAllocated.BudgetY2 = 0;
+                        bm.MonthAllocated.BudgetY3 = 0;
+                        bm.MonthAllocated.BudgetY5 = 0;
+                        bm.MonthAllocated.BudgetY6 = 0;
+                        bm.MonthAllocated.BudgetY8 = 0;
+                        bm.MonthAllocated.BudgetY9 = 0;
+                        bm.MonthAllocated.BudgetY11 = 0;
+                        bm.MonthAllocated.BudgetY12 = 0;
                     }
                 }
             }
@@ -3226,30 +3226,30 @@ namespace RevenuePlanner.Controllers
             BudgetMonth AllocatedTotal = new BudgetMonth();
             BudgetMonth PercAllocated = new BudgetMonth();
             ActualTotal = model.Where(m => m.ActivityType == ActivityType.ActivityMain).Select(m => m.MonthActual).FirstOrDefault();
-            MainTotalActual = ActualTotal.Jan + ActualTotal.Feb + ActualTotal.Mar + ActualTotal.Apr + ActualTotal.May + ActualTotal.Jun + ActualTotal.Jul + ActualTotal.Aug + ActualTotal.Sep + ActualTotal.Oct + ActualTotal.Nov + ActualTotal.Dec;
+            MainTotalActual = ActualTotal.BudgetY1 + ActualTotal.BudgetY2 + ActualTotal.BudgetY3 + ActualTotal.BudgetY4 + ActualTotal.BudgetY5 + ActualTotal.BudgetY6 + ActualTotal.BudgetY7 + ActualTotal.BudgetY8 + ActualTotal.BudgetY9 + ActualTotal.BudgetY10 + ActualTotal.BudgetY11 + ActualTotal.BudgetY12;
             if (Tab == ReportTabType.Plan.ToString())
             {
                 AllocatedTotal = model.Where(m => m.ActivityType == ActivityType.ActivityMain).Select(m => m.ChildMonthAllocated).FirstOrDefault();
-                MainTotalAllocated = AllocatedTotal.Jan + AllocatedTotal.Feb + AllocatedTotal.Mar + AllocatedTotal.Apr + AllocatedTotal.May + AllocatedTotal.Jun + AllocatedTotal.Jul + AllocatedTotal.Aug + AllocatedTotal.Sep + AllocatedTotal.Oct + AllocatedTotal.Nov + AllocatedTotal.Dec;
+                MainTotalAllocated = AllocatedTotal.BudgetY1 + AllocatedTotal.BudgetY2 + AllocatedTotal.BudgetY3 + AllocatedTotal.BudgetY4 + AllocatedTotal.BudgetY5 + AllocatedTotal.BudgetY6 + AllocatedTotal.BudgetY7 + AllocatedTotal.BudgetY8 + AllocatedTotal.BudgetY9 + AllocatedTotal.BudgetY10 + AllocatedTotal.BudgetY11 + AllocatedTotal.BudgetY12;
             }
             else
             {
                 AllocatedTotal = model.Where(m => m.ActivityType == ActivityType.ActivityMain).Select(m => m.MonthPlanned).FirstOrDefault();
-                MainTotalAllocated = AllocatedTotal.Jan + AllocatedTotal.Feb + AllocatedTotal.Mar + AllocatedTotal.Apr + AllocatedTotal.May + AllocatedTotal.Jun + AllocatedTotal.Jul + AllocatedTotal.Aug + AllocatedTotal.Sep + AllocatedTotal.Oct + AllocatedTotal.Nov + AllocatedTotal.Dec;
+                MainTotalAllocated = AllocatedTotal.BudgetY1 + AllocatedTotal.BudgetY2 + AllocatedTotal.BudgetY3 + AllocatedTotal.BudgetY4 + AllocatedTotal.BudgetY5 + AllocatedTotal.BudgetY6 + AllocatedTotal.BudgetY7 + AllocatedTotal.BudgetY8 + AllocatedTotal.BudgetY9 + AllocatedTotal.BudgetY10 + AllocatedTotal.BudgetY11 + AllocatedTotal.BudgetY12;
             }
 
-            PercAllocated.Jan = (AllocatedTotal.Jan == 0 && ActualTotal.Jan == 0) ? 0 : (AllocatedTotal.Jan == 0 && ActualTotal.Jan > 0) ? 101 : ActualTotal.Jan / AllocatedTotal.Jan * 100;
-            PercAllocated.Feb = (AllocatedTotal.Feb == 0 && ActualTotal.Feb == 0) ? 0 : (AllocatedTotal.Feb == 0 && ActualTotal.Feb > 0) ? 101 : ActualTotal.Feb / AllocatedTotal.Feb * 100;
-            PercAllocated.Mar = (AllocatedTotal.Mar == 0 && ActualTotal.Mar == 0) ? 0 : (AllocatedTotal.Mar == 0 && ActualTotal.Mar > 0) ? 101 : ActualTotal.Mar / AllocatedTotal.Mar * 100;
-            PercAllocated.Apr = (AllocatedTotal.Apr == 0 && ActualTotal.Apr == 0) ? 0 : (AllocatedTotal.Apr == 0 && ActualTotal.Apr > 0) ? 101 : ActualTotal.Apr / AllocatedTotal.Apr * 100;
-            PercAllocated.May = (AllocatedTotal.May == 0 && ActualTotal.May == 0) ? 0 : (AllocatedTotal.May == 0 && ActualTotal.May > 0) ? 101 : ActualTotal.May / AllocatedTotal.May * 100;
-            PercAllocated.Jun = (AllocatedTotal.Jun == 0 && ActualTotal.Jun == 0) ? 0 : (AllocatedTotal.Jun == 0 && ActualTotal.Jun > 0) ? 101 : ActualTotal.Jun / AllocatedTotal.Jun * 100;
-            PercAllocated.Jul = (AllocatedTotal.Jul == 0 && ActualTotal.Jul == 0) ? 0 : (AllocatedTotal.Jul == 0 && ActualTotal.Jul > 0) ? 101 : ActualTotal.Jul / AllocatedTotal.Jul * 100;
-            PercAllocated.Aug = (AllocatedTotal.Aug == 0 && ActualTotal.Aug == 0) ? 0 : (AllocatedTotal.Aug == 0 && ActualTotal.Aug > 0) ? 101 : ActualTotal.Aug / AllocatedTotal.Aug * 100;
-            PercAllocated.Sep = (AllocatedTotal.Sep == 0 && ActualTotal.Sep == 0) ? 0 : (AllocatedTotal.Sep == 0 && ActualTotal.Sep > 0) ? 101 : ActualTotal.Sep / AllocatedTotal.Sep * 100;
-            PercAllocated.Oct = (AllocatedTotal.Oct == 0 && ActualTotal.Oct == 0) ? 0 : (AllocatedTotal.Oct == 0 && ActualTotal.Oct > 0) ? 101 : ActualTotal.Oct / AllocatedTotal.Oct * 100;
-            PercAllocated.Nov = (AllocatedTotal.Nov == 0 && ActualTotal.Nov == 0) ? 0 : (AllocatedTotal.Nov == 0 && ActualTotal.Nov > 0) ? 101 : ActualTotal.Nov / AllocatedTotal.Nov * 100;
-            PercAllocated.Dec = (AllocatedTotal.Dec == 0 && ActualTotal.Dec == 0) ? 0 : (AllocatedTotal.Dec == 0 && ActualTotal.Dec > 0) ? 101 : ActualTotal.Dec / AllocatedTotal.Dec * 100;
+            PercAllocated.BudgetY1 = (AllocatedTotal.BudgetY1 == 0 && ActualTotal.BudgetY1 == 0) ? 0 : (AllocatedTotal.BudgetY1 == 0 && ActualTotal.BudgetY1 > 0) ? 101 : ActualTotal.BudgetY1 / AllocatedTotal.BudgetY1 * 100;
+            PercAllocated.BudgetY2 = (AllocatedTotal.BudgetY2 == 0 && ActualTotal.BudgetY2 == 0) ? 0 : (AllocatedTotal.BudgetY2 == 0 && ActualTotal.BudgetY2 > 0) ? 101 : ActualTotal.BudgetY2 / AllocatedTotal.BudgetY2 * 100;
+            PercAllocated.BudgetY3 = (AllocatedTotal.BudgetY3 == 0 && ActualTotal.BudgetY3 == 0) ? 0 : (AllocatedTotal.BudgetY3 == 0 && ActualTotal.BudgetY3 > 0) ? 101 : ActualTotal.BudgetY3 / AllocatedTotal.BudgetY3 * 100;
+            PercAllocated.BudgetY4 = (AllocatedTotal.BudgetY4 == 0 && ActualTotal.BudgetY4 == 0) ? 0 : (AllocatedTotal.BudgetY4 == 0 && ActualTotal.BudgetY4 > 0) ? 101 : ActualTotal.BudgetY4 / AllocatedTotal.BudgetY4 * 100;
+            PercAllocated.BudgetY5 = (AllocatedTotal.BudgetY5 == 0 && ActualTotal.BudgetY5 == 0) ? 0 : (AllocatedTotal.BudgetY5 == 0 && ActualTotal.BudgetY5 > 0) ? 101 : ActualTotal.BudgetY5 / AllocatedTotal.BudgetY5 * 100;
+            PercAllocated.BudgetY6 = (AllocatedTotal.BudgetY6 == 0 && ActualTotal.BudgetY6 == 0) ? 0 : (AllocatedTotal.BudgetY6 == 0 && ActualTotal.BudgetY6 > 0) ? 101 : ActualTotal.BudgetY6 / AllocatedTotal.BudgetY6 * 100;
+            PercAllocated.BudgetY7 = (AllocatedTotal.BudgetY7 == 0 && ActualTotal.BudgetY7 == 0) ? 0 : (AllocatedTotal.BudgetY7 == 0 && ActualTotal.BudgetY7 > 0) ? 101 : ActualTotal.BudgetY7 / AllocatedTotal.BudgetY7 * 100;
+            PercAllocated.BudgetY8 = (AllocatedTotal.BudgetY8 == 0 && ActualTotal.BudgetY8 == 0) ? 0 : (AllocatedTotal.BudgetY8 == 0 && ActualTotal.BudgetY8 > 0) ? 101 : ActualTotal.BudgetY8 / AllocatedTotal.BudgetY8 * 100;
+            PercAllocated.BudgetY9 = (AllocatedTotal.BudgetY9 == 0 && ActualTotal.BudgetY9 == 0) ? 0 : (AllocatedTotal.BudgetY9 == 0 && ActualTotal.BudgetY9 > 0) ? 101 : ActualTotal.BudgetY9 / AllocatedTotal.BudgetY9 * 100;
+            PercAllocated.BudgetY10 = (AllocatedTotal.BudgetY10 == 0 && ActualTotal.BudgetY10 == 0) ? 0 : (AllocatedTotal.BudgetY10 == 0 && ActualTotal.BudgetY10 > 0) ? 101 : ActualTotal.BudgetY10 / AllocatedTotal.BudgetY10 * 100;
+            PercAllocated.BudgetY11 = (AllocatedTotal.BudgetY11 == 0 && ActualTotal.BudgetY11 == 0) ? 0 : (AllocatedTotal.BudgetY11 == 0 && ActualTotal.BudgetY11 > 0) ? 101 : ActualTotal.BudgetY11 / AllocatedTotal.BudgetY11 * 100;
+            PercAllocated.BudgetY12 = (AllocatedTotal.BudgetY12 == 0 && ActualTotal.BudgetY12 == 0) ? 0 : (AllocatedTotal.BudgetY12 == 0 && ActualTotal.BudgetY12 > 0) ? 101 : ActualTotal.BudgetY12 / AllocatedTotal.BudgetY12 * 100;
 
             ViewBag.PercAllocated = PercAllocated;
             ViewBag.MainTotalActual = MainTotalActual;
@@ -3828,64 +3828,64 @@ namespace RevenuePlanner.Controllers
                 switch (i)
                 {
                     case 1:
-                        actualValue = budgetPlan.MonthActual.Jan;
-                        plannedValue = budgetPlan.MonthPlanned.Jan;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Jan;
+                        actualValue = budgetPlan.MonthActual.BudgetY1;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY1;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY1;
                         break;
                     case 2:
-                        actualValue = budgetPlan.MonthActual.Feb;
-                        plannedValue = budgetPlan.MonthPlanned.Feb;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Feb;
+                        actualValue = budgetPlan.MonthActual.BudgetY2;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY2;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY2;
                         break;
                     case 3:
-                        actualValue = budgetPlan.MonthActual.Mar;
-                        plannedValue = budgetPlan.MonthPlanned.Mar;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Mar;
+                        actualValue = budgetPlan.MonthActual.BudgetY3;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY3;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY3;
                         break;
                     case 4:
-                        actualValue = budgetPlan.MonthActual.Apr;
-                        plannedValue = budgetPlan.MonthPlanned.Apr;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Apr;
+                        actualValue = budgetPlan.MonthActual.BudgetY4;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY4;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY4;
                         break;
                     case 5:
-                        actualValue = budgetPlan.MonthActual.May;
-                        plannedValue = budgetPlan.MonthPlanned.May;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.May;
+                        actualValue = budgetPlan.MonthActual.BudgetY5;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY5;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY5;
                         break;
                     case 6:
-                        actualValue = budgetPlan.MonthActual.Jun;
-                        plannedValue = budgetPlan.MonthPlanned.Jun;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Jun;
+                        actualValue = budgetPlan.MonthActual.BudgetY6;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY6;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY6;
                         break;
                     case 7:
-                        actualValue = budgetPlan.MonthActual.Jul;
-                        plannedValue = budgetPlan.MonthPlanned.Jul;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Jul;
+                        actualValue = budgetPlan.MonthActual.BudgetY7;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY7;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY7;
                         break;
                     case 8:
-                        actualValue = budgetPlan.MonthActual.Aug;
-                        plannedValue = budgetPlan.MonthPlanned.Aug;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Aug;
+                        actualValue = budgetPlan.MonthActual.BudgetY8;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY8;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY8;
                         break;
                     case 9:
-                        actualValue = budgetPlan.MonthActual.Sep;
-                        plannedValue = budgetPlan.MonthPlanned.Sep;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Sep;
+                        actualValue = budgetPlan.MonthActual.BudgetY9;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY9;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY9;
                         break;
                     case 10:
-                        actualValue = budgetPlan.MonthActual.Oct;
-                        plannedValue = budgetPlan.MonthPlanned.Oct;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Oct;
+                        actualValue = budgetPlan.MonthActual.BudgetY10;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY10;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY10;
                         break;
                     case 11:
-                        actualValue = budgetPlan.MonthActual.Nov;
-                        plannedValue = budgetPlan.MonthPlanned.Nov;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Nov;
+                        actualValue = budgetPlan.MonthActual.BudgetY11;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY11;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY11;
                         break;
                     case 12:
-                        actualValue = budgetPlan.MonthActual.Dec;
-                        plannedValue = budgetPlan.MonthPlanned.Dec;
-                        childAllocatedValue = budgetPlan.ChildMonthAllocated.Dec;
+                        actualValue = budgetPlan.MonthActual.BudgetY12;
+                        plannedValue = budgetPlan.MonthPlanned.BudgetY12;
+                        childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY12;
                         break;
                 }
                 DivId = Activitytype + activityId;
@@ -3984,76 +3984,76 @@ namespace RevenuePlanner.Controllers
                     switch (i)
                     {
                         case 1:
-                            actualValue = budgetPlan.MonthActual.Jan;
-                            allocatedValue = budgetPlan.MonthAllocated.Jan;
-                            plannedValue = budgetPlan.MonthPlanned.Jan;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Jan;
+                            actualValue = budgetPlan.MonthActual.BudgetY1;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY1;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY1;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY1;
                             break;
                         case 2:
-                            actualValue = budgetPlan.MonthActual.Feb;
-                            allocatedValue = budgetPlan.MonthAllocated.Feb;
-                            plannedValue = budgetPlan.MonthPlanned.Feb;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Feb;
+                            actualValue = budgetPlan.MonthActual.BudgetY2;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY2;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY2;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY2;
                             break;
                         case 3:
-                            actualValue = budgetPlan.MonthActual.Mar;
-                            allocatedValue = budgetPlan.MonthAllocated.Mar;
-                            plannedValue = budgetPlan.MonthPlanned.Mar;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Mar;
+                            actualValue = budgetPlan.MonthActual.BudgetY3;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY3;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY3;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY3;
                             break;
                         case 4:
-                            actualValue = budgetPlan.MonthActual.Apr;
-                            allocatedValue = budgetPlan.MonthAllocated.Apr;
-                            plannedValue = budgetPlan.MonthPlanned.Apr;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Apr;
+                            actualValue = budgetPlan.MonthActual.BudgetY4;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY4;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY4;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY4;
                             break;
                         case 5:
-                            actualValue = budgetPlan.MonthActual.May;
-                            allocatedValue = budgetPlan.MonthAllocated.May;
-                            plannedValue = budgetPlan.MonthPlanned.May;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.May;
+                            actualValue = budgetPlan.MonthActual.BudgetY5;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY5;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY5;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY5;
                             break;
                         case 6:
-                            actualValue = budgetPlan.MonthActual.Jun;
-                            allocatedValue = budgetPlan.MonthAllocated.Jun;
-                            plannedValue = budgetPlan.MonthPlanned.Jun;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Jun;
+                            actualValue = budgetPlan.MonthActual.BudgetY6;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY6;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY6;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY6;
                             break;
                         case 7:
-                            actualValue = budgetPlan.MonthActual.Jul;
-                            allocatedValue = budgetPlan.MonthAllocated.Jul;
-                            plannedValue = budgetPlan.MonthPlanned.Jul;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Jul;
+                            actualValue = budgetPlan.MonthActual.BudgetY7;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY7;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY7;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY7;
                             break;
                         case 8:
-                            actualValue = budgetPlan.MonthActual.Aug;
-                            allocatedValue = budgetPlan.MonthAllocated.Aug;
-                            plannedValue = budgetPlan.MonthPlanned.Aug;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Aug;
+                            actualValue = budgetPlan.MonthActual.BudgetY8;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY8;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY8;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY8;
                             break;
                         case 9:
-                            actualValue = budgetPlan.MonthActual.Sep;
-                            allocatedValue = budgetPlan.MonthAllocated.Sep;
-                            plannedValue = budgetPlan.MonthPlanned.Sep;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Sep;
+                            actualValue = budgetPlan.MonthActual.BudgetY9;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY9;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY9;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY9;
                             break;
                         case 10:
-                            actualValue = budgetPlan.MonthActual.Oct;
-                            allocatedValue = budgetPlan.MonthAllocated.Oct;
-                            plannedValue = budgetPlan.MonthPlanned.Oct;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Oct;
+                            actualValue = budgetPlan.MonthActual.BudgetY10;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY10;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY10;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY10;
                             break;
                         case 11:
-                            actualValue = budgetPlan.MonthActual.Nov;
-                            allocatedValue = budgetPlan.MonthAllocated.Nov;
-                            plannedValue = budgetPlan.MonthPlanned.Nov;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Nov;
+                            actualValue = budgetPlan.MonthActual.BudgetY11;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY11;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY11;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY11;
                             break;
                         case 12:
-                            actualValue = budgetPlan.MonthActual.Dec;
-                            allocatedValue = budgetPlan.MonthAllocated.Dec;
-                            plannedValue = budgetPlan.MonthPlanned.Dec;
-                            childAllocatedValue = budgetPlan.ChildMonthAllocated.Dec;
+                            actualValue = budgetPlan.MonthActual.BudgetY12;
+                            allocatedValue = budgetPlan.MonthAllocated.BudgetY12;
+                            plannedValue = budgetPlan.MonthPlanned.BudgetY12;
+                            childAllocatedValue = budgetPlan.ChildMonthAllocated.BudgetY12;
                             break;
                     }
                     DivId = Activitytype + budgetPlan.ActivityId;
@@ -4173,10 +4173,10 @@ namespace RevenuePlanner.Controllers
             string formatThousand = "#,#0.##", budgetErrorCss = "background:#ff1e26;";
             double dblProgress = 0;
             Budgetdataobj BudgetDataObj;
-            double sumMonthActual = bm.MonthActual.Jan + bm.MonthActual.Feb + bm.MonthActual.Mar + bm.MonthActual.Apr + bm.MonthActual.May + bm.MonthActual.Jun + bm.MonthActual.Jul + bm.MonthActual.Aug + bm.MonthActual.Sep + bm.MonthActual.Oct + bm.MonthActual.Nov + bm.MonthActual.Dec;
-            double sumMonthPlanned = bm.MonthPlanned.Jan + bm.MonthPlanned.Feb + bm.MonthPlanned.Mar + bm.MonthPlanned.Apr + bm.MonthPlanned.May + bm.MonthPlanned.Jun + bm.MonthPlanned.Jul + bm.MonthPlanned.Aug + bm.MonthPlanned.Sep + bm.MonthPlanned.Oct + bm.MonthPlanned.Nov + bm.MonthPlanned.Dec;
-            double sumMonthAllocated = bm.MonthAllocated.Jan + bm.MonthAllocated.Feb + bm.MonthAllocated.Mar + bm.MonthAllocated.Apr + bm.MonthAllocated.May + bm.MonthAllocated.Jun + bm.MonthAllocated.Jul + bm.MonthAllocated.Aug + bm.MonthAllocated.Sep + bm.MonthAllocated.Oct + bm.MonthAllocated.Nov + bm.MonthAllocated.Dec;
-            double sumMonthChildAllocated = bm.ChildMonthAllocated.Jan + bm.ChildMonthAllocated.Feb + bm.ChildMonthAllocated.Mar + bm.ChildMonthAllocated.Apr + bm.ChildMonthAllocated.May + bm.ChildMonthAllocated.Jun + bm.ChildMonthAllocated.Jul + bm.ChildMonthAllocated.Aug + bm.ChildMonthAllocated.Sep + bm.ChildMonthAllocated.Oct + bm.ChildMonthAllocated.Nov + bm.ChildMonthAllocated.Dec;
+            double sumMonthActual = bm.MonthActual.BudgetY1 + bm.MonthActual.BudgetY2 + bm.MonthActual.BudgetY3 + bm.MonthActual.BudgetY4 + bm.MonthActual.BudgetY5 + bm.MonthActual.BudgetY6 + bm.MonthActual.BudgetY7 + bm.MonthActual.BudgetY8 + bm.MonthActual.BudgetY9 + bm.MonthActual.BudgetY10 + bm.MonthActual.BudgetY11 + bm.MonthActual.BudgetY12;
+            double sumMonthPlanned = bm.MonthPlanned.BudgetY1 + bm.MonthPlanned.BudgetY2 + bm.MonthPlanned.BudgetY3 + bm.MonthPlanned.BudgetY4 + bm.MonthPlanned.BudgetY5 + bm.MonthPlanned.BudgetY6 + bm.MonthPlanned.BudgetY7 + bm.MonthPlanned.BudgetY8 + bm.MonthPlanned.BudgetY9 + bm.MonthPlanned.BudgetY10 + bm.MonthPlanned.BudgetY11 + bm.MonthPlanned.BudgetY12;
+            double sumMonthAllocated = bm.MonthAllocated.BudgetY1 + bm.MonthAllocated.BudgetY2 + bm.MonthAllocated.BudgetY3 + bm.MonthAllocated.BudgetY4 + bm.MonthAllocated.BudgetY5 + bm.MonthAllocated.BudgetY6 + bm.MonthAllocated.BudgetY7 + bm.MonthAllocated.BudgetY8 + bm.MonthAllocated.BudgetY9 + bm.MonthAllocated.BudgetY10 + bm.MonthAllocated.BudgetY11 + bm.MonthAllocated.BudgetY12;
+            double sumMonthChildAllocated = bm.ChildMonthAllocated.BudgetY1 + bm.ChildMonthAllocated.BudgetY2 + bm.ChildMonthAllocated.BudgetY3 + bm.ChildMonthAllocated.BudgetY4 + bm.ChildMonthAllocated.BudgetY5 + bm.ChildMonthAllocated.BudgetY6 + bm.ChildMonthAllocated.BudgetY7 + bm.ChildMonthAllocated.BudgetY8 + bm.ChildMonthAllocated.BudgetY9 + bm.ChildMonthAllocated.BudgetY10 + bm.ChildMonthAllocated.BudgetY11 + bm.ChildMonthAllocated.BudgetY12;
 
             //Actual
             BudgetDataObj = new Budgetdataobj();
@@ -4283,18 +4283,18 @@ namespace RevenuePlanner.Controllers
         {
             //// Get monthly budget values.
             BudgetMonth month = new BudgetMonth();
-            month.Jan = lst.Where(budgt => budgt.Period.ToUpper() == Common.Jan).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Feb = lst.Where(budgt => budgt.Period.ToUpper() == Common.Feb).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Mar = lst.Where(budgt => budgt.Period.ToUpper() == Common.Mar).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Apr = lst.Where(budgt => budgt.Period.ToUpper() == Common.Apr).Select(budgt => budgt.Value).FirstOrDefault();
-            month.May = lst.Where(budgt => budgt.Period.ToUpper() == Common.May).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Jun = lst.Where(budgt => budgt.Period.ToUpper() == Common.Jun).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Jul = lst.Where(budgt => budgt.Period.ToUpper() == Common.Jul).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Aug = lst.Where(budgt => budgt.Period.ToUpper() == Common.Aug).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Sep = lst.Where(budgt => budgt.Period.ToUpper() == Common.Sep).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Oct = lst.Where(budgt => budgt.Period.ToUpper() == Common.Oct).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Nov = lst.Where(budgt => budgt.Period.ToUpper() == Common.Nov).Select(budgt => budgt.Value).FirstOrDefault();
-            month.Dec = lst.Where(budgt => budgt.Period.ToUpper() == Common.Dec).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY1 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Jan).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY2 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Feb).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY3 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Mar).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY4 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Apr).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY5 = lst.Where(budgt => budgt.Period.ToUpper() == Common.May).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY6 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Jun).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY7 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Jul).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY8 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Aug).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY9 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Sep).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY10 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Oct).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY11 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Nov).Select(budgt => budgt.Value).FirstOrDefault();
+            month.BudgetY12 = lst.Where(budgt => budgt.Period.ToUpper() == Common.Dec).Select(budgt => budgt.Value).FirstOrDefault();
 
             if (columnType.ToString() == ReportColumnType.Planned.ToString())
             {
@@ -4342,35 +4342,35 @@ namespace RevenuePlanner.Controllers
                     {
                         //// Set parent line values.
                         parent = new BudgetMonth();
-                        parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Jan * weightage) / 100) ?? 0;
-                        parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Feb * weightage) / 100) ?? 0;
-                        parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Mar * weightage) / 100) ?? 0;
-                        parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Apr * weightage) / 100) ?? 0;
-                        parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.May * weightage) / 100) ?? 0;
-                        parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Jun * weightage) / 100) ?? 0;
-                        parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Jul * weightage) / 100) ?? 0;
-                        parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Aug * weightage) / 100) ?? 0;
-                        parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Sep * weightage) / 100) ?? 0;
-                        parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Oct * weightage) / 100) ?? 0;
-                        parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Nov * weightage) / 100) ?? 0;
-                        parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.Dec * weightage) / 100) ?? 0;
+                        parent.BudgetY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY1 * weightage) / 100) ?? 0;
+                        parent.BudgetY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY2 * weightage) / 100) ?? 0;
+                        parent.BudgetY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY3 * weightage) / 100) ?? 0;
+                        parent.BudgetY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY4 * weightage) / 100) ?? 0;
+                        parent.BudgetY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY5 * weightage) / 100) ?? 0;
+                        parent.BudgetY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY6 * weightage) / 100) ?? 0;
+                        parent.BudgetY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY7 * weightage) / 100) ?? 0;
+                        parent.BudgetY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY8 * weightage) / 100) ?? 0;
+                        parent.BudgetY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY9 * weightage) / 100) ?? 0;
+                        parent.BudgetY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY10 * weightage) / 100) ?? 0;
+                        parent.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY11 * weightage) / 100) ?? 0;
+                        parent.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY12 * weightage) / 100) ?? 0;
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
 
                         //// Set parent Actual line values.
                         parentActual = new BudgetMonth();
-                        parentActual.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Jan * weightage) / 100) ?? 0;
-                        parentActual.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Feb * weightage) / 100) ?? 0;
-                        parentActual.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Mar * weightage) / 100) ?? 0;
-                        parentActual.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Apr * weightage) / 100) ?? 0;
-                        parentActual.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.May * weightage) / 100) ?? 0;
-                        parentActual.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Jun * weightage) / 100) ?? 0;
-                        parentActual.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Jul * weightage) / 100) ?? 0;
-                        parentActual.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Aug * weightage) / 100) ?? 0;
-                        parentActual.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Sep * weightage) / 100) ?? 0;
-                        parentActual.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Oct * weightage) / 100) ?? 0;
-                        parentActual.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Nov * weightage) / 100) ?? 0;
-                        parentActual.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.Dec * weightage) / 100) ?? 0;
+                        parentActual.BudgetY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY1 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY2 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY3 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY4 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY5 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY6 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY7 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY8 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY9 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY10 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY11 * weightage) / 100) ?? 0;
+                        parentActual.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthActual.BudgetY12 * weightage) / 100) ?? 0;
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual = parentActual;
                     }
@@ -4388,52 +4388,52 @@ namespace RevenuePlanner.Controllers
                 {
                     //// Set Parent line values.
                     parent = new BudgetMonth();
-                    parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jan) ?? 0;
-                    parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Feb) ?? 0;
-                    parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Mar) ?? 0;
-                    parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Apr) ?? 0;
-                    parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.May) ?? 0;
-                    parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jun) ?? 0;
-                    parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jul) ?? 0;
-                    parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Aug) ?? 0;
-                    parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Sep) ?? 0;
-                    parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Oct) ?? 0;
-                    parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Nov) ?? 0;
-                    parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Dec) ?? 0;
+                    parent.BudgetY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY1) ?? 0;
+                    parent.BudgetY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY2) ?? 0;
+                    parent.BudgetY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY3) ?? 0;
+                    parent.BudgetY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY4) ?? 0;
+                    parent.BudgetY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY5) ?? 0;
+                    parent.BudgetY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY6) ?? 0;
+                    parent.BudgetY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY7) ?? 0;
+                    parent.BudgetY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY8) ?? 0;
+                    parent.BudgetY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY9) ?? 0;
+                    parent.BudgetY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY10) ?? 0;
+                    parent.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY11) ?? 0;
+                    parent.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY12) ?? 0;
                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
 
                     //// Set parent Actual line values.
                     parentActual = new BudgetMonth();
-                    parentActual.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jan) ?? 0;
-                    parentActual.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Feb) ?? 0;
-                    parentActual.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Mar) ?? 0;
-                    parentActual.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Apr) ?? 0;
-                    parentActual.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.May) ?? 0;
-                    parentActual.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jun) ?? 0;
-                    parentActual.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jul) ?? 0;
-                    parentActual.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Aug) ?? 0;
-                    parentActual.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Sep) ?? 0;
-                    parentActual.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Oct) ?? 0;
-                    parentActual.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Nov) ?? 0;
-                    parentActual.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Dec) ?? 0;
+                    parentActual.BudgetY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY1) ?? 0;
+                    parentActual.BudgetY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY2) ?? 0;
+                    parentActual.BudgetY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY3) ?? 0;
+                    parentActual.BudgetY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY4) ?? 0;
+                    parentActual.BudgetY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY5) ?? 0;
+                    parentActual.BudgetY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY6) ?? 0;
+                    parentActual.BudgetY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY7) ?? 0;
+                    parentActual.BudgetY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY8) ?? 0;
+                    parentActual.BudgetY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY9) ?? 0;
+                    parentActual.BudgetY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY10) ?? 0;
+                    parentActual.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY11) ?? 0;
+                    parentActual.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.BudgetY12) ?? 0;
                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual = parentActual;
 
                     //// Set parent monthly allocated line values.
                     parentAllocated = new BudgetMonth();
-                    parentAllocated.Jan = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jan) ?? 0;
-                    parentAllocated.Feb = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Feb) ?? 0;
-                    parentAllocated.Mar = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Mar) ?? 0;
-                    parentAllocated.Apr = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Apr) ?? 0;
-                    parentAllocated.May = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.May) ?? 0;
-                    parentAllocated.Jun = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jun) ?? 0;
-                    parentAllocated.Jul = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jul) ?? 0;
-                    parentAllocated.Aug = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Aug) ?? 0;
-                    parentAllocated.Sep = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Sep) ?? 0;
-                    parentAllocated.Oct = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Oct) ?? 0;
-                    parentAllocated.Nov = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Nov) ?? 0;
-                    parentAllocated.Dec = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Dec) ?? 0;
+                    parentAllocated.BudgetY1 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY1) ?? 0;
+                    parentAllocated.BudgetY2 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY2) ?? 0;
+                    parentAllocated.BudgetY3 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY3) ?? 0;
+                    parentAllocated.BudgetY4 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY4) ?? 0;
+                    parentAllocated.BudgetY5 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY5) ?? 0;
+                    parentAllocated.BudgetY6 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY6) ?? 0;
+                    parentAllocated.BudgetY7 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY7) ?? 0;
+                    parentAllocated.BudgetY8 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY8) ?? 0;
+                    parentAllocated.BudgetY9 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY9) ?? 0;
+                    parentAllocated.BudgetY10 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY10) ?? 0;
+                    parentAllocated.BudgetY11 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY11) ?? 0;
+                    parentAllocated.BudgetY12 = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.BudgetY12) ?? 0;
                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ChildMonthAllocated = parentAllocated;
                 }
             }
@@ -4473,31 +4473,31 @@ namespace RevenuePlanner.Controllers
                         //// Set monthly line Items values.
                         if (lines.Count > 0)
                         {
-                            lineDiffPlanned.Jan = _budgModel.MonthPlanned.Jan - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jan) ?? 0;
-                            lineDiffPlanned.Feb = _budgModel.MonthPlanned.Feb - lines.Sum(lmon => (double?)lmon.MonthPlanned.Feb) ?? 0;
-                            lineDiffPlanned.Mar = _budgModel.MonthPlanned.Mar - lines.Sum(lmon => (double?)lmon.MonthPlanned.Mar) ?? 0;
-                            lineDiffPlanned.Apr = _budgModel.MonthPlanned.Apr - lines.Sum(lmon => (double?)lmon.MonthPlanned.Apr) ?? 0;
-                            lineDiffPlanned.May = _budgModel.MonthPlanned.May - lines.Sum(lmon => (double?)lmon.MonthPlanned.May) ?? 0;
-                            lineDiffPlanned.Jun = _budgModel.MonthPlanned.Jun - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jun) ?? 0;
-                            lineDiffPlanned.Jul = _budgModel.MonthPlanned.Jul - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jul) ?? 0;
-                            lineDiffPlanned.Aug = _budgModel.MonthPlanned.Aug - lines.Sum(lmon => (double?)lmon.MonthPlanned.Aug) ?? 0;
-                            lineDiffPlanned.Sep = _budgModel.MonthPlanned.Sep - lines.Sum(lmon => (double?)lmon.MonthPlanned.Sep) ?? 0;
-                            lineDiffPlanned.Oct = _budgModel.MonthPlanned.Oct - lines.Sum(lmon => (double?)lmon.MonthPlanned.Oct) ?? 0;
-                            lineDiffPlanned.Nov = _budgModel.MonthPlanned.Nov - lines.Sum(lmon => (double?)lmon.MonthPlanned.Nov) ?? 0;
-                            lineDiffPlanned.Dec = _budgModel.MonthPlanned.Dec - lines.Sum(lmon => (double?)lmon.MonthPlanned.Dec) ?? 0;
+                            lineDiffPlanned.BudgetY1 = _budgModel.MonthPlanned.BudgetY1 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY1) ?? 0;
+                            lineDiffPlanned.BudgetY2 = _budgModel.MonthPlanned.BudgetY2 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY2) ?? 0;
+                            lineDiffPlanned.BudgetY3 = _budgModel.MonthPlanned.BudgetY3 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY3) ?? 0;
+                            lineDiffPlanned.BudgetY4 = _budgModel.MonthPlanned.BudgetY4 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY4) ?? 0;
+                            lineDiffPlanned.BudgetY5 = _budgModel.MonthPlanned.BudgetY5 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY5) ?? 0;
+                            lineDiffPlanned.BudgetY6 = _budgModel.MonthPlanned.BudgetY6 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY6) ?? 0;
+                            lineDiffPlanned.BudgetY7 = _budgModel.MonthPlanned.BudgetY7 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY7) ?? 0;
+                            lineDiffPlanned.BudgetY8 = _budgModel.MonthPlanned.BudgetY8 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY8) ?? 0;
+                            lineDiffPlanned.BudgetY9 = _budgModel.MonthPlanned.BudgetY9 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY9) ?? 0;
+                            lineDiffPlanned.BudgetY10 = _budgModel.MonthPlanned.BudgetY10 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY10) ?? 0;
+                            lineDiffPlanned.BudgetY11 = _budgModel.MonthPlanned.BudgetY11 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY11) ?? 0;
+                            lineDiffPlanned.BudgetY12 = _budgModel.MonthPlanned.BudgetY12 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY12) ?? 0;
 
-                            lineDiffPlanned.Jan = lineDiffPlanned.Jan < 0 ? 0 : lineDiffPlanned.Jan;
-                            lineDiffPlanned.Feb = lineDiffPlanned.Feb < 0 ? 0 : lineDiffPlanned.Feb;
-                            lineDiffPlanned.Mar = lineDiffPlanned.Mar < 0 ? 0 : lineDiffPlanned.Mar;
-                            lineDiffPlanned.Apr = lineDiffPlanned.Apr < 0 ? 0 : lineDiffPlanned.Apr;
-                            lineDiffPlanned.May = lineDiffPlanned.May < 0 ? 0 : lineDiffPlanned.May;
-                            lineDiffPlanned.Jun = lineDiffPlanned.Jun < 0 ? 0 : lineDiffPlanned.Jun;
-                            lineDiffPlanned.Jul = lineDiffPlanned.Jul < 0 ? 0 : lineDiffPlanned.Jul;
-                            lineDiffPlanned.Aug = lineDiffPlanned.Aug < 0 ? 0 : lineDiffPlanned.Aug;
-                            lineDiffPlanned.Sep = lineDiffPlanned.Sep < 0 ? 0 : lineDiffPlanned.Sep;
-                            lineDiffPlanned.Oct = lineDiffPlanned.Oct < 0 ? 0 : lineDiffPlanned.Oct;
-                            lineDiffPlanned.Nov = lineDiffPlanned.Nov < 0 ? 0 : lineDiffPlanned.Nov;
-                            lineDiffPlanned.Dec = lineDiffPlanned.Dec < 0 ? 0 : lineDiffPlanned.Dec;
+                            lineDiffPlanned.BudgetY1 = lineDiffPlanned.BudgetY1 < 0 ? 0 : lineDiffPlanned.BudgetY1;
+                            lineDiffPlanned.BudgetY2 = lineDiffPlanned.BudgetY2 < 0 ? 0 : lineDiffPlanned.BudgetY2;
+                            lineDiffPlanned.BudgetY3 = lineDiffPlanned.BudgetY3 < 0 ? 0 : lineDiffPlanned.BudgetY3;
+                            lineDiffPlanned.BudgetY4 = lineDiffPlanned.BudgetY4 < 0 ? 0 : lineDiffPlanned.BudgetY4;
+                            lineDiffPlanned.BudgetY5 = lineDiffPlanned.BudgetY5 < 0 ? 0 : lineDiffPlanned.BudgetY5;
+                            lineDiffPlanned.BudgetY6 = lineDiffPlanned.BudgetY6 < 0 ? 0 : lineDiffPlanned.BudgetY6;
+                            lineDiffPlanned.BudgetY7 = lineDiffPlanned.BudgetY7 < 0 ? 0 : lineDiffPlanned.BudgetY7;
+                            lineDiffPlanned.BudgetY8 = lineDiffPlanned.BudgetY8 < 0 ? 0 : lineDiffPlanned.BudgetY8;
+                            lineDiffPlanned.BudgetY9 = lineDiffPlanned.BudgetY9 < 0 ? 0 : lineDiffPlanned.BudgetY9;
+                            lineDiffPlanned.BudgetY10 = lineDiffPlanned.BudgetY10 < 0 ? 0 : lineDiffPlanned.BudgetY10;
+                            lineDiffPlanned.BudgetY11 = lineDiffPlanned.BudgetY11 < 0 ? 0 : lineDiffPlanned.BudgetY11;
+                            lineDiffPlanned.BudgetY12 = lineDiffPlanned.BudgetY12 < 0 ? 0 : lineDiffPlanned.BudgetY12;
 
                             model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthPlanned = lineDiffPlanned;
                             model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonthPlanned = lineDiffPlanned;
@@ -4519,34 +4519,34 @@ namespace RevenuePlanner.Controllers
                         foreach (BudgetModelReport line in lineItems)
                         {
                             BudgetMonth linePlannedBudget = new BudgetMonth();
-                            linePlannedBudget.Jan = (double)(line.MonthPlanned.Jan * Weightage) / 100;
-                            linePlannedBudget.Feb = (double)(line.MonthPlanned.Feb * Weightage) / 100;
-                            linePlannedBudget.Mar = (double)(line.MonthPlanned.Mar * Weightage) / 100;
-                            linePlannedBudget.Apr = (double)(line.MonthPlanned.Apr * Weightage) / 100;
-                            linePlannedBudget.May = (double)(line.MonthPlanned.May * Weightage) / 100;
-                            linePlannedBudget.Jun = (double)(line.MonthPlanned.Jun * Weightage) / 100;
-                            linePlannedBudget.Jul = (double)(line.MonthPlanned.Jul * Weightage) / 100;
-                            linePlannedBudget.Aug = (double)(line.MonthPlanned.Aug * Weightage) / 100;
-                            linePlannedBudget.Sep = (double)(line.MonthPlanned.Sep * Weightage) / 100;
-                            linePlannedBudget.Oct = (double)(line.MonthPlanned.Oct * Weightage) / 100;
-                            linePlannedBudget.Nov = (double)(line.MonthPlanned.Nov * Weightage) / 100;
-                            linePlannedBudget.Dec = (double)(line.MonthPlanned.Dec * Weightage) / 100;
+                            linePlannedBudget.BudgetY1 = (double)(line.MonthPlanned.BudgetY1 * Weightage) / 100;
+                            linePlannedBudget.BudgetY2 = (double)(line.MonthPlanned.BudgetY2 * Weightage) / 100;
+                            linePlannedBudget.BudgetY3 = (double)(line.MonthPlanned.BudgetY3 * Weightage) / 100;
+                            linePlannedBudget.BudgetY4 = (double)(line.MonthPlanned.BudgetY4 * Weightage) / 100;
+                            linePlannedBudget.BudgetY5 = (double)(line.MonthPlanned.BudgetY5 * Weightage) / 100;
+                            linePlannedBudget.BudgetY6 = (double)(line.MonthPlanned.BudgetY6 * Weightage) / 100;
+                            linePlannedBudget.BudgetY7 = (double)(line.MonthPlanned.BudgetY7 * Weightage) / 100;
+                            linePlannedBudget.BudgetY8 = (double)(line.MonthPlanned.BudgetY8 * Weightage) / 100;
+                            linePlannedBudget.BudgetY9 = (double)(line.MonthPlanned.BudgetY9 * Weightage) / 100;
+                            linePlannedBudget.BudgetY10 = (double)(line.MonthPlanned.BudgetY10 * Weightage) / 100;
+                            linePlannedBudget.BudgetY11 = (double)(line.MonthPlanned.BudgetY11 * Weightage) / 100;
+                            linePlannedBudget.BudgetY12 = (double)(line.MonthPlanned.BudgetY12 * Weightage) / 100;
 
                             line.MonthPlanned = linePlannedBudget;
 
                             BudgetMonth lineActualBudget = new BudgetMonth();
-                            lineActualBudget.Jan = (double)(line.MonthActual.Jan * Weightage) / 100;
-                            lineActualBudget.Feb = (double)(line.MonthActual.Feb * Weightage) / 100;
-                            lineActualBudget.Mar = (double)(line.MonthActual.Mar * Weightage) / 100;
-                            lineActualBudget.Apr = (double)(line.MonthActual.Apr * Weightage) / 100;
-                            lineActualBudget.May = (double)(line.MonthActual.May * Weightage) / 100;
-                            lineActualBudget.Jun = (double)(line.MonthActual.Jun * Weightage) / 100;
-                            lineActualBudget.Jul = (double)(line.MonthActual.Jul * Weightage) / 100;
-                            lineActualBudget.Aug = (double)(line.MonthActual.Aug * Weightage) / 100;
-                            lineActualBudget.Sep = (double)(line.MonthActual.Sep * Weightage) / 100;
-                            lineActualBudget.Oct = (double)(line.MonthActual.Oct * Weightage) / 100;
-                            lineActualBudget.Nov = (double)(line.MonthActual.Nov * Weightage) / 100;
-                            lineActualBudget.Dec = (double)(line.MonthActual.Dec * Weightage) / 100;
+                            lineActualBudget.BudgetY1 = (double)(line.MonthActual.BudgetY1 * Weightage) / 100;
+                            lineActualBudget.BudgetY2 = (double)(line.MonthActual.BudgetY2 * Weightage) / 100;
+                            lineActualBudget.BudgetY3 = (double)(line.MonthActual.BudgetY3 * Weightage) / 100;
+                            lineActualBudget.BudgetY4 = (double)(line.MonthActual.BudgetY4 * Weightage) / 100;
+                            lineActualBudget.BudgetY5 = (double)(line.MonthActual.BudgetY5 * Weightage) / 100;
+                            lineActualBudget.BudgetY6 = (double)(line.MonthActual.BudgetY6 * Weightage) / 100;
+                            lineActualBudget.BudgetY7 = (double)(line.MonthActual.BudgetY7 * Weightage) / 100;
+                            lineActualBudget.BudgetY8 = (double)(line.MonthActual.BudgetY8 * Weightage) / 100;
+                            lineActualBudget.BudgetY9 = (double)(line.MonthActual.BudgetY9 * Weightage) / 100;
+                            lineActualBudget.BudgetY10 = (double)(line.MonthActual.BudgetY10 * Weightage) / 100;
+                            lineActualBudget.BudgetY11 = (double)(line.MonthActual.BudgetY11 * Weightage) / 100;
+                            lineActualBudget.BudgetY12 = (double)(line.MonthActual.BudgetY12 * Weightage) / 100;
                             line.MonthActual = lineActualBudget;
 
 
@@ -4565,34 +4565,34 @@ namespace RevenuePlanner.Controllers
                         foreach (BudgetModelReport line in lineItems)
                         {
                             BudgetMonth linePlannedBudget = new BudgetMonth();
-                            linePlannedBudget.Jan = (double)(line.MonthPlanned.Jan * Weightage) / 100;
-                            linePlannedBudget.Feb = (double)(line.MonthPlanned.Feb * Weightage) / 100;
-                            linePlannedBudget.Mar = (double)(line.MonthPlanned.Mar * Weightage) / 100;
-                            linePlannedBudget.Apr = (double)(line.MonthPlanned.Apr * Weightage) / 100;
-                            linePlannedBudget.May = (double)(line.MonthPlanned.May * Weightage) / 100;
-                            linePlannedBudget.Jun = (double)(line.MonthPlanned.Jun * Weightage) / 100;
-                            linePlannedBudget.Jul = (double)(line.MonthPlanned.Jul * Weightage) / 100;
-                            linePlannedBudget.Aug = (double)(line.MonthPlanned.Aug * Weightage) / 100;
-                            linePlannedBudget.Sep = (double)(line.MonthPlanned.Sep * Weightage) / 100;
-                            linePlannedBudget.Oct = (double)(line.MonthPlanned.Oct * Weightage) / 100;
-                            linePlannedBudget.Nov = (double)(line.MonthPlanned.Nov * Weightage) / 100;
-                            linePlannedBudget.Dec = (double)(line.MonthPlanned.Dec * Weightage) / 100;
+                            linePlannedBudget.BudgetY1 = (double)(line.MonthPlanned.BudgetY1 * Weightage) / 100;
+                            linePlannedBudget.BudgetY2 = (double)(line.MonthPlanned.BudgetY2 * Weightage) / 100;
+                            linePlannedBudget.BudgetY3 = (double)(line.MonthPlanned.BudgetY3 * Weightage) / 100;
+                            linePlannedBudget.BudgetY4 = (double)(line.MonthPlanned.BudgetY4 * Weightage) / 100;
+                            linePlannedBudget.BudgetY5 = (double)(line.MonthPlanned.BudgetY5 * Weightage) / 100;
+                            linePlannedBudget.BudgetY6 = (double)(line.MonthPlanned.BudgetY6 * Weightage) / 100;
+                            linePlannedBudget.BudgetY7 = (double)(line.MonthPlanned.BudgetY7 * Weightage) / 100;
+                            linePlannedBudget.BudgetY8 = (double)(line.MonthPlanned.BudgetY8 * Weightage) / 100;
+                            linePlannedBudget.BudgetY9 = (double)(line.MonthPlanned.BudgetY9 * Weightage) / 100;
+                            linePlannedBudget.BudgetY10 = (double)(line.MonthPlanned.BudgetY10 * Weightage) / 100;
+                            linePlannedBudget.BudgetY11 = (double)(line.MonthPlanned.BudgetY11 * Weightage) / 100;
+                            linePlannedBudget.BudgetY12 = (double)(line.MonthPlanned.BudgetY12 * Weightage) / 100;
 
                             line.MonthPlanned = linePlannedBudget;
 
                             BudgetMonth lineActualBudget = new BudgetMonth();
-                            lineActualBudget.Jan = (double)(line.MonthActual.Jan * Weightage) / 100;
-                            lineActualBudget.Feb = (double)(line.MonthActual.Feb * Weightage) / 100;
-                            lineActualBudget.Mar = (double)(line.MonthActual.Mar * Weightage) / 100;
-                            lineActualBudget.Apr = (double)(line.MonthActual.Apr * Weightage) / 100;
-                            lineActualBudget.May = (double)(line.MonthActual.May * Weightage) / 100;
-                            lineActualBudget.Jun = (double)(line.MonthActual.Jun * Weightage) / 100;
-                            lineActualBudget.Jul = (double)(line.MonthActual.Jul * Weightage) / 100;
-                            lineActualBudget.Aug = (double)(line.MonthActual.Aug * Weightage) / 100;
-                            lineActualBudget.Sep = (double)(line.MonthActual.Sep * Weightage) / 100;
-                            lineActualBudget.Oct = (double)(line.MonthActual.Oct * Weightage) / 100;
-                            lineActualBudget.Nov = (double)(line.MonthActual.Nov * Weightage) / 100;
-                            lineActualBudget.Dec = (double)(line.MonthActual.Dec * Weightage) / 100;
+                            lineActualBudget.BudgetY1 = (double)(line.MonthActual.BudgetY1 * Weightage) / 100;
+                            lineActualBudget.BudgetY2 = (double)(line.MonthActual.BudgetY2 * Weightage) / 100;
+                            lineActualBudget.BudgetY3 = (double)(line.MonthActual.BudgetY3 * Weightage) / 100;
+                            lineActualBudget.BudgetY4 = (double)(line.MonthActual.BudgetY4 * Weightage) / 100;
+                            lineActualBudget.BudgetY5 = (double)(line.MonthActual.BudgetY5 * Weightage) / 100;
+                            lineActualBudget.BudgetY6 = (double)(line.MonthActual.BudgetY6 * Weightage) / 100;
+                            lineActualBudget.BudgetY7 = (double)(line.MonthActual.BudgetY7 * Weightage) / 100;
+                            lineActualBudget.BudgetY8 = (double)(line.MonthActual.BudgetY8 * Weightage) / 100;
+                            lineActualBudget.BudgetY9 = (double)(line.MonthActual.BudgetY9 * Weightage) / 100;
+                            lineActualBudget.BudgetY10 = (double)(line.MonthActual.BudgetY10 * Weightage) / 100;
+                            lineActualBudget.BudgetY11 = (double)(line.MonthActual.BudgetY11 * Weightage) / 100;
+                            lineActualBudget.BudgetY12 = (double)(line.MonthActual.BudgetY12 * Weightage) / 100;
                             line.MonthActual = lineActualBudget;
 
                             //  }
@@ -4811,34 +4811,34 @@ namespace RevenuePlanner.Controllers
                 foreach (BudgetModelReport line in lstLineItems)
                 {
                     BudgetMonth linePlannedBudget = new BudgetMonth();
-                    linePlannedBudget.Jan = (double)(line.MonthPlanned.Jan * weightage) / 100;
-                    linePlannedBudget.Feb = (double)(line.MonthPlanned.Feb * weightage) / 100;
-                    linePlannedBudget.Mar = (double)(line.MonthPlanned.Mar * weightage) / 100;
-                    linePlannedBudget.Apr = (double)(line.MonthPlanned.Apr * weightage) / 100;
-                    linePlannedBudget.May = (double)(line.MonthPlanned.May * weightage) / 100;
-                    linePlannedBudget.Jun = (double)(line.MonthPlanned.Jun * weightage) / 100;
-                    linePlannedBudget.Jul = (double)(line.MonthPlanned.Jul * weightage) / 100;
-                    linePlannedBudget.Aug = (double)(line.MonthPlanned.Aug * weightage) / 100;
-                    linePlannedBudget.Sep = (double)(line.MonthPlanned.Sep * weightage) / 100;
-                    linePlannedBudget.Oct = (double)(line.MonthPlanned.Oct * weightage) / 100;
-                    linePlannedBudget.Nov = (double)(line.MonthPlanned.Nov * weightage) / 100;
-                    linePlannedBudget.Dec = (double)(line.MonthPlanned.Dec * weightage) / 100;
+                    linePlannedBudget.BudgetY1 = (double)(line.MonthPlanned.BudgetY1 * weightage) / 100;
+                    linePlannedBudget.BudgetY2 = (double)(line.MonthPlanned.BudgetY2 * weightage) / 100;
+                    linePlannedBudget.BudgetY3 = (double)(line.MonthPlanned.BudgetY3 * weightage) / 100;
+                    linePlannedBudget.BudgetY4 = (double)(line.MonthPlanned.BudgetY4 * weightage) / 100;
+                    linePlannedBudget.BudgetY5 = (double)(line.MonthPlanned.BudgetY5 * weightage) / 100;
+                    linePlannedBudget.BudgetY6 = (double)(line.MonthPlanned.BudgetY6 * weightage) / 100;
+                    linePlannedBudget.BudgetY7 = (double)(line.MonthPlanned.BudgetY7 * weightage) / 100;
+                    linePlannedBudget.BudgetY8 = (double)(line.MonthPlanned.BudgetY8 * weightage) / 100;
+                    linePlannedBudget.BudgetY9 = (double)(line.MonthPlanned.BudgetY9 * weightage) / 100;
+                    linePlannedBudget.BudgetY10 = (double)(line.MonthPlanned.BudgetY10 * weightage) / 100;
+                    linePlannedBudget.BudgetY11 = (double)(line.MonthPlanned.BudgetY11 * weightage) / 100;
+                    linePlannedBudget.BudgetY12 = (double)(line.MonthPlanned.BudgetY12 * weightage) / 100;
 
                     line.MonthPlanned = linePlannedBudget;
 
                     BudgetMonth lineActualBudget = new BudgetMonth();
-                    lineActualBudget.Jan = (double)(line.MonthActual.Jan * weightage) / 100;
-                    lineActualBudget.Feb = (double)(line.MonthActual.Feb * weightage) / 100;
-                    lineActualBudget.Mar = (double)(line.MonthActual.Mar * weightage) / 100;
-                    lineActualBudget.Apr = (double)(line.MonthActual.Apr * weightage) / 100;
-                    lineActualBudget.May = (double)(line.MonthActual.May * weightage) / 100;
-                    lineActualBudget.Jun = (double)(line.MonthActual.Jun * weightage) / 100;
-                    lineActualBudget.Jul = (double)(line.MonthActual.Jul * weightage) / 100;
-                    lineActualBudget.Aug = (double)(line.MonthActual.Aug * weightage) / 100;
-                    lineActualBudget.Sep = (double)(line.MonthActual.Sep * weightage) / 100;
-                    lineActualBudget.Oct = (double)(line.MonthActual.Oct * weightage) / 100;
-                    lineActualBudget.Nov = (double)(line.MonthActual.Nov * weightage) / 100;
-                    lineActualBudget.Dec = (double)(line.MonthActual.Dec * weightage) / 100;
+                    lineActualBudget.BudgetY1 = (double)(line.MonthActual.BudgetY1 * weightage) / 100;
+                    lineActualBudget.BudgetY2 = (double)(line.MonthActual.BudgetY2 * weightage) / 100;
+                    lineActualBudget.BudgetY3 = (double)(line.MonthActual.BudgetY3 * weightage) / 100;
+                    lineActualBudget.BudgetY4 = (double)(line.MonthActual.BudgetY4 * weightage) / 100;
+                    lineActualBudget.BudgetY5 = (double)(line.MonthActual.BudgetY5 * weightage) / 100;
+                    lineActualBudget.BudgetY6 = (double)(line.MonthActual.BudgetY6 * weightage) / 100;
+                    lineActualBudget.BudgetY7 = (double)(line.MonthActual.BudgetY7 * weightage) / 100;
+                    lineActualBudget.BudgetY8 = (double)(line.MonthActual.BudgetY8 * weightage) / 100;
+                    lineActualBudget.BudgetY9 = (double)(line.MonthActual.BudgetY9 * weightage) / 100;
+                    lineActualBudget.BudgetY10 = (double)(line.MonthActual.BudgetY10 * weightage) / 100;
+                    lineActualBudget.BudgetY11 = (double)(line.MonthActual.BudgetY11 * weightage) / 100;
+                    lineActualBudget.BudgetY12 = (double)(line.MonthActual.BudgetY12 * weightage) / 100;
                     line.MonthActual = lineActualBudget;
 
                 }

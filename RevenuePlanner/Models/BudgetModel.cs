@@ -7,44 +7,44 @@ namespace RevenuePlanner.Models
 {
     public class BudgetMonth
     {
-        public double Jan { get; set; } //Q1
-        public double Feb { get; set; }
-        public double Mar { get; set; }
-        public double Apr { get; set; } //Q2
-        public double May { get; set; }
-        public double Jun { get; set; }
-        public double Jul { get; set; } //Q3
-        public double Aug { get; set; }
-        public double Sep { get; set; }
-        public double Oct { get; set; } //Q4
-        public double Nov { get; set; }
-        public double Dec { get; set; }
+        public double BudgetY1 { get; set; } //Q1
+        public double BudgetY2 { get; set; }
+        public double BudgetY3 { get; set; }
+        public double BudgetY4 { get; set; } //Q2
+        public double BudgetY5 { get; set; }
+        public double BudgetY6 { get; set; }
+        public double BudgetY7 { get; set; } //Q3
+        public double BudgetY8 { get; set; }
+        public double BudgetY9 { get; set; }
+        public double BudgetY10 { get; set; } //Q4
+        public double BudgetY11 { get; set; }
+        public double BudgetY12 { get; set; }
 
-        public double CJan { get; set; } //Q1
-        public double CFeb { get; set; }
-        public double CMar { get; set; }
-        public double CApr { get; set; } //Q2
-        public double CMay { get; set; }
-        public double CJun { get; set; }
-        public double CJul { get; set; } //Q3
-        public double CAug { get; set; }
-        public double CSep { get; set; }
-        public double COct { get; set; } //Q4
-        public double CNov { get; set; }
-        public double CDec { get; set; }
+        public double CostY1 { get; set; } //Q1
+        public double CostY2 { get; set; }
+        public double CostY3 { get; set; }
+        public double CostY4 { get; set; } //Q2
+        public double CostY5 { get; set; }
+        public double CostY6 { get; set; }
+        public double CostY7 { get; set; } //Q3
+        public double CostY8 { get; set; }
+        public double CostY9 { get; set; }
+        public double CostY10 { get; set; } //Q4
+        public double CostY11 { get; set; }
+        public double CostY12 { get; set; }
 
-        public double AJan { get; set; } //Q1
-        public double AFeb { get; set; }
-        public double AMar { get; set; }
-        public double AApr { get; set; } //Q2
-        public double AMay { get; set; }
-        public double AJun { get; set; }
-        public double AJul { get; set; } //Q3
-        public double AAug { get; set; }
-        public double ASep { get; set; }
-        public double AOct { get; set; } //Q4
-        public double ANov { get; set; }
-        public double ADec { get; set; }
+        public double ActualY1 { get; set; } //Q1
+        public double ActualY2 { get; set; }
+        public double ActualY3 { get; set; }
+        public double ActualY4 { get; set; } //Q2
+        public double ActualY5 { get; set; }
+        public double ActualY6 { get; set; }
+        public double ActualY7 { get; set; } //Q3
+        public double ActualY8 { get; set; }
+        public double ActualY9 { get; set; }
+        public double ActualY10 { get; set; } //Q4
+        public double ActualY11 { get; set; }
+        public double ActualY12 { get; set; }
 
     }
     public class ViewByModel

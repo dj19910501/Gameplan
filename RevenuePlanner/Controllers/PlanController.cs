@@ -7403,67 +7403,6 @@ namespace RevenuePlanner.Controllers
         
         #endregion
 
-        /// <summary>
-        /// Manage lines items if cost is allocated to other
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        private List<BudgetModel> ManageLineItems(List<BudgetModel> model)
-        {
-            foreach (BudgetModel l in model.Where(l => l.ActivityType == ActivityType.ActivityTactic))
-            {
-                //// Calculate Line Difference.
-                BudgetMonth lineDiff = new BudgetMonth();
-                List<BudgetModel> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
-                BudgetModel otherLine = lines.Where(ol => ol.LineItemTypeId == null).FirstOrDefault();
-                lines = lines.Where(ol => ol.LineItemTypeId != null).ToList();
-                if (otherLine != null)
-                {
-                    if (lines.Count > 0)
-                    {
-                        lineDiff.Jan = l.Month.Jan - lines.Sum(lmon => (double?)lmon.Month.Jan) ?? 0;
-                        lineDiff.Feb = l.Month.Feb - lines.Sum(lmon => (double?)lmon.Month.Feb) ?? 0;
-                        lineDiff.Mar = l.Month.Mar - lines.Sum(lmon => (double?)lmon.Month.Mar) ?? 0;
-                        lineDiff.Apr = l.Month.Apr - lines.Sum(lmon => (double?)lmon.Month.Apr) ?? 0;
-                        lineDiff.May = l.Month.May - lines.Sum(lmon => (double?)lmon.Month.May) ?? 0;
-                        lineDiff.Jun = l.Month.Jun - lines.Sum(lmon => (double?)lmon.Month.Jun) ?? 0;
-                        lineDiff.Jul = l.Month.Jul - lines.Sum(lmon => (double?)lmon.Month.Jul) ?? 0;
-                        lineDiff.Aug = l.Month.Aug - lines.Sum(lmon => (double?)lmon.Month.Aug) ?? 0;
-                        lineDiff.Sep = l.Month.Sep - lines.Sum(lmon => (double?)lmon.Month.Sep) ?? 0;
-                        lineDiff.Oct = l.Month.Oct - lines.Sum(lmon => (double?)lmon.Month.Oct) ?? 0;
-                        lineDiff.Nov = l.Month.Nov - lines.Sum(lmon => (double?)lmon.Month.Nov) ?? 0;
-                        lineDiff.Dec = l.Month.Dec - lines.Sum(lmon => (double?)lmon.Month.Dec) ?? 0;
-
-                        lineDiff.Jan = lineDiff.Jan < 0 ? 0 : lineDiff.Jan;
-                        lineDiff.Feb = lineDiff.Feb < 0 ? 0 : lineDiff.Feb;
-                        lineDiff.Mar = lineDiff.Mar < 0 ? 0 : lineDiff.Mar;
-                        lineDiff.Apr = lineDiff.Apr < 0 ? 0 : lineDiff.Apr;
-                        lineDiff.May = lineDiff.May < 0 ? 0 : lineDiff.May;
-                        lineDiff.Jun = lineDiff.Jun < 0 ? 0 : lineDiff.Jun;
-                        lineDiff.Jul = lineDiff.Jul < 0 ? 0 : lineDiff.Jul;
-                        lineDiff.Aug = lineDiff.Aug < 0 ? 0 : lineDiff.Aug;
-                        lineDiff.Sep = lineDiff.Sep < 0 ? 0 : lineDiff.Sep;
-                        lineDiff.Oct = lineDiff.Oct < 0 ? 0 : lineDiff.Oct;
-                        lineDiff.Nov = lineDiff.Nov < 0 ? 0 : lineDiff.Nov;
-                        lineDiff.Dec = lineDiff.Dec < 0 ? 0 : lineDiff.Dec;
-
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Month = lineDiff;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonth = lineDiff;
-
-                        double allocated = l.Allocated - lines.Sum(l1 => l1.Allocated);
-                        allocated = allocated < 0 ? 0 : allocated;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Allocated = allocated;
-                    }
-                    else
-                    {
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Month = l.Month;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonth = l.Month;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Allocated = l.Allocated < 0 ? 0 : l.Allocated;
-                    }
-                }
-            }
-            return model;
-        }
 
         #region "Actuals Tab of LineItem related functions"
 

@@ -202,90 +202,90 @@ namespace RevenuePlanner.Services
                     MonthValues = new BudgetMonth()
                     {
                         //Budget Month Allocation
-                        Feb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y2"])), PlanExchangeRate),
-                        Jan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y1"])), PlanExchangeRate),
-                        Mar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y3"])), PlanExchangeRate),
-                        Apr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y4"])), PlanExchangeRate),
-                        May = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y5"])), PlanExchangeRate),
-                        Jun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y6"])), PlanExchangeRate),
-                        Jul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y7"])), PlanExchangeRate),
-                        Aug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y8"])), PlanExchangeRate),
-                        Sep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y9"])), PlanExchangeRate),
-                        Oct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y10"])), PlanExchangeRate),
-                        Nov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y11"])), PlanExchangeRate),
-                        Dec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y12"])), PlanExchangeRate),
+                        BudgetY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y2"])), PlanExchangeRate),
+                        BudgetY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y1"])), PlanExchangeRate),
+                        BudgetY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y3"])), PlanExchangeRate),
+                        BudgetY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y4"])), PlanExchangeRate),
+                        BudgetY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y5"])), PlanExchangeRate),
+                        BudgetY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y6"])), PlanExchangeRate),
+                        BudgetY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y7"])), PlanExchangeRate),
+                        BudgetY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y8"])), PlanExchangeRate),
+                        BudgetY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y9"])), PlanExchangeRate),
+                        BudgetY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y10"])), PlanExchangeRate),
+                        BudgetY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y11"])), PlanExchangeRate),
+                        BudgetY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y12"])), PlanExchangeRate),
 
                         //Cost Month Allocation
-                        CFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY2"])), PlanExchangeRate),
-                        CJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY1"])), PlanExchangeRate),
-                        CMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY3"])), PlanExchangeRate),
-                        CApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY4"])), PlanExchangeRate),
-                        CMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY5"])), PlanExchangeRate),
-                        CJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY6"])), PlanExchangeRate),
-                        CJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY7"])), PlanExchangeRate),
-                        CAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY8"])), PlanExchangeRate),
-                        CSep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY9"])), PlanExchangeRate),
-                        COct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY10"])), PlanExchangeRate),
-                        CNov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY11"])), PlanExchangeRate),
-                        CDec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY12"])), PlanExchangeRate),
+                        CostY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY2"])), PlanExchangeRate),
+                        CostY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY1"])), PlanExchangeRate),
+                        CostY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY3"])), PlanExchangeRate),
+                        CostY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY4"])), PlanExchangeRate),
+                        CostY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY5"])), PlanExchangeRate),
+                        CostY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY6"])), PlanExchangeRate),
+                        CostY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY7"])), PlanExchangeRate),
+                        CostY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY8"])), PlanExchangeRate),
+                        CostY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY9"])), PlanExchangeRate),
+                        CostY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY10"])), PlanExchangeRate),
+                        CostY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY11"])), PlanExchangeRate),
+                        CostY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY12"])), PlanExchangeRate),
 
                         //Actuals Month Allocation
-                        AFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY2"])), PlanExchangeRate),
-                        AJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY1"])), PlanExchangeRate),
-                        AMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY3"])), PlanExchangeRate),
-                        AApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY4"])), PlanExchangeRate),
-                        AMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY5"])), PlanExchangeRate),
-                        AJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY6"])), PlanExchangeRate),
-                        AJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY7"])), PlanExchangeRate),
-                        AAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY8"])), PlanExchangeRate),
-                        ASep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY9"])), PlanExchangeRate),
-                        AOct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY10"])), PlanExchangeRate),
-                        ANov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY11"])), PlanExchangeRate),
-                        ADec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY12"])), PlanExchangeRate)
+                        ActualY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY2"])), PlanExchangeRate),
+                        ActualY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY1"])), PlanExchangeRate),
+                        ActualY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY3"])), PlanExchangeRate),
+                        ActualY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY4"])), PlanExchangeRate),
+                        ActualY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY5"])), PlanExchangeRate),
+                        ActualY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY6"])), PlanExchangeRate),
+                        ActualY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY7"])), PlanExchangeRate),
+                        ActualY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY8"])), PlanExchangeRate),
+                        ActualY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY9"])), PlanExchangeRate),
+                        ActualY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY10"])), PlanExchangeRate),
+                        ActualY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY11"])), PlanExchangeRate),
+                        ActualY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY12"])), PlanExchangeRate)
                     },
                     NextYearMonthValues = new BudgetMonth()
                     {
                         //Budget Month Allocation
-                        Feb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y14"])), PlanExchangeRate),
-                        Jan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y13"])), PlanExchangeRate),
-                        Mar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y15"])), PlanExchangeRate),
-                        Apr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y16"])), PlanExchangeRate),
-                        May = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y17"])), PlanExchangeRate),
-                        Jun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y18"])), PlanExchangeRate),
-                        Jul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y19"])), PlanExchangeRate),
-                        Aug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y20"])), PlanExchangeRate),
-                        Sep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y21"])), PlanExchangeRate),
-                        Oct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y22"])), PlanExchangeRate),
-                        Nov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y23"])), PlanExchangeRate),
-                        Dec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y24"])), PlanExchangeRate),
+                        BudgetY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y14"])), PlanExchangeRate),
+                        BudgetY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y13"])), PlanExchangeRate),
+                        BudgetY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y15"])), PlanExchangeRate),
+                        BudgetY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y16"])), PlanExchangeRate),
+                        BudgetY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y17"])), PlanExchangeRate),
+                        BudgetY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y18"])), PlanExchangeRate),
+                        BudgetY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y19"])), PlanExchangeRate),
+                        BudgetY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y20"])), PlanExchangeRate),
+                        BudgetY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y21"])), PlanExchangeRate),
+                        BudgetY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y22"])), PlanExchangeRate),
+                        BudgetY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y23"])), PlanExchangeRate),
+                        BudgetY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["Y24"])), PlanExchangeRate),
 
                         //Cost Month Allocation
-                        CFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY14"])), PlanExchangeRate),
-                        CJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY13"])), PlanExchangeRate),
-                        CMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY15"])), PlanExchangeRate),
-                        CApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY16"])), PlanExchangeRate),
-                        CMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY17"])), PlanExchangeRate),
-                        CJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY18"])), PlanExchangeRate),
-                        CJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY19"])), PlanExchangeRate),
-                        CAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY20"])), PlanExchangeRate),
-                        CSep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY21"])), PlanExchangeRate),
-                        COct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY22"])), PlanExchangeRate),
-                        CNov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY23"])), PlanExchangeRate),
-                        CDec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY24"])), PlanExchangeRate),
+                        CostY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY14"])), PlanExchangeRate),
+                        CostY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY13"])), PlanExchangeRate),
+                        CostY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY15"])), PlanExchangeRate),
+                        CostY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY16"])), PlanExchangeRate),
+                        CostY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY17"])), PlanExchangeRate),
+                        CostY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY18"])), PlanExchangeRate),
+                        CostY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY19"])), PlanExchangeRate),
+                        CostY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY20"])), PlanExchangeRate),
+                        CostY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY21"])), PlanExchangeRate),
+                        CostY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY22"])), PlanExchangeRate),
+                        CostY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY23"])), PlanExchangeRate),
+                        CostY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["CostY24"])), PlanExchangeRate),
 
                         //Actuals Month Allocation
-                        AFeb = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY14"])), PlanExchangeRate),
-                        AJan = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY13"])), PlanExchangeRate),
-                        AMar = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY15"])), PlanExchangeRate),
-                        AApr = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY16"])), PlanExchangeRate),
-                        AMay = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY17"])), PlanExchangeRate),
-                        AJun = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY18"])), PlanExchangeRate),
-                        AJul = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY19"])), PlanExchangeRate),
-                        AAug = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY20"])), PlanExchangeRate),
-                        ASep = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY21"])), PlanExchangeRate),
-                        AOct = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY22"])), PlanExchangeRate),
-                        ANov = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY23"])), PlanExchangeRate),
-                        ADec = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY24"])), PlanExchangeRate)
+                        ActualY2 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY14"])), PlanExchangeRate),
+                        ActualY1 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY13"])), PlanExchangeRate),
+                        ActualY3 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY15"])), PlanExchangeRate),
+                        ActualY4 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY16"])), PlanExchangeRate),
+                        ActualY5 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY17"])), PlanExchangeRate),
+                        ActualY6 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY18"])), PlanExchangeRate),
+                        ActualY7 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY19"])), PlanExchangeRate),
+                        ActualY8 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY20"])), PlanExchangeRate),
+                        ActualY9 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY21"])), PlanExchangeRate),
+                        ActualY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY22"])), PlanExchangeRate),
+                        ActualY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY23"])), PlanExchangeRate),
+                        ActualY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY24"])), PlanExchangeRate)
                     }
                 }).ToList();
             }
@@ -943,87 +943,87 @@ namespace RevenuePlanner.Services
                     objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
                     if (monthNo == 1)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jan) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jan < Entity.ChildMonthValues.Jan ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY1) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY1 < Entity.ChildMonthValues.BudgetY1 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1);
                     }
                     else if (monthNo == 2)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Feb) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Feb < Entity.ChildMonthValues.Feb ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CFeb);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AFeb);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY2) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY2 < Entity.ChildMonthValues.BudgetY2 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY2);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY2);
                     }
                     else if (monthNo == 3)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Mar) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Mar < Entity.ChildMonthValues.Mar ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CMar);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AMar);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY3) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY3 < Entity.ChildMonthValues.BudgetY3 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY3);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY3);
                     }
                     else if (monthNo == 4)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Apr) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Apr < Entity.ChildMonthValues.Apr ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CApr);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AApr);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY4) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY4 < Entity.ChildMonthValues.BudgetY4 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4);
                     }
                     else if (monthNo == 5)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.May) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.May < Entity.ChildMonthValues.May ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CMay);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AMay);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY5) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY5 < Entity.ChildMonthValues.BudgetY5 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY5);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY5);
                     }
                     else if (monthNo == 6)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jun) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jun < Entity.ChildMonthValues.Jun ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CJun);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AJun);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY6) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY6 < Entity.ChildMonthValues.BudgetY6 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY6);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY6);
                     }
                     else if (monthNo == 7)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jul) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Jul < Entity.ChildMonthValues.Jul ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CJul);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AJul);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY7) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY7 < Entity.ChildMonthValues.BudgetY7 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7);
                     }
                     else if (monthNo == 8)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Aug) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Aug < Entity.ChildMonthValues.Aug ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CAug);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AAug);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY8) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY8 < Entity.ChildMonthValues.BudgetY8 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY8);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY8);
                     }
                     else if (monthNo == 9)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Sep) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Sep < Entity.ChildMonthValues.Sep ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CSep);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ASep);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY9) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY9 < Entity.ChildMonthValues.BudgetY9 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY9);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY9);
                     }
                     else if (monthNo == 10)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Oct) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Oct < Entity.ChildMonthValues.Oct ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.COct);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AOct);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY10) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY10 < Entity.ChildMonthValues.BudgetY10 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10);
                     }
                     else if (monthNo == 11)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Nov) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Nov < Entity.ChildMonthValues.Nov ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CNov);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ANov);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY11) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY11 < Entity.ChildMonthValues.BudgetY11 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY11);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY11);
                     }
                     else if (monthNo == 12)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Dec) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.Dec < Entity.ChildMonthValues.Dec ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CDec);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ADec);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY12) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY12 < Entity.ChildMonthValues.BudgetY12 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY12);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY12);
                     }
                     if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value))
                     {
@@ -1068,60 +1068,60 @@ namespace RevenuePlanner.Services
                 {
                     if (i == 1)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jan + Entity.MonthValues.Feb + Entity.MonthValues.Mar) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.Jan + Entity.ChildMonthValues.Feb + Entity.ChildMonthValues.Mar) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan + Entity.MonthValues.CFeb + Entity.MonthValues.CMar);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan + Entity.MonthValues.AFeb + Entity.MonthValues.AMar);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY1 + Entity.MonthValues.BudgetY2 + Entity.MonthValues.BudgetY3) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY1 + Entity.ChildMonthValues.BudgetY2 + Entity.ChildMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1 + Entity.MonthValues.CostY2 + Entity.MonthValues.CostY3);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1 + Entity.MonthValues.ActualY2 + Entity.MonthValues.ActualY3);
 
                     }
                     else if (i == 4)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Apr + Entity.MonthValues.May + Entity.MonthValues.Jun) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.Apr + Entity.MonthValues.May + Entity.MonthValues.Jun) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CApr + Entity.MonthValues.CMay + Entity.MonthValues.CJun);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AApr + Entity.MonthValues.AMay + Entity.MonthValues.AJun);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4 + Entity.MonthValues.CostY5 + Entity.MonthValues.CostY6);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4 + Entity.MonthValues.ActualY5 + Entity.MonthValues.ActualY6);
                     }
                     else if (i == 7)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jul + Entity.MonthValues.Aug + Entity.MonthValues.Sep) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.Jul + Entity.MonthValues.Aug + Entity.MonthValues.Sep) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CJul + Entity.MonthValues.CAug + Entity.MonthValues.CSep);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AJul + Entity.MonthValues.AAug + Entity.MonthValues.ASep);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7 + Entity.MonthValues.CostY8 + Entity.MonthValues.CostY9);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7 + Entity.MonthValues.ActualY8 + Entity.MonthValues.ActualY9);
                     }
                     else if (i == 10)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Oct + Entity.MonthValues.Nov + Entity.MonthValues.Dec) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.Oct + Entity.MonthValues.Nov + Entity.MonthValues.Dec) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.COct + Entity.MonthValues.CNov + Entity.MonthValues.CDec);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AOct + Entity.MonthValues.ANov + Entity.MonthValues.ADec);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10 + Entity.MonthValues.CostY11 + Entity.MonthValues.CostY12);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10 + Entity.MonthValues.ActualY11 + Entity.MonthValues.ActualY12);
                     }
                     else if (i == 13)
                     {
-                        objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Jan + Entity.NextYearMonthValues.Feb + Entity.NextYearMonthValues.Mar) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.Jan + Entity.NextYearMonthValues.Feb + Entity.NextYearMonthValues.Mar) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CJan + Entity.NextYearMonthValues.CFeb + Entity.NextYearMonthValues.CMar) : ThreeDash;
-                        objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.AJan + Entity.NextYearMonthValues.AFeb + Entity.NextYearMonthValues.AMar) : ThreeDash;
+                        objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY1 + Entity.NextYearMonthValues.BudgetY2 + Entity.NextYearMonthValues.BudgetY3) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.BudgetY1 + Entity.NextYearMonthValues.BudgetY2 + Entity.NextYearMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY1 + Entity.NextYearMonthValues.CostY2 + Entity.NextYearMonthValues.CostY3) : ThreeDash;
+                        objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY1 + Entity.NextYearMonthValues.ActualY2 + Entity.NextYearMonthValues.ActualY3) : ThreeDash;
                     }
                     else if (i == 16)
                     {
-                        objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Apr + Entity.NextYearMonthValues.May + Entity.NextYearMonthValues.Jun) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.Apr + Entity.NextYearMonthValues.May + Entity.NextYearMonthValues.Jun) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CApr + Entity.NextYearMonthValues.CMay + Entity.NextYearMonthValues.CJun) : ThreeDash;
-                        objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.AApr + Entity.NextYearMonthValues.AMay + Entity.NextYearMonthValues.AJun) : ThreeDash;
+                        objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY4 + Entity.NextYearMonthValues.BudgetY5 + Entity.NextYearMonthValues.BudgetY6) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.BudgetY4 + Entity.NextYearMonthValues.BudgetY5 + Entity.NextYearMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY4 + Entity.NextYearMonthValues.CostY5 + Entity.NextYearMonthValues.CostY6) : ThreeDash;
+                        objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY4 + Entity.NextYearMonthValues.ActualY5 + Entity.NextYearMonthValues.ActualY6) : ThreeDash;
                     }
                     else if (i == 19)
                     {
-                        objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Jul + Entity.NextYearMonthValues.Aug + Entity.NextYearMonthValues.Sep) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.Jul + Entity.NextYearMonthValues.Aug + Entity.NextYearMonthValues.Sep) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CJul + Entity.NextYearMonthValues.CAug + Entity.NextYearMonthValues.CSep) : ThreeDash;
-                        objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.AJul + Entity.NextYearMonthValues.AAug + Entity.NextYearMonthValues.ASep) : ThreeDash;
+                        objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY7 + Entity.NextYearMonthValues.BudgetY8 + Entity.NextYearMonthValues.BudgetY9) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.BudgetY7 + Entity.NextYearMonthValues.BudgetY8 + Entity.NextYearMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY7 + Entity.NextYearMonthValues.CostY8 + Entity.NextYearMonthValues.CostY9) : ThreeDash;
+                        objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY7 + Entity.NextYearMonthValues.ActualY8 + Entity.NextYearMonthValues.ActualY9) : ThreeDash;
                     }
                     else if (i == 22)
                     {
-                        objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Oct + Entity.NextYearMonthValues.Nov + Entity.NextYearMonthValues.Dec) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.Oct + Entity.NextYearMonthValues.Nov + Entity.NextYearMonthValues.Dec) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.COct + Entity.NextYearMonthValues.CNov + Entity.NextYearMonthValues.CDec) : ThreeDash;
-                        objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.AOct + Entity.NextYearMonthValues.ANov + Entity.NextYearMonthValues.ADec) : ThreeDash;
+                        objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY10 + Entity.NextYearMonthValues.BudgetY11 + Entity.NextYearMonthValues.BudgetY12) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.BudgetY10 + Entity.NextYearMonthValues.BudgetY11 + Entity.NextYearMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12) : ThreeDash;
+                        objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12) : ThreeDash;
                     }
                     if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value))
                     {
@@ -1176,32 +1176,32 @@ namespace RevenuePlanner.Services
                     }
                     else if (monthNo == 13)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jan + Entity.MonthValues.Feb + Entity.MonthValues.Mar) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.Jan + Entity.MonthValues.Feb + Entity.MonthValues.Mar) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CJan + Entity.MonthValues.CFeb + Entity.MonthValues.CMar);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AJan + Entity.MonthValues.AFeb + Entity.MonthValues.AMar);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY1 + Entity.MonthValues.BudgetY2 + Entity.MonthValues.BudgetY3) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY1 + Entity.MonthValues.BudgetY2 + Entity.MonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1 + Entity.MonthValues.CostY2 + Entity.MonthValues.CostY3);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1 + Entity.MonthValues.ActualY2 + Entity.MonthValues.ActualY3);
 
                     }
                     else if (monthNo == 16)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Apr + Entity.MonthValues.May + Entity.MonthValues.Jun) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.Apr + Entity.MonthValues.May + Entity.MonthValues.Jun) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CApr + Entity.MonthValues.CMay + Entity.MonthValues.CJun);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AApr + Entity.MonthValues.AMay + Entity.MonthValues.AJun);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4 + Entity.MonthValues.CostY5 + Entity.MonthValues.CostY6);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4 + Entity.MonthValues.ActualY5 + Entity.MonthValues.ActualY6);
                     }
                     else if (monthNo == 19)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Jul + Entity.MonthValues.Aug + Entity.MonthValues.Sep) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.Jul + Entity.MonthValues.Aug + Entity.MonthValues.Sep) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CJul + Entity.MonthValues.CAug + Entity.MonthValues.CSep);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AJul + Entity.MonthValues.AAug + Entity.MonthValues.ASep);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7 + Entity.MonthValues.CostY8 + Entity.MonthValues.CostY9);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7 + Entity.MonthValues.ActualY8 + Entity.MonthValues.ActualY9);
                     }
                     else if (monthNo == 22)
                     {
-                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.Oct + Entity.MonthValues.Nov + Entity.MonthValues.Dec) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.Oct + Entity.MonthValues.Nov + Entity.MonthValues.Dec) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
-                        objCostMonth.value = Convert.ToString(Entity.MonthValues.COct + Entity.MonthValues.CNov + Entity.MonthValues.CDec);
-                        objActualMonth.value = Convert.ToString(Entity.MonthValues.AOct + Entity.MonthValues.ANov + Entity.MonthValues.ADec);
+                        objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) : ThreeDash;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10 + Entity.MonthValues.CostY11 + Entity.MonthValues.CostY12);
+                        objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10 + Entity.MonthValues.ActualY11 + Entity.MonthValues.ActualY12);
                     }
                     if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value))
                     {
@@ -1239,28 +1239,28 @@ namespace RevenuePlanner.Services
                 objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
                 if (monthNo == 13)
                 {
-                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Jan + Entity.NextYearMonthValues.Feb + Entity.NextYearMonthValues.Mar) : ThreeDash;
-                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CJan + Entity.NextYearMonthValues.CFeb + Entity.NextYearMonthValues.CMar);
-                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.AJan + Entity.NextYearMonthValues.AFeb + Entity.NextYearMonthValues.AMar);
+                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY1 + Entity.NextYearMonthValues.BudgetY2 + Entity.NextYearMonthValues.BudgetY3) : ThreeDash;
+                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY1 + Entity.NextYearMonthValues.CostY2 + Entity.NextYearMonthValues.CostY3);
+                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY1 + Entity.NextYearMonthValues.ActualY2 + Entity.NextYearMonthValues.ActualY3);
 
                 }
                 else if (monthNo == 16)
                 {
-                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Apr + Entity.NextYearMonthValues.May + Entity.NextYearMonthValues.Jun) : ThreeDash;
-                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CApr + Entity.NextYearMonthValues.CMay + Entity.NextYearMonthValues.CJun);
-                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.AApr + Entity.NextYearMonthValues.AMay + Entity.NextYearMonthValues.AJun);
+                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY4 + Entity.NextYearMonthValues.BudgetY5 + Entity.NextYearMonthValues.BudgetY6) : ThreeDash;
+                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY4 + Entity.NextYearMonthValues.CostY5 + Entity.NextYearMonthValues.CostY6);
+                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY4 + Entity.NextYearMonthValues.ActualY5 + Entity.NextYearMonthValues.ActualY6);
                 }
                 else if (monthNo == 19)
                 {
-                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Jul + Entity.NextYearMonthValues.Aug + Entity.NextYearMonthValues.Sep) : ThreeDash;
-                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CJul + Entity.NextYearMonthValues.CAug + Entity.NextYearMonthValues.CSep);
-                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.AJul + Entity.NextYearMonthValues.AAug + Entity.NextYearMonthValues.ASep);
+                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY7 + Entity.NextYearMonthValues.BudgetY8 + Entity.NextYearMonthValues.BudgetY9) : ThreeDash;
+                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY7 + Entity.NextYearMonthValues.CostY8 + Entity.NextYearMonthValues.CostY9);
+                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY7 + Entity.NextYearMonthValues.ActualY8 + Entity.NextYearMonthValues.ActualY9);
                 }
                 else if (monthNo == 22)
                 {
-                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.Oct + Entity.NextYearMonthValues.Nov + Entity.NextYearMonthValues.Dec) : ThreeDash;
-                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.COct + Entity.NextYearMonthValues.CNov + Entity.NextYearMonthValues.CDec);
-                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.AOct + Entity.NextYearMonthValues.ANov + Entity.NextYearMonthValues.ADec);
+                    objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY10 + Entity.NextYearMonthValues.BudgetY11 + Entity.NextYearMonthValues.BudgetY12) : ThreeDash;
+                    objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12);
+                    objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12);
                 }
 
                 BudgetDataObjList.Add(objBudgetMonth);
@@ -1433,18 +1433,18 @@ namespace RevenuePlanner.Services
                 {
                     if (lines.Count > 0)
                     {
-                        lineDiff.CJan = l.MonthValues.CJan - lines.Sum(lmon => (double?)lmon.MonthValues.CJan) ?? 0;
-                        lineDiff.CFeb = l.MonthValues.CFeb - lines.Sum(lmon => (double?)lmon.MonthValues.CFeb) ?? 0;
-                        lineDiff.CMar = l.MonthValues.CMar - lines.Sum(lmon => (double?)lmon.MonthValues.CMar) ?? 0;
-                        lineDiff.CApr = l.MonthValues.CApr - lines.Sum(lmon => (double?)lmon.MonthValues.CApr) ?? 0;
-                        lineDiff.CMay = l.MonthValues.CMay - lines.Sum(lmon => (double?)lmon.MonthValues.CMay) ?? 0;
-                        lineDiff.CJun = l.MonthValues.CJun - lines.Sum(lmon => (double?)lmon.MonthValues.CJun) ?? 0;
-                        lineDiff.CJul = l.MonthValues.CJul - lines.Sum(lmon => (double?)lmon.MonthValues.CJul) ?? 0;
-                        lineDiff.CAug = l.MonthValues.CAug - lines.Sum(lmon => (double?)lmon.MonthValues.CAug) ?? 0;
-                        lineDiff.CSep = l.MonthValues.CSep - lines.Sum(lmon => (double?)lmon.MonthValues.CSep) ?? 0;
-                        lineDiff.COct = l.MonthValues.COct - lines.Sum(lmon => (double?)lmon.MonthValues.COct) ?? 0;
-                        lineDiff.CNov = l.MonthValues.CNov - lines.Sum(lmon => (double?)lmon.MonthValues.CNov) ?? 0;
-                        lineDiff.CDec = l.MonthValues.CDec - lines.Sum(lmon => (double?)lmon.MonthValues.CDec) ?? 0;
+                        lineDiff.CostY1 = l.MonthValues.CostY1 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY1) ?? 0;
+                        lineDiff.CostY2 = l.MonthValues.CostY2 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY2) ?? 0;
+                        lineDiff.CostY3 = l.MonthValues.CostY3 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY3) ?? 0;
+                        lineDiff.CostY4 = l.MonthValues.CostY4 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY4) ?? 0;
+                        lineDiff.CostY5 = l.MonthValues.CostY5 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY5) ?? 0;
+                        lineDiff.CostY6 = l.MonthValues.CostY6 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY6) ?? 0;
+                        lineDiff.CostY7 = l.MonthValues.CostY7 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY7) ?? 0;
+                        lineDiff.CostY8 = l.MonthValues.CostY8 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY8) ?? 0;
+                        lineDiff.CostY9 = l.MonthValues.CostY9 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY9) ?? 0;
+                        lineDiff.CostY10 = l.MonthValues.CostY10 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY10) ?? 0;
+                        lineDiff.CostY11 = l.MonthValues.CostY11 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY11) ?? 0;
+                        lineDiff.CostY12 = l.MonthValues.CostY12 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY12) ?? 0;
 
 
                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthValues = lineDiff;
@@ -1486,76 +1486,76 @@ namespace RevenuePlanner.Services
                 childBudget = new BudgetMonth();
                 parent = new BudgetMonth();
 
-                parent.AJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJan * weightage)) ?? 0;
-                parent.AFeb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AFeb * weightage)) ?? 0;
-                parent.AMar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AMar * weightage)) ?? 0;
-                parent.AApr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AApr * weightage)) ?? 0;
-                parent.AMay = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AMay * weightage)) ?? 0;
-                parent.AJun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJun * weightage)) ?? 0;
-                parent.AJul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AJul * weightage)) ?? 0;
-                parent.AAug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AAug * weightage)) ?? 0;
-                parent.ASep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ASep * weightage)) ?? 0;
-                parent.AOct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.AOct * weightage)) ?? 0;
-                parent.ANov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ANov * weightage)) ?? 0;
-                parent.ADec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ADec * weightage)) ?? 0;
+                parent.ActualY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY1 * weightage)) ?? 0;
+                parent.ActualY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY2 * weightage)) ?? 0;
+                parent.ActualY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY3 * weightage)) ?? 0;
+                parent.ActualY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY4 * weightage)) ?? 0;
+                parent.ActualY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY5 * weightage)) ?? 0;
+                parent.ActualY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY6 * weightage)) ?? 0;
+                parent.ActualY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY7 * weightage)) ?? 0;
+                parent.ActualY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY8 * weightage)) ?? 0;
+                parent.ActualY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY9 * weightage)) ?? 0;
+                parent.ActualY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY10 * weightage)) ?? 0;
+                parent.ActualY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY11 * weightage)) ?? 0;
+                parent.ActualY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY12 * weightage)) ?? 0;
 
                 if (string.Compare(ParentActivityType, ActivityType.ActivityTactic,true)<0)
                 {
-                    parent.CJan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJan * weightage)) ?? 0;
-                    parent.CFeb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CFeb * weightage)) ?? 0;
-                    parent.CMar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CMar * weightage)) ?? 0;
-                    parent.CApr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CApr * weightage)) ?? 0;
-                    parent.CMay = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CMay * weightage)) ?? 0;
-                    parent.CJun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJun * weightage)) ?? 0;
-                    parent.CJul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CJul * weightage)) ?? 0;
-                    parent.CAug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CAug * weightage)) ?? 0;
-                    parent.CSep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CSep * weightage)) ?? 0;
-                    parent.COct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.COct * weightage)) ?? 0;
-                    parent.CNov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CNov * weightage)) ?? 0;
-                    parent.CDec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CDec * weightage)) ?? 0;
-                    totalMonthCostSum = parent.CJan + parent.CFeb + parent.CMar + parent.CApr + parent.CMay + parent.CJun + parent.CJul + parent.CAug + parent.CSep + parent.COct + parent.CNov + parent.CDec;
+                    parent.CostY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY1 * weightage)) ?? 0;
+                    parent.CostY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY2 * weightage)) ?? 0;
+                    parent.CostY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY3 * weightage)) ?? 0;
+                    parent.CostY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY4 * weightage)) ?? 0;
+                    parent.CostY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY5 * weightage)) ?? 0;
+                    parent.CostY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY6 * weightage)) ?? 0;
+                    parent.CostY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY7 * weightage)) ?? 0;
+                    parent.CostY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY8 * weightage)) ?? 0;
+                    parent.CostY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY9 * weightage)) ?? 0;
+                    parent.CostY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY10 * weightage)) ?? 0;
+                    parent.CostY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY11 * weightage)) ?? 0;
+                    parent.CostY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY12 * weightage)) ?? 0;
+                    totalMonthCostSum = parent.CostY1 + parent.CostY2 + parent.CostY3 + parent.CostY4 + parent.CostY5 + parent.CostY6 + parent.CostY7 + parent.CostY8 + parent.CostY9 + parent.CostY10 + parent.CostY11 + parent.CostY12;
                 }
                 else
                 {
-                    parent.CJan = l.MonthValues.CJan;
-                    parent.CFeb = l.MonthValues.CFeb;
-                    parent.CMar = l.MonthValues.CMar;
-                    parent.CApr = l.MonthValues.CApr;
-                    parent.CMay = l.MonthValues.CMay;
-                    parent.CJun = l.MonthValues.CJun;
-                    parent.CJul = l.MonthValues.CJul;
-                    parent.CAug = l.MonthValues.CAug;
-                    parent.CSep = l.MonthValues.CSep;
-                    parent.COct = l.MonthValues.COct;
-                    parent.CNov = l.MonthValues.CNov;
-                    parent.CDec = l.MonthValues.CDec;
+                    parent.CostY1 = l.MonthValues.CostY1;
+                    parent.CostY2 = l.MonthValues.CostY2;
+                    parent.CostY3 = l.MonthValues.CostY3;
+                    parent.CostY4 = l.MonthValues.CostY4;
+                    parent.CostY5 = l.MonthValues.CostY5;
+                    parent.CostY6 = l.MonthValues.CostY6;
+                    parent.CostY7 = l.MonthValues.CostY7;
+                    parent.CostY8 = l.MonthValues.CostY8;
+                    parent.CostY9 = l.MonthValues.CostY9;
+                    parent.CostY10 = l.MonthValues.CostY10;
+                    parent.CostY11 = l.MonthValues.CostY11;
+                    parent.CostY12 = l.MonthValues.CostY12;
                 }
 
-                parent.Jan = l.MonthValues.Jan;
-                parent.Feb = l.MonthValues.Feb;
-                parent.Mar = l.MonthValues.Mar;
-                parent.Apr = l.MonthValues.Apr;
-                parent.May = l.MonthValues.May;
-                parent.Jun = l.MonthValues.Jun;
-                parent.Jul = l.MonthValues.Jul;
-                parent.Aug = l.MonthValues.Aug;
-                parent.Sep = l.MonthValues.Sep;
-                parent.Oct = l.MonthValues.Oct;
-                parent.Nov = l.MonthValues.Nov;
-                parent.Dec = l.MonthValues.Dec;
+                parent.BudgetY1 = l.MonthValues.BudgetY1;
+                parent.BudgetY2 = l.MonthValues.BudgetY2;
+                parent.BudgetY3 = l.MonthValues.BudgetY3;
+                parent.BudgetY4 = l.MonthValues.BudgetY4;
+                parent.BudgetY5 = l.MonthValues.BudgetY5;
+                parent.BudgetY6 = l.MonthValues.BudgetY6;
+                parent.BudgetY7 = l.MonthValues.BudgetY7;
+                parent.BudgetY8 = l.MonthValues.BudgetY8;
+                parent.BudgetY9 = l.MonthValues.BudgetY9;
+                parent.BudgetY10 = l.MonthValues.BudgetY10;
+                parent.BudgetY11 = l.MonthValues.BudgetY11;
+                parent.BudgetY12 = l.MonthValues.BudgetY12;
 
-                childBudget.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Jan)) ?? 0;
-                childBudget.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Feb)) ?? 0;
-                childBudget.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Mar)) ?? 0;
-                childBudget.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Apr)) ?? 0;
-                childBudget.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.May)) ?? 0;
-                childBudget.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Jun)) ?? 0;
-                childBudget.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Jul)) ?? 0;
-                childBudget.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Aug)) ?? 0;
-                childBudget.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Sep)) ?? 0;
-                childBudget.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Oct)) ?? 0;
-                childBudget.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Nov)) ?? 0;
-                childBudget.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.Dec)) ?? 0;
+                childBudget.BudgetY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY1)) ?? 0;
+                childBudget.BudgetY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY2)) ?? 0;
+                childBudget.BudgetY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY3)) ?? 0;
+                childBudget.BudgetY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY4)) ?? 0;
+                childBudget.BudgetY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY5)) ?? 0;
+                childBudget.BudgetY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY6)) ?? 0;
+                childBudget.BudgetY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY7)) ?? 0;
+                childBudget.BudgetY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY8)) ?? 0;
+                childBudget.BudgetY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY9)) ?? 0;
+                childBudget.BudgetY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY10)) ?? 0;
+                childBudget.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY11)) ?? 0;
+                childBudget.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY12)) ?? 0;
 
                 PlanBudgetModel Entity = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault();
                 Entity.MonthValues = parent;
@@ -1590,44 +1590,44 @@ namespace RevenuePlanner.Services
                 foreach (PlanBudgetModel line in lstLineItems)
                 {
                     BudgetMonth lineBudget = new BudgetMonth();
-                    lineBudget.AJan = (double)(line.MonthValues.AJan * weightage) / 100;
-                    lineBudget.AFeb = (double)(line.MonthValues.AFeb * weightage) / 100;
-                    lineBudget.AMar = (double)(line.MonthValues.AMar * weightage) / 100;
-                    lineBudget.AApr = (double)(line.MonthValues.AApr * weightage) / 100;
-                    lineBudget.AMay = (double)(line.MonthValues.AMay * weightage) / 100;
-                    lineBudget.AJun = (double)(line.MonthValues.AJun * weightage) / 100;
-                    lineBudget.AJul = (double)(line.MonthValues.AJul * weightage) / 100;
-                    lineBudget.AAug = (double)(line.MonthValues.AAug * weightage) / 100;
-                    lineBudget.ASep = (double)(line.MonthValues.ASep * weightage) / 100;
-                    lineBudget.AOct = (double)(line.MonthValues.AOct * weightage) / 100;
-                    lineBudget.ANov = (double)(line.MonthValues.ANov * weightage) / 100;
-                    lineBudget.ADec = (double)(line.MonthValues.ADec * weightage) / 100;
+                    lineBudget.ActualY1 = (double)(line.MonthValues.ActualY1 * weightage) / 100;
+                    lineBudget.ActualY2 = (double)(line.MonthValues.ActualY2 * weightage) / 100;
+                    lineBudget.ActualY3 = (double)(line.MonthValues.ActualY3 * weightage) / 100;
+                    lineBudget.ActualY4 = (double)(line.MonthValues.ActualY4 * weightage) / 100;
+                    lineBudget.ActualY5 = (double)(line.MonthValues.ActualY5 * weightage) / 100;
+                    lineBudget.ActualY6 = (double)(line.MonthValues.ActualY6 * weightage) / 100;
+                    lineBudget.ActualY7 = (double)(line.MonthValues.ActualY7 * weightage) / 100;
+                    lineBudget.ActualY8 = (double)(line.MonthValues.ActualY8 * weightage) / 100;
+                    lineBudget.ActualY9 = (double)(line.MonthValues.ActualY9 * weightage) / 100;
+                    lineBudget.ActualY10 = (double)(line.MonthValues.ActualY10 * weightage) / 100;
+                    lineBudget.ActualY11 = (double)(line.MonthValues.ActualY11 * weightage) / 100;
+                    lineBudget.ActualY12 = (double)(line.MonthValues.ActualY12 * weightage) / 100;
 
-                    lineBudget.CJan = (double)(line.MonthValues.CJan * weightage) / 100;
-                    lineBudget.CFeb = (double)(line.MonthValues.CFeb * weightage) / 100;
-                    lineBudget.CMar = (double)(line.MonthValues.CMar * weightage) / 100;
-                    lineBudget.CApr = (double)(line.MonthValues.CApr * weightage) / 100;
-                    lineBudget.CMay = (double)(line.MonthValues.CMay * weightage) / 100;
-                    lineBudget.CJun = (double)(line.MonthValues.CJun * weightage) / 100;
-                    lineBudget.CJul = (double)(line.MonthValues.CJul * weightage) / 100;
-                    lineBudget.CAug = (double)(line.MonthValues.CAug * weightage) / 100;
-                    lineBudget.CSep = (double)(line.MonthValues.CSep * weightage) / 100;
-                    lineBudget.COct = (double)(line.MonthValues.COct * weightage) / 100;
-                    lineBudget.CNov = (double)(line.MonthValues.CNov * weightage) / 100;
-                    lineBudget.CDec = (double)(line.MonthValues.CDec * weightage) / 100;
+                    lineBudget.CostY1 = (double)(line.MonthValues.CostY1 * weightage) / 100;
+                    lineBudget.CostY2 = (double)(line.MonthValues.CostY2 * weightage) / 100;
+                    lineBudget.CostY3 = (double)(line.MonthValues.CostY3 * weightage) / 100;
+                    lineBudget.CostY4 = (double)(line.MonthValues.CostY4 * weightage) / 100;
+                    lineBudget.CostY5 = (double)(line.MonthValues.CostY5 * weightage) / 100;
+                    lineBudget.CostY6 = (double)(line.MonthValues.CostY6 * weightage) / 100;
+                    lineBudget.CostY7 = (double)(line.MonthValues.CostY7 * weightage) / 100;
+                    lineBudget.CostY8 = (double)(line.MonthValues.CostY8 * weightage) / 100;
+                    lineBudget.CostY9 = (double)(line.MonthValues.CostY9 * weightage) / 100;
+                    lineBudget.CostY10 = (double)(line.MonthValues.CostY10 * weightage) / 100;
+                    lineBudget.CostY11 = (double)(line.MonthValues.CostY11 * weightage) / 100;
+                    lineBudget.CostY12 = (double)(line.MonthValues.CostY12 * weightage) / 100;
 
-                    lineBudget.Jan = (double)(line.MonthValues.Jan * weightage) / 100;
-                    lineBudget.Feb = (double)(line.MonthValues.Feb * weightage) / 100;
-                    lineBudget.Mar = (double)(line.MonthValues.Mar * weightage) / 100;
-                    lineBudget.Apr = (double)(line.MonthValues.Apr * weightage) / 100;
-                    lineBudget.May = (double)(line.MonthValues.May * weightage) / 100;
-                    lineBudget.Jun = (double)(line.MonthValues.Jun * weightage) / 100;
-                    lineBudget.Jul = (double)(line.MonthValues.Jul * weightage) / 100;
-                    lineBudget.Aug = (double)(line.MonthValues.Aug * weightage) / 100;
-                    lineBudget.Sep = (double)(line.MonthValues.Sep * weightage) / 100;
-                    lineBudget.Oct = (double)(line.MonthValues.Oct * weightage) / 100;
-                    lineBudget.Nov = (double)(line.MonthValues.Nov * weightage) / 100;
-                    lineBudget.Dec = (double)(line.MonthValues.Dec * weightage) / 100;
+                    lineBudget.BudgetY1 = (double)(line.MonthValues.BudgetY1 * weightage) / 100;
+                    lineBudget.BudgetY2 = (double)(line.MonthValues.BudgetY2 * weightage) / 100;
+                    lineBudget.BudgetY3 = (double)(line.MonthValues.BudgetY3 * weightage) / 100;
+                    lineBudget.BudgetY4 = (double)(line.MonthValues.BudgetY4 * weightage) / 100;
+                    lineBudget.BudgetY5 = (double)(line.MonthValues.BudgetY5 * weightage) / 100;
+                    lineBudget.BudgetY6 = (double)(line.MonthValues.BudgetY6 * weightage) / 100;
+                    lineBudget.BudgetY7 = (double)(line.MonthValues.BudgetY7 * weightage) / 100;
+                    lineBudget.BudgetY8 = (double)(line.MonthValues.BudgetY8 * weightage) / 100;
+                    lineBudget.BudgetY9 = (double)(line.MonthValues.BudgetY9 * weightage) / 100;
+                    lineBudget.BudgetY10 = (double)(line.MonthValues.BudgetY10 * weightage) / 100;
+                    lineBudget.BudgetY11 = (double)(line.MonthValues.BudgetY11 * weightage) / 100;
+                    lineBudget.BudgetY12 = (double)(line.MonthValues.BudgetY12 * weightage) / 100;
                     line.MonthValues = lineBudget;
                 }
             }
