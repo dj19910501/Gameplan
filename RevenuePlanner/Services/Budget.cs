@@ -39,7 +39,7 @@ namespace RevenuePlanner.Services
         public const string EndColType = ",ro,ro";
         public const string FixcolWidth = "100,100,100,10,100,302,75,100,110,100";
         public const string EndcolWidth = ",150,150";
-        public const string FixColsorting = "na,na,na,na,na,na,na,na,na,na";
+        public const string FixColsorting = "na,na,na,na,na,na,na,int,int,int";
         public const string EndColsorting = ",int,int";
         public const string QuarterPrefix = "Q";
         public const string DhtmlxColSpan = "#cspan";
@@ -47,8 +47,8 @@ namespace RevenuePlanner.Services
         public const string ColActual = "Actual";
         public const string ColPlanned = "Planned";
         public const string NotEditableCellStyle = "color:#a2a2a2 !important;";
-        public const string RedCornerStyle = "background: rgba(0, 0, 0, 0) url(./content/images/red-corner-budget.png) no-repeat scroll right top;";
-        public const string OrangeCornerStyle = "background: rgba(0, 0, 0, 0) url(./content/images/orange-corner-budget.png) no-repeat scroll right top;";
+        public const string RedCornerStyle = "background-image:url(../content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top; ";
+        public const string OrangeCornerStyle = "background-image: url(../content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;";
         public const string ThreeDash = "---";
         public bool isMultiYear = false;
 
@@ -400,7 +400,7 @@ namespace RevenuePlanner.Services
             if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityPlan.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=Plan title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=Plan onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -418,7 +418,7 @@ namespace RevenuePlanner.Services
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityCampaign.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=CP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=CP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -436,7 +436,7 @@ namespace RevenuePlanner.Services
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityProgram.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=PP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=PP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -458,7 +458,7 @@ namespace RevenuePlanner.Services
                 string LinkedTacticId = Entity.LinkTacticId == 0 ? "null" : Entity.LinkTacticId.ToString();
 
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=TP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=TP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -478,7 +478,7 @@ namespace RevenuePlanner.Services
             else if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityLineItem.ToLower() && Entity.LineItemTypeId != null)
             {
                 // Magnifying Glass to open Inspect Popup
-                IconsData = "<div class=grid_Search id=LP title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
+                IconsData = "<div class=grid_Search id=LP onclick=javascript:DisplayPopupforBudget(this) title=View ><i class='fa fa-external-link-square' aria-hidden='true'></i></div>";
 
                 // Add Button
                 if (IsAddEntityRights)
@@ -490,8 +490,6 @@ namespace RevenuePlanner.Services
             }
             return IconsData;
         }
-
-
 
         public BudgetDHTMLXGridModel CreateDhtmlxFormattedBudgetData(BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string AllocatedBy, int UserID, int ClientId, string Year, string viewBy)
         {
@@ -537,6 +535,7 @@ namespace RevenuePlanner.Services
             objBudgetDHTMLXGrid.Grid.rows = gridjsonlist;
             return objBudgetDHTMLXGrid;
         }
+
         private List<BudgetDHTMLXGridDataModel> GenerateHierarchy(List<PlanBudgetModel> model, int UserID, int ClientId, string Year, string AllocatedBy, bool isViewBy, string ParentId = "")
         {
             List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
@@ -743,6 +742,7 @@ namespace RevenuePlanner.Services
             }
             return gridjsonlist;
         }
+
         private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string Year)
         {
             string firstYear = GetInitialYearFromTimeFrame(Year);
@@ -851,7 +851,6 @@ namespace RevenuePlanner.Services
             return objBudgetDHTMLXGrid;
         }
 
-
         private List<Budgetdataobj> CampaignBudgetSummary(List<PlanBudgetModel> model, string activityType, string parentActivityId, List<Budgetdataobj> BudgetDataObjList, string allocatedBy, string activityId, bool isViewby = false)
         {
             PlanBudgetModel Entity = model.Where(pl => pl.ActivityType == activityType && pl.ParentActivityId == parentActivityId && pl.ActivityId == activityId).OrderBy(p => p.ActivityName).ToList().FirstOrDefault();
@@ -955,10 +954,10 @@ namespace RevenuePlanner.Services
                 {
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                    objActualMonth.locked = Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                     objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
                     objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                    objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+                    objActualMonth.style = Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
                     if (monthNo == 1)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY1) : ThreeDash;
@@ -1080,8 +1079,8 @@ namespace RevenuePlanner.Services
                 objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
                 objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
                 objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+                objActualMonth.locked = Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                objActualMonth.style = Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
                 if (!isViewby)
                 {
                     if (i == 1)
@@ -1173,10 +1172,10 @@ namespace RevenuePlanner.Services
                 {
                     objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
                     objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-                    objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                    objActualMonth.locked = Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                     objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
                     objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                    objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+                    objActualMonth.style = Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
 
                     if (monthNo < 13)
                     {
@@ -1253,8 +1252,8 @@ namespace RevenuePlanner.Services
                 objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
                 objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
                 objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                objActualMonth.locked = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? CellNotLocked : CellLocked;
-                objActualMonth.style = Entity.isActualEditable && isLineItem && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
+                objActualMonth.locked = Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                objActualMonth.style = Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
                 if (monthNo == 13)
                 {
                     objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY1 + Entity.NextYearMonthValues.BudgetY2 + Entity.NextYearMonthValues.BudgetY3) : ThreeDash;
@@ -1389,12 +1388,17 @@ namespace RevenuePlanner.Services
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.Id));
+                        bool isLineItem = BudgetModel.Where(ent => ent.ParentActivityId == item.ActivityId).Any();
                         //Check tactic is editable or not
                         lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isBudgetEditable = true;
                             item.isCostEditable = true;
+                            if (!isLineItem)
+                            {
+                                item.isActualEditable = true;
+                            }
                         }
                         else
                         {
@@ -1587,6 +1591,7 @@ namespace RevenuePlanner.Services
 
             return model;
         }
+
         //This function apply weightage to budget cell values
         private List<PlanBudgetModel> SetLineItemCostByWeightage(List<PlanBudgetModel> model, string ViewBy)
         {
