@@ -311,14 +311,6 @@
         else {
             $("#txtTitle").removeClass("error");
         }
-
-        if (iserror) {
-            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
-            $('#InspectTab').removeClass('SpanDisable');
-        }
-        else {
-            $("#errorMessage").css("display", "none");
-        }
         var OwnerValue = $('#ddlOwner').val();
         if (OwnerValue == "") {
             $('#btnMultiselect_ddlOwner').addClass("error");
@@ -328,6 +320,14 @@
         else {
             $('#btnMultiselect_ddlOwner').removeClass("error");
         }
+        if (iserror) {
+            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            $('#InspectTab').removeClass('SpanDisable');
+        }
+        else {
+            $("#errorMessage").css("display", "none");
+        }
+      
         var regex = /(>|<)/m;
 
         var descriptionvalue = $("#txtDescription").val();
@@ -368,7 +368,15 @@
                                 $("#successMessage").css("display", "block");
                                 $("#spanMessageSuccess").empty();
                                 $("#spanMessageSuccess").text(data.succmsg);
+                                $("#errorMessagePlan").css("display", "none");
+                                $("#spanErrMessagePlan").empty();
+                                $("#spanErrMessagePlan").html('');
                                 returnparameter = true;
+                                var planid = $("#hdnPlanId").val();
+                                if (planid == '0') {
+                                    planid = data.id;
+                                    isCopyTactic = planid;
+                                }
                             }
                             returnparameter = true;
                         }

@@ -367,11 +367,16 @@ namespace RevenuePlanner.Controllers
                         int resultadd = AddUpdatePlanDetails(objPlanModel, 0, plan, true);
                         if (resultadd > 0)
                         {
+                            List<Plan_UserSavedViews> UserSavedViews = db.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.ID).ToList();
+                            UserSavedViews.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                            db.SaveChanges();
+                            Sessions.PlanUserSavedViews = null;
                             Sessions.PlanId = plan.PlanId;
                             Sessions.PlanPlanIds.Add(plan.PlanId);
-                            Sessions.IsNoPlanCreated = true;
+                            Sessions.IsNoPlanCreated = false;
                             //Create default Plan Improvement Campaign, Program
                             int returnValue = CreatePlanImprovementCampaignAndProgram();
+                            strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Convert.ToString(Enums.PlanEntity.Plan)]);  
                             return Json(new { id = plan.PlanId, succmsg = strMessage, redirect = "" });
                         }
                         else
@@ -10350,7 +10355,10 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.PlanTaskDelete(Enums.Section.Plan.ToString(), id);
                             if (returnValue != 0)
                             {
-
+                                List<Plan_UserSavedViews> UserSavedViews = db.Plan_UserSavedViews.Where(a => a.Userid==Sessions.User.ID).ToList();
+                                UserSavedViews.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                db.SaveChanges();
+                                Sessions.PlanUserSavedViews = null;
                                 Plan plan = db.Plans.Where(p => p.PlanId == id).FirstOrDefault();
                                 returnValue = Common.InsertChangeLog(id, null, id, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", plan.CreatedBy);
                                 strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
