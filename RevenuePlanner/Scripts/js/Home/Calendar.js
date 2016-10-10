@@ -37,9 +37,9 @@ function BindPlanCalendar() {
                 calendarHtml += data;
                 $("#GridGanttContent").html('');
                 $("#GridGanttContent").html(calendarHtml);
-            GetCalendarDataInJsonFormat();
-            $('#ChangeView').show();
-				   }
+                GetCalendarDataInJsonFormat();
+                $('#ChangeView').show();
+            }
 
         }
     });
@@ -75,6 +75,14 @@ var viewBy = $('#ddlTabViewBy').val();
                 $('#exp-serach').css('display', 'none');
             }
 
+        },
+        //Added by Bhumika to display loading Spinner when calendar load
+        beforeSend: function () {
+            // setting a timeout
+            $('#loader').css('display','block');
+        },
+        complete: function () {
+            $('#loader').css('display', 'none');
         }
     });
 }

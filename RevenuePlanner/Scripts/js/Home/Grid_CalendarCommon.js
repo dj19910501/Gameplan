@@ -191,6 +191,14 @@ function LoadBudgetGrid() {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
             $('#ChangeView').show();
+        },
+        //Added by Bhumika to display loading Spinner when calendar load
+        beforeSend: function () {
+            // setting a timeout
+            $('#loader').css('display', 'block');
+        },
+        complete: function () {
+            $('#loader').css('display', 'none');
         }
     });
 }
@@ -225,6 +233,14 @@ function LoadPlanGrid() {
             $("div[id^='LinkIcon']").each(function () {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
+        },
+        //Added by Bhumika to display loading Spinner when calendar load
+        beforeSend: function () {
+            // setting a timeout
+            $('#loader').css('display', 'block');
+        },
+        complete: function () {
+            $('#loader').css('display', 'none');
         }
     });
 }

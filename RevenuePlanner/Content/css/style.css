@@ -13551,8 +13551,20 @@ input.serach-input {
 }
 .slideLeft #divsidebartoggle.padding-content{padding:0 !important}
 .slideLeft .sidebar-toogle{left: 0;}
+ /* ==================================== */
 
-/* ******************** */
+#loader{
+    transition:all 0.5s ease 0s; 
+    margin: 0 auto;
+    position: fixed;
+    right: auto;
+    top: 60%;
+    left: 55%;
+    z-index:1499
+
+}
+#divupcomingact .sbOptions a{ padding: 5px 12px;font-size: 13px;}
+
 
 
 
