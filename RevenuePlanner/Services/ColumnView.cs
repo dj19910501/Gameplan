@@ -291,10 +291,14 @@ namespace RevenuePlanner.Services
 
                     }).ToList();
                     List<CustomFieldDependency> DependencyList = objDbMrpEntities.CustomFieldDependencies.Where(a => a.IsDeleted == false).Select(a => a).ToList();
+                    var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.ID, true);
+                    List<Models.CustomRestriction> lstEditableRestrictions = new List<CustomRestriction>();
+                    lstEditableRestrictions = userCustomRestrictionList.Where(restriction => restriction.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit).ToList();
 
                     List<int> customfieldid = columnattribute.Select(a => Convert.ToInt32(a.CustomFieldId)).ToList();
                     List<CustomFieldOption> optlist = objDbMrpEntities.CustomFieldOptions.Where(a => a.CustomField.ClientId == clientID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).ToList();
-
+                    List<int> enitablerestrictionoptionId = lstEditableRestrictions.Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
+                    optlist = optlist.Where(opt => enitablerestrictionoptionId.Contains(opt.CustomFieldOptionId)).ToList();
                     optionlist = optlist.Select(o => new CustomFieldOptionModel
                         {
                             ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
