@@ -137,7 +137,10 @@
             }
             
         });
-
+        HomeGrid.attachEvent("onRowSelect", function (id, ind) {
+            var idindex = idcoluIndex = HomeGrid.getColIndexById('id');
+            isEditTacticHomeGrid = HomeGrid.cells(id, idindex).getValue();
+        });
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);
         var mainGridData = JsonModel;
