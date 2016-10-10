@@ -1557,6 +1557,13 @@ color: #89CEDE;
 
 #divgridview  #gridbox div:nth-child(2) > .objbox table.obj{width:100% !important}/* specilly applied on Budget grid*/
 
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr tr:first-child{height:0 !important}
+#divgridview.budget-grid div.gridbox table.hdr {
+    margin-right: 18px !important;
+    padding-right: 18px !important;
+    box-sizing: border-box !important;
+}
+
 /* ============== Search box CSS ================ */
 /*#divgridview .xhdr{ height: 37px !important; }*/
 
