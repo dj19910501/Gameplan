@@ -1997,9 +1997,8 @@ function CallUnPackageHoneyComb() {
                     }
 
                      if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
-                    var removeEntirePkg = taskId.split('_')[1];
-                    HomeGrid.clearAll();
-                }
+                      HomeGrid.clearAll();
+                     }
                 }
                 else {
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']");
@@ -2242,7 +2241,6 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
                 RemoveAllHoneyCombData();
                 ShowMessage(false, PackageUnsuccessful, 3000);
                 if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
-                    var removeEntirePkg = taskId.split('_')[1];
                     HomeGrid.clearAll();
                 }
 

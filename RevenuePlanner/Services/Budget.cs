@@ -346,13 +346,13 @@ namespace RevenuePlanner.Services
             {
                 // Get list of package tactic ids
                 Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
-
-                BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring.Replace("'", "&#39;").Replace("\"", "&#34;")) + Linkedstring + HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
+                BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring).Replace("'", "&#39;").Replace("\"", "&#34;") + Linkedstring + HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;").Replace("\"", "&#34;");
             }
             else
             {
                 BudgetDataObj.value = Linkedstring + HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
             }
+
             if (Entity.ActivityType == ActivityType.ActivityLineItem && Entity.LineItemTypeId == null)
             {
                 BudgetDataObj.locked = CellLocked;
