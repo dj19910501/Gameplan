@@ -336,11 +336,11 @@ namespace RevenuePlanner.Helpers
             Connection = Conn_Open();
             if (!isMonthly)
             {
-                spname = "Sp_ImportPlanBudgetDataQuarterly";
+                spname = "ImportPlanBudgetDataQuarterly";
             }
             else
             {
-                spname = "Sp_ImportPlanBudgetDataMonthly";
+                spname = "ImportPlanBudgetDataMonthly";
             }
             using (command = new SqlCommand(spname, Connection))
             {
@@ -368,11 +368,11 @@ namespace RevenuePlanner.Helpers
             Connection = Conn_Open();
             if (!isMonthly)
             {
-                spname = "Sp_ImportPlanActualDataQuarterly";
+                spname = "ImportPlanActualDataQuarterly";
             }
             else
             {
-                spname = "Sp_ImportPlanActualDataMonthly";
+                spname = "ImportPlanActualDataMonthly";
             }
             using (command = new SqlCommand(spname, Connection))
             {
@@ -401,11 +401,11 @@ namespace RevenuePlanner.Helpers
             Connection = Conn_Open();
             if (!isMonthly)
             {
-                spname = "Sp_ImportPlanCostDataQuarterly";
+                spname = "ImportPlanCostDataQuarterly";
             }
             else
             {
-                spname = "Sp_ImportPlanCostDataMonthly";
+                spname = "ImportPlanCostDataMonthly";
             }
             using (command = new SqlCommand(spname, Connection))
             {
@@ -427,32 +427,32 @@ namespace RevenuePlanner.Helpers
         /// <param name="isMonthly"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public DataSet ImportPlanActuals(DataTable dtNew, bool isMonthly, int userId)
-        {
-            DataSet dataset = new DataSet();
-            string spname = string.Empty;
-            Connection = Conn_Open();
-            if (!isMonthly)
-            {
-                spname = "Sp_GetPlanActualDataQuarterly";
-            }
-            else
-            {
-                spname = "Sp_GetPlanActualDataMonthly";
-            }
-            using (command = new SqlCommand(spname, Connection))
-            {
-                command.CommandType = CommandType.StoredProcedure;
-                //  command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
-                command.Parameters.AddWithValue("@ImportData", dtNew);
-                command.Parameters.AddWithValue("@UserId", userId);
-                SqlDataAdapter adp = new SqlDataAdapter(command);
-                command.CommandTimeout = 0;
-                adp.Fill(dataset);
-                Conn_Close();
-            }
-            return dataset;
-        }
+        //public DataSet ImportPlanActuals(DataTable dtNew, bool isMonthly, int userId)
+        //{
+        //    DataSet dataset = new DataSet();
+        //    string spname = string.Empty;
+        //    Connection = Conn_Open();
+        //    if (!isMonthly)
+        //    {
+        //        spname = "Sp_GetPlanActualDataQuarterly";
+        //    }
+        //    else
+        //    {
+        //        spname = "Sp_GetPlanActualDataMonthly";
+        //    }
+        //    using (command = new SqlCommand(spname, Connection))
+        //    {
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        //  command.Parameters.AddWithValue("@PlanId", Convert.ToInt32(dtNew.Rows[0][0]));
+        //        command.Parameters.AddWithValue("@ImportData", dtNew);
+        //        command.Parameters.AddWithValue("@UserId", userId);
+        //        SqlDataAdapter adp = new SqlDataAdapter(command);
+        //        command.CommandTimeout = 0;
+        //        adp.Fill(dataset);
+        //        Conn_Close();
+        //    }
+        //    return dataset;
+        //}
 
         public string GetColumnValue(string Query)
         {

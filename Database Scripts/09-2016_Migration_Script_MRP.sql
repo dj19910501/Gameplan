@@ -3447,7 +3447,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[Plan_BudgetQuarterCalculation]	
 	@EntityId INT,
-	@Quater INT,
+	@Quarter INT,
 	@newValue FLOAT
 	AS
 	BEGIN
@@ -3462,27 +3462,27 @@ CREATE PROCEDURE [dbo].[Plan_BudgetQuarterCalculation]
 				DROP TABLE #tempDataPlan_Budget
 			END 
 			SELECT * INTO #tempDataPlan_Budget FROM (SELECT * from Plan_Budget where PlanId=@EntityId) a 
-			IF(@Quater=1)
+			IF(@Quarter=1)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataPlan_Budget where Period in('Y1','Y2','Y3')	
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataPlan_Budget where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
-            ELSE IF(@Quater=2)
+            ELSE IF(@Quarter=2)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataPlan_Budget where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataPlan_Budget where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
-			ELSE IF(@Quater=3)
+			ELSE IF(@Quarter=3)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataPlan_Budget where Period in('Y7','Y8','Y9')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataPlan_Budget where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
-			ELSE IF(@Quater=4)
+			ELSE IF(@Quarter=4)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataPlan_Budget where Period in('Y10','Y11','Y12')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataPlan_Budget where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
 			END
 
@@ -3553,7 +3553,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[Plan_CampaignBudgetQuarterCalculation]	
 	@EntityId INT,
-	@Quater INT,
+	@Quarter INT,
 	@newValue FLOAT
 	AS
 	BEGIN
@@ -3568,27 +3568,27 @@ CREATE PROCEDURE [dbo].[Plan_CampaignBudgetQuarterCalculation]
 				DROP TABLE #tempDataCampaign
 			END 
 			SELECT * INTO #tempDataCampaign FROM (SELECT * from Plan_Campaign_Budget where PlanCampaignId=@EntityId) a 
-			IF(@Quater=1)
+			IF(@Quarter=1)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataCampaign where Period in('Y1','Y2','Y3')	
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataCampaign where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
-            ELSE IF(@Quater=2)
+            ELSE IF(@Quarter=2)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataCampaign where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataCampaign where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
-			ELSE IF(@Quater=3)
+			ELSE IF(@Quarter=3)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataCampaign where Period in('Y7','Y8','Y9')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataCampaign where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
-			ELSE IF(@Quater=4)
+			ELSE IF(@Quarter=4)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataCampaign where Period in('Y10','Y11','Y12')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataCampaign where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
 			END
 
@@ -3658,7 +3658,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[Plan_Campaign_Program_BudgetQuarterCalculation]	
 	@EntityId INT,
-	@Quater INT,
+	@Quarter INT,
 	@newValue FLOAT
 	AS
 	BEGIN
@@ -3673,27 +3673,27 @@ CREATE PROCEDURE [dbo].[Plan_Campaign_Program_BudgetQuarterCalculation]
 				DROP TABLE #tempDataProgram
 			END 
 			SELECT * INTO #tempDataProgram FROM (SELECT * from Plan_Campaign_Program_Budget where PlanProgramId=@EntityId) a 
-			IF(@Quater=1)
+			IF(@Quarter=1)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataProgram where Period in('Y1','Y2','Y3')	
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataProgram where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
-            ELSE IF(@Quater=2)
+            ELSE IF(@Quarter=2)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataProgram where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataProgram where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
-			ELSE IF(@Quater=3)
+			ELSE IF(@Quarter=3)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataProgram where Period in('Y7','Y8','Y9')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataProgram where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
-			ELSE IF(@Quater=4)
+			ELSE IF(@Quarter=4)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataProgram where Period in('Y10','Y11','Y12')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataProgram where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
 			END
 
@@ -3762,7 +3762,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalculation]	
 	@EntityId INT,
-	@Quater INT,
+	@Quarter INT,
 	@newValue FLOAT
 	AS
 	BEGIN
@@ -3777,27 +3777,27 @@ CREATE PROCEDURE [dbo].[Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalcula
 				DROP TABLE #tempDataTactic
 			END 
 			SELECT * INTO #tempDataTactic FROM (SELECT * from Plan_Campaign_Program_Tactic_Budget where PlanTacticId=@EntityId) a 
-			IF(@Quater=1)
+			IF(@Quarter=1)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataTactic where Period in('Y1','Y2','Y3')	
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataTactic where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
-            ELSE IF(@Quater=2)
+            ELSE IF(@Quarter=2)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataTactic where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataTactic where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
-			ELSE IF(@Quater=3)
+			ELSE IF(@Quarter=3)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataTactic where Period in('Y7','Y8','Y9')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataTactic where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
-			ELSE IF(@Quater=4)
+			ELSE IF(@Quarter=4)
 			BEGIN
-				SELECT @Sum=SUM(value) from #tempDataTactic where Period in('Y10','Y11','Y12')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataTactic where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
 			END
 
@@ -3867,7 +3867,7 @@ END
 Go
 CREATE PROCEDURE [dbo].[Tactic_ActuallQuarterCalculation]	
 	@EntityId INT,
-	@Quater INT,
+	@Quarter INT,
 	@newValue FLOAT
 	AS
 	BEGIN
@@ -3882,25 +3882,25 @@ CREATE PROCEDURE [dbo].[Tactic_ActuallQuarterCalculation]
 				DROP TABLE #tempTacticActual
 			END 
 			SELECT * INTO #tempTacticActual FROM (SELECT * from Plan_Campaign_Program_Tactic_Actual where PlanTacticId=@EntityId and StageTitle='Cost') a 
-			IF(@Quater=1)
+			IF(@Quarter=1)
 			BEGIN
 				SELECT @Sum=SUM(Actualvalue) from #tempTacticActual where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
-            ELSE IF(@Quater=2)
+            ELSE IF(@Quarter=2)
 			BEGIN
 				SELECT @Sum=SUM(Actualvalue) from #tempTacticActual where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
-			ELSE IF(@Quater=3)
+			ELSE IF(@Quarter=3)
 			BEGIN
 				SELECT @Sum=SUM(Actualvalue) from #tempTacticActual where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
-			ELSE IF(@Quater=4)
+			ELSE IF(@Quarter=4)
 			BEGIN
 				SELECT @Sum=SUM(Actualvalue) from #tempTacticActual where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
@@ -3975,7 +3975,7 @@ Go
 
 CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]	
 	@EntityId INT,
-	@Quater INT,
+	@Quarter INT,
 	@newValue FLOAT
 	AS
 	BEGIN
@@ -3990,27 +3990,27 @@ CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]
 				DROP TABLE #tempLineItemActual
 			END 
 			SELECT * INTO #tempLineItemActual FROM (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual where PlanLineItemId=@EntityId) a 
-			IF(@Quater=1)
+			IF(@Quarter=1)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y1','Y2','Y3')	
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
-            ELSE IF(@Quater=2)
+            ELSE IF(@Quarter=2)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
-			ELSE IF(@Quater=3)
+			ELSE IF(@Quarter=3)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y7','Y8','Y9')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
-			ELSE IF(@Quater=4)
+			ELSE IF(@Quarter=4)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y10','Y11','Y12')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
 			END
 
@@ -4089,7 +4089,7 @@ END
 Go
 CREATE PROCEDURE [dbo].[Tactic_CostQuarterCalculation]	
 	@EntityId INT,
-	@Quater INT,
+	@Quarter INT,
 	@newValue FLOAT
 	AS
 	BEGIN
@@ -4104,27 +4104,27 @@ CREATE PROCEDURE [dbo].[Tactic_CostQuarterCalculation]
 				DROP TABLE #tempTacticActual
 			END 
 			SELECT * INTO #tempTacticActual FROM (SELECT * from Plan_Campaign_Program_Tactic_Cost where PlanTacticId=@EntityId ) a 
-			IF(@Quater=1)
+			IF(@Quarter=1)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempTacticActual where Period in('Y1','Y2','Y3')	
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempTacticActual where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
-            ELSE IF(@Quater=2)
+            ELSE IF(@Quarter=2)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempTacticActual where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempTacticActual where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
-			ELSE IF(@Quater=3)
+			ELSE IF(@Quarter=3)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempTacticActual where Period in('Y7','Y8','Y9')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempTacticActual where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
-			ELSE IF(@Quater=4)
+			ELSE IF(@Quarter=4)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempTacticActual where Period in('Y10','Y11','Y12')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempTacticActual where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
 			END
 
@@ -4195,7 +4195,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[LineItem_CostQuarterCalculation]	
 	@EntityId INT,
-	@Quater INT,
+	@Quarter INT,
 	@newValue FLOAT
 	AS
 	BEGIN
@@ -4210,27 +4210,27 @@ CREATE PROCEDURE [dbo].[LineItem_CostQuarterCalculation]
 				DROP TABLE #tempLineItemActual
 			END 
 			SELECT * INTO #tempLineItemActual FROM (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Cost where PlanLineItemId=@EntityId) a 
-			IF(@Quater=1)
+			IF(@Quarter=1)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y1','Y2','Y3')	
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
-            ELSE IF(@Quater=2)
+            ELSE IF(@Quarter=2)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
-			ELSE IF(@Quater=3)
+			ELSE IF(@Quarter=3)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y7','Y8','Y9')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
-			ELSE IF(@Quater=4)
+			ELSE IF(@Quarter=4)
 			BEGIN
-				SELECT @Sum=SUM(Value) from #tempLineItemActual where Period in('Y10','Y11','Y12')
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempLineItemActual where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
 			END
 
@@ -4304,25 +4304,41 @@ END
 
 GO
 
-IF  EXISTS (SELECT * FROM sys.types WHERE is_user_defined = 1 AND name = 'ImportExcelBudgetMonthData')
-BEGIN
---if table type exist then check sp is exist or not then drop and create it after type creation
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_ImportPlanBudgetDataMonthly') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
 
 	DROP PROCEDURE [dbo].[Sp_ImportPlanBudgetDataMonthly] 
 END
-
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_ImportPlanActualDataMonthly') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
 
 	DROP PROCEDURE [dbo].[Sp_ImportPlanActualDataMonthly] 
 END
-
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_ImportPlanCostDataMonthly') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
 
 	DROP PROCEDURE [dbo].[Sp_ImportPlanCostDataMonthly] 
+END
+
+IF  EXISTS (SELECT * FROM sys.types WHERE is_user_defined = 1 AND name = 'ImportExcelBudgetMonthData')
+BEGIN
+--if table type exist then check sp is exist or not then drop and create it after type creation
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'ImportPlanBudgetDataMonthly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+
+	DROP PROCEDURE [dbo].[ImportPlanBudgetDataMonthly] 
+END
+
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'ImportPlanActualDataMonthly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+
+	DROP PROCEDURE [dbo].[ImportPlanActualDataMonthly] 
+END
+
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'ImportPlanCostDataMonthly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+
+	DROP PROCEDURE [dbo].[ImportPlanCostDataMonthly] 
 END
 
 
@@ -4348,7 +4364,7 @@ CREATE TYPE [dbo].[ImportExcelBudgetMonthData] AS TABLE(
 	[DEC] [float] NULL
 )
 GO
-CREATE PROCEDURE [dbo].[Sp_ImportPlanBudgetDataMonthly]  --17314
+CREATE PROCEDURE [dbo].[ImportPlanBudgetDataMonthly]  --17314
 --@PlanId int,
 @ImportData ImportExcelBudgetMonthData READONLY,
 @UserId INT
@@ -4375,7 +4391,7 @@ from
 ) d
 pivot
 (
-   sum(value)
+   SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) planDetails
 ) as rPlan group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -4393,7 +4409,7 @@ from
  e
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) planCampaignDetails
 ) as rPlanCampaign group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -4415,7 +4431,7 @@ from
 ) r
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramDetails
 ) as rPlanCampaignProgram group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -4437,7 +4453,7 @@ in( SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan')
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -5150,7 +5166,7 @@ select ActivityId from @ImportData  EXCEPT select ActivityId from #Temp
 
 END
 Go
-CREATE PROCEDURE [dbo].[Sp_ImportPlanActualDataMonthly]  --17314
+CREATE PROCEDURE [dbo].[ImportPlanActualDataMonthly]  --17314
 --@PlanId int,
 @ImportData ImportExcelBudgetMonthData READONLY,
 @UserId INT
@@ -5180,7 +5196,7 @@ in(  SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan')
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -5203,14 +5219,15 @@ select PlanProgramId from Plan_Campaign_Program where IsDeleted =0 and PlanCampa
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name], Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
 
 ) as ExistingData
 
-select * into #temp2 from (select * from @ImportData EXCEPT select ActivityId,ActivityType,[Task Name],Budget, JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC from #Temp)   k
+--select * into #temp2 from (select * from @ImportData EXCEPT select ActivityId,ActivityType,[Task Name],Budget, JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC from #Temp)   k
+select * into #temp2 from (select * from @ImportData)   k
 
 
 --select * from @ImportData EXCEPT select * from #Temp
@@ -5599,7 +5616,7 @@ END
 
 Go
 
-CREATE PROCEDURE [dbo].[Sp_ImportPlanCostDataMonthly]  --17314
+CREATE PROCEDURE [dbo].[ImportPlanCostDataMonthly]  --17314
 --@PlanId int,
 @ImportData ImportExcelBudgetMonthData READONLY,
 @UserId INT
@@ -5629,7 +5646,7 @@ in(  SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan')
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -5652,14 +5669,15 @@ select PlanProgramId from Plan_Campaign_Program where IsDeleted =0 and PlanCampa
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name], Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
 
 ) as ExistingData
 
-select * into #temp2 from (select * from @ImportData EXCEPT select ActivityId,ActivityType,[Task Name],Budget, JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC from #Temp)   k
+select * into #temp2 from (select * from @ImportData )   k
+--select * into #temp2 from (select * from @ImportData EXCEPT select ActivityId,ActivityType,[Task Name],Budget, JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC from #Temp)   k
 
 
 --select * from @ImportData EXCEPT select * from #Temp
@@ -6074,11 +6092,7 @@ select ActivityId from @ImportData where TYPE not in('plan')  EXCEPT select Acti
 END
 Go
 
-GO
---Check Table type is exist or not
-IF  EXISTS (SELECT * FROM sys.types WHERE is_user_defined = 1 AND name = 'ImportExcelBudgetQuarterData')
-BEGIN
---if table type exist then check sp is exist or not then drop and create it after type creation
+
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_ImportPlanBudgetDataQuarterly') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
 	DROP PROCEDURE [dbo].[Sp_ImportPlanBudgetDataQuarterly] 
@@ -6091,6 +6105,24 @@ END
 IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'Sp_ImportPlanCostDataQuarterly') AND type IN ( N'P', N'PC' ) ) 
 BEGIN
 	DROP PROCEDURE [dbo].[Sp_ImportPlanCostDataQuarterly] 
+END
+GO
+--Check Table type is exist or not
+IF  EXISTS (SELECT * FROM sys.types WHERE is_user_defined = 1 AND name = 'ImportExcelBudgetQuarterData')
+BEGIN
+--if table type exist then check sp is exist or not then drop and create it after type creation
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'ImportPlanBudgetDataQuarterly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[ImportPlanBudgetDataQuarterly] 
+END
+
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'ImportPlanActualDataQuarterly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[ImportPlanActualDataQuarterly] 
+END
+IF EXISTS ( SELECT  * FROM sys.objects WHERE  object_id = OBJECT_ID(N'ImportPlanCostDataQuarterly') AND type IN ( N'P', N'PC' ) ) 
+BEGIN
+	DROP PROCEDURE [dbo].[ImportPlanCostDataQuarterly] 
 END
 
 DROP TYPE ImportExcelBudgetQuarterData;
@@ -6108,7 +6140,7 @@ CREATE TYPE [dbo].[ImportExcelBudgetQuarterData] AS TABLE(
 	[Q4] [float] NULL
 )
 GO
-CREATE PROCEDURE [dbo].[Sp_ImportPlanBudgetDataQuarterly]  --17314
+CREATE PROCEDURE [dbo].[ImportPlanBudgetDataQuarterly]  --17314
 --@PlanId int,
 @ImportData ImportExcelBudgetQuarterData READONLY,
 @UserId INT 
@@ -6134,7 +6166,7 @@ from
 ) d
 pivot
 (
-   sum(value)
+   SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) planDetails
 ) as rPlan group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -6152,7 +6184,7 @@ SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan') and IsDeleted = 0
 ) e
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) planCampaignDetails
 ) as rPlanCampaign group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -6175,7 +6207,7 @@ from
 ) r
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramDetails
 ) as rPlanCampaignProgram group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -6200,7 +6232,7 @@ and IsDeleted=0))
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -6260,7 +6292,7 @@ Declare @Sum float;	DECLARE @newValue FLOAT;
 
 
 			
-			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinal where Period in('Y1','Y2','Y3')		
+			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataFinal where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId
 			--start kausha 
 			IF(@newValue!='')
@@ -6288,7 +6320,7 @@ Declare @Sum float;	DECLARE @newValue FLOAT;
 			END
 			
 
-			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinal where Period in('Y4','Y5','Y6')		
+			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataFinal where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId
 				IF(@newValue!='')
 			BEGIN
@@ -6312,7 +6344,7 @@ Declare @Sum float;	DECLARE @newValue FLOAT;
 				END
 			END		
 
-				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinal where Period in('Y7','Y8','Y9')		
+				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataFinal where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId
 				IF(@newValue!='')
 			BEGIN
@@ -6337,7 +6369,7 @@ Declare @Sum float;	DECLARE @newValue FLOAT;
 			END
 
 		
-			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinal where Period in('Y10','Y11','Y12')		
+			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataFinal where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId
 				IF(@newValue!='')
 			BEGIN
@@ -6383,7 +6415,7 @@ IF ( @Type='Campaign')
 
 
 
-			SELECT @Sum=SUM(value) from #tempDataFinalCampaign where Period in('Y1','Y2','Y3')		
+			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalCampaign where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
 				IF(@newValue!='')
 			BEGIN
@@ -6407,7 +6439,7 @@ IF ( @Type='Campaign')
 				END
 			END
 
-			SELECT @Sum=SUM(value) from #tempDataFinalCampaign where Period in('Y4','Y5','Y6')		
+			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalCampaign where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
 				IF(@newValue!='')
 			BEGIN
@@ -6431,7 +6463,7 @@ IF ( @Type='Campaign')
 			END
 
 		
-			SELECT @Sum=SUM(value) from #tempDataFinalCampaign where Period in('Y7','Y8','Y9')		
+			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalCampaign where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
 				IF(@newValue!='')
 			BEGIN
@@ -6455,7 +6487,7 @@ IF ( @Type='Campaign')
 				END
 			END
 
-			SELECT @Sum=SUM(value) from #tempDataFinalCampaign where Period in('Y10','Y11','Y12')		
+			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalCampaign where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
 				IF(@newValue!='')
 			BEGIN
@@ -6503,7 +6535,7 @@ IF ( @Type='Program')
 
 
 
-			SELECT @Sum=SUM(value) from #tempDataFinalProgram where Period in('Y1','Y2','Y3')		
+			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalProgram where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
 				IF(@newValue!='')
 			BEGIN
@@ -6527,7 +6559,7 @@ IF ( @Type='Program')
 				END
 			END
 
-				SELECT @Sum=SUM(value) from #tempDataFinalProgram where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalProgram where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
 				IF(@newValue!='')
 			BEGIN
@@ -6552,7 +6584,7 @@ IF ( @Type='Program')
 				END
 			END
 		
-				SELECT @Sum=SUM(value) from #tempDataFinalProgram where Period in('Y7','Y8','Y9')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalProgram where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
 				IF(@newValue!='')
 			BEGIN
@@ -6577,7 +6609,7 @@ IF ( @Type='Program')
 				END
 			END
 		
-				SELECT @Sum=SUM(value) from #tempDataFinalProgram where Period in('Y10','Y11','Y12')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalProgram where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
 				IF(@newValue!='')
 			BEGIN
@@ -6625,7 +6657,7 @@ IF ( @Type='Tactic')
 
 
 
-			SELECT @Sum=SUM(value) from #tempDataFinalTactic where Period in('Y1','Y2','Y3')		
+			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalTactic where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
 				IF(@newValue!='')
@@ -6649,7 +6681,7 @@ IF ( @Type='Tactic')
 				END
 			END
 
-			SELECT @Sum=SUM(value) from #tempDataFinalTactic where Period in('Y4','Y5','Y6')		
+			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalTactic where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
 				IF(@newValue!='')
@@ -6675,7 +6707,7 @@ IF ( @Type='Tactic')
 			END
 			
 
-				SELECT @Sum=SUM(value) from #tempDataFinalTactic where Period in('Y7','Y8','Y9')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalTactic where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
 				IF(@newValue!='')
@@ -6700,7 +6732,7 @@ IF ( @Type='Tactic')
 				END
 			END
 
-				SELECT @Sum=SUM(value) from #tempDataFinalTactic where Period in('Y10','Y11','Y12')		
+				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalTactic where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
 				IF(@newValue!='')
@@ -6738,7 +6770,7 @@ select ActivityId from @ImportData  EXCEPT select ActivityId from #Temp
 END
 
 Go
-CREATE PROCEDURE [dbo].[Sp_ImportPlanActualDataQuarterly]  --17314
+CREATE PROCEDURE [dbo].[ImportPlanActualDataQuarterly]  --17314
 --@PlanId int,
 @ImportData ImportExcelBudgetQuarterData READONLY,
 @UserId INT 
@@ -6766,7 +6798,7 @@ in(  SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan')
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -6786,7 +6818,7 @@ select PlanProgramId from Plan_Campaign_Program where IsDeleted =0 and PlanCampa
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name], Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -6973,7 +7005,7 @@ IF (LOWER(@Type)='lineitem')
 
 			
 
-			SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataLineItemActual where Period in('Y1','Y2','Y3')		
+			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and LOWEr([ActivityType])='lineitem'
 			
 				IF(@newValue!='')
@@ -6997,7 +7029,7 @@ IF (LOWER(@Type)='lineitem')
 				END
 			END
 			
-			SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataLineItemActual where Period in('Y4','Y5','Y6')		
+			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='lineitem'
 			
 				IF(@newValue!='')
@@ -7024,7 +7056,7 @@ IF (LOWER(@Type)='lineitem')
 			END
 			
 
-				SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataLineItemActual where Period in('Y7','Y8','Y9')		
+				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and LOWER([ActivityType])='lineitem'
 
 				IF(@newValue!='')
@@ -7050,7 +7082,7 @@ IF (LOWER(@Type)='lineitem')
 				END
 			END
 
-				SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataLineItemActual where Period in('Y10','Y11','Y12')		
+				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and LOWER([ActivityType])='lineitem'
 
 				IF(@newValue!='')
@@ -7095,7 +7127,7 @@ END
 
 --Insertation End #2623 import multiple plan
 GO
-CREATE PROCEDURE [dbo].[Sp_ImportPlanCostDataQuarterly]  --17314
+CREATE PROCEDURE [dbo].[ImportPlanCostDataQuarterly]  --17314
 --@PlanId int,
 @ImportData ImportExcelBudgetQuarterData READONLY,
 @UserId INT 
@@ -7123,7 +7155,7 @@ in(  SELECT ActivityId FROM @ImportData WHERE LOWER([TYPE])='plan')
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name],Budget, Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -7143,7 +7175,7 @@ select PlanProgramId from Plan_Campaign_Program where IsDeleted =0 and PlanCampa
 ) t
 pivot
 (
-  sum(value)
+  SUM(value)
   for period in ([Y1], [Y2], [Y3], [Y4],[Y5], [Y6], [Y7], [Y8],[Y9], [Y10], [Y11], [Y12])
 ) PlanCampaignProgramTacticDetails
 ) as rPlanCampaignProgramTactic group by ActivityId,[Task Name], Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12
@@ -7211,7 +7243,7 @@ IF (LOWER(@Type)='tactic')
 				DROP TABLE #tempDataActualTactic
 			END 
 			SELECT * INTO #tempDataActualTactic FROM (SELECT * from Plan_Campaign_Program_Tactic_Cost WHERE PlanTacticId = @EntityId ) a 
-			SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataActualTactic where Period in('Y1','Y2','Y3')		
+			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataActualTactic where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
 				IF(@newValue!='')
@@ -7235,7 +7267,7 @@ IF (LOWER(@Type)='tactic')
 				END
 			END
 
-			SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataActualTactic where Period in('Y4','Y5','Y6')		
+			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataActualTactic where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
 				IF(@newValue!='')
@@ -7262,7 +7294,7 @@ IF (LOWER(@Type)='tactic')
 			END
 			
 
-				SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataActualTactic where Period in('Y7','Y8','Y9')		
+				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataActualTactic where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
 				IF(@newValue!='')
@@ -7288,7 +7320,7 @@ IF (LOWER(@Type)='tactic')
 				END
 			END
 
-				SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataActualTactic where Period in('Y10','Y11','Y12')		
+				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataActualTactic where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
 				IF(@newValue!='')
@@ -7358,7 +7390,7 @@ IF (LOWER(@Type)='lineitem')
 
 			
 
-			SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataLineItemActual where Period in('Y1','Y2','Y3')		
+			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and LOWEr([ActivityType])='lineitem'
 			
 				IF(@newValue!='')
@@ -7382,7 +7414,7 @@ IF (LOWER(@Type)='lineitem')
 				END
 			END
 			
-			SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataLineItemActual where Period in('Y4','Y5','Y6')		
+			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='lineitem'
 			
 				IF(@newValue!='')
@@ -7409,7 +7441,7 @@ IF (LOWER(@Type)='lineitem')
 			END
 			
 
-				SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataLineItemActual where Period in('Y7','Y8','Y9')		
+				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and LOWER([ActivityType])='lineitem'
 
 				IF(@newValue!='')
@@ -7435,7 +7467,7 @@ IF (LOWER(@Type)='lineitem')
 				END
 			END
 
-				SELECT @Sum=ISNULL(SUM(Value),0) from #tempDataLineItemActual where Period in('Y10','Y11','Y12')		
+				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and LOWER([ActivityType])='lineitem'
 
 				IF(@newValue!='')
@@ -7479,6 +7511,10 @@ select ActivityId from @ImportData where TYPE not in('plan')  EXCEPT select Acti
 END
 
 --Insertation End #2623 import multiple plan
+
+Go
+--Insertation End #2623 import multiple plan
+
 
 Go
 --Insertation End #2623 import multiple plan

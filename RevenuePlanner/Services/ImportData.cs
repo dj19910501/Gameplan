@@ -24,14 +24,39 @@ namespace RevenuePlanner.Services
         /// <returns></returns>
         public DataTable GetPlanBudgetDataByType(DataTable importData, string planBudgetType, bool isMonthly)
         {
+            int MonthQuarterStartIndex = 7;//this is month or quarter columnstart index
             DataTable dtPlanBudget = importData;
 
             //planBudgetType veriable is used to identify type of plan budget(ie>plan,budget,actual) 
 
             int columnRemovedCount = 0;//veriable to identify how many columns are removed
             int columnCount = dtPlanBudget.Columns.Count;//veriable to identify total column in datatable           
-            //Loop to remove columns which is not related to planBudgetType where first three column will be fixed Activityid,type,task name.
-            for (int i = 3; i < columnCount; i++) 
+                                                         //Loop to remove columns which is not related to planBudgetType where first three column will be fixed Activityid,type,task name.
+            if (dtPlanBudget.Rows[dtPlanBudget.Rows.Count - 1][0].ToString().Trim() ==
+                                     "This document was made with dhtmlx library. http://dhtmlx.com")
+            {
+                dtPlanBudget.Rows.RemoveAt(dtPlanBudget.Rows.Count - 1);
+            }
+            List<string> listPlanActivityId = dtPlanBudget.AsEnumerable().Where(data => data.Field<string>("Type") == "plan")
+                         .Select(r => r.Field<string>("ActivityId"))
+                         .ToList();
+            List<int> activityIdlist = listPlanActivityId.Select(int.Parse).ToList();
+
+            List<Plan> planList = (from row in objDbMrpEntities.Plans where activityIdlist.Contains(row.PlanId) select row).ToList();
+
+            for (int cntplanid = 0; cntplanid < planList.Count; cntplanid++)
+            {
+                string year = planList.ElementAt(cntplanid).Year;
+
+
+                if (!Convert.ToString(dtPlanBudget.Columns[MonthQuarterStartIndex]).ToLower().Trim().Contains(year))
+                {
+                    dtPlanBudget = dtPlanBudget.AsEnumerable()
+        .Where(row => row.Field<String>("activityid") != year && row.Field<String>("type") != "plan").CopyToDataTable();
+
+                }
+            }
+            for (int i = 3; i < columnCount; i++)
             {
                 //if (!Convert.ToString(dtPlanBudget.Rows[0][i - columnRemovedCount]).ToLower().Trim().Contains(planBudgetType))
                 //{
@@ -45,11 +70,7 @@ namespace RevenuePlanner.Services
                 }
             }
             //remove extra row.
-            if (dtPlanBudget.Rows[dtPlanBudget.Rows.Count - 1][0].ToString().Trim() ==
-                          "This document was made with dhtmlx library. http://dhtmlx.com")
-            {
-                dtPlanBudget.Rows.RemoveAt(dtPlanBudget.Rows.Count - 1);
-            }
+
             //Set column name 
             dtPlanBudget = SetColumnName(dtPlanBudget, isMonthly);
             //convert current currency value in to dollar.
@@ -71,7 +92,7 @@ namespace RevenuePlanner.Services
             //Assign column name "budget" to second column of datatable
             dtPlanBudget.Columns[3].ColumnName = "Budget";
 
-           // dtPlanBudget.Rows.RemoveAt(0);
+            // dtPlanBudget.Rows.RemoveAt(0);
             int columnCount = dtPlanBudget.Columns.Count;///veriable to manage total column counts
             int columnRemovedCount = 0;///veriable to identify how many columns are removed
             int monthQuartercount = 1;
@@ -108,7 +129,7 @@ namespace RevenuePlanner.Services
 
                     monthQuartercount++;
                 }
-            }          
+            }
             return dtPlanBudget;
         }
 
@@ -161,7 +182,7 @@ namespace RevenuePlanner.Services
         private DataTable ConvertValueAsperCurrency(DataTable dtimportData)
         {
             for (int i = 0; i < dtimportData.Columns.Count; i++)
-            {               
+            {
                 RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
                 for (int j = 0; j < dtimportData.Rows.Count; j++)
                 {
@@ -175,9 +196,9 @@ namespace RevenuePlanner.Services
                             dtimportData.Rows[j][i] = Convert.ToString(objCurrency.SetValueByExchangeRate(value, Sessions.PlanExchangeRate));
                         }
                     }
-                }               
+                }
             }
-          
+
             return dtimportData;
         }
     }
