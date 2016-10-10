@@ -540,7 +540,7 @@ namespace RevenuePlanner.Helpers
                 RecipientIds = ReportRecipientUserIds;
             }
             Connection = Conn_Open();
-            using (new SqlCommand("SaveLogNoticationdata", Connection))
+            using (command = new SqlCommand("SaveLogNoticationdata", Connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@action", action);
