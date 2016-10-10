@@ -3884,25 +3884,25 @@ CREATE PROCEDURE [dbo].[Tactic_ActuallQuarterCalculation]
 			SELECT * INTO #tempTacticActual FROM (SELECT * from Plan_Campaign_Program_Tactic_Actual where PlanTacticId=@EntityId and StageTitle='Cost') a 
 			IF(@Quarter=1)
 			BEGIN
-				SELECT @Sum=SUM(Actualvalue) from #tempTacticActual where Period in('Y1','Y2','Y3')	
+				SELECT @Sum=ISNULL(SUM(Actualvalue),0) from #tempTacticActual where Period in('Y1','Y2','Y3')	
 				SET @FirstMonthofQuarter	='Y1';SET @SecondMonthofQuarter	='Y2';SET @ThirdMonthofQuarter	='Y3'
 			END
 
             ELSE IF(@Quarter=2)
 			BEGIN
-				SELECT @Sum=SUM(Actualvalue) from #tempTacticActual where Period in('Y4','Y5','Y6')		
+				SELECT @Sum=ISNULL(SUM(Actualvalue),0) from #tempTacticActual where Period in('Y4','Y5','Y6')		
 				SET @FirstMonthofQuarter	='Y4';SET @SecondMonthofQuarter	='Y5';SET @ThirdMonthofQuarter	='Y6'
 			END
 
 			ELSE IF(@Quarter=3)
 			BEGIN
-				SELECT @Sum=SUM(Actualvalue) from #tempTacticActual where Period in('Y7','Y8','Y9')
+				SELECT @Sum=ISNULL(SUM(Actualvalue),0) from #tempTacticActual where Period in('Y7','Y8','Y9')
 				SET @FirstMonthofQuarter	='Y7';SET @SecondMonthofQuarter	='Y8';SET @ThirdMonthofQuarter	='Y9'
 			END
 
 			ELSE IF(@Quarter=4)
 			BEGIN
-				SELECT @Sum=SUM(Actualvalue) from #tempTacticActual where Period in('Y10','Y11','Y12')
+				SELECT @Sum=ISNULL(SUM(Actualvalue),0) from #tempTacticActual where Period in('Y10','Y11','Y12')
 				SET @FirstMonthofQuarter	='Y10';SET @SecondMonthofQuarter	='Y11';SET @ThirdMonthofQuarter	='Y12'
 			END
 
@@ -5269,7 +5269,7 @@ IF ( LOWER(@Type)='tactic')
 	IF Exists (select top 1 PlanTacticId from [Plan_Campaign_Program_Tactic] where PlanTacticId =  @EntityId and [Status] IN('In-Progress','Complete','Approved') )
 			BEGIN
 
-			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId)
+			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId and LineItemTypeId IS NOT NULL)
 			BEGIN			
 		
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y1' and StageTitle='Cost')
@@ -6867,7 +6867,7 @@ IF (LOWER(@Type)='tactic')
 		IF Exists (select top 1 PlanTacticId from Plan_Campaign_Program_Tactic where PlanTacticId =  @EntityId and [Status] IN('In-Progress','Complete','Approved'))
 			BEGIN
 
-			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId)
+			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId and LineItemTypeId IS NOT NULL)
 			BEGIN			
 
 				IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataActualTactic') AND type in (N'U'))
