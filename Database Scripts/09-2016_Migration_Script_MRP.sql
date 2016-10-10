@@ -1,3 +1,423 @@
+--#2695 - performance improvement for grid view
+--
+--Add VARCHAR columns to speed up search 
+--This done on dbo space on tow tables, CustomFieldOption and CustomRestriction
+-- 
+SET ANSI_PADDING ON;
+GO
+
+IF (NOT exists (SELECT 1 FROM sys.columns where name = 'CustomFieldOptionIDX' AND Object_ID = Object_ID(N'CustomFieldOption')))
+ALTER TABLE CustomFieldOption 
+ADD [CustomFieldOptionIDX]  AS (CONVERT([varchar](10),[CustomFieldOptionId],0)) PERSISTED
+GO 
+
+IF (NOT exists (SELECT 1 FROM sys.indexes where name = 'IDX_CustomFieldOption_CustomFieldOptionIDX' AND Object_ID = Object_ID(N'CustomFieldOption')))
+CREATE NONCLUSTERED INDEX [IDX_CustomFieldOption_CustomFieldOptionIDX] ON [dbo].[CustomFieldOption]
+(
+	[CustomFieldOptionIDX] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+GO
+
+IF (NOT exists (SELECT 1 FROM sys.columns where name = 'CustomFieldOptionIDX' AND Object_ID = Object_ID(N'CustomRestriction')))
+ALTER TABLE CustomRestriction 
+ADD	[CustomFieldOptionIDX]  AS (CONVERT([varchar](50),[CustomFieldOptionId],0)) PERSISTED
+GO 
+
+IF (NOT exists (SELECT 1 FROM sys.indexes where name = 'IDX_CustomRestriction_CustomFieldOptionIDX' AND Object_ID = Object_ID(N'CustomRestriction')))
+CREATE NONCLUSTERED INDEX [IDX_CustomRestriction_CustomFieldOptionIDX] ON [dbo].[CustomRestriction]
+(
+	[CustomFieldOptionIDX] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+GO
+
+--
+--
+--Create MV SCHEMA - a new schema to house all materialized views 
+--
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'MV')
+BEGIN
+	EXEC('CREATE SCHEMA MV')
+END
+GO
+
+--
+--HELPER FUNCTION 1 to calculate value per entity and customField
+--
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[MV].[fnCustomFieldEntityValue]'))
+DROP FUNCTION [MV].[fnCustomFieldEntityValue]
+GO
+
+CREATE FUNCTION [MV].[fnCustomFieldEntityValue] (@EntityId INT, @CustomFieldId INT)
+RETURNS VARCHAR(MAX)
+AS
+BEGIN
+	RETURN SUBSTRING((	SELECT ',' + CAST(R.Value AS VARCHAR) FROM CustomField_Entity R
+						WHERE R.EntityId = @EntityId
+								AND R.CustomFieldId = @CustomFieldId
+						FOR XML PATH('')), 2,900000) 
+END
+GO 
+
+--
+--HELPER FUNCTION 2 to calculate value per entity, customField and user
+--
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[MV].[fnCustomFieldEntityUnrestrictedText]'))
+DROP FUNCTION [MV].[fnCustomFieldEntityUnrestrictedText];
+GO 
+
+--
+--This function returns all option values as if there is custom restriction
+--
+CREATE FUNCTION [MV].[fnCustomFieldEntityUnrestrictedText] (@EntityId INT, @CustomFieldId INT)
+RETURNS VARCHAR(MAX)
+AS
+BEGIN
+	RETURN SUBSTRING((	SELECT ',' + 
+							CASE WHEN C.CustomFieldTypeId = 1 --text box 
+								THEN R.Value
+								ELSE CAST(CCP.Value AS VARCHAR(50)) 
+							END
+						FROM CustomField_Entity R
+							JOIN CustomField C ON C.CustomFieldId = R.CustomFieldId
+							LEFT JOIN CustomFieldOption CCP ON R.Value = CCP.CustomFieldOptionIDX
+
+						WHERE R.EntityId = @EntityId AND R.CustomFieldId = @CustomFieldId
+						FOR XML PATH('')), 2,900000) 
+END
+GO
+
+--
+-- This function returns onky allowed custom field options 
+--
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[MV].[fnCustomFieldEntityRestrictedTextByUser]'))
+DROP FUNCTION [MV].[fnCustomFieldEntityRestrictedTextByUser];
+GO 
+
+CREATE FUNCTION [MV].[fnCustomFieldEntityRestrictedTextByUser] (@CustomFieldId INT, @UserId INT)
+RETURNS VARCHAR(MAX)
+AS
+BEGIN
+	RETURN SUBSTRING((  SELECT ','+MAX(CFO.Value)
+						FROM CustomFieldOption CFO
+								INNER JOIN CustomRestriction CR ON CR.CustomFieldId = CFO.CustomFieldId
+									AND CR.CustomFieldOptionId = CFO.CustomFieldOptionId
+						WHERE CR.Permission=2 
+								AND @CustomFieldId = CR.CustomFieldId
+						GROUP BY CFO.CustomFieldId
+						FOR XML PATH('')),2,90000)
+END 
+GO
+
+--
+--Crearte [MV].[CustomFieldData] table to house the materialized view for custom field data
+-- 
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[MV].[CustomFieldData]'))
+DROP TABLE [MV].[CustomFieldData]
+GO
+ 
+CREATE TABLE [MV].[CustomFieldData](
+	[EntityId] [INT] NOT NULL,
+	[CustomFieldId] [INT] NOT NULL,
+	[Value] [VARCHAR](MAX) NULL,
+	[UnrestrictedText] [VARCHAR](MAX) NULL,
+ CONSTRAINT [PK_CustomFieldData] PRIMARY KEY CLUSTERED 
+(
+	[EntityId] ASC,
+	[CustomFieldId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+--
+-- Create table [MV].[CustomFieldDataRestrictedUserOptions] - Materialized view 
+--
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[MV].[CustomFieldEntityRestrictedTextByUser]'))
+DROP TABLE [MV].[CustomFieldEntityRestrictedTextByUser]
+GO
+
+CREATE TABLE [MV].[CustomFieldEntityRestrictedTextByUser](
+	[CustomFieldId] [INT] NOT NULL,
+	[UserId] [INT] NOT NULL, 
+	[Text] [VARCHAR](MAX) NULL,
+ CONSTRAINT [PK_CustomFieldEntityRestrictedTextByUser] PRIMARY KEY CLUSTERED 
+(
+	[CustomFieldId] ASC,
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+--
+--Procedute to populate MV data - in case we need refresh the view manually. 
+--
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[MV].[spRePouplateMVData]'))
+DROP PROCEDURE [MV].[spRePouplateMVData]
+GO
+
+CREATE PROCEDURE [MV].[spRePouplateMVData]
+AS
+BEGIN 
+	--Repopulate [MV].CustomFieldData
+	DELETE FROM [MV].CustomFieldData
+
+	INSERT INTO [MV].CustomFieldData(EntityId, CustomFieldId, Value, UnrestrictedText)
+	SELECT	 EntityId
+			,CustomFieldId
+			,[MV].fnCustomFieldEntityValue(EntityId, CustomFieldId) AS Value
+			,[MV].fnCustomFieldEntityUnrestrictedText(EntityId, CustomFieldId) as [Text]
+	FROM CustomField_Entity
+	GROUP BY EntityId, CustomFieldId
+
+	--re-Populate The [MV].[CustomFieldEntityRestrictedTextByUser] 
+	DELETE FROM [MV].[CustomFieldEntityRestrictedTextByUser]
+
+	INSERT INTO [MV].[CustomFieldEntityRestrictedTextByUser](CustomFieldId, UserId, [Text])
+	SELECT	CR.CustomFieldId
+			,CR.UserId
+			,[MV].fnCustomFieldEntityRestrictedTextByUser(CR.CustomFieldId, CR.UserId) AS [Text]  
+	FROM CustomRestriction CR 
+	GROUP BY CR.CustomFieldId, CR.UserId
+
+END 
+GO
+
+--
+--Populate MV data initually (for 4.9 release)
+-- 
+EXEC [MV].[spRePouplateMVData]
+GO 
+
+--
+--Add trigger to update CustomFieldData materialized view  
+--
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		John Zhang
+-- Create date: Oct 7, 2016 
+-- Description:	The trigger updates the BigViewCustomFieldData
+-- =============================================
+
+IF EXISTS (SELECT *FROM sys.triggers WHERE OBJECT_ID = OBJECT_ID('[dbo].UpdateCustomFieldData'))
+	DROP TRIGGER  [dbo].UpdateCustomFieldData
+GO
+
+CREATE TRIGGER [dbo].UpdateCustomFieldData 
+   ON  dbo.CustomField_Entity 
+   AFTER INSERT,UPDATE, DELETE
+AS 
+BEGIN
+	SET NOCOUNT ON;
+
+	---Handle changes 
+	UPDATE  A 
+	SET		A.[Value] = dbo.fnCustomFieldEntityValue(B.EntityId, B.CustomFieldId)
+		  , A.[UnrestrictedText] = dbo.fnCustomFieldEntityText(B.EntityId, B.CustomFieldId)
+	FROM [MV].CustomFieldData A JOIN (		SELECT CE.EntityId, CE.CustomFieldId 
+											FROM INSERTED CE 
+												 JOIN CustomField CF ON CF.CustomFieldId = CE.CustomFieldId
+											GROUP BY CE.EntityId, CE.CustomFieldId) B ON B.EntityId = A.EntityId AND B.CustomFieldId = A.CustomFieldId
+
+	-- Handle inserts 
+	INSERT INTO  [MV].CustomFieldData(EntityId, CustomFieldId, Value, UnrestrictedText)
+	SELECT    CE.EntityId
+			, CE.CustomFieldId
+			, [MV].fnCustomFieldEntityValue(CE.EntityId, CE.CustomFieldId)
+			, [MV].fnCustomFieldEntityUnrestrictedText(CE.EntityId, CE.CustomFieldId)
+	FROM INSERTED CE 
+			JOIN CustomField CF ON CF.CustomFieldId = CE.CustomFieldId
+			LEFT JOIN [MV].CustomFieldData BV ON BV.EntityId = CE.EntityId AND BV.CustomFieldId = CE.CustomFieldId 
+	WHERE BV.EntityId IS NULL
+	GROUP BY CE.EntityId, CE.CustomFieldId
+
+	--Handle delete 
+	DELETE [MV].CustomFieldData
+	FROM DELETED D LEFT JOIN INSERTED I ON D.EntityId = I.EntityId AND D.CustomFieldId = I.CustomFieldId
+	WHERE [MV].CustomFieldData.EntityId = D.EntityId 
+		AND [MV].CustomFieldData.CustomFieldId = D.CustomFieldId 
+		AND I.EntityId IS NULL
+
+END
+GO
+
+--
+-- Add trigger to update [CustomFieldEntityRestrictedTextByUser] materialized view 
+--
+IF EXISTS (SELECT *FROM sys.triggers WHERE OBJECT_ID = OBJECT_ID('[dbo].UpdateCustomFieldEntityRestrictedTextByUser'))
+	DROP TRIGGER  [dbo].UpdateCustomFieldEntityRestrictedTextByUser
+GO
+
+CREATE TRIGGER [dbo].UpdateCustomFieldEntityRestrictedTextByUser 
+   ON  dbo.CustomRestriction 
+   AFTER INSERT,UPDATE, DELETE
+AS 
+BEGIN
+	SET NOCOUNT ON;
+
+	---Handle changes 
+	UPDATE A 
+	SET  A.[Text] = [MV].fnCustomFieldEntityRestrictedTextByUser(CR.CustomFieldId, CR.UserId)
+	FROM [MV].CustomFieldEntityRestrictedTextByUser A 
+			JOIN (SELECT DISTINCT UserId, CustomFieldID FROM INSERTED) CR ON CR.UserId = A.UserId AND CR.CustomFieldId = A.CustomFieldId
+
+	-- Handle inserts 
+	INSERT INTO  [MV].CustomFieldEntityRestrictedTextByUser(UserId, CustomFieldId, [Text])
+	SELECT    I.UserId
+			, I.CustomFieldId
+			, [MV].fnCustomFieldEntityRestrictedTextByUser(I.CustomFieldId, I.UserId)
+	FROM INSERTED I 
+			JOIN CustomRestriction CR ON CR.CustomFieldId = I.CustomFieldId AND CR.UserId = I.UserId
+			LEFT JOIN [MV].CustomFieldEntityRestrictedTextByUser BV ON BV.UserId = I.UserId AND BV.CustomFieldId = I.CustomFieldId 
+	WHERE BV.CustomFieldId IS NULL
+	GROUP BY I.UserId, I.CustomFieldId
+
+	--Handle delete 
+	DELETE [MV].CustomFieldEntityRestrictedTextByUser
+	FROM DELETED D LEFT JOIN INSERTED I ON D.UserId = I.UserId AND D.CustomFieldId = I.CustomFieldId
+	WHERE [MV].CustomFieldEntityRestrictedTextByUser.UserId = D.UserId 
+		AND [MV].CustomFieldEntityRestrictedTextByUser.CustomFieldId = D.CustomFieldId 
+		AND I.CustomFieldId IS NULL
+
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GridCustomFieldData]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GridCustomFieldData] AS' 
+END
+GO
+
+-- =============================================
+-- Author:		Nishant Sheth
+-- Create date: 16-Sep-2016
+-- Description:	Get home grid customfields and it's values 
+-- =============================================
+ALTER PROCEDURE [dbo].[GridCustomFieldData]
+	@PlanId	 NVARCHAR(MAX)=''
+	,@ClientId int = 0
+	,@OwnerIds NVARCHAR(MAX) = ''
+	,@TacticTypeIds varchar(max)=''
+	,@StatusIds varchar(max)=''
+	,@UserId int = 0
+AS
+BEGIN
+
+SET NOCOUNT ON;
+
+	DECLARE @CustomFieldTypeText VARCHAR(20)= 'TextBox'
+	DECLARE @CustomFieldTypeDropDown VARCHAR(20)= 'DropDownList'
+
+	-- Variables for fnGetFilterEntityHierarchy we pass defualt values because no need to pass timeframe option on grid
+	DECLARE @TimeFrame VARCHAR(20)='' 
+	DECLARE @Isgrid BIT=1
+
+	-- Get List of Custom fields which are textbox type
+	SELECT C.CustomFieldId
+			,C.Name AS 'CustomFieldName' 
+			,C.CustomFieldTypeId 
+			,C.IsRequired
+			,C.EntityType
+			,C.AbbreviationForMulti
+			,@CustomFieldTypeText As 'CustomFieldType'
+			FROM CustomField  C
+			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' FROM CustomFieldType CT
+				WHERE CT.Name=@CustomFieldTypeText 
+				AND CT.CustomFieldTypeId = C.CustomFieldTypeId)CT
+			WHERE ClientId=@ClientId
+					AND IsDeleted=0
+					AND EntityType IN('Campaign','Program','Tactic','Lineitem')
+		UNION ALL
+		-- Get Custom fields which are dropdown type and get only that custom fields which have it's option of that custom field
+		SELECT C.CustomFieldId
+			,C.Name AS 'CustomFieldName' 
+			,C.CustomFieldTypeId 
+			,C.IsRequired
+			,C.EntityType
+			,C.AbbreviationForMulti
+			,@CustomFieldTypeDropDown AS 'CustomFieldType'
+			FROM CustomField  C
+			CROSS APPLY (	SELECT CT.Name AS 'CustomFieldType' 
+							FROM CustomFieldType CT
+							WHERE CT.Name=@CustomFieldTypeDropDown 
+								AND CT.CustomFieldTypeId = C.CustomFieldTypeId)CT
+			CROSS APPLY (	SELECT CP.CustomFieldId 
+							FROM CustomFieldOption CP
+							WHERE 
+								C.CustomFieldId = CP.CustomFieldId
+							GROUP BY CP.CustomFieldId
+							HAVING COUNT(CP.CustomFieldOptionId)>0) CP
+			WHERE ClientId=@ClientId
+					AND IsDeleted=0
+					AND EntityType IN('Campaign','Program','Tactic','Lineitem')
+
+	-- Get list of Entity custom fields values
+	SELECT 
+		A.EntityId
+		,MAX(A.EntityType) EntityType
+		,A.CustomFieldId
+		,MAX(A.Value) AS Value
+		,MAX(A.UniqueId) AS UniqueId
+		,MAX(A.Text) AS 'Text'
+		FROM (
+				SELECT CE.CustomFieldId
+					,Hireachy.EntityId
+					,CE.Value
+					,Hireachy.EntityType
+					,C.CustomFieldType	
+					,Hireachy.EntityType +'_'+CAST(CE.EntityId AS VARCHAR) AS 'UniqueId'
+					,(  CASE WHEN C.IsRequired=1
+							 THEN 
+								CE.RestrictedText
+							 ELSE 
+								CE.UnRestrictedText
+						END ) AS 'Text'
+				FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds,@TimeFrame,@Isgrid) Hireachy 
+				CROSS APPLY (SELECT C.CustomFieldId
+									,C.EntityType
+									,CT.CustomFieldType
+									,C.IsRequired FROM CustomField C
+							 CROSS APPLY(	SELECT Name AS 'CustomFieldType' 
+											FROM CustomFieldType CT
+											WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId) CT
+							 WHERE Hireachy.EntityType = C.EntityType AND C.ClientId = @ClientId
+					AND C.IsDeleted=0) C
+				CROSS APPLY(	SELECT   CE.EntityId
+										,CE.CustomFieldId
+										,CE.Value
+										,CE.UnrestrictedText
+										,RE.[Text] AS RestrictedText 
+								FROM [MV].CustomFieldData CE
+								LEFT JOIN [MV].[CustomFieldEntityRestrictedTextByUser] RE 
+										ON RE.CustomFieldId = CE.CustomFieldId AND RE.UserId = @UserId
+								WHERE C.CustomFieldId = CE.CustomFieldId
+									AND Hireachy.EntityId = CE.EntityId ) CE
+				UNION ALL
+				SELECT C.CustomFieldId,NULL,NULL,NULL,CT.CustomFieldType,NULL,NULL 
+				FROM CustomField C
+				CROSS APPLY(SELECT Name AS 'CustomFieldType' 
+							FROM CustomFieldType CT
+							WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId) CT
+				WHERE C.ClientId = @ClientId
+					AND C.IsDeleted = 0
+					AND C.EntityType IN('Campaign','Program','Tactic','Lineitem')
+			) A
+	GROUP BY A.CustomFieldId, A.EntityId
+
+END
+GO
+
+--#2695 END OF MV SCRIPT - Contact John Zhang if you have any questions. 
+
 --#2557 - pulling finance data 
 IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('[INT].[PullLineItemActuals]'))
 	DROP PROCEDURE [INT].[PullLineItemActuals]
@@ -8167,148 +8587,6 @@ END
 
 GO
 
-/****** Object:  StoredProcedure [dbo].[GridCustomFieldData]    Script Date: 09/30/2016 15:51:28 ******/
-
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GridCustomFieldData]') AND type in (N'P', N'PC'))
-BEGIN
-EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GridCustomFieldData] AS' 
-END
-GO
-
-
--- =============================================
--- Author:		Nishant Sheth
--- Create date: 16-Sep-2016
--- Description:	Get home grid customfields and it's values 
--- =============================================
-ALTER PROCEDURE [dbo].[GridCustomFieldData]
-	@PlanId	 NVARCHAR(MAX)=''
-	,@ClientId int = 0
-	,@OwnerIds NVARCHAR(MAX) = ''
-	,@TacticTypeIds varchar(max)=''
-	,@StatusIds varchar(max)=''
-	,@UserId int = 0
-AS
-BEGIN
-
-SET NOCOUNT ON;
-
-	DECLARE @CustomFieldTypeText VARCHAR(20)= 'TextBox'
-	DECLARE @CustomFieldTypeDropDown VARCHAR(20)= 'DropDownList'
-
-	-- Variables for fnGetFilterEntityHierarchy we pass defualt values because no need to pass timeframe option on grid
-	DECLARE @TimeFrame VARCHAR(20)='' 
-	DECLARE @Isgrid BIT=1
-
-	-- Get List of Custom fields which are textbox type
-	SELECT C.CustomFieldId
-			,C.Name AS 'CustomFieldName' 
-			,C.CustomFieldTypeId 
-			,C.IsRequired
-			,C.EntityType
-			,C.AbbreviationForMulti
-			,@CustomFieldTypeText As 'CustomFieldType'
-			FROM CustomField  C
-			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' FROM CustomFieldType CT
-				WHERE CT.Name=@CustomFieldTypeText 
-				AND CT.CustomFieldTypeId = C.CustomFieldTypeId)CT
-			WHERE ClientId=@ClientId
-					AND IsDeleted=0
-					AND EntityType IN('Campaign','Program','Tactic','Lineitem')
-		UNION ALL
-		-- Get Custom fields which are dropdown type and get only that custom fields which have it's option of that custom field
-		SELECT C.CustomFieldId
-			,C.Name AS 'CustomFieldName' 
-			,C.CustomFieldTypeId 
-			,C.IsRequired
-			,C.EntityType
-			,C.AbbreviationForMulti
-			,@CustomFieldTypeDropDown AS 'CustomFieldType'
-			FROM CustomField  C
-			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' FROM CustomFieldType CT
-				WHERE CT.Name=@CustomFieldTypeDropDown 
-				AND CT.CustomFieldTypeId = C.CustomFieldTypeId)CT
-			CROSS APPLY (SELECT CP.CustomFieldId FROM CustomFieldOption CP
-							WHERE 
-							C.CustomFieldId = CP.CustomFieldId
-							GROUP BY CP.CustomFieldId
-							HAVING COUNT(CP.CustomFieldOptionId)>0) CP
-			WHERE ClientId=@ClientId
-					AND IsDeleted=0
-					AND EntityType IN('Campaign','Program','Tactic','Lineitem')
-
-	-- Get list of Entity custom fields values
-	SELECT 
-	A.EntityId
-	,MAX(A.EntityType) EntityType
-	,A.CustomFieldId
-	,MAX(A.Value) AS Value
-	,MAX(A.UniqueId) AS UniqueId
-	,MAX(A.Text) AS 'Text'
-	FROM (
-	SELECT CE.CustomFieldId,Hireachy.EntityId
-	,(SELECT SUBSTRING((	
-						SELECT ',' + CAST(R.Value AS VARCHAR) FROM CustomField_Entity R
-						WHERE R.EntityId = CE.EntityId
-						AND R.CustomFieldId = CE.CustomFieldId
-						FOR XML PATH('')), 2,900000
-						)) AS Value,
-						Hireachy.EntityType
-						,C.CustomFieldType	
-						,Hireachy.EntityType +'_'+CAST(CE.EntityId AS VARCHAR) AS 'UniqueId'
-						,(SELECT SUBSTRING((	
-							SELECT ',' + 
-							CASE WHEN C.CustomFieldType = @CustomFieldTypeText
-								THEN R.Value
-							ELSE 
-								CASE WHEN C.IsRequired=1
-										THEN (SELECT SUBSTRING((SELECT ','+MAX(CPInner.Value)
-													FROM CustomFieldOption CPInner
-												INNER JOIN CustomRestriction CR ON 
-												CR.CustomFieldId = CPInner.CustomFieldId
-												AND CR.CustomFieldOptionId = CPInner.CustomFieldOptionId
-												AND R.Value = CAST(CR.CustomFieldOptionId AS varchar(50))
-												AND CR.UserId=@UserId AND CR.Permission=2
-												WHERE CR.Permission=2
-												GROUP BY CPInner.CustomFieldId
-												FOR XML PATH('')),2,90000))
-										ELSE 
-											CAST(CCP.Value AS VARCHAR(50)) 
-										END
-								END
-							FROM CustomField_Entity R
-							LEFT JOIN CustomFieldOption CCP ON R.Value = CAST(CCP.CustomFieldOptionId AS varchar(50))
-							WHERE R.EntityId = CE.EntityId
-							AND R.CustomFieldId = CE.CustomFieldId
-							AND CE.CustomFieldId = C.CustomFieldId
-							FOR XML PATH('')), 2,900000
-						)) AS 'Text'
-					FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds,@TimeFrame,@Isgrid) Hireachy 
-					CROSS APPLY (SELECT C.CustomFieldId
-										,C.EntityType
-										,CT.CustomFieldType
-										,C.IsRequired FROM CustomField C
-							CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT
-								WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId)CT
-							WHERE Hireachy.EntityType = C.EntityType AND C.ClientId = @ClientId
-						AND C.IsDeleted=0) C
-					CROSS APPLY(SELECT CE.EntityId,CE.CustomFieldId FROM CustomField_Entity CE
-						WHERE C.CustomFieldId = CE.CustomFieldId
-						AND Hireachy.EntityId = CE.EntityId)CE
-					UNION ALL
-					SELECT C.CustomFieldId,NULL,NULL,NULL,CT.CustomFieldType,NULL,NULL FROM CustomField C
-					CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT
-						WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId)CT
-						WHERE C.ClientId = @ClientId
-					AND C.IsDeleted = 0
-					AND C.EntityType IN('Campaign','Program','Tactic','Lineitem')
-		) A
-		GROUP BY A.CustomFieldId,A.EntityId
-
-END
-
-
-GO
 -- =============================================
 -- Author:		Dhvani Raval
 -- Create date: 09/26/2016
