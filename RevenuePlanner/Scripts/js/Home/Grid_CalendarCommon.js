@@ -1704,20 +1704,24 @@ function BindViewSelections(strUrl) {
         success: function (data) {
             if (data != null && data != 'undefined') {
                 if (data.length > 0) {
-                    $.each(data, function (index, time) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = urlContent + '/Login/Index';
+                    }
+                    else {
+                        $.each(data, function (index, time) {
 
-                        if (type == time.Value) {
-                            $html += '<option value="' + time.Value + '" selected="selected">' + time.Text + '</option>';
-                        }
-                        else {
-                            $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
-                        }
+                            if (type == time.Value) {
+                                $html += '<option value="' + time.Value + '" selected="selected">' + time.Text + '</option>';
+                            }
+                            else {
+                                $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                            }
 
-                    });
+                        });
+                    }
                 }
                 $dropdown.append($html);
                 $("#ddlTabViewBy").multiselect('refresh');
-                //$('#ddlTabViewBy').val(data.ViewBy.toString());
             }
         }
     });
