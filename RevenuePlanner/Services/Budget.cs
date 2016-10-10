@@ -198,6 +198,7 @@ namespace RevenuePlanner.Services
                     AssetType = Convert.ToString(row["ROITacticType"]),
                     AnchorTacticID = Convert.ToInt32(Convert.ToString(row["IsAnchorTacticId"])),
                     CalendarHoneycombpackageIDs = Convert.ToString(row["CalendarHoneycombpackageIDs"]),
+                    LinkedPlanName = Convert.ToString(row["LinkedPlanName"]),
 
                     MonthValues = new BudgetMonth()
                     {
@@ -321,16 +322,33 @@ namespace RevenuePlanner.Services
             BudgetDataObj = new Budgetdataobj();
             //Add title of plan entity into dhtmlx model
 
+            bool IsExtendedTactic = (Entity.EndDate.Year - Entity.StartDate.Year) > 0 ? true : false;
+            int? LinkedTacticId = Entity.LinkTacticId;
+            if (LinkedTacticId == 0)
+            {
+                LinkedTacticId = null;
+            }
+            string Linkedstring = string.Empty;
+            if (string.Compare(Entity.ActivityType, Convert.ToString(Enums.EntityType.Tactic), true) == 0)
+            {
+                Linkedstring = HttpUtility.HtmlEncode(((IsExtendedTactic == true && LinkedTacticId == null) ?
+                                    "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" :
+                                        ((IsExtendedTactic == true && LinkedTacticId != null) || (LinkedTacticId != null)) ?
+                                        "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + (!string.IsNullOrEmpty(Entity.LinkedPlanName) ?
+                                        null :
+                                    Entity.LinkedPlanName.Replace("'", "&#39;")) + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : ""));
+            }            
+
             if (Entity.AnchorTacticID != null && Entity.AnchorTacticID > 0 && !string.IsNullOrEmpty(Entity.Id) && Convert.ToString(Entity.AnchorTacticID) == Entity.Id)
             {
                 // Get list of package tactic ids
                 Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
-              
-                     BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring.Replace("'", "&#39;").Replace("\"", "&#34;")) + HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
+
+                BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring.Replace("'", "&#39;").Replace("\"", "&#34;")) + Linkedstring + HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
             }
             else
             {
-                BudgetDataObj.value = HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
+                BudgetDataObj.value = Linkedstring + HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
             }
             if (Entity.ActivityType == ActivityType.ActivityLineItem && Entity.LineItemTypeId == null)
             {
@@ -366,7 +384,7 @@ namespace RevenuePlanner.Services
             BudgetDataObj = new Budgetdataobj();
             //Add unAllocated budget into dhtmlx model
             BudgetDataObj.style = NotEditableCellStyle;
-            BudgetDataObj.value = Convert.ToString(Entity.UnallocatedBudget);
+            BudgetDataObj.value = Convert.ToString(Entity.TotalUnallocatedBudget);
             BudgetDataObjList.Add(BudgetDataObj);
 
             return BudgetDataObjList;
@@ -776,7 +794,7 @@ namespace RevenuePlanner.Services
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
                     colType = colType + ",ed,ed,ed";
                     width = width + ",130,130,130";
-                    colSorting = colSorting + ",str,str,str";
+                    colSorting = colSorting + ",int,int,int";
 
                     if (quarterCounter == 4)//Check if queter counter reach to last quarter then reset it
                     {
@@ -820,7 +838,7 @@ namespace RevenuePlanner.Services
 
                     colType = colType + ",ed,ed,ed";
                     width = width + ",140,140,140";
-                    colSorting = colSorting + ",str,str,str";
+                    colSorting = colSorting + ",int,int,int";
                 }
             }
 
@@ -1450,18 +1468,16 @@ namespace RevenuePlanner.Services
                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthValues = lineDiff;
 
                         double allocated = l.TotalAllocatedCost - lines.Sum(l1 => l1.TotalAllocatedCost);
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().TotalAllocatedCost = allocated;
-
-                        // Calculate Balance UnAllocated Cost
-                        double BalanceUnallocatedCost = l.UnallocatedCost - lines.Sum(lmon => lmon.UnallocatedCost);
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().UnallocatedCost = BalanceUnallocatedCost;
-
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().TotalAllocatedCost = allocated;                                                
                     }
                     else
                     {
                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthValues = l.MonthValues;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().TotalAllocatedCost = l.TotalAllocatedCost < 0 ? 0 : l.TotalAllocatedCost;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().TotalAllocatedCost = l.TotalAllocatedCost < 0 ? 0 : l.TotalAllocatedCost;                        
                     }
+                    // Calculate Balance UnAllocated Cost
+                    double BalanceUnallocatedCost = l.UnallocatedCost - lines.Sum(lmon => lmon.UnallocatedCost);
+                    model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().UnallocatedCost = BalanceUnallocatedCost;
                 }
             }
             return model;

@@ -129,6 +129,20 @@
                     HomeGrid.saveOpenStates("plangridState");
                 }, 500);
             });
+
+            HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
+                if (IsManageviewClick) {
+                    IsManageviewClick = false;
+                    return false;
+                }
+                else if (IsManageDropdown) {
+                    IsManageviewClick = false;
+                    return false;
+                }
+                else
+                    return true;
+            });
+
             var machineNameindex = HomeGrid.getColIndexById("MachineName");
             var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
             var colTypeIndex = HomeGrid.getColIndexById("Type");

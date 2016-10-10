@@ -7659,7 +7659,7 @@ GO
 -- Create date: 09/08/2016
 -- Description:	This store proc. return data for budget tab for repective plan, campaign, program and tactic
 -- =============================================
-ALTER PROCEDURE [dbo].[GetPlanBudget]--[GetPlanBudget] '20212,20203,19569'
+ALTER PROCEDURE [dbo].[GetPlanBudget]--[GetPlanBudget] '19421','98,104,66,410,308','14917,32098,32097,14918,14916,14919,14920','Created,Submitted,Approved,In-Progress,Complete,Declined',308,'Tactic','2016-2017',0
 	(
 	@PlanId NVARCHAR(MAX),
 	@ownerIds nvarchar(max)='',
@@ -7738,6 +7738,7 @@ SELECT		 0 Id
 			,NULL ROITacticType
 			,0 IsAnchorTacticId
 			,NULL CalendarHoneycombpackageIDs
+			,NULL LinkedPlanName
 			FROM @ViewbyTable
 UNION ALL
 
@@ -7778,6 +7779,7 @@ SELECT		Id
 			,NULL ROITacticType
 			,0 IsAnchorTacticId
 			,NULL CalendarHoneycombpackageIDs
+			,NULL LinkedPlanName
 		FROM 
 				(SELECT 
 					P.PlanId Id
@@ -7843,6 +7845,7 @@ SELECT
 		,NULL ROITacticType
 		,0 IsAnchorTacticId
 		,NULL CalendarHoneycombpackageIDs
+		,NULL LinkedPlanName
 	 FROM
 			(SELECT 
 				PC.PlanCampaignId Id	
@@ -7907,6 +7910,7 @@ UNION ALL
 		,NULL ROITacticType
 		,0 IsAnchorTacticId
 		,NULL CalendarHoneycombpackageIDs
+		,NULL LinkedPlanName
 	 FROM
 			(SELECT 
 				PCP.PlanProgramId Id
@@ -7977,6 +7981,7 @@ UNION ALL
 	     ,AssetType ROITacticType
 		,ISNULL(AnchorTacticID,0) IsAnchorTacticId
 		,CalendarHoneycombpackageIDs
+		,LinkedPlanName
 	 FROM
 			(SELECT
 				PCPT.PlanTacticId Id 
@@ -8005,13 +8010,15 @@ UNION ALL
 				,RPD.AnchorTacticID
 				,TP.AssetType
 				,CalendarHoneycombpackageIDs = H.ROIPackageIds
+				,P.Title as 'LinkedPlanName'
 			FROM @tmp H
 				INNER JOIN Plan_Campaign_Program_Tactic PCPT ON H.EntityId=PCPT.PlanTacticId 
 				LEFT JOIN Plan_Campaign_Program_Tactic_Budget PCPTB ON PCPT.PlanTacticId=PCPTB.PlanTacticId
 				LEFT JOIN Plan_Campaign_Program_Tactic_Cost PCPTC ON PCPT.PlanTacticId=PCPTC.PlanTacticId
 				LEFT JOIN Plan_Campaign_Program_Tactic_Actual PCPTA ON PCPT.PlanTacticId=PCPTA.PlanTacticId AND PCPTA.StageTitle='Cost'
 				LEFT JOIN ROI_PackageDetail RPD ON RPD.PlanTacticId = PCPT.PlanTacticId
-				INNER JOIN TacticType TP ON (TP.TacticTypeId = PCPT.TacticTypeId)
+				LEFT JOIN [Plan] P ON P.PlanId = PCPT.LinkedPlanId
+				INNER JOIN TacticType TP ON (TP.TacticTypeId = PCPT.TacticTypeId)				
 			WHERE H.EntityType='Tactic'
 			)Tactic
 			PIVOT
@@ -8074,6 +8081,7 @@ UNION ALL
 	    ,NULL ROITacticType
 		,0 IsAnchorTacticId
 		,NULL CalendarHoneycombpackageIDs
+		,NULL LinkedPlanName
 	 FROM
 		 (SELECT	PCPTL.PlanLineItemId Id
 					,H.TaskId

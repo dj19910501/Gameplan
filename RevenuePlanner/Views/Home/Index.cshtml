@@ -444,6 +444,9 @@
                 BindPlanCalendar();
             }
         });
+        $("#ddlUpComingActivitesSelectBox").click(function () {
+            $('#ddlTabViewBy').multiselect("close");
+        });
         SetTooltip();
         function toggleChevron(e) {
             $(e.target)
