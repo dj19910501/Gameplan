@@ -65,20 +65,23 @@ namespace RevenuePlanner.Services
             PlanUserSavedViews = SetOFLastViews;
             List<string> LastSetOfPlanSelected = new List<string>();
             List<string> LastSetOfYearSelected = new List<string>();
-
-            //Set Plan And Year as per Last set of views
-            SetLastSetofPlanYear(UserId, FilterPresetName, SetOFLastViews, SetOfPlanSelected, ref LastSetOfPlanSelected, ref LastSetOfYearSelected, Convert.ToString(Enums.FilterLabel.Year));
-
-            //Fetch Selected Year
+            List<Plan> YearWiseListOfPlans = new List<Plan>();
+            List<int> StartYears = new List<int>();
+            List<int> EndYears = new List<int>();
             List<string> SelectedYear = activePlan.Where(plan => plan.IsDeleted == false && currentPlan.Select(s => s.PlanId).ToArray().Contains(plan.PlanId)).Select(plan => plan.Year).ToList();
-            SelectedYear = GetSelectedYear(activePlan, LastSetOfPlanSelected, LastSetOfYearSelected, SelectedYear);
-
             //List ofdistinct PlanIDs
             List<int> uniqueplanids = activePlan.Select(p => p.PlanId).Distinct().ToList();
-
             //List of Campaign based on Plan wise
             List<Plan_Campaign> CampPlans = objDbMrpEntities.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId)).Select(camp => camp).ToList();
+            if (currentPlanId == null || currentPlanId.Count() == 0)
+            {
+                //Set Plan And Year as per Last set of views
+                SetLastSetofPlanYear(UserId, FilterPresetName, SetOFLastViews, SetOfPlanSelected, ref LastSetOfPlanSelected, ref LastSetOfYearSelected, Convert.ToString(Enums.FilterLabel.Year));
 
+                //Fetch Selected Year
+
+                SelectedYear = GetSelectedYear(activePlan, LastSetOfPlanSelected, LastSetOfYearSelected, SelectedYear);
+            }
             // List of Campaign between selected years
             List<int> CampPlanIds = CampPlans.Where(camp => SelectedYear.Contains(Convert.ToString(camp.StartDate.Year)) || SelectedYear.Contains(Convert.ToString(camp.EndDate.Year)))
                 .Select(camp => camp.PlanId).Distinct().ToList();
@@ -89,7 +92,7 @@ namespace RevenuePlanner.Services
 
             List<int> allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
 
-            List<Plan> YearWiseListOfPlans = activePlan.Where(list => allPlanIds.Contains(list.PlanId)).ToList();
+            YearWiseListOfPlans = activePlan.Where(list => allPlanIds.Contains(list.PlanId)).ToList();
 
             //All Plan List
             planmodel.lstPlan = YearWiseListOfPlans.Select(plan => new PlanListModel
@@ -101,8 +104,6 @@ namespace RevenuePlanner.Services
 
             }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
 
-            List<int> StartYears = new List<int>();
-            List<int> EndYears = new List<int>();
             if (CampPlans != null && CampPlans.Count() > 0)
             {
                 StartYears = CampPlans.Select(camp => camp.StartDate.Year).Distinct().ToList();
