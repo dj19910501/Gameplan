@@ -1982,6 +1982,7 @@ function CallUnPackageHoneyComb() {
                 AnchorTacticId: anchorTacticId
             },
             success: function (data) {
+                var ViewBy = $('#ddlTabViewBy').val();
                 if (isCalendarView == false) {
                     // Remove package icon from the grid
                     var rowObject = $('.honeycombbox-icon-gantt[taskid=' + anchorTacticId + ']');
@@ -1994,6 +1995,11 @@ function CallUnPackageHoneyComb() {
                         getvalue = getvalue.replace(newValue, '');
                         HomeGrid.cells(rowId, TaskNameColIndex).setValue(getvalue);
                     }
+
+                     if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+                    var removeEntirePkg = taskId.split('_')[1];
+                    HomeGrid.clearAll();
+                }
                 }
                 else {
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']");
@@ -2039,7 +2045,7 @@ function CallUnPackageHoneyComb() {
                         AnchorTaskIdsList.Id.push(CalendarTaskID);
                     }
                     // Added by Arpita Soni for Ticket #2357 on 07/15/2016
-                    var ViewBy = $('#ddlTabViewBy').val();
+                   
                     if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
                         var removeEntirePkg = CalendarTaskID.split('_')[0];
                         gantt.deleteTask(removeEntirePkg);
@@ -2194,7 +2200,7 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
         success: function (data) {
             var getvalue = HomeGrid.cells(dhtmlxrowid, TaskNameColIndex).getValue();
             var Index = getvalue.indexOf("pkgIcon");
-
+            var ViewBy = $('#ddlTabViewBy').val();
             if (IsPromotion) {
                 if (Index > -1) {
                     // Bind updated items to package icon into grid
@@ -2211,6 +2217,14 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
                 $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
                 Totallength = Totallength - 1;
                 Height = Number(Height) + (Sum);
+
+                if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+                    var taskToDelete = $("div[altid='" + taskId + "']");
+                    if (taskToDelete != undefined && taskToDelete.length > 0) {
+                        HomeGrid.deleteRow(taskId);
+                    }
+                }
+
             }
             else {
                 // As package is deleted, remove package icon from the grid
@@ -2227,6 +2241,11 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
                 // If asset tactic is deleted then entire package deleted so remove all data from honeycomb
                 RemoveAllHoneyCombData();
                 ShowMessage(false, PackageUnsuccessful, 3000);
+                if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+                    var removeEntirePkg = taskId.split('_')[1];
+                    HomeGrid.clearAll();
+                }
+
             }
 
             $("#totalEntity").text(Totallength);
@@ -2303,7 +2322,6 @@ function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totalleng
                     AnchorTaskIdsList.Id.push(CalendarTaskID);
                     AnchorTaskIdsList.Value.push(data.remainItems.toString());
                 }
-
                 if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
                     var taskToDelete = $("div[altid='" + taskId + "']");
                     if (taskToDelete != undefined && taskToDelete.length > 0) {
@@ -2355,6 +2373,7 @@ function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totalleng
                     }
 
                 });
+               
                 AnchorTaskIdsList.Id.push(CalendarTaskID);
                 if ( ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
                     var removeEntirePkg = taskId.split('_')[0];
