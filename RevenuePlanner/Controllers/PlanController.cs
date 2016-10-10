@@ -8265,7 +8265,7 @@ namespace RevenuePlanner.Controllers
             int yearDiff = 0, perdNum = 12, cntr = 0;
             bool isMultiYearlinkedTactic = false;
             List<string> lstLinkedPeriods = new List<string>();
-            
+
             try
             {
                 #region update Plan Detail
@@ -8680,20 +8680,22 @@ namespace RevenuePlanner.Controllers
 
                     }
                     ///Added by Rahul Shah for Save Custom Field from Plan Grid PL #2594
-                    else if(UpdateColumn.ToString().IndexOf("custom") >= 0) {
-                        if (CustomFieldInput != null && CustomFieldInput != "") {
+                    else if (UpdateColumn.ToString().IndexOf("custom") >= 0)
+                    {
+                        if (CustomFieldInput != null && CustomFieldInput != "")
+                        {
                             List<CustomFieldStageWeight> customFields = JsonConvert.DeserializeObject<List<CustomFieldStageWeight>>(CustomFieldInput); //Deserialize Json Data to List.
                             int CustomFieldId = customFields.Select(cust => cust.CustomFieldId).FirstOrDefault(); // Get Custom Field Id 
                             List<string> CustomfieldValue = customFields.Select(cust => cust.Value).ToList();// Get Custom Field Option Value
 
-                            Dictionary<int ,string> CustomFieldOptionIds = new Dictionary<int, string>();
+                            Dictionary<int, string> CustomFieldOptionIds = new Dictionary<int, string>();
                             CustomFieldOptionIds = db.CustomFieldOptions.Where(log => log.CustomFieldId == CustomFieldId && CustomfieldValue.Contains(log.Value)).ToDictionary(log => log.CustomFieldOptionId, log => log.Value.ToString());// Get Key Value pair for Customfield option id and its value according to Value.
 
                             List<CustomField_Entity> prevCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == id && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList();
                             prevCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
                             if (customFields.Count != 0)
                             {
-                                CustomField_Entity objcustomFieldEntity;                                
+                                CustomField_Entity objcustomFieldEntity;
                                 foreach (var item in customFields)
                                 {
                                     if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "" && ColumnType.ToString().ToUpper() != Enums.ColumnType.ed.ToString().ToUpper())
@@ -8709,16 +8711,13 @@ namespace RevenuePlanner.Controllers
                                         {
                                             objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
                                         }
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.ID;
-                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
-                                        objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+                                        objcustomFieldEntity = AssignValuetoCommonProperties(objcustomFieldEntity, item);
                                         db.CustomField_Entity.Add(objcustomFieldEntity);
                                     }
-                                }                                
+                                }
                             }
 
-                    if (linkedTacticId > 0)
+                            if (linkedTacticId > 0)
                             {
                                 List<CustomField_Entity> prevLinkCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == linkedTacticId && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList();
                                 prevLinkCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
@@ -8741,10 +8740,8 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
                                             }
-                                            objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                            objcustomFieldEntity.CreatedBy = Sessions.User.ID;
-                                            objcustomFieldEntity.Weightage = (byte)item.Weight;
-                                            objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+
+                                            objcustomFieldEntity = AssignValuetoCommonProperties(objcustomFieldEntity, item);
                                             db.CustomField_Entity.Add(objcustomFieldEntity);
                                         }
                                     }
@@ -9002,7 +8999,7 @@ namespace RevenuePlanner.Controllers
                             Dictionary<int, string> CustomFieldOptionIds = new Dictionary<int, string>();
                             CustomFieldOptionIds = db.CustomFieldOptions.Where(log => log.CustomFieldId == CustomFieldId && CustomfieldValue.Contains(log.Value)).ToDictionary(log => log.CustomFieldOptionId, log => log.Value.ToString()); // Get Key Value pair for Customfield option id and its value according to Value.
 
-                            List<CustomField_Entity> prevCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == id && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList(); 
+                            List<CustomField_Entity> prevCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == id && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList();
                             prevCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
                             if (customFields.Count != 0)
                             {
@@ -9022,10 +9019,8 @@ namespace RevenuePlanner.Controllers
                                         {
                                             objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
                                         }
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.ID;
-                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
-                                        objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+
+                                        objcustomFieldEntity = AssignValuetoCommonProperties(objcustomFieldEntity, item);
                                         db.CustomField_Entity.Add(objcustomFieldEntity);
                                     }
                                 }
@@ -9130,10 +9125,8 @@ namespace RevenuePlanner.Controllers
                                         {
                                             objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
                                         }
-                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
-                                        objcustomFieldEntity.CreatedBy = Sessions.User.ID;
-                                        objcustomFieldEntity.Weightage = (byte)item.Weight;
-                                        objcustomFieldEntity.CostWeightage = (byte)item.CostWeight;
+
+                                        objcustomFieldEntity = AssignValuetoCommonProperties(objcustomFieldEntity, item);
                                         db.CustomField_Entity.Add(objcustomFieldEntity);
                                     }
                                 }
@@ -9285,7 +9278,7 @@ namespace RevenuePlanner.Controllers
                         if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
                             SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, oldOwnerId, Convert.ToInt32(UpdateVal), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString(), UpdateColumn);
                     }
-                    
+
                     // Modified by Arpita Soni for Ticket #2634 on 09/22/2016
                     objPlanTactic.UpdateBalanceLineItemCost(objTactic.PlanTacticId);
 
@@ -9309,7 +9302,21 @@ namespace RevenuePlanner.Controllers
 
             return Json(new { errormsg = "" });
         }
-
+        /// <summary>
+        /// Following method is created to assign value to some common properties.
+        /// </summary>
+        /// <param name="objcustomFieldEntity"></param>
+        /// <param name="objCustomFieldStageWeight"></param>
+        /// <returns></returns>
+        private CustomField_Entity AssignValuetoCommonProperties(CustomField_Entity objcustomFieldEntity, CustomFieldStageWeight objCustomFieldStageWeight)
+        {
+            objcustomFieldEntity.CreatedDate = DateTime.Now;
+            objcustomFieldEntity.CreatedBy = Sessions.User.ID;
+            objcustomFieldEntity.Weightage = (byte)objCustomFieldStageWeight.Weight;
+            objcustomFieldEntity.CostWeightage = (byte)objCustomFieldStageWeight.CostWeight;
+            return objcustomFieldEntity;
+        }
+        
         public void ReduceTacticPlannedCost(ref Plan_Campaign_Program_Tactic objTactic, ref Plan_Campaign_Program_Tactic ObjLinkedTactic, ref List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlist, double lineitem_diffCost)
         {
             try
