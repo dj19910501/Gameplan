@@ -319,16 +319,18 @@
     $('.sidebar-toogle a').toggle(
     function () {
         ///new code
-        var ganttwidth = $("#gantt_here").width();
-        var totalWidth = ganttwidth - 230;
-        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            if ($('#IsGridView').val().toLowerCase() == "true") {
+        var ganttwidth;
+        var totalWidth;
+        if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
                 var ganttwidth = $("#gridbox").width();
                 var totalWidth = ganttwidth + 230;
                 ResizeGrid(totalWidth);
             }
-        }
+        else {
+            ganttwidth = $("#gantt_here").width();
+            totalWidth = ganttwidth - 230;
         gantt._render_tasks_scales(totalWidth);
+        }
         $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
 
         $(".gantt_last_cell").dblclick(function (e) {
@@ -354,11 +356,9 @@
 
         $('.gantt_hor_scroll').hide();
 
-    }, function () {
-        ///new code
-        var ganttwidth = $("#gantt_here").width();
-        var totalWidth = ganttwidth - 230;
-        gantt._render_tasks_scales(totalWidth);
+    }
+
+    , function () {
 
         $('#gantt_hor_scroll').attr('style', 'Width: 1483px;');
 
@@ -382,13 +382,7 @@
         });
 
         $('.gantt_hor_scroll').hide();
-        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            if ($('#IsGridView').val().toLowerCase() == "true") { //Modified by Komal Rawal for 2013 Home/Plan Layout changes
-                var ganttwidth = $("#gridbox").width();
-                var totalWidth = ganttwidth - 230;
-                ResizeGrid(totalWidth);
-            }
-        }
+        
     });
 
 
