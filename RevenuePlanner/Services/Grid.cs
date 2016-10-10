@@ -1427,6 +1427,14 @@ namespace RevenuePlanner.Services
                         IsEditable = objHomeGridProp.lockedstateone;
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
+
+                    // Check Entity Type is line item and is other line item or not
+                    if (string.Compare(objres.EntityType, Enums.EntityType.Lineitem.ToString(), true) == 0 && string.IsNullOrEmpty(objres.LineItemType))
+                    {
+                        IsEditable = objHomeGridProp.lockedstateone;
+                        cellTextColor = objHomeGridProp.stylecolorgray;
+                    }
+
                     if ((pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate)) &&
                             (objres.EntityType.ToUpper().ToString() == Enums.EntityType.Lineitem.ToString().ToUpper()) ||
                             ((viewBy.ToUpper() != PlanGanttTypes.Tactic.ToString().ToUpper()) && (objres.EntityType.ToUpper().ToString() == viewBy.ToUpper()))
@@ -1435,6 +1443,7 @@ namespace RevenuePlanner.Services
                         objPlanData.value = "-";
                         objPlanData.actval = "-";
                         objPlanData.locked = objHomeGridProp.lockedstateone;
+                        cellTextColor = objHomeGridProp.stylecolorgray;
                     }
                     else
                     {
@@ -1448,10 +1457,22 @@ namespace RevenuePlanner.Services
                                 objPlanData.locked = !string.IsNullOrEmpty(objres.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
                             }
                             else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString()
-                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
+                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
                             {
-
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
+                                cellTextColor = objHomeGridProp.stylecolorgray;
+                            }
+                            else
+                            {
+                                objPlanData.locked = IsEditable;
+                            }
+                        }
+                        else if (objres.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
+                        {
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
+                            {
+                                objPlanData.locked = objHomeGridProp.lockedstateone;
+                                cellTextColor = objHomeGridProp.stylecolorgray;
                             }
                             else
                             {
@@ -1460,9 +1481,11 @@ namespace RevenuePlanner.Services
                         }
                         else if (objres.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower())
                         {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString())
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString()
+                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
                             {
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
+                                cellTextColor = objHomeGridProp.stylecolorgray;
                             }
                             else
                             {
@@ -1471,9 +1494,11 @@ namespace RevenuePlanner.Services
                         }
                         else if (objres.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower())
                         {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString())
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString()
+                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
                             {
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
+                                cellTextColor = objHomeGridProp.stylecolorgray;
                             }
                             else
                             {
@@ -1482,9 +1507,12 @@ namespace RevenuePlanner.Services
                         }
                         else if (objres.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower())
                         {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString())
+                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString()
+                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString()
+                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
                             {
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
+                                cellTextColor = objHomeGridProp.stylecolorgray;
                             }
                             else
                             {
@@ -1556,6 +1584,12 @@ namespace RevenuePlanner.Services
                         cellTextColor = objHomeGridProp.stylecolorblack;
                     }
                     else
+                    {
+                        IsEditable = objHomeGridProp.lockedstateone;
+                        cellTextColor = objHomeGridProp.stylecolorgray;
+                    }
+                    // Check Entity Type is line item and is other line item or not
+                    if (string.Compare(objres.EntityType, Enums.EntityType.Lineitem.ToString(), true) == 0 && string.IsNullOrEmpty(objres.LineItemType))
                     {
                         IsEditable = objHomeGridProp.lockedstateone;
                         cellTextColor = objHomeGridProp.stylecolorgray;
