@@ -430,6 +430,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
              
            }
         }
+        opencombobox();
     }
     if (stage == 1) {
         if (updatetype == secLineItem.toLowerCase()) {
@@ -1399,4 +1400,22 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
         HomeGrid.registerCList(cellInd, clistitem);
     }
 
+}
+//Open selectbox reverse when not find enough space at bottom - Bhumika - #2596
+function opencombobox() {
+    // get the scollTop (distance scrolled from top)
+    //var scrollTop = $(".objbox").scrollTop();
+    // get the top offset of the dropdown (distance from top of the page)
+    var topOffset = $(".rowselected td").offset().top;
+    // get the Table height
+    var windowHeight = $(".objbox").height();
+    // calculate the dropdown offset relative to table position
+    var relativeOffset = topOffset - windowHeight;
+    // if the relative offset is greater than half the table height, reverse the dropdown.
+    if (relativeOffset > 200) {
+        $("body").addClass("reverse");
+    }
+    else {
+        $("body").removeClass("reverse");
+    }
 }

@@ -1462,7 +1462,7 @@ cursor: pointer;
 color: #9c9fa0;
 font-size: 18px;
 }
-.grid_Search .fa{font-size: 15px;}
+/*.grid_Search .fa{font-size: 15px;}*/
 .grid_add:hover .fa.fa-plus-circle, 
 .gantt_add:hover .fa, 
 .grid_Search:hover .fa {
@@ -1563,6 +1563,7 @@ color: #89CEDE;
     padding-right: 18px !important;
     box-sizing: border-box !important;
 }
+
 
 /* ============== Search box CSS ================ */
 /*#divgridview .xhdr{ height: 37px !important; }*/
@@ -1780,7 +1781,7 @@ h2.title-simple button {margin-bottom:0}
 .dhx_clist {
     border: 1px solid #aaa !important;
     border-radius: 5px;
-    max-height: 200px;
+    height: 120px !important;
     overflow: auto;
     padding: 2px 2px 4px 10px !important;
     width: 150px;
@@ -1808,7 +1809,11 @@ h2.title-simple button {margin-bottom:0}
     box-shadow: none;
     display: block;
     border-radius:4px;
+    display:none;
 }
+body.reverse .dhx_combo_select{margin-top:-150px !important}
+body.reverse .dhx_clist{margin-top:-150px !important}
+
 /************************************************ Responsive css start here **********************************************************/
 @media (max-width: 1600px) {
 .task-tbl #divgridview, 
