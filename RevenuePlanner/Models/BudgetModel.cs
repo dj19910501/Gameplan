@@ -89,7 +89,7 @@ namespace RevenuePlanner.Models
         public Nullable<int> AnchorTacticID { get; set; }
         public string TaskId { get; set; }
         public double UnallocatedCost { get; set; }
-
+        public string LinkedPlanName { get; set; }
         public string CalendarHoneycombpackageIDs { get; set; }
 
     }
