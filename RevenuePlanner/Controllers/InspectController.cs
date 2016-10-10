@@ -10359,6 +10359,7 @@ namespace RevenuePlanner.Controllers
                                 UserSavedViews.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 db.SaveChanges();
                                 Sessions.PlanUserSavedViews = null;
+                                
                                 Plan plan = db.Plans.Where(p => p.PlanId == id).FirstOrDefault();
                                 returnValue = Common.InsertChangeLog(id, null, id, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed, "", plan.CreatedBy);
                                 strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
@@ -10608,7 +10609,10 @@ namespace RevenuePlanner.Controllers
                                     Common.ChangeCampaignStatus(LinkedPlanCampaignId, false);
                                 }
                             }
-
+                            if(IsPlan)
+                            {
+                                Sessions.PlanPlanIds = null;
+                            }
                             scope.Complete();
 
                             ViewBag.CampaignID = cid;

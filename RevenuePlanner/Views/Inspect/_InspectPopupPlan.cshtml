@@ -311,6 +311,10 @@
                     if (ReturnParameter == false) {
                         return false;
                     }
+                    else
+                    {
+                        ReloadSavedPlan();
+                    }
                     //else {
                     //    $('.close-x-big-icon').trigger('click');
 
@@ -340,7 +344,9 @@
             });            
         }
     });
-
+    function ReloadSavedPlan() {
+        loadInspectPopup($("#hdnPlanId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", "Setup", '@Enums.InspectPopupMode.Edit.ToString()', 0, '@RequestedModule');
+    }
     function updatePlanNameDrp() {
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').each(function (e) {
           var planid = $(this).val().toString();
