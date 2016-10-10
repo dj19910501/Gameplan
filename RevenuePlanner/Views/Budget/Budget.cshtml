@@ -79,10 +79,11 @@
     var attachHeader;
     var header;
     var eventidonedit = 0;
+    var noplan = '@Sessions.IsNoPlanCreated';
     $(document).ready(function () {
         var GridRowId='@GridFirstrowId';
         $('#divgridview').addClass('budget-grid');
-        if (GridRowId != '') {
+        if (GridRowId != '' || noplan.toLowerCase() == 'true') {
             var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
             exportgridData = JsonModel;
             HomeGrid = new dhtmlXGridObject('gridbox');
@@ -184,9 +185,10 @@
             LoadAfterParsing();
             var rowCount = HomeGrid.getRowsNum();
             if (rowCount != undefined && rowCount == 0) {
-                var noplan = '@Sessions.IsNoPlanCreated';
+                
                 if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
                     AddBlankRow();
+                    $('#exp-serach').hide();
                 }
             }
             SetTooltip();
@@ -557,7 +559,7 @@ function AddBlankRow() {
     var taskcolindex = 0;
     for (var i = 1; i < HomeGrid.getColumnCount() ; i++) {
         id = HomeGrid.getColumnId(i);
-        if (id == '@Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString().ToLower()') {
+        if (id == '@Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString()') {
             blankrawdata.push("Your plan goes here");
             taskcolindex = i;
         }
@@ -579,5 +581,7 @@ function AddBlankRow() {
     HomeGrid.addRow("newRow_0", rawdata);
     HomeGrid.cells("newRow_0", addcolindex).setValue("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id='Plan' alt='000' per='true' title='Add'><i class='fa fa-plus-circle'></i></div>");
     HomeGrid.setCellTextStyle("newRow_0", taskcolindex, "color:gray;font-style: italic;");
+    var colourCodeIndex = HomeGrid.getColIndexById('@Enums.HomeGrid_Default_Hidden_Columns.ColourCode.ToString().ToLower()');
+    HomeGrid.setColumnHidden(colourCodeIndex, true);
 }
 </script>
