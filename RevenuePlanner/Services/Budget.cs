@@ -47,8 +47,8 @@ namespace RevenuePlanner.Services
         public const string ColActual = "Actual";
         public const string ColPlanned = "Planned";
         public const string NotEditableCellStyle = "color:#a2a2a2 !important;";
-        public const string RedCornerStyle = "background: rgba(0, 0, 0, 0) url(../content/images/red-corner-budget.png) no-repeat scroll right top;";
-        public const string OrangeCornerStyle = "background: rgba(0, 0, 0, 0) url(../content/images/orange-corner-budget.png) no-repeat scroll right top;";
+        public const string RedCornerStyle = "background: rgba(0, 0, 0, 0) url(./content/images/red-corner-budget.png) no-repeat scroll right top;";
+        public const string OrangeCornerStyle = "background: rgba(0, 0, 0, 0) url(./content/images/orange-corner-budget.png) no-repeat scroll right top;";
         public const string ThreeDash = "---";
         public bool isMultiYear = false;
 
