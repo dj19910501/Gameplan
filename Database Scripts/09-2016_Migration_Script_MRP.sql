@@ -352,10 +352,11 @@ END
 
 GO
 
+/****** Object:  UserDefinedFunction [dbo].[fnGetEntitieHirarchyByPlanId]    Script Date: 10/10/2016 20:04:23 ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetEntitieHirarchyByPlanId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 DROP FUNCTION [dbo].[fnGetEntitieHirarchyByPlanId]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnGetEntitieHirarchyByPlanId]    Script Date: 10/07/2016 12:42:03 ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetEntitieHirarchyByPlanId]    Script Date: 10/10/2016 20:04:23 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -410,11 +411,6 @@ BEGIN
 			SET @StartDate= CONVERT(DATETIME,@MinYear+''-01-01 00:00:00'') --Set first date of minimum year
 			SET @EndDate= CONVERT(DATETIME,@MaxYear+''-12-31 00:00:00'')   --Set Last date of maximum year
 
-			IF (CHARINDEX(''-'',@TimeFrame)=0)
-				BEGIN
-					INSERT INTO @TimeFrameDatesAndYear
-					SELECT CONVERT(VARCHAR(10),(CONVERT(INT,@TimeFrame)-1)) --split timeframe parameter e.g. 2015-2016
-				END
 		END
 	
 
@@ -428,8 +424,7 @@ BEGIN
 		FROM [Plan] P 
 			--INNER JOIN Model M ON M.ModelId = P.ModelId AND M.ClientId = @ClientId
 		WHERE P.IsDeleted = 0 
-				AND 
-				(@isGrid=1 OR P.[Year] in (SELECT PlanYear from @TimeFrameDatesAndYear))
+				
 			AND (
 					@PlanIds IS NULL 
 					OR P.PlanId IN (SELECT DISTINCT dimension FROM dbo.fnSplitString(@PlanIds,'',''))

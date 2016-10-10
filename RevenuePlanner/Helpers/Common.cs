@@ -9255,6 +9255,51 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
+        /// Added by Mitesh Vaishnav For PL ticket 2642
+        /// </summary>
+        /// <param name="Year">Timeframe year e.g. 2015-2016</param>
+        /// <returns> This function returns first year from passed timeframe</returns>
+        public static string GetInitialYearFromTimeFrame(string Year)
+        {
+            if (!string.IsNullOrEmpty(Year))
+            {
+                string[] arrYear = Year.Split('-');
+                if (arrYear.Length > 0)
+                {
+                    return arrYear[0];
+                }
+            }
+            return string.Empty;
+
+        }
+        /// <summary>
+        /// Added by Mitesh Vaishnav for PL ticket 2585
+        /// Check passed timeframe have multiyear or not
+        /// </summary>
+        /// <param name="Year"></param>
+        /// <returns>return true if passed parameter have multiyear e.g. 2015-2016 else returns false</returns>
+        public static bool IsMultiyearTimeframe(string Year)
+        {
+            bool result = false;
+            if (!string.IsNullOrEmpty(Year))
+            {
+                string[] arrYear = Year.Split('-');
+                if (arrYear.Length == 2)//If array of year have 2 items then we can find diff between 2 years
+                {
+                    int FirstYear = Convert.ToInt32(arrYear[0]);
+                    int LastYear = Convert.ToInt32(arrYear[1]);
+                    int diff = LastYear - FirstYear;
+                    if (diff > 0)
+                    {
+                        result = true;
+                    }
+                }
+            }
+            return result;
+        }
+
+
+        /// <summary>
         /// This function returns datatable which contains details tactic and line item's planned cost
         /// </summary>
         /// <returns></returns>

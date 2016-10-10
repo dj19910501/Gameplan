@@ -73,12 +73,15 @@ namespace RevenuePlanner.Services
             }
             else
             {
-                isMultiYear = IsMultiyearTimeframe(year);
+                isMultiYear =Common.IsMultiyearTimeframe(year);
             }
 
             DataTable dt = objSp.GetBudget(PlanIds, UserID, viewBy, OwnerIds, TacticTypeids, StatusIds, year); //Get budget data for budget,planned cost and actual using store proc. GetplanBudget
 
             List<PlanBudgetModel> model = CreateBudgetDataModel(dt, PlanExchangeRate); //Convert datatable with budget data to PlanBudgetModel model
+
+            model = FilterPlanByTimeFrame(model, year);//Except plan al entity be filter at Db level so we remove plan object by applying timeframe filter.  
+
             List<int> CustomFieldFilteredTacticIds = FilterCustomField(model, CustomFieldId);
 
             //filter budget model by custom field filter list
@@ -583,7 +586,7 @@ namespace RevenuePlanner.Services
                 //Set flag to identify plan year. e.g.if timeframe is 2015-2016 and plan have plan year 2016 then we will not set month data for Jan-2015 to Dec-2015 of respective plan
                 bool isNextYearPlan = false;
                 bool isMultiYearPlan = false;
-                string firstYear = GetInitialYearFromTimeFrame(Year);
+                string firstYear =Common.GetInitialYearFromTimeFrame(Year);
                 if (bm.PlanYear != firstYear)
                 {
                     isNextYearPlan = true;
@@ -745,7 +748,7 @@ namespace RevenuePlanner.Services
 
         private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string Year)
         {
-            string firstYear = GetInitialYearFromTimeFrame(Year);
+            string firstYear = Common.GetInitialYearFromTimeFrame(Year);
             string lastYear = string.Empty;
             //check if multiyear flag is on then last year will be firstyear+1
             if (isMultiYear)
@@ -1655,43 +1658,42 @@ namespace RevenuePlanner.Services
             return model;
         }
 
+        
+       
         /// <summary>
-        /// Added by Mitesh Vaishnav For PL ticket 2642
+        /// Added by Mitesh Vaishnav for PL ticket 2585
         /// </summary>
-        /// <param name="Year">Timeframe year e.g. 2015-2016</param>
-        /// <returns> This function returns first year from passed timeframe</returns>
-        private string GetInitialYearFromTimeFrame(string Year)
+        /// <param name="BudgetModel"></param>
+        /// <param name="Year"></param>
+        /// <returns></returns>
+        private List<PlanBudgetModel> FilterPlanByTimeFrame(List<PlanBudgetModel> BudgetModel,string Year)
         {
-            if (!string.IsNullOrEmpty(Year))
+            foreach(PlanBudgetModel objPlan in BudgetModel.Where(p => p.ActivityType == ActivityType.ActivityPlan).ToList())
             {
-                string[] arrYear = Year.Split('-');
-                if (arrYear.Length > 0)
+                if (!BudgetModel.Where(ent=>ent.ParentActivityId==objPlan.ActivityId).Any())
                 {
-                    return arrYear[0];
-                }
-            }
-            return string.Empty;
-
-        }
-
-        private bool IsMultiyearTimeframe(string Year)
-        {
-            bool result = false;
-            if (!string.IsNullOrEmpty(Year))
-            {
-                string[] arrYear = Year.Split('-');
-                if (arrYear.Length == 2)//If array of year have 2 items then we can find diff between 2 years
-                {
-                    int FirstYear = Convert.ToInt32(arrYear[0]);
-                    int LastYear = Convert.ToInt32(arrYear[1]);
-                    int diff = LastYear - FirstYear;
-                    if (diff > 0)
+                    int planId=Convert.ToInt32(objPlan.Id);//
+                    bool isChildExist = objDbMrpEntities.Plan_Campaign.Where(p => p.PlanId == planId && p.IsDeleted == false).Any();
+                    if (isChildExist)
                     {
-                        result = true;
+                        BudgetModel.Remove(objPlan);
+                    }
+                    else
+                    {
+                        string firstYear = Common.GetInitialYearFromTimeFrame(Year);
+                        string lastYear = firstYear;
+                        if (isMultiYear)
+                        {
+                            lastYear = Convert.ToString(Convert.ToInt32(firstYear) + 1);
+                        }
+                        if (objPlan.PlanYear!=firstYear && objPlan.PlanYear!=lastYear)
+                        {
+                            BudgetModel.Remove(objPlan);
+                        }
                     }
                 }
             }
-            return result;
+            return BudgetModel;
         }
     }
 }
