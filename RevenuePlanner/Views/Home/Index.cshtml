@@ -23,6 +23,7 @@
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
     var ShowInspectPopup = ViewBag.ShowInspectPopup; //nullable  value
     bool NoPlanCreated = (bool)Sessions.IsNoPlanCreated;
+    int CurrentRequestPlanID = ViewBag.currentPlanId;
 }
 @Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
@@ -458,7 +459,12 @@
         $('.accordion').on('shown.bs.collapse', toggleChevron);
     });
     function LoadFilter() {
+            var PlanID = '@CurrentRequestPlanID';
         var strURL = '@Url.Content("~/Filter/Index/")';
+            if (PlanID == 0)
+            {
+                PlanID = 'null'
+            }
         $.ajax({
             url: strURL,
             type: 'post',
@@ -466,7 +472,7 @@
             async: false,
             data: {
                 activeMenu: '@Enums.ActiveMenu.Home',
-                CurrPlanIds: '@Sessions.PlanPlanIds'
+                currentPlanId: PlanID,
             },
             success: function (data) {
                 if (data != 'undefined' && data != null) {

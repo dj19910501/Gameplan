@@ -151,13 +151,14 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
-                Plan Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(currentPlanId));
+                Plan Plan = objPlan;
                 isPublished = Plan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
+             
 
             }
             ViewBag.IsPlanEditable = IsPlanEditable;
             ViewBag.IsPublished = isPublished;
-
+            ViewBag.currentPlanId = currentPlanId;
             ViewBag.RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
             //set value to show inspect popup for url sent in email 
             if (currentPlanId > 0 && ShowPopup)
