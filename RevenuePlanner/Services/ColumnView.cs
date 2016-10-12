@@ -302,7 +302,7 @@ namespace RevenuePlanner.Services
                     foreach (CustomAttribute item in columnattribute)
                     {
                         int cutomid = Convert.ToInt32(item.CustomFieldId);
-                        if (item.IsRequired)
+                        if (item.IsRequired && item.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower())
                             finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid && enitablerestrictionoptionId.Contains(opt.CustomFieldOptionId)).ToList();
                         else
                             finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid).ToList();
