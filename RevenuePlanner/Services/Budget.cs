@@ -560,8 +560,6 @@ namespace RevenuePlanner.Services
                 lstSubordinatesIds = Common.GetAllSubordinates(UserID);
             }
 
-            Dictionary<int, string> lstUserDetails = new Dictionary<int, string>();
-            lstUserDetails = objBDSServiceClient.GetUserListByClientIdEx(ClientId).ToDictionary(x => x.ID, x => x.FirstName + " " + x.LastName);
 
             Dictionary<int, string> lstTacticTypeTitle = new Dictionary<int, string>();
             List<int> TacticTypeIds = model.Where(t => t.ActivityType == ActivityType.ActivityTactic).Select(t => t.TacticTypeId).ToList();
@@ -605,14 +603,8 @@ namespace RevenuePlanner.Services
                 gridjsonlistPlanObj.open = Open;
 
                 string OwnerName = string.Empty;
-                if (lstUserDetails != null && lstUserDetails.Count > 0)
-                {
-                    if (lstUserDetails.ContainsKey(bm.CreatedBy))
-                    {
-                        OwnerName = Convert.ToString(lstUserDetails[bm.CreatedBy]);
-                    }
-                }
 
+                OwnerName = Convert.ToString(bm.CreatedBy);
                 BudgetDataObjList = SetBudgetDhtmlxFormattedValues(model, bm, OwnerName, ActivityType.ActivityPlan, AllocatedBy, isNextYearPlan, isMultiYearPlan, gridjsonlistPlanObj.id, IsPlanCreateAll);
                 gridjsonlistPlanObj.data = BudgetDataObjList;
 
@@ -630,13 +622,7 @@ namespace RevenuePlanner.Services
 
                     bool IsCampCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmc.CreatedBy == UserID || lstSubordinatesIds.Contains(bmc.CreatedBy)) ? true : false : true;
 
-                    if (lstUserDetails != null && lstUserDetails.Count > 0)
-                    {
-                        if (lstUserDetails.ContainsKey(bm.CreatedBy))
-                        {
-                            OwnerName = Convert.ToString(lstUserDetails[bm.CreatedBy]);
-                        }
-                    }
+                    OwnerName = Convert.ToString(bm.CreatedBy);
                     List<Budgetdataobj> CampaignDataObjList = SetBudgetDhtmlxFormattedValues(model, bmc, OwnerName, ActivityType.ActivityCampaign, AllocatedBy, isNextYearPlan, isMultiYearPlan, CampaignRowsObj.id, IsCampCreateAll);
 
                     CampaignRowsObj.data = CampaignDataObjList;
@@ -655,13 +641,7 @@ namespace RevenuePlanner.Services
 
                         bool IsProgCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmp.CreatedBy == UserID || lstSubordinatesIds.Contains(bmp.CreatedBy)) ? true : false : true;
 
-                        if (lstUserDetails != null && lstUserDetails.Count > 0)
-                        {
-                            if (lstUserDetails.ContainsKey(bm.CreatedBy))
-                            {
-                                OwnerName = Convert.ToString(lstUserDetails[bm.CreatedBy]);
-                            }
-                        }
+                        OwnerName = Convert.ToString(bm.CreatedBy);
                         List<Budgetdataobj> ProgramDataObjList = SetBudgetDhtmlxFormattedValues(model, bmp, OwnerName, ActivityType.ActivityProgram, AllocatedBy, isNextYearPlan, isMultiYearPlan, ProgramRowsObj.id, IsProgCreateAll);
                         ProgramRowsObj.data = ProgramDataObjList;
 
@@ -680,14 +660,8 @@ namespace RevenuePlanner.Services
 
                             bool IsTacCreateAll = IsPlanCreateAll == false ? (bmt.CreatedBy == UserID || lstSubordinatesIds.Contains(bmt.CreatedBy)) ? true : false : true;
 
-                            if (lstUserDetails != null && lstUserDetails.Count > 0)
-                            {
-                                if (lstUserDetails.ContainsKey(bm.CreatedBy))
-                                {
-                                    OwnerName = Convert.ToString(lstUserDetails[bm.CreatedBy]);
-                                }
-                            }
 
+                            OwnerName = Convert.ToString(bm.CreatedBy);
                             string TacticType = string.Empty;
                             if (lstTacticTypeTitle != null && lstTacticTypeTitle.Count > 0)
                             {
@@ -714,13 +688,7 @@ namespace RevenuePlanner.Services
 
                                 bool IsLinItmCreateAll = IsPlanCreateAll == false ? (bml.CreatedBy == UserID || lstSubordinatesIds.Contains(bml.CreatedBy)) ? true : false : true;
 
-                                if (lstUserDetails != null && lstUserDetails.Count > 0)
-                                {
-                                    if (lstUserDetails.ContainsKey(bm.CreatedBy))
-                                    {
-                                        OwnerName = Convert.ToString(lstUserDetails[bm.CreatedBy]);
-                                    }
-                                }
+                                OwnerName = Convert.ToString(bm.CreatedBy);
                                 List<Budgetdataobj> LineDataObjList = SetBudgetDhtmlxFormattedValues(model, bml, OwnerName, ActivityType.ActivityLineItem, AllocatedBy, isNextYearPlan, isMultiYearPlan, LineRowsObj.id, IsLinItmCreateAll);
 
                                 LineRowsObj.data = LineDataObjList;
