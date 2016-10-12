@@ -75,7 +75,6 @@
         @HtmlHelpers.GenerateMappingFieldsForInspectPopup(Model.PlanLineItemId)
     </div>
     <!-- Added by Arpita Soni for Ticket #2212 on 05/24/2016 -->
-    <a href="@Url.Action("Budgeting", "Plan", new { PlanId = Model.PlanId })" class="gotoLink">Go to Plan Budget <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
     if (Sessions.AppMenus.Where(x => x.Code.ToLower() == Enums.ActiveMenu.MarketingBudget.ToString().ToLower()).Any())
     {
         <a href="@Url.Action("Index","Finance")" class="gotoLink" >Go to Marketing Budget <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>

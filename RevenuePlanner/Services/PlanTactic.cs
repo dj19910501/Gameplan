@@ -115,7 +115,7 @@ namespace RevenuePlanner.Services
             objBudgetDHTMLXGrid.ColAlign += commaString + objHomeGridProperty.aligncenter;
             objBudgetDHTMLXGrid.ColumnIds += commaString + "unallocatedcost";
             objBudgetDHTMLXGrid.ColType += commaString + objHomeGridProperty.typero;
-            objBudgetDHTMLXGrid.Width += commaString + "80";
+            objBudgetDHTMLXGrid.Width += commaString + "90";   // set cost column width to 90 so that 10 digits shows properly
             objBudgetDHTMLXGrid.ColSorting += commaString + "na";
 
             return objBudgetDHTMLXGrid;
@@ -137,7 +137,7 @@ namespace RevenuePlanner.Services
                     objBudgetDHTMLXGrid.ColAlign += commaString + objHomeGridProperty.aligncenter;
                     objBudgetDHTMLXGrid.ColumnIds += commaString + dt.ToString(Common.MonthlyCostHeaderFormat);
                     objBudgetDHTMLXGrid.ColType += commaString + objHomeGridProperty.typeEdn;
-                    objBudgetDHTMLXGrid.Width += commaString + "80";
+                    objBudgetDHTMLXGrid.Width += commaString + "90";    // set cost column width to 90 so that 10 digits shows properly
                     objBudgetDHTMLXGrid.ColSorting += commaString + "na";
                 }
             }
@@ -158,7 +158,7 @@ namespace RevenuePlanner.Services
                     objBudgetDHTMLXGrid.ColAlign += commaString + objHomeGridProperty.aligncenter;
                     objBudgetDHTMLXGrid.ColumnIds += commaString + "Q" + Convert.ToString(quarterCounter) + "-" + Convert.ToString(tacticYears[key]);
                     objBudgetDHTMLXGrid.ColType += commaString + objHomeGridProperty.typeEdn;
-                    objBudgetDHTMLXGrid.Width += commaString + "80";
+                    objBudgetDHTMLXGrid.Width += commaString + "90";  // set cost column width to 90 so that 10 digits shows properly
                     objBudgetDHTMLXGrid.ColSorting += commaString + "na";
                     quarterCounter++;
                 }
@@ -420,10 +420,10 @@ namespace RevenuePlanner.Services
                         SumOfMonths = 0;
                         Period = Common.PeriodPrefix + Convert.ToString(i + MonthCounter);      // When current year is 2016 then For Q1-2017 -> Y13
                         QuartersList = Common.GetMonthsOfQuarters(i + MonthCounter);            // Get months for the quarter
-                        // Sum up month wise values to get the sum of quarter
-                        QuartersList.ForEach(x => SumOfMonths = SumOfMonths + Convert.ToDouble(row[x]));
+                        // Sum up month wise values by applying currency to get the sum of quarter
+                        QuartersList.ForEach(x => SumOfMonths = SumOfMonths + objCurrency.GetValueByExchangeRate(Convert.ToDouble(row[x]),PlanExchangeRate));
                         QuarterLabel = "Q" + Convert.ToString(quarterCounter) + "-" + Convert.ToString(tacticYears[key]);
-                        dictMonthlyCosts.Add(QuarterLabel, objCurrency.GetValueByExchangeRate(SumOfMonths, PlanExchangeRate));
+                        dictMonthlyCosts.Add(QuarterLabel, SumOfMonths);
                         quarterCounter++;
                     }
                     MonthCounter = MonthCounter + Convert.ToInt32(Enums.QuarterMonthDigit.Month);   // Add total no. of months(12) for second year

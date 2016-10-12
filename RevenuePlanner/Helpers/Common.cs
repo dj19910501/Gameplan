@@ -202,7 +202,7 @@ namespace RevenuePlanner.Helpers
         public const string CommonColumnIdsForDefaultCols = "activityid,taskname,icons,plannedcost";
         public const string CommonAlignForDefaultCols = "left,left,center,left";
         public const string CommonColTypeForDefaultCols = "ro,tree,ro,edn";
-        public const string CommonWidthForDefaultCols = "0,200,60,80";
+        public const string CommonWidthForDefaultCols = "0,200,60,90"; // set planned cost width to 90 so that 10 digits shows properly
         public const string CommonColSortingForDefaultCols = "na,na,na,na";
 
 

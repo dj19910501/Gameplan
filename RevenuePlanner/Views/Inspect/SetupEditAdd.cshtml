@@ -225,7 +225,6 @@
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString().ToLower(),Model.Status, 0, Enums.InspectPopupMode.Edit.ToString())
     </div>
     <!-- Added by Arpita Soni for Ticket #2212 on 05/24/2016 -->
-    <a href="@Url.Action("Budgeting", "Plan", new { PlanId = Model.PlanId })" class="gotoLink" onclick="onGoToPlanBudgetClick(); return true;">Go to Plan Budget <i class=" fa fa-long-arrow-right" aria-hidden="true"></i> </a>
     if (Sessions.AppMenus.Where(x => x.Code.ToLower() == Enums.ActiveMenu.MarketingBudget.ToString().ToLower()).Any())
     {
         <a href="@Url.Action("Index","Finance")" class="gotoLink" onclick="onGoToMarketingBudgetClick(); return true;">Go to Marketing Budget <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
@@ -615,13 +614,8 @@
           $("#ddlProgram").val(htmlDecode($("#ddlProgram").val()));  // added by dashrath prajapati for pl#1916 Ampersand
           //added by devanshi reg pl #2213
           $(".allocatecost").on("click", function (e) {
-              var result = SetupSavetactic();
-              if (result) {
-                  var tacticid = $("#hdnPlanTacticId").val();
-                  var pid = $("#hdnPlanId").val();
-                  var redirecturl = '@Url.Action("Budgeting", "Plan")' + '?PlanId=' + pid + '&selectedid=' + tacticid + '&type=plan&ItemType=Tactic';
-                  window.location = redirecturl;
-              }
+              RemoveTabClass();
+              UpdateViewByForLineIitemsGrid('@Enums.PlanAllocatedBy.months');
           });
           // added by Rahul Shah for PL #2335 point 1. to set default focus on tactic inspect popup open.
           $('#txtTacticTitle').focus();
@@ -1351,9 +1345,6 @@ if ('@Model.IsPackagedTactic' != null && '@Convert.ToString(Model.IsPackagedTact
         $('#CustomHtmlHelperfield').show();
         $('#CustomAttributeheading').show();
 
-    }
-    function onGoToPlanBudgetClick() {
-        logMixpanelTrack("Clicked on Go to Plan Budget link under Tactic inspection window."); // log Go to Plan link event to mixpanel. Added by Viral regarding PL ticket #2434.
     }
     function onGoToMarketingBudgetClick() {
         logMixpanelTrack("Clicked on Go to Marketing Budget link under Tactic inspection window."); // log Go to Marketing Budget link event to mixpanel. Added by Viral regarding PL ticket #2434.

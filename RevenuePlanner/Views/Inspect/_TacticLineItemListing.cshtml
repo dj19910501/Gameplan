@@ -231,7 +231,8 @@ else
                                 var balance_rowid = LineItemGrid.getRowId(rows_count - 1);
                                 // always first row is for tactic so get tactic cost value
                                 var first_rowid = LineItemGrid.getRowId(0);
-                                var tac_cost = parseFloat(LineItemGrid.cells(first_rowid, cellInd).getValue().replace(',','')); 
+                                // get value of tactic planned cost by removing all commas
+                                var tac_cost = parseFloat(LineItemGrid.cells(first_rowid, cellInd).getValue().replace(/,/g, "")); 
                                 var lineitem_cost = 0;
                                 for(var i = 1 ; i < rows_count - 1; i++) { // sum of line item cost
                                     var row_id = LineItemGrid.getRowId(i);
