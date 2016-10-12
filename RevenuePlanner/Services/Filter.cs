@@ -24,7 +24,7 @@ namespace RevenuePlanner.Services
         {
             objSp = new StoredProcedure();
             objCache = new CacheObject();
-            objDbMrpEntities = new MRPEntities();
+            objDbMrpEntities = Common.db;
             bdsUserRepository = new BDSService.BDSServiceClient();
         }
         #endregion

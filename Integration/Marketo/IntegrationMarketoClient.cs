@@ -483,25 +483,25 @@ namespace Integration.Marketo
 
 
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "UpdateTacticInstanceTacticId_Comment execution start.");
-                    MRPEntities mp = new MRPEntities();
-                    SqlConnection conn = new SqlConnection();
-                    conn.ConnectionString = mp.Database.Connection.ConnectionString;
-                    conn.Open();
-                    SqlCommand cmd = new SqlCommand("UpdateTacticInstanceTacticId_Comment", conn);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@strCreatedTacIds", strCreatedTacIds);
-                    cmd.Parameters.AddWithValue("@strUpdatedTacIds", strUpdatedTacIds);
-                    cmd.Parameters.AddWithValue("@strUpdateComment", Common.TacticUpdatedComment + Integration.Helper.Enums.IntegrationType.Marketo.ToString());
-                    cmd.Parameters.AddWithValue("@strCreateComment", Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Marketo.ToString());
-                    cmd.Parameters.AddWithValue("@isAutoSync", Common.IsAutoSync);
-                    cmd.Parameters.AddWithValue("@userId", _userId);
-                    cmd.Parameters.AddWithValue("@integrationType", Enums.IntegrationType.Marketo.ToString());
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                    mp.Dispose();
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "UpdateTacticInstanceTacticId_Comment execution end.");
+                    using (MRPEntities mp = new MRPEntities())
+                    {
+                        SqlConnection conn = new SqlConnection();
+                        conn.ConnectionString = mp.Database.Connection.ConnectionString;
+                        conn.Open();
+                        SqlCommand cmd = new SqlCommand("UpdateTacticInstanceTacticId_Comment", conn);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@strCreatedTacIds", strCreatedTacIds);
+                        cmd.Parameters.AddWithValue("@strUpdatedTacIds", strUpdatedTacIds);
+                        cmd.Parameters.AddWithValue("@strUpdateComment", Common.TacticUpdatedComment + Integration.Helper.Enums.IntegrationType.Marketo.ToString());
+                        cmd.Parameters.AddWithValue("@strCreateComment", Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Marketo.ToString());
+                        cmd.Parameters.AddWithValue("@isAutoSync", Common.IsAutoSync);
+                        cmd.Parameters.AddWithValue("@userId", _userId);
+                        cmd.Parameters.AddWithValue("@integrationType", Enums.IntegrationType.Marketo.ToString());
+                        cmd.ExecuteNonQuery();
+                        conn.Close();
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "UpdateTacticInstanceTacticId_Comment execution end.");
+                    }
                 }
-
                 #endregion
 
             }

@@ -42,7 +42,7 @@ namespace RevenuePlanner.Services
         // Constructor
         public Grid()
         {
-            objDbMrpEntities = new MRPEntities(); // Create Entities object
+            objDbMrpEntities = Common.db; // Create Entities object
             objCache = new CacheObject(); // Create Cache object for stored data
             objColumnView = new ColumnView();
         }

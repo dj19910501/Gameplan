@@ -14,7 +14,7 @@ namespace RevenuePlanner.Services
         private CacheObject objCache = new CacheObject();
         public Currency()
         {
-            objDbMrpEntities = new MRPEntities();
+            objDbMrpEntities = Common.db;
         }
 
         /// <summary>

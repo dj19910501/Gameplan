@@ -26,7 +26,7 @@ namespace RevenuePlanner.Controllers
     {
         #region Variables
 
-        private MRPEntities objDbMrpEntities = new MRPEntities();
+        private MRPEntities objDbMrpEntities = Common.db;
         private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;

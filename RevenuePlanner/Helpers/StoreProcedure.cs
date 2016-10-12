@@ -17,7 +17,7 @@ namespace RevenuePlanner.Helpers
     {
         SqlConnection Connection;
         SqlCommand command = null;
-        MRPEntities db = new MRPEntities();
+        MRPEntities db = Common.db;
 
         private SqlConnection Conn_Open()
         {
@@ -235,7 +235,6 @@ namespace RevenuePlanner.Helpers
         public DataSet GetExportCSV(int PlanId, string HoneyCombids = null)
         {
             DataSet dataset = new DataSet();
-            db = new MRPEntities();
             Connection = Conn_Open();
             using (command = new SqlCommand("ExportToCSV", Connection))
             {
@@ -306,7 +305,6 @@ namespace RevenuePlanner.Helpers
         public DataSet GetDashboarContentData(int UserId, int DashboardID = 0)
         {
             DataSet dataset = new DataSet();
-            db = new MRPEntities();
             Connection = Conn_Open();
             using (command = new SqlCommand("GetDashboardContentData", Connection))
             {
@@ -478,7 +476,6 @@ namespace RevenuePlanner.Helpers
 
         public List<CustomDashboardModel> GetCustomDashboardsClientwise(int UserId, int ClientId)
         {
-            MRPEntities db = new MRPEntities();
             SqlParameter[] para = new SqlParameter[2];
             para[0] = new SqlParameter
             {
@@ -567,7 +564,6 @@ namespace RevenuePlanner.Helpers
         //Added by Komal Rawal on 16-09-2016 to get goal values in header for plans
         public List<GoalValueModel> spgetgoalvalues(string Planids)
         {
-            MRPEntities db = new MRPEntities();
             List<GoalValueModel> GoalValues = new List<GoalValueModel>();
             SqlParameter[] para = new SqlParameter[2];
             para[0] = new SqlParameter()

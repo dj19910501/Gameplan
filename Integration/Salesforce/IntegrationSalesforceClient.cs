@@ -7216,7 +7216,6 @@ namespace Integration.Salesforce
 
                     }
                     conn.Close();
-                    mp.Dispose();
                 }
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get Mapping detail for " + EntityType + " custom field(s), Found " + CustomFieldsList.Count().ToString() + " custome field mapping");
             }

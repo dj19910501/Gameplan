@@ -27,7 +27,7 @@ namespace RevenuePlanner.Controllers
         //
         // GET: /Finance/
         #region Declartion
-        private MRPEntities db = new MRPEntities();
+        private MRPEntities db = Common.db;
         private const string PeriodPrefix = "Y";
         private const string formatThousand = "#,#0.##";
         private bool _IsBudgetCreate_Edit = true;

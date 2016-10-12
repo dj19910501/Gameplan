@@ -25,7 +25,7 @@ namespace RevenuePlanner.Controllers
     public class LoginController : CommonController
     {
         #region Variables
-        MRPEntities db = new MRPEntities();
+        MRPEntities db = Common.db;
         private bool IsClientAllowedForCustomNaming = false;
         ICurrency objCurrency = new Currency(); // Add By Nishant Sheth
         #endregion

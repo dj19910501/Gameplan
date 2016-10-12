@@ -25,7 +25,7 @@ namespace RevenuePlanner.Controllers
     {
         #region Variables
 
-        private MRPEntities db = new MRPEntities();
+        private MRPEntities db = Common.db;
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         IAlerts objcommonalert = new Alerts();
 
@@ -1082,7 +1082,6 @@ namespace RevenuePlanner.Controllers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            db.Dispose();
             base.Dispose(disposing);
         }
 

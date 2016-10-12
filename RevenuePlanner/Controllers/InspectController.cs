@@ -24,7 +24,7 @@ namespace RevenuePlanner.Controllers
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
 
         #region Variables
-        private MRPEntities db = new MRPEntities();
+        private MRPEntities db = Common.db;
         private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
         private string DefaultLineItemTitle = "Line Item";
         private string PeriodChar = "Y";
@@ -7718,7 +7718,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveTitle(string ActivePopup, string title = "", string Id = "")
         {
-            MRPEntities db = new MRPEntities();
+            //MRPEntities db = new MRPEntities();
             try
             {
                 if (ActivePopup == "Tactic")

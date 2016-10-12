@@ -1983,19 +1983,20 @@ namespace Integration.Eloqua
                         "WHERE ([Extent1].[EntityId] IN (" + idList + ")) " +
                         "order by keyv";
 
-                    MRPEntities mp = new MRPEntities();
-                    DbConnection conn = mp.Database.Connection;
-                    conn.Open();
-                    DbCommand comm = conn.CreateCommand();
-                    comm.CommandText = Query;
-                    DbDataReader ddr = comm.ExecuteReader();
-
-                    while (ddr.Read())
+                    using (MRPEntities mp = new MRPEntities())
                     {
-                        _mappingCustomFields.Add(new CustomFiledMapping { CustomFieldId = !ddr.IsDBNull(1) ? Convert.ToInt32(ddr.GetString(1)) : 0, EntityId = !ddr.IsDBNull(2) ? Convert.ToInt32(ddr.GetString(2)) : 0, Value = !ddr.IsDBNull(3) ? Convert.ToString(ddr.GetString(3)) : string.Empty, CustomNameValue = !ddr.IsDBNull(4) ? Convert.ToString(ddr.GetString(4)) : string.Empty });
+                        DbConnection conn = mp.Database.Connection;
+                        conn.Open();
+                        DbCommand comm = conn.CreateCommand();
+                        comm.CommandText = Query;
+                        DbDataReader ddr = comm.ExecuteReader();
+
+                        while (ddr.Read())
+                        {
+                            _mappingCustomFields.Add(new CustomFiledMapping { CustomFieldId = !ddr.IsDBNull(1) ? Convert.ToInt32(ddr.GetString(1)) : 0, EntityId = !ddr.IsDBNull(2) ? Convert.ToInt32(ddr.GetString(2)) : 0, Value = !ddr.IsDBNull(3) ? Convert.ToString(ddr.GetString(3)) : string.Empty, CustomNameValue = !ddr.IsDBNull(4) ? Convert.ToString(ddr.GetString(4)) : string.Empty });
+                        }
+                        conn.Close();
                     }
-                    conn.Close();
-                    mp.Dispose();
                 }
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get Mapping detail for " + EntityType + " custom field(s), Found " + _mappingCustomFields.Count().ToString() + " custome field mapping");
             }

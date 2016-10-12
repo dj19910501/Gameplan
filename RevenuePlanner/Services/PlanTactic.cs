@@ -19,7 +19,7 @@ namespace RevenuePlanner.Services
         private HomeGridProperties objHomeGridProperty = new HomeGridProperties();
         public PlanTactic()
         {
-            objDbMrpEntities = new MRPEntities();
+            objDbMrpEntities = Common.db;
             objCurrency = new Currency();
         }
 

@@ -17,7 +17,7 @@ namespace RevenuePlanner.Services
         private MRPEntities objDbMrpEntities;
         public ColumnView()
         {
-            objDbMrpEntities = new MRPEntities();
+            objDbMrpEntities = Common.db;
         }
         #region method to fill custom field for create new view
         // Get Custom field
