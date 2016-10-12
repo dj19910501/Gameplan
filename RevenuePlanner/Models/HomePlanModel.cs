@@ -955,5 +955,6 @@ namespace RevenuePlanner.Models
         public string CalendarHoneycombpackageIDs { get; set; }
         public bool? Permission { get; set; }
         public long? PlanId { get; set; }
+        public int? PYear { get; set; }
     }
 }

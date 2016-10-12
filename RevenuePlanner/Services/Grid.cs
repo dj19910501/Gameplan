@@ -1956,6 +1956,12 @@ namespace RevenuePlanner.Services
                 calResultset = FilterCustomField(calResultset, customFieldIds); // Get filtered tactics based on customfield selection under Filter.
             #endregion
 
+
+            #region "Filter data based on timeframe"
+            if (calResultset != null && calResultset.Count > 0 && !string.IsNullOrEmpty(timeframe))
+                calResultset = FilterPlanByTimeFrame(calResultset, timeframe); // Get filtered tactics based on timeframe.
+            #endregion
+
             return calResultset;
         }
 
@@ -2042,6 +2048,46 @@ namespace RevenuePlanner.Services
                 resultData.AddRange(tacData);
             }
             return resultData;
+        }
+
+        /// <summary>
+        /// Added by Viral Kadiya for PL ticket 2585
+        /// </summary>
+        /// <param name="calendarDataModel"></param>
+        /// <param name="TimeFrame"></param>
+        /// <returns></returns>
+        private List<calendarDataModel> FilterPlanByTimeFrame(List<calendarDataModel> calendarDataModel, string TimeFrame)
+        {
+
+            bool isMultiYear = Common.IsMultiyearTimeframe(TimeFrame);  // Identify that Timeframe is multiyear or not.
+            string entPlan = ActivityType.ActivityPlan.ToLower();
+            foreach (calendarDataModel objPlan in calendarDataModel.Where(p => p.type.ToLower() == entPlan).ToList())
+            {
+                if (!calendarDataModel.Where(ent => ent.parent == objPlan.id).Any())
+                {
+                    int planId = Convert.ToInt32(objPlan.PlanId);//
+                    bool isChildExist = objDbMrpEntities.Plan_Campaign.Where(p => p.PlanId == planId && p.IsDeleted == false).Any();
+                    if (isChildExist)
+                    {
+                        calendarDataModel.Remove(objPlan);
+                    }
+                    else
+                    {
+                        string firstYear = Common.GetInitialYearFromTimeFrame(TimeFrame);
+                        string lastYear = firstYear;
+
+                        if (isMultiYear)
+                        {
+                            lastYear = Convert.ToString(Convert.ToInt32(firstYear) + 1);
+                        }
+                        if (objPlan.PYear.Value.ToString() != firstYear && objPlan.PYear.Value.ToString() != lastYear)
+                        {
+                            calendarDataModel.Remove(objPlan);
+                        }
+                    }
+                }
+            }
+            return calendarDataModel;
         }
 
         #endregion

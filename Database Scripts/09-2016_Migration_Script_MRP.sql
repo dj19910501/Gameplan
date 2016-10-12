@@ -2916,15 +2916,11 @@ GO
 -- Description:	Get Plan Calendar Start & End Date
 -- =============================================
 
-
-
-
-
-/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/05/2016 5:17:16 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/12/2016 6:16:52 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGetPlanCalendarData]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[spGetPlanCalendarData]
 GO
-/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/05/2016 5:17:16 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/12/2016 6:16:52 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2986,7 +2982,8 @@ BEGIN
 				IsAnchorTacticId int,
 				CalendarHoneycombpackageIDs varchar(max),
 				Permission bit,
-				PlanId bigint
+				PlanId bigint,
+				PYear int		-- PlanYear
 			)
 
 	Declare @entTactic varchar(20)='Tactic'
@@ -3021,7 +3018,8 @@ BEGIN
 			TaskId			NVARCHAR(500),
 			ParentTaskId	NVARCHAR(500),
 			PlanId			BIGINT,
-			ROIPackageIds	Varchar(max)
+			ROIPackageIds	Varchar(max),
+			PYear			INT				-- Plan Year
 		)
 	
 	Declare @varThisYear varchar(10)='thisyear'
@@ -3039,8 +3037,9 @@ BEGIN
 	END
 	
 	INSERT INTO @Entities 
-	SELECT		UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,Status,StartDate,EndDate,CreatedBy,TaskId,ParentTaskId,PlanId,ROIPackageIds 
-	FROM		[dbo].fnViewByEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@viewBy,@varCurntTimeframe,@isGrid)
+	SELECT		UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, ColorCode,H.Status,StartDate,EndDate,H.CreatedBy,TaskId,ParentTaskId,H.PlanId,ROIPackageIds,P.[Year] 
+	FROM		[dbo].fnViewByEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@viewBy,@varCurntTimeframe,@isGrid) as H
+	LEFT JOIN	[Plan] as P on H.PlanId = P.PlanId
 	
 	-- Get Plan wise MinStartEffective date from Improvement Tactic
 		BEGIN
@@ -3099,7 +3098,8 @@ BEGIN
 				IsAnchorTacticId int,
 				CalendarHoneycombpackageIDs varchar(max),
 				Permission bit,
-				PlanId bigint
+				PlanId bigint,
+				PYear int		-- PlanYear
 			)
 		END
 
@@ -3152,7 +3152,8 @@ BEGIN
 					RP.AnchorTacticID as 'IsAnchorTacticId',
 					ent.ROIPackageIds as  'CalendarHoneycombpackageIDs',
 					Null as 'Permission',
-					ent.PlanId
+					ent.PlanId,
+					ent.PYear				-- PlanYear
 			FROM @Entities as ent
 			INNER JOIN Plan_Campaign_Program_Tactic as tac on ent.EntityId = tac.PlanTacticId and ent.EntityType='Tactic'
 			LEFT JOIN TacticType as TP on tac.TacticTypeId = TP.TacticTypeId and TP.IsDeleted='0'
@@ -3233,13 +3234,14 @@ BEGIN
 				IsAnchorTacticId int,
 				CalendarHoneycombpackageIDs varchar(max),
 				Permission bit,
-				PlanId bigint
+				PlanId bigint,
+				PYear  int		-- PlanYear
 			)
 		END
 
 		-- Insert Tactic Data to local table @tblPrograms
 		BEGIN
-			INSERT INTO @tblPrograms(id,[text],machineName,[start_date],endDate,progress,parent,colorcode,PlanProgramId,[Status],TacticType,CreatedBy,[type],PlanId)
+			INSERT INTO @tblPrograms(id,[text],machineName,[start_date],endDate,progress,parent,colorcode,PlanProgramId,[Status],TacticType,CreatedBy,[type],PlanId,PYear)
 
 			SELECT 
 					ent.TaskId as 'id',
@@ -3261,7 +3263,8 @@ BEGIN
 					@dblDash as 'TacticType',
 					ent.CreatedBy as 'CreatedBy',
 					@entProgram as [type],
-					ent.PlanId
+					ent.PlanId,
+					ent.PYear				-- PlanYear
 			FROM @Entities as ent
 			WHERE EntityType=@entProgram 
 			--AND (ent.EndDate >= @calStartDate AND ent.EndDate <= @calEndDate) AND (ent.StartDate >= @calStartDate AND ent.StartDate <= @calEndDate)
@@ -3370,13 +3373,14 @@ BEGIN
 				IsAnchorTacticId int,
 				CalendarHoneycombpackageIDs varchar(max),
 				Permission bit,
-				PlanId bigint
+				PlanId bigint,
+				PYear  int		-- PlanYear
 			)
 		END
 
 		-- Insert Campaign Data to local table @tblCampaigns
 		BEGIN
-			INSERT INTO @tblCampaigns(id,[text],[start_date],endDate,progress,parent,colorcode,PlanCampaignId,[Status],TacticType,CreatedBy,[type],PlanId)
+			INSERT INTO @tblCampaigns(id,[text],[start_date],endDate,progress,parent,colorcode,PlanCampaignId,[Status],TacticType,CreatedBy,[type],PlanId,PYear)
 
 			SELECT 
 					ent.TaskId as 'id',
@@ -3396,7 +3400,8 @@ BEGIN
 					@dblDash as 'TacticType',
 					ent.CreatedBy as 'CreatedBy',
 					@entCampaign as [type],
-					ent.PlanId
+					ent.PlanId,
+					ent.PYear						-- Plan Year
 			FROM @Entities as ent
 			WHERE EntityType=@entCampaign 
 			--AND (ent.EndDate >= @calStartDate AND ent.EndDate <= @calEndDate) AND (ent.StartDate >= @calStartDate AND ent.StartDate <= @calEndDate)
@@ -3502,13 +3507,14 @@ BEGIN
 				IsAnchorTacticId int,
 				CalendarHoneycombpackageIDs varchar(max),
 				Permission bit,
-				PlanId bigint
+				PlanId bigint,
+				PYear  int		-- PlanYear
 			)
 		END
 
 		-- Insert Plan Data to local table @tblPlans
 		BEGIN
-			INSERT INTO @tblPlans(id,[text],progress,parent,colorcode,[Status],TacticType,CreatedBy,[type],PlanId)
+			INSERT INTO @tblPlans(id,[text],progress,parent,colorcode,[Status],TacticType,CreatedBy,[type],PlanId,PYear)
 
 			SELECT 
 					ent.TaskId as 'id',
@@ -3520,7 +3526,8 @@ BEGIN
 					@dblDash as 'TacticType',
 					ent.CreatedBy as 'CreatedBy',
 					@entPlan as [type],
-					ent.PlanId
+					ent.PlanId,
+					ent.PYear
 			FROM @Entities as ent
 			WHERE ent.EntityType=@entPlan 
 			order by [text]
@@ -3624,11 +3631,11 @@ BEGIN
 		INSERT INTO @tblResult
 					(id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
 					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
-					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId)
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId,PYear)
 		(
 		SELECT		id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
 					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
-					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId,PYear
 		
 		FROM		@tblPlans
 		)
@@ -3638,7 +3645,7 @@ BEGIN
 		(
 		SELECT		id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
 					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
-					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId,PYear
 		 
 		FROM		@tblCampaigns
 		)
@@ -3648,7 +3655,7 @@ BEGIN
 		(
 		SELECT		id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
 					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
-					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId,PYear
 
 		FROM		@tblPrograms 
 		)
@@ -3658,7 +3665,7 @@ BEGIN
 		(
 		SELECT		id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
 					,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
-					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+					,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId,PYear
 
 		FROM		@tblTactics 
 		)
@@ -3667,7 +3674,7 @@ BEGIN
 
 	SELECT	id,[text],machineName,[start_date],endDate,duration,progress,[open],isSubmitted,isDeclined,projectedStageValue,mqls,cost,cws,parent,color,colorcode
 			,PlanTacticId,PlanProgramId,PlanCampaignId,[Status],TacticTypeId,TacticType,CreatedBy,LinkTacticPermission,LinkedTacticId,LinkedPlanName,[type]
-			,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId
+			,ROITacticType,OwnerName,IsAnchorTacticId,CalendarHoneycombpackageIDs,Permission,PlanId,PYear
 
 	FROM	@tblResult
 
@@ -3675,7 +3682,9 @@ BEGIN
 END
 
 
+
 GO
+
 
 
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PublishModel]') AND type in (N'P', N'PC'))
