@@ -228,7 +228,7 @@
     var inspectEdit = '@Enums.InspectPopupMode.Edit.ToString()';
     var inspectAdd = '@Enums.InspectPopupMode.Add.ToString()';
     var inspectRequestIndex = '@Enums.InspectPopupRequestedModules.Index.ToString()';
-   var glblsrchExternalName = '@Enums.GlobalSearch.ExternalName.ToString().ToUpper()';
+    var glblsrchExternalName = '@Enums.GlobalSearch.ExternalName.ToString().ToUpper()';
     var glblsrchActivityName = '@Enums.GlobalSearch.ActivityName.ToString().ToUpper()';
     var planCloneType = '@Enums.DuplicationModule.Plan';
     var campaignCloneType = '@Enums.DuplicationModule.Campaign';
@@ -253,7 +253,7 @@
     var IsManageviewClick = false;
     var IsBudgetGrid = false;
     var isCalendarView = false;
-   
+
     var TaskNameColIndex = 0;
     var ExportSelectedIds = {
         TaskID: [],
@@ -271,7 +271,7 @@
         RemoveId: [],
         AddItemId: [],
     };
-    var IsPackageView = false;   
+    var IsPackageView = false;
     var PreventUnPackageClick = true;
     var IsUpdate = false;
     var filters = {
@@ -291,6 +291,13 @@
     var isDataModified = false;
     var isCopyTactic = 0;
     var isEditTactic = 0;
+
+    //Start: To identify the current Active Tab from Plan Grid, Calendar & Budget.
+    var calendarTab = '@Enums.ActivePlanTab.Calendar.ToString()';
+    var gridTab = '@Enums.ActivePlanTab.Grid.ToString()';
+    var budgetTab = '@Enums.ActivePlanTab.Budget.ToString()';
+    //End
+
     //for Hidding tooltip -ticket 2414
     var $doc = $(document);
 
@@ -326,14 +333,14 @@
         var ganttwidth;
         var totalWidth;
         if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
-                var ganttwidth = $("#gridbox").width();
-                var totalWidth = ganttwidth + 230;
-                ResizeGrid(totalWidth);
-            }
+            var ganttwidth = $("#gridbox").width();
+            var totalWidth = ganttwidth + 230;
+            ResizeGrid(totalWidth);
+        }
         else {
             ganttwidth = $("#gantt_here").width();
             totalWidth = ganttwidth - 230;
-        gantt._render_tasks_scales(totalWidth);
+            gantt._render_tasks_scales(totalWidth);
         }
         $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
 
@@ -386,7 +393,7 @@
         });
 
         $('.gantt_hor_scroll').hide();
-        
+
     });
 
 
@@ -430,11 +437,11 @@
                 $('#errorMessageInspectPopup').slideUp(400);
             }
         }
-        //END 
+        //END
 
         $(".selectBox select").selectbox();
         $("#ddlTabViewBy").multiselect();
-        LoadFilter();
+        LoadFilter(gridTab);    // Set PlanGrid as Active tab after user logged in to application on first time.
         $("#ddlUpComingActivites").change(function () {
             RefershPlanHeaderCalc();
             if (IsBudgetGrid) {
@@ -457,13 +464,12 @@
         $('.accordion').on('hidden.bs.collapse', toggleChevron);
         $('.accordion').on('shown.bs.collapse', toggleChevron);
     });
-    function LoadFilter() {
-            var PlanID = '@CurrentRequestPlanID';
+    function LoadFilter(currentActiveTab) {
+        var PlanID = '@CurrentRequestPlanID';
         var strURL = '@Url.Content("~/Filter/Index/")';
-            if (PlanID == 0)
-            {
-                PlanID = 'null'
-            }
+        if (PlanID == 0) {
+            PlanID = 'null'
+        }
         $.ajax({
             url: strURL,
             type: 'post',
@@ -485,14 +491,14 @@
                     RefershPlanHeaderCalc();
                     GetMultiplePlanNames();
                     GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
-                    if ('@IsBudgetView'.toLowerCase() == 'true') {
+                    if (currentActiveTab == budgetTab) {
                         IsBudgetGrid = true;
                         LoadBudgetGrid();
                     }
-                    else if ('@IsGridView'.toLowerCase() == 'true') {
+                    else if (currentActiveTab == gridTab) {
                         LoadPlanGrid();
                     }
-                    else {
+                    else if (currentActiveTab == calendarTab) {
                         BindPlanCalendar();
                     }
                 }

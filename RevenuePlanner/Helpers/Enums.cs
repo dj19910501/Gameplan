@@ -1738,6 +1738,14 @@ namespace RevenuePlanner.Helpers
             StartDate,
             EndDate
         }
+
+        public enum ActivePlanTab
+        { 
+            Grid,
+            Calendar,
+            Budget
+        }
+
     }
 
     #region Authorization

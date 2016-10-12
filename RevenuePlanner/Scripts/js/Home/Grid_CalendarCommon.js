@@ -933,7 +933,7 @@ function CloseIconClick() {
                 if (gridSearchFlag == 1) {
                     isCopyTacticHomeGrid = isCopyTactic;
                     isEditTacticHomeGrid = isEditTactic;
-                    LoadFilter();
+                    LoadFilter(gridTab);            //variable 'gridTab' delcare at Index.cshtml page. 
                     gridSearchFlag = 0;
                 }
                 //else if (isBoostAuthorized) {
@@ -2541,13 +2541,18 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
 }
 // Method to refresh calender after popup close-- #2587
 function RefreshCurrentTab() {
-    LoadFilter();
+    var currentTab;
     if (!IsBudgetGrid) {
-    BindPlanCalendar();
+        currentTab = calendarTab;       //variable 'calendarTab' delcared at Index.cshtml page. 
     }
     else if (IsBudgetGrid) {
-        LoadBudgetGrid();
+        currentTab = budgetTab;         //variable 'budgetTab' delcared at Index.cshtml page.
     }
+    else {
+        currentTab = gridTab;           //variable 'gridTab' delcared at Index.cshtml page.
+    }
+
+    LoadFilter(currentTab);
 
 }
 

@@ -29,13 +29,13 @@
                     @Html.DropDownList("ddlPlans", new SelectList((System.Collections.IEnumerable)ViewBag.plans, "Value", "Text"))
                     <div class="nl-overlay"></div>
                 </div>
-                <div id="successMessage1" class="alert alert-success hide">
+                <div id="cpySuccessMessage" class="alert alert-success hide">
                     <a class="close closemessage">×</a>
                     <strong>Success.</strong> <span id="spanMessageSuccess1"></span>
                 </div>
-                <div id="errorMessage1" class="alert alert-error hide">
+                <div id="cpyErrorMessage" class="alert alert-error hide">
                     <a class="close closemessage">×</a>
-                    <strong>Error!</strong> <span id="spanMessageError1"></span>
+                    <strong>Error!</strong> <span id="cpySpanMessageError"></span>
                 </div>
                 <div id="warningMessage1" class="alert msgWarning hide">
                     <a class="close closemessage">×</a>
@@ -225,8 +225,8 @@
                             //    var str = result.clonetype + " " + '<span class="lickSuccessMsg">' + result.sourceEntityHtmlDecodedTitle + '</span>' + " " + 'has been linked to' + " " + '<span class="lickSuccessMsg">' + result.destPlanTitle + '</span>';
                             //    $('#spanMessageSuccess').html(str);
                             //    $("#errorMessage").css("display", "none");
-                            //    $("#errorMessage1").css("display", "none");
-                            //    $("#successMessage1").css("display", "none");
+                            //    $("#cpyErrorMessage").css("display", "none");
+                            //    $("#cpySuccessMessage").css("display", "none");
                             //}
                             //else {
                             if (option != "") {
@@ -237,8 +237,8 @@
                             $("#spanMsgSuccess").text(result.msg).css('font-weight', 'normal');
                             var str = result.clonetype + " " + '<span class="lickSuccessMsg">' + result.sourceEntityHtmlDecodedTitle + '</span>' + " " + 'has been linked to' + " " + '<span class="lickSuccessMsg">' + result.destPlanTitle + '</span>';
                             $('#spanMsgSuccess').html(str);
-                            $("#errorMessage1").css("display", "none");
-                            $("#successMessage1").css("display", "none");
+                            $("#cpyErrorMessage").css("display", "none");
+                            $("#cpySuccessMessage").css("display", "none");
                             logMixpanelTrack("Link To " + cloneType + " :" + escape(srcEntityTitle)); // log Copy To event to mixpanel. Added by Viral for PL ticket #2434.                            
                             //}
                             $('#copytactic').hide();
@@ -296,8 +296,8 @@
                             }
                             logMixpanelTrack("Copy To " + cloneType + " :" + escape(srcEntityTitle)); // log Copy To event to mixpanel. Added by Viral for PL ticket #2434.
                             $('#copytactic').hide();
-                            $("#errorMessage1").css("display", "none");
-                            $("#successMessage1").css("display", "none");
+                            $("#cpyErrorMessage").css("display", "none");
+                            $("#cpySuccessMessage").css("display", "none");
                         }
                         else {
                             ShowErrorC(issuccess, result.msg);
@@ -316,23 +316,23 @@
                 $("#SuccessMsg").css("display", "block");
                 $("#spanMsgSuccess").empty();
                 $("#spanMsgSuccess").text(value);
-                $("#errorMessage1").css("display", "none");
-                $("#successMessage1").css("display", "none");
+                $("#cpyErrorMessage").css("display", "none");
+                $("#cpySuccessMessage").css("display", "none");
                 //$("#spanMessageSuccess1").empty();
                 //$("#spanMessageSuccess1").text(Message);
 
                 //if (time != 'undefined') {
-                //    $('#successMessage1').slideDown(time);
+                //    $('#cpySuccessMessage').slideDown(time);
                 //}
             }
             else {
                 //$('#copytactic').show();
                 $("#warningMessage1").css("display", "none");
-                $("#successMessage1").css("display", "none");
-                $("#errorMessage1").css("display", "block");
-                $("#errorMessage1").slideDown(400);
-                $("#spanMessageError1").empty();
-                $("#spanMessageError1").html(value);
+                $("#cpySuccessMessage").css("display", "none");
+                $("#cpyErrorMessage").css("display", "block");
+                $("#cpyErrorMessage").slideDown(400);
+                $("#cpySpanMessageError").empty();
+                $("#cpySpanMessageError").text(value);
             }
         }
         function showWarningMessage() {
@@ -346,7 +346,7 @@
                 $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.CloneEntityMetaDataErrorMessage.ToString()');
             }
             $("#SuccessMsg").css("display", "none");
-            $("#errorMessage1").css("display", "none");
+            $("#cpyErrorMessage").css("display", "none");
         }
         $(".closemessage").click(function () {
             //$("#divBackground").css("display", "none");

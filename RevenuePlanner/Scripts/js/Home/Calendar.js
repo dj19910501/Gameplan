@@ -457,11 +457,10 @@ function manageAddPopup()
     isCopyTacticHomeGrid = 0;
     isEditTacticHomeGrid = 0;
 }
-
+var eventTaskClick; //// Variable to hold double click event.
+var eventdblTaskClick;
 function AttachEventToTactic() {
-
-    var eventTaskClick; //// Variable to hold double click event.
-    var eventdblTaskClick;
+    
     //// Detaching single click event.
     if (eventTaskClick != undefined) {
         gantt.detachEvent(eventTaskClick);
@@ -482,7 +481,7 @@ function AttachEventToTactic() {
             scrollstate = gantt.getScrollState();
             bodyscrollpos = $(window).scrollTop();
 
-            ShowModel(taskId, null);
+            ShowModel(taskId, true);
             return true;
         } else {
             return false;
@@ -935,6 +934,8 @@ function CallPDF() {
 
             });
         }
+        gantt.getGridColumn("colorcode").hide = false;   // Show 'ColorCode' column after export to PDF file.
+        gantt.refreshData();
     }
     else {
         $('#cErrorInspectPopup').html('No plan selected to export the data in .pdf');
