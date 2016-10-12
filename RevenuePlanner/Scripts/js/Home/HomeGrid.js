@@ -710,6 +710,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                     }
                                 }
                                 LoadPlanGrid();
+                                RefershPlanHeaderCalc();
                                 ItemIndex = HomeGrid.getRowIndex(tactid);
                                 state0 = ItemIndex;
                                 HomeGrid.cells(rowId, PlannedCostColIndex).setValue((nValue));
@@ -861,6 +862,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                     }
                                 }
                                 LoadPlanGrid();
+                                RefershPlanHeaderCalc();
                                 ItemIndex = HomeGrid.getRowIndex(rowId);
                                 state0 = ItemIndex;
                             }
@@ -1023,6 +1025,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                     if (UpdateColumn == TargetStageGoalId) {
                         var psv = HomeGrid.getUserData(rowid, "stage");
                         HomeGrid.cells(rowid, TargetStageGoalColIndex).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
+                        RefershPlanHeaderCalc();
                     }
 
                     if (UpdateColumn == TacticTypeId) {
