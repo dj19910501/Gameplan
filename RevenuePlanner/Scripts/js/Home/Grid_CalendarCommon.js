@@ -947,18 +947,18 @@ function CloseIconClick() {
             return true;
         }
         else {
-            if ($("#hdnPlanLineItemID").val() == '0' || $("#hdnPlanLineItemID").val() == undefined) {
+            // Modified by Arpita Soni to resolve inspect popup crashing issue from Budget screen
+            if (isCalendarView) {
                 if (isDataModified) {
                     RefreshCurrentTab();
                 }
-                else {
+                else if (IsCalander) {
                     gantt.refreshData();
                     GlobalSearch();
                 }
-            } else {
-                if (IsBudgetGrid) {
-                    LoadBudgetGrid();
-                }
+            }
+            else if (IsBudgetGrid) {
+                LoadBudgetGrid();
                 $('#divPlanEditButtonHome').click();
             }
         }
