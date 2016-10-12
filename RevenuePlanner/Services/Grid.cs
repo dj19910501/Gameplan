@@ -205,7 +205,6 @@ namespace RevenuePlanner.Services
             }
 
             //set owner name 
-          // GridHireachyData = SetOwnerName(GridHireachyData);
 
             // Update Plan Start and end date
             GridHireachyData = UpdatePlanStartEndDate(GridHireachyData);
@@ -1897,30 +1896,7 @@ namespace RevenuePlanner.Services
         }
 
 
-        // Desc: Set Owner Name  of entity
-        public List<GridDefaultModel> SetOwnerName(List<GridDefaultModel> lstGridDataModel)
-        {
-            #region "Get OwnerName"
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            Dictionary<int, User> lstUsersData = new Dictionary<int, BDSService.User>();
-            objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ForEach(u => lstUsersData.Add(u.ID, u)); // Get User list by Client ID.
-            #endregion
-
-            #region "Set Owner Name "
-            KeyValuePair<int, User> usr;
-            foreach (GridDefaultModel data in lstGridDataModel)
-            {
-                #region "Set Owner Name"
-                usr = lstUsersData.Where(u => data.Owner.HasValue && u.Key == data.Owner.Value).FirstOrDefault();
-                if (usr.Value != null)
-                    data.OwnerName = string.Format("{0} {1}", Convert.ToString(usr.Value.FirstName), Convert.ToString(usr.Value.LastName)); // Set Owner Name in format like: 'FirstName LastName'
-                #endregion
-
-            }
-            #endregion
-
-            return lstGridDataModel;
-        }
+       
 
         #endregion
 
