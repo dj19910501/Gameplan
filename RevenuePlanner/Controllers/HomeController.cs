@@ -4130,6 +4130,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns> Return Calendar Json Result</returns>
         [HttpPost]
+        [CompressAttribute]
         public JsonResult GetCalendarData(string planIds, string ownerIds, string tactictypeIds, string statusIds, string customFieldIds, string timeframe, string viewBy)
         {
             #region "Declare local variables"

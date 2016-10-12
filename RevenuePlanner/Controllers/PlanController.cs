@@ -8186,6 +8186,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="StatusIds">Status Ids</param>
         /// <param name="customFieldIds">customField Ids</param>
         /// <returns>returns partial view HomeGrid</returns>
+        [CompressAttribute]
         public ActionResult GetHomeGridData(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy)
         {
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
@@ -12075,6 +12076,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="StatusIds">filter status ids</param>
         /// <param name="Year">selected year of plans from timeframe </param>
         /// <returns></returns>
+        [CompressAttribute]
         public ActionResult GetBudgetData(string PlanIds,string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "")
         {
             IBudget Iobj = new RevenuePlanner.Services.Budget();
