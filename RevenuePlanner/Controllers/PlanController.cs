@@ -8218,29 +8218,6 @@ namespace RevenuePlanner.Controllers
             }
             return PartialView("_HomeGrid", objPlanMainDHTMLXGrid);
         }
-
-        /// <summary>
-        /// Add By Nishant Sheth
-        /// Get home grid data from cache memory 
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult GetHomeGridDataFromCache(string viewBy)
-        {
-            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
-            try
-            {
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGridDataFromCache(Sessions.User.CID, Sessions.User.ID, viewBy, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate);
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-                if (objException is System.ServiceModel.EndpointNotFoundException)
-                {
-                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            return PartialView("_HomeGrid", objPlanMainDHTMLXGrid);
-        }
         #endregion
 
         #region Save gridview detail from home

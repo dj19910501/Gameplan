@@ -75,30 +75,6 @@ function GridHideColumn() {
 }
 ///
 
-
-// Start Function for Load home grid from cache data
-// Add By Nishant Sheth
-function LoadPlanGridFromCache() {
-    var viewBy = $('#ddlTabViewBy').val();
-    $.ajax({
-        url: urlContent + 'Plan/GetHomeGridDataFromCache/',
-        data:{
-            viewBy: viewBy
-        },
-        success: function (result) {
-            var gridhtml = NodatawithfilterGrid;
-            gridhtml += result;
-            $("#divgridview").html('');
-            $("#divgridview").html(gridhtml);
-            $("div[id^='LinkIcon']").each(function () {
-                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
-            });
-            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
-        }
-    });
-}
-// End
-
 ////Move column functionality
 function MoveColumn() {
     HomeGrid.attachEvent("onAfterCMove", function (cInd, posInd) {

@@ -368,54 +368,6 @@ namespace RevenuePlanner.Test.Controllers
 
         /// <summary>
         /// Add By Nishant Sheth
-        /// To get home grid data from cache with out set cache memory object or null cache memory
-        /// </summary>
-        [TestMethod]
-        public void GetPlanGridDataFromCache_WithOut_CacheMemoryData()
-        {
-            Console.WriteLine("To Get Home grid data from cache object without set cache data for grid.\n");
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-            string viewBy = PlanGanttTypes.Tactic.ToString();
-            var result = controller.GetHomeGridDataFromCache(viewBy) as ActionResult;
-            // data object should not be null in json result
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-        }
-
-        /// <summary>
-        /// Add By Nishant Sheth
-        /// To get home grid data from cache with set cache memory object 
-        /// </summary>
-        [TestMethod]
-        public void GetPlanGridDataFromCache_With_CacheMemoryData()
-        {
-            Console.WriteLine("To Get Home grid data from cache object.\n");
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            PlanController controller = new PlanController();
-            controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
-
-            string PlanId = Convert.ToString(DataHelper.GetPlanId());
-            string OwnerIds = Convert.ToString(DataHelper.GetPlanOwnerId(int.Parse(PlanId)));
-            int ModelId = DataHelper.GetPlanModelId(int.Parse(PlanId));
-            List<string> lstTacticTypeIds = DataHelper.GetTacticTypeList(ModelId).Select(a => Convert.ToString(a.TacticTypeId)).ToList();
-            string TacticTypeIds = string.Join(",", lstTacticTypeIds);
-            List<string> lstStatus = Enums.TacticStatusValues.Select(a => a.Value).ToList();
-            string StatusIds = string.Join(",", lstStatus);
-            string viewBy = PlanGanttTypes.Tactic.ToString();
-            // Call the GetHomeGridData method for set Cache memory data
-            controller.GetHomeGridData(PlanId, OwnerIds, TacticTypeIds, StatusIds, string.Empty, viewBy);
-
-            var result = controller.GetHomeGridDataFromCache(viewBy) as ActionResult; // Call cache memory data method for grid data
-            // Data object should not be null in json result
-            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result:  " + result);
-            Assert.IsNotNull(result);
-        }
-
-
-        /// <summary>
-        /// Add By Nishant Sheth
         /// To get home grid data with pass all parameters
         /// </summary>
         [TestMethod]

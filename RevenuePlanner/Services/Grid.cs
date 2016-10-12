@@ -85,7 +85,7 @@ namespace RevenuePlanner.Services
         /// There are 2 results set from the GridCustomFieldData sproc- 1.CustomField master list 2. Values of custom fields for entities with in selected plans 
         /// TODO :: Working to combine 'GridCustomFieldData' Sproc and 'GetGridData' Sproc so that we can get result in single db call it's covered in #2572 PL ticket.
         /// <summary>
-        private GridCustomColumnData GetGridCustomFieldData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, int UserId)
+        private GridCustomColumnData GetGridCustomFieldData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, List<string> customColumnslist, int UserId)
         {
             GridCustomColumnData EntityList = new GridCustomColumnData();
             SqlConnection Connection = objDbMrpEntities.Database.Connection as SqlConnection;
@@ -96,6 +96,7 @@ namespace RevenuePlanner.Services
                     Connection.Open();
                 // Create a SQL command to execute the sproc 
                 DbCommand cmd = objDbMrpEntities.Database.Connection.CreateCommand();
+                cmd.CommandTimeout = 0;
                 cmd.CommandText = "[dbo].[GridCustomFieldData]";
                 cmd.CommandType = CommandType.StoredProcedure;
 
@@ -135,12 +136,19 @@ namespace RevenuePlanner.Services
                 paraUserId.Direction = ParameterDirection.Input;
                 paraUserId.Value = UserId;
 
+                DbParameter paraSelectedCustomField = cmd.CreateParameter();
+                paraSelectedCustomField.ParameterName = "SelectedCustomField";
+                paraSelectedCustomField.DbType = DbType.String;
+                paraSelectedCustomField.Direction = ParameterDirection.Input;
+                paraSelectedCustomField.Value = string.Join(",", customColumnslist);
+
                 cmd.Parameters.Add(paraPlanId);
                 cmd.Parameters.Add(paraClientId);
                 cmd.Parameters.Add(paraOwnerIds);
                 cmd.Parameters.Add(paraTacticTypeIds);
                 cmd.Parameters.Add(paraStatusIds);
                 cmd.Parameters.Add(paraUserId);
+                cmd.Parameters.Add(paraSelectedCustomField);
 
                 DbDataReader reader = cmd.ExecuteReader();
                 // Read CustomField from the first result set 
@@ -202,7 +210,7 @@ namespace RevenuePlanner.Services
             // Update Plan Start and end date
             GridHireachyData = UpdatePlanStartEndDate(GridHireachyData);
             // Get List of custom fields and it's entity's values
-            GridCustomColumnData ListOfCustomData = GridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds, UserId);
+            GridCustomColumnData ListOfCustomData = GridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customColumnslist, UserId, IsUserView);
 
             List<Int64> lsteditableEntityIds = GetEditableTacticIds(GridHireachyData, ListOfCustomData, UserId, ClientId);
             // Set Row wise permission
@@ -217,12 +225,6 @@ namespace RevenuePlanner.Services
             }).ToList();
 
             PivotcustomFieldData(ref customColumnslist, ListOfCustomData, ref IsUserView, EntityRowPermission);
-
-            // Add Plan grid default column data to cache object
-            objCache.AddCache(Convert.ToString(Enums.CacheObject.ListPlanGridDefaultData), GridHireachyData);
-
-            // Add Plan grid default column data to cache object
-            objCache.AddCache(Convert.ToString(Enums.CacheObject.ListPlanGridCustomColumnData), ListOfCustomData);
 
             // Check is user select Planned Cost column in column saved view
             bool IsPlanCostColumn = UserDefinedColumns.Where(a =>
@@ -259,7 +261,7 @@ namespace RevenuePlanner.Services
 
             // Generate Hierarchy of Plan grid
             List<PlanDHTMLXGridDataModel> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
-                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist))
+                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData))
                      .ToList();
 
             objPlanMainDHTMLXGrid.head = ListOfDefaultColumnHeader;
@@ -268,43 +270,45 @@ namespace RevenuePlanner.Services
         }
 
         /// <summary>
-        /// Get llist of Editable tactic ids list
+        /// Get list of Editable tactic ids list
         /// </summary>
         private List<Int64> GetEditableTacticIds(List<GridDefaultModel> GridHireachyData, GridCustomColumnData ListOfCustomData, int UserId, int ClientId)
         {
             List<int> lstTacticIds = GridHireachyData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower()).Select(a => int.Parse(a.EntityId.ToString())).ToList();
-
             List<CustomField_Entity> customfieldEntitylist = new List<CustomField_Entity>();
-            // Split the comma separated values to list
-            var lstCommaSplitCustomfield = ListOfCustomData.CustomFieldValues.Where(a => a.Value != null).Select(a => new
+            List<Int64> lsteditableEntityIds = new List<Int64>();
+            if (ListOfCustomData != null && ListOfCustomData.CustomFields != null && ListOfCustomData.CustomFieldValues != null)
             {
-                CustomFieldId = a.CustomFieldId,
-                EntityId = a.EntityId,
-                ListofValues = a.Value.Split(',')
-            }).ToList();
-
-            // Add item to custom field entity list
-            int ParseCustomValue = 0;
-            foreach (var data in lstCommaSplitCustomfield.Where(a => a.ListofValues.Count() > 1).ToList())
-            {
-                foreach (var val in data.ListofValues)
+                // Split the comma separated values to list
+                var lstCommaSplitCustomfield = ListOfCustomData.CustomFieldValues.Where(a => a.Value != null).Select(a => new
                 {
-                    int.TryParse(val, out ParseCustomValue);
-                    customfieldEntitylist.Add(new CustomField_Entity { CustomFieldId = int.Parse(data.CustomFieldId.ToString()), EntityId = int.Parse(data.EntityId.ToString()), Value = ParseCustomValue.ToString() });
+                    CustomFieldId = a.CustomFieldId,
+                    EntityId = a.EntityId,
+                    ListofValues = a.Value.Split(',')
+                }).ToList();
+
+                // Add item to custom field entity list
+                int ParseCustomValue = 0;
+                foreach (var data in lstCommaSplitCustomfield.Where(a => a.ListofValues.Count() > 1).ToList())
+                {
+                    foreach (var val in data.ListofValues)
+                    {
+                        int.TryParse(val, out ParseCustomValue);
+                        customfieldEntitylist.Add(new CustomField_Entity { CustomFieldId = int.Parse(data.CustomFieldId.ToString()), EntityId = int.Parse(data.EntityId.ToString()), Value = ParseCustomValue.ToString() });
+                    }
                 }
+
+                // Add items which have only single value for entity
+                customfieldEntitylist.AddRange(lstCommaSplitCustomfield.Where(a => a.ListofValues.Count() == 1)
+                    .Select(a => new CustomField_Entity { CustomFieldId = int.Parse(a.CustomFieldId.ToString()), EntityId = int.Parse(a.EntityId.ToString()), Value = Convert.ToString(a.ListofValues[0]) }).ToList());
+
+                ListOfCustomData.CustomFieldValues.Where(a => a.EntityId != null && a.CustomFieldId != null)
+                .Select(a => new CustomField_Entity { CustomFieldId = int.Parse(a.CustomFieldId.ToString()), EntityId = int.Parse(a.EntityId.ToString()), Value = a.Value }).ToList();
+
+                // Get list of editable list of tactic ids for permission
+                lsteditableEntityIds = Common.GetEditableTacticList(UserId, ClientId, lstTacticIds, false, customfieldEntitylist)
+                   .Select(a => Int64.Parse(a.ToString())).ToList();
             }
-
-            // Add items which have only single value for entity
-            customfieldEntitylist.AddRange(lstCommaSplitCustomfield.Where(a => a.ListofValues.Count() == 1)
-                .Select(a => new CustomField_Entity { CustomFieldId = int.Parse(a.CustomFieldId.ToString()), EntityId = int.Parse(a.EntityId.ToString()), Value = Convert.ToString(a.ListofValues[0]) }).ToList());
-
-            ListOfCustomData.CustomFieldValues.Where(a => a.EntityId != null && a.CustomFieldId != null)
-            .Select(a => new CustomField_Entity { CustomFieldId = int.Parse(a.CustomFieldId.ToString()), EntityId = int.Parse(a.EntityId.ToString()), Value = a.Value }).ToList();
-
-            // Get list of editable list of tactic ids for permission
-            List<Int64> lsteditableEntityIds = Common.GetEditableTacticList(UserId, ClientId, lstTacticIds, false, customfieldEntitylist)
-                .Select(a => Int64.Parse(a.ToString())).ToList();
-
             return lsteditableEntityIds;
         }
 
@@ -339,101 +343,17 @@ namespace RevenuePlanner.Services
         }
 
         /// <summary>
-        /// Get plan grid data from cache memory
-        /// </summary>
-        public PlanMainDHTMLXGrid GetPlanGridDataFromCache(int ClientId, int UserId, string viewBy, string CurrencySymbol, double ExchangeRate)
-        {
-            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
-            PlanExchangeRate = ExchangeRate; // Set client currency plan exchange rate 
-            PlanCurrencySymbol = CurrencySymbol; // Set user currency symbol
-            // Get MQL title label client wise
-            string MQLTitle = GetMqlTitle(ClientId);
-
-            // Get list of user wise columns or default columns of grid view it's refrencely update from GenerateJsonHeader Method
-            List<string> HiddenColumns = new List<string>(); // List of hidden columns of plan grid
-            List<string> UserDefinedColumns = new List<string>(); // List of User selected or default columns list
-            List<string> customColumnslist = new List<string>(); // List of custom field columns
-
-            // Generate header methods for default columns
-            List<PlanHead> ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle, ref HiddenColumns, ref UserDefinedColumns, ref customColumnslist, UserId, ref IsUserView);
-
-            //Get list of entities for plan grid from Cache object
-            List<GridDefaultModel> GridHireachyData = (List<GridDefaultModel>)objCache.Returncache(Convert.ToString(Enums.CacheObject.ListPlanGridDefaultData));
-            if (GridHireachyData == null)
-            {
-                GridHireachyData = new List<GridDefaultModel>();
-            }
-
-            // Check is user select Planned Cost column in column saved view
-            bool IsPlanCostColumn = UserDefinedColumns.Where(a =>
-               a.ToLower() == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost).ToLower()).Any();
-            if (IsPlanCostColumn)
-            {
-                // Round up the Planned Cost value for Program/Campaign/Plan
-                GridHireachyData = RoundupValues(GridHireachyData, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost));
-            }
-
-            // Check is user select Revenue column in column saved view
-            bool IsRevenueColumn = UserDefinedColumns.Where(a =>
-                a.ToLower() == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue).ToLower()).Any();
-            if (IsRevenueColumn)
-            {
-                // Round up the Revenue value for Program/Campaign/Plan
-                GridHireachyData = RoundupValues(GridHireachyData, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue));
-            }
-
-            // Check is user select MQL column in column saved view
-            bool IsMQLColumn = UserDefinedColumns.Where(a =>
-               a.ToLower() == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL).ToLower()).Any();
-            if (IsMQLColumn)
-            {
-                // Round up the MQL value for Program/Campaign/Plan
-                GridHireachyData = RoundupValues(GridHireachyData, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL));
-            }
-
-            // Get selected columns data
-            List<PlanGridColumnData> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
-
-            // Get List of custom fields and it's entity's values
-            GridCustomColumnData ListOfCustomData = (GridCustomColumnData)objCache.Returncache(Convert.ToString(Enums.CacheObject.ListPlanGridCustomColumnData));
-            if (ListOfCustomData == null)
-            {
-                ListOfCustomData = new GridCustomColumnData();
-            }
-
-            List<EntityPermissionRowWise> EntityRowPermission = GridHireachyData.Select(a => new EntityPermissionRowWise
-            {
-                IsRowPermission = a.IsRowPermission,
-                EntityId = a.EntityId.ToString(),
-                EntityType = a.EntityType,
-                LineItemType = a.LineItemType
-            }).ToList();
-
-            // Pivot Custom fields data with selected columns
-            PivotcustomFieldData(ref customColumnslist, ListOfCustomData, ref IsUserView, EntityRowPermission);
-
-            // Merge header of plan grid with custom fields
-            ListOfDefaultColumnHeader.AddRange(GridCustomHead(ListOfCustomData.CustomFields, customColumnslist));
-
-            // Generate Hierarchy of Plan grid
-            List<PlanDHTMLXGridDataModel> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
-                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist))
-                     .ToList();
-
-            objPlanMainDHTMLXGrid.head = ListOfDefaultColumnHeader;
-            objPlanMainDHTMLXGrid.rows = griditems;
-            return objPlanMainDHTMLXGrid;
-        }
-
-        /// <summary>
         /// Add By Nishant Sheth
         /// Get list of custom fields values for each entities
         /// </summary>
-        private GridCustomColumnData GridCustomFieldData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, int UserId)
+        private GridCustomColumnData GridCustomFieldData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, List<string> customColumnslist, int UserId, bool IsUserView)
         {
             GridCustomColumnData data = new GridCustomColumnData();
-            // Call the method of stored procedure that return list of custom field and it's entities values
-            data = GetGridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds, UserId);
+            if (IsUserView)
+            {
+                // Call the method of stored procedure that return list of custom field and it's entities values
+                data = GetGridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customColumnslist, UserId);
+            }
             return data;
         }
 
@@ -443,7 +363,7 @@ namespace RevenuePlanner.Services
         /// </summary>
         private void PivotcustomFieldData(ref List<string> selectedCustomColumns, GridCustomColumnData data, ref bool IsUserView, List<EntityPermissionRowWise> EntityRowPermission)
         {
-            if (selectedCustomColumns.Count == 0 && !IsUserView)
+            if (IsUserView)
             {
                 // Update selectedCustomColumns variable with list of user selected/all custom fields columns name
                 if (data.CustomFields != null)
@@ -961,9 +881,8 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Generate items for hierarchy 
         /// </summary>
-        PlanDHTMLXGridDataModel CreateItemGrid(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist)
+        PlanDHTMLXGridDataModel CreateItemGrid(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData)
         {
-            Planuserdatagrid objUserData = new Planuserdatagrid();
             List<PlanDHTMLXGridDataModel> children = new List<PlanDHTMLXGridDataModel>();
             try
             {
@@ -972,19 +891,14 @@ namespace RevenuePlanner.Services
 
                 // Call recursive if any other child entity
                 children = lstChildren
-                .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist)).ToList();
+                .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridDefaultData)).ToList();
 
                 EntitydataobjItem = new List<Plandataobj>();
 
                 // Get list of custom field values for particular entity based on pivoted entities list
                 List<Plandataobj> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId == (Row.EntityType + "_" + Row.EntityId))
                                            .Select(a => a.CustomFieldData).FirstOrDefault();
-
-                if (Row.EntityType == "Plan")
-                {
-
-                }
-                if (lstCustomfieldData == null)
+                if (lstCustomfieldData == null && CustomFieldData.CustomFields != null)
                 {
                     List<Plandataobj> ItemEmptylist = new List<Plandataobj>(); // Variable for empty list of custom fields value to assign entity 
                     // Get list of custom fields by entity type
@@ -1022,7 +936,7 @@ namespace RevenuePlanner.Services
             {
                 throw;
             }
-            return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, bgColor = string.Empty, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId) };
+            return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, bgColor = string.Empty, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
         }
         #endregion
 
@@ -1042,7 +956,10 @@ namespace RevenuePlanner.Services
             #endregion
 
             #region Set Customfield Columns Values
-            EntitydataobjCreateItem.AddRange(objCustomfieldData);
+            if (objCustomfieldData != null)
+            {
+                EntitydataobjCreateItem.AddRange(objCustomfieldData);
+            }
             #endregion
 
             return EntitydataobjCreateItem;
@@ -1242,11 +1159,9 @@ namespace RevenuePlanner.Services
         /// Set the user data for entities
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Planuserdatagrid GridUserData(string EntityType, string UniqueId)
+        public Planuserdatagrid GridUserData(string EntityType, string UniqueId, List<GridDefaultModel> DataList)
         {
             Planuserdatagrid objUserData = new Planuserdatagrid();
-            // Get data of plan grid default columns data from cache 
-            List<GridDefaultModel> DataList = (List<GridDefaultModel>)objCache.Returncache(Convert.ToString(Enums.CacheObject.ListPlanGridDefaultData));
             if (string.Compare(EntityType, Convert.ToString(Enums.EntityType.Campaign), true) == 0)
             {
                 objUserData = CampaignUserData(DataList, UniqueId);
