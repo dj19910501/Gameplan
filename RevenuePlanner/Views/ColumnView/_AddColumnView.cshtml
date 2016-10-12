@@ -171,6 +171,7 @@
 
                 url: '@Url.Action("SaveColumnView", "ColumnView")', // we are calling json method
                 type: 'post',
+                async:false,
                 dataType: 'json',
                 contentType: 'application/json',
                 data: "{'AttributeDetail':" + (_ColumnView) + ",'Isgrid':'" + Isgrid + "'}",

@@ -168,8 +168,7 @@ function LoadAfterParsing() {
         SetTooltip();
        
         LoadAfterParsing();
-        isCopyTacticHomeGrid = 0;
-        isEditTacticHomeGrid = 0;
+       
         var childItems = HomeGrid.getAllSubItems(rowid);
         if (childItems != undefined && childItems != null && childItems != "") {
             //childItems = childItems.split(',').filter(function (tac) {
