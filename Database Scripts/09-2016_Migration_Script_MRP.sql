@@ -291,6 +291,32 @@ BEGIN
 END
 GO
 
+-------------------- Start -------------------- 
+-- =============================================
+-- Author: Viral Kadiya
+-- Create date: 12-Oct-2016
+-- Description:	Create Indexes on Improvement Campaign & Program Table
+-- =============================================
+
+IF (NOT exists (SELECT 1 FROM sys.indexes where name = 'NONCLUSTEREDINDEX_Plan_Improvement_Campaign_ImprovementPlanCampaignId' AND Object_ID = Object_ID(N'Plan_Improvement_Campaign')))
+BEGIN
+	CREATE NONCLUSTERED INDEX [NONCLUSTEREDINDEX_Plan_Improvement_Campaign_ImprovementPlanCampaignId]
+	ON [dbo].[Plan_Improvement_Campaign] ([ImprovePlanId])
+	INCLUDE ([ImprovementPlanCampaignId])
+END
+GO
+
+IF (NOT exists (SELECT 1 FROM sys.indexes where name = 'NONCLUSTEREDINDEX_Plan_Improvement_Campaign_Program_ImprovementPlanProgramId' AND Object_ID = Object_ID(N'Plan_Improvement_Campaign_Program')))
+BEGIN
+	CREATE NONCLUSTERED INDEX [NONCLUSTEREDINDEX_Plan_Improvement_Campaign_Program_ImprovementPlanProgramId]
+	ON [dbo].[Plan_Improvement_Campaign_Program] ([ImprovementPlanCampaignId])
+	INCLUDE ([ImprovementPlanProgramId])
+END
+GO
+
+-------------------- End -------------------- 
+
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GridCustomFieldData]') AND type in (N'P', N'PC'))
 BEGIN
 EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GridCustomFieldData] AS' 
