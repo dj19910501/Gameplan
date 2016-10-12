@@ -136,7 +136,7 @@ namespace RevenuePlanner.Helpers
         public static string ImprovementProgram = "Improvement Program";
 
         // Default Other line item title
-        public static string LineItemTitleDefault = "Balance"; // Modified Name of other line item to "Balance" in Ticket #2634
+        public static string LineItemTitleDefault = "Sys_Gen_Balance"; // Modified Name of other line item to "Sys_Gen_Balance" as per Lauren's suggestion on 10/12/2016
 
         // Label text for Unallocated Budget label
         public static string UnallocatedBudgetLabelText = "Unallocated";

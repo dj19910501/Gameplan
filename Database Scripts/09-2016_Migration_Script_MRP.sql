@@ -221,8 +221,8 @@ BEGIN
 
 	---Handle changes 
 	UPDATE  A 
-	SET		A.[Value] = dbo.fnCustomFieldEntityValue(B.EntityId, B.CustomFieldId)
-		  , A.[UnrestrictedText] = dbo.fnCustomFieldEntityText(B.EntityId, B.CustomFieldId)
+	SET		A.[Value] = MV.fnCustomFieldEntityValue(B.EntityId, B.CustomFieldId)
+		  , A.[UnrestrictedText] = MV.fnCustomFieldEntityUnrestrictedText(B.EntityId, B.CustomFieldId)
 	FROM [MV].CustomFieldData A JOIN (		SELECT CE.EntityId, CE.CustomFieldId 
 											FROM INSERTED CE 
 												 JOIN CustomField CF ON CF.CustomFieldId = CE.CustomFieldId
@@ -8857,7 +8857,7 @@ GO
 
 IF EXISTS(SELECT * FROM sys.columns WHERE [name] = 'Title' AND [object_id] = OBJECT_ID(N'Plan_Campaign_Program_Tactic_LineItem'))
 BEGIN
-	UPDATE Plan_Campaign_Program_Tactic_LineItem SET Title='Balance' WHERE LineItemTypeId IS NULL
+	UPDATE Plan_Campaign_Program_Tactic_LineItem SET Title='Sys_Gen_Balance' WHERE LineItemTypeId IS NULL
 END
 GO
 
