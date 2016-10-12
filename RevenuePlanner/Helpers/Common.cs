@@ -820,7 +820,7 @@ namespace RevenuePlanner.Helpers
                         List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, Enums.Custom_Notification.TacticIsApproved.ToString().ToLower());
                         if (List_NotificationUserIds.Count > 0)
                         {
-                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(ids.ID)).Select(u => u.Email).ToList();
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticApproved.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
                         }
 
@@ -830,7 +830,7 @@ namespace RevenuePlanner.Helpers
                         List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, Enums.Custom_Notification.ProgramIsApproved.ToString().ToLower());
                         if (List_NotificationUserIds.Count > 0)
                         {
-                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(ids.ID)).Select(u => u.Email).ToList();
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramApproved.ToString(), "", Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
                         }
 
@@ -840,7 +840,7 @@ namespace RevenuePlanner.Helpers
                         List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, Enums.Custom_Notification.CampaignIsApproved.ToString().ToLower());
                         if (List_NotificationUserIds.Count > 0)
                         {
-                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(ids.ID)).Select(u => u.Email).ToList();
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignApproved.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
                         }
                     }
@@ -899,7 +899,7 @@ namespace RevenuePlanner.Helpers
                         List_NotificationUserIds = GetAllNotificationUserIds(UserId, Enums.Custom_Notification.TacticIsSubmitted.ToString().ToLower());
                         if (List_NotificationUserIds.Count > 0)
                         {
-                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).Distinct().ToList();
+                            lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(ids.ID)).Select(u => u.Email).Distinct().ToList();
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
 
                         }
@@ -924,7 +924,7 @@ namespace RevenuePlanner.Helpers
                     List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, NotificationName.ToLower());
                     if (List_NotificationUserIds.Count > 0)
                     {
-                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
+                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(ids.ID)).Select(u => u.Email).ToList();
 
                         if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                         {
@@ -938,7 +938,7 @@ namespace RevenuePlanner.Helpers
                     List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, NotificationName.ToLower());
                     if (List_NotificationUserIds.Count > 0)
                     {
-                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
+                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(ids.ID)).Select(u => u.Email).ToList();
                         if (section == Convert.ToString(Enums.Section.Program).ToLower())
                         {
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ProgramCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Program).ToLower(), planTacticId, PlanId, URL);
@@ -951,7 +951,7 @@ namespace RevenuePlanner.Helpers
                     List_NotificationUserIds = GetAllNotificationUserIds(lst_CollaboratorId, NotificationName.ToLower());
                     if (List_NotificationUserIds.Count > 0)
                     {
-                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(Sessions.User.ID)).Select(u => u.Email).ToList();
+                        lst_CollaboratorEmail = UsersDetails.Where(ids => List_NotificationUserIds.Contains(ids.ID)).Select(u => u.Email).ToList();
                         if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                         {
                             SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Campaign).ToLower(), planTacticId, PlanId, URL);
