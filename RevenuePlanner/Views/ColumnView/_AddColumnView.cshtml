@@ -64,7 +64,7 @@
     $(document).ready(function () {
         var Isselectall = '@ViewBag.IsSelectAll';
         if (Isselectall.toLowerCase() == 'true') {
-            $(".addview-wrap").find("input:checkbox").attr("checked", "checked");
+            $(".addview-wrap").find(".category[entitytpe='Common']").find("input:checkbox").attr("checked", "checked");
         }
         if (Isgrid.toLocaleLowerCase() == "true") {
             $(".chkAttributes").each(function () {

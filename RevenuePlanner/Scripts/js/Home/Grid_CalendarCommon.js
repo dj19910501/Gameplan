@@ -1031,7 +1031,7 @@ $("#honeycomb").popover({
                             ' <div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"> ' +
                             ' <h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5> ' +
                             ' <p class="metadata"> ' +
-                            ' <span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span> ' +
+                            ' <span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + SetOwnerNameFoeHoneycomb(ExportSelectedIds.OwnerName[i]) + '</span> ' +
                             ' </p></div> ' +
                             ' <div class="span1 text-right pull-right" title="Delete" > ' +
                             ' <i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i> ' +
@@ -1042,7 +1042,7 @@ $("#honeycomb").popover({
                                 ' <div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"> ' +
                                 ' <h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5> ' +
                                 ' <p class="metadata"> ' +
-                                ' <span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span> ' +
+                                ' <span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + SetOwnerNameFoeHoneycomb(ExportSelectedIds.OwnerName[i]) + '</span> ' +
                                 ' </p></div> ' +
                                 ' <div class="span1 text-right pull-right" title="Delete"> ' +
                                 ' <i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i> ' +
@@ -1051,10 +1051,10 @@ $("#honeycomb").popover({
                     }
                     else {
                     if (ExportSelectedIds.ROITacticType[i] == AssetType) {
-                        htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '" csvid="' + ExportSelectedIds.CsvId[i] + '"  roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                        htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '" csvid="' + ExportSelectedIds.CsvId[i] + '"  roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + SetOwnerNameFoeHoneycomb(ExportSelectedIds.OwnerName[i]) + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                 }
                 else {
-                        htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '" csvid="' + ExportSelectedIds.CsvId[i] + '"  roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                        htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '" csvid="' + ExportSelectedIds.CsvId[i] + '"  roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + SetOwnerNameFoeHoneycomb(ExportSelectedIds.OwnerName[i]) + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                     }
                 }
             }
@@ -1063,7 +1063,18 @@ $("#honeycomb").popover({
         return $("#honeycomb_content").html();
     }
 });
-
+//function to set owner name while diplay detail on honeycomb export popup
+function SetOwnerNameFoeHoneycomb(ownerid)
+{
+    var honeycombOwnerlist = Ownerlist;
+    var ownername = ownerid;
+    $.each(honeycombOwnerlist, function (index, item) {
+        if (item.key == ownerid) {
+            ownername = item.value;
+        }
+    });
+    return ownername;
+}
 function RemoveAllHoneyCombData() {
     $('#honeycomb_content').find(".hc-block").remove();
     IsPackageView = false;

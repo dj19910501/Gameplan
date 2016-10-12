@@ -205,7 +205,7 @@ namespace RevenuePlanner.Services
             }
 
             //set owner name 
-            GridHireachyData = SetOwnerName(GridHireachyData);
+          // GridHireachyData = SetOwnerName(GridHireachyData);
 
             // Update Plan Start and end date
             GridHireachyData = UpdatePlanStartEndDate(GridHireachyData);
@@ -1752,7 +1752,7 @@ namespace RevenuePlanner.Services
 
             string addColumn = @" <div class=grid_Search id=Plan onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" +
                 grid_add
-                + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Select' id=Plan TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.OwnerName)
+                + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Select' id=Plan TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.Owner)
                 + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode + "' altId=" + Row.TaskId
                 + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>";
             return addColumn;
@@ -1773,7 +1773,7 @@ namespace RevenuePlanner.Services
             string addColumn = @" <div class=grid_Search id=CP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add
                 + "<div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '"
-                + Convert.ToString(Row.OwnerName) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;"))
+                + Convert.ToString(Row.Owner) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;"))
                 + "' altId=" + Row.TaskId + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + "' taskId= " + Row.EntityId + " csvId=Campaign_" + Row.EntityId + "></div>";
             return addColumn;
         }
@@ -1791,7 +1791,7 @@ namespace RevenuePlanner.Services
             }
             string addColumn = @" <div class=grid_Search id=PP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
                 + grid_add
-                + " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.OwnerName)
+                + " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.Owner)
                 + "'  TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "'  altId= " + Row.TaskId +
                 " per=" + Row.IsCreatePermission.ToString().ToLower() + "'  taskId= " + Row.EntityId + " csvId=Program_" + Row.EntityId + "></div>";
             return addColumn;
@@ -1813,7 +1813,7 @@ namespace RevenuePlanner.Services
                 + grid_add
                 + " <div class=honeycombbox-icon-gantt id=Tactic onclick=javascript:AddRemoveEntity(this)  title = 'Select' anchortacticid='" + Row.AnchorTacticID + "' roitactictype='" + Row.AssetType
                 + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode
-                + "'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.OwnerName) + "' altId=" + Row.TaskId
+                + "'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.Owner) + "' altId=" + Row.TaskId
                 + " per=" + Row.IsCreatePermission.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>";
             return addColumn;
         }
@@ -1964,11 +1964,7 @@ namespace RevenuePlanner.Services
         // Desc: Set Owner Name and Permission of entity
         public List<calendarDataModel> SetOwnerNameAndPermission(List<calendarDataModel> lstCalendarDataModel)
         {
-            #region "Get OwnerName"
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            Dictionary<int, User> lstUsersData = new Dictionary<int, BDSService.User>();
-            objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).ForEach(u => lstUsersData.Add(u.ID, u)); // Get User list by Client ID.
-            #endregion
+           
 
             #region "Get SubOrdinates"
             List<int> lstSubordinatesIds = new List<int>();
@@ -1985,11 +1981,7 @@ namespace RevenuePlanner.Services
             KeyValuePair<int, User> usr;
             foreach (calendarDataModel data in lstCalendarDataModel)
             {
-                #region "Set Owner Name"
-                usr = lstUsersData.Where(u => data.CreatedBy.HasValue && u.Key == data.CreatedBy.Value).FirstOrDefault();
-                if (usr.Value != null)
-                    data.OwnerName = string.Format("{0} {1}", Convert.ToString(usr.Value.FirstName), Convert.ToString(usr.Value.LastName)); // Set Owner Name in format like: 'FirstName LastName'
-                #endregion
+               
 
                 #region "Set Permission"
                 if (IsPlanCreateAllAuthorized == false)     // check whether user has plan create permission or not

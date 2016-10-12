@@ -194,6 +194,15 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.IsPlanEditable = IsPlanEditable;
 
+            #region "Get OwnerName"
+
+            var lstUsersData = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).Select(u => new
+            {
+                key = u.ID.ToString(),
+                value = Convert.ToString(HttpUtility.HtmlEncode(u.FirstName + " " + u.LastName))
+            }).ToList(); // Get User list by Client ID.
+            ViewBag.OwnerList = lstUsersData;
+            #endregion
 
             return View();
 

@@ -166,9 +166,7 @@ function LoadAfterParsing() {
     }
     editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
         SetTooltip();
-        setTimeout(function () {
-            HomeGrid.saveOpenStates("plangridState");
-        }, 1000);
+       
         LoadAfterParsing();
         isCopyTacticHomeGrid = 0;
         isEditTacticHomeGrid = 0;

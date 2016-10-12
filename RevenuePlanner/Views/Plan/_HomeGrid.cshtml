@@ -138,7 +138,7 @@
             
         });
         HomeGrid.attachEvent("onRowSelect", function (id, ind) {
-            var idindex = idcoluIndex = HomeGrid.getColIndexById('id');
+            var idindex = HomeGrid.getColIndexById('id');
             isEditTacticHomeGrid = HomeGrid.cells(id, idindex).getValue();
         });
         HomeGrid.enableDistributedParsing(true, 10, 0.1);

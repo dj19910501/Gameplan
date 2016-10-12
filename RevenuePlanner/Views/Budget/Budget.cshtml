@@ -125,9 +125,7 @@
             HomeGrid.attachEvent("onOpenEnd", function (id, state) {
                 isCopyTacticHomeGrid = 0;
                 isEditTacticHomeGrid = 0;
-                setTimeout(function () {
-                    HomeGrid.saveOpenStates("plangridState");
-                }, 500);
+               
             });
 
             HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
@@ -143,7 +141,7 @@
                     return true;
             });
             HomeGrid.attachEvent("onRowSelect", function (id, ind) {
-                var idindex = idcoluIndex = HomeGrid.getColIndexById('ActivityId');
+                var idindex =  HomeGrid.getColIndexById('ActivityId');
                 isEditTacticHomeGrid = HomeGrid.cells(id, idindex).getValue();
             });
             var machineNameindex = HomeGrid.getColIndexById("MachineName");
