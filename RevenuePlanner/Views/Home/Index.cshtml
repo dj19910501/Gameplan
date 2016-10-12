@@ -531,10 +531,11 @@
                 $('.modal-body').scrollTop(0);
             }
         });
+        HomeGrid.saveOpenStates("plangridState");
+
         IsManageviewClick = true;
         return true;
     }
-        HomeGrid.saveOpenStates("plangridState");
     $(".closeCreateNewView").click(function () {
         $('#CreateNewView').hide();
     });
