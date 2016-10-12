@@ -47,12 +47,15 @@ namespace RevenuePlanner.Services
             for (int cntplanid = 0; cntplanid < planList.Count; cntplanid++)
             {
                 string year = planList.ElementAt(cntplanid).Year;
-
+                string activityId = Convert.ToString(planList.ElementAt(cntplanid).PlanId);
+             //   List<DataRow> lst = new List<DataRow>();
+               
 
                 if (!Convert.ToString(dtPlanBudget.Columns[MonthQuarterStartIndex]).ToLower().Trim().Contains(year))
                 {
-                    dtPlanBudget = dtPlanBudget.AsEnumerable()
-        .Where(row => row.Field<String>("activityid") != year && row.Field<String>("type") != "plan").CopyToDataTable();
+                    
+                    DataRow planRow = dtPlanBudget.AsEnumerable().Where(row => row.Field<String>("activityid") == activityId && row.Field<String>("type") == "plan").FirstOrDefault();
+                    dtPlanBudget.Rows.Remove(planRow);
 
                 }
             }
@@ -181,7 +184,9 @@ namespace RevenuePlanner.Services
         /// <returns></returns>
         private DataTable ConvertValueAsperCurrency(DataTable dtimportData)
         {
-            for (int i = 0; i < dtimportData.Columns.Count; i++)
+            //following index is value column startindex
+            int valueColumnIndex = 3;
+            for (int i = valueColumnIndex; i < dtimportData.Columns.Count; i++)
             {
                 RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
                 for (int j = 0; j < dtimportData.Rows.Count; j++)
@@ -196,6 +201,8 @@ namespace RevenuePlanner.Services
                             dtimportData.Rows[j][i] = Convert.ToString(objCurrency.SetValueByExchangeRate(value, Sessions.PlanExchangeRate));
                         }
                     }
+                    else
+                        dtimportData.Rows[j][i] = "0";
                 }
             }
 
