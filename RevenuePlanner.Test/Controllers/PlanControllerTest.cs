@@ -20,11 +20,12 @@ namespace RevenuePlanner.Test.Controllers
     [TestClass]
     public class PlanControllerTest
     {
-        PlanController objPlanController = new PlanController();
+        PlanController objPlanController;
         [TestInitialize]
         public void LoadCacheMessage()
         {
             HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+            objPlanController = new PlanController();
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
             objPlanController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objPlanController);
