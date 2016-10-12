@@ -103,6 +103,7 @@ BEGIN
 									AND CR.CustomFieldOptionId = CFO.CustomFieldOptionId
 						WHERE CR.Permission=2 
 								AND @CustomFieldId = CR.CustomFieldId
+								AND UserId = @UserId
 						GROUP BY CFO.CustomFieldOptionId
 						FOR XML PATH('')),2,90000)
 END 
