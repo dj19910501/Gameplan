@@ -48,11 +48,12 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
 }
 
+
 @*add new*@
 @Html.Hidden("IsGridView", IsGridView)
 @Html.Hidden("IsPlanEditable", IsPlanCreateAuthorized)
 @*end*@
-<script type="text/javascript" src="~/Scripts/Planhud.js"></script>
+
 @*<script src="~/Scripts/js/Home/planCalendar.js"></script>*@
 
 @* ================= Header section start ==================  *@
@@ -200,10 +201,8 @@
 @Html.Partial("~/Views/Plan/_PlanGridVariable.cshtml")
 @Html.Partial("~/Views/Home/_CalExportPDFHeaderHtml.cshtml")
 <div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
-<script src="~/Scripts/Filter.js"></script>
-<script src="~/Scripts/js/Home/Grid_CalendarCommon.js"></script>
-<script src="~/Scripts/js/Home/HomeGrid.js"></script>
-<script src="~/Scripts/js/Home/Calendar.js"></script>
+@Scripts.Render("~/bundles/Home_BudgetJs")
+
     <script type="text/javascript">
     var isCopyTacticHomeGrid = 0;
     var isEditTacticHomeGrid = 0;

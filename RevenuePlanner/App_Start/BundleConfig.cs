@@ -24,7 +24,7 @@ namespace RevenuePlanner
                      "~/Content/css/summernote.css",
                      "~/Content/css/jquery.multiselect.css",
                      "~/Content/css/daterangepicker-bs3.css"
-                //"~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css"
+                    //"~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css"
                     ));
 
             bundles.Add(new StyleBundle("~/Content/css/GetCSSForLogin").Include(
@@ -49,7 +49,7 @@ namespace RevenuePlanner
                         "~/Scripts/js/mixpanel.login.js" //ensure this script is the last called
                         ));
 
-            bundles.Add(new ScriptBundle("~/bundles/GetJS").Include(                        
+            bundles.Add(new ScriptBundle("~/bundles/GetJS").Include(
                         "~/Scripts/js/jquery-2.2.1.js",
                         "~/Scripts/MultiCurrency.js",
                         "~/Scripts/js/jquery-migrate-1.2.1.js",
@@ -96,6 +96,20 @@ namespace RevenuePlanner
                    "~/Scripts/moment.js",
                    "~/Scripts/moment.min.js",
                    "~/Scripts/daterangepicker.js"
+                ));
+            //Create bundle for homepage and budget scripts.
+            bundles.Add(new ScriptBundle("~/bundles/Home_BudgetJs").Include(
+                   //index
+                   "~/Scripts/Planhud.js",
+                   "~/Scripts/Filter.js",
+                   "~/Scripts/js/Home/Grid_CalendarCommon.js",
+                   "~/Scripts/js/Home/HomeGrid.js",
+                   "~/Scripts/js/Home/Calendar.js",
+                   //Tree grid js
+                   "~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js",
+                  //File input control js
+                  "~/Scripts/js/fileinput.js"
+
                 ));
             //added by devanshi #2368
             bundles.Add(new StyleBundle("~/Content/css/GetCSSBudget").Include(
