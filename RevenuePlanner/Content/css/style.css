@@ -8982,6 +8982,7 @@ li.close-list {
 	min-width: 205px !important;
 	max-width: 205px !important;
 }
+.minmax-width200.text_ellipsis{margin:0}
 .new-btn-plan {
 	background: left center no-repeat #fff;
 	border: 1px solid #c6c6c6;
