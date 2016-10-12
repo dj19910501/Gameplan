@@ -515,7 +515,7 @@ namespace RevenuePlanner.Test.Helper
             //string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
             //List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
             List<int> lstPlanids = db.Plans.Where(pl => pl.CreatedBy == UserId && pl.IsDeleted == false).Select(pl => pl.PlanId).Take(5).ToList();
-            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.PlanTacticId).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId) && id.IsDeleted == false).Select(tactictype => tactictype.PlanTacticId).ToList();
             int PlanTacticId = tactic.FirstOrDefault();
             int ParentEntityId = db.Plan_Campaign_Program_Tactic.Where(tt => tt.PlanTacticId == PlanTacticId).Select(tt => tt.PlanProgramId).FirstOrDefault();
             string entityId = lstPlanids.FirstOrDefault().ToString() + "_" + tactic.FirstOrDefault().ToString();

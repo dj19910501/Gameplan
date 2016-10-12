@@ -742,7 +742,7 @@ namespace RevenuePlanner.Test.Controllers
             int PlanID = DataHelper.GetPlanId();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
             int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
-            string Title = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.Title).FirstOrDefault();
+            string Title = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId && id.IsDeleted == false).Select(tactic => tactic.Title).FirstOrDefault();
             Inspect_Popup_Plan_Campaign_Program_TacticModel Form = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
             Form.PlanTacticId = 0;
             Form.PlanProgramId = PlanProgramId;
@@ -1201,7 +1201,7 @@ namespace RevenuePlanner.Test.Controllers
             PartialViewResult result = null;
 
             // Get tactic id
-            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(tac => tac.PlanTacticId).FirstOrDefault();
+            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(Sessions.User.ID) && t.IsDeleted == false).Select(tac => tac.PlanTacticId).FirstOrDefault();
 
             // Set Allcated By
             string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);
@@ -1234,7 +1234,7 @@ namespace RevenuePlanner.Test.Controllers
             PartialViewResult result = null;
 
             // Get tactic id
-            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(Sessions.User.ID)).Select(tac => tac.PlanTacticId).FirstOrDefault();
+            int tacticId = db.Plan_Campaign_Program_Tactic.Where(t => t.CreatedBy.Equals(Sessions.User.ID) && t.IsDeleted == false).Select(tac => tac.PlanTacticId).FirstOrDefault();
 
             // Set Allcated By
             string AllocatedBy = Convert.ToString(Enums.PlanAllocatedBy.months);

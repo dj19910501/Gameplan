@@ -170,8 +170,8 @@ namespace RevenuePlanner.Test.MockHelpers
         /// 
         public static string GetPlanYear(int planId)
         {
-            string published = Convert.ToString(Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value).ToLower();
-            return Convert.ToString(db.Plans.Where(p => p.IsDeleted == false && p.Status.ToLower() == published && p.PlanId==planId).Select(p => p.Year).FirstOrDefault());
+            
+            return Convert.ToString(db.Plans.Where(p => p.IsDeleted == false && p.PlanId==planId).Select(p => p.Year).FirstOrDefault());
         }
 
         /// <summary>

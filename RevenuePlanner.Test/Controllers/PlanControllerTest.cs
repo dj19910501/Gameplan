@@ -2094,8 +2094,8 @@ namespace RevenuePlanner.Test.Controllers
             string StatusIds = string.Join(",", lstStatus);
             string viewby = PlanGanttTypes.Tactic.ToString();
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
-            string monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
-            var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, monthText) as PartialViewResult;
+            //string monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
+            var result = objPlanController.GetBudgetData(PlanId.ToString(), viewby, OwnerIds, TacticTypeIds, StatusIds, string.Empty, strThisMonth) as PartialViewResult;
 
             Assert.AreEqual("~/Views/Budget/Budget.cshtml", result.ViewName);
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + "\n The Assert Value result:  " + result.ViewName);
