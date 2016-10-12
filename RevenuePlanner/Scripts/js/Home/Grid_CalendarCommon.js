@@ -2542,8 +2542,16 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
     var arrEntityIds = PCPTId.split('_');
     var CampaignId = "", ProgramId = "", TacticId = "";
     if (arrEntityIds != null && arrEntityIds.length > 2) {
-        CampaignId = arrEntityIds[1].replace('C', '');
-        ProgramId = arrEntityIds[2].replace('P', '');
+        $.each(arrEntityIds, function (index, Id) {
+            if (Id.indexOf('C') >= 0) {
+                CampaignId = Id.replace("C", "");
+            }
+            if (Id.indexOf('P') >= 0)
+            {
+                ProgramId = Id.replace("P", "");
+            }
+
+        });
         var divCamp = $('div[taskid="' + CampaignId + '"]').attr('altId');
         HomeGrid.openItem(divCamp);
         var divProg = $('div[taskid="' + ProgramId + '"]').attr('altId');

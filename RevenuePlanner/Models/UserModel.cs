@@ -202,6 +202,7 @@ namespace RevenuePlanner.Models
         public string PlanTitle { get; set; }
         public int? RequestCount { get; set; }
         public int? ComponentId { get; set; }
+        public int? EntityId { get; set; }
     }
     public class UserAlertsNotification
     {
@@ -211,6 +212,8 @@ namespace RevenuePlanner.Models
         public string CreatedDate { get; set; }
         public string ActionName { get; set; }
         public int? PlanID { get; set; }
+
+        public int? EntityID { get; set; }
     }
 
     public class NotificationRequestList

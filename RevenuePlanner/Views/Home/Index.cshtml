@@ -24,6 +24,7 @@
     var ShowInspectPopup = ViewBag.ShowInspectPopup; //nullable  value
     bool NoPlanCreated = (bool)Sessions.IsNoPlanCreated;
     int CurrentRequestPlanID = ViewBag.currentPlanId;
+    int SelectedTacticid = ViewBag.SelectedTacticID;
 }
 @Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
@@ -204,8 +205,13 @@
 @Scripts.Render("~/bundles/Home_BudgetJs")
 
     <script type="text/javascript">
+    var SelectedTacticId = '@SelectedTacticid';
     var isCopyTacticHomeGrid = 0;
     var isEditTacticHomeGrid = 0;
+    if (SelectedTacticId != 0)
+    {
+        isEditTacticHomeGrid = SelectedTacticId;
+    }
     var selectedTaskID = "";
     var scrollstate = 0;
     var Ownerlist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.OwnerList))'); // added by devanshi

@@ -291,10 +291,10 @@
                         $.each(data.NotificationsData, function (i, Item) {
                             if (Item.ActionName == '@Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString().ToLower()') {
                                 if (Item.RequestCount == '1') {
-                                    htmlstringForRequests += '<li style="cursor:pointer" id="Request" PlanId= "' + Item.ComponentId + '" onclick="RequestItemClick(this)" title="You have ' + Item.RequestCount + ' new approval request for plan ' + Item.PlanTitle + '"><span class="dd-left">You have ' + Item.RequestCount + ' new approval request for plan ' + Item.PlanTitle + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
+                                    htmlstringForRequests += '<li style="cursor:pointer" id="Request" PlanId= "' + Item.ComponentId + '" EntityId= "'+ Item.EntityId +'"  onclick="RequestItemClick(this)" title="You have ' + Item.RequestCount + ' new approval request for plan ' + Item.PlanTitle + '"><span class="dd-left">You have ' + Item.RequestCount + ' new approval request for plan ' + Item.PlanTitle + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
                                 }
                                 else {
-                                    htmlstringForRequests += '<li style="cursor:pointer" id="Request" PlanId= "' + Item.ComponentId + '" onclick="RequestItemClick(this)" title="You have ' + Item.RequestCount + ' new approval requests for plan ' + Item.PlanTitle + '"><span class="dd-left">You have ' + Item.RequestCount + ' new approval requests for plan ' + Item.PlanTitle + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
+                                    htmlstringForRequests += '<li style="cursor:pointer" id="Request" PlanId= "' + Item.ComponentId + '" EntityId= "' + Item.EntityId + '" onclick="RequestItemClick(this)" title="You have ' + Item.RequestCount + ' new approval requests for plan ' + Item.PlanTitle + '"><span class="dd-left">You have ' + Item.RequestCount + ' new approval requests for plan ' + Item.PlanTitle + '</span><span class="dd-right">' + Item.NotificationCreatedDate + '</span></li>';
                                 }
                             }
                             else {
@@ -336,6 +336,7 @@
         });
         function RequestItemClick(e) {
             var Id = $(e).attr("id");
+            var EntityId = $(e).attr("EntityId");
             var queryStringArr = [];
             if (Id == "Request") {
                 var PlanId = $(e).attr("PlanId");
@@ -353,6 +354,12 @@
                          key: 'IsRequest',
                          Value: "true"
                      });
+
+                    queryStringArr.push(
+                    {
+                        key: 'SelectedTacticID',
+                        Value: EntityId
+                    });
 
                     queryStringArr.push(
                        {

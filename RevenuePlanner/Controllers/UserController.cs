@@ -1604,7 +1604,8 @@ namespace RevenuePlanner.Controllers
                                        ActionName = g.FirstOrDefault().ActionName,
                                        PlanTitle = objPlan.Title,
                                        ComponentId = g.FirstOrDefault().ComponentId,
-                                       RequestCount = g.Count()
+                                       RequestCount = g.Count(),
+                                       EntityId = g.FirstOrDefault().EntityId
                                    }).ToList();
 
                 
@@ -1614,7 +1615,8 @@ namespace RevenuePlanner.Controllers
                         NotificationCreatedDate = Common.TimeAgo(a.CreatedDate),
                         NotificationId = a.NotificationId,
                         ActionName = a.ActionName,
-                        ComponentId = a.ComponentId
+                        ComponentId = a.ComponentId,
+                        EntityId = a.EntityId
                     }).ToList();
 
                     if (RequestList != null && RequestList.Count > 0)
@@ -1682,7 +1684,8 @@ namespace RevenuePlanner.Controllers
                         CreatedDate = Common.TimeAgo(a.CreatedDate,true),
                         NotificationId = a.NotificationId,
                         ActionName = a.ActionName,
-                        PlanID = a.ComponentId
+                        PlanID = a.ComponentId,
+                        EntityID = a.EntityId
 
                     }).ToList();
 
