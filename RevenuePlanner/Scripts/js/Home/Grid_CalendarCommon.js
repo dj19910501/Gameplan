@@ -1,7 +1,18 @@
 ﻿///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
     IsBudgetGrid = false
-    BindUpcomingActivites(filters.PlanIDs.toString())
+    BindUpcomingActivites(filters.PlanIDs.toString());
+    // clear array used for package/unpackage handling in calendar on tab change
+    AddRemovePackageItems = {
+        RemoveId: [],
+        AddItemId: [],
+    };
+
+    AnchorTaskIdsList = {
+        Id: [],
+        Value: []
+    };
+  //End
     //cleare success msg as we want to hide import msg on click of grid or calendar
     $('#SuccessMsg').css('display', 'none');
     if ($('#errorMsg').css('display') == 'block') {
@@ -94,7 +105,19 @@ function ShowhideDataonGridCalendar() {
 
 $('#btnbudget').click(function () {
     IsBudgetGrid = true;
-    BindUpcomingActivites(filters.PlanIDs.toString())
+    BindUpcomingActivites(filters.PlanIDs.toString());
+
+   // clear array used for package/unpackage handling in calendar on tab change
+    AddRemovePackageItems = {
+        RemoveId: [],
+        AddItemId: [],
+    };
+
+    AnchorTaskIdsList = {
+        Id: [],
+        Value: []
+    };
+   //end
     //cleare success msg as we want to hide import msg on click of grid or calendar
   
     if ($('#errorMsg').css('display') == 'block') {
@@ -992,7 +1015,7 @@ function CloseIconClick() {
                 if (isDataModified) {
                     RefreshCurrentTab();
                 }
-                else if (IsCalander) {
+                else if (isCalendarView) {
                     gantt.refreshData();
                     GlobalSearch();
                 }
@@ -1834,12 +1857,6 @@ function SetFilterData(EntityId, nValue) {
 } 
 
 
-
-//To Handle roi package/unpackage
-var AnchorTaskIdsList = {
-    Id: [],
-    Value: []
-};
 function CallPackageHoneyComb() {
     var ViewBy = $('#ddlTabViewBy').val();
     if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
@@ -1905,8 +1922,9 @@ function CallPackageHoneyComb() {
                     IsAlreadyPackaged.push($(this).find('h5').text());
                 }
             });
-
+        if (isCalendarView == true) {
             AnchorTaskIdsList.Value.push(promotionTacticIds.toString());
+        }
     }
     if (hasAnchorTactic != 1 || !isOnlyTactics || IsAlreadyPackaged.length > 0 || PlanIds.length > 1) {
         // All errors as per validation
