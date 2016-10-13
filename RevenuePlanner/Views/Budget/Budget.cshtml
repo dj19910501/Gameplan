@@ -375,40 +375,67 @@ function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
     }
     HomeGrid.cells(rowId, UnAllocatedIndex).setValue(SetAmtDiff);
     var ChildNodeIds = HomeGrid.getSubItems(rowId);
+        var ParentCost = 0;
+        var ParentUnallocatedCost = SetAmtDiff;
     if (Type.toLowerCase() == 'lineitem') {
         var GetParentId = HomeGrid.getParentId(rowId);
+            ParentCost = HomeGrid.cells(GetParentId, cellInd).getValue();
+            ParentUnallocatedCost = HomeGrid.cells(GetParentId, UnAllocatedIndex).getValue();
         ChildNodeIds = HomeGrid.getSubItems(GetParentId);
     }
     var arrChildNodeIds = ChildNodeIds.split(',');
     var ActivityTypeIndex = HomeGrid.getColIndexById("LineItemTypeId");
 
-    for (var i = 0; i < arrChildNodeIds.length; i++) {
-        var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
-        if (ActivityId == '') {
-            //Balance Planned Cost
-            SetBalanceCost(arrChildNodeIds[i], cellInd, Type, AmtDiff);
+        var LineItemTotal = 0;
+        
+        for (var i = 0; i < arrChildNodeIds.length; i++) {
+            var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
+            if (ActivityId != '') {
+                LineItemTotal = LineItemTotal + parseInt(HomeGrid.cells(arrChildNodeIds[i], cellInd).getValue());
+            }
+        }
+        //calculate total lineitems unallocated cost
+        var LineItemUnallocatedTotal = 0;
+        for (var i = 0; i < arrChildNodeIds.length; i++) {
+            var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
+            if (ActivityId != '') {
+                LineItemUnallocatedTotal = LineItemUnallocatedTotal + parseInt(HomeGrid.cells(arrChildNodeIds[i], UnAllocatedIndex).getValue());
+            }
+        }
+        for (var i = 0; i < arrChildNodeIds.length; i++) {
+            var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
+            if (ActivityId == '') {
+                //debugger;
 
-            //Balance UnAllocated Cost
-            SetBalanceCost(arrChildNodeIds[i], UnAllocatedIndex, Type, AmtDiff);
+                //Balance Planned Cost
+                SetBalanceCost(arrChildNodeIds[i], cellInd, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue,ParentCost);
+                //debugger;
+                //Balance UnAllocated Cost
+                SetBalanceUnallocatedCost(arrChildNodeIds[i], UnAllocatedIndex, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue, ParentUnallocatedCost, LineItemUnallocatedTotal);
+            }
+        }
+        //Roll Up Function
+        if (Type.toLowerCase() != 'lineitem') {
+            RollUpCost(rowId, cellInd, AmtDiff, IsTotalCost);
         }
     }
-    //Roll Up Function
-    if (Type.toLowerCase() != 'lineitem') {
-        RollUpCost(rowId, cellInd, AmtDiff, IsTotalCost);
-    }
-}
 
-function SetBalanceCost(arrChildNodeId, cellInd, Type, AmtDiff) {
-    var BalanceCost = parseInt(HomeGrid.cells(arrChildNodeId, cellInd).getValue());
-    var SetAmtDiff = 0;
-    if (Type.toLowerCase() == 'tactic') {
-        SetAmtDiff = parseInt(BalanceCost) + parseInt(AmtDiff);
+    function SetBalanceCost(arrChildNodeId, cellInd, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue, ParentCost) {
+      
+        var SetAmtDiff = 0;
+        if (Type.toLowerCase() == 'tactic') {
+            SetAmtDiff = parseInt(nValue) - parseInt(LineItemTotal);
+        }
+        else if (Type.toLowerCase() == 'lineitem') {
+            SetAmtDiff = parseInt(ParentCost) - parseInt(LineItemTotal);
+        }
+        HomeGrid.cells(arrChildNodeId, cellInd).setValue(SetAmtDiff);
     }
-    else if (Type.toLowerCase() == 'lineitem') {
-        SetAmtDiff = parseInt(BalanceCost) - parseInt(AmtDiff);
+    function SetBalanceUnallocatedCost(arrChildNodeId, cellInd, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue, tacticUnallocatedCost, LineItemUnallocatedTotal) {
+        
+        var unAllocated = tacticUnallocatedCost - LineItemUnallocatedTotal;
+            HomeGrid.cells(arrChildNodeId, cellInd).setValue(unAllocated);
     }
-    HomeGrid.cells(arrChildNodeId, cellInd).setValue(SetAmtDiff);
-}
 
 function RollUpCost(rowId, cellInd, AmtDiff, IsTotalCost) {
     var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedCost");

@@ -72,6 +72,7 @@ namespace RevenuePlanner.Models
         public bool isBudgetEditable { get; set; }
         public bool isCostEditable { get; set; }
         public bool isActualEditable { get; set; }
+        public bool isEntityEditable { get; set; }
         public List<CustomField_Entity> CustomFieldEntities { get; set; }
         public string CustomFieldType { get; set; }
         public int? LineItemTypeId { get; set; }

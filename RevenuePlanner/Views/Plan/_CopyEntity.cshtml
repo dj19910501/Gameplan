@@ -244,7 +244,9 @@
                             $('#copytactic').hide();
                             isDataModified = true;
                             ConfirmLinkTactic();
-
+                            if (IsBudgetGrid) {
+                                LoadBudgetGrid();
+                            }
                         }
                         else {
                             ShowErrorC(issuccess, result.msg);

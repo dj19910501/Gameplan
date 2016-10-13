@@ -113,7 +113,7 @@ namespace RevenuePlanner
                 ));
             //added by devanshi #2368
             bundles.Add(new StyleBundle("~/Content/css/GetCSSBudget").Include(
-                "~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css",
+             //   "~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css",
                 "~/Content/css/fileinput.css"
 ));
             BundleTable.EnableOptimizations = true;
