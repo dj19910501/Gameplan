@@ -875,7 +875,7 @@ namespace RevenuePlanner.Services
                     objTotalCost.style = NotEditableCellStyle;
                 }
 
-                if (Common.ParseDoubleValue(objTotalCost.value) > Common.ParseDoubleValue(objTotalBudget.value))
+                if (Common.ParseDoubleValue(objTotalCost.value) > Common.ParseDoubleValue(objTotalBudget.value) && Entity.ActivityType!=ActivityType.ActivityLineItem)
                 {
                     objTotalCost.style = objTotalCost.style + RedCornerStyle;
                 }
@@ -1021,7 +1021,7 @@ namespace RevenuePlanner.Services
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY12);
                     }
-                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value))
+                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
                     }
@@ -1119,7 +1119,7 @@ namespace RevenuePlanner.Services
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12) : ThreeDash;
                     }
-                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value))
+                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
                     }
@@ -1199,7 +1199,7 @@ namespace RevenuePlanner.Services
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10 + Entity.MonthValues.CostY11 + Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10 + Entity.MonthValues.ActualY11 + Entity.MonthValues.ActualY12);
                     }
-                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value))
+                    if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
                     }
@@ -1258,7 +1258,10 @@ namespace RevenuePlanner.Services
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12);
                 }
-
+                if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
+                {
+                    objCostMonth.style = objCostMonth.style + RedCornerStyle;
+                }
                 BudgetDataObjList.Add(objBudgetMonth);
                 BudgetDataObjList.Add(objCostMonth);
                 BudgetDataObjList.Add(objActualMonth);
