@@ -959,6 +959,7 @@ function UpdateResult() {
     GetFilterIds();
     //if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
     if ($('#IsGridView').val().toLowerCase() == "true" && !IsBudgetGrid) {
+        HomeGrid.saveOpenStates("plangridState");
         filters.customFieldIds = [];
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {

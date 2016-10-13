@@ -167,8 +167,7 @@ function LoadAfterParsing() {
     editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
         SetTooltip();
        
-        LoadAfterParsing();
-       
+      //  LoadAfterParsing();
         var childItems = HomeGrid.getAllSubItems(rowid);
         if (childItems != undefined && childItems != null && childItems != "") {
             //childItems = childItems.split(',').filter(function (tac) {
@@ -356,6 +355,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
     AssignParentIds(rowId);
     UpdateColumn = HomeGrid.getColumnId(Colind, 0);
+    var type = HomeGrid.getColType(cellInd);
     if (stage == 0) {
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
@@ -393,7 +393,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             var iddetail = customcolId.replace("custom_", "");
             var id = iddetail.split(':')[0];
             var clistitem = [];            
-            var type = HomeGrid.getColType(cellInd);
+          
             var entityid=HomeGrid.cells(rowId, GridHiddenId).getValue();
             if (type == "clist") {
               
@@ -404,6 +404,10 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         opencombobox();
     }
     if (stage == 1) {
+        if (type == "clist" && $(".dhx_clist input").length == 1) {
+            $(".dhx_clist").css("display", "none");
+            return false;
+        }
         if (updatetype.toLowerCase() == secLineItem.toLowerCase() || updatetype.toLowerCase() == 'tactic') {
             var oldval = HomeGrid.cells(rowId, cellInd).getValue();
             var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
@@ -1368,14 +1372,17 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
             success: function (data) {
                 if (data != null && data.optionlist != null && data.optionlist.length>0)
                     optionlist = data.optionlist;
-                if (optionlist != null && optionlist.length > 0) {
+                if (optionlist != null && optionlist.length > 0 && optionlist != undefined) {
                     $.each(optionlist, function (i, item) {
+                        if (clistitem.indexOf(item.value)==-1)
                         clistitem.push(item.value);
                     });
                     HomeGrid.registerCList(cellInd, clistitem);
                 }
-                else
-                    return false;
+                else {
+                    HomeGrid.registerCList(cellInd, clistitem);
+                }
+
                 }
         });
     }
