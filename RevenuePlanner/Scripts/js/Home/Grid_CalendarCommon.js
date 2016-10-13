@@ -2732,13 +2732,8 @@ function CallPdfHoneyComb() {
     var isAvailablerecord = false;
     // Modified By Nishant Sheth
     // Desc :: To resolve the #1981 code review points to resolve click on clear filters and
-    if (PdfFilters.SelectedPlans.toString().trim().length > 0 && activeMenu == 'home') {
+    if (PdfFilters.SelectedPlans.toString().trim().length > 0) {
         isAvailablerecord = true;
-    }
-    else {
-        if ($("#CurrentPlanId").val() > 0 && activeMenu != 'home') {
-            isAvailablerecord = true;
-        }
     }
     if (isAvailablerecord) {
         var GanttTaskDataforHoney = {
