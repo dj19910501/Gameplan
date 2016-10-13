@@ -2011,7 +2011,7 @@ namespace RevenuePlanner.Services
 
             bool isMultiYear = Common.IsMultiyearTimeframe(TimeFrame);  // Identify that Timeframe is multiyear or not.
             string entPlan = ActivityType.ActivityPlan.ToLower();
-            foreach (calendarDataModel objPlan in calendarDataModel.Where(p => p.type.ToLower() == entPlan).ToList())
+            foreach (calendarDataModel objPlan in calendarDataModel.Where(p => p.type != null && p.type.ToLower() == entPlan).ToList())
             {
                 if (!calendarDataModel.Where(ent => ent.parent == objPlan.id).Any())
                 {

@@ -2943,11 +2943,11 @@ GO
 -- Description:	Get Plan Calendar Start & End Date
 -- =============================================
 
-/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/12/2016 6:16:52 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/13/2016 4:58:12 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spGetPlanCalendarData]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[spGetPlanCalendarData]
 GO
-/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/12/2016 6:16:52 PM ******/
+/****** Object:  StoredProcedure [dbo].[spGetPlanCalendarData]    Script Date: 10/13/2016 4:58:12 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3563,7 +3563,7 @@ BEGIN
 
 		BEGIN
 			-- Update start_date column for Plan
-			UPDATE @tblPlans SET [start_date]= ISNull( D.[start_date],DATEFROMPARTS (DATEPART(yyyy,GETDATE()), 1, 1))
+			UPDATE @tblPlans SET [start_date]= ISNull( D.[start_date],DATEFROMPARTS (DATEPART(yyyy,@calStartDate), 1, 1))
 			FROM @tblPlans as TP
 			JOIN 
 				(
@@ -3581,7 +3581,7 @@ BEGIN
 
 		BEGIN
 			-- Update enddate column for Plan
-			UPDATE @tblPlans SET endDate= ISNull( D.endDate,DATEFROMPARTS (DATEPART(yyyy,GETDATE()), 12, 31))
+			UPDATE @tblPlans SET endDate= ISNull( D.endDate,DATEFROMPARTS (DATEPART(yyyy,@calEndDate), 12, 31))
 			FROM @tblPlans as TP
 			JOIN 
 				(
@@ -3710,7 +3710,9 @@ END
 
 
 
+
 GO
+
 
 
 

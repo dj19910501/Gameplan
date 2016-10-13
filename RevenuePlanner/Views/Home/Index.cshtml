@@ -356,6 +356,7 @@
             ganttwidth = $("#gantt_here").width();
             totalWidth = ganttwidth - 230;
             gantt._render_tasks_scales(totalWidth);
+            gantt.refreshData();
         }
         $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
 
@@ -385,6 +386,19 @@
     }
 
     , function () {
+        var ganttwidth;
+        var totalWidth;
+        if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
+            var ganttwidth = $("#gridbox").width();
+            var totalWidth = ganttwidth + 230;
+            ResizeGrid(totalWidth);
+        }
+        else {
+            ganttwidth = $("#gantt_here").width();
+            totalWidth = ganttwidth - 230;
+            gantt._render_tasks_scales(totalWidth);
+            gantt.refreshData();
+        }
 
         $('#gantt_hor_scroll').attr('style', 'Width: 1483px;');
 
