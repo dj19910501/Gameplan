@@ -8075,8 +8075,14 @@ BEGIN
 				,Tactic.ProjectedStageValue 
 				,Stage.Title AS 'ProjectedStage'
 				,NULL AS 'TargetStageGoal'
-				,MQL.Value as MQL
-				,Revenue.Value as Revenue
+				,CASE WHEN Hireachy.EntityType='Tactic'
+					THEN
+					(SELECT Value FROM dbo.fnGetMqlByEntityTypeAndEntityId('Tactic',@ClientId,Stage.[Level],@StageMqlMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue))
+					END
+					AS MQL
+				,CASE WHEN Hireachy.EntityType='Tactic'
+					THEN (SELECT Value FROM dbo.fnGetRevueneByEntityTypeAndEntityId('Tactic',@ClientId,Stage.[Level],@StageRevenueMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue,M.AverageDealSize))
+					END AS Revenue
 				,Tactic.TacticCustomName AS 'MachineName'
 				,Tactic.LinkedPlanId
 				,Tactic.LinkedTacticId
@@ -8119,12 +8125,6 @@ BEGIN
 						WHERE Hireachy.EntityType = 'LineItem'
 						AND Hireachy.EntityId = LineItem.PlanLineItemId) LineItem
 	OUTER APPLY (SELECT Stage.Title,Stage.StageId,Stage.[Level] FROM Stage WITH (NOLOCK) WHERE Tactic.StageId = Stage.StageId AND Stage.IsDeleted=0) Stage
-	OUTER APPLY (SELECT Value FROM dbo.fnGetMqlByEntityTypeAndEntityId(Hireachy.EntityType,@ClientId,Stage.[Level],@StageMqlMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue) MQL
-					WHERE Hireachy.EntityType='Tactic') AS MQL
-	OUTER APPLY (SELECT Value FROM dbo.fnGetRevueneByEntityTypeAndEntityId(Hireachy.EntityType,@ClientId,Stage.[Level],@StageRevenueMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue,M.AverageDealSize) Revenue
-					WHERE Hireachy.EntityType='Tactic') AS Revenue
-	Order by Hireachy.EntityTitle
-	
 END
 
 

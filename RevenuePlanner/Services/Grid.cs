@@ -73,7 +73,7 @@ namespace RevenuePlanner.Services
 
             EntityList = objDbMrpEntities.Database
                 .SqlQuery<GridDefaultModel>("GetGridData @PlanId,@ClientId,@OwnerIds,@TacticTypeIds,@StatusIds,@ViewBy", para)
-                .ToList();
+                .OrderBy(a => a.EntityTitle).ToList();
             return EntityList;
         }
         #endregion
@@ -379,7 +379,7 @@ namespace RevenuePlanner.Services
                         , data.CustomFields
                         , EntityRowPermission)
                         .ToList();
-            
+
             // Create empty list of custom field values for entity where there is no any custom fields value on entity
             List<Plandataobj> lstCustomPlanData = new List<Plandataobj>();
             selectedCustomColumns.ForEach(a =>
@@ -442,11 +442,6 @@ namespace RevenuePlanner.Services
                     return objHomeGridProp.openstateone;
             }
             else if (string.Compare(EntityType, Convert.ToString(Enums.EntityType.Campaign), true) == 0)
-            {
-                if (ChildernCount > 0)
-                    return objHomeGridProp.openstateone;
-            }
-            else if (string.Compare(EntityType, Convert.ToString(Enums.EntityType.Program), true) == 0)
             {
                 if (ChildernCount > 0)
                     return objHomeGridProp.openstateone;
@@ -935,7 +930,7 @@ namespace RevenuePlanner.Services
             {
                 throw;
             }
-            return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, bgColor = string.Empty, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
+            return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
         }
         #endregion
 
@@ -1173,10 +1168,12 @@ namespace RevenuePlanner.Services
             {
                 if (!string.IsNullOrEmpty(UniqueId))
                 {
-                    GridDefaultModel Row = DataList.Where(a => a.UniqueId == UniqueId).FirstOrDefault();
+                    var Row = DataList.Where(a => a.UniqueId == UniqueId)
+                        .Select(a => new { a.ProjectedStage, a.TacticTypeId }).FirstOrDefault();
                     if (Row != null)
                     {
-                        objUserData = TacticUserData(Row);
+                        objUserData.stage = Row.ProjectedStage;
+                        objUserData.tactictype = Convert.ToString(Row.TacticTypeId);
                     }
                 }
             }
@@ -1184,10 +1181,11 @@ namespace RevenuePlanner.Services
             {
                 if (!string.IsNullOrEmpty(UniqueId))
                 {
-                    GridDefaultModel Row = DataList.Where(a => a.UniqueId == UniqueId).FirstOrDefault();
-                    if (Row != null)
+                    var LineItemType = DataList.Where(a => a.UniqueId == UniqueId).Select(a => a.LineItemType).FirstOrDefault();
+                    if (LineItemType != null)
                     {
-                        objUserData = LineItemUserData(Row);
+                        string IsOther = Convert.ToString(!string.IsNullOrEmpty(LineItemType) ? false : true);
+                        objUserData.IsOther = IsOther;
                     }
                 }
             }
@@ -1209,9 +1207,9 @@ namespace RevenuePlanner.Services
                                     prg.UniqueId,
                                     prg.StartDate,
                                     prg.EndDate
-                                }).ToList();
+                                });
 
-            if (ProgramDetail.Count > 0)
+            if (ProgramDetail.Count() > 0)
             {
                 objUserData.psdate = ProgramDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
                 objUserData.pedate = ProgramDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
@@ -1223,9 +1221,9 @@ namespace RevenuePlanner.Services
                                     {
                                         objData.StartDate,
                                         objData.EndDate
-                                    }).ToList();
+                                    });
 
-                if (TacticDetail.Count > 0)
+                if (TacticDetail.Count() > 0)
                 {
                     objUserData.tsdate = TacticDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
                     objUserData.tedate = TacticDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
@@ -1248,39 +1246,15 @@ namespace RevenuePlanner.Services
                                 {
                                     tac.StartDate,
                                     tac.EndDate
-                                }).ToList();
-            if (TacticDetail.Count > 0)
+                                });
+            if (TacticDetail.Count() > 0)
             {
                 objUserData.tsdate = TacticDetail.Min(a => a.StartDate).Value.ToString("MM/dd/yyyy");
                 objUserData.tedate = TacticDetail.Max(a => a.EndDate).Value.ToString("MM/dd/yyyy");
             }
             return objUserData;
         }
-        
-        /// <summary>
-        /// Set the user data for Tactic entities
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Planuserdatagrid TacticUserData(GridDefaultModel Row)
-        {
-            Planuserdatagrid objUserData = new Planuserdatagrid();
-            objUserData.stage = Row.ProjectedStage;
-            objUserData.tactictype = Convert.ToString(Row.TacticTypeId);
 
-            return objUserData;
-        }
-
-        /// <summary>
-        /// Set the user data for Lineitem entities
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Planuserdatagrid LineItemUserData(GridDefaultModel Row)
-        {
-            Planuserdatagrid objUserData = new Planuserdatagrid();
-            string IsOther = Convert.ToString(!string.IsNullOrEmpty(Row.LineItemType) ? false : true);
-            objUserData.IsOther = IsOther;
-            return objUserData;
-        }
         #endregion
 
 
@@ -1896,7 +1870,7 @@ namespace RevenuePlanner.Services
         }
 
 
-       
+
 
         #endregion
 
@@ -1946,7 +1920,7 @@ namespace RevenuePlanner.Services
         // Desc: Set Owner Name and Permission of entity
         public List<calendarDataModel> SetOwnerNameAndPermission(List<calendarDataModel> lstCalendarDataModel)
         {
-           
+
 
             #region "Get SubOrdinates"
             List<int> lstSubordinatesIds = new List<int>();
@@ -1963,7 +1937,7 @@ namespace RevenuePlanner.Services
             KeyValuePair<int, User> usr;
             foreach (calendarDataModel data in lstCalendarDataModel)
             {
-               
+
 
                 #region "Set Permission"
                 if (IsPlanCreateAllAuthorized == false)     // check whether user has plan create permission or not

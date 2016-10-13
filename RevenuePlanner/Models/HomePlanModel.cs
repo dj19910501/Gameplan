@@ -394,7 +394,6 @@ namespace RevenuePlanner.Models
     {
         public string id { get; set; }
         public string open { get; set; }
-        public string bgColor { get; set; }
         public List<Plandataobj> data { get; set; }
         public Planuserdatagrid userdata { get; set; }
         public List<PlanDHTMLXGridDataModel> rows { get; set; }
