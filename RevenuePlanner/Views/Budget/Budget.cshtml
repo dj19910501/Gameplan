@@ -116,6 +116,16 @@
             mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
             var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
 
+            //Set number format for value fields
+            var columnIdArray = '@Model.ColumnIds'.split(',');
+
+            var startValueColumnIndex = 7;//this is the value column start index
+            for (i = startValueColumnIndex; i < columnIdArray.length; ++i) {
+                // do something with `substr[i]`
+
+                HomeGrid.setNumberFormat("0,000.00", i, ".", ",");
+
+            }
             HomeGrid.parse(GridDataHomeGrid, "json");
             HomeGrid.collapseAll();
 
@@ -355,9 +365,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
 
 function SetActualCost(rowId, cellInd, nValue, oValue) {
     var TotalActualIndex = HomeGrid.getColIndexById("ActualCost");
-    var TotalActualCost = parseInt(HomeGrid.cells(rowId, TotalActualIndex).getValue());
-    var AmtDiff = parseInt(nValue) - parseInt(oValue);
-    var SetAmtDiff = parseInt(TotalActualCost) + parseInt(AmtDiff);
+    var TotalActualCost = parseFloat(HomeGrid.cells(rowId, TotalActualIndex).getValue());
+    var AmtDiff = parseFloat(nValue) - parseFloat(oValue);
+    var SetAmtDiff = parseFloat(TotalActualCost) + parseFloat(AmtDiff);
     HomeGrid.cells(rowId, TotalActualIndex).setValue(SetAmtDiff);
 
     //Roll Up Function
@@ -367,11 +377,11 @@ function SetActualCost(rowId, cellInd, nValue, oValue) {
 function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
     //Total Planned Cost
     var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedCost");
-    var UnAllocatedTotalCost = parseInt(HomeGrid.cells(rowId, UnAllocatedIndex).getValue());
-    var AmtDiff = parseInt(nValue) - parseInt(oValue);
-    var SetAmtDiff = parseInt(UnAllocatedTotalCost) + parseInt(AmtDiff);
+    var UnAllocatedTotalCost = parseFloat(HomeGrid.cells(rowId, UnAllocatedIndex).getValue());
+    var AmtDiff = parseFloat(nValue) - parseFloat(oValue);
+    var SetAmtDiff = parseFloat(UnAllocatedTotalCost) + parseFloat(AmtDiff);
     if (!IsTotalCost) {
-        SetAmtDiff = parseInt(UnAllocatedTotalCost) - parseInt(AmtDiff);
+        SetAmtDiff = parseFloat(UnAllocatedTotalCost) - parseFloat(AmtDiff);
     }
     HomeGrid.cells(rowId, UnAllocatedIndex).setValue(SetAmtDiff);
     var ChildNodeIds = HomeGrid.getSubItems(rowId);
@@ -391,7 +401,7 @@ function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
         for (var i = 0; i < arrChildNodeIds.length; i++) {
             var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
             if (ActivityId != '') {
-                LineItemTotal = LineItemTotal + parseInt(HomeGrid.cells(arrChildNodeIds[i], cellInd).getValue());
+                LineItemTotal = LineItemTotal + parseFloat(HomeGrid.cells(arrChildNodeIds[i], cellInd).getValue());
             }
         }
         //calculate total lineitems unallocated cost
@@ -399,7 +409,7 @@ function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
         for (var i = 0; i < arrChildNodeIds.length; i++) {
             var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
             if (ActivityId != '') {
-                LineItemUnallocatedTotal = LineItemUnallocatedTotal + parseInt(HomeGrid.cells(arrChildNodeIds[i], UnAllocatedIndex).getValue());
+                LineItemUnallocatedTotal = LineItemUnallocatedTotal + parseFloat(HomeGrid.cells(arrChildNodeIds[i], UnAllocatedIndex).getValue());
             }
         }
         for (var i = 0; i < arrChildNodeIds.length; i++) {
@@ -424,10 +434,10 @@ function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
       
         var SetAmtDiff = 0;
         if (Type.toLowerCase() == 'tactic') {
-            SetAmtDiff = parseInt(nValue) - parseInt(LineItemTotal);
+            SetAmtDiff = parseFloat(nValue) - parseFloat(LineItemTotal);
         }
         else if (Type.toLowerCase() == 'lineitem') {
-            SetAmtDiff = parseInt(ParentCost) - parseInt(LineItemTotal);
+            SetAmtDiff = parseFloat(ParentCost) - parseFloat(LineItemTotal);
         }
         HomeGrid.cells(arrChildNodeId, cellInd).setValue(SetAmtDiff);
     }
@@ -441,15 +451,15 @@ function RollUpCost(rowId, cellInd, AmtDiff, IsTotalCost) {
     var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedCost");
     var ParentId = HomeGrid.getParentId(rowId);
     while (ParentId != null && ParentId != '') {
-        var ParentCost = parseInt(HomeGrid.cells(ParentId, cellInd).getValue());
-        var ParentAmtDiff = parseInt(ParentCost) + parseInt(AmtDiff);
+        var ParentCost = parseFloat(HomeGrid.cells(ParentId, cellInd).getValue());
+        var ParentAmtDiff = parseFloat(ParentCost) + parseFloat(AmtDiff);
         HomeGrid.cells(ParentId, cellInd).setValue(ParentAmtDiff);
 
         //Parent UnAllocated Cost
-        var UnAllocatedTotalCost = parseInt(HomeGrid.cells(ParentId, UnAllocatedIndex).getValue());
-        var SetAmtDiff = parseInt(UnAllocatedTotalCost) + parseInt(AmtDiff);
+        var UnAllocatedTotalCost = parseFloat(HomeGrid.cells(ParentId, UnAllocatedIndex).getValue());
+        var SetAmtDiff = parseFloat(UnAllocatedTotalCost) + parseFloat(AmtDiff);
         if (!IsTotalCost) {
-            SetAmtDiff = parseInt(UnAllocatedTotalCost) - parseInt(AmtDiff);
+            SetAmtDiff = parseFloat(UnAllocatedTotalCost) - parseFloat(AmtDiff);
         }
         HomeGrid.cells(ParentId, UnAllocatedIndex).setValue(SetAmtDiff);
 
@@ -461,13 +471,13 @@ function RollUpActualCost(rowId, cellInd, AmtDiff) {
     var TotalActualIndex = HomeGrid.getColIndexById("ActualCost");
     var ParentId = HomeGrid.getParentId(rowId);
     while (ParentId != null && ParentId != '') {
-        var ParentCost = parseInt(HomeGrid.cells(ParentId, cellInd).getValue());
-        var ParentAmtDiff = parseInt(ParentCost) + parseInt(AmtDiff);
+        var ParentCost = parseFloat(HomeGrid.cells(ParentId, cellInd).getValue());
+        var ParentAmtDiff = parseFloat(ParentCost) + parseFloat(AmtDiff);
         HomeGrid.cells(ParentId, cellInd).setValue(ParentAmtDiff);
 
         //Parent Total Cost
-        var TotalActualCost = parseInt(HomeGrid.cells(ParentId, TotalActualIndex).getValue());
-        var SetAmtDiff = parseInt(TotalActualCost) + parseInt(AmtDiff);
+        var TotalActualCost = parseFloat(HomeGrid.cells(ParentId, TotalActualIndex).getValue());
+        var SetAmtDiff = parseFloat(TotalActualCost) + parseFloat(AmtDiff);
         HomeGrid.cells(ParentId, TotalActualIndex).setValue(SetAmtDiff);
 
         ParentId = HomeGrid.getParentId(ParentId);

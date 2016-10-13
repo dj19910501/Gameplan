@@ -35,8 +35,8 @@ namespace RevenuePlanner.Services
         public const string EndColumnsHeader = ",Unallocated Planned Cost,Unallocated Budget";
         public const string FixColumnIds = "ActivityId,Type,MachineName,colourcode,LineItemTypeId,TaskName,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",UnAllocatedCost,Budget";
-        public const string FixColType = "ro,ro,ro,ro,ro,tree,ro,ed,ed,ed";
-        public const string EndColType = ",ro,ro";
+        public const string FixColType = "ro,ro,ro,ro,ro,tree,ro,edn,edn,edn";
+        public const string EndColType = ",ron,ron";
         public const string FixcolWidth = "100,100,100,10,100,302,75,100,110,100";
         public const string EndcolWidth = ",150,150";
         public const string FixColsorting = "na,na,na,na,na,na,na,int,int,int";
@@ -49,7 +49,8 @@ namespace RevenuePlanner.Services
         public const string NotEditableCellStyle = "color:#a2a2a2 !important;";
         public const string RedCornerStyle = "background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top; ";
         public const string OrangeCornerStyle = "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;";
-        public const string ThreeDash = "---";
+        //public const string ThreeDash = "---";
+        public const string ThreeDash = "0";
         public bool isMultiYear = false;
 
 
@@ -768,7 +769,7 @@ namespace RevenuePlanner.Services
 
 
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
-                    colType = colType + ",ed,ed,ed";
+                    colType = colType + ",edn,edn,edn";
                     width = width + ",130,130,130";
                     colSorting = colSorting + ",int,int,int";
 
@@ -812,7 +813,7 @@ namespace RevenuePlanner.Services
                     .Append(manageviewicon);
 
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
-                    colType = colType + ",ed,ed,ed";
+                    colType = colType + ",edn,edn,edn";
                     width = width + ",140,140,140";
                     colSorting = colSorting + ",int,int,int";
                 }
