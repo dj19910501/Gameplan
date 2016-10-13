@@ -150,8 +150,8 @@
                     return true;
             });
             HomeGrid.attachEvent("onRowSelect", function (id, ind) {
-                var idindex =  HomeGrid.getColIndexById('ActivityId');
-                isEditTacticHomeGrid = HomeGrid.cells(id, idindex).getValue();
+                isEditTacticHomeGrid = id;
+
             });
             var machineNameindex = HomeGrid.getColIndexById("MachineName");
             var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");

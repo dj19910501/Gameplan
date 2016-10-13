@@ -127,8 +127,7 @@
 
         });
         HomeGrid.attachEvent("onRowSelect", function (id, ind) {
-            var idindex = HomeGrid.getColIndexById('id');
-            isEditTacticHomeGrid = HomeGrid.cells(id, idindex).getValue();
+            isEditTacticHomeGrid = id;
         });
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);

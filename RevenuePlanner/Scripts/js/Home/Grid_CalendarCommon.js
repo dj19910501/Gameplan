@@ -401,7 +401,7 @@ function DisplayPopUpMenu(obj, e) {
     var permission = $(obj).attr('Permission');
     var LineType = $(obj).attr('lineitemtype');
     if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
-
+        HomeGrid.saveOpenStates("plangridState");
         LinkTacticPermission = $(obj).attr('linktacticper');
         LinkedTacticId = $(obj).attr('linkedtacticid');
         type = $(obj).attr('id');
@@ -410,6 +410,10 @@ function DisplayPopUpMenu(obj, e) {
         permission = $(obj).attr('per');
         LineType = $(obj).attr('lt');
 
+    }
+    else
+    {
+        SetcookieforSaveState();
     }
     var name_Id = name.split("_");
     var PlanId;
@@ -2692,10 +2696,17 @@ function SetselectedRow()
         //isCopyTactic = 0;
     }
     else if (isEditTacticHomeGrid != 0) {
+        if (isEditTacticHomeGrid.indexOf('L') > -1)
+            id = isEditTacticHomeGrid;
+        else {
         var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, idcoluIndex, true);
-        var id = selectedcell[0];
-        var rowid;
+            id = selectedcell[0];
+        }
+        
         if (id != undefined && id != 'undefined') {
+            if (isEditTacticHomeGrid.indexOf('L') > -1)
+                rowid = id;
+            else
             rowid = id[0];
            // HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
