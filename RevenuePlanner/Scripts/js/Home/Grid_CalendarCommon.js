@@ -377,6 +377,7 @@ function loadInspectPopup(id, section, tabValue, mode, parentId) {
 }
 ///Added by Rahul Shah to open Inpection window on click ok ViewIcon for Plan Grid
 function DisplayPopup(item) {
+    HomeGrid.saveOpenStates("plangridState");
     inspectCloseFocus = $(item).position().top;
     var id = $(item).parent().prev().html();
     var type = $(item).attr('id');
@@ -384,6 +385,7 @@ function DisplayPopup(item) {
     DisplayEditablePopup(id, type);
 }
 function DisplayPopupforBudget(item) {
+    HomeGrid.saveOpenStates("plangridState");
     inspectCloseFocus = $(item).position().top;
     var id = $(item).parent().parent().find('td:first').html();
     var type = $(item).attr('id');
