@@ -1631,7 +1631,7 @@ namespace RevenuePlanner.Controllers
                 Common.InsertChangeLog(Sessions.ModelId, 0, objTacticTypeDB.TacticTypeId, objTacticTypeDB.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
 
                 //// Dispose db object
-                //objDbMrpEntities.Dispose();
+                objDbMrpEntities.Dispose();
                 TempData["SuccessMessage"] = string.Format(Common.objCached.ModelTacticDeleted, objTacticTypeDB.Title);
 
                 return Json(new { status = "SUCCESS" });
@@ -1734,7 +1734,7 @@ namespace RevenuePlanner.Controllers
                         objDbMrpEntities.SaveChanges();
 
                         Common.InsertChangeLog((int)ModelId, 0, objtactic.TacticTypeId, objtactic.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.added);
-                        //objDbMrpEntities.Dispose();
+                        objDbMrpEntities.Dispose();
 
                         TempData["SuccessMessage"] = string.Format(Common.objCached.ModelNewTacticSaveSucess, Title);
                     }
@@ -1777,11 +1777,12 @@ namespace RevenuePlanner.Controllers
                         objtactic.TacticTypeId = TacticTypeId;
                         objtactic.IsDeleted = false;
 
-                        objDbMrpEntities.Entry(objtactic).State = EntityState.Modified;
-                        objDbMrpEntities.SaveChanges();
+                        MRPEntities dbedit = new MRPEntities();
+                        dbedit.Entry(objtactic).State = EntityState.Modified;
+                        dbedit.SaveChanges();
 
                         Common.InsertChangeLog((int)ModelId, 0, objtactic.TacticTypeId, objtactic.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.updated);
-
+                        dbedit.Dispose();
                         TempData["SuccessMessage"] = string.Format(Common.objCached.ModelTacticEditSucess, Title);
 
                         //#2063: Tactic 'Deployed To Integration' not defaulting to on
@@ -2098,7 +2099,8 @@ namespace RevenuePlanner.Controllers
                                 objtactic.IsDeleted = false;
                                 objtactic.WorkFrontTemplateId = tacticType.WorkFrontTemplateId; // Added Brad Gray 07/25/2015 WorkFront Template to Tactic Type mapping - updated 1/7/2016 by Brad Gray PL#1856
 
-                                objDbMrpEntities.Entry(objtactic).State = EntityState.Modified;
+                                dbedit = new MRPEntities();
+                                dbedit.Entry(objtactic).State = EntityState.Modified;
 
                                 //#2063: Tactic 'Deployed To Integration' not defaulting to on
                                 // Added by Viral on 04/08/2016
@@ -2141,7 +2143,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 #endregion
 
-                                result = objDbMrpEntities.SaveChanges();
+                                result = dbedit.SaveChanges();
+                                dbedit.Dispose();
                                 //// changed by : Nirav Shah on 31 Jan 2013
                                 //// Bug 19:Model - should not be able to publish a model with no tactics selected */
                                 if (msgshow == false)
