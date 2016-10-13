@@ -146,7 +146,7 @@ function LoadAfterParsing() {
         HomeGrid.detachEvent(eventidonbeforedrag);
     }
     eventidonbeforedrag = HomeGrid.attachEvent("onBeforeDrag", function (id) {
-        if (id != "" && id != undefined) {           
+        if (id != "" && id != undefined) {
             var drag_id = HomeGrid.cells(id, GridHiddenId).getValue();
             var drag_Type = HomeGrid.cells(id, ActivitypeHidden).getValue();
             if (drag_id.length > 0) {
@@ -166,8 +166,8 @@ function LoadAfterParsing() {
     }
     editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
         SetTooltip();
-       
-      //  LoadAfterParsing();
+
+        //  LoadAfterParsing();
         var childItems = HomeGrid.getAllSubItems(rowid);
         if (childItems != undefined && childItems != null && childItems != "") {
             //childItems = childItems.split(',').filter(function (tac) {
@@ -313,7 +313,7 @@ function formatDate(d) {
     return addZero(d.getMonth() + 1) + "/" + addZero(d.getDate()) + "/" + d.getFullYear();
 }
 
-function SetColumUpdatedValue(CellInd, diff) {   
+function SetColumUpdatedValue(CellInd, diff) {
     progActVal = HomeGrid.cells(progid, CellInd).getAttribute("actval");
     CampActVal = HomeGrid.cells(campid, CellInd).getAttribute("actval");
     PlanActVal = HomeGrid.cells(planid, CellInd).getAttribute("actval");
@@ -322,7 +322,7 @@ function SetColumUpdatedValue(CellInd, diff) {
     newPlanVal = parseInt(PlanActVal.toString().replace(/\,/g, '').replace(CurrencySybmol, '')) + parseInt(diff);
     HomeGrid.cells(progid, CellInd).setAttribute("actval", newProgVal);
     HomeGrid.cells(campid, CellInd).setAttribute("actval", newCampVal);
-    HomeGrid.cells(planid, CellInd).setAttribute("actval", newPlanVal);    
+    HomeGrid.cells(planid, CellInd).setAttribute("actval", newPlanVal);
 }
 
 
@@ -363,43 +363,43 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         if (rowId == "newRow_0")
             return false;
         if (Colind == TypeColIndex) {
-                var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
-            if (updatetype.toLowerCase() == secLineItem) {                
+            var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
+            if (updatetype.toLowerCase() == secLineItem) {
                 var combo = HomeGrid.getCombo(cellInd);
                 combo.clear();
                 if (lineItemTypefieldOptionList.length > 0) {
                     $.each(lineItemTypefieldOptionList, function (i, item) {
-                    combo.put(item.id, item.value);
-                });
+                        combo.put(item.id, item.value);
+                    });
+                }
             }
-            }
-            else {               
+            else {
                 var combo = HomeGrid.getCombo(cellInd);
                 //var tacticTypelist1 = TacticTypelistDataforGrid;
                 combo.clear();
                 if (tacticTypefieldOptionList.length > 0) {
                     $.each(tacticTypefieldOptionList, function (i, item) {
-                    if (item.PlanId == _planid) {
-                       combo.put(item.id, item.value);
-                    }
-                });
+                        if (item.PlanId == _planid) {
+                            combo.put(item.id, item.value);
+                        }
+                    });
+                }
             }
         }
-        }
-        
+
         //added by devanshi #2598
         var customcolId = HomeGrid.getColumnId(cellInd);
         if (customcolId.indexOf("custom_") >= 0) {
             var iddetail = customcolId.replace("custom_", "");
             var id = iddetail.split(':')[0];
-            var clistitem = [];            
-          
-            var entityid=HomeGrid.cells(rowId, GridHiddenId).getValue();
+            var clistitem = [];
+
+            var entityid = HomeGrid.cells(rowId, GridHiddenId).getValue();
             if (type == "clist") {
-              
-                    GetCustomfieldOptionlist(id, entityid, cellInd);
-             
-           }
+
+                GetCustomfieldOptionlist(id, entityid, cellInd);
+
+            }
         }
         opencombobox();
     }
@@ -536,7 +536,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 else
                     return false;
             }
-            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {                              
+            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
                 var customcolId = UpdateColumn;
                 var iddetail = customcolId.replace("custom_", "");
                 var id = iddetail.split(':')[0];
@@ -563,24 +563,26 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 Value: htmlEncode(customvalue[key]),
                                 Weight: weight,
                                 CostWeight: weight
-                        });                                                
+                            });
                         });
                     }
-                    _customFieldValues = JSON.stringify(_customFieldValues);                  
+                    _customFieldValues = JSON.stringify(_customFieldValues);
                 }
                 else {
                     return false;
-            }
-            }
-            if (UpdateColumn == TacticTypeId && updatetype.toLowerCase() == secTactic.toLowerCase()) {                                
-                //here oValue is assign id according to its value
-                if (tacticTypefieldOptionList.length > 0) {
-                    $.each(tacticTypefieldOptionList, function (i, item) {                          
-                        if (item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
-                            oValue = item.id;
-                        }
-                    });
                 }
+            }
+            if (UpdateColumn == TacticTypeId && updatetype.toLowerCase() == secTactic.toLowerCase()) {
+                //here oValue is assign id according to its value
+                var oldTacticTypeid = tacticTypefieldOptionList.filter(function (item) {
+                    if (item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
+                        return item.id;
+                    }
+                });
+                if (oldTacticTypeid.length > 0) {
+                    oValue = oldTacticTypeid[0].id;
+                }
+
                 var tacticTypeId = nValue;
                 var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');
                 var arrTacTypes = tacticTypefieldOptionList;
@@ -643,18 +645,19 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             if (updatetype.toLowerCase() == secLineItem.toLowerCase()) {
                 //here oValue is assign id according to its value
                 if (UpdateColumn == TacticTypeId) {
-                    if (lineItemTypefieldOptionList.length > 0) {
-                        $.each(lineItemTypefieldOptionList, function (i, item) {
-                            if (item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
-                                oValue = item.id;
-                            }
-                        });
+                    var oldLineItemTypeid = lineItemTypefieldOptionList.filter(function (item) {
+                        if (item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
+                            return item.id;
+                        }
+                    });
+                    if (oldLineItemTypeid.length > 0) {
+                        oValue = oldTacticTypeid[0].id;
                     }
                 }
                 var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
                 if (actval == null || actval == "")
                     actval = oValue;
-                if (nValue != oValue && nValue != actval) {                    
+                if (nValue != oValue && nValue != actval) {
                     UpdateVal = nValue;
                     var TotalRowIds = HomeGrid.getAllSubItems(tactid);
                     $.ajax({
@@ -988,20 +991,20 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
             else {
                 if (data.mql != null) {
                     mqlConversion = data.mql;
-                }                
+                }
                 var mqlValue = mqlConversion.toString();
                 HomeGrid.cells(rowid, MQLColIndex).setValue(mqlValue);
                 diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
                 HomeGrid.cells(rowid, MQLColIndex).setAttribute("actval", mqlConversion);
                 SetColumUpdatedValue(MQLColIndex, diff);
-            }           
+            }
             HomeGrid.cells(progid, MQLColIndex).setValue(newProgVal, false);
             HomeGrid.cells(campid, MQLColIndex).setValue(newCampVal, false);
             HomeGrid.cells(planid, MQLColIndex).setValue(newPlanVal, false);
             HomeGrid.cells(rowid, RevenueColIndex).setValue(CurrencySybmol + revenue);
-            var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getAttribute("actval");           
-            diff = parseInt(revenue) - parseInt(tactActRevenuVal.toString().replace(/\,/g,'').replace(CurrencySybmol,''));
-            SetColumUpdatedValue(RevenueColIndex, diff);          
+            var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getAttribute("actval");
+            diff = parseInt(revenue) - parseInt(tactActRevenuVal.toString().replace(/\,/g, '').replace(CurrencySybmol, ''));
+            SetColumUpdatedValue(RevenueColIndex, diff);
             HomeGrid.cells(progid, RevenueColIndex).setValue(CurrencySybmol + newProgVal);
             HomeGrid.cells(campid, RevenueColIndex).setValue(CurrencySybmol + newCampVal);
             HomeGrid.cells(planid, RevenueColIndex).setValue(CurrencySybmol + newPlanVal);
@@ -1318,7 +1321,7 @@ function ExportToExcel(isHoneyComb) {
         var lineItemTypeIdIndex = exportGrid.getColIndexById("LineItemTypeId");
         if (isHoneyComb) {
             HomeGrid.forEachRow(function (id) {
-              
+
                 var d = HomeGrid.cells(id, iconIndex).getValue();
                 if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
                     exportGrid.setRowHidden(id, true);
@@ -1340,21 +1343,19 @@ function ExportToExcel(isHoneyComb) {
     }
 }
 //function to get dependent custom field options for tactic
-function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
-{    
+function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
     var customoption = customfieldOptionList;
     var optionlist;
     var clistitem = [];
     function filterbyparent(obj) {
-        if (obj.customFieldId == customFieldId && obj.ParentOptionId!=null && obj.ParentOptionId.length>0)
+        if (obj.customFieldId == customFieldId && obj.ParentOptionId != null && obj.ParentOptionId.length > 0)
             return true;
         else
             return false;
     }
     d = customoption.filter(filterbyparent);
-    
-    if(d!=null && d.length>0)
-    {
+
+    if (d != null && d.length > 0) {
         var parentoptid = [];
         $.each(d, function (i, item) {
             if (parentoptid.indexOf(item.ParentOptionId[0]) < 0)
@@ -1370,12 +1371,12 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
                 parentoptionId: (parentoptid)
             },
             success: function (data) {
-                if (data != null && data.optionlist != null && data.optionlist.length>0)
+                if (data != null && data.optionlist != null && data.optionlist.length > 0)
                     optionlist = data.optionlist;
                 if (optionlist != null && optionlist.length > 0 && optionlist != undefined) {
                     $.each(optionlist, function (i, item) {
-                        if (clistitem.indexOf(item.value)==-1)
-                        clistitem.push(item.value);
+                        if (clistitem.indexOf(item.value) == -1)
+                            clistitem.push(item.value);
                     });
                     HomeGrid.registerCList(cellInd, clistitem);
                 }
@@ -1383,7 +1384,7 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd)
                     HomeGrid.registerCList(cellInd, clistitem);
                 }
 
-                }
+            }
         });
     }
     else {
