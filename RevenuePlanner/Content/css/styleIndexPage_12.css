@@ -1462,6 +1462,7 @@ cursor: pointer;
 color: #9c9fa0;
 font-size: 18px;
 }
+.grid_add .fa.fa-plus-circle,  .gantt_add .fa{font-size: 19px;}
 /*.grid_Search .fa{font-size: 15px;}*/
 .grid_add:hover .fa.fa-plus-circle, 
 .gantt_add:hover .fa, 
@@ -1472,9 +1473,9 @@ color: #89CEDE;
 /*.task-tbl #divgridview.budget-grid .odd_dhx_skyblue,*/
 .task-tbl .gantt_task_row.odd {background:#f2f2f2}
 
- .task-tbl #divgridview .obj .uneven {
+ /*.task-tbl #divgridview #gridbox > div:nth-child(2) .obj .uneven {
         background-color: #f2f2f2;
-    }
+    }*/
 /*.task-tbl #divgridview  #gridbox  div:first-child .obj .uneven, 
 .task-tbl #divgridview.budget-grid div#gridbox .gridbox.gridbox_dhx_skyblue table.obj .odd_dhx_skyblue{
     background:#fff !important;
@@ -1558,11 +1559,11 @@ color: #89CEDE;
 #divgridview  #gridbox div:nth-child(2) > .objbox table.obj{width:100% !important}/* specilly applied on Budget grid*/
 
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr tr:first-child{height:0 !important}
-#divgridview.budget-grid div.gridbox table.hdr {
+/*#divgridview.budget-grid div.gridbox table.hdr {
     margin-right: 18px !important;
     padding-right: 18px !important;
     box-sizing: border-box !important;
-}
+}*/
 
 
 /* ============== Search box CSS ================ */
