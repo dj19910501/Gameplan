@@ -571,7 +571,7 @@ namespace RevenuePlanner.Services
                 type = "edn",
                 align = "center",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost),
-                sort = "int",
+                sort = "str",
                 width = 160,
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost) + ColumnManagmentIcon
             });

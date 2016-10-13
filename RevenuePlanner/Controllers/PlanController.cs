@@ -8422,6 +8422,7 @@ namespace RevenuePlanner.Controllers
                         {
                             NewCost = objCurrency.SetValueByExchangeRate(NewCost, PlanExchangeRate);
                         }
+                        pcpobj.Cost = NewCost;
                         objPlanTactic.SaveTotalTacticCost(id, NewCost);
                     }
                     else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString())
@@ -9098,7 +9099,7 @@ namespace RevenuePlanner.Controllers
                         // Apply exchange rate on new value and perform operations in USD form
                         if (!string.IsNullOrEmpty(UpdateVal))
                             newLineItemCost = objCurrency.SetValueByExchangeRate(double.Parse(UpdateVal), PlanExchangeRate);
-
+                        objLineitem.Cost = newLineItemCost;
                         objPlanTactic.SaveTotalLineItemCost(id, newLineItemCost);
                     }
                     else if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString())
@@ -9440,13 +9441,14 @@ namespace RevenuePlanner.Controllers
                 var tacticdata = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == tactictid).FirstOrDefault();
                 StartDate = tacticdata.StartDate;
                 EndDate = tacticdata.EndDate;
+                int PlanId = tacticdata.Plan_Campaign_Program.Plan_Campaign.PlanId;
                 int StageId = 0;
                 if (StageID == null)
                     StageId = tacticdata.StageId;
                 else
                     StageId = (int)StageID;
 
-                int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).FirstOrDefault();
+                int modelId = db.Plans.Where(p => p.PlanId == PlanId).Select(p => p.ModelId).FirstOrDefault();
 
                 Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                 objTactic.StartDate = StartDate;

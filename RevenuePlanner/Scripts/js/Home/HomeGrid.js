@@ -314,21 +314,16 @@ function formatDate(d) {
     return addZero(d.getMonth() + 1) + "/" + addZero(d.getDate()) + "/" + d.getFullYear();
 }
 
-function SetColumUpdatedValue(CellInd, diff) {
+function SetColumUpdatedValue(CellInd, diff) {   
     progActVal = HomeGrid.cells(progid, CellInd).getAttribute("actval");
     CampActVal = HomeGrid.cells(campid, CellInd).getAttribute("actval");
     PlanActVal = HomeGrid.cells(planid, CellInd).getAttribute("actval");
-    newProgVal = parseInt(progActVal) + parseInt(diff);
-    newCampVal = parseInt(CampActVal) + parseInt(diff);
-    newPlanVal = parseInt(PlanActVal) + parseInt(diff);
+    newProgVal = parseInt(progActVal.toString().replace(/\,/g, '').replace(CurrencySybmol, '')) + parseInt(diff);
+    newCampVal = parseInt(CampActVal.toString().replace(/\,/g, '').replace(CurrencySybmol, '')) + parseInt(diff);
+    newPlanVal = parseInt(PlanActVal.toString().replace(/\,/g, '').replace(CurrencySybmol, '')) + parseInt(diff);
     HomeGrid.cells(progid, CellInd).setAttribute("actval", newProgVal);
     HomeGrid.cells(campid, CellInd).setAttribute("actval", newCampVal);
-    HomeGrid.cells(planid, CellInd).setAttribute("actval", newPlanVal);
-    if (tactid != 0) {
-        TactActVal = HomeGrid.cells(tactid, CellInd).getAttribute("actval");
-        newTactVal = parseInt(TactActVal) + parseInt(diff);
-        HomeGrid.cells(tactid, CellInd).setAttribute("actval", newTactVal);
-    }
+    HomeGrid.cells(planid, CellInd).setAttribute("actval", newPlanVal);    
 }
 
 
@@ -655,7 +650,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
                 if (actval == null || actval == "")
                     actval = oValue;
-                if (nValue != oValue && nValue != actval) {
+                if (nValue != oValue && nValue != actval) {                    
                     UpdateVal = nValue;
                     var TotalRowIds = HomeGrid.getAllSubItems(tactid);
                     $.ajax({
@@ -671,8 +666,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                             else if (UpdateColumn == PlannedCostId) {
                                 diff = parseInt(nValue) - parseInt(oValue);
-                                diffLineAndTactic = states.lineItemCost - states.tacticCost
-                                if (states.lineItemCost > states.tacticCost) {
+                                diffLineAndTactic = nValue - states.tacticCost
+                                if (nValue > states.tacticCost) {
 
                                     SetColumUpdatedValue(PlannedCostColIndex, diffLineAndTactic);
                                     HomeGrid.cells(progid, PlannedCostColIndex).setValue((newProgVal));
@@ -686,7 +681,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         }
                                     }
                                 }
-                                else if (states.lineItemCost == states.tacticCost) {
+                                else if (nValue == states.tacticCost) {
                                     for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                         if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
                                             HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
@@ -904,6 +899,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
 
 function AssignParentIds(rowId) {
     if (updatetype.toLowerCase() == secTactic) {
+        tactid = rowId;
         progid = HomeGrid.getParentId(rowId);
         campid = HomeGrid.getParentId(progid);
         planid = HomeGrid.getParentId(campid);
@@ -988,23 +984,23 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
             else {
                 if (data.mql != null) {
                     mqlConversion = data.mql;
-                }
-                var mqlValue = GetAbberiviatedValue(mqlConversion.toString(), false);
+                }                
+                var mqlValue = mqlConversion.toString();
                 HomeGrid.cells(rowid, MQLColIndex).setValue(mqlValue);
                 diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
                 HomeGrid.cells(rowid, MQLColIndex).setAttribute("actval", mqlConversion);
                 SetColumUpdatedValue(MQLColIndex, diff);
-            }
-            HomeGrid.cells(progid, MQLColIndex).setValue(GetAbberiviatedValue(newProgVal), false);
-            HomeGrid.cells(campid, MQLColIndex).setValue(GetAbberiviatedValue(newCampVal), false);
-            HomeGrid.cells(planid, MQLColIndex).setValue(GetAbberiviatedValue(newPlanVal), false);
-            HomeGrid.cells(rowid, RevenueColIndex).setValue(FormatNumber(revenue));
-            var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getAttribute("actval");
-            diff = parseInt(revenue) - parseInt(tactActRevenuVal);
-            SetColumUpdatedValue(RevenueColIndex, diff);
-            HomeGrid.cells(progid, RevenueColIndex).setValue((FormatNumber(newProgVal)));
-            HomeGrid.cells(campid, RevenueColIndex).setValue((FormatNumber(newCampVal)));
-            HomeGrid.cells(planid, RevenueColIndex).setValue((FormatNumber(newPlanVal)));
+            }           
+            HomeGrid.cells(progid, MQLColIndex).setValue(newProgVal, false);
+            HomeGrid.cells(campid, MQLColIndex).setValue(newCampVal, false);
+            HomeGrid.cells(planid, MQLColIndex).setValue(newPlanVal, false);
+            HomeGrid.cells(rowid, RevenueColIndex).setValue(CurrencySybmol + revenue);
+            var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getAttribute("actval");           
+            diff = parseInt(revenue) - parseInt(tactActRevenuVal.toString().replace(/\,/g,'').replace(CurrencySybmol,''));
+            SetColumUpdatedValue(RevenueColIndex, diff);          
+            HomeGrid.cells(progid, RevenueColIndex).setValue(CurrencySybmol + newProgVal);
+            HomeGrid.cells(campid, RevenueColIndex).setValue(CurrencySybmol + newCampVal);
+            HomeGrid.cells(planid, RevenueColIndex).setValue(CurrencySybmol + newPlanVal);
             HomeGrid.cells(rowid, RevenueColIndex).setAttribute("actval", revenue);
             $.ajax({
                 type: 'POST',
