@@ -64,6 +64,7 @@ namespace RevenuePlanner.Models
         public int CreatedBy { get; set; }
         public BudgetMonth MonthValues { get; set; }
         public BudgetMonth ChildMonthValues { get; set; }
+        public BudgetMonth ChildNextYearMonthValues { get; set; }
         public BudgetMonth NextYearMonthValues { get; set; }
         public double TotalUnallocatedBudget { get; set; }
         public double YearlyBudget { get; set; }

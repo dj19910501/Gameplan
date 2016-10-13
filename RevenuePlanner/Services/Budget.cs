@@ -1073,49 +1073,49 @@ namespace RevenuePlanner.Services
                     else if (i == 4)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY4 + Entity.ChildMonthValues.BudgetY5 + Entity.ChildMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4 + Entity.MonthValues.CostY5 + Entity.MonthValues.CostY6);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4 + Entity.MonthValues.ActualY5 + Entity.MonthValues.ActualY6);
                     }
                     else if (i == 7)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY7 + Entity.ChildMonthValues.BudgetY8 + Entity.ChildMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7 + Entity.MonthValues.CostY8 + Entity.MonthValues.CostY9);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7 + Entity.MonthValues.ActualY8 + Entity.MonthValues.ActualY9);
                     }
                     else if (i == 10)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY10 + Entity.ChildMonthValues.BudgetY11 + Entity.ChildMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10 + Entity.MonthValues.CostY11 + Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10 + Entity.MonthValues.ActualY11 + Entity.MonthValues.ActualY12);
                     }
                     else if (i == 13)
                     {
                         objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY1 + Entity.NextYearMonthValues.BudgetY2 + Entity.NextYearMonthValues.BudgetY3) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.BudgetY1 + Entity.NextYearMonthValues.BudgetY2 + Entity.NextYearMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY1 + Entity.ChildNextYearMonthValues.BudgetY2 + Entity.ChildNextYearMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY1 + Entity.NextYearMonthValues.CostY2 + Entity.NextYearMonthValues.CostY3) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY1 + Entity.NextYearMonthValues.ActualY2 + Entity.NextYearMonthValues.ActualY3) : ThreeDash;
                     }
                     else if (i == 16)
                     {
                         objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY4 + Entity.NextYearMonthValues.BudgetY5 + Entity.NextYearMonthValues.BudgetY6) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.BudgetY4 + Entity.NextYearMonthValues.BudgetY5 + Entity.NextYearMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY4 + Entity.ChildNextYearMonthValues.BudgetY5 + Entity.ChildNextYearMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY4 + Entity.NextYearMonthValues.CostY5 + Entity.NextYearMonthValues.CostY6) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY4 + Entity.NextYearMonthValues.ActualY5 + Entity.NextYearMonthValues.ActualY6) : ThreeDash;
                     }
                     else if (i == 19)
                     {
                         objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY7 + Entity.NextYearMonthValues.BudgetY8 + Entity.NextYearMonthValues.BudgetY9) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.BudgetY7 + Entity.NextYearMonthValues.BudgetY8 + Entity.NextYearMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY7 + Entity.ChildNextYearMonthValues.BudgetY8 + Entity.ChildNextYearMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY7 + Entity.NextYearMonthValues.CostY8 + Entity.NextYearMonthValues.CostY9) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY7 + Entity.NextYearMonthValues.ActualY8 + Entity.NextYearMonthValues.ActualY9) : ThreeDash;
                     }
                     else if (i == 22)
                     {
                         objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY10 + Entity.NextYearMonthValues.BudgetY11 + Entity.NextYearMonthValues.BudgetY12) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.NextYearMonthValues.BudgetY10 + Entity.NextYearMonthValues.BudgetY11 + Entity.NextYearMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY10 + Entity.ChildNextYearMonthValues.BudgetY11 + Entity.ChildNextYearMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12) : ThreeDash;
                     }
@@ -1173,7 +1173,7 @@ namespace RevenuePlanner.Services
                     else if (monthNo == 13)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY1 + Entity.MonthValues.BudgetY2 + Entity.MonthValues.BudgetY3) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY1 + Entity.MonthValues.BudgetY2 + Entity.MonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY1 + Entity.ChildMonthValues.BudgetY2 + Entity.ChildMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1 + Entity.MonthValues.CostY2 + Entity.MonthValues.CostY3);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1 + Entity.MonthValues.ActualY2 + Entity.MonthValues.ActualY3);
 
@@ -1181,21 +1181,21 @@ namespace RevenuePlanner.Services
                     else if (monthNo == 16)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY4 + Entity.ChildMonthValues.BudgetY5 + Entity.ChildMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4 + Entity.MonthValues.CostY5 + Entity.MonthValues.CostY6);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4 + Entity.MonthValues.ActualY5 + Entity.MonthValues.ActualY6);
                     }
                     else if (monthNo == 19)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY7 + Entity.ChildMonthValues.BudgetY8 + Entity.ChildMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7 + Entity.MonthValues.CostY8 + Entity.MonthValues.CostY9);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7 + Entity.MonthValues.ActualY8 + Entity.MonthValues.ActualY9);
                     }
                     else if (monthNo == 22)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY10 + Entity.ChildMonthValues.BudgetY11 + Entity.ChildMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10 + Entity.MonthValues.CostY11 + Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10 + Entity.MonthValues.ActualY11 + Entity.MonthValues.ActualY12);
                     }
@@ -1236,6 +1236,7 @@ namespace RevenuePlanner.Services
                 if (monthNo == 13)
                 {
                     objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY1 + Entity.NextYearMonthValues.BudgetY2 + Entity.NextYearMonthValues.BudgetY3) : ThreeDash;
+                    objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY1 + Entity.ChildNextYearMonthValues.BudgetY2 + Entity.ChildNextYearMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY1 + Entity.NextYearMonthValues.CostY2 + Entity.NextYearMonthValues.CostY3);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY1 + Entity.NextYearMonthValues.ActualY2 + Entity.NextYearMonthValues.ActualY3);
 
@@ -1243,18 +1244,21 @@ namespace RevenuePlanner.Services
                 else if (monthNo == 16)
                 {
                     objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY4 + Entity.NextYearMonthValues.BudgetY5 + Entity.NextYearMonthValues.BudgetY6) : ThreeDash;
+                    objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY4 + Entity.ChildNextYearMonthValues.BudgetY5 + Entity.ChildNextYearMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY4 + Entity.NextYearMonthValues.CostY5 + Entity.NextYearMonthValues.CostY6);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY4 + Entity.NextYearMonthValues.ActualY5 + Entity.NextYearMonthValues.ActualY6);
                 }
                 else if (monthNo == 19)
                 {
                     objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY7 + Entity.NextYearMonthValues.BudgetY8 + Entity.NextYearMonthValues.BudgetY9) : ThreeDash;
+                    objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY7 + Entity.ChildNextYearMonthValues.BudgetY8 + Entity.ChildNextYearMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY7 + Entity.NextYearMonthValues.CostY8 + Entity.NextYearMonthValues.CostY9);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY7 + Entity.NextYearMonthValues.ActualY8 + Entity.NextYearMonthValues.ActualY9);
                 }
                 else if (monthNo == 22)
                 {
                     objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY10 + Entity.NextYearMonthValues.BudgetY11 + Entity.NextYearMonthValues.BudgetY12) : ThreeDash;
+                    objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY10 + Entity.ChildNextYearMonthValues.BudgetY11 + Entity.ChildNextYearMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12);
                 }
@@ -1474,6 +1478,10 @@ namespace RevenuePlanner.Services
                     // Calculate Balance UnAllocated Cost
                     double BalanceUnallocatedCost = l.UnallocatedCost - lines.Sum(lmon => lmon.UnallocatedCost);
                     model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().UnallocatedCost = BalanceUnallocatedCost;
+                    if (!model.Where(m=>m.ParentActivityId==l.ActivityId && m.LineItemTypeId!=null).Any())
+                    {
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().TotalActuals = l.TotalActuals;
+                    }
                 }
             }
             return model;
@@ -1485,6 +1493,7 @@ namespace RevenuePlanner.Services
             double totalMonthCostSum = 0;
             // int _ViewById = ViewBy;            
             BudgetMonth childBudget;
+            BudgetMonth childNextYearBudget;
             BudgetMonth parent;
             foreach (PlanBudgetModel l in model.Where(_mdl => _mdl.ActivityType == ParentActivityType))
             {
@@ -1496,6 +1505,7 @@ namespace RevenuePlanner.Services
                 }
                 weightage = weightage / 100;
                 childBudget = new BudgetMonth();
+                childNextYearBudget = new BudgetMonth();
                 parent = new BudgetMonth();
 
                 parent.ActualY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY1 * weightage)) ?? 0;
@@ -1569,15 +1579,32 @@ namespace RevenuePlanner.Services
                 childBudget.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY11)) ?? 0;
                 childBudget.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY12)) ?? 0;
 
+                childNextYearBudget.BudgetY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY1)) ?? 0;
+                childNextYearBudget.BudgetY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY2)) ?? 0;
+                childNextYearBudget.BudgetY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY3)) ?? 0;
+                childNextYearBudget.BudgetY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY4)) ?? 0;
+                childNextYearBudget.BudgetY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY5)) ?? 0;
+                childNextYearBudget.BudgetY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY6)) ?? 0;
+                childNextYearBudget.BudgetY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY7)) ?? 0;
+                childNextYearBudget.BudgetY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY8)) ?? 0;
+                childNextYearBudget.BudgetY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY9)) ?? 0;
+                childNextYearBudget.BudgetY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY10)) ?? 0;
+                childNextYearBudget.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY11)) ?? 0;
+                childNextYearBudget.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY12)) ?? 0;
+
                 PlanBudgetModel Entity = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault();
                 Entity.MonthValues = parent;
                 Entity.ChildMonthValues = childBudget;
+                Entity.ChildNextYearMonthValues = childNextYearBudget;
                 if (l.ActivityType != ActivityType.ActivityTactic)
                 {
                     Entity.TotalAllocatedCost = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalAllocatedCost) ?? 0;
                     Entity.UnallocatedCost = Entity.TotalAllocatedCost - totalMonthCostSum;
                 }
-                Entity.TotalActuals = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalActuals) ?? 0;
+                if (l.ActivityType == ActivityType.ActivityTactic && model.Where(m=>m.ParentActivityId==l.ActivityId && m.LineItemTypeId!=null).Any())
+                {
+                    Entity.TotalActuals = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalActuals) ?? 0;   
+                }
                 //}
             }
 
