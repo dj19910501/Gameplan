@@ -1366,6 +1366,7 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
         $.ajax({
             url: urlContent + 'Plan/GetdependantOptionlist/',
             traditional: true,
+            async:false,
             data: {
                 customfieldId: customFieldId,
                 entityid: entityid,

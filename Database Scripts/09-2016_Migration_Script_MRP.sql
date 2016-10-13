@@ -4172,7 +4172,7 @@ CREATE PROCEDURE [dbo].[Plan_Campaign_Program_BudgetQuarterCalculation]
 				UPDATE Plan_Campaign_Program_Budget  SET Value = 0     WHERE   PlanProgramId = @EntityId AND Period = @ThirdMonthofQuarter				
 				END			
 			END
-			PRINT @UpdateValue
+			
 			IF(@UpdateValue<@DifferenceAmount)
 			BEGIN
 			IF EXISTS (SELECT * from #tempDataProgram WHERE PlanProgramId = @EntityId AND Period = @SecondMonthofQuarter)
@@ -4276,7 +4276,7 @@ CREATE PROCEDURE [dbo].[Plan_Campaign_Program_Tactic_Budget_BudgetQuarterCalcula
 				UPDATE Plan_Campaign_Program_Tactic_Budget  SET Value = 0     WHERE   PlanTacticId = @EntityId AND Period = @ThirdMonthofQuarter				
 				END			
 			END
-			PRINT @UpdateValue
+			
 			IF(@UpdateValue<@DifferenceAmount)
 			BEGIN
 			IF EXISTS (SELECT * from #tempDataTactic WHERE PlanTacticId = @EntityId AND Period = @SecondMonthofQuarter)
@@ -4478,9 +4478,9 @@ CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]
 			--Select * from #tempLineItemActual
 			IF EXISTS (SELECT * from #tempLineItemActual WHERE  PlanLineItemId= @EntityId AND Period = @ThirdMonthofQuarter)
 			BEGIN		
-	           print '1'
-			   print @UpdateValue
-			   print @DifferenceAmount
+	          
+			 
+			 
 				IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @ThirdMonthofQuarter)>@DifferenceAmount)
 				BEGIN
 				UPDATE Plan_Campaign_Program_Tactic_LineItem_Actual  SET Value = (Value-(@DifferenceAmount-@UpdateValue))  WHERE  PlanLineItemId = @EntityId AND Period = @ThirdMonthofQuarter
@@ -4497,8 +4497,8 @@ CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]
 			BEGIN
 			IF EXISTS (SELECT * from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @SecondMonthofQuarter)
 			BEGIN
-			  print @UpdateValue
-			   print @DifferenceAmount
+			 
+			 
 				IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @SecondMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
 				BEGIN
 				UPDATE Plan_Campaign_Program_Tactic_LineItem_Actual  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanLineItemId = @EntityId AND Period = @SecondMonthofQuarter
@@ -4516,8 +4516,8 @@ CREATE PROCEDURE [dbo].[LineItem_ActuallQuarterCalculation]
 			BEGIN
 			IF EXISTS (SELECT * from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter)
 			BEGIN
-			  print @UpdateValue
-			   print @DifferenceAmount
+			 
+			  
 				IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
 				BEGIN
 				UPDATE Plan_Campaign_Program_Tactic_LineItem_Actual  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter
@@ -4698,9 +4698,9 @@ CREATE PROCEDURE [dbo].[LineItem_CostQuarterCalculation]
 			--Select * from #tempLineItemActual
 			IF EXISTS (SELECT * from #tempLineItemActual WHERE  PlanLineItemId= @EntityId AND Period = @ThirdMonthofQuarter)
 			BEGIN		
-	           print '1'
-			   print @UpdateValue
-			   print @DifferenceAmount
+	          
+			 
+			  
 				IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @ThirdMonthofQuarter)>@DifferenceAmount)
 				BEGIN
 				UPDATE Plan_Campaign_Program_Tactic_LineItem_Cost  SET Value = (Value-(@DifferenceAmount-@UpdateValue))  WHERE  PlanLineItemId = @EntityId AND Period = @ThirdMonthofQuarter
@@ -4717,8 +4717,8 @@ CREATE PROCEDURE [dbo].[LineItem_CostQuarterCalculation]
 			BEGIN
 			IF EXISTS (SELECT * from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @SecondMonthofQuarter)
 			BEGIN
-			  print @UpdateValue
-			   print @DifferenceAmount
+			 
+			  
 				IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @SecondMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
 				BEGIN
 				UPDATE Plan_Campaign_Program_Tactic_LineItem_Cost  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanLineItemId = @EntityId AND Period = @SecondMonthofQuarter
@@ -4736,8 +4736,8 @@ CREATE PROCEDURE [dbo].[LineItem_CostQuarterCalculation]
 			BEGIN
 			IF EXISTS (SELECT * from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter)
 			BEGIN
-			  print @UpdateValue
-			   print @DifferenceAmount
+			 
+			 
 				IF((SELECT Value from #tempLineItemActual WHERE PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter)>(@DifferenceAmount-@UpdateValue))
 				BEGIN
 				UPDATE Plan_Campaign_Program_Tactic_LineItem_Cost  SET Value = (Value-(@DifferenceAmount-@UpdateValue))     WHERE   PlanLineItemId = @EntityId AND Period = @FirstMonthofQuarter
@@ -5724,12 +5724,12 @@ IF ( LOWER(@Type)='tactic')
 	IF Exists (select top 1 PlanTacticId from [Plan_Campaign_Program_Tactic] where PlanTacticId =  @EntityId and [Status] IN('In-Progress','Complete','Approved') )
 			BEGIN
 
-			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId and LineItemTypeId IS NOT NULL)
+			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId  AND IsDeleted=0)
 			BEGIN			
 		
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y1' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.JAN != '' THEN T.JAN ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.JAN 
 			      from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y1' and StageTitle='Cost'
 				END
 				  ELSE
@@ -5743,7 +5743,7 @@ IF ( LOWER(@Type)='tactic')
 		
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y2' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.FEB != '' THEN T.FEB ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.FEB 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y2' and StageTitle='Cost'
 				END
 				ELSE
@@ -5755,7 +5755,7 @@ IF ( LOWER(@Type)='tactic')
 		 
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y3' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.MAR != '' THEN T.MAR ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.MAR 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y3' and StageTitle='Cost'
 				END
 			ELSE
@@ -5767,7 +5767,7 @@ IF ( LOWER(@Type)='tactic')
 
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y4' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.APR != '' THEN T.APR ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.APR 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y4' and StageTitle='Cost'
 				END
 					ELSE
@@ -5781,7 +5781,7 @@ IF ( LOWER(@Type)='tactic')
 
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y5' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.MAY != '' THEN T.MAY ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.MAY 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y5' and StageTitle='Cost'
 				END
 
@@ -5796,7 +5796,7 @@ IF ( LOWER(@Type)='tactic')
 
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y6' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.JUN != '' THEN T.JUN ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.JUN 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y6' and StageTitle='Cost'
 				END
 			ELSE
@@ -5809,7 +5809,7 @@ IF ( LOWER(@Type)='tactic')
 
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y7' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.JUL != '' THEN T.JUL ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.JUL 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y7' and StageTitle='Cost'
 				END
 		ELSE
@@ -5823,7 +5823,7 @@ IF ( LOWER(@Type)='tactic')
 
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y8' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.AUG != '' THEN T.AUG ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.AUG 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y8' and StageTitle='Cost'
 				END
 				ELSE
@@ -5837,7 +5837,7 @@ IF ( LOWER(@Type)='tactic')
 			
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y9' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.SEP != '' THEN T.SEP ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.SEP 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y9' and StageTitle='Cost'
 				END
 		ELSE
@@ -5851,7 +5851,7 @@ IF ( LOWER(@Type)='tactic')
 			
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y10' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.OCT != '' THEN T.OCT ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.OCT 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y10' and StageTitle='Cost'
 				END
 	
@@ -5865,7 +5865,7 @@ IF ( LOWER(@Type)='tactic')
 
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y11' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.NOV != '' THEN T.NOV ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.NOV 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y11' and StageTitle='Cost'
 				END
 	
@@ -5878,7 +5878,7 @@ IF ( LOWER(@Type)='tactic')
 
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y12' and StageTitle='Cost')
 				BEGIN
-					UPDATE P SET P.Actualvalue = CASE WHEN T.DEC != '' THEN T.DEC ELSE P.Actualvalue END
+					UPDATE P SET P.Actualvalue = T.DEC 
 			from Plan_Campaign_Program_Tactic_Actual P INNER JOIN #TempDiffer T on P.PlanTacticId = T.ActivityId WHERE P.PlanTacticId = @EntityId AND Period = 'Y12' and StageTitle='Cost'
 				END
 
@@ -5912,7 +5912,7 @@ IF ( LOWER(@Type)='lineitem')
 			--Y1
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y1')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.JAN != '' THEN T.JAN ELSE P.Value END
+						UPDATE P SET P.Value = T.JAN 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y1'
 				END
 				ELSE
@@ -5925,7 +5925,7 @@ IF ( LOWER(@Type)='lineitem')
              --Y2
 			 	IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y2')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.FEB != '' THEN T.FEB ELSE P.Value END
+						UPDATE P SET P.Value = T.FEB 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y2'
 				END
 				ELSE
@@ -5937,7 +5937,7 @@ IF ( LOWER(@Type)='lineitem')
 			---Y3
 				IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y3')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.MAR != '' THEN T.MAR ELSE P.Value END
+						UPDATE P SET P.Value = T.MAR 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y3'
 				END
 				ELSE
@@ -5951,7 +5951,7 @@ IF ( LOWER(@Type)='lineitem')
 
 	IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y4')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.APR != '' THEN T.APR ELSE P.Value END
+						UPDATE P SET P.Value = T.APR 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y4'
 				END
 				ELSE
@@ -5963,7 +5963,7 @@ IF ( LOWER(@Type)='lineitem')
 --Y5
 	IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y5')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.MAY != '' THEN T.MAY ELSE P.Value END
+						UPDATE P SET P.Value = T.MAY 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y5'
 				END
 				ELSE
@@ -5976,7 +5976,7 @@ IF ( LOWER(@Type)='lineitem')
 ---Y6
 	IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y6')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.JUN != '' THEN T.JUN ELSE P.Value END
+						UPDATE P SET P.Value = T.JUN 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y6'
 				END
 				ELSE
@@ -5988,7 +5988,7 @@ IF ( LOWER(@Type)='lineitem')
 ---y7
 	IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y7')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.JUL != '' THEN T.JUL ELSE P.Value END
+						UPDATE P SET P.Value = T.JUL 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y7'
 				END
 				ELSE
@@ -6000,7 +6000,7 @@ IF ( LOWER(@Type)='lineitem')
 --Y8
 	IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y8')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.AUG != '' THEN T.AUG ELSE P.Value END
+						UPDATE P SET P.Value = T.AUG 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y8'
 				END
 				ELSE
@@ -6012,7 +6012,7 @@ IF ( LOWER(@Type)='lineitem')
 				--Y9
 	IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y9')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.SEP != '' THEN T.SEP ELSE P.Value END
+						UPDATE P SET P.Value = T.SEP 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y9'
 				END
 				ELSE
@@ -6023,7 +6023,7 @@ IF ( LOWER(@Type)='lineitem')
 				--Y10
 					IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y10')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.OCT != '' THEN T.OCT ELSE P.Value END
+						UPDATE P SET P.Value = T.OCT 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y10'
 				END
 				ELSE
@@ -6035,7 +6035,7 @@ IF ( LOWER(@Type)='lineitem')
 				--Y11
 					IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y11')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.NOV != '' THEN T.NOV ELSE P.Value END
+						UPDATE P SET P.Value = T.NOV 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y11'
 				END
 				ELSE
@@ -6047,7 +6047,7 @@ IF ( LOWER(@Type)='lineitem')
 				--Y12
 					IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_LineItem_Actual WHERE PlanLineItemId = @EntityId AND Period = 'Y12')
 				BEGIN
-						UPDATE P SET P.Value = CASE WHEN T.DEC != '' THEN T.DEC ELSE P.Value END
+						UPDATE P SET P.Value = T.DEC 
 						from Plan_Campaign_Program_Tactic_LineItem_Actual P INNER JOIN #TempDiffer T on P.PlanLineItemId = T.ActivityId WHERE P.PlanLineItemId = @EntityId AND Period = 'Y12'
 				END
 				ELSE
@@ -7326,7 +7326,7 @@ IF (LOWER(@Type)='tactic')
 		IF Exists (select top 1 PlanTacticId from Plan_Campaign_Program_Tactic where PlanTacticId =  @EntityId and [Status] IN('In-Progress','Complete','Approved'))
 			BEGIN
 
-			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId and LineItemTypeId IS NOT NULL)
+			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId  AND IsDeleted=0)
 			BEGIN			
 
 				IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataActualTactic') AND type in (N'U'))
@@ -7337,7 +7337,7 @@ IF (LOWER(@Type)='tactic')
 			SELECT @Sum=ISNULL(SUM(Actualvalue),0) from #tempDataActualTactic where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7361,7 +7361,7 @@ IF (LOWER(@Type)='tactic')
 			SELECT @Sum=ISNULL(SUM(Actualvalue),0) from #tempDataActualTactic where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7388,7 +7388,7 @@ IF (LOWER(@Type)='tactic')
 				SELECT @Sum=ISNULL(SUM(Actualvalue),0) from #tempDataActualTactic where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7414,7 +7414,7 @@ IF (LOWER(@Type)='tactic')
 				SELECT @Sum=ISNULL(SUM(Actualvalue),0) from #tempDataActualTactic where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7470,7 +7470,7 @@ IF (LOWER(@Type)='lineitem')
 			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and LOWEr([ActivityType])='lineitem'
 			
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7494,7 +7494,7 @@ IF (LOWER(@Type)='lineitem')
 			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='lineitem'
 			
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7521,7 +7521,7 @@ IF (LOWER(@Type)='lineitem')
 				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and LOWER([ActivityType])='lineitem'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7547,7 +7547,7 @@ IF (LOWER(@Type)='lineitem')
 				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and LOWER([ActivityType])='lineitem'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN

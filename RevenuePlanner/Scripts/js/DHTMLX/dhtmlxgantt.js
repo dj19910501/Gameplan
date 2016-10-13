@@ -609,12 +609,19 @@ gantt._render_grid_item = function (item) {
         var cell;
 
         var value;
-        if (col.name == "add") {
+        
+        if (col.name == "text") {
+            if (item.IsRowPermission != null && item.IsRowPermission == true)
+                value = "<div class='gantt_tree_content'>" + item[col.name] + "</div>";
+            else
+                value = "<div class='gantt_tree_content' style='color:#727272;'>" + item[col.name] + "</div>";
+        }
+        else if (col.name == "add") {
             var _item = item.text.replace(/'/g, "&#39;");            
             if ("add" == col.name && i == columns.length - 1) {
                 if (item.type == "Plan") {
                     // #1780
-                    if (item.Permission == true)
+                    if (item.Permission != null && item.Permission == true)
                     {
 					    if (item.id == "000") { // bind only add icon for new bank row -- #2587
 					        value = "<div id='" + item.type + "' class='grid_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div>";
@@ -637,7 +644,7 @@ gantt._render_grid_item = function (item) {
 
                 else if (item.type == "Campaign") {
                     // #1780
-                    if (item.Permission == true)
+                    if (item.Permission != null && item.Permission == true)
                     {
                         value = "<div id='CP' class='grid_Search' title='View' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanCampaignId + "','CP')><i class='fa fa-external-link-square'></i></div><div id='" + item.type + "' class='grid_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div><div id='" + item.type + "' onclick='javascript:AddRemoveEntity(this)' class='honeycombbox-icon-gantt calender-view-honeycomb'  title= 'Select' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanCampaignId + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.CreatedBy + "'   taskname='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
@@ -652,7 +659,7 @@ gantt._render_grid_item = function (item) {
 
                 else if (item.type == "Program") {
                     // #1780
-                    if (item.Permission == true)
+                    if (item.Permission != null && item.Permission == true)
                     {
                         value = "<div id='PP' class='grid_Search' title='View' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanProgramId + "','PP')><i class='fa fa-external-link-square'></i></div><div id='" + item.type + "' class='grid_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div><div id='" + item.type + "' onclick='javascript:AddRemoveEntity(this)'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Select' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanProgramId + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.CreatedBy + "'  taskname='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
                     }
@@ -666,7 +673,7 @@ gantt._render_grid_item = function (item) {
 
                 else if (item.type == "Tactic") {
                     // #1780
-                    if (item.Permission == true) {
+                    if (item.Permission != null && item.Permission == true) {
                         value = "<div id='TP' class='grid_Search' title='View' data-original-title='View' onclick=DisplayEditablePopup('" + item.PlanTacticId + "','TP')><i class='fa fa-external-link-square'></i></div> <div id='" + item.type + "' class='grid_add' Name='" + item.id + "' data-toggle='tooltip' title='Add' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "' onclick='DisplayPopUpMenu(this,event)'><i class='fa fa-plus-circle'></i></div>  <div id='" + item.type + "' onclick='javascript:AddRemoveEntity(this)'  class='honeycombbox-icon-gantt calender-view-honeycomb' title= 'Select' altId='" + item.id + "' csvid='" + item.type + '_' + item.PlanTacticId + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.CreatedBy + "'  taskname='" + _item + "' Permission='" + item.Permission + "'  roitactictype='" + item.ROITacticType + "' taskid='" + item.PlanTacticId + "' anchortacticid='" + item.IsAnchorTacticId + "'>" + "</div>  ";
                     }
                     else
@@ -10133,7 +10140,7 @@ if (!gantt.templates) gantt.templates = {};
             },
             grid_blank: function (item) {
                 if (item.type == "Tactic") {
-                    if ((item.Permission == true && item.LinkTacticPermission == true) || (item.LinkedTacticId != null)) {
+                    if ((item.Permission != null && item.Permission == true && item.LinkTacticPermission == true) || (item.LinkedTacticId != null)) {
                         //"<div class='gantt_tree_icon gantt_blank'></div>";
                         //Added By Komal Rawal for PL 1845 link tactic feature.
                         var Class = 'fa fa-chain-broken';
