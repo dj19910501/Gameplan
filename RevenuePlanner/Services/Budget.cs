@@ -1373,7 +1373,7 @@ namespace RevenuePlanner.Services
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.Id));
-                        bool isLineItem = BudgetModel.Where(ent => ent.ParentActivityId == item.ActivityId).Any();
+                        bool isLineItem = BudgetModel.Where(ent => ent.ParentActivityId == item.ActivityId && item.LineItemTypeId != null).Any();
                         //Check tactic is editable or not
                         lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
@@ -1642,9 +1642,7 @@ namespace RevenuePlanner.Services
                 }
             }
             return model;
-        }
-
-        
+        }        
        
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket 2585
