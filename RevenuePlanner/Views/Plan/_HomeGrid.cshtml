@@ -3,13 +3,13 @@
 @using RevenuePlanner.Helpers
 @{
     var countrows = 0;
-    if (Model != null && Model.rows!=null)
-    { 
-        countrows=Model.rows.Count;
+    if (Model != null && Model.rows != null)
+    {
+        countrows = Model.rows.Count;
     }
     bool IsFirstTimeLogin = Sessions.FirstTimeLogin;
     Sessions.FirstTimeLogin = false;
-    //List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);   
+    //List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);
 
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
@@ -36,8 +36,8 @@
 
 <script type="text/javascript">
     gridname = "home";
-     
-    var tacticTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))'); 
+
+    var tacticTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
     var lineItemTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.LineItemTypelist))');
     var customfieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.CustomAttributOption))'); // added by devanshi
 
@@ -101,8 +101,7 @@
                 IsManageviewClick = false;
                 return false;
             }
-            else if (IsManageDropdown)
-            {
+            else if (IsManageDropdown) {
                 IsManageviewClick = false;
                 return false;
             }
@@ -118,20 +117,14 @@
             LoadAfterParsing();
             if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
                 HomeGrid.showRow(HomeGrid.getRowId(state0));
-               // HomeGrid.openItem(HomeGrid.getRowId(state0));
+                // HomeGrid.openItem(HomeGrid.getRowId(state0));
             }
-            if (!IslineItemDelete) {
-                if ($("#hdnPlanLineItemID").val() != '0' && $("#hdnPlanLineItemID").val() != undefined) {
-                    HomeGrid.showRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(), GridHiddenId)[0][0]);
-                    HomeGrid.setSelectedRow(HomeGrid.findCell($("#hdnPlanLineItemID").val(), GridHiddenId)[0][0]);
-                }
+
+            if (scrollstate != null && scrollstate != undefined) {
+                HomeGrid.objBox.scrollTop = scrollstate.y;
             }
-         
-                if (scrollstate != null && scrollstate != undefined ) {
-                    HomeGrid.objBox.scrollTop = scrollstate.y ;
-                    }
-           
-            
+
+
         });
         HomeGrid.attachEvent("onRowSelect", function (id, ind) {
             var idindex = HomeGrid.getColIndexById('id');
@@ -140,27 +133,27 @@
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);
         var mainGridData = JsonModel;
-        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();        
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         HomeGrid.parse(GridDataHomeGrid, "json");
         GridHideColumn();  ///Calling Hide column function
-      
+
         HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
         colSplitId = HomeGrid.getColIndexById(AddId);
-        HomeGrid.splitAt(colSplitId + 1);        
-        MoveColumn(); ///Calling Move column function       
+        HomeGrid.splitAt(colSplitId + 1);
+        MoveColumn(); ///Calling Move column function
         var firsttime = '@IsFirstTimeLogin';
         if (firsttime.toString().toLowerCase() == 'false') {
             HomeGrid.collapseAll();
             //  setTimeout(function () {
-                HomeGrid.loadOpenStates("plangridState");
-                    HomeGrid.objBox.scrollTop = scrollstate.y ;
-                
-          //  }, 200);
+            HomeGrid.loadOpenStates("plangridState");
+            HomeGrid.objBox.scrollTop = scrollstate.y;
+
+            //  }, 200);
         }
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
-        
-        
+
+
         LoadAfterParsing();
 
         if (parseInt('@countrows') > 0) {
@@ -170,17 +163,17 @@
 
         } else {
             var noplan = '@Sessions.IsNoPlanCreated';
-            if ($("#IsPlanEditable").val().toString().toLowerCase()=='true' && noplan.toLowerCase()=='true') {
+            if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
                 AddBlankRow();
                 $("#gridbox").show();
                 $("#goalwrapper").show();
                 $("#NodatawithfilterGrid").hide();
             }
             else {
-            $("#gridbox").hide();
-            $("#goalwrapper").hide();
-            $("#NodatawithfilterGrid").show();
-        }
+                $("#gridbox").hide();
+                $("#goalwrapper").hide();
+                $("#NodatawithfilterGrid").show();
+            }
             $('#exp-serach').hide();
         }
         if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
