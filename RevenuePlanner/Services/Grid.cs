@@ -973,11 +973,11 @@ namespace RevenuePlanner.Services
             #endregion
 
             #region set campaign permission
-            lstData = GridCampaignRowPermission(lstData, objPermission, lstSubordinatesIds, UserId);
+            lstData = GridCampaignRowPermission(lstData, objPermission, lstSubordinatesIds, lsteditableEntityIds, UserId);
             #endregion
 
             #region set program permission
-            lstData = GridProgramRowPermission(lstData, objPermission, lstSubordinatesIds, UserId);
+            lstData = GridProgramRowPermission(lstData, objPermission, lstSubordinatesIds, lsteditableEntityIds, UserId);
             #endregion
 
             #region set tactic permission
@@ -1030,7 +1030,7 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Set grid campaign row permission
         /// </summary>
-        private List<GridDefaultModel> GridCampaignRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, int UserId)
+        private List<GridDefaultModel> GridCampaignRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, List<Int64> lsteditableEntityIds, int UserId)
         {
             if (objPermission.PlanCreate == false)
             {
@@ -1044,17 +1044,29 @@ namespace RevenuePlanner.Services
                 lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower())
                     .ToList().ForEach(a => a.IsCreatePermission = true);
             }
-
             // Update campaign edit permission
             lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower() && a.Owner == UserId).ToList()
                 .ForEach(a => a.IsRowPermission = true);
+
+            // Set edit permission if it's child's tactic is editable
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower())
+               .ToList().ForEach(a =>
+               {
+                   var CampProgramList = lstData.Where(camp => camp.ParentUniqueId == a.UniqueId).Select(camp => camp.UniqueId); // Get Campaign's Program List 
+                   var ProgramTacticList = lstData.Where(prg => CampProgramList.Contains(prg.ParentUniqueId)).Select(prg => prg.EntityId); // Get Program's Tactic
+                   var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
+                   if (ProgramTacticList.Count() == AllowEntityIds)
+                   {
+                       a.IsRowPermission = true;
+                   }
+               });
             return lstData;
         }
 
         /// <summary>
         /// Set grid program row permission
         /// </summary>
-        private List<GridDefaultModel> GridProgramRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, int UserId)
+        private List<GridDefaultModel> GridProgramRowPermission(List<GridDefaultModel> lstData, EntityPermission objPermission, List<int> lstSubordinatesIds, List<Int64> lsteditableEntityIds, int UserId)
         {
             if (objPermission.PlanCreate == false)
             {
@@ -1071,6 +1083,17 @@ namespace RevenuePlanner.Services
             //Update program edit permission
             lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower() && a.Owner == UserId).ToList()
                .ForEach(a => a.IsRowPermission = true);
+            // Set edit permission if it's child's tactic is editable
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower())
+               .ToList().ForEach(a =>
+               {
+                   var ProgramTacticList = lstData.Where(prg => prg.ParentUniqueId == a.UniqueId).Select(prg => prg.EntityId);// Get Program's Tactic
+                   var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
+                   if (ProgramTacticList.Count() == AllowEntityIds)
+                   {
+                       a.IsRowPermission = true;
+                   }
+               });
             return lstData;
         }
 
