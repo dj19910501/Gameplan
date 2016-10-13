@@ -103,7 +103,6 @@ namespace RevenuePlanner
                    "~/Scripts/Planhud.js",
                    "~/Scripts/Filter.js",
                    "~/Scripts/js/Home/Grid_CalendarCommon.js",
-                   "~/Scripts/js/Home/HomeGrid.js",
                    "~/Scripts/js/Home/Calendar.js",
                    //Tree grid js
                    "~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js",
