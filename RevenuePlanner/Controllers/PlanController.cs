@@ -1062,57 +1062,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Get Multiple plans data
-        //commented by dhvani
-        ///// <summary>
-        ///// Added By : Sohel Pathan
-        ///// Added Date : 22/09/2014
-        ///// Description : Get plan/home header data for multiple plans
-        ///// </summary>
-        ///// <param name="strPlanIds">Comma separated list of plan ids</param>
-        ///// <param name="activeMenu">Get Active Menu</param>
-        ///// <returns>returns Json object with values required to show in plan/home header</returns>
-        //public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
-        //{
-        //    planid = System.Web.HttpUtility.UrlDecode(planid);
-        //    List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
-
-        //    try
-        //    {
-        //        return Json(new
-        //        {
-        //            lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlans(planIds, activeMenu, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
-        //        }, JsonRequestBehavior.AllowGet);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-        //    }
-        //    return Json(new { }, JsonRequestBehavior.AllowGet);
-        //}
-        //// Add By Nishant Sheth 
-        //// Desc:: For get header values with sync proces and performance
-        //public async Task<JsonResult> GetPlanByMultiplePlanIDsPer(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", string TabId = "")
-        //{
-        //    planid = System.Web.HttpUtility.UrlDecode(planid);
-        //    List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
-
-        //    try
-        //    {
-        //        await Task.Delay(1);
-        //        return Json(new
-        //        {
-        //            lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlansPer(planIds, activeMenu, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
-        //        }, JsonRequestBehavior.AllowGet);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-        //    }
-        //    return Json(new { }, JsonRequestBehavior.AllowGet);
-        //}
-
-        //Add by Komal Rawal on 12/09/2016
-        //Desc : To get header values.
+        
         public async Task<JsonResult> GetHeaderforPlanByMultiplePlanIDs(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "" , bool IsGridView = false)
         {
             planid = System.Web.HttpUtility.UrlDecode(planid);

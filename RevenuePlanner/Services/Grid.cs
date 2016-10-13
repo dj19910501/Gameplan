@@ -1928,32 +1928,62 @@ namespace RevenuePlanner.Services
             #region "Get SubOrdinates"
             List<int> lstSubordinatesIds = new List<int>();
             bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);    // Check that user has subordinates permission or not. 
-            var IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);                  // Check that user has plan create permission or not.
-
+            bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);                  // Check that user has plan create permission or not.
+            bool IsPlanEditAll = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);                            // Check that user has permission to edit plan permission or not.
+            int userId = Sessions.User.ID;
             if (IsTacticAllowForSubordinates)
             {
-                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);   // Get all subordinates based on UserId.
+                lstSubordinatesIds = Common.GetAllSubordinates(userId);   // Get all subordinates based on UserId.
             }
             #endregion
 
-            #region "Set Owner Name & Permission"
-            KeyValuePair<int, User> usr;
-            foreach (calendarDataModel data in lstCalendarDataModel)
-            {
-
-
                 #region "Set Permission"
-                if (IsPlanCreateAllAuthorized == false)     // check whether user has plan create permission or not
-                {
-                    if ((data.CreatedBy.HasValue) && (data.CreatedBy.Value.Equals(Sessions.User.ID) || lstSubordinatesIds.Contains(data.CreatedBy.Value))) // check whether Entity owner is own or it's subordinates.
-                        data.Permission = true;
-                    else
-                        data.Permission = false;
-                }
-                else
-                    data.Permission = true;
-                #endregion
+            
+            if (IsPlanCreateAllAuthorized)          // check whether user has plan create permission or not
+            {
+                lstCalendarDataModel.ForEach(data => data.Permission = true);
             }
+                    else
+            {
+                lstCalendarDataModel.Where(data =>
+                                                (data.CreatedBy.HasValue) &&
+                                                (data.CreatedBy.Value.Equals(userId) || lstSubordinatesIds.Contains(data.CreatedBy.Value))
+                                          ).ToList()
+                                    .ForEach(data => data.Permission = true);
+            }
+
+            #region "Set SubOrdinate Permission"
+
+            #region "Plan Entities Permission"
+
+            string strPlanEntity = Enums.EntityType.Plan.ToString().ToLower();
+
+            if (lstCalendarDataModel.Where(a => a.CreatedBy.HasValue && a.CreatedBy.Value == userId).Any())  // check that user is owner or not
+            {
+                lstCalendarDataModel.Where(a => a.CreatedBy.HasValue && a.CreatedBy.Value == userId).ToList().ForEach(a => a.IsRowPermission = true);   // set Edit permission for all entities.
+            }
+            else if (IsPlanEditAll)                         // Check that user has permission to edit plan permission or not.
+            {
+                lstCalendarDataModel.Where(a => a.type != null && a.type.ToLower() == strPlanEntity).ToList().ForEach(a => a.IsRowPermission = true);
+            }
+            else if (IsTacticAllowForSubordinates)         // Check that user has subordinates permission or not. 
+            {
+                lstCalendarDataModel.Where(a => a.type != null && a.type.ToLower() == strPlanEntity && 
+                                          ((a.CreatedBy.HasValue) && lstSubordinatesIds.Contains(a.CreatedBy.Value))
+                                          ).ToList()
+                                    .ForEach(a => a.IsRowPermission = true);
+            }
+                #endregion
+
+            #region "Tactic Entities Permission"
+            lstCalendarDataModel.Where(a => a.type != null && a.type.ToLower() == Enums.EntityType.Tactic.ToString().ToLower() &&
+                                            a.CreatedBy.HasValue && ((a.CreatedBy.Value == userId) || lstSubordinatesIds.Contains(a.CreatedBy.Value))).ToList()
+                                .ForEach(a => a.IsRowPermission = true);
+            #endregion
+
+            #endregion
+
+
             #endregion
 
             return lstCalendarDataModel;
