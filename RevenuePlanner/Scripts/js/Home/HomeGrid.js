@@ -574,6 +574,14 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             }
             }
             if (UpdateColumn == TacticTypeId && updatetype.toLowerCase() == secTactic.toLowerCase()) {                                
+                //here oValue is assign id according to its value
+                if (tacticTypefieldOptionList.length > 0) {
+                    $.each(tacticTypefieldOptionList, function (i, item) {                          
+                        if (item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
+                            oValue = item.id;
+                        }
+                    });
+                }
                 var tacticTypeId = nValue;
                 var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');
                 var arrTacTypes = tacticTypefieldOptionList;
@@ -634,6 +642,16 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 }
             }
             if (updatetype.toLowerCase() == secLineItem.toLowerCase()) {
+                //here oValue is assign id according to its value
+                if (UpdateColumn == TacticTypeId) {
+                    if (lineItemTypefieldOptionList.length > 0) {
+                        $.each(lineItemTypefieldOptionList, function (i, item) {
+                            if (item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
+                                oValue = item.id;
+                            }
+                        });
+                    }
+                }
                 var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
                 if (actval == null || actval == "")
                     actval = oValue;
