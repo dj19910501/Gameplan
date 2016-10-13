@@ -349,6 +349,12 @@ SET NOCOUNT ON;
 	DECLARE @TimeFrame VARCHAR(20)='' 
 	DECLARE @Isgrid BIT=1
 
+	DECLARE @CustomFieldIds TABLE (
+		Item BIGINT Primary Key
+	)
+	INSERT INTO @CustomFieldIds
+		SELECT CAST(Item AS BIGINT) as Item FROM dbo.SplitString(@SelectedCustomField,',') 
+
 	-- Get List of Custom fields which are textbox type
 	SELECT C.CustomFieldId
 			,C.Name AS 'CustomFieldName' 
@@ -358,7 +364,7 @@ SET NOCOUNT ON;
 			,C.AbbreviationForMulti
 			,@CustomFieldTypeText As 'CustomFieldType'
 			FROM CustomField  C
-			CROSS APPLY (SELECT CAST(Item AS INT) as Item FROM dbo.SplitString(@SelectedCustomField,',') selCol 
+			CROSS APPLY (SELECT Item FROM @CustomFieldIds selCol 
 						WHERE selCol.Item = C.CustomFieldId) selCol
 			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' FROM CustomFieldType CT
 				WHERE CT.Name=@CustomFieldTypeText 
@@ -375,7 +381,7 @@ SET NOCOUNT ON;
 			,C.AbbreviationForMulti
 			,@CustomFieldTypeDropDown AS 'CustomFieldType'
 			FROM CustomField  C
-			CROSS APPLY (SELECT CAST(Item AS INT) as Item FROM dbo.SplitString(@SelectedCustomField,',') selCol 
+			CROSS APPLY (SELECT Item FROM @CustomFieldIds selCol 
 						WHERE selCol.Item = C.CustomFieldId) selCol
 			CROSS APPLY (	SELECT CT.Name AS 'CustomFieldType' 
 							FROM CustomFieldType CT
@@ -416,7 +422,7 @@ SET NOCOUNT ON;
 									,C.EntityType
 									,CT.CustomFieldType
 									,C.IsRequired FROM CustomField C
-							CROSS APPLY (SELECT CAST(Item AS INT) as Item FROM dbo.SplitString(@SelectedCustomField,',') selCol 
+							CROSS APPLY (SELECT Item FROM @CustomFieldIds selCol 
 											WHERE selCol.Item = C.CustomFieldId) selCol
 							 CROSS APPLY(	SELECT Name AS 'CustomFieldType' 
 											FROM CustomFieldType CT

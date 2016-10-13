@@ -82,6 +82,7 @@ function MoveColumn() {
         var ColumnDetail = [];
         var AttrType = 'Common'; // For as default column or customfield column with which kind of entity custom fields
         for (var i = 0; i < ColumnCount; i++) {
+            AttrType = 'Common';
             var ColWidth = HomeGrid.getColWidth(i);
             var customcolId = HomeGrid.getColumnId(i).toString();
             if (customcolId.indexOf("custom_") >= 0) {
