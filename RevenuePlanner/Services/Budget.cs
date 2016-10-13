@@ -21,7 +21,7 @@ namespace RevenuePlanner.Services
         RevenuePlanner.Services.ICurrency objCurrency;
         public Budget()
         {
-            objDbMrpEntities = Common.db;
+            objDbMrpEntities = new MRPEntities();
             objBDSServiceClient = new BDSService.BDSServiceClient();
             objSp = new StoredProcedure();
             objColumnView = new ColumnView();

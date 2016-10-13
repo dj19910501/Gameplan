@@ -25,7 +25,7 @@ namespace RevenuePlanner.Controllers
     {
         #region Variables
 
-        private MRPEntities db = Common.db;
+        private MRPEntities db = new MRPEntities();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         IAlerts objcommonalert = new Alerts();
 

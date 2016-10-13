@@ -36,7 +36,7 @@ namespace RevenuePlanner.Controllers
 
         #region Variables
 
-        private MRPEntities db = Common.db;
+        private MRPEntities db = new MRPEntities();
         private const string ColumnMonth = "Month";
         private const string ColumnValue = "Value";
         private const string PeriodPrefix = "Y";

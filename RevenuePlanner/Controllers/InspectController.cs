@@ -24,7 +24,7 @@ namespace RevenuePlanner.Controllers
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
 
         #region Variables
-        private MRPEntities db = Common.db;
+        private MRPEntities db = new MRPEntities();
         private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
         private string DefaultLineItemTitle = "Line Item";
         private string PeriodChar = "Y";

@@ -17,7 +17,7 @@ namespace RevenuePlanner.Helpers
     {
         SqlConnection Connection;
         SqlCommand command = null;
-        MRPEntities db = Common.db;
+        MRPEntities db = new MRPEntities();
 
         private SqlConnection Conn_Open()
         {

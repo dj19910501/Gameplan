@@ -42,7 +42,7 @@ namespace RevenuePlanner.Services
         // Constructor
         public Grid()
         {
-            objDbMrpEntities = Common.db; // Create Entities object
+            objDbMrpEntities = new MRPEntities(); // Create Entities object
             objCache = new CacheObject(); // Create Cache object for stored data
             objColumnView = new ColumnView();
         }
@@ -379,7 +379,7 @@ namespace RevenuePlanner.Services
                         , data.CustomFields
                         , EntityRowPermission)
                         .ToList();
-
+            
             // Create empty list of custom field values for entity where there is no any custom fields value on entity
             List<Plandataobj> lstCustomPlanData = new List<Plandataobj>();
             selectedCustomColumns.ForEach(a =>
@@ -1256,7 +1256,7 @@ namespace RevenuePlanner.Services
             }
             return objUserData;
         }
-
+        
         /// <summary>
         /// Set the user data for Tactic entities
         /// </summary>

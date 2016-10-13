@@ -14,7 +14,7 @@ namespace RevenuePlanner.Services
         private MRPEntities objDbMrpEntities;
         public ImportData()
         {
-            objDbMrpEntities = Common.db;
+            objDbMrpEntities = new MRPEntities();
         }
         /// <summary>
         /// Following function will return filtered datatable as per planBudgetType.

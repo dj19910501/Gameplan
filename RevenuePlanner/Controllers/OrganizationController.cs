@@ -19,7 +19,7 @@ namespace RevenuePlanner.Controllers
 
         #region "Variables"
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-        private MRPEntities db = Common.db;
+        private MRPEntities db = new MRPEntities();
         #endregion
 
         #region "Index"

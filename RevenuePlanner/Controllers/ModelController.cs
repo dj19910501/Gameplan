@@ -29,7 +29,7 @@ namespace RevenuePlanner.Controllers
     public class ModelController : CommonController
     {
         #region Local Variables for ModelController
-        private MRPEntities objDbMrpEntities = Common.db;
+        private MRPEntities objDbMrpEntities = new MRPEntities();
         static Random rnd = new Random();
         string strVersion = "version";
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency(); //Added by Rahul Shah for PL #2498 to apply multi currency
@@ -1777,8 +1777,8 @@ namespace RevenuePlanner.Controllers
                         objtactic.TacticTypeId = TacticTypeId;
                         objtactic.IsDeleted = false;
 
-                        Common.db.Entry(objtactic).State = EntityState.Modified;
-                        Common.db.SaveChanges();
+                        objDbMrpEntities.Entry(objtactic).State = EntityState.Modified;
+                        objDbMrpEntities.SaveChanges();
 
                         Common.InsertChangeLog((int)ModelId, 0, objtactic.TacticTypeId, objtactic.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.updated);
 
@@ -2098,7 +2098,7 @@ namespace RevenuePlanner.Controllers
                                 objtactic.IsDeleted = false;
                                 objtactic.WorkFrontTemplateId = tacticType.WorkFrontTemplateId; // Added Brad Gray 07/25/2015 WorkFront Template to Tactic Type mapping - updated 1/7/2016 by Brad Gray PL#1856
 
-                                Common.db.Entry(objtactic).State = EntityState.Modified;
+                                objDbMrpEntities.Entry(objtactic).State = EntityState.Modified;
 
                                 //#2063: Tactic 'Deployed To Integration' not defaulting to on
                                 // Added by Viral on 04/08/2016
@@ -2141,7 +2141,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 #endregion
 
-                                result = Common.db.SaveChanges();
+                                result = objDbMrpEntities.SaveChanges();
                                 //// changed by : Nirav Shah on 31 Jan 2013
                                 //// Bug 19:Model - should not be able to publish a model with no tactics selected */
                                 if (msgshow == false)
