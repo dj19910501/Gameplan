@@ -8070,8 +8070,8 @@ li.close-list {
 	line-height: normal;
 	margin-left: 2px;
 	margin-top: 0;
-	width: 19px; /*20px changed by Bhumika #1997 18-3-2016 */
-	height: 20px;
+	width: 17px; /*20px changed by Bhumika #1997 18-3-2016 */
+	height: 19px;
 	cursor: pointer;
 	opacity: 0.6;
 }
@@ -12541,18 +12541,19 @@ a:focus, a:hover {
 	background-color: #89cede; /* #2312 */
 }
 #ImportModal {
-	width: 400px;
+	width: 500px;
 }
 #ImportModal .modal-header {
 	padding: 2px 15px;
 }
 #ImportModal.fade.in {
-	top: 34%; /*margin-left:-500px;*/
+	top: 18%; /*margin-left:-500px;*/
 }
 #ImportBtn {
 	width: 65px;
 	margin-right: 10px;
 }
+#ImportBtn .input-group-btn{margin-bottom: 15px;}
 .btn-primary.btn-file:hover, .btn-primary.fileinput-upload:hover {
 	background-color: #70bbcc !important;
 }
