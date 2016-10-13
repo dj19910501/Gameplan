@@ -561,14 +561,14 @@ function SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost) {
         success: function (data) {
 
             if (data.isSuccess == true) {
-                section = section.toLowerCase();
+                section = Section.toLowerCase();
                 $("#hdnBudgetingIsSave").val("true");
-                if (tab.toLowerCase() == 'actual' || tab.toLowerCase() == 'budget') {
-                    $("#hdnBudgetingExpandId").val(section + entityId);
+                if (Tab.toLowerCase() == 'actual' || Tab.toLowerCase() == 'budget') {
+                    $("#hdnBudgetingExpandId").val(section + EntityId);
                 }
                 else {
                     var sectionIntializer = section == "tactic" ? "cpt" : section == "program" ? "cp" : section == "campaign" ? "c" : "";
-                    $("#hdnBudgetingExpandId").val(section + sectionIntializer + '_' + entityId);
+                    $("#hdnBudgetingExpandId").val(section + sectionIntializer + '_' + EntityId);
                 }
             }
             else {

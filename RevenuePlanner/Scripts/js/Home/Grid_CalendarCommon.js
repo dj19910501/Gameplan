@@ -648,7 +648,7 @@ function DisplayPopUpMenu(obj, e) {
 
     ////Copy Campaign.
     $('#CloneCampaign1').click(function () {
-        if ($('#IsGridView').val().toLowerCase() == "false") {
+        if ($('#IsGridView').val().toLowerCase() == "false" && !IsBudgetGrid) {
             scrollstate = gantt.getScrollState();
             bodyscrollpos = $(window).scrollTop();
         }
@@ -706,7 +706,7 @@ function DisplayPopUpMenu(obj, e) {
         });
     });
     $('#ChildProgram').click(function () {
-        if ($('#IsGridView').val().toLowerCase() == "false") {
+        if ($('#IsGridView').val().toLowerCase() == "false" && !IsBudgetGrid) {
             scrollstate = gantt.getScrollState();
             bodyscrollpos = $(window).scrollTop();
         }
@@ -724,7 +724,7 @@ function DisplayPopUpMenu(obj, e) {
 
     //Copy Program
     $('#CloneProgram1').click(function () {
-        if ($('#IsGridView').val().toLowerCase() == "false") {
+        if ($('#IsGridView').val().toLowerCase() == "false" && !IsBudgetGrid) {
             scrollstate = gantt.getScrollState();
             bodyscrollpos = $(window).scrollTop();
         }
@@ -783,7 +783,7 @@ function DisplayPopUpMenu(obj, e) {
 
     //Child Tactic
     $("#ChildTactic").on("click", function () {
-        if ($('#IsGridView').val().toLowerCase() == "false") {
+        if ($('#IsGridView').val().toLowerCase() == "false" && !IsBudgetGrid) {
             scrollstate = gantt.getScrollState();
             bodyscrollpos = $(window).scrollTop();
         }
@@ -798,7 +798,7 @@ function DisplayPopUpMenu(obj, e) {
     //New Tactic
     $("#NewTactic1").on("click", function () {
 
-        if ($('#IsGridView').val().toLowerCase() == "false") {
+        if ($('#IsGridView').val().toLowerCase() == "false" && !IsBudgetGrid) {
             scrollstate = gantt.getScrollState();
             bodyscrollpos = $(window).scrollTop();
         }
@@ -813,7 +813,7 @@ function DisplayPopUpMenu(obj, e) {
     //Copy Tactic
     $('#CloneTactic1').click(function () {
 
-        if ($('#IsGridView').val().toLowerCase() == "false") {
+        if ($('#IsGridView').val().toLowerCase() == "false" && !IsBudgetGrid) {
             scrollstate = gantt.getScrollState();
             bodyscrollpos = $(window).scrollTop();
         }
@@ -889,7 +889,7 @@ function DisplayPopUpMenu(obj, e) {
 
     //Copy Line Item
     $('#CloneLineItem').click(function () {
-        if ($('#IsGridView').val().toLowerCase() == "false") {
+        if ($('#IsGridView').val().toLowerCase() == "false" && !IsBudgetGrid) {
             scrollstate = gantt.getScrollState();
             bodyscrollpos = $(window).scrollTop();
         }
@@ -1360,7 +1360,7 @@ function OpentCopyPopup(obj, isProceed) {
     cloneObj = obj;
     var redirectType = $(obj).attr('redirecttype');
     if (redirectType == "" || redirectType == undefined) {
-        if ($('#IsGridView').val().toLowerCase() == "false") {
+        if ($('#IsGridView').val().toLowerCase() == "false" && !IsBudgetGrid) {
             scrollstate = gantt.getScrollState();
         }
         else {
