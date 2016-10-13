@@ -790,7 +790,7 @@ namespace RevenuePlanner.Services
                 {
                     int LinkedTacitcId = Convert.ToInt32(objTactic.LinkedTacticId);
                     objTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpt =>
-                                                                                    pcpt.PlanTacticId == EntityId &&
+                                                                                    pcpt.PlanTacticId == LinkedTacitcId &&
                                                                                     pcpt.IsDeleted == false).FirstOrDefault();
                     SaveTacticTotalPlannedCost(objTactic, newCost);
                 }
