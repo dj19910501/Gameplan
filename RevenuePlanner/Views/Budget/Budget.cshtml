@@ -257,16 +257,20 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
         if (stage == 0) { // Stage == 0 Means Click on Cell
             var newvalue = HomeGrid.cells(rowId, cellInd).getValue();
-            if (newvalue.indexOf("</div>") > -1) {
-                if (newvalue.split("</div>").length > 2) {
-                    value = newvalue.split("</div>")[0] + '</div>' + newvalue.split("</div>")[1];
-                    TacticName = newvalue.split("</div>")[2];
-                }
-                else {
-                    value = newvalue.split("</div>")[0];
-                    TacticName = newvalue.split("</div>")[1];
+            if (cellInd == TaskNameId)
+            {
+                if (newvalue.indexOf("</div>") > -1) {
+                    if (newvalue.split("</div>").length > 2) {
+                        value = newvalue.split("</div>")[0] + '</div>' + newvalue.split("</div>")[1];
+                        TacticName = newvalue.split("</div>")[2];
+                    }
+                    else {
+                        value = newvalue.split("</div>")[0];
+                        TacticName = newvalue.split("</div>")[1];
+                    }
                 }
             }
+         
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
@@ -274,8 +278,10 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 return false;
         }
         else {
-            if (nValue != undefined) {
-                TacticName = nValue;
+            if (cellInd == TaskNameId) {
+                if (nValue != undefined) {
+                    TacticName = nValue;
+                }
             }
         }
         if (stage == 1) {
@@ -630,11 +636,11 @@ function SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost) {
     if (Tab.toLowerCase() == 'planned') {
         var monthlyplannedcost;
         if (MonthCost != null && MonthCost != '') {
-            monthlyplannedcost = SetValueByExchangeRate(MonthCost.replace(/,/g, ""));
+            monthlyplannedcost = SetValueByExchangeRate(MonthCost);
         }
         else {
             isTotalCost = true;
-            monthlyplannedcost = SetValueByExchangeRate(YearCost.replace(/,/g, ""));
+            monthlyplannedcost = SetValueByExchangeRate(YearCost);
         }
         FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&allocatedcost=' + monthlyplannedcost + '&tab=' + Tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost;
     }
@@ -655,17 +661,17 @@ function SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost) {
         if (MonthCost != null && MonthCost != '') {
             inputArr.push({
                 key: TotalKeyText,
-                Value: SetValueByExchangeRate(YearCost.replace(/,/g, ""))
+                Value: SetValueByExchangeRate(YearCost)
             });
             inputArr.push({
                 key: MonthlyKeyText,
-                Value: SetValueByExchangeRate(MonthCost.replace(/,/g, ""))
+                Value: SetValueByExchangeRate(MonthCost)
             });
         }
         else {
             inputArr.push({
                 key: TotalKeyText,
-                Value: SetValueByExchangeRate(YearCost.replace(/,/g, ""))
+                Value: SetValueByExchangeRate(YearCost)
             });
         }
         jsonInputs = JSON.stringify(inputArr);

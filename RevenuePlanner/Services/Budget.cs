@@ -34,7 +34,7 @@ namespace RevenuePlanner.Services
         public const string FixHeader = "ActivityId,Type,machinename,,,Activity,,Total Budget" + manageviewicon + ",Planned Cost" + manageviewicon + ",Total Actual" + manageviewicon;
         public const string EndColumnsHeader = ",Unallocated Planned Cost,Unallocated Budget";
         public const string FixColumnIds = "ActivityId,Type,MachineName,colourcode,LineItemTypeId,TaskName,Buttons,BudgetCost,PlannedCost,ActualCost";
-        public const string EndColumnIds = ",UnAllocatedCost,Budget";
+        public const string EndColumnIds = ",UnAllocatedCost,UnAllocatedBudget";
         public const string FixColType = "ro,ro,ro,ro,ro,tree,ro,edn,edn,edn";
         public const string EndColType = ",ron,ron";
         public const string FixcolWidth = "100,100,100,10,100,302,75,100,110,100";
