@@ -133,10 +133,12 @@
             var colSplitId = HomeGrid.getColIndexById("BudgetCost");
             HomeGrid.splitAt(colSplitId);
 
-            //HomeGrid.attachEvent("onOpenEnd", function (id, state) {
-            //    isCopyTacticHomeGrid = 0;
-            //    isEditTacticHomeGrid = 0;
-            //});
+            HomeGrid.attachEvent("onOpenEnd", function (id, state) {
+                if (state == "1") {
+                    SetFlagTooltip();
+                    SetTooltip();
+                }
+            });
 
             HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
                 if (IsManageviewClick) {
@@ -200,6 +202,7 @@
                     $('#exp-serach').hide();
                 }
             }
+            SetFlagTooltip();
             SetTooltip();
         }
         else {
@@ -211,6 +214,29 @@
         }
     });
 
+    function SetFlagTooltip()
+    {
+        var allRowIDs = HomeGrid.getAllRowIds(',').split(",");
+        var parent = ["plan", "campaign", "program"];
+        var parentUppercase = ["Plan", "Campaign", "Program"];
+        var child = ["Campaign", "Program", "Tactic"];
+        for (var i = 0; i < allRowIDs.length; i++) {
+            for (var j = 0; j < HomeGrid.getColumnsNum() ; j++) {
+                if (HomeGrid.getColumnId(j) == "PlannedCost" || HomeGrid.getColumnId(j) == "Planned" || HomeGrid.getColumnId(j) == "BudgetCost" || HomeGrid.getColumnId(j) == "Budget")
+                    if (HomeGrid.cells(allRowIDs[i], j).getAttribute("actval") == "1") {
+                        var TypeIndex = HomeGrid.getColIndexById("Type");
+                        var Type = HomeGrid.cells(allRowIDs[i], TypeIndex).getValue();
+                        HomeGrid.cells(allRowIDs[i], j).setAttribute("title", Type + "'s cost is over it's budget.");
+                    }
+                    else if (HomeGrid.cells(allRowIDs[i], j).getAttribute("actval") == "2") {
+                        var TypeIndex = HomeGrid.getColIndexById("Type");
+                        var Type = HomeGrid.cells(allRowIDs[i], TypeIndex).getValue();
+                        var p_ind = parent.indexOf(Type.toLowerCase());
+                        HomeGrid.cells(allRowIDs[i], j).setAttribute("title", parentUppercase[p_ind] + " Budget is less than the budget for it's " + child[p_ind] + ".");
+                    }
+            }
+        }
+    }
 function LoadAfterParsing() {
     if (eventidonedit != 0) {
         HomeGrid.detachEvent(eventidonedit);

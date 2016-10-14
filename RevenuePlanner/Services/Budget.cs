@@ -51,6 +51,8 @@ namespace RevenuePlanner.Services
         public const string OrangeCornerStyle = "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;";
         //public const string ThreeDash = "---";
         public const string ThreeDash = "0";
+        public const string BudgetFlagval = "2";
+        public const string CostFlagVal = "1";
         public bool isMultiYear = false;
 
 
@@ -878,10 +880,12 @@ namespace RevenuePlanner.Services
                 if (Common.ParseDoubleValue(objTotalCost.value) > Common.ParseDoubleValue(objTotalBudget.value) && Entity.ActivityType!=ActivityType.ActivityLineItem)
                 {
                     objTotalCost.style = objTotalCost.style + RedCornerStyle;
+                    objTotalCost.actval = CostFlagVal;
                 }
                 if (ChildTotalBudget > Common.ParseDoubleValue(objTotalBudget.value))
                 {
                     objTotalBudget.style = objTotalBudget.style + OrangeCornerStyle;
+                    objTotalBudget.actval = BudgetFlagval;
                 }
                 BudgetDataObjList.Add(objTotalBudget);
                 BudgetDataObjList.Add(objTotalCost);
@@ -940,90 +944,141 @@ namespace RevenuePlanner.Services
                     if (monthNo == 1)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY1) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY1 < Entity.ChildMonthValues.BudgetY1 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        
+                        if (!isLineItem && Entity.MonthValues.BudgetY1 < Entity.ChildMonthValues.BudgetY1 )
+                        {
+                            objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1);
                     }
                     else if (monthNo == 2)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY2) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY2 < Entity.ChildMonthValues.BudgetY2 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+
+                        if (!isLineItem && Entity.MonthValues.BudgetY2 < Entity.ChildMonthValues.BudgetY2)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY2);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY2);
                     }
                     else if (monthNo == 3)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY3) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY3 < Entity.ChildMonthValues.BudgetY3 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY3 < Entity.ChildMonthValues.BudgetY3)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY3);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY3);
                     }
                     else if (monthNo == 4)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY4) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY4 < Entity.ChildMonthValues.BudgetY4 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY4 < Entity.ChildMonthValues.BudgetY4)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4);
                     }
                     else if (monthNo == 5)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY5) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY5 < Entity.ChildMonthValues.BudgetY5 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY5 < Entity.ChildMonthValues.BudgetY5)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY5);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY5);
                     }
                     else if (monthNo == 6)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY6) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY6 < Entity.ChildMonthValues.BudgetY6 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY6 < Entity.ChildMonthValues.BudgetY6)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY6);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY6);
                     }
                     else if (monthNo == 7)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY7) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY7 < Entity.ChildMonthValues.BudgetY7 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY7 < Entity.ChildMonthValues.BudgetY7)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7);
                     }
                     else if (monthNo == 8)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY8) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY8 < Entity.ChildMonthValues.BudgetY8 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY8 < Entity.ChildMonthValues.BudgetY8)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY8);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY8);
                     }
                     else if (monthNo == 9)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY9) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY9 < Entity.ChildMonthValues.BudgetY9 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY9 < Entity.ChildMonthValues.BudgetY9)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY9);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY9);
                     }
                     else if (monthNo == 10)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY10) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY10 < Entity.ChildMonthValues.BudgetY10 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY10 < Entity.ChildMonthValues.BudgetY10)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10);
                     }
                     else if (monthNo == 11)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY11) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY11 < Entity.ChildMonthValues.BudgetY11 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY11 < Entity.ChildMonthValues.BudgetY11)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY11);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY11);
                     }
                     else if (monthNo == 12)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY12) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Entity.MonthValues.BudgetY12 < Entity.ChildMonthValues.BudgetY12 ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Entity.MonthValues.BudgetY12 < Entity.ChildMonthValues.BudgetY12)
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY12);
                     }
                     if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
+                        objCostMonth.actval = CostFlagVal;
                     }
                 }
                 else
@@ -1065,7 +1120,11 @@ namespace RevenuePlanner.Services
                     if (i == 1)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY1 + Entity.MonthValues.BudgetY2 + Entity.MonthValues.BudgetY3) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY1 + Entity.ChildMonthValues.BudgetY2 + Entity.ChildMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY1 + Entity.ChildMonthValues.BudgetY2 + Entity.ChildMonthValues.BudgetY3))
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1 + Entity.MonthValues.CostY2 + Entity.MonthValues.CostY3);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1 + Entity.MonthValues.ActualY2 + Entity.MonthValues.ActualY3);
 
@@ -1073,55 +1132,87 @@ namespace RevenuePlanner.Services
                     else if (i == 4)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY4 + Entity.ChildMonthValues.BudgetY5 + Entity.ChildMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY4 + Entity.ChildMonthValues.BudgetY5 + Entity.ChildMonthValues.BudgetY6) )
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle ;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4 + Entity.MonthValues.CostY5 + Entity.MonthValues.CostY6);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4 + Entity.MonthValues.ActualY5 + Entity.MonthValues.ActualY6);
                     }
                     else if (i == 7)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY7 + Entity.ChildMonthValues.BudgetY8 + Entity.ChildMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY7 + Entity.ChildMonthValues.BudgetY8 + Entity.ChildMonthValues.BudgetY9))
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7 + Entity.MonthValues.CostY8 + Entity.MonthValues.CostY9);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7 + Entity.MonthValues.ActualY8 + Entity.MonthValues.ActualY9);
                     }
                     else if (i == 10)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY10 + Entity.ChildMonthValues.BudgetY11 + Entity.ChildMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY10 + Entity.ChildMonthValues.BudgetY11 + Entity.ChildMonthValues.BudgetY12))
+                        {
+                            objBudgetMonth.style =   objBudgetMonth.style + OrangeCornerStyle ;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10 + Entity.MonthValues.CostY11 + Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10 + Entity.MonthValues.ActualY11 + Entity.MonthValues.ActualY12);
                     }
                     else if (i == 13)
                     {
                         objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY1 + Entity.NextYearMonthValues.BudgetY2 + Entity.NextYearMonthValues.BudgetY3) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY1 + Entity.ChildNextYearMonthValues.BudgetY2 + Entity.ChildNextYearMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY1 + Entity.ChildNextYearMonthValues.BudgetY2 + Entity.ChildNextYearMonthValues.BudgetY3))
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle ;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY1 + Entity.NextYearMonthValues.CostY2 + Entity.NextYearMonthValues.CostY3) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY1 + Entity.NextYearMonthValues.ActualY2 + Entity.NextYearMonthValues.ActualY3) : ThreeDash;
                     }
                     else if (i == 16)
                     {
                         objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY4 + Entity.NextYearMonthValues.BudgetY5 + Entity.NextYearMonthValues.BudgetY6) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY4 + Entity.ChildNextYearMonthValues.BudgetY5 + Entity.ChildNextYearMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY4 + Entity.ChildNextYearMonthValues.BudgetY5 + Entity.ChildNextYearMonthValues.BudgetY6))
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY4 + Entity.NextYearMonthValues.CostY5 + Entity.NextYearMonthValues.CostY6) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY4 + Entity.NextYearMonthValues.ActualY5 + Entity.NextYearMonthValues.ActualY6) : ThreeDash;
                     }
                     else if (i == 19)
                     {
                         objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY7 + Entity.NextYearMonthValues.BudgetY8 + Entity.NextYearMonthValues.BudgetY9) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY7 + Entity.ChildNextYearMonthValues.BudgetY8 + Entity.ChildNextYearMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY7 + Entity.ChildNextYearMonthValues.BudgetY8 + Entity.ChildNextYearMonthValues.BudgetY9))
+                        {
+                            objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY7 + Entity.NextYearMonthValues.CostY8 + Entity.NextYearMonthValues.CostY9) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY7 + Entity.NextYearMonthValues.ActualY8 + Entity.NextYearMonthValues.ActualY9) : ThreeDash;
                     }
                     else if (i == 22)
                     {
                         objBudgetMonth.value = IsMultiYearPlan && !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY10 + Entity.NextYearMonthValues.BudgetY11 + Entity.NextYearMonthValues.BudgetY12) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY10 + Entity.ChildNextYearMonthValues.BudgetY11 + Entity.ChildNextYearMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY10 + Entity.ChildNextYearMonthValues.BudgetY11 + Entity.ChildNextYearMonthValues.BudgetY12))
+                        {
+                            objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12) : ThreeDash;
                     }
                     if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
+                        objCostMonth.actval = CostFlagVal;
                     }
                 }
                 else
@@ -1173,7 +1264,12 @@ namespace RevenuePlanner.Services
                     else if (monthNo == 13)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY1 + Entity.MonthValues.BudgetY2 + Entity.MonthValues.BudgetY3) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY1 + Entity.ChildMonthValues.BudgetY2 + Entity.ChildMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY1 + Entity.ChildMonthValues.BudgetY2 + Entity.ChildMonthValues.BudgetY3))
+                        {
+                            objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1 + Entity.MonthValues.CostY2 + Entity.MonthValues.CostY3);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1 + Entity.MonthValues.ActualY2 + Entity.MonthValues.ActualY3);
 
@@ -1181,27 +1277,43 @@ namespace RevenuePlanner.Services
                     else if (monthNo == 16)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY4 + Entity.MonthValues.BudgetY5 + Entity.MonthValues.BudgetY6) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY4 + Entity.ChildMonthValues.BudgetY5 + Entity.ChildMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY4 + Entity.ChildMonthValues.BudgetY5 + Entity.ChildMonthValues.BudgetY6) )
+                        {
+                            objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle ;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4 + Entity.MonthValues.CostY5 + Entity.MonthValues.CostY6);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4 + Entity.MonthValues.ActualY5 + Entity.MonthValues.ActualY6);
                     }
                     else if (monthNo == 19)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY7 + Entity.MonthValues.BudgetY8 + Entity.MonthValues.BudgetY9) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY7 + Entity.ChildMonthValues.BudgetY8 + Entity.ChildMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY7 + Entity.ChildMonthValues.BudgetY8 + Entity.ChildMonthValues.BudgetY9))
+                        {
+                            objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7 + Entity.MonthValues.CostY8 + Entity.MonthValues.CostY9);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7 + Entity.MonthValues.ActualY8 + Entity.MonthValues.ActualY9);
                     }
                     else if (monthNo == 22)
                     {
                         objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.MonthValues.BudgetY10 + Entity.MonthValues.BudgetY11 + Entity.MonthValues.BudgetY12) : ThreeDash;
-                        objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY10 + Entity.ChildMonthValues.BudgetY11 + Entity.ChildMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                        
+                        if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY10 + Entity.ChildMonthValues.BudgetY11 + Entity.ChildMonthValues.BudgetY12))
+                        {
+                            objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
+                            objBudgetMonth.actval = BudgetFlagval;
+                        }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10 + Entity.MonthValues.CostY11 + Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10 + Entity.MonthValues.ActualY11 + Entity.MonthValues.ActualY12);
                     }
                     if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
+                        objCostMonth.actval = CostFlagVal;
                     }
                 }
                 else
@@ -1236,7 +1348,12 @@ namespace RevenuePlanner.Services
                 if (monthNo == 13)
                 {
                     objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY1 + Entity.NextYearMonthValues.BudgetY2 + Entity.NextYearMonthValues.BudgetY3) : ThreeDash;
-                    objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY1 + Entity.ChildNextYearMonthValues.BudgetY2 + Entity.ChildNextYearMonthValues.BudgetY3) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                    
+                    if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY1 + Entity.ChildNextYearMonthValues.BudgetY2 + Entity.ChildNextYearMonthValues.BudgetY3))
+                    {
+                        objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle ;
+                        objBudgetMonth.actval = BudgetFlagval;
+                    }
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY1 + Entity.NextYearMonthValues.CostY2 + Entity.NextYearMonthValues.CostY3);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY1 + Entity.NextYearMonthValues.ActualY2 + Entity.NextYearMonthValues.ActualY3);
 
@@ -1244,27 +1361,43 @@ namespace RevenuePlanner.Services
                 else if (monthNo == 16)
                 {
                     objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY4 + Entity.NextYearMonthValues.BudgetY5 + Entity.NextYearMonthValues.BudgetY6) : ThreeDash;
-                    objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY4 + Entity.ChildNextYearMonthValues.BudgetY5 + Entity.ChildNextYearMonthValues.BudgetY6) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                    
+                    if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY4 + Entity.ChildNextYearMonthValues.BudgetY5 + Entity.ChildNextYearMonthValues.BudgetY6))
+                    {
+                        objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                        objBudgetMonth.actval = BudgetFlagval;
+                    }
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY4 + Entity.NextYearMonthValues.CostY5 + Entity.NextYearMonthValues.CostY6);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY4 + Entity.NextYearMonthValues.ActualY5 + Entity.NextYearMonthValues.ActualY6);
                 }
                 else if (monthNo == 19)
                 {
                     objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY7 + Entity.NextYearMonthValues.BudgetY8 + Entity.NextYearMonthValues.BudgetY9) : ThreeDash;
-                    objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY7 + Entity.ChildNextYearMonthValues.BudgetY8 + Entity.ChildNextYearMonthValues.BudgetY9) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                    
+                    if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY7 + Entity.ChildNextYearMonthValues.BudgetY8 + Entity.ChildNextYearMonthValues.BudgetY9))
+                    {
+                        objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                        objBudgetMonth.actval = BudgetFlagval;
+                    }
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY7 + Entity.NextYearMonthValues.CostY8 + Entity.NextYearMonthValues.CostY9);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY7 + Entity.NextYearMonthValues.ActualY8 + Entity.NextYearMonthValues.ActualY9);
                 }
                 else if (monthNo == 22)
                 {
                     objBudgetMonth.value = !isLineItem ? Convert.ToString(Entity.NextYearMonthValues.BudgetY10 + Entity.NextYearMonthValues.BudgetY11 + Entity.NextYearMonthValues.BudgetY12) : ThreeDash;
-                    objBudgetMonth.style = !isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY10 + Entity.ChildNextYearMonthValues.BudgetY11 + Entity.ChildNextYearMonthValues.BudgetY12) ? objBudgetMonth.style + OrangeCornerStyle : objBudgetMonth.style;
+                    
+                    if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY10 + Entity.ChildNextYearMonthValues.BudgetY11 + Entity.ChildNextYearMonthValues.BudgetY12))
+                    {
+                        objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
+                        objBudgetMonth.actval = BudgetFlagval;
+                    }
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12);
                 }
                 if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                 {
                     objCostMonth.style = objCostMonth.style + RedCornerStyle;
+                    objCostMonth.actval = CostFlagVal;
                 }
                 BudgetDataObjList.Add(objBudgetMonth);
                 BudgetDataObjList.Add(objCostMonth);
