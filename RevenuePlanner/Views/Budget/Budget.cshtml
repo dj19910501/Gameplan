@@ -5,7 +5,7 @@
 @{
     bool isquarter = ViewBag.isquarter;
     string GridFirstrowId = string.Empty;
-    if (Model.Grid.rows.Count>0)
+    if (Model.Grid.rows.Count > 0)
     {
         GridFirstrowId = Model.Grid.rows[0].id;
     }
@@ -78,7 +78,7 @@
     var eventidonedit = 0;
     var noplan = '@Sessions.IsNoPlanCreated';
     $(document).ready(function () {
-        var GridRowId='@GridFirstrowId';
+        var GridRowId = '@GridFirstrowId';
         $('#divgridview').addClass('budget-grid');
         if (GridRowId != '' || noplan.toLowerCase() == 'true') {
             var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
@@ -106,8 +106,8 @@
             HomeGrid.enableAutoWidth(false);
             HomeGrid.enableEditTabOnly(true);
 
-        TaskNameColIndex = HomeGrid.getColIndexById("TaskName");
-        HomeGrid.setColumnMinWidth("300", TaskNameColIndex);
+            TaskNameColIndex = HomeGrid.getColIndexById("TaskName");
+            HomeGrid.setColumnMinWidth("300", TaskNameColIndex);
 
             HomeGrid.setEditable(true);
             HomeGrid.init();
@@ -156,11 +156,13 @@
 
             });
             var machineNameindex = HomeGrid.getColIndexById("MachineName");
+            var LinkTacticId = HomeGrid.getColIndexById("LinkTacticId");
             var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
             var colTypeIndex = HomeGrid.getColIndexById("Type");
             var LineItemTypeIdIndex = HomeGrid.getColIndexById("LineItemTypeId");
             HomeGrid.setColumnHidden(ActivityIdindex, true);
             HomeGrid.setColumnHidden(machineNameindex, true);
+            HomeGrid.setColumnHidden(LinkTacticId, true);
             HomeGrid.setColumnHidden(colTypeIndex, true);
             HomeGrid.setColumnHidden(LineItemTypeIdIndex, true);
             var ColumnsToView = '@Model.HiddenTab';
@@ -175,7 +177,7 @@
                         }
                         if (ColumnId == 'UnAllocatedBudget') {
                             ColumnId = 'BudgetCost';
-                        }                        
+                        }
                         var YearlyTab = sTab + "Cost";
                         if (ColumnId == sTab || ColumnId == YearlyTab) {
                             HomeGrid.setColumnHidden(j, true);
@@ -183,19 +185,19 @@
                     }
                 }
             }
-           
+
             //setTimeout(function () {
-                HomeGrid.setSizes();
-              HomeGrid.loadOpenStates("plangridState");
-              
-                   HomeGrid.objBox.scrollTop = scrollstate.y ;
-               
+            HomeGrid.setSizes();
+            HomeGrid.loadOpenStates("plangridState");
+
+            HomeGrid.objBox.scrollTop = scrollstate.y;
+
             //}, 200);
-                   LoadAfterParsing();
+            LoadAfterParsing();
 
             var rowCount = HomeGrid.getRowsNum();
             if (rowCount != undefined && rowCount == 0) {
-                
+
                 if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
                     AddBlankRow();
                     $('#exp-serach').hide();
@@ -213,8 +215,7 @@
         }
     });
 
-    function SetFlagTooltip()
-    {
+    function SetFlagTooltip() {
         var allRowIDs = HomeGrid.getAllRowIds(',').split(",");
         var parent = ["plan", "campaign", "program"];
         var parentUppercase = ["Plan", "Campaign", "Program"];
@@ -236,20 +237,20 @@
             }
         }
     }
-function LoadAfterParsing() {
-    if (eventidonedit != 0) {
-        HomeGrid.detachEvent(eventidonedit);
-    }
-    eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
-    SetselectedRow();
-   
-        HomeGrid.objBox.scrollTop = scrollstate.y ;
-    
-}
+    function LoadAfterParsing() {
+        if (eventidonedit != 0) {
+            HomeGrid.detachEvent(eventidonedit);
+        }
+        eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
+        SetselectedRow();
 
-var value;
-var TacticName;
-function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+        HomeGrid.objBox.scrollTop = scrollstate.y;
+
+    }
+
+    var value;
+    var TacticName;
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         var TaskNameId = HomeGrid.getColIndexById("TaskName");
         if (cellInd != TaskNameId && nValue == '') {
             nValue = 0;
@@ -257,8 +258,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
         if (stage == 0) { // Stage == 0 Means Click on Cell
             var newvalue = HomeGrid.cells(rowId, cellInd).getValue();
-            if (cellInd == TaskNameId)
-            {
+            if (cellInd == TaskNameId) {
                 if (newvalue.indexOf("</div>") > -1) {
                     if (newvalue.split("</div>").length > 2) {
                         value = newvalue.split("</div>")[0] + '</div>' + newvalue.split("</div>")[1];
@@ -270,7 +270,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     }
                 }
             }
-         
+
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
@@ -298,129 +298,136 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 }
             }
         }
-       
+
         if (stage == 2) { // Stage == 2 - Means perform focus out event
             if (nValue != oValue) {
-            var EntityId = HomeGrid.cells(rowId, 0).cell.innerText;
-            var Section = HomeGrid.cells(rowId, 1).cell.innerText;
-            var Month = '';
-            var YearCost;
-            var MonthCost;
-            var Tab;
-            var BudgetHdr = HomeGrid.getColLabel(cellInd, 0);
-            if (BudgetHdr.indexOf("-") > -1) {
-                Tab = BudgetHdr.split(' ')[1];
-            }
-            else {
-                Tab = BudgetHdr;
-            }
 
-            var TypeIndex = HomeGrid.getColIndexById("Type");
+                var LinkTacticIdIndex = HomeGrid.getColIndexById("LinkTacticId");
+                var LinkTacticId = HomeGrid.cells(rowId, LinkTacticIdIndex).getValue();
 
-            if (TaskNameId == cellInd) {
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Plan/SaveGridDetail/")',
-                    data: { UpdateType: HomeGrid.cells(rowId, TypeIndex).cell.innerText, UpdateColumn: 'TaskName', UpdateVal: nValue, Id: parseInt(EntityId) },
-                    dataType: 'json',
-                    success: function (states) {
-                        if (states.errormsg != null && states.errormsg.trim() != "") {
-                            alert(states.errormsg.trim());
-                            HomeGrid.cells(rowId, cellInd).setValue(oValue);
-                            return false;
+                var EntityId = HomeGrid.cells(rowId, 0).cell.innerText;
+                var Section = HomeGrid.cells(rowId, 1).cell.innerText;
+                var Month = '';
+                var YearCost;
+                var MonthCost;
+                var Tab;
+                var BudgetHdr = HomeGrid.getColLabel(cellInd, 0);
+                if (BudgetHdr.indexOf("-") > -1) {
+                    Tab = BudgetHdr.split(' ')[1];
+                }
+                else {
+                    Tab = BudgetHdr;
+                }
+
+                var TypeIndex = HomeGrid.getColIndexById("Type");
+
+                if (TaskNameId == cellInd) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/SaveGridDetail/")',
+                        data: { UpdateType: HomeGrid.cells(rowId, TypeIndex).cell.innerText, UpdateColumn: 'TaskName', UpdateVal: nValue, Id: parseInt(EntityId) },
+                        dataType: 'json',
+                        success: function (states) {
+                            if (states.errormsg != null && states.errormsg.trim() != "") {
+                                alert(states.errormsg.trim());
+                                HomeGrid.cells(rowId, cellInd).setValue(oValue);
+                                return false;
+                            }
+                            else {
+                                if (HomeGrid.cells(rowId, TypeIndex).cell.innerText.toLowerCase() == "plan") {
+                                    SetFilterData(EntityId, nValue);
+                                }
+                                if (LinkTacticId != null && LinkTacticId != '' && LinkTacticId != 0) {
+                                    LoadBudgetGrid();
+                                }
+                            }
+                        }
+                    });
+                }
+                else {
+                    if (Tab.toLowerCase() == 'actual' || Tab.toLowerCase() == 'planned' || Tab.toLowerCase() == 'budget') {
+                        Month = BudgetHdr.split(' ')[0];
+                    }
+                    var IsTotalCost = false;
+                    if (Tab.toLowerCase() == 'actual') {
+                        var ActualCostColIndex = HomeGrid.getColIndexById("ActualCost");
+                        YearCost = HomeGrid.cells(rowId, ActualCostColIndex).cell.innerText;
+                        MonthCost = nValue;
+                    }
+                    else if (Tab.toLowerCase() == 'planned') {
+                        var PlannedCostColIndex = HomeGrid.getColIndexById("PlannedCost");
+                        YearCost = HomeGrid.cells(rowId, PlannedCostColIndex).cell.innerText;
+                        MonthCost = nValue;
+                    }
+                    else if (Tab.toLowerCase() == 'budget') {
+                        var BudgetCostColIndex = HomeGrid.getColIndexById("BudgetCost");
+                        YearCost = HomeGrid.cells(rowId, BudgetCostColIndex).cell.innerText;
+                        MonthCost = nValue;
+                    }
+                    else if (Tab.toLowerCase() == 'total actual') {
+                        Tab = "Actual";
+                        MonthCost = '';
+                        YearCost = nValue;
+                    }
+                    else if (Tab.toLowerCase() == 'planned cost') {
+                        IsTotalCost = true;
+                        Tab = "Planned";
+                        MonthCost = '';
+                        YearCost = nValue;
+                    }
+                    else if (Tab.toLowerCase() == 'total budget') {
+                        IsTotalCost = true;
+                        Tab = "Budget";
+                        MonthCost = '';
+                        YearCost = nValue;
+                    }
+                    SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost, LinkTacticId);
+
+                    var Type = HomeGrid.cells(rowId, TypeIndex).getValue();
+                    if (Tab.toLowerCase() == "planned") {
+                        var TypeIndex = HomeGrid.getColIndexById("Type");
+                        if (IsTotalCost) {
+                            if (Type.toLowerCase() == 'tactic') {
+                                //Tactic Planned Cost Change
+                                SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), true);
+                            }
+                            else if (Type.toLowerCase() == 'lineitem') {
+                                //LineItem Planned Cost Change
+                                SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), true);
+                            }
                         }
                         else {
-                            if (HomeGrid.cells(rowId, TypeIndex).cell.innerText.toLowerCase() == "plan") {
-                                SetFilterData(EntityId, nValue);
+                            if (Type.toLowerCase() == 'tactic') {
+                                //Tactic Monthly Planned Cost Change
+                                SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), false);
+                            }
+                            else if (Type.toLowerCase() == 'lineitem') {
+                                //LineItem Monthly Planned Cost Change
+                                SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), false);
                             }
                         }
                     }
-                });
-            }
-            else {
-                if (Tab.toLowerCase() == 'actual' || Tab.toLowerCase() == 'planned' || Tab.toLowerCase() == 'budget') {
-                    Month = BudgetHdr.split(' ')[0];
+                    else if (Tab.toLowerCase() == "actual") {
+                        //Actual Cost Change
+                        SetActualCost(rowId, cellInd, nValue, oValue, Type.toLowerCase());
+                    }
+                    else if (Tab.toLowerCase() == "budget") {
+                        SetBudgetCost(rowId, cellInd, nValue, oValue, IsTotalCost);
+                    }
                 }
-                var IsTotalCost = false;
-                if (Tab.toLowerCase() == 'actual') {
-                    var ActualCostColIndex = HomeGrid.getColIndexById("ActualCost");
-                    YearCost = HomeGrid.cells(rowId, ActualCostColIndex).cell.innerText;
-                    MonthCost = nValue;
-                }
-                else if (Tab.toLowerCase() == 'planned') {
-                    var PlannedCostColIndex = HomeGrid.getColIndexById("PlannedCost");
-                    YearCost = HomeGrid.cells(rowId, PlannedCostColIndex).cell.innerText;
-                    MonthCost = nValue;
-                }
-                else if (Tab.toLowerCase() == 'budget') {
-                    var BudgetCostColIndex = HomeGrid.getColIndexById("BudgetCost");
-                    YearCost = HomeGrid.cells(rowId, BudgetCostColIndex).cell.innerText;
-                    MonthCost = nValue;
-                }
-                else if (Tab.toLowerCase() == 'total actual') {
-                    Tab = "Actual";
-                    MonthCost = '';
-                    YearCost = nValue;
-                }
-                else if (Tab.toLowerCase() == 'planned cost') {
-                    IsTotalCost = true;
-                    Tab = "Planned";
-                    MonthCost = '';
-                    YearCost = nValue;
-                }
-                else if (Tab.toLowerCase() == 'total budget') {
-                    IsTotalCost = true;
-                    Tab = "Budget";
-                    MonthCost = '';
-                    YearCost = nValue;
-                }
-                SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost);
-
-                var Type = HomeGrid.cells(rowId, TypeIndex).getValue();
-                if (Tab.toLowerCase() == "planned") {
-                    var TypeIndex = HomeGrid.getColIndexById("Type");
-                    if (IsTotalCost) {
-                        if (Type.toLowerCase() == 'tactic') {
-                            //Tactic Planned Cost Change
-                            SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), true);
-                        }
-                        else if (Type.toLowerCase() == 'lineitem') {
-                            //LineItem Planned Cost Change
-                            SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), true);
-                        }
+                if (cellInd == TaskNameId) {
+                    if (value != undefined && value != "undefined" && value != null) {
+                        HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
                     }
                     else {
-                        if (Type.toLowerCase() == 'tactic') {
-                            //Tactic Monthly Planned Cost Change
-                            SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), false);
-                        }
-                        else if (Type.toLowerCase() == 'lineitem') {
-                            //LineItem Monthly Planned Cost Change
-                            SetPlannedCost(rowId, cellInd, nValue, oValue, Type.toLowerCase(), false);
-                        }
+                        HomeGrid.cells(rowId, cellInd).setValue(TacticName);
                     }
                 }
-                else if (Tab.toLowerCase() == "actual") {
-                    //Actual Cost Change
-                    SetActualCost(rowId, cellInd, nValue, oValue, Type.toLowerCase());
-                }
-                else if (Tab.toLowerCase() == "budget") {
-                    SetBudgetCost(rowId, cellInd, nValue, oValue, IsTotalCost);
-                }
-            }
-            if (cellInd == TaskNameId) {
-                if (value != undefined && value != "undefined" && value != null) {
-                    HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
-                }
-                else {
-                    HomeGrid.cells(rowId, cellInd).setValue(TacticName);
-                }
-            }
-            value = "";
+                value = "";
 
-            return true;
+                return true;
             }
-           
+
             if (cellInd == TaskNameId) {
                 if (value != undefined && value != "undefined" && value != null) {
                     HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
@@ -433,8 +440,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             return true;
 
         }
-   
-}
+
+    }
 
     function SetBudgetCost(rowId, cellInd, nValue, oValue, IsTotalCost) {
         var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedBudget");
@@ -447,18 +454,34 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         HomeGrid.cells(rowId, UnAllocatedIndex).setValue(SetAmtDiff);
 
         var GetParentId = HomeGrid.getParentId(rowId);
-        var ParentCost = parseFloat(HomeGrid.cells(GetParentId, cellInd).getValue());
-        var ChildNodeIds = HomeGrid.getSubItems(GetParentId);
-        var arrChildNodeIds = ChildNodeIds.split(',');
-        var ChildTotal = 0;
+        if (GetParentId != 0) {
+            var ParentCost = parseFloat(HomeGrid.cells(GetParentId, cellInd).getValue());
+            var ChildNodeIds = HomeGrid.getSubItems(GetParentId);
+            var arrChildNodeIds = ChildNodeIds.split(',');
+            var ChildTotal = 0;
+            for (var i = 0; i < arrChildNodeIds.length; i++) {
+                ChildTotal = parseFloat(ChildTotal + parseFloat(HomeGrid.cells(arrChildNodeIds[i], cellInd).getValue()));
+            }
+            if (ChildTotal > ParentCost) {
+                HomeGrid.setCellTextStyle(GetParentId, cellInd, "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+            }
+            else {
+                HomeGrid.setCellTextStyle(GetParentId, cellInd, "");
+            }
+        }
+
+        ParentCost = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
+        ChildNodeIds = HomeGrid.getSubItems(rowId);
+        arrChildNodeIds = ChildNodeIds.split(',');
+        ChildTotal = 0;
         for (var i = 0; i < arrChildNodeIds.length; i++) {
             ChildTotal = parseFloat(ChildTotal + parseFloat(HomeGrid.cells(arrChildNodeIds[i], cellInd).getValue()));
         }
         if (ChildTotal > ParentCost) {
-            HomeGrid.setCellTextStyle(GetParentId, cellInd, "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+            HomeGrid.setCellTextStyle(rowId, cellInd, "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
         }
         else {
-            HomeGrid.setCellTextStyle(GetParentId, cellInd, "");
+            HomeGrid.setCellTextStyle(rowId, cellInd, "");
         }
 
         var BudgetVal = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
@@ -472,58 +495,60 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
 
     function SetActualCost(rowId, cellInd, nValue, oValue, Type) {
-    var TotalActualIndex = HomeGrid.getColIndexById("ActualCost");
-    var TotalActualCost = parseFloat(HomeGrid.cells(rowId, TotalActualIndex).getValue());
-    var AmtDiff = parseFloat(nValue) - parseFloat(oValue);
-    var SetAmtDiff = parseFloat(TotalActualCost) + parseFloat(AmtDiff);
-    HomeGrid.cells(rowId, TotalActualIndex).setValue(SetAmtDiff);
+        var TotalActualIndex = HomeGrid.getColIndexById("ActualCost");
+        var TotalActualCost = parseFloat(HomeGrid.cells(rowId, TotalActualIndex).getValue());
+        var AmtDiff = parseFloat(nValue) - parseFloat(oValue);
+        var SetAmtDiff = parseFloat(TotalActualCost) + parseFloat(AmtDiff);
+        HomeGrid.cells(rowId, TotalActualIndex).setValue(SetAmtDiff);
 
-    if (Type == 'tactic') {
-        var ChildNodeIds = HomeGrid.getSubItems(rowId);
-        var arrChildNodeIds = ChildNodeIds.split(',');
-        var ActivityTypeIndex = HomeGrid.getColIndexById("LineItemTypeId");
-        for (var i = 0; i < arrChildNodeIds.length; i++) {
-            var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
-            if (ActivityId == '') {
-                //Balance Actual Cost
-                var BalCelVal = parseFloat(HomeGrid.cells(arrChildNodeIds[i], cellInd).getValue());
-                var SetBalCelVal = parseFloat(BalCelVal + AmtDiff);
-                HomeGrid.cells(arrChildNodeIds[i], cellInd).setValue(SetBalCelVal);
-                //Balance Total Actual Cost
-                var BalTotCelVal = parseFloat(HomeGrid.cells(arrChildNodeIds[i], TotalActualIndex).getValue());
-                var SetBalTotCelVal = parseFloat(BalTotCelVal + AmtDiff);
-                HomeGrid.cells(arrChildNodeIds[i], TotalActualIndex).setValue(SetBalTotCelVal);
+        if (Type == 'tactic') {
+            var ChildNodeIds = HomeGrid.getSubItems(rowId);
+            var arrChildNodeIds = ChildNodeIds.split(',');
+            var ActivityTypeIndex = HomeGrid.getColIndexById("LineItemTypeId");
+            for (var i = 0; i < arrChildNodeIds.length; i++) {
+                var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
+                if (ActivityId == '') {
+                    //Balance Actual Cost
+                    var BalCelVal = parseFloat(HomeGrid.cells(arrChildNodeIds[i], cellInd).getValue());
+                    var SetBalCelVal = parseFloat(BalCelVal + AmtDiff);
+                    HomeGrid.cells(arrChildNodeIds[i], cellInd).setValue(SetBalCelVal);
+                    //Balance Total Actual Cost
+                    var BalTotCelVal = parseFloat(HomeGrid.cells(arrChildNodeIds[i], TotalActualIndex).getValue());
+                    var SetBalTotCelVal = parseFloat(BalTotCelVal + AmtDiff);
+                    HomeGrid.cells(arrChildNodeIds[i], TotalActualIndex).setValue(SetBalTotCelVal);
+                }
             }
         }
+        //Roll Up Function
+        RollUpActualCost(rowId, cellInd, AmtDiff);
     }
-    //Roll Up Function
-    RollUpActualCost(rowId, cellInd, AmtDiff);
-}
 
-function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
-    //Total Planned Cost
-    var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedCost");
-    var UnAllocatedTotalCost = parseFloat(HomeGrid.cells(rowId, UnAllocatedIndex).getValue());
-    var AmtDiff = parseFloat(nValue) - parseFloat(oValue);
-    var SetAmtDiff = parseFloat(UnAllocatedTotalCost) + parseFloat(AmtDiff);
-    if (!IsTotalCost) {
-        SetAmtDiff = parseFloat(UnAllocatedTotalCost) - parseFloat(AmtDiff);
-    }
-    HomeGrid.cells(rowId, UnAllocatedIndex).setValue(SetAmtDiff);
-    var ChildNodeIds = HomeGrid.getSubItems(rowId);
+    function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
+        //Total Planned Cost
+        var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedCost");
+        var UnAllocatedTotalCost = parseFloat(HomeGrid.cells(rowId, UnAllocatedIndex).getValue());
+        var AmtDiff = parseFloat(nValue) - parseFloat(oValue);
+        var SetAmtDiff = parseFloat(UnAllocatedTotalCost) + parseFloat(AmtDiff);
+        if (!IsTotalCost) {
+            SetAmtDiff = parseFloat(UnAllocatedTotalCost) - parseFloat(AmtDiff);
+        }
+        HomeGrid.cells(rowId, UnAllocatedIndex).setValue(SetAmtDiff);
+        var ChildNodeIds = HomeGrid.getSubItems(rowId);
         var ParentCost = 0;
         var ParentUnallocatedCost = SetAmtDiff;
-    if (Type.toLowerCase() == 'lineitem') {
-        var GetParentId = HomeGrid.getParentId(rowId);
-            ParentCost = HomeGrid.cells(GetParentId, cellInd).getValue();
-            ParentUnallocatedCost = HomeGrid.cells(GetParentId, UnAllocatedIndex).getValue();
-        ChildNodeIds = HomeGrid.getSubItems(GetParentId);
-    }
-    var arrChildNodeIds = ChildNodeIds.split(',');
-    var ActivityTypeIndex = HomeGrid.getColIndexById("LineItemTypeId");
+        if (Type.toLowerCase() == 'lineitem') {
+            var GetParentId = HomeGrid.getParentId(rowId);
+            if (GetParentId != 0) {
+                ParentCost = HomeGrid.cells(GetParentId, cellInd).getValue();
+                ParentUnallocatedCost = HomeGrid.cells(GetParentId, UnAllocatedIndex).getValue();
+                ChildNodeIds = HomeGrid.getSubItems(GetParentId);
+            }
+        }
+        var arrChildNodeIds = ChildNodeIds.split(',');
+        var ActivityTypeIndex = HomeGrid.getColIndexById("LineItemTypeId");
 
         var LineItemTotal = 0;
-        
+
         for (var i = 0; i < arrChildNodeIds.length; i++) {
             var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
             if (ActivityId != '') {
@@ -542,7 +567,7 @@ function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
             var ActivityId = HomeGrid.cells(arrChildNodeIds[i], ActivityTypeIndex).getValue();
             if (ActivityId == '') {
                 //Balance Planned Cost
-                SetBalanceCost(arrChildNodeIds[i], cellInd, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue,ParentCost);
+                SetBalanceCost(arrChildNodeIds[i], cellInd, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue, ParentCost);
                 //Balance UnAllocated Cost
                 SetBalanceUnallocatedCost(arrChildNodeIds[i], UnAllocatedIndex, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue, ParentUnallocatedCost, LineItemUnallocatedTotal);
             }
@@ -563,7 +588,7 @@ function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
     }
 
     function SetBalanceCost(arrChildNodeId, cellInd, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue, ParentCost) {
-      
+
         var SetAmtDiff = 0;
         if (Type.toLowerCase() == 'tactic') {
             SetAmtDiff = parseFloat(nValue) - parseFloat(LineItemTotal);
@@ -574,189 +599,192 @@ function SetPlannedCost(rowId, cellInd, nValue, oValue, Type, IsTotalCost) {
         HomeGrid.cells(arrChildNodeId, cellInd).setValue(SetAmtDiff);
     }
     function SetBalanceUnallocatedCost(arrChildNodeId, cellInd, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue, tacticUnallocatedCost, LineItemUnallocatedTotal) {
-        
+
         var unAllocated = tacticUnallocatedCost - LineItemUnallocatedTotal;
-            HomeGrid.cells(arrChildNodeId, cellInd).setValue(unAllocated);
+        HomeGrid.cells(arrChildNodeId, cellInd).setValue(unAllocated);
     }
 
-function RollUpCost(rowId, cellInd, AmtDiff, IsTotalCost) {
-    var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedCost");
-    var ParentId = HomeGrid.getParentId(rowId);
-    while (ParentId != null && ParentId != '') {
-        var ParentCost = parseFloat(HomeGrid.cells(ParentId, cellInd).getValue());
-        var ParentAmtDiff = parseFloat(ParentCost) + parseFloat(AmtDiff);
-        HomeGrid.cells(ParentId, cellInd).setValue(ParentAmtDiff);
+    function RollUpCost(rowId, cellInd, AmtDiff, IsTotalCost) {
+        var UnAllocatedIndex = HomeGrid.getColIndexById("UnAllocatedCost");
+        var ParentId = HomeGrid.getParentId(rowId);
+        while (ParentId != null && ParentId != '' && ParentId != 0) {
+            var ParentCost = parseFloat(HomeGrid.cells(ParentId, cellInd).getValue());
+            var ParentAmtDiff = parseFloat(ParentCost) + parseFloat(AmtDiff);
+            HomeGrid.cells(ParentId, cellInd).setValue(ParentAmtDiff);
 
-        var PlannedVal = parseFloat(HomeGrid.cells(ParentId, cellInd).getValue());
-        var BudgetVal = parseFloat(HomeGrid.cells(ParentId, cellInd - 1).getValue());
-        if (PlannedVal > BudgetVal) {
-            HomeGrid.setCellTextStyle(ParentId, cellInd, "background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
-        }
-        else {
-            HomeGrid.setCellTextStyle(ParentId, cellInd, "");
-        }
-
-        //Parent UnAllocated Cost
-        var UnAllocatedTotalCost = parseFloat(HomeGrid.cells(ParentId, UnAllocatedIndex).getValue());
-        var SetAmtDiff = parseFloat(UnAllocatedTotalCost) + parseFloat(AmtDiff);
-        if (!IsTotalCost) {
-            SetAmtDiff = parseFloat(UnAllocatedTotalCost) - parseFloat(AmtDiff);
-        }
-        HomeGrid.cells(ParentId, UnAllocatedIndex).setValue(SetAmtDiff);
-
-        ParentId = HomeGrid.getParentId(ParentId);
-    }
-}
-
-function RollUpActualCost(rowId, cellInd, AmtDiff) {
-    var TotalActualIndex = HomeGrid.getColIndexById("ActualCost");
-    var ParentId = HomeGrid.getParentId(rowId);
-    while (ParentId != null && ParentId != '') {
-        var ParentCost = parseFloat(HomeGrid.cells(ParentId, cellInd).getValue());
-        var ParentAmtDiff = parseFloat(ParentCost) + parseFloat(AmtDiff);
-        HomeGrid.cells(ParentId, cellInd).setValue(ParentAmtDiff);
-
-        //Parent Total Cost
-        var TotalActualCost = parseFloat(HomeGrid.cells(ParentId, TotalActualIndex).getValue());
-        var SetAmtDiff = parseFloat(TotalActualCost) + parseFloat(AmtDiff);
-        HomeGrid.cells(ParentId, TotalActualIndex).setValue(SetAmtDiff);
-
-        ParentId = HomeGrid.getParentId(ParentId);
-    }
-}
-
-function SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost) {
-    var isquarter = false;
-    var FunctionParam;
-    var isTotalCost = false;
-    if ('@isquarter'.toLowerCase() == 'true') {
-        isquarter = true;
-    }
-
-    if (Tab.toLowerCase() == 'planned') {
-        var monthlyplannedcost;
-        if (MonthCost != null && MonthCost != '') {
-            monthlyplannedcost = SetValueByExchangeRate(MonthCost);
-        }
-        else {
-            isTotalCost = true;
-            monthlyplannedcost = SetValueByExchangeRate(YearCost);
-        }
-        FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&allocatedcost=' + monthlyplannedcost + '&tab=' + Tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost;
-    }
-    else {
-        var inputArr = [];
-        var jsonInputs;
-        var MonthlyKeyText;
-        var TotalKeyText;
-
-        if (Tab.toLowerCase() == 'budget') {
-            MonthlyKeyText = 'BudgetMonth';
-            TotalKeyText = 'BudgetYear';
-        }
-        else {
-            MonthlyKeyText = 'CostMonth';
-            TotalKeyText = 'CostYear';
-        }
-        if (MonthCost != null && MonthCost != '') {
-            inputArr.push({
-                key: TotalKeyText,
-                Value: SetValueByExchangeRate(YearCost)
-            });
-            inputArr.push({
-                key: MonthlyKeyText,
-                Value: SetValueByExchangeRate(MonthCost)
-            });
-        }
-        else {
-            inputArr.push({
-                key: TotalKeyText,
-                Value: SetValueByExchangeRate(YearCost)
-            });
-        }
-        jsonInputs = JSON.stringify(inputArr);
-
-        if (Tab.toLowerCase() == 'budget') {
-            FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&inputs=' + jsonInputs + '&isquarter=' + isquarter;
-        }
-        else {
-            FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&inputs=' + jsonInputs + '&tab=' + Tab + '&isquarter=' + isquarter;
-        }
-    }
-
-    var URL;
-    if (Tab.toLowerCase() == 'budget') {
-        URL = '@Url.Content("~/Plan/SaveBudgetCell/")';
-    }
-    else if (Tab.toLowerCase() == 'planned') {
-        URL = '@Url.Content("~/Inspect/SaveLineItemCostAllocation/")';
-    }
-    else if (Tab.toLowerCase() == 'actual') {
-        URL = '@Url.Content("~/Plan/SavePlannedCell/")';
-    }
-    $.ajax({
-        type: 'POST',
-        url: URL,
-        dataType: "json",
-        data: FunctionParam,
-        success: function (data) {
-
-            if (data.isSuccess == true) {
-                section = Section.toLowerCase();
-                $("#hdnBudgetingIsSave").val("true");
-                if (Tab.toLowerCase() == 'actual' || Tab.toLowerCase() == 'budget') {
-                    $("#hdnBudgetingExpandId").val(section + EntityId);
-                }
-                else {
-                    var sectionIntializer = section == "tactic" ? "cpt" : section == "program" ? "cp" : section == "campaign" ? "c" : "";
-                    $("#hdnBudgetingExpandId").val(section + sectionIntializer + '_' + EntityId);
-                }
+            var PlannedVal = parseFloat(HomeGrid.cells(ParentId, cellInd).getValue());
+            var BudgetVal = parseFloat(HomeGrid.cells(ParentId, cellInd - 1).getValue());
+            if (PlannedVal > BudgetVal) {
+                HomeGrid.setCellTextStyle(ParentId, cellInd, "background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
             }
             else {
-                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
-                $('#errorMessageDuplicatePlan').slideDown(700);
-
+                HomeGrid.setCellTextStyle(ParentId, cellInd, "");
             }
-        }
-    });
-}
 
-function showModal() {
-    LoadFileInputModelBox();
-    $('#ImportModal').modal('show');
-}
-//added by devanshi to add blank row to budget grid when there is no plan for client #2587 30-9-2016
-function AddBlankRow() {
-    var blankrawdata = [];
-    blankrawdata.push("--");
-    var id = "";
-    var addcolindex = 0;
-    var taskcolindex = 0;
-    for (var i = 1; i < HomeGrid.getColumnCount() ; i++) {
-        id = HomeGrid.getColumnId(i);
-        if (id == '@Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString()') {
-            blankrawdata.push("Your plan goes here");
-            taskcolindex = i;
-        }
-        else if (id == 'Buttons') {
-            blankrawdata.push("");
-            addcolindex = i;
-        }
-        else if (id == 'ActivityId') {
-            blankrawdata.push("0");
-        }
-        else if (id == '@Enums.HomeGrid_Default_Hidden_Columns.ColourCode.ToString().ToLower()') {
-            blankrawdata.push("");
-        }
-        else {
-            blankrawdata.push("--");
+            //Parent UnAllocated Cost
+            var UnAllocatedTotalCost = parseFloat(HomeGrid.cells(ParentId, UnAllocatedIndex).getValue());
+            var SetAmtDiff = parseFloat(UnAllocatedTotalCost) + parseFloat(AmtDiff);
+            if (!IsTotalCost) {
+                SetAmtDiff = parseFloat(UnAllocatedTotalCost) - parseFloat(AmtDiff);
+            }
+            HomeGrid.cells(ParentId, UnAllocatedIndex).setValue(SetAmtDiff);
+
+            ParentId = HomeGrid.getParentId(ParentId);
         }
     }
-    var rawdata = blankrawdata.join(',');
-    HomeGrid.addRow("newRow_0", rawdata);
-    HomeGrid.cells("newRow_0", addcolindex).setValue("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id='Plan' alt='000' per='true' title='Add'><i class='fa fa-plus-circle'></i></div>");
-    HomeGrid.setCellTextStyle("newRow_0", taskcolindex, "color:gray;font-style: italic;");
-    var colourCodeIndex = HomeGrid.getColIndexById('@Enums.HomeGrid_Default_Hidden_Columns.ColourCode.ToString().ToLower()');
-    HomeGrid.setColumnHidden(colourCodeIndex, true);
-}
+
+    function RollUpActualCost(rowId, cellInd, AmtDiff) {
+        var TotalActualIndex = HomeGrid.getColIndexById("ActualCost");
+        var ParentId = HomeGrid.getParentId(rowId);
+        while (ParentId != null && ParentId != '') {
+            var ParentCost = parseFloat(HomeGrid.cells(ParentId, cellInd).getValue());
+            var ParentAmtDiff = parseFloat(ParentCost) + parseFloat(AmtDiff);
+            HomeGrid.cells(ParentId, cellInd).setValue(ParentAmtDiff);
+
+            //Parent Total Cost
+            var TotalActualCost = parseFloat(HomeGrid.cells(ParentId, TotalActualIndex).getValue());
+            var SetAmtDiff = parseFloat(TotalActualCost) + parseFloat(AmtDiff);
+            HomeGrid.cells(ParentId, TotalActualIndex).setValue(SetAmtDiff);
+
+            ParentId = HomeGrid.getParentId(ParentId);
+        }
+    }
+
+    function SaveValues(EntityId, Section, Month, Tab, MonthCost, YearCost, LinkTacticId) {
+        var isquarter = false;
+        var FunctionParam;
+        var isTotalCost = false;
+        if ('@isquarter'.toLowerCase() == 'true') {
+            isquarter = true;
+        }
+
+        if (Tab.toLowerCase() == 'planned') {
+            var monthlyplannedcost;
+            if (MonthCost != null && MonthCost != '') {
+                monthlyplannedcost = SetValueByExchangeRate(MonthCost);
+            }
+            else {
+                isTotalCost = true;
+                monthlyplannedcost = SetValueByExchangeRate(YearCost);
+            }
+            FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&allocatedcost=' + monthlyplannedcost + '&tab=' + Tab + '&isquarter=' + isquarter + '&isTotalCost=' + isTotalCost;
+        }
+        else {
+            var inputArr = [];
+            var jsonInputs;
+            var MonthlyKeyText;
+            var TotalKeyText;
+
+            if (Tab.toLowerCase() == 'budget') {
+                MonthlyKeyText = 'BudgetMonth';
+                TotalKeyText = 'BudgetYear';
+            }
+            else {
+                MonthlyKeyText = 'CostMonth';
+                TotalKeyText = 'CostYear';
+            }
+            if (MonthCost != null && MonthCost != '') {
+                inputArr.push({
+                    key: TotalKeyText,
+                    Value: SetValueByExchangeRate(YearCost)
+                });
+                inputArr.push({
+                    key: MonthlyKeyText,
+                    Value: SetValueByExchangeRate(MonthCost)
+                });
+            }
+            else {
+                inputArr.push({
+                    key: TotalKeyText,
+                    Value: SetValueByExchangeRate(YearCost)
+                });
+            }
+            jsonInputs = JSON.stringify(inputArr);
+
+            if (Tab.toLowerCase() == 'budget') {
+                FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&inputs=' + jsonInputs + '&isquarter=' + isquarter;
+            }
+            else {
+                FunctionParam = 'entityId=' + EntityId + '&section=' + Section + '&month=' + Month + '&inputs=' + jsonInputs + '&tab=' + Tab + '&isquarter=' + isquarter;
+            }
+        }
+
+        var URL;
+        if (Tab.toLowerCase() == 'budget') {
+            URL = '@Url.Content("~/Plan/SaveBudgetCell/")';
+        }
+        else if (Tab.toLowerCase() == 'planned') {
+            URL = '@Url.Content("~/Inspect/SaveLineItemCostAllocation/")';
+        }
+        else if (Tab.toLowerCase() == 'actual') {
+            URL = '@Url.Content("~/Plan/SavePlannedCell/")';
+        }
+        $.ajax({
+            type: 'POST',
+            url: URL,
+            dataType: "json",
+            data: FunctionParam,
+            success: function (data) {
+
+                if (data.isSuccess == true) {
+                    section = Section.toLowerCase();
+                    $("#hdnBudgetingIsSave").val("true");
+                    if (Tab.toLowerCase() == 'actual' || Tab.toLowerCase() == 'budget') {
+                        $("#hdnBudgetingExpandId").val(section + EntityId);
+                    }
+                    else {
+                        var sectionIntializer = section == "tactic" ? "cpt" : section == "program" ? "cp" : section == "campaign" ? "c" : "";
+                        $("#hdnBudgetingExpandId").val(section + sectionIntializer + '_' + EntityId);
+                    }
+                    if (LinkTacticId != null && LinkTacticId != '' && LinkTacticId != 0) {
+                        LoadBudgetGrid();
+                    }
+                }
+                else {
+                    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
+                    $('#errorMessageDuplicatePlan').slideDown(700);
+
+                }
+            }
+        });
+    }
+
+    function showModal() {
+        LoadFileInputModelBox();
+        $('#ImportModal').modal('show');
+    }
+    //added by devanshi to add blank row to budget grid when there is no plan for client #2587 30-9-2016
+    function AddBlankRow() {
+        var blankrawdata = [];
+        blankrawdata.push("--");
+        var id = "";
+        var addcolindex = 0;
+        var taskcolindex = 0;
+        for (var i = 1; i < HomeGrid.getColumnCount() ; i++) {
+            id = HomeGrid.getColumnId(i);
+            if (id == '@Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString()') {
+                blankrawdata.push("Your plan goes here");
+                taskcolindex = i;
+            }
+            else if (id == 'Buttons') {
+                blankrawdata.push("");
+                addcolindex = i;
+            }
+            else if (id == 'ActivityId') {
+                blankrawdata.push("0");
+            }
+            else if (id == '@Enums.HomeGrid_Default_Hidden_Columns.ColourCode.ToString().ToLower()') {
+                blankrawdata.push("");
+            }
+            else {
+                blankrawdata.push("--");
+            }
+        }
+        var rawdata = blankrawdata.join(',');
+        HomeGrid.addRow("newRow_0", rawdata);
+        HomeGrid.cells("newRow_0", addcolindex).setValue("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id='Plan' alt='000' per='true' title='Add'><i class='fa fa-plus-circle'></i></div>");
+        HomeGrid.setCellTextStyle("newRow_0", taskcolindex, "color:gray;font-style: italic;");
+        var colourCodeIndex = HomeGrid.getColIndexById('@Enums.HomeGrid_Default_Hidden_Columns.ColourCode.ToString().ToLower()');
+        HomeGrid.setColumnHidden(colourCodeIndex, true);
+    }
 </script>

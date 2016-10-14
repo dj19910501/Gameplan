@@ -31,15 +31,15 @@ namespace RevenuePlanner.Services
         private const string Open = "1";
         private const string CellLocked = "1";
         private const string CellNotLocked = "0";
-        public const string FixHeader = "ActivityId,Type,machinename,,,Activity,,Total Budget" + manageviewicon + ",Planned Cost" + manageviewicon + ",Total Actual" + manageviewicon;
+        public const string FixHeader = "ActivityId,Type,machinename,,,,Activity,,Total Budget" + manageviewicon + ",Planned Cost" + manageviewicon + ",Total Actual" + manageviewicon;
         public const string EndColumnsHeader = ",Unallocated Planned Cost,Unallocated Budget";
-        public const string FixColumnIds = "ActivityId,Type,MachineName,colourcode,LineItemTypeId,TaskName,Buttons,BudgetCost,PlannedCost,ActualCost";
+        public const string FixColumnIds = "ActivityId,Type,MachineName,LinkTacticId,colourcode,LineItemTypeId,TaskName,Buttons,BudgetCost,PlannedCost,ActualCost";
         public const string EndColumnIds = ",UnAllocatedCost,UnAllocatedBudget";
-        public const string FixColType = "ro,ro,ro,ro,ro,tree,ro,edn,edn,edn";
+        public const string FixColType = "ro,ro,ro,ro,ro,ro,tree,ro,edn,edn,edn";
         public const string EndColType = ",ron,ron";
-        public const string FixcolWidth = "100,100,100,10,100,302,75,100,110,100";
+        public const string FixcolWidth = "100,100,100,100,10,100,302,75,100,110,100";
         public const string EndcolWidth = ",150,150";
-        public const string FixColsorting = "na,na,na,na,na,na,na,int,int,int";
+        public const string FixColsorting = "na,na,na,na,na,na,na,na,int,int,int";
         public const string EndColsorting = ",int,int";
         public const string QuarterPrefix = "Q";
         public const string DhtmlxColSpan = "#cspan";
@@ -314,6 +314,10 @@ namespace RevenuePlanner.Services
 
             BudgetDataObj = new Budgetdataobj();
             BudgetDataObj.value = Entity.MachineName;
+            BudgetDataObjList.Add(BudgetDataObj);
+
+            BudgetDataObj = new Budgetdataobj();
+            BudgetDataObj.value = Convert.ToString(Entity.LinkTacticId);
             BudgetDataObjList.Add(BudgetDataObj);
 
             BudgetDataObj = new Budgetdataobj();
