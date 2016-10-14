@@ -1230,118 +1230,97 @@ function ExportToExcel(isHoneyComb) {
     //start  
     var rowIdArray = [];
     var HoneyCombSelectedArray = [];
+
+    //get following columns index which need to show/hide in export
+    var iconColumnIndex = HomeGrid.getColIndexById("Add");
+    var colourCodeIndex = HomeGrid.getColIndexById("ColourCode");
+    var machineNameIndex = HomeGrid.getColIndexById("MachineName");
+    var TypeIndex = HomeGrid.getColIndexById("Type");
+    var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
+    if (gridname.toLowerCase() == "budget") {
+        iconColumnIndex = HomeGrid.getColIndexById("Buttons");
+        colourCodeIndex = HomeGrid.getColIndexById("colourcode");
+    }
+    if (isHoneyComb) {
+        HomeGrid.forEachRow(function (id) {
+
+            var d = HomeGrid.cells(id, iconColumnIndex).getValue();
+            if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
+                HomeGrid.setRowHidden(id, true);
+                rowIdArray.push(id);
+            }
+            else {
+                HoneyCombSelectedArray.push(id);
+            }
+        });
+    }
+    //save users current strate of tree
+    HomeGrid.saveOpenStates("plangridState");
+    HomeGrid.expandAll();
+
+    var ActivityIdIndex = HomeGrid.getColIndexById("ActivityId");
+    //Show/Hide columns as per export requirements
+  
     if (gridname.toLowerCase() == "home") {
-        //get following columns index which need to show/hide in export
-        var iconColumnIndex = HomeGrid.getColIndexById("Add");
-        var colourCodeIndex = HomeGrid.getColIndexById("ColourCode");
-        var machineNameIndex = HomeGrid.getColIndexById("MachineName");
-
-        if (isHoneyComb) {
-            HomeGrid.forEachRow(function (id) {
-
-                var d = HomeGrid.cells(id, iconColumnIndex).getValue();
-                if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
-                    HomeGrid.setRowHidden(id, true);
-                    rowIdArray.push(id);
-                }
-                else {
-                    HoneyCombSelectedArray.push(id);
-                }
-            });
-        }
-        //save users current strate of tree
-        HomeGrid.saveOpenStates("plangridState");
-        HomeGrid.expandAll();
-        //Show/Hide columns as per export requirements
         HomeGrid.setColumnHidden(iconColumnIndex, true);
         HomeGrid.setColumnHidden(colourCodeIndex, true);
-        //HomeGrid.setColumnHidden(machineNameIndex, true);        
-        HomeGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
-        HomeGrid.collapseAll();
-        //load users current strate of tree
-        HomeGrid.loadOpenStates("plangridState");
-        //Show/Hide columns as per export requirements
+    }
+    else {
+        HomeGrid.setColumnHidden(ActivityIdindex, false);
+        HomeGrid.setColumnHidden(TypeIndex, false);
+        var columnIdArray = ColumnIds.split(',');
+        var serializeStr = '';
+        // var startValueColumnIndex = 7;//this is the value column start index
+        for (i = 0; i < columnIdArray.length; ++i) {
+            if (i == 0) {
+                if (columnIdArray[i] == 'MachineName' || columnIdArray[i] == 'LineItemTypeId' || columnIdArray[i] == 'Buttons' || columnIdArray[i] == 'colourcode')
+                    serializeStr = serializeStr + "false"
+                else
+                    serializeStr = serializeStr + "true"
+            }
+            else {
+                if (columnIdArray[i] == 'MachineName' || columnIdArray[i] == 'LineItemTypeId' || columnIdArray[i] == 'Buttons' || columnIdArray[i] == 'colourcode')
+                    serializeStr = serializeStr + ",false"
+                else
+                    serializeStr = serializeStr + ",true"
+            }
+
+
+        }
+        HomeGrid.setSerializableColumns(serializeStr);
+    }
+    HomeGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
+    HomeGrid.collapseAll();
+    //load users current strate of tree
+    HomeGrid.loadOpenStates("plangridState");
+    //Show/Hide columns as per export requirements
+    if (gridname.toLowerCase() == "home") {
         HomeGrid.setColumnHidden(iconColumnIndex, false);
         HomeGrid.setColumnHidden(colourCodeIndex, false);
-        //.setColumnHidden(machineNameIndex, false);
-        if (rowIdArray != undefined) {
-            $.each(rowIdArray, function (key) {
-                HomeGrid.setRowHidden(rowIdArray[key], false);
-            });
-        }
-        //Checked honeycomb icon as active after export as it sometimes deactive due to export.
-        if (HoneyCombSelectedArray != undefined) {
-            $.each(HoneyCombSelectedArray, function (key) {
-                var columnText = HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).getValue();
-                if (columnText.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
-                    HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).setValue(columnText.replace("honeycombbox-icon-gantt", "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active"));
-                }
-            });
-        }
     }
-    else if (gridname.toLowerCase() == "budget") {
-        var exportGrid = new dhtmlXGridObject('gridExport');
-        var JsonExportModel = exportgridData;
-        exportGrid.setImagePath(imgPath);
-        exportGrid.setImageSize(1, 1);
-        exportGrid.enableAutoHeight(true);
-        exportGrid.enableAutoWidth(false);
-        exportGrid.setColumnIds(ColumnIds);
-        if (gridname != undefined) {
-            if (gridname.toLowerCase() == 'budget') {
-                if (gridheader != undefined)
-                    exportGrid.setHeader(gridheader);
-                if (colType != undefined)
-                    exportGrid.setColTypes(colType);
-                if (colSorting != undefined)
-                    exportGrid.setColSorting(colSorting);
-                if (budgetWidth != undefined)
-                    exportGrid.setInitWidths(budgetWidth);
-                if (attachHeader != undefined) {
-                    //  exportGrid.attachHeader(attachHeader);
-                    attachHeader = $('<div/>').html(attachHeader.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-                    attachHeader = (attachHeader.toString().replace(/&amp;/g, '&'));
-                    exportGrid.attachHeader(JSON.parse(attachHeader));
-                }
+    else {
+
+        HomeGrid.setColumnHidden(ActivityIdindex, true);
+        HomeGrid.setColumnHidden(TypeIndex, true);
+    }
+    //.setColumnHidden(machineNameIndex, false);
+    if (rowIdArray != undefined) {
+        $.each(rowIdArray, function (key) {
+            HomeGrid.setRowHidden(rowIdArray[key], false);
+        });
+    }
+    //Checked honeycomb icon as active after export as it sometimes    deactive due to export.
+
+    if (HoneyCombSelectedArray != undefined) {
+        $.each(HoneyCombSelectedArray, function (key) {
+            var columnText = HomeGrid.cells(HoneyCombSelectedArray
+[key], iconColumnIndex).getValue();
+            if (columnText.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
+                HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).setValue(columnText.replace("honeycombbox-icon-gantt", "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active"));
             }
-        }
-        exportGrid.init();
-        setTimeout(function () {
-            exportGrid.setSizes();
-        }, 200);
-        var mainGridData = JsonExportModel;
-        mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-        exportGrid.parse(GridDataHomeGrid, "json");
-        //get following columns index which need to show/hide in export
-        var ActivityIdIndex = exportGrid.getColIndexById("ActivityId");
-        var TypeIndex = exportGrid.getColIndexById("Type");
-        var machineNameIndex = exportGrid.getColIndexById("MachineName");
-        var colourCodeIndex = exportGrid.getColIndexById("colourcode");
-        var iconIndex = exportGrid.getColIndexById("Buttons");
-        var lineItemTypeIdIndex = exportGrid.getColIndexById("LineItemTypeId");
-        if (isHoneyComb) {
-            HomeGrid.forEachRow(function (id) {
-
-                var d = HomeGrid.cells(id, iconIndex).getValue();
-                if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
-                    exportGrid.setRowHidden(id, true);
-                    rowIdArray.push(id);
-                }
-            });
-        }
-        //Show/Hide columns as per export requirements
-        exportGrid.setColumnHidden(ActivityIdIndex, false);
-        exportGrid.setColumnHidden(TypeIndex, false);
-        exportGrid.setColumnHidden(machineNameIndex, true);
-        exportGrid.setColumnHidden(colourCodeIndex, true);
-        exportGrid.setColumnHidden(iconIndex, true);
-        //hide lineitemtypeid column index
-        exportGrid.setColumnHidden(lineItemTypeIdIndex, true);
-
-        exportGrid.expandAll();
-        exportGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
+        });
     }
+
 }
 //function to get dependent custom field options for tactic
 function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
@@ -1366,7 +1345,7 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
         $.ajax({
             url: urlContent + 'Plan/GetdependantOptionlist/',
             traditional: true,
-            async:false,
+            async: false,
             data: {
                 customfieldId: customFieldId,
                 entityid: entityid,

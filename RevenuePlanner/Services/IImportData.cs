@@ -10,5 +10,7 @@ namespace RevenuePlanner.Services
   public  interface IImportData
     {
         DataTable GetPlanBudgetDataByType(DataTable importData, string planBudgetType,bool isMonthly);
+        DataTable ReturnPlanYearData(DataTable importData);
+        
     }
 }

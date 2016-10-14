@@ -14,7 +14,7 @@ namespace RevenuePlanner.Services
         private MRPEntities objDbMrpEntities;
         public ImportData()
         {
-            objDbMrpEntities = new MRPEntities();
+            objDbMrpEntities = Common.db;
         }
         /// <summary>
         /// Following function will return filtered datatable as per planBudgetType.
@@ -24,22 +24,54 @@ namespace RevenuePlanner.Services
         /// <returns></returns>
         public DataTable GetPlanBudgetDataByType(DataTable importData, string planBudgetType, bool isMonthly)
         {
-            int MonthQuarterStartIndex = 7;//this is month or quarter columnstart index
+
             DataTable dtPlanBudget = importData;
-
-            //planBudgetType veriable is used to identify type of plan budget(ie>plan,budget,actual) 
-
-            int columnRemovedCount = 0;//veriable to identify how many columns are removed
-            int columnCount = dtPlanBudget.Columns.Count;//veriable to identify total column in datatable           
-                                                         //Loop to remove columns which is not related to planBudgetType where first three column will be fixed Activityid,type,task name.
-            if (dtPlanBudget.Rows[dtPlanBudget.Rows.Count - 1][0].ToString().Trim() ==
-                                     "This document was made with dhtmlx library. http://dhtmlx.com")
+            try
             {
-                dtPlanBudget.Rows.RemoveAt(dtPlanBudget.Rows.Count - 1);
+
+
+                //planBudgetType veriable is used to identify type of plan budget(ie>plan,budget,actual) 
+
+                int columnRemovedCount = 0;//veriable to identify how many columns are removed
+                int columnCount = dtPlanBudget.Columns.Count;//veriable to identify total column in datatable           
+                                                             //Loop to remove columns which is not related to planBudgetType where first three column will be fixed Activityid,type,task name.
+                if (dtPlanBudget.Rows[dtPlanBudget.Rows.Count - 1][0].ToString().Trim() ==
+                                         "This document was made with dhtmlx library. http://dhtmlx.com")
+                {
+                    dtPlanBudget.Rows.RemoveAt(dtPlanBudget.Rows.Count - 1);
+                }
+
+                for (int i = 3; i < columnCount; i++)
+                {
+                    //if (!Convert.ToString(dtPlanBudget.Rows[0][i - columnRemovedCount]).ToLower().Trim().Contains(planBudgetType))
+                    //{
+                    //    dtPlanBudget.Columns.RemoveAt(i - columnRemovedCount);
+                    //    columnRemovedCount++;
+                    //}
+                    if (!Convert.ToString(dtPlanBudget.Columns[i - columnRemovedCount]).ToLower().Trim().Contains(planBudgetType))
+                    {
+                        dtPlanBudget.Columns.RemoveAt(i - columnRemovedCount);
+                        columnRemovedCount++;
+                    }
+                }
+                //remove extra row.
+
+                //Set column name 
+                dtPlanBudget = SetColumnName(dtPlanBudget, isMonthly);
+                //convert current currency value in to dollar.
+                return ConvertValueAsperCurrency(dtPlanBudget);
             }
+            catch(Exception ex)
+            {
+                return null;
+            }
+        }
+        public DataTable ReturnPlanYearData(DataTable dtPlanBudget)
+        {
+            int MonthQuarterStartIndex = 7;//this is month or quarter columnstart index
             List<string> listPlanActivityId = dtPlanBudget.AsEnumerable().Where(data => data.Field<string>("Type") == "plan")
-                         .Select(r => r.Field<string>("ActivityId"))
-                         .ToList();
+                        .Select(r => r.Field<string>("ActivityId"))
+                        .ToList();
             List<int> activityIdlist = listPlanActivityId.Select(int.Parse).ToList();
 
             List<Plan> planList = (from row in objDbMrpEntities.Plans where activityIdlist.Contains(row.PlanId) select row).ToList();
@@ -48,36 +80,81 @@ namespace RevenuePlanner.Services
             {
                 string year = planList.ElementAt(cntplanid).Year;
                 string activityId = Convert.ToString(planList.ElementAt(cntplanid).PlanId);
-             //   List<DataRow> lst = new List<DataRow>();
-               
+                //   List<DataRow> lst = new List<DataRow>();
+
 
                 if (!Convert.ToString(dtPlanBudget.Columns[MonthQuarterStartIndex]).ToLower().Trim().Contains(year))
                 {
-                    
+
                     DataRow planRow = dtPlanBudget.AsEnumerable().Where(row => row.Field<String>("activityid") == activityId && row.Field<String>("type") == "plan").FirstOrDefault();
+                    if(planRow!=null)
                     dtPlanBudget.Rows.Remove(planRow);
+                    int intActivityId = Convert.ToInt32(activityId);
+                    //Remove cmapign of that plan
+                    List<Plan_Campaign> lstCampaign = (from row in objDbMrpEntities.Plan_Campaign
+                                                       where row.PlanId.Equals(intActivityId) && row.IsDeleted == false
+                                                       select row).ToList();
+
+                    for (int campaignCnt = 0; campaignCnt < lstCampaign.Count; campaignCnt++)
+                    {
+                        activityId = Convert.ToString(lstCampaign.ElementAt(campaignCnt).PlanCampaignId);
+                        DataRow campaignRow = dtPlanBudget.AsEnumerable().Where(row => row.Field<String>("activityid") == activityId && row.Field<String>("type") == "campaign").FirstOrDefault();
+                        if (campaignRow != null)
+                            dtPlanBudget.Rows.Remove(campaignRow);
+                    }
+
+
+                    //Remove program of that plan
+                    List<Plan_Campaign_Program> lstProgram = (from row in objDbMrpEntities.Plan_Campaign_Program
+                                                              join objCampaign in objDbMrpEntities.Plan_Campaign on row.PlanCampaignId equals objCampaign.PlanCampaignId
+                                                              where objCampaign.PlanId.Equals(intActivityId) && row.IsDeleted == false && objCampaign.IsDeleted == false
+                                                              select row).ToList();
+
+                    for (int programCnt = 0; programCnt < lstProgram.Count; programCnt++)
+                    {
+                        activityId = Convert.ToString(lstProgram.ElementAt(programCnt).PlanProgramId);
+                        DataRow programRow = dtPlanBudget.AsEnumerable().Where(row => row.Field<String>("activityid") == activityId && row.Field<String>("type") == "program").FirstOrDefault();
+                        if (programRow != null)
+                            dtPlanBudget.Rows.Remove(programRow);
+                    }
+                    //remove tactic  of that plan
+                    List<Plan_Campaign_Program_Tactic> lstTactic = (from row in objDbMrpEntities.Plan_Campaign_Program_Tactic
+                                                                    join objProgram in objDbMrpEntities.Plan_Campaign_Program on row.PlanProgramId equals objProgram.PlanProgramId
+                                                                    join objCampaign in objDbMrpEntities.Plan_Campaign on objProgram.PlanCampaignId equals objCampaign.PlanCampaignId
+                                                                    where objCampaign.PlanId.Equals(intActivityId) && row.IsDeleted == false && objCampaign.IsDeleted == false &&
+                                                                    objProgram.IsDeleted == false
+                                                                    select row).ToList();
+
+                    for (int tacticCnt = 0; tacticCnt < lstTactic.Count; tacticCnt++)
+                    {
+                        activityId = Convert.ToString(lstTactic.ElementAt(tacticCnt).PlanTacticId);
+                        DataRow tacticRow = dtPlanBudget.AsEnumerable().Where(row => row.Field<String>("activityid") == activityId && row.Field<String>("type") == "tactic").FirstOrDefault();
+                        if (tacticRow != null)
+                            dtPlanBudget.Rows.Remove(tacticRow);
+                    }
+                    //remove line item of that plan
+
+                    List<Plan_Campaign_Program_Tactic_LineItem> lstLineItem = (from row in objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem
+                                                                               join objtactic in objDbMrpEntities.Plan_Campaign_Program_Tactic on row.PlanTacticId equals objtactic.PlanTacticId
+                                                                               join objProgram in objDbMrpEntities.Plan_Campaign_Program on objtactic.PlanProgramId equals objProgram.PlanProgramId
+                                                                               join objCampaign in objDbMrpEntities.Plan_Campaign on objProgram.PlanCampaignId equals objCampaign.PlanCampaignId
+                                                                               where objCampaign.PlanId.Equals(intActivityId) && row.IsDeleted == false && objCampaign.IsDeleted == false &&
+                                                                               objProgram.IsDeleted == false
+                                                                               select row).ToList();
+
+                    for (int lineItemCnt = 0; lineItemCnt < lstLineItem.Count; lineItemCnt++)
+                    {
+                        activityId = Convert.ToString(lstLineItem.ElementAt(lineItemCnt).PlanLineItemId);
+                        DataRow lineItemRow = dtPlanBudget.AsEnumerable().Where(row => row.Field<String>("activityid") == activityId && row.Field<String>("type") == "lineitem").FirstOrDefault();
+                        if (lineItemRow != null)
+                            dtPlanBudget.Rows.Remove(lineItemRow);
+                    }
 
                 }
-            }
-            for (int i = 3; i < columnCount; i++)
-            {
-                //if (!Convert.ToString(dtPlanBudget.Rows[0][i - columnRemovedCount]).ToLower().Trim().Contains(planBudgetType))
-                //{
-                //    dtPlanBudget.Columns.RemoveAt(i - columnRemovedCount);
-                //    columnRemovedCount++;
-                //}
-                if (!Convert.ToString(dtPlanBudget.Columns[i - columnRemovedCount]).ToLower().Trim().Contains(planBudgetType))
-                {
-                    dtPlanBudget.Columns.RemoveAt(i - columnRemovedCount);
-                    columnRemovedCount++;
-                }
-            }
-            //remove extra row.
+               
 
-            //Set column name 
-            dtPlanBudget = SetColumnName(dtPlanBudget, isMonthly);
-            //convert current currency value in to dollar.
-            return ConvertValueAsperCurrency(dtPlanBudget);
+            }
+            return dtPlanBudget;
         }
         /// <summary>
         /// Following method is used to set column Names(as per month and quarter)

@@ -1062,8 +1062,8 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Get Multiple plans data
-        
-        public async Task<JsonResult> GetHeaderforPlanByMultiplePlanIDs(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "" , bool IsGridView = false)
+
+        public async Task<JsonResult> GetHeaderforPlanByMultiplePlanIDs(string planid, string activeMenu, string year, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool IsGridView = false)
         {
             planid = System.Web.HttpUtility.UrlDecode(planid);
             List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
@@ -1073,7 +1073,7 @@ namespace RevenuePlanner.Controllers
                 await Task.Delay(1);
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForPlans(planIds, activeMenu, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds,IsGridView),
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForPlans(planIds, activeMenu, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, IsGridView),
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
@@ -1696,7 +1696,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         //   [ActionName("ApplyToCalendar")] 
         //Modified By Komal Rawal for new UI
-        public ActionResult PublishPlan(int UserId = 0, int PlanId=0)
+        public ActionResult PublishPlan(int UserId = 0, int PlanId = 0)
         {
             int IntPlanId = PlanId;
             try
@@ -1722,7 +1722,7 @@ namespace RevenuePlanner.Controllers
                 int returnValue = db.SaveChanges();
                 Common.InsertChangeLog(Sessions.PlanId, 0, Sessions.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.published, "", plan.CreatedBy);
                 ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
-                return Json(new { activeMenu = Enums.ActiveMenu.Plan.ToString(), currentPlanId = Sessions.PlanId, succmsg=Common.objCached.ModelPublishSuccess }, JsonRequestBehavior.AllowGet);
+                return Json(new { activeMenu = Enums.ActiveMenu.Plan.ToString(), currentPlanId = Sessions.PlanId, succmsg = Common.objCached.ModelPublishSuccess }, JsonRequestBehavior.AllowGet);
             }
             catch
             {
@@ -4601,7 +4601,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="month">month of budget</param>
         /// <param name="inputs">values of budget for month/year</param>
         /// <returns>json flag for success or failure</returns>
-        
+
         // This method will need to be refactored as part of ticket#2680
         public JsonResult SaveBudgetCell(string entityId, string section, string month, string inputs, bool isquarter)
         {
@@ -4628,7 +4628,7 @@ namespace RevenuePlanner.Controllers
                     {
                         string period = Enums.monthList[MonthName].ToString();
                         string PlanYear = GetPlanYear(section, EntityId);
-                        
+
                         int PlanYearDiff = Convert.ToInt32(CellYear) - Convert.ToInt32(PlanYear);
                         if (PlanYearDiff > 0)
                         {
@@ -7312,7 +7312,7 @@ namespace RevenuePlanner.Controllers
 
             return PartialView("_BudgetingPlanList", objHomePlan);
         }
-        
+
         #endregion
 
 
@@ -8112,8 +8112,8 @@ namespace RevenuePlanner.Controllers
                 objPermission.PlanEditAll = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 objPermission.PlanEditSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 #endregion
-				
-				 if (string.IsNullOrEmpty(viewBy))
+
+                if (string.IsNullOrEmpty(viewBy))
                     viewBy = PlanGanttTypes.Tactic.ToString();
 
                 ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID);
@@ -8652,7 +8652,7 @@ namespace RevenuePlanner.Controllers
                     db.Entry(pcpobj).State = EntityState.Modified;
                     db.SaveChanges();
 
-                    if(UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString())
+                    if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString())
                     {
                         GetCacheValue();
                     }
@@ -8696,7 +8696,7 @@ namespace RevenuePlanner.Controllers
                                 Common.ChangeCampaignStatus(oldCampaignId, false);
                             }
                         }
-                       
+
                     }
                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                     //Added By Komal Rawal to update owner in HoneyComb
@@ -9121,7 +9121,7 @@ namespace RevenuePlanner.Controllers
             objcustomFieldEntity.CostWeightage = (byte)objCustomFieldStageWeight.CostWeight;
             return objcustomFieldEntity;
         }
-        
+
         public void ReduceTacticPlannedCost(ref Plan_Campaign_Program_Tactic objTactic, ref Plan_Campaign_Program_Tactic ObjLinkedTactic, ref List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlist, double lineitem_diffCost)
         {
             try
@@ -11088,18 +11088,19 @@ namespace RevenuePlanner.Controllers
         #endregion
         #endregion
 
-    
+
 
         /// <summary>
         /// Added by Rushil Bhuptani on 14/06/2016 for ticket #2227
         /// Import excel file data and update database with imported data.
         /// </summary>
         [HttpPost]
-      
+
         public ActionResult ExcelFileUpload()
         {
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();
+            bool isPlanYearExist = true;
             try
             {
                 if (Request.Files[0].ContentLength > 0)
@@ -11164,7 +11165,11 @@ namespace RevenuePlanner.Controllers
                         if (columnNames.Where(w => w.ToLower().Contains("jan")).Any())
                             isMonthly = true;
                         //Following is method using which we can specify import data as per type.
-                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dt.Copy(), "budget", isMonthly);
+
+                        DataTable dtplanYearData = objcommonimportData.ReturnPlanYearData(dt.Copy());
+                        DataTable dtBudget = objcommonimportData.GetPlanBudgetDataByType(dtplanYearData.Copy(), "budget", isMonthly);
+                        if (dtplanYearData.Rows.Count != dt.Rows.Count)
+                            isPlanYearExist = false;
                         //if type will be null then following message will be appear.
                         foreach (DataRow row in dtBudget.Rows)
                         {
@@ -11174,19 +11179,26 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                         //Filter budget data table with  plan,tactic,lineitem,campaign and program.
-                        dtBudget = dtBudget.AsEnumerable()
-         .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "campaign" || row.Field<String>("type").ToLower() == "program").CopyToDataTable();
-
+                        if (dtBudget != null)
+                        {
+                            if (dtBudget.Rows.Count > 0)
+                                dtBudget = dtBudget.AsEnumerable().Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "campaign" || row.Field<String>("type").ToLower() == "program").CopyToDataTable();
+                        }
                         //Filter actual data table with only plan,tactic and lineitem
-                        DataTable dtActual = objcommonimportData.GetPlanBudgetDataByType(dt.Copy(), "actual", isMonthly);
-                        dtActual = dtActual.AsEnumerable()
-         .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "lineitem").CopyToDataTable();
+                        DataTable dtActual = objcommonimportData.GetPlanBudgetDataByType(dtplanYearData.Copy(), "actual", isMonthly);
+                        if (dtActual != null)
+                        {
+                            if (dtActual.Rows.Count > 0)
+                                dtActual = dtActual.AsEnumerable().Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "lineitem").CopyToDataTable();
+                        }
 
                         //Filter plan(cost) data table with only plan,tactic and lineitem
-                        DataTable dtCost = objcommonimportData.GetPlanBudgetDataByType(dt.Copy(), "planned", isMonthly);
-                        dtCost = dtCost.AsEnumerable()
-         .Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "lineitem").CopyToDataTable();
-
+                        DataTable dtCost = objcommonimportData.GetPlanBudgetDataByType(dtplanYearData.Copy(), "planned", isMonthly);
+                        if (dtCost != null)
+                        {
+                            if (dtCost.Rows.Count > 0)
+                                dtCost = dtCost.AsEnumerable().Where(row => row.Field<String>("type").ToLower() == "plan" || row.Field<String>("type").ToLower() == "tactic" || row.Field<String>("type").ToLower() == "lineitem").CopyToDataTable();
+                        }
                         //Import PlanBudgetData
                         DataSet dataResponsebudget = objSp.ImportPlanBudgetList(dtBudget, isMonthly, Sessions.User.ID);
                         //Import PlanActualData
@@ -11217,8 +11229,12 @@ namespace RevenuePlanner.Controllers
                     return Json(new { msg = "error", error = Common.objCached.InvalidImportData }, JsonRequestBehavior.AllowGet);
                 }
             }
+            if (isPlanYearExist)
+                return Json(new { conflict = false, message = Common.objCached.ImportSuccessMessage }, JsonRequestBehavior.AllowGet);
+            else
+                return Json(new { conflict = false, message = Common.objCached.ImportSuccessMessage + " Warning: " + Common.objCached.ActivityIdInvalid },
 
-            return Json(new { conflict = false, message = Common.objCached.ImportSuccessMessage }, JsonRequestBehavior.AllowGet); ;
+    JsonRequestBehavior.AllowGet);
 
         }
 
@@ -11356,12 +11372,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="Year">selected year of plans from timeframe </param>
         /// <returns></returns>
         [CompressAttribute]
-        public ActionResult GetBudgetData(string PlanIds,string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "")
+        public ActionResult GetBudgetData(string PlanIds, string ViewBy, string OwnerIds = "", string TactictypeIds = "", string StatusIds = "", string CustomFieldIds = "", string year = "")
         {
             IBudget Iobj = new RevenuePlanner.Services.Budget();
             int UserID = Sessions.User.ID;
-            int ClientId = Sessions.User.CID;  
-           if (string.IsNullOrEmpty(ViewBy))
+            int ClientId = Sessions.User.CID;
+            if (string.IsNullOrEmpty(ViewBy))
             {
                 ViewBy = PlanGanttTypes.Tactic.ToString();
             }
@@ -11378,6 +11394,8 @@ namespace RevenuePlanner.Controllers
             return PartialView("~/Views/Budget/Budget.cshtml", budgetModel);
 
         }
+
+   
         /// <summary>
         /// Method to get dependant custom field option for plan grid
         /// Added by : devanshi
@@ -11389,16 +11407,16 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetdependantOptionlist(int customfieldId, int entityid, List<int> parentoptionId)
         {
             List<CustomField_Entity> entitycustomfieldvalue = db.CustomField_Entity.Where(a => a.EntityId == entityid).ToList();
-            List<CustomFieldDependency> dependancy = db.CustomFieldDependencies.Where(a=>a.ChildCustomFieldId==customfieldId).ToList();
+            List<CustomFieldDependency> dependancy = db.CustomFieldDependencies.Where(a => a.ChildCustomFieldId == customfieldId).ToList();
             List<Options> CustomFieldOptionList = new List<Options>();
             if (entitycustomfieldvalue != null && parentoptionId != null && parentoptionId.Count > 0)
             {
                 foreach (int parentoptid in parentoptionId)
                 {
                     var isexist = entitycustomfieldvalue.Where(a => a.Value == Convert.ToString(parentoptid)).Any();
-                    if(isexist)
+                    if (isexist)
                     {
-                        CustomFieldOptionList.AddRange(dependancy.Where(a => a.ParentOptionId == parentoptid && a.IsDeleted==false).Select(a => new Options
+                        CustomFieldOptionList.AddRange(dependancy.Where(a => a.ParentOptionId == parentoptid && a.IsDeleted == false).Select(a => new Options
                         {
                             value = a.CustomFieldOption.Value
                         }).ToList());
