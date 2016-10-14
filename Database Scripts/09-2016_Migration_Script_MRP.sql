@@ -1767,7 +1767,15 @@ END
 --select * from CustomFieldType where CustomFieldId=29
 -- EXEC sp_GetCustomFieldList '464eb808-ad1f-4481-9365-6aada15023bd'
 GO
-/****** Object:  StoredProcedure [dbo].[spViewByDropDownList]    Script Date: 09/08/2016 12:46:47 PM ******/
+
+
+/* Start- Added by Viral for Ticket #2595 on 10/14/2016 */
+
+/****** Object:  StoredProcedure [dbo].[spViewByDropDownList]    Script Date: 10/14/2016 2:19:01 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spViewByDropDownList]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[spViewByDropDownList]
+GO
+/****** Object:  StoredProcedure [dbo].[spViewByDropDownList]    Script Date: 10/14/2016 2:19:01 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1778,22 +1786,11 @@ EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[spViewByDropDownLi
 END
 GO
 
-/****** Object:  StoredProcedure [dbo].[spViewByDropDownList]    Script Date: 09/13/2016 2:46:45 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
--- =============================================
--- Author:		<Author,,JZhang>
--- Create date: <Create Date,05-July-2016,>
--- Description:	<This is a rewrite of the orginal proc for performance reason. Using in memory table reduces time from 900 ms to 40 ms on average>
--- =============================================
 ALTER PROCEDURE  [dbo].[spViewByDropDownList] 
 	-- Add the parameters for the stored procedure here
 	@PlanId NVARCHAR(max),
-	@ClientId INT,
-	@UserId INT=0
+	@ClientId INT
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -1801,36 +1798,56 @@ BEGIN
 	SET NOCOUNT ON;
 
 	DECLARE @tblCustomerFieldIDs TABLE ( EntityType NVARCHAR(120), EntityID INT, CustomFieldID INT) 
+	DECLARE @entCampaign varchar(20)='Campaign'
+	DECLARE @entProgram varchar(20)='Program'
+	DECLARE @entTactic varchar(20)='Tactic'
+	DECLARE @PlanIds Table(
+		PlanId int
+	)
 
-	INSERT INTO @tblCustomerFieldIDs SELECT 'Campaign', A.PlanCampaignId, B.CustomFieldId 
-	FROM Plan_Campaign A CROSS APPLY (  SELECT B.CustomFieldId 
-										FROM CustomField_Entity B 
-										WHERE B.EntityId = A.PlanCampaignId AND A.IsDeleted=0 AND A.PlanId in ( SELECT val FROM dbo.comma_split(@Planid, ','))) B
+	INSERT INTO @PlanIds SELECT Cast(IsNUll(val,0) as int) FROM dbo.comma_split(@Planid, ',')
 
-	INSERT INTO @tblCustomerFieldIDs SELECT 'Program', A.PlanProgramId, B.CustomFieldId 
-	FROM Plan_Campaign_Program A CROSS APPLY (	SELECT B.CustomFieldId  
-												FROM CustomField_Entity B 
-												WHERE B.EntityId = A.PlanProgramId AND A.IsDeleted=0 AND A.PlanCampaignId in(SELECT EntityId FROM @tblCustomerFieldIDs WHERE EntityType = 'Campaign')) B 
-
-	INSERT INTO @tblCustomerFieldIDs SELECT 'Tactic', A.PlanTacticId, B.CustomFieldId 
-	FROM Plan_Campaign_Program_Tactic A CROSS APPLY (	SELECT B.CustomFieldId 
-														FROM CustomField_Entity B 
-														WHERE B.EntityId = A.PlanTacticId AND A.IsDeleted=0 AND A.PlanProgramId in(SELECT EntityId FROM @tblCustomerFieldIDs WHERE EntityType = 'Program')) B
-
+	INSERT INTO @tblCustomerFieldIDs
+	SELECT @entCampaign, A.PlanCampaignId, B.CustomFieldId 
+		FROM Plan_Campaign A 
+		JOIN CustomField_Entity B ON A.PlanCampaignId = B.EntityId
+		JOIN CustomField CS ON B.CustomFieldId = CS.CustomFieldId and CS.EntityType=@entCampaign
+		WHERE A.IsDeleted='0' and A.PlanId IN (SELECT PlanId FROM @PlanIds)
+	
+	INSERT INTO @tblCustomerFieldIDs
+	SELECT @entProgram, A.PlanProgramId, B.CustomFieldId 
+		FROM Plan_Campaign_Program A 
+		JOIN CustomField_Entity B ON A.PlanProgramId = B.EntityId
+		JOIN CustomField CS ON B.CustomFieldId = CS.CustomFieldId and CS.EntityType=@entProgram
+		JOIN Plan_Campaign C ON A.PlanCampaignId = C.PlanCampaignId and C.IsDeleted='0' and C.PlanId IN (SELECT PlanId FROM @PlanIds)
+		WHERE A.IsDeleted='0'
+	
+	INSERT INTO @tblCustomerFieldIDs
+	SELECT @entTactic, A.PlanTacticId, B.CustomFieldId 
+		FROM Plan_Campaign_Program_Tactic A 
+		JOIN CustomField_Entity B ON A.PlanTacticId = B.EntityId
+		JOIN CustomField CS ON B.CustomFieldId = CS.CustomFieldId and CS.EntityType=@entTactic
+		JOIN Plan_Campaign_Program P ON A.PlanProgramId = P.PlanProgramId and P.IsDeleted='0'
+		JOIN Plan_Campaign C ON P.PlanCampaignId = C.PlanCampaignId and C.IsDeleted='0' and C.PlanId IN (SELECT PlanId FROM @PlanIds)
+		WHERE A.IsDeleted='0'
+	
 	SELECT DISTINCT(A.Name) AS [Text],A.EntityType +'Custom'+ Cast(A.CustomFieldId as nvarchar(50)) as Value  
-	FROM CustomField A CROSS APPLY (	SELECT B.CustomFieldTypeId,B.Name 
-										FROM CustomFieldType B 
-										WHERE A.CustomFieldTypeId = B.CustomFieldTypeId) B CROSS APPLY (SELECT C.CustomFieldID 
-																										FROM @tblCustomerFieldIDs C 
-																										WHERE C.CustomFieldID = A.CustomFieldId) C 
-										
-	WHERE A.ClientId=@ClientId AND A.IsDeleted=0 AND A.IsDisplayForFilter=1 AND A.EntityType IN ('Tactic','Campaign','Program') and B.Name='DropDownList' 
-	ORDER BY Value DESC 
+		FROM CustomField A CROSS APPLY (	SELECT B.CustomFieldTypeId,B.Name 
+											FROM CustomFieldType B 
+											WHERE A.CustomFieldTypeId = B.CustomFieldTypeId) B CROSS APPLY (SELECT C.CustomFieldID 
+																											FROM @tblCustomerFieldIDs C 
+																											WHERE C.CustomFieldID = A.CustomFieldId) C 
+											
+		WHERE A.ClientId=@ClientId AND A.IsDeleted=0 AND A.IsDisplayForFilter=1 AND A.EntityType IN ('Tactic','Campaign','Program') and B.Name='DropDownList' 
+		ORDER BY Value DESC 
 
  END
 
 
+
 GO
+
+/* End- Added by Viral for Ticket #2595 on 10/14/2016 */
 
 -- =============================================
 -- Author: Viral Kadiya
@@ -8903,6 +8920,8 @@ END
 GO
 
 /* End - Added by Arpita Soni for Ticket #2622 on 10/03/2016 */
+
+
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
