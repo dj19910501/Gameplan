@@ -727,7 +727,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     $.ajax({
                         type: 'POST',
                         url: urlContent + 'Plan/SaveGridDetail',
-                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id), CustomFieldInput: _customFieldValues, ColumnType: type.toString() },
+                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id), CustomFieldInput: _customFieldValues, ColumnType: type.toString(), oValue: oValue.toString()
+                    },
                         dataType: 'json',
                         success: function (states) {
                             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
@@ -872,7 +873,16 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 $('#ExpSearch').css('display', 'block');
                                 GlobalSearch();
                             }
-
+                       
+                            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
+                                var ids = states.DependentCustomfield;
+                                for (var i = 0; i < ids.length; i++) {
+                                    var originalColumnid = "custom_" + ids[i] + ":" + updatetype.toString();
+                                    var colIndex = HomeGrid.getColIndexById(originalColumnid);
+                                    if (colIndex != undefined && colIndex != '')
+                                        HomeGrid.cells(rowId, colIndex).setValue('');
+                                }
+                            }
                         }
                     });
                 }
