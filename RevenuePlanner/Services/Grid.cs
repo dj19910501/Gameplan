@@ -28,7 +28,7 @@ namespace RevenuePlanner.Services
         List<Plandataobj> plandataobjlistCreateItem = new List<Plandataobj>();
         List<Plandataobj> EntitydataobjItem = new List<Plandataobj>(); // Plan grid entity row's data
         List<CustomfieldPivotData> EntityCustomDataValues = new List<CustomfieldPivotData>(); // Set Custom fields value for entities
-        List<Plandataobj> EmptyCustomValues; // Variable for assigned blank values for custom field
+        List<PlandataobjColumn> EmptyCustomValues; // Variable for assigned blank values for custom field
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
         HomeGridProperties objHomeGridProp = new HomeGridProperties();
         double PlanExchangeRate = 1; // set currency plan exchange rate. it's variable value update from 'GetPlanGrid' method
@@ -191,7 +191,30 @@ namespace RevenuePlanner.Services
             List<string> HiddenColumns = new List<string>(); // List of hidden columns of plan grid
             List<string> UserDefinedColumns = new List<string>(); // List of User selected or default columns list
             List<string> customColumnslist = new List<string>(); // List of custom field columns
-
+            // Get user column management data
+            User_CoulmnView objUserView = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
+            List<AttributeDetail> UserColitems = null;
+            Dictionary<int, string> usercolindex = new Dictionary<int, string>();
+            if (objUserView != null && !string.IsNullOrEmpty(objUserView.GridAttribute))
+            {
+                XDocument doc = XDocument.Parse(objUserView.GridAttribute);
+                // Read the xml data from user column view
+                UserColitems = objColumnView.UserSavedColumnAttribute(doc);
+                // Add hidden columns 
+                lstHomeGrid_Hidden_And_Default_Columns().Select(a => a.Key.ToString()).ToList().ForEach(a =>
+                {
+                    usercolindex.Add((usercolindex.Count + 1), a);
+                });
+                // Add common/standard columns 
+                UserColitems.Select(a => a).ToList().ForEach(a =>
+                {
+                    // Add Column id same as attribute id where attribute type is common
+                    if (string.Compare(a.AttributeType, Convert.ToString(Enums.HomeGridColumnAttributeType.Common), true) == 0 && !(lstHomeGrid_Hidden_And_Default_Columns().Select(hidden => hidden.Key.ToString()).Contains(a.AttributeId)))
+                    { usercolindex.Add((usercolindex.Count + 1), a.AttributeId); }
+                    else if (string.Compare(a.AttributeType, Convert.ToString(Enums.HomeGridColumnAttributeType.Common), true) == 1)
+                    { usercolindex.Add((usercolindex.Count + 1), ("custom_" + a.AttributeId + ":" + a.AttributeType)); } // Add Column id with custom_CustomFieldId:EntityType combination
+                });
+            }
             // Generate header columns for grid
             List<PlanHead> ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle, ref HiddenColumns, ref UserDefinedColumns, ref customColumnslist, UserId, ref IsUserView);
 
@@ -203,8 +226,6 @@ namespace RevenuePlanner.Services
             {
                 GridHireachyData = FilterCustomField(GridHireachyData, customFieldIds);
             }
-
-            //set owner name 
 
             // Update Plan Start and end date
             GridHireachyData = UpdatePlanStartEndDate(GridHireachyData);
@@ -261,9 +282,18 @@ namespace RevenuePlanner.Services
             // Merge header of plan grid with custom fields
             ListOfDefaultColumnHeader.AddRange(GridCustomHead(ListOfCustomData.CustomFields, customColumnslist));
 
+            if (UserColitems != null && UserColitems.Count > 0)
+            {
+                ListOfDefaultColumnHeader = (from colsort in usercolindex
+                                             join HeaderCol in ListOfDefaultColumnHeader
+                                                 on colsort.Value equals HeaderCol.id
+                                             orderby colsort.Key
+                                             select HeaderCol).ToList();
+
+            }
             // Generate Hierarchy of Plan grid
             List<PlanDHTMLXGridDataModel> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
-                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData))
+                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData, usercolindex))
                      .ToList();
 
             objPlanMainDHTMLXGrid.head = ListOfDefaultColumnHeader;
@@ -384,16 +414,20 @@ namespace RevenuePlanner.Services
                         .ToList();
 
             // Create empty list of custom field values for entity where there is no any custom fields value on entity
-            List<Plandataobj> lstCustomPlanData = new List<Plandataobj>();
-            selectedCustomColumns.ForEach(a =>
+            List<PlandataobjColumn> lstCustomPlanData = new List<PlandataobjColumn>();
+            if (selectedCustomColumns != null && selectedCustomColumns.Count > 0)
             {
-                lstCustomPlanData.Add(new Plandataobj
+                selectedCustomColumns.ForEach(a =>
                 {
-                    value = string.Empty,
-                    locked = objHomeGridProp.lockedstateone,
-                    style = objHomeGridProp.stylecolorgray
+                    lstCustomPlanData.Add(new PlandataobjColumn
+                    {
+                        value = string.Empty,
+                        locked = objHomeGridProp.lockedstateone,
+                        style = objHomeGridProp.stylecolorgray,
+                        column = data.CustomFields.Where(cust => a == cust.CustomFieldId.ToString()).Select(cust => cust.CustomUniqueId).FirstOrDefault()
+                    });
                 });
-            });
+            }
             EmptyCustomValues = lstCustomPlanData;
         }
 
@@ -462,20 +496,32 @@ namespace RevenuePlanner.Services
         private List<PlanHead> GenerateJsonHeader(string MQLTitle, ref List<string> HiddenColumns, ref List<string> UserDefinedColumns, ref List<string> customColumnslist, int UserId, ref bool IsUserView)
         {
             List<PlanHead> headobjlist = new List<PlanHead>(); // List of headers detail of plan grid
-            try
+            // Get user column view
+            User_CoulmnView userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
+            // Add Default and hidden required columns into list
+            headobjlist = lstHomeGrid_Hidden_And_Default_Columns().Select(a => a.Value).ToList();
+            if (headobjlist != null && headobjlist.Count > 0)
             {
-                // Get user column view
-                User_CoulmnView userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
-
-                // Add Default and hidden required columns into list
-                headobjlist = lstHomeGrid_Hidden_And_Default_Columns().Select(a => a.Value).ToList();
-                if (headobjlist != null && headobjlist.Count > 0)
-                {
-                    HiddenColumns.AddRange(headobjlist.Select(a => a.value).ToList());
-                }
-
-                // Below condition for when user have no any specific column view of plan grid
-                if (userview == null)
+                HiddenColumns.AddRange(headobjlist.Select(a => a.value).ToList());
+            }
+            // Below condition for when user have no any specific column view of plan grid
+            if (userview == null)
+            {
+                IsUserView = false;
+                // Set option values for dropdown columns like Tactic type/ Owner/ Asset type
+                List<PlanHead> lstDefaultColumns = new List<PlanHead>();
+                string MqlString = MQLTitle + Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon); // set client wise mql title and column management icon;
+                Dictionary<string, PlanHead> DictDefaultCoulmns = lstHomeGrid_Default_Columns();
+                DictDefaultCoulmns.Where(a => a.Key == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL)).FirstOrDefault().Value.value = MqlString;
+                lstDefaultColumns.AddRange(DictDefaultCoulmns.Select(a => a.Value).ToList());
+                // Update UserDefinedColumns variable with default columns list
+                UserDefinedColumns = lstDefaultColumns.Select(a => a.id).ToList();
+                // Merge list with default columns list
+                headobjlist.AddRange(lstDefaultColumns);
+            }
+            else
+            {
+                if (userview.GridAttribute == null)
                 {
                     IsUserView = false;
                     // Set option values for dropdown columns like Tactic type/ Owner/ Asset type
@@ -491,45 +537,21 @@ namespace RevenuePlanner.Services
                 }
                 else
                 {
-                    if (userview.GridAttribute == null)
+                    // Get user grid view columns list
+                    string attributexml = userview.GridAttribute;
+                    IsUserView = true;
+                    if (!string.IsNullOrEmpty(attributexml))
                     {
-                        IsUserView = false;
-                        // Set option values for dropdown columns like Tactic type/ Owner/ Asset type
-                        List<PlanHead> lstDefaultColumns = new List<PlanHead>();
-                        string MqlString = MQLTitle + Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon); // set client wise mql title and column management icon;
-                        Dictionary<string, PlanHead> DictDefaultCoulmns = lstHomeGrid_Default_Columns();
-                        DictDefaultCoulmns.Where(a => a.Key == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL)).FirstOrDefault().Value.value = MqlString;
-                        lstDefaultColumns.AddRange(DictDefaultCoulmns.Select(a => a.Value).ToList());
-                        // Update UserDefinedColumns variable with default columns list
-                        UserDefinedColumns = lstDefaultColumns.Select(a => a.id).ToList();
-                        // Merge list with default columns list
-                        headobjlist.AddRange(lstDefaultColumns);
-                    }
-                    else
-                    {
-                        // Get user grid view columns list
-                        string attributexml = userview.GridAttribute;
-                        IsUserView = true;
-                        if (!string.IsNullOrEmpty(attributexml))
-                        {
-                            XDocument doc = XDocument.Parse(attributexml);
-                            // Read the xml data from user column view
-                            List<AttributeDetail> items = objColumnView.UserSavedColumnAttribute(doc);
-
-                            // Set default columns values
-                            headobjlist.AddRange(GetUserDefaultColumnsProp(items, MQLTitle, ref  UserDefinedColumns));
-
-                            // Add custom field columns to that user have selected from column manage view
-                            customColumnslist = items.Where(a => a.AttributeType.ToLower() != Convert.ToString(Enums.HomeGridColumnAttributeType.Common).ToLower())
-                                                .Select(a => a.AttributeId).ToList();
-                        }
+                        XDocument doc = XDocument.Parse(attributexml);
+                        // Read the xml data from user column view
+                        List<AttributeDetail> items = objColumnView.UserSavedColumnAttribute(doc);
+                        // Set default columns values
+                        headobjlist.AddRange(GetUserDefaultColumnsProp(items, MQLTitle, ref  UserDefinedColumns));
+                        // Add custom field columns to that user have selected from column manage view
+                        customColumnslist = items.Where(a => a.AttributeType.ToLower() != Convert.ToString(Enums.HomeGridColumnAttributeType.Common).ToLower())
+                                            .Select(a => a.AttributeId).ToList();
                     }
                 }
-
-            }
-            catch
-            {
-                throw;
             }
             return headobjlist;
         }
@@ -740,7 +762,6 @@ namespace RevenuePlanner.Services
                                 a.value = MQLTitle + Enums.GetEnumDescription(Enums.HomeGrid_Header_Icons.columnmanagementicon); // set client wise mql title and column management icon
                             });
                     }
-
                     UserDefinedColumns.AddRange(lstDefaultCols.Select(a => a.id).ToList());
                 }
             }
@@ -878,7 +899,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Generate items for hierarchy 
         /// </summary>
-        PlanDHTMLXGridDataModel CreateItemGrid(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData)
+        PlanDHTMLXGridDataModel CreateItemGrid(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData, Dictionary<int, string> usercolindex)
         {
             List<PlanDHTMLXGridDataModel> children = new List<PlanDHTMLXGridDataModel>();
             try
@@ -888,16 +909,16 @@ namespace RevenuePlanner.Services
 
                 // Call recursive if any other child entity
                 children = lstChildren
-                .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridDefaultData)).ToList();
+                .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridDefaultData, usercolindex)).ToList();
 
                 EntitydataobjItem = new List<Plandataobj>();
 
                 // Get list of custom field values for particular entity based on pivoted entities list
-                List<Plandataobj> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId == (Row.EntityType + "_" + Row.EntityId))
+                List<PlandataobjColumn> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId == (Row.EntityType + "_" + Row.EntityId))
                                            .Select(a => a.CustomFieldData).FirstOrDefault();
                 if (lstCustomfieldData == null && CustomFieldData.CustomFields != null)
                 {
-                    List<Plandataobj> ItemEmptylist = new List<Plandataobj>(); // Variable for empty list of custom fields value to assign entity 
+                    List<PlandataobjColumn> ItemEmptylist = new List<PlandataobjColumn>(); // Variable for empty list of custom fields value to assign entity 
                     // Get list of custom fields by entity type
                     List<string> EntityCustomFields = CustomFieldData.CustomFields.Where(a => a.EntityType.ToLower() == Row.EntityType.ToLower()).Select(a => a.CustomFieldId.ToString()).ToList();
                     // Get list of custom column indexes from custom field list
@@ -915,7 +936,7 @@ namespace RevenuePlanner.Services
                         {
                             if (Colindexes.Contains(j))
                             {
-                                ItemEmptylist.Add(new Plandataobj { value = string.Empty, locked = objHomeGridProp.lockedstatezero, style = objHomeGridProp.stylecolorblack });
+                                ItemEmptylist.Add(new PlandataobjColumn { value = string.Empty, locked = objHomeGridProp.lockedstatezero, style = objHomeGridProp.stylecolorblack, column = EmptyCustomValues[j].column });
                             }
                             else
                             { ItemEmptylist.Add(EmptyCustomValues[j]); }
@@ -927,7 +948,7 @@ namespace RevenuePlanner.Services
                 }
 
                 // Set the values of row
-                EntitydataobjItem = GridDataRow(Row, EntitydataobjItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData);
+                EntitydataobjItem = GridDataRow(Row, EntitydataobjItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData, usercolindex);
             }
             catch
             {
@@ -942,23 +963,30 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Set the grid rows for entities
         /// </summary>
-        public List<Plandataobj> GridDataRow(PlanGridColumnData Row, List<Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<Plandataobj> objCustomfieldData)
+        public List<Plandataobj> GridDataRow(PlanGridColumnData Row, List<Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<PlandataobjColumn> objCustomfieldData, Dictionary<int, string> usercolindex)
         {
             bool IsEditable = true;
             string cellTextColor = string.Empty;
             cellTextColor = IsEditable ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
-
+            List<PlandataobjColumn> lstOrderData = new List<PlandataobjColumn>();
             #region Set Default Columns Values
-            EntitydataobjCreateItem.AddRange(Row.lstdata);
+            lstOrderData.AddRange(Row.lstdata);
             #endregion
-
             #region Set Customfield Columns Values
             if (objCustomfieldData != null)
             {
-                EntitydataobjCreateItem.AddRange(objCustomfieldData);
+                lstOrderData.AddRange(objCustomfieldData);
             }
             #endregion
-
+            if (usercolindex != null && usercolindex.Count > 0)
+            {
+                lstOrderData = (from colsort in usercolindex
+                                join lstData in lstOrderData
+                                    on colsort.Value equals lstData.column
+                                orderby colsort.Key
+                                select lstData).ToList();
+            }
+            EntitydataobjCreateItem.AddRange(lstOrderData.Select(a => new Plandataobj { value = a.value, type = a.type, style = a.style, locked = a.locked, actval = a.actval }));
             return EntitydataobjCreateItem;
         }
 
@@ -1049,17 +1077,16 @@ namespace RevenuePlanner.Services
                 .ForEach(a => a.IsRowPermission = true);
 
             // Set edit permission if it's child's tactic is editable
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower())
-               .ToList().ForEach(a =>
-               {
-                   var CampProgramList = lstData.Where(camp => camp.ParentUniqueId == a.UniqueId).Select(camp => camp.UniqueId); // Get Campaign's Program List 
-                   var ProgramTacticList = lstData.Where(prg => CampProgramList.Contains(prg.ParentUniqueId)).Select(prg => prg.EntityId); // Get Program's Tactic
-                   var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
-                   if (ProgramTacticList.Count() == AllowEntityIds)
-                   {
-                       a.IsRowPermission = true;
-                   }
-               });
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower()).ToList().ForEach(a =>
+            {
+                var CampProgramList = lstData.Where(camp => camp.ParentUniqueId == a.UniqueId).Select(camp => camp.UniqueId).ToList(); // Get Campaign's Program List 
+                var ProgramTacticList = lstData.Where(prg => CampProgramList.Contains(prg.ParentUniqueId)).Select(prg => prg.EntityId).ToList(); // Get Program's Tactic
+                var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
+                if (ProgramTacticList.Count > 0 && ProgramTacticList.Count == AllowEntityIds)
+                {
+                    a.IsRowPermission = true;
+                }
+            });
             return lstData;
         }
 
@@ -1084,12 +1111,11 @@ namespace RevenuePlanner.Services
             lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower() && a.Owner == UserId).ToList()
                .ForEach(a => a.IsRowPermission = true);
             // Set edit permission if it's child's tactic is editable
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower())
-               .ToList().ForEach(a =>
+            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower()).ToList().ForEach(a =>
                {
-                   var ProgramTacticList = lstData.Where(prg => prg.ParentUniqueId == a.UniqueId).Select(prg => prg.EntityId);// Get Program's Tactic
+                   var ProgramTacticList = lstData.Where(prg => prg.ParentUniqueId == a.UniqueId).Select(prg => prg.EntityId).ToList();// Get Program's Tactic
                    var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
-                   if (ProgramTacticList.Count() == AllowEntityIds)
+                   if (ProgramTacticList.Count > 0 && ProgramTacticList.Count == AllowEntityIds)
                    {
                        a.IsRowPermission = true;
                    }
@@ -1308,8 +1334,8 @@ namespace RevenuePlanner.Services
             {
                 return null;
             }
-            Plandataobj objPlanData = new Plandataobj();
-            List<Plandataobj> lstPlanData = new List<Plandataobj>();
+            PlandataobjColumn objPlanData = new PlandataobjColumn();
+            List<PlandataobjColumn> lstPlanData = new List<PlandataobjColumn>();
             Type type = RowData.GetType();
             string IsEditable = string.Empty;
             string cellTextColor = string.Empty;
@@ -1318,7 +1344,9 @@ namespace RevenuePlanner.Services
             objres = InsertAttributeValueforAddColumns(RowData, objres);
 
             // Insert Hidden field values
-            lstPlanData.AddRange(InsertHiddenDefaultColumnsValues(RowData, objres));
+            List<PlandataobjColumn> lstHiddenColData = InsertHiddenDefaultColumnsValues(RowData, objres);
+
+            lstPlanData.AddRange(lstHiddenColData);
 
             // Set user selected columns values
             foreach (var pair in props.Select(n => new
@@ -1327,9 +1355,10 @@ namespace RevenuePlanner.Services
                 Property = type.GetProperty(n)
             }))
             {
-                objPlanData = new Plandataobj();
+                objPlanData = new PlandataobjColumn();
                 if (pair.Property != null)
                 {
+                    objPlanData.column = pair.Name;
                     objres.EntityType = GetvalueFromObject(RowData, "EntityType");
                     if (objres.IsRowPermission == true)
                     {
@@ -1460,7 +1489,6 @@ namespace RevenuePlanner.Services
                             }
                         }
                         objPlanData.style = cellTextColor;
-
                     }
                 }
                 lstPlanData.Add(objPlanData);
@@ -1474,41 +1502,45 @@ namespace RevenuePlanner.Services
         /// Return the hidden columns data for particular Entities
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private List<Plandataobj> InsertHiddenDefaultColumnsValues(object RowData, PlanGridColumnData objres)
+        private List<PlandataobjColumn> InsertHiddenDefaultColumnsValues(object RowData, PlanGridColumnData objres)
         {
             // Insert Hidden field values
-            List<Plandataobj> lstPlanData = new List<Plandataobj>();
+            List<PlandataobjColumn> lstPlanData = new List<PlandataobjColumn>();
             lstHomeGrid_Hidden_And_Default_Columns().Select(col => col.Key).ToList().ForEach(coldata =>
             {
                 if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType), true) == 0)
                 {
-                    lstPlanData.Add(new Plandataobj
+                    lstPlanData.Add(new PlandataobjColumn
                     {
-                        value = objres.EntityType // Set Entity Type like Plan/Campaign etc...
+                        value = objres.EntityType, // Set Entity Type like Plan/Campaign etc...
+                        column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType)
                     });
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode), true) == 0)
                 {
-                    lstPlanData.Add(new Plandataobj
+                    lstPlanData.Add(new PlandataobjColumn
                     {
-                        style = "background-color:#" + objres.ColorCode // Set colour Column
+                        style = "background-color:#" + objres.ColorCode, // Set colour Column
+                        column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode)
                     });
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), true) == 0)
                 {
-                    lstPlanData.Add(new Plandataobj
+                    lstPlanData.Add(new PlandataobjColumn
                     {
-                        value = Convert.ToString(objres.EntityId) // Set column ids
+                        value = Convert.ToString(objres.EntityId), // Set column ids
+                        column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id)
                     });
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName), true) == 0)
                 {
 
-                    lstPlanData.Add(new Plandataobj
+                    lstPlanData.Add(new PlandataobjColumn
                     {
                         value = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType()
                                                                 .GetProperty(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName))
-                                                                .GetValue(RowData, new object[0]))) // set machine name for tactics
+                                                                .GetValue(RowData, new object[0]))), // set machine name for tactics
+                        column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName)
                     });
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName), true) == 0)
@@ -1575,18 +1607,20 @@ namespace RevenuePlanner.Services
                         objres.IsExtendTactic = IsExtendedTactic;
                         objres.LinkedTacticId = LinkedTacticId;
                     }
-                    lstPlanData.Add(new Plandataobj
+                    lstPlanData.Add(new PlandataobjColumn
                     {
                         value = Roistring + Linkedstring + HttpUtility.HtmlEncode(objres.EntityTitle), //Set Entity title
                         locked = IsEditable,
-                        style = cellTextColor
+                        style = cellTextColor,
+                        column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName)
                     });
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add), true) == 0)
                 {
-                    lstPlanData.Add(new Plandataobj
+                    lstPlanData.Add(new PlandataobjColumn
                     {
-                        value = AddColumnString(objres) //Set Add icon html string for plan grid
+                        value = AddColumnString(objres), //Set Add icon html string for plan grid
+                        column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add)
                     });
                 }
             });
@@ -1960,13 +1994,13 @@ namespace RevenuePlanner.Services
             }
             #endregion
 
-                #region "Set Permission"
-            
+            #region "Set Permission"
+
             if (IsPlanCreateAllAuthorized)          // check whether user has plan create permission or not
             {
                 lstCalendarDataModel.ForEach(data => data.Permission = true);
             }
-                    else
+            else
             {
                 lstCalendarDataModel.Where(data =>
                                                 (data.CreatedBy.HasValue) &&
@@ -1991,12 +2025,12 @@ namespace RevenuePlanner.Services
             }
             else if (IsTacticAllowForSubordinates)         // Check that user has subordinates permission or not. 
             {
-                lstCalendarDataModel.Where(a => a.type != null && a.type.ToLower() == strPlanEntity && 
+                lstCalendarDataModel.Where(a => a.type != null && a.type.ToLower() == strPlanEntity &&
                                           ((a.CreatedBy.HasValue) && lstSubordinatesIds.Contains(a.CreatedBy.Value))
                                           ).ToList()
                                     .ForEach(a => a.IsRowPermission = true);
             }
-                #endregion
+            #endregion
 
             #region "Tactic Entities Permission"
             lstCalendarDataModel.Where(a => a.type != null && a.type.ToLower() == Enums.EntityType.Tactic.ToString().ToLower() &&
@@ -2225,7 +2259,7 @@ namespace RevenuePlanner.Services
         private static dynamic GetAnonymousObject(IEnumerable<string> columns, IEnumerable<object> values, List<GridCustomFields> CustomFields, List<EntityPermissionRowWise> EntityRowPermission)
         {
             CustomfieldPivotData objCustomPivotData = new CustomfieldPivotData();
-            List<Plandataobj> lstCustomFieldData = new List<Plandataobj>();
+            List<PlandataobjColumn> lstCustomFieldData = new List<PlandataobjColumn>();
             int i;
             string EntityType = string.Empty;
             string EntityId = string.Empty;
@@ -2293,11 +2327,12 @@ namespace RevenuePlanner.Services
                         DataValue = string.Empty;
                     }
                     lstCustomFieldData.Add(
-                        new Plandataobj
+                        new PlandataobjColumn
                         {
                             locked = lockedval,
                             value = DataValue,
-                            style = styleval
+                            style = styleval,
+                            column = CustomFields.Where(a => columns.ElementAt(i) == a.CustomFieldId.ToString()).Select(a => a.CustomUniqueId).FirstOrDefault()
                         });
                 }
             }

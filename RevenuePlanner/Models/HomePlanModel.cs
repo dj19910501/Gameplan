@@ -484,7 +484,7 @@ namespace RevenuePlanner.Models
         public bool IsRowPermission { get; set; }
         public bool IsExtendTactic { get; set; }
         public int? LinkedTacticId { get; set; }
-        public List<Plandataobj> lstdata { get; set; }
+        public List<PlandataobjColumn> lstdata { get; set; }
         //public Plandataobj objdata { get; set; }
     }
 
@@ -757,7 +757,7 @@ namespace RevenuePlanner.Models
     {
         public string UniqueId { get; set; }
         public string EntityType { get; set; }
-        public List<Plandataobj> CustomFieldData { get; set; }
+        public List<PlandataobjColumn> CustomFieldData { get; set; }
     }
 
     // Add By Nishant Sheth
@@ -771,6 +771,7 @@ namespace RevenuePlanner.Models
         public string EntityType { get; set; }
         public string AbbreviationForMulti { get; set; }
         public string CustomFieldType { get; set; }
+        public string CustomUniqueId { get; set; }
     }
 
     // Add By Nishant Sheth
@@ -847,6 +848,16 @@ namespace RevenuePlanner.Models
         public string style { get; set; }
         public string actval { get; set; }
         public string type { get; set; }
+    }
+    // Class use for plan grid data with column name // use for display order wise column on plan grid
+    public class PlandataobjColumn
+    {
+        public string value { get; set; }
+        public string locked { get; set; }
+        public string style { get; set; }
+        public string actval { get; set; }
+        public string type { get; set; }
+        public string column { get; set; }
     }
 
     public class PlanHead

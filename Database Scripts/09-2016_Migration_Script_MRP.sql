@@ -363,6 +363,7 @@ SET NOCOUNT ON;
 			,C.EntityType
 			,C.AbbreviationForMulti
 			,@CustomFieldTypeText As 'CustomFieldType'
+			,'custom_'+CAST (C.CustomFieldId AS VARCHAR(100))+':'+C.EntityType AS CustomUniqueId
 			FROM CustomField  C
 			CROSS APPLY (SELECT Item FROM @CustomFieldIds selCol 
 						WHERE selCol.Item = C.CustomFieldId) selCol
@@ -380,6 +381,7 @@ SET NOCOUNT ON;
 			,C.EntityType
 			,C.AbbreviationForMulti
 			,@CustomFieldTypeDropDown AS 'CustomFieldType'
+			,'custom_'+CAST (C.CustomFieldId AS VARCHAR(100))+':'+C.EntityType AS CustomUniqueId
 			FROM CustomField  C
 			CROSS APPLY (SELECT Item FROM @CustomFieldIds selCol 
 						WHERE selCol.Item = C.CustomFieldId) selCol
@@ -441,7 +443,6 @@ SET NOCOUNT ON;
 									AND Hireachy.EntityId = CE.EntityId ) CE
 				) A
 	GROUP BY A.CustomFieldId, A.EntityId
-
 END
 GO
 
