@@ -1082,7 +1082,7 @@ namespace RevenuePlanner.Services
                 var CampProgramList = lstData.Where(camp => camp.ParentUniqueId == a.UniqueId).Select(camp => camp.UniqueId).ToList(); // Get Campaign's Program List 
                 var ProgramTacticList = lstData.Where(prg => CampProgramList.Contains(prg.ParentUniqueId)).Select(prg => prg.EntityId).ToList(); // Get Program's Tactic
                 var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
-                if (ProgramTacticList.Count > 0 && ProgramTacticList.Count == AllowEntityIds)
+                if (ProgramTacticList.Count > 0 && ProgramTacticList.Count == AllowEntityIds && lstSubordinatesIds.Contains(int.Parse(a.Owner.ToString())))
                 {
                     a.IsRowPermission = true;
                 }
@@ -1115,7 +1115,7 @@ namespace RevenuePlanner.Services
                {
                    var ProgramTacticList = lstData.Where(prg => prg.ParentUniqueId == a.UniqueId).Select(prg => prg.EntityId).ToList();// Get Program's Tactic
                    var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
-                   if (ProgramTacticList.Count > 0 && ProgramTacticList.Count == AllowEntityIds)
+                   if (ProgramTacticList.Count > 0 && ProgramTacticList.Count == AllowEntityIds && lstSubordinatesIds.Contains(int.Parse(a.Owner.ToString())))
                    {
                        a.IsRowPermission = true;
                    }
@@ -1234,11 +1234,8 @@ namespace RevenuePlanner.Services
                 if (!string.IsNullOrEmpty(UniqueId))
                 {
                     var LineItemType = DataList.Where(a => a.UniqueId == UniqueId).Select(a => a.LineItemType).FirstOrDefault();
-                    if (LineItemType != null)
-                    {
-                        string IsOther = Convert.ToString(!string.IsNullOrEmpty(LineItemType) ? false : true);
-                        objUserData.IsOther = IsOther;
-                    }
+                    string IsOther = Convert.ToString(!string.IsNullOrEmpty(LineItemType) ? false : true);
+                    objUserData.IsOther = IsOther;
                 }
             }
 
