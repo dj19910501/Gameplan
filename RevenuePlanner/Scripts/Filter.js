@@ -957,6 +957,7 @@ function UpdateResult() {
     IsUpdate = true;
     isRequest = false;
     GetFilterIds();
+    RemoveAllHoneyCombData();
     //if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
     if ($('#IsGridView').val().toLowerCase() == "true" && !IsBudgetGrid) {
         HomeGrid.saveOpenStates("plangridState");
