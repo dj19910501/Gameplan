@@ -111,6 +111,7 @@
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
         HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
+        HomeGrid.enableEditTabOnly(true);;
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
         HomeGrid.attachEvent("onDistributedEnd", function () {

@@ -315,12 +315,13 @@ function formatDate(d) {
 }
 
 function SetColumUpdatedValue(CellInd, diff) {
+    debugger;
     progActVal = HomeGrid.cells(progid, CellInd).getAttribute("actval");
     CampActVal = HomeGrid.cells(campid, CellInd).getAttribute("actval");
     PlanActVal = HomeGrid.cells(planid, CellInd).getAttribute("actval");
-    newProgVal = parseInt(progActVal.toString().replace(/\,/g, '').replace(CurrencySybmol, '')) + parseInt(diff);
-    newCampVal = parseInt(CampActVal.toString().replace(/\,/g, '').replace(CurrencySybmol, '')) + parseInt(diff);
-    newPlanVal = parseInt(PlanActVal.toString().replace(/\,/g, '').replace(CurrencySybmol, '')) + parseInt(diff);
+    newProgVal = parseInt(ReplaceCC(progActVal.toString())) + parseInt(diff);
+    newCampVal = parseInt(ReplaceCC(CampActVal.toString())) + parseInt(diff);
+    newPlanVal = parseInt(ReplaceCC(PlanActVal.toString())) + parseInt(diff);
     HomeGrid.cells(progid, CellInd).setAttribute("actval", newProgVal);
     HomeGrid.cells(campid, CellInd).setAttribute("actval", newCampVal);
     HomeGrid.cells(planid, CellInd).setAttribute("actval", newPlanVal);
@@ -357,6 +358,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     AssignParentIds(rowId);
     UpdateColumn = HomeGrid.getColumnId(Colind, 0);
     var type = HomeGrid.getColType(cellInd);
+    var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
     if (stage == 0) {
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
         if ((locked != null && locked != "") && locked == "1")
@@ -364,7 +366,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         if (rowId == "newRow_0")
             return false;
         if (Colind == TypeColIndex) {
-            var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
             if (updatetype.toLowerCase() == secLineItem) {
                 var combo = HomeGrid.getCombo(cellInd);
                 combo.clear();
@@ -442,11 +443,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
         if (UpdateColumn == TargetStageGoalId) {
             var psv = HomeGrid.cells(rowId, TargetStageGoalColIndex).getValue().split(" ");
-            this.editor.obj.value = (psv[0].replace(/,/g, ""));
+            //this.editor.obj.value = (psv[0].replace(/,/g, ""));
+            this.editor.obj.value = (ReplaceCC(psv[0]));
         }
     }
     if (stage == 2) {
-
+        debugger;
         if (nValue != null && nValue != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
             var oldAssetType = '';
             var NewValue = htmlDecode(nValue);
@@ -528,7 +530,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             }
             if (UpdateColumn.toString().trim() == TargetStageGoalId) {
                 var splitoval = oValue.split(" ");
-                if (nValue != splitoval[0].replace(/,/g, "")) {
+                //if (nValue != splitoval[0].replace(/,/g, ""))
+                if (nValue != ReplaceCC(splitoval[0])) {
                     var tactictypeindex = HomeGrid.getColIndexById('tactictype');
                     var tacticTypeId = HomeGrid.getUserData(rowId, "tactictype");
                     GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue, null);
@@ -576,7 +579,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             if (UpdateColumn == TacticTypeId && updatetype.toLowerCase() == secTactic.toLowerCase()) {
                 //here oValue is assign id according to its value
                 var oldTacticTypeid = tacticTypefieldOptionList.filter(function (item) {
-                    if (item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
+                    if (item.PlanId == _planid && item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
                         return item.id;
                     }
                 });
@@ -647,12 +650,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 //here oValue is assign id according to its value
                 if (UpdateColumn == TacticTypeId) {
                     var oldLineItemTypeid = lineItemTypefieldOptionList.filter(function (item) {
-                        if (item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
+                        if (item.PlanId == _planid && item.value.trim().toLowerCase().toString() == oValue.trim().toLowerCase().toString()) {
                             return item.id;
                         }
                     });
                     if (oldLineItemTypeid.length > 0) {
-                        oValue = oldTacticTypeid[0].id;
+                        oValue = oldLineItemTypeid[0].id;
                     }
                 }
                 var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
@@ -673,45 +676,24 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 return false;
                             }
                             else if (UpdateColumn == PlannedCostId) {
-                                diff = parseInt(nValue) - parseInt(oValue);
-                                diffLineAndTactic = nValue - states.tacticCost
-                                if (nValue > states.tacticCost) {
 
-                                    SetColumUpdatedValue(PlannedCostColIndex, diffLineAndTactic);
-                                    HomeGrid.cells(progid, PlannedCostColIndex).setValue((newProgVal));
-                                    HomeGrid.cells(campid, PlannedCostColIndex).setValue((newCampVal));
-                                    HomeGrid.cells(planid, PlannedCostColIndex).setValue((newPlanVal));
-                                    HomeGrid.cells(tactid, PlannedCostColIndex).setValue((newTactVal));
-                                    for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                        if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                            HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue((states.otherLineItemCost));
-                                            HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
-                                        }
+                                diff = parseInt(states.lineItemCost) - parseInt(ReplaceCC(oValue));
+                                for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+                                    if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") != "False") {
+                                        HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + (states.tacticCost - states.lineItemCost));
                                     }
                                 }
-                                else if (nValue == states.tacticCost) {
-                                    for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                        if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                            HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
-                                        }
-                                    }
-                                }
-                                else {
-                                    for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                        if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                            HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue((states.otherLineItemCost));
-                                        }
-                                    }
-                                }
-                                HomeGrid.saveOpenStates("plangridState");
-                                LoadPlanGrid();
+
                                 RefershPlanHeaderCalc();
                                 ItemIndex = HomeGrid.getRowIndex(tactid);
                                 state0 = ItemIndex;
-                                HomeGrid.cells(rowId, PlannedCostColIndex).setValue((nValue));
+                                HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(nValue)));
                             }
-                            else if (UpdateColumn == TacticTypeId)
-                                HomeGrid.cells(rowId, cellInd).setAttribute("actval", nValue);
+                            if (UpdateColumn == PlannedCostId || UpdateColumn == TaskNameId) {
+                                if (states.linkTacticId > 0) {
+                                    LoadPlanGrid();
+                                }
+                            }
                         }
                     });
                 }
@@ -727,8 +709,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     $.ajax({
                         type: 'POST',
                         url: urlContent + 'Plan/SaveGridDetail',
-                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id), CustomFieldInput: _customFieldValues, ColumnType: type.toString(), oValue: oValue.toString()
-                    },
+                        data: {
+                            UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id), CustomFieldInput: _customFieldValues, ColumnType: type.toString(), oValue: oValue.toString()
+                        },
                         dataType: 'json',
                         success: function (states) {
                             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
@@ -828,37 +811,21 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 }
                                 ComapreDate(updatetype, rowId, EndDateColIndex, nValue, UpdateColumn);
                             }
-                            if (UpdateColumn == PlannedCostId) {
-                                if (nValue < states.lineItemCost) {
-                                    HomeGrid.cells(rowId, PlannedCostColIndex).setValue((oValue));
-                                }
-                                else if (nValue == states.lineItemCost) {
-                                    if (TotalRowIds != "") {
-                                        for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-
-                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                                HomeGrid.deleteRow(TotalRowIds.split(',')[i]);
-                                            }
-                                        }
+                            if (UpdateColumn == PlannedCostId || UpdateColumn == TaskNameId) {
+                                diff = parseInt(nValue) - parseInt(oValue);
+                                SetColumUpdatedValue(PlannedCostColIndex, diff);
+                                HomeGrid.cells(progid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newProgVal)));
+                                HomeGrid.cells(campid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newCampVal)));
+                                HomeGrid.cells(planid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newPlanVal)));
+                                HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(nValue)));
+                                for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+                                    if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") != "False") {
+                                        HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + numberWithCommas(nValue - states.lineItemCost));
                                     }
                                 }
-                                else {
-                                    diff = parseInt(nValue) - parseInt(oValue);
-                                    SetColumUpdatedValue(PlannedCostColIndex, diff);
-                                    HomeGrid.cells(progid, PlannedCostColIndex).setValue((newProgVal));
-                                    HomeGrid.cells(campid, PlannedCostColIndex).setValue((newCampVal));
-                                    HomeGrid.cells(planid, PlannedCostColIndex).setValue((newPlanVal));
-                                    HomeGrid.cells(rowId, PlannedCostColIndex).setValue((nValue));
-                                    if (TotalRowIds != "") {
-                                        for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "True") {
-                                                HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue((states.OtherLineItemCost));
-                                            }
-                                        }
-                                    }
+                                if (states.linkTacticId > 0) {
+                                    LoadPlanGrid();
                                 }
-                                HomeGrid.saveOpenStates("plangridState");
-                                LoadPlanGrid();
                                 RefershPlanHeaderCalc();
                                 ItemIndex = HomeGrid.getRowIndex(rowId);
                                 state0 = ItemIndex;
@@ -873,21 +840,11 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 $('#ExpSearch').css('display', 'block');
                                 GlobalSearch();
                             }
-                       
-                            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
-                                var ids = states.DependentCustomfield;
-                                for (var i = 0; i < ids.length; i++) {
-                                    var originalColumnid = "custom_" + ids[i] + ":" + updatetype.toString();
-                                    var colIndex = HomeGrid.getColIndexById(originalColumnid);
-                                    if (colIndex != undefined && colIndex != '')
-                                        HomeGrid.cells(rowId, colIndex).setValue('');
-                                }
-                            }
                         }
                     });
                 }
                 if (cellInd == TaskNameColIndex) {
-                    if (value != undefined && value != "undefined" && value != null && value.trim() != '') {
+                    if (value != undefined && value != "undefined" && value != null) {
                         HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
                     }
                     else {
@@ -900,19 +857,20 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 });
                 return true;
             }
-            if (cellInd == TaskNameColIndex) {
-                if (value != undefined && value != "undefined" && value != null) {
-                    HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
-                }
-                else {
-                    HomeGrid.cells(rowId, cellInd).setValue(TacticName);
-                }
-            }
-            value = "";
-            $("div[id^='LinkIcon']").each(function () {
-                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
-            });
-            return true;
+            //if (cellInd == TaskNameColIndex) {
+            //    if (value != undefined && value != "undefined" && value != null) {
+            //        HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
+            //    }
+            //    else {
+            //        HomeGrid.cells(rowId, cellInd).setValue(TacticName);
+            //    }
+            //}
+            //value = "";
+            //$("div[id^='LinkIcon']").each(function () {
+            //    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+            //});
+            //return true;
+
         }
     }
 }
@@ -1006,21 +964,22 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                     mqlConversion = data.mql;
                 }
                 var mqlValue = mqlConversion.toString();
-                HomeGrid.cells(rowid, MQLColIndex).setValue(mqlValue);
+                HomeGrid.cells(rowid, MQLColIndex).setValue(numberWithCommas(mqlValue));
                 diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
                 HomeGrid.cells(rowid, MQLColIndex).setAttribute("actval", mqlConversion);
                 SetColumUpdatedValue(MQLColIndex, diff);
             }
-            HomeGrid.cells(progid, MQLColIndex).setValue(newProgVal, false);
-            HomeGrid.cells(campid, MQLColIndex).setValue(newCampVal, false);
-            HomeGrid.cells(planid, MQLColIndex).setValue(newPlanVal, false);
-            HomeGrid.cells(rowid, RevenueColIndex).setValue(CurrencySybmol + revenue);
+            debugger;
+            HomeGrid.cells(progid, MQLColIndex).setValue(numberWithCommas(newProgVal), false);
+            HomeGrid.cells(campid, MQLColIndex).setValue(numberWithCommas(newCampVal), false);
+            HomeGrid.cells(planid, MQLColIndex).setValue(numberWithCommas(newPlanVal), false);
+            HomeGrid.cells(rowid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(revenue));
             var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getAttribute("actval");
             diff = parseInt(revenue) - parseInt(tactActRevenuVal.toString().replace(/\,/g, '').replace(CurrencySybmol, ''));
             SetColumUpdatedValue(RevenueColIndex, diff);
-            HomeGrid.cells(progid, RevenueColIndex).setValue(CurrencySybmol + newProgVal);
-            HomeGrid.cells(campid, RevenueColIndex).setValue(CurrencySybmol + newCampVal);
-            HomeGrid.cells(planid, RevenueColIndex).setValue(CurrencySybmol + newPlanVal);
+            HomeGrid.cells(progid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newProgVal));
+            HomeGrid.cells(campid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newCampVal));
+            HomeGrid.cells(planid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newPlanVal));
             HomeGrid.cells(rowid, RevenueColIndex).setAttribute("actval", revenue);
             $.ajax({
                 type: 'POST',
@@ -1034,7 +993,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                         HomeGrid.cells(rowid, TargetStageGoalColIndex).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
                         RefershPlanHeaderCalc();
                     }
-
+                    debugger;
                     if (UpdateColumn == TacticTypeId) {
                         var PlanIds = HomeGrid.cells(planid, GridHiddenId).getValue()
                         $("#ulTacticType li input[type=checkbox]").each(function () {
@@ -1046,51 +1005,28 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                         });
                         GetTacticTypelist(filters.PlanIDs, false);
                         SaveLastSetofViews();
+                        var TotalchildRowIds = HomeGrid.getAllSubItems(rowid);
                         var tacCost = 0;
                         if (states.TacticCost != null && states.TacticCost != 'undefined') {
                             tacCost = states.TacticCost;
                         }
                         PlannedCostColIndex = HomeGrid.getColIndexById(PlannedCostId);
-                        var oldPlanCost = HomeGrid.cells(rowid, PlannedCostColIndex).getValue();
-                        HomeGrid.cells(rowid, PlannedCostColIndex).setValue(tacCost);
-                        var TotalchildRowIds = HomeGrid.getAllSubItems(rowid);
-                        PlannedCostColIndex = HomeGrid.getColIndexById(PlannedCostId);
-                        if (tacCost < states.lineItemCost) {
-                            HomeGrid.cells(rowid, PlannedCostColIndex).setValue((oldPlanCost));
-                        }
-                        else if (tacCost == states.lineItemCost) {
-                            if (TotalchildRowIds != "") {
-                                for (var i = 0; i < TotalchildRowIds.split(',').length; i++) {
-
-                                    if (HomeGrid.getUserData(TotalchildRowIds.split(',')[i], "IsOther") == "True") {
-                                        HomeGrid.deleteRow(TotalchildRowIds.split(',')[i]);
-                                    }
-                                }
-                            }
-                            diff = parseInt(tacCost) - parseInt(oldPlanCost);
-                            SetColumUpdatedValue(PlannedCostColIndex, diff);
-                            HomeGrid.cells(progid, PlannedCostColIndex).setValue((newProgVal));
-                            HomeGrid.cells(campid, PlannedCostColIndex).setValue((newCampVal));
-                            HomeGrid.cells(planid, PlannedCostColIndex).setValue((newPlanVal));
-                            HomeGrid.cells(rowid, PlannedCostColIndex).setValue((tacCost));
-                        }
-                        else {
-                            diff = parseInt(tacCost) - parseInt(oldPlanCost);
-                            SetColumUpdatedValue(PlannedCostColIndex, diff);
-                            HomeGrid.cells(progid, PlannedCostColIndex).setValue((newProgVal));
-                            HomeGrid.cells(campid, PlannedCostColIndex).setValue((newCampVal));
-                            HomeGrid.cells(planid, PlannedCostColIndex).setValue((newPlanVal));
-                            HomeGrid.cells(rowid, PlannedCostColIndex).setValue((tacCost));
-                            if (TotalchildRowIds != "") {
-                                for (var i = 0; i < TotalchildRowIds.split(',').length; i++) {
-                                    if (HomeGrid.getUserData(TotalchildRowIds.split(',')[i], "IsOther") == "True") {
-                                        HomeGrid.cells(TotalchildRowIds.split(',')[i], PlannedCostColIndex).setValue((states.OtherLineItemCost));
-                                    }
-                                }
+                        var oldTacticCost = HomeGrid.cells(rowid, PlannedCostColIndex).getValue();
+                        diff = parseInt(tacCost) - parseInt(ReplaceCC(oldTacticCost));
+                        SetColumUpdatedValue(PlannedCostColIndex, diff);
+                        HomeGrid.cells(progid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newProgVal)));
+                        HomeGrid.cells(campid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newCampVal)));
+                        HomeGrid.cells(planid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newPlanVal)));
+                        HomeGrid.cells(rowid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(tacCost)));
+                        for (var i = 0; i < TotalchildRowIds.split(',').length; i++) {
+                            if (HomeGrid.getUserData(TotalchildRowIds.split(',')[i], "IsOther") != "False") {
+                                HomeGrid.cells(TotalchildRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + (tacCost - states.lineItemCost));
                             }
                         }
-                        HomeGrid.saveOpenStates("plangridState");
-                        LoadPlanGrid()
+                        if (states.linkTacticId > 0) {
+                            LoadPlanGrid();
+                        }
+                        RefershPlanHeaderCalc();
                         ItemIndex = HomeGrid.getRowIndex(rowid);
                         state0 = ItemIndex;
                     }
@@ -1273,7 +1209,7 @@ function ExportToExcel(isHoneyComb) {
 
     var ActivityIdIndex = HomeGrid.getColIndexById("ActivityId");
     //Show/Hide columns as per export requirements
-  
+
     if (gridname.toLowerCase() == "home") {
         HomeGrid.setColumnHidden(iconColumnIndex, true);
         HomeGrid.setColumnHidden(colourCodeIndex, true);

@@ -7071,6 +7071,7 @@ namespace RevenuePlanner.Controllers
                         {
                             double Cost = tt.ProjectedRevenue != null && tt.ProjectedRevenue.HasValue ? tt.ProjectedRevenue.Value : 0;
                             objPlanTactic.SaveTotalTacticCost(id, Cost);
+                            pcpobj.Cost = Cost;
                         }
 
                         if (linkedTacticId > 0 && tactictypeid > 0)
@@ -7395,9 +7396,9 @@ namespace RevenuePlanner.Controllers
                                                                     ((pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == pcpobj.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
                                                                      : pcpobj.Cost;
                     }
+                    totalLineitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
 
-
-                    return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost, OwnerName = OwnerName, TacticCost = tacticCost, DependentCustomfield = dependantcustomfieldid }, JsonRequestBehavior.AllowGet);
+                    return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost, OwnerName = OwnerName, TacticCost = tacticCost, linkTacticId = linkedTacticId }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
                 #region update program detail
@@ -7628,10 +7629,13 @@ namespace RevenuePlanner.Controllers
                 #region update LineItem Detail
                 if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.lineitem.ToString())
                 {
+                    double totalLineItemCost;
                     Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(id));
                     oldOwnerId = objLineitem.CreatedBy; //Added by Rahul Shah on 17/03/2016 for PL #2068
                     var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == objLineitem.PlanTacticId);
                     var LinkedTacticId = objTactic.LinkedTacticId;
+                    int PlanTacticId = objTactic.PlanTacticId;
+                    
                     #region "Retrieve Linked Plan Line Item"
                     int linkedLineItemId = 0;
                     linkedLineItemId = (objLineitem != null && objLineitem.LinkedLineItemId.HasValue) ? objLineitem.LinkedLineItemId.Value : 0;
@@ -7658,6 +7662,7 @@ namespace RevenuePlanner.Controllers
 
 
                     //Added By Rahul Shah on 16/10/2015 for PL 1559
+                    double tacticostNew = objTactic.Plan_Campaign_Program_Tactic_Cost.Select(tactic => tactic.Value).Sum();
                     if (UpdateColumn == Enums.HomeGrid_Default_Hidden_Columns.TaskName.ToString())
                     {
                         //// Get Linked Tactic duplicate record.
@@ -7758,7 +7763,7 @@ namespace RevenuePlanner.Controllers
                     #endregion
                     int result = Common.InsertChangeLog(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated, "", objLineitem.CreatedBy);
                     db.SaveChanges();
-
+                    totalLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                     //Added by Rahul Shah on 17/03/2016 for PL #2068
                     if (result > 0)
                     {
@@ -7766,7 +7771,7 @@ namespace RevenuePlanner.Controllers
                             SendEmailnotification(objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, oldOwnerId, Convert.ToInt32(UpdateVal), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title.ToString(), objLineitem.Plan_Campaign_Program_Tactic.Title.ToString(), Enums.Section.LineItem.ToString().ToLower(), objLineitem.Title.ToString(), UpdateColumn);
                     }
 
-                    return Json(new { tacticCost = objTactic.Cost }, JsonRequestBehavior.AllowGet);
+                    return Json(new { lineItemCost = totalLineItemCost, tacticCost = objTactic.Cost, linkTacticId = LinkedTacticId }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
             }
