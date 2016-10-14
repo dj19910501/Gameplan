@@ -11171,9 +11171,9 @@ namespace RevenuePlanner.Controllers
                         if (dtplanYearData.Rows.Count != dt.Rows.Count)
                             isPlanYearExist = false;
                         //if type will be null then following message will be appear.
-                        foreach (DataRow row in dtBudget.Rows)
+                        for(int i = 0;i<dtplanYearData.Rows.Count-1;i++)
                         {
-                            if (string.IsNullOrEmpty(Convert.ToString(row["Type"]).Trim()))
+                            if (string.IsNullOrEmpty(Convert.ToString(dtplanYearData.Rows[i]["Type"]).Trim()))
                             {
                                 return Json(new { msg = "error", error = Common.objCached.ImportValidation.Replace("{0}", "Type") }, JsonRequestBehavior.AllowGet);
                             }
