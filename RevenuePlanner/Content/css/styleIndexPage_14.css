@@ -1469,6 +1469,12 @@ font-size: 18px;
 .grid_Search:hover .fa {
 color: #89CEDE;
 }
+
+
+.task-tbl #GridGanttContent .grid_add, .task-tbl #GridGanttContent .grid_Search {
+	margin-top: 1px; /*by bheru mehta 09-12-2015*/
+}
+
 /* For odd row color */
 /*.task-tbl #divgridview.budget-grid .odd_dhx_skyblue,*/
 .task-tbl .gantt_task_row.odd {background:#f2f2f2}
@@ -1559,13 +1565,14 @@ color: #89CEDE;
 #divgridview  #gridbox div:nth-child(2) > .objbox table.obj{width:100% !important}/* specilly applied on Budget grid*/
 
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr tr:first-child{height:0 !important}
-/*#divgridview.budget-grid div.gridbox table.hdr {
-    margin-right: 18px !important;
-    padding-right: 18px !important;
-    box-sizing: border-box !important;
-}*/
+#divgridview.budget-grid div.gridbox table.hdr,
+#divgridview.budget-grid div.gridbox table.obj {
+  -webkit-box-sizing: content-box !important;
+  -moz-box-sizing: content-box !important;
+  box-sizing: content-box !important;
+}
 
-
+#divgridview.budget-grid div:nth-child(2) > .objbox table.obj{margin-right: 20px !important;}
 /* ============== Search box CSS ================ */
 /*#divgridview .xhdr{ height: 37px !important; }*/
 
