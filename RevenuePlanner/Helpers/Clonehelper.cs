@@ -14,7 +14,7 @@ namespace RevenuePlanner.Helpers
     {
         #region Variables
         private string PeriodChar = "Y";
-        IPlanTactic objPlanTactic = new PlanTactic();
+        IPlanTactic objIPlanTactic = new PlanTactic();
 
         #endregion
         public MRPEntities db = new MRPEntities();
@@ -169,6 +169,7 @@ namespace RevenuePlanner.Helpers
                                     pcpt.EndDate = pcpt.EndDate.AddYears(DateTime.Now.Year - pcpt.EndDate.Year);
                                     //// End - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
                                     pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
+
                                     pcpt.Plan_Campaign_Program_Tactic_Budget = pcpt.Plan_Campaign_Program_Tactic_Budget.ToList();
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.IsDeleted == false).ToList();
                                     pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
@@ -765,7 +766,6 @@ namespace RevenuePlanner.Helpers
                     CustomFieldsList.ForEach(a => { a.EntityId = objLinkedLineItem.PlanLineItemId; db.Entry(a).State = EntityState.Added; });
                     db.SaveChanges();
 
-                    CostCalculacation(TacticId);
                     CopyLinkedID = objLinkedLineItem.PlanLineItemId;
                 }
 
@@ -806,7 +806,7 @@ namespace RevenuePlanner.Helpers
                     CustomFieldsList.ForEach(a => { a.EntityId = objPlanCampaignProgramTacticLineItem.PlanLineItemId; db.Entry(a).State = EntityState.Added; });
                     db.SaveChanges();
                     int LineItemID = objPlanCampaignProgramTacticLineItem.PlanLineItemId;
-                    
+
                     if (LinkedLineItemID != null)
                     {
                         Plan_Campaign_Program_Tactic_LineItem CopiedLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanLineItemId == CopyLinkedID).FirstOrDefault();
@@ -816,7 +816,7 @@ namespace RevenuePlanner.Helpers
 
                     }
                     // Added by Arpita Soni for Ticket #2634 - line item cost allocation
-                    objPlanTactic.UpdateBalanceLineItemCost(TacticId);
+                    objIPlanTactic.UpdateBalanceLineItemCost(TacticId);
                 }
 
                 return returnFlag;
@@ -873,35 +873,6 @@ namespace RevenuePlanner.Helpers
                 throw ex;
             }
 
-        }
-
-        /// <summary>
-        /// Cost Calculacation for Line Items
-        /// Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
-        /// </summary>
-        /// <param name="TacticId"></param>
-        public void CostCalculacation(int TacticId)
-        {
-            Plan_Campaign_Program_Tactic ObjTactic = db.Plan_Campaign_Program_Tactic.SingleOrDefault(t => t.PlanTacticId == TacticId);
-            var objtacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == TacticId && s.IsDeleted == false && s.LineItemTypeId != null).ToList();
-            Plan_Campaign_Program_Tactic_LineItem objtacticLineItemOthers = db.Plan_Campaign_Program_Tactic_LineItem.SingleOrDefault(s => s.PlanTacticId == TacticId && s.IsDeleted == false
-                && s.LineItemTypeId == null);
-
-            double CostSum = 0;
-            if (objtacticLineItem.Count > 0)
-            {
-                CostSum = objtacticLineItem.Sum(a => a.Cost);
-            }
-            if (objtacticLineItemOthers != null)
-            {
-                objtacticLineItemOthers.Cost = (ObjTactic.Cost > CostSum) ? (ObjTactic.Cost - CostSum) : 0;
-                //if (objtacticLineItemOthers.Cost == 0)
-                //{
-                //    objtacticLineItemOthers.IsDeleted = true;
-                //}
-                db.Entry(objtacticLineItemOthers).State = EntityState.Modified;
-                int result = db.SaveChanges();
-            }
         }
 
         #region "Method related to Copy entities to other Plan"
@@ -1011,6 +982,7 @@ namespace RevenuePlanner.Helpers
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                             pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();
                         });
+
                     if (isdifferModel)
                     {
                         PlanTactic_TacticTypeMapping objTacticTypeMapping = lstTacticTypeMapping.Where(tac => tac.PlanTacticId == objPlanTactic.PlanTacticId).FirstOrDefault();
@@ -1603,22 +1575,13 @@ namespace RevenuePlanner.Helpers
                     planid = objPlanTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                     objPlanTactic.Plan_Campaign_Program = null;
                     objPlanTactic.Plan_Campaign_Program_Tactic_Comment = objPlanTactic.Plan_Campaign_Program_Tactic_Comment.ToList();
-                    //modified by Rahul Shah on 22/03/2016 for PL #2032 observation.
-                    //objPlanTactic.CreatedBy = UserId;
-                    //objPlanTactic.CreatedDate = DateTime.Now;
-                    //objPlanTactic.Plan_Campaign_Program_Tactic_Actual = objPlanTactic.Plan_Campaign_Program_Tactic_Actual.ToList();
-                    //objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
-                    //objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
                     objPlanTactic.Tactic_Share = objPlanTactic.Tactic_Share.ToList();
                     objPlanTactic.TacticBudget = 0;
                     objPlanTactic.PlanProgramId = parentEntityId;
                     objPlanTactic.StartDate = GetResultDateforLink(objPlanTactic.StartDate, startDate, true);
                     objPlanTactic.EndDate = objPlanTactic.EndDate;
-                    objPlanTactic.Cost = 0;
                     objPlanTactic.ModifiedBy = Sessions.User.ID;
                     objPlanTactic.ModifiedDate = System.DateTime.Now;
-                    //objPlanTactic.StartDate = objPlanTactic.StartDate;
-                    //objPlanTactic.EndDate = objPlanTactic.EndDate;
                     objPlanTactic.LinkedPlanId = planid;
                     objPlanTactic.LinkedTacticId = objPlanTactic.PlanTacticId;
                     objPlanTactic.Plan_Campaign_Program_Tactic_Actual = objPlanTactic.Plan_Campaign_Program_Tactic_Actual.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
@@ -1659,7 +1622,7 @@ namespace RevenuePlanner.Helpers
                             }
                         }
                         );
-                    objPlanTactic.Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).Sum(tac => tac.Value);
+                    objPlanTactic.Cost = objPlanTactic.Cost;
                     objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
                     objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList().ForEach(
                         budget =>
@@ -1684,7 +1647,7 @@ namespace RevenuePlanner.Helpers
                         pcptl =>
                         {
                             pcptl.LineItemType = null;
-                            pcptl.Cost = 0;
+                            pcptl.Cost = pcptl.Cost;
                             //modified by Rahul Shah on 22/03/2016 for PL #2032 observation.
                             //pcptl.CreatedBy = UserId;
                             //pcptl.CreatedDate = DateTime.Now;
@@ -1709,7 +1672,6 @@ namespace RevenuePlanner.Helpers
                                      }
                                  }
                                 );
-                            pcptl.Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(cost => cost.Value).Sum();
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual = pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().ForEach(
                                  actual =>

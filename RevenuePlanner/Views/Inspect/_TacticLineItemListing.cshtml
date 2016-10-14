@@ -181,14 +181,7 @@ else
                         url: urlContent + 'Plan/SaveGridDetail',
                         data: { UpdateType: section, UpdateColumn: UpdateColumn.trim(), UpdateVal: nValue, Id: parseInt(entityId) },
                         dataType: 'json',
-                        success: function (states) {
-                            if (data.isSuccess == true) {
-                                $("#liLine_Items").trigger("click");
-                            }
-                            else {
-                                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + data.errormsg);
-                                $('#errorMessageDuplicatePlan').slideDown(700);
-                            }
+                        success: function (data) {
                         }
                     });
                 }

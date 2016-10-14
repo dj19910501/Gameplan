@@ -37,18 +37,20 @@ namespace RevenuePlanner.Helpers
         #region Declarations
         public static MRPEntities db
         {
-            get {
-                    if (_db == null)
-                    {
-                        _db = new MRPEntities();
-                    }
-                    return _db; 
+            get
+            {
+                if (_db == null)
+                {
+                    _db = new MRPEntities();
                 }
+                return _db;
+            }
         }
 
         [ThreadStatic]
         protected static MRPEntities _db = null;
         public static RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
+        public static RevenuePlanner.Services.PlanTactic objPlanTactic = new RevenuePlanner.Services.PlanTactic();
         public static double PlanExchangeRate = 0;
         public const string InvalidCharactersForEmail = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
         public const string InvalidCharactersForAnswer = "^[^~^|]+$";
@@ -6440,10 +6442,6 @@ namespace RevenuePlanner.Helpers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        try
-                        {
-                            //// To increase performance we added this code. By Pratik Chauhan
-                            db.Configuration.AutoDetectChangesEnabled = false;
 
                             //// Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                             //List<CustomField_Entity> tblCustomField = new List<CustomField_Entity>();
@@ -6552,7 +6550,7 @@ namespace RevenuePlanner.Helpers
 
                                 //End
 
-
+                                returnValue = db.SaveChanges();
                             }
                             //// End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                             else if (section == Enums.Section.Campaign.ToString() && id != 0)
@@ -6626,7 +6624,7 @@ namespace RevenuePlanner.Helpers
                                 //end
 
                                 RemoveAlertRule(tacticIds);
-
+                                returnValue = db.SaveChanges();
                             }
                             else if (section == Enums.Section.Program.ToString() && id != 0)
                             {
@@ -6686,6 +6684,7 @@ namespace RevenuePlanner.Helpers
                                 //var tactic_customFieldList = tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
                                 //tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
+                                returnValue = db.SaveChanges();
                             }
                             else if (section == Enums.Section.Tactic.ToString() && id != 0)
                             {
@@ -6709,7 +6708,6 @@ namespace RevenuePlanner.Helpers
                                 // Added by Arpita Soni for Ticket #2354 on 07/14/2016
                                 RemoveTacticsFromPackage(Plan_Campaign_Program_TacticList);
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
-
                                 #region "Remove linked Tactic"
                                 List<int> linkedTacticIds = Plan_Campaign_Program_TacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(line => line.LinkedTacticId.Value).Distinct().ToList();
                                 if (linkedTacticIds != null && linkedTacticIds.Count > 0)
@@ -6742,44 +6740,43 @@ namespace RevenuePlanner.Helpers
                                 #endregion
                                 //end
                                 RemoveAlertRule(Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList());
+                                returnValue = db.SaveChanges();
                             }
                             else if (section == Enums.Section.LineItem.ToString() && id != 0)
                             {
-                                var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanLineItemId == id).ToList();
-                                //// Modified By Nishant Sheth for Ticket #2538
-                                var TotalLineItemCost = plan_campaign_Program_Tactic_LineItemList.Sum(a => a.Cost);
-                                var LineItemTactic = plan_campaign_Program_Tactic_LineItemList.Select(a => a.Plan_Campaign_Program_Tactic).FirstOrDefault();
-                                if (LineItemTactic != null)
+                                Plan_Campaign_Program_Tactic_LineItem objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanLineItemId == id).FirstOrDefault();
+                                if (objLineItem != null)
                                 {
-                                    var TacticCost = LineItemTactic.Cost;
-                                    if (TacticCost >= TotalLineItemCost)
+                                    objLineItem.IsDeleted = true;
+                                    objLineItem.ModifiedDate = System.DateTime.Now;
+                                    objLineItem.ModifiedBy = Sessions.User.ID;
+                                    db.Entry(objLineItem).State = EntityState.Modified;
+                                    returnValue = db.SaveChanges();
+                                    objPlanTactic.UpdateBalanceLineItemCost(objLineItem.PlanTacticId);
+
+                                    if (objLineItem.LinkedLineItemId != null)
                                     {
-                                        var TacticStartMonth = LineItemTactic.StartDate.Month;
-                                        LineItemTactic.Cost = TacticCost - TotalLineItemCost;
-                                        var Listabc = LineItemTactic.Plan_Campaign_Program_Tactic_Cost.Where(a => a.Period == "Y" + TacticStartMonth).ToList();
-
-                                        Listabc.ForEach(a =>
+                                        objLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanLineItemId == objLineItem.LinkedLineItemId).FirstOrDefault();
+                                        if (objLineItem != null)
                                         {
-                                            a.Value = (a.Value >= TotalLineItemCost ? a.Value - TotalLineItemCost : 0);
-                                            db.Entry(a).State = EntityState.Modified;
-                                        });
-
-                                        db.Entry(LineItemTactic).State = EntityState.Modified;
+                                            objLineItem.IsDeleted = true;
+                                            objLineItem.ModifiedDate = System.DateTime.Now;
+                                            objLineItem.ModifiedBy = Sessions.User.ID;
+                                            db.Entry(objLineItem).State = EntityState.Modified;
+                                            returnValue = db.SaveChanges();
+                                            List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstLineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => a.PlanLineItemId == objLineItem.LinkedLineItemId).ToList();
+                                            lstLineItemActual.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                            db.SaveChanges();
+                                            objPlanTactic.UpdateBalanceLineItemCost(objLineItem.PlanTacticId);
+                                        }
                                     }
+
+                                    ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
+                                    var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => a.PlanLineItemId == id).ToList();
+                                    plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                    db.SaveChanges();
                                 }
-                                plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.ID; });
-
-                                ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
-                                var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => a.PlanLineItemId == id).ToList();
-                                plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                             }
-                        }
-                        finally
-                        {
-                            db.Configuration.AutoDetectChangesEnabled = true;
-                        }
-
-                        returnValue = db.SaveChanges();
                         scope.Complete();
                     }
                 }
