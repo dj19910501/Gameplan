@@ -11213,7 +11213,7 @@ namespace RevenuePlanner.Controllers
                         //following message will be displayed if data will not match existing activityid                        
                         if (dataResponsebudget.Tables[0].Rows.Count > 0 || dataResponseactual.Tables[0].Rows.Count > 0 || dataResponsecost.Tables[0].Rows.Count > 0)
                         {
-                            return Json(new { conflict = true, message = Common.objCached.ActivityIdInvalid }, JsonRequestBehavior.AllowGet);
+                            return Json(new { conflict = true, message = Common.objCached.ImportSuccessMessage + " Warning: " + Common.objCached.ActivityIdInvalid }, JsonRequestBehavior.AllowGet);
                         }
                     }
                 }

@@ -1757,6 +1757,7 @@ function LoadFileInputModelBox() {
 
     $('#input-43').on('fileloaded', function (event, file, previewId, index, reader) {
         $('.fileinput-upload-button').show();
+        $('.fileinput-cancel-button').hide();
     });
     $('#input-43').on('fileuploaderror', function (event, data, msg) {
         $('.fileinput-upload-button').hide();
