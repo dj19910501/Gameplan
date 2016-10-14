@@ -115,10 +115,10 @@
         HomeGrid.init();
         HomeGrid.attachEvent("onDistributedEnd", function () {
             LoadAfterParsing();
-            if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
-                HomeGrid.showRow(HomeGrid.getRowId(state0));
-                // HomeGrid.openItem(HomeGrid.getRowId(state0));
-            }
+            //if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
+            //    HomeGrid.showRow(HomeGrid.getRowId(state0));
+            //    // HomeGrid.openItem(HomeGrid.getRowId(state0));
+            //}
 
             if (scrollstate != null && scrollstate != undefined) {
                 HomeGrid.objBox.scrollTop = scrollstate.y;
@@ -141,8 +141,11 @@
         colSplitId = HomeGrid.getColIndexById(AddId);
         HomeGrid.splitAt(colSplitId + 1);
         MoveColumn(); ///Calling Move column function
-        var firsttime = '@IsFirstTimeLogin';
-        if (firsttime.toString().toLowerCase() == 'false') {
+        @*var firsttime = '@IsFirstTimeLogin';
+        if (firsttime.toString().toLowerCase() == 'false') {*@
+        var cookie = document.cookie;
+        if (cookie.indexOf("gridOpenplangridState") > -1) {
+      
             HomeGrid.collapseAll();
             //  setTimeout(function () {
             HomeGrid.loadOpenStates("plangridState");

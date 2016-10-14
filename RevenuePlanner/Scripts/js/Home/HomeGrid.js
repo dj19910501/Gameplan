@@ -703,6 +703,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         }
                                     }
                                 }
+                                HomeGrid.saveOpenStates("plangridState");
                                 LoadPlanGrid();
                                 RefershPlanHeaderCalc();
                                 ItemIndex = HomeGrid.getRowIndex(tactid);
@@ -855,6 +856,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         }
                                     }
                                 }
+                                HomeGrid.saveOpenStates("plangridState");
                                 LoadPlanGrid();
                                 RefershPlanHeaderCalc();
                                 ItemIndex = HomeGrid.getRowIndex(rowId);
@@ -1077,6 +1079,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                                 }
                             }
                         }
+                        HomeGrid.saveOpenStates("plangridState");
                         LoadPlanGrid()
                         ItemIndex = HomeGrid.getRowIndex(rowid);
                         state0 = ItemIndex;

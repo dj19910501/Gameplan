@@ -1012,6 +1012,7 @@ function UpdateResult() {
 
     }
     else if (IsBudgetGrid) {
+        HomeGrid.saveOpenStates("plangridState");
         LoadBudgetGrid();
     }
     else {

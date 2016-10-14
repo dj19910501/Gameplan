@@ -123,7 +123,7 @@ $('#btnbudget').click(function () {
     if ($('#errorMsg').css('display') == 'block') {
         $('#errorMsg').css('display', 'none');
     }
-    if (IsGridView) {
+    if (IsGridView || $('#IsGridView').val().toLowerCase() == "true") {
         scrollstate = {
             y: HomeGrid.objBox.scrollTop,
             x: HomeGrid.objBox.scrollLeft,
@@ -1502,6 +1502,7 @@ function ConfirmLinkTactic() {
             if (gridSearchFlag == 1) {
                 isCopyTacticHomeGrid = isCopyTactic;
                 isEditTacticHomeGrid = isEditTactic;
+                HomeGrid.saveOpenStates("plangridState");
                 LoadPlanGrid();
                 gridSearchFlag = 0;
             }
@@ -2701,7 +2702,7 @@ function SetselectedRow()
             else
             rowid = id[0];
            // HomeGrid.openItem(HomeGrid.getParentId(rowid));
-            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, false);
             ItemIndex = HomeGrid.getRowIndex(rowid);
             state0 = ItemIndex;
         }
