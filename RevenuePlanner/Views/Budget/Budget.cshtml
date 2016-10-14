@@ -250,7 +250,6 @@ function LoadAfterParsing() {
 var value;
 var TacticName;
 function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
-    if (nValue != oValue) {
         var TaskNameId = HomeGrid.getColIndexById("TaskName");
         if (cellInd != TaskNameId && nValue == '') {
             nValue = 0;
@@ -293,7 +292,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 }
             }
         }
+       
         if (stage == 2) { // Stage == 2 - Means perform focus out event
+            if (nValue != oValue) {
             var EntityId = HomeGrid.cells(rowId, 0).cell.innerText;
             var Section = HomeGrid.cells(rowId, 1).cell.innerText;
             var Month = '';
@@ -412,8 +413,21 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             value = "";
 
             return true;
+            }
+           
+            if (cellInd == TaskNameId) {
+                if (value != undefined && value != "undefined" && value != null) {
+                    HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
+                }
+                else {
+                    HomeGrid.cells(rowId, cellInd).setValue(TacticName);
+                }
+            }
+            value = "";
+            return true;
+
         }
-    }    
+   
 }
 
     function SetBudgetCost(rowId, cellInd, nValue, oValue, IsTotalCost) {
