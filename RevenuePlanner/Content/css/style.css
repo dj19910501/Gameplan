@@ -109,6 +109,7 @@ a:hover, a:focus {
 .midl-wrap { /* Class Added for #2219 - Bhumika */
 	display: table; /*display: block;*/
 	height: 100%;
+    background:#fff;
 }
 /* 27-10-2015 for ticket 1713 by bheru start*/
 #sidebar {
@@ -13571,11 +13572,12 @@ input.serach-input {
 #divupcomingact .sbOptions a{ padding: 5px 12px;font-size: 13px;}
 
 /* On Measure tab */
-/*.highcharts-container, .highcharts-container svg, .highcharts-container chart{width:100% !important; max-width:100% !important}
+.highcharts-container, .highcharts-container svg, .highcharts-container chart{width:100% !important; max-width:100% !important}
+/*.highcharts-container{max-width:80% !important; overflow:auto}*/
 #divTabData {
     margin: 0;
     overflow: hidden !important;
-    width:100% !important;
+    width:60% !important;
     padding-left: 20px;
     box-sizing: border-box;
 }
@@ -13586,10 +13588,15 @@ input.serach-input {
     border: 1px solid #ccc;
 }
 #divTabData #gridbox table{ width: 100% !important;}
-#divMainReportPart{display: inline-block;
+#divMainReportPart{
     float: left;
-    width: 77%;
-    box-sizing: border-box;}*/
+    width: 100%;
+    box-sizing: border-box;
+}
+.slideLeft #divTabData{width: 75%;}
+.budgetReportHeader{padding-left: 18px; margin-bottom: 10px; width: 100%; float: left;}
+.budgetReportHeader .selectBox{float:right}
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */

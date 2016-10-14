@@ -531,99 +531,104 @@
     <!--End sidebar-->
 }
 
+<div style="float:left; width:100%; overflow:hidden" class="clearfix hello">
 
-
-@*Added By komal Rawal for #1296*@
-<div style="height:40px" id="ddlsection">
-     <div style="float: right;margin-top:20px; margin-right:15px;">
-      <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
-                    @Html.DropDownList("ddlAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text","Selected"), new { @class = "ddlStyleReport hide" })
-               </span>
-     </div>
-</div>
-<div style="height:40px;display:none;" id="ddlCustomTimeFrame" class="ddlQuarter">
-    <div style="" class="breadcrum-wrap">
-        
-        <ol class="breadcrumb">
-            <li><span>Custom</a></span></li>
-            <li class="active" id="dashboardpagetext"></li>
-        </ol>
-    </div>
-    
-    <div style="float: right;margin-right:15px;">
-        <span class="selectBox" id="ddlCustomAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
-            @Html.DropDownList("ddlCustomAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text","Selected"), new { @class = "ddlStyleReport hide" })
-        </span>
-    </div>
-    <div class="timecolbox">
-        <div>
-            @Html.Raw(@Html.GetLastLogDate())
-            @*<p class="timecol">as of 05/20/2015</p>
-            <p class="timecol">2:25PM IST</p>*@
+    @*Added By komal Rawal for #1296*@
+    <div style="height:40px" id="ddlsection">
+        <div style="float: right;margin-top:20px; margin-right:15px;">
+            <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
+                @Html.DropDownList("ddlAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", "Selected"), new { @class = "ddlStyleReport hide" })
+            </span>
         </div>
     </div>
-</div>
+    <div style="height:40px;display:none;" id="ddlCustomTimeFrame" class="ddlQuarter">
+        <div style="" class="breadcrum-wrap">
 
-<div id="budgetHeader" class="budgetColums budgetReporting" style="display: none">
-    <div class="plannedCost">
-        <h3 class="source-sans-proregular h3budget h3padding ">You've spent <span id="SpanTotalSpend"></span> out of <span id="SpanTotalBudgeted"></span>.</h3>
-        <div style="clear: both;"></div>
-    </div>
-    <div class="budgetCompare monthContainerBudget">
-        <h3 class="source-sans-proregular" id="monthCompareTitle"></h3>
-        <div class="budgetCompareInner" id="monthContainer">
-    </div>
-        <div style="clear: both;"></div>
-    </div>
-</div>
-
-<div id="revenueHeader" class="budgetColums budgetReporting" style="display: none">
-    <div class="plannedCost">
-        <h3><span>Marketing Revenue</span>
-            <br />
-        </h3>
-        <div style="clear: both;"></div>
-    </div>
-    <div class="budgetCompare">
-        <div id="RevenueActualDiv" class="header-right-blocks">
-        <p class="source-sans-probold">Actual</p>
-            <p class="value source-sans-prolight" style="font-size: 30px;" id="revenueActual"></p>
-        <h5 id="revenueActualPercentage"></h5>
-    </div>
-        <div id="RevenueProjectedDiv" class="header-right-blocks block-last">
-        <p class="source-sans-probold">Goal</p>
-            <p class="value source-sans-prolight" id="revenueProjected" style="font-size: 30px;"></p>
-        <p class="ellipsis-block FormatingBlock">Revenue</p>
-
-    </div>
-    </div>
-</div>
-
-<div id="conversionHeader" class="budgetColums budgetReporting" style="display: none">
-    <div class="plannedCost">
-        <h3><span>Waterfall Conversion</span>
-            <br />
-        </h3>
-        <div style="clear: both;"></div>
-    </div>
-    <div class="budgetCompare">
-        <div  id="mqlActualDiv" class="header-right-blocks">
-            <p class="source-sans-probold">Actual</p>
-            <p class="value source-sans-prolight" id="mqlActual" style="font-size: 30px;"></p>
-            <h5 id="mqlActualPercentage"></h5>
+            <ol class="breadcrumb">
+                <li><span>Custom</a></span></li>
+                <li class="active" id="dashboardpagetext"></li>
+            </ol>
         </div>
-        <div id="mqlProjectedDiv" class="header-right-blocks block-last"> 
-            <p class="source-sans-probold">Goal</p>
-            <p class="value source-sans-prolight" id="mqlProjected" style="font-size: 30px;"></p>
-            <p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("MQL")</p>
 
+        <div style="float: right;margin-right:15px;">
+            <span class="selectBox" id="ddlCustomAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
+                @Html.DropDownList("ddlCustomAllocate", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", "Selected"), new { @class = "ddlStyleReport hide" })
+            </span>
+        </div>
+        <div class="timecolbox">
+            <div>
+                @Html.Raw(@Html.GetLastLogDate())
+                @*<p class="timecol">as of 05/20/2015</p>
+                    <p class="timecol">2:25PM IST</p>*@
+            </div>
         </div>
     </div>
-</div>
 
-<div id="divMainReportPart" class="margin_top20">
-</div>
-<div id="DivShareReport">
+    <div id="budgetHeader" class="budgetColums budgetReporting" style="display: none">
+        <div class="plannedCost">
+            <h3 class="source-sans-proregular h3budget h3padding ">You've spent <span id="SpanTotalSpend"></span> out of <span id="SpanTotalBudgeted"></span>.</h3>
+            <div style="clear: both;"></div>
+        </div>
+        <div class="budgetCompare monthContainerBudget">
+            <h3 class="source-sans-proregular" id="monthCompareTitle"></h3>
+            <div class="budgetCompareInner" id="monthContainer">
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    </div>
+
+    <div id="revenueHeader" class="budgetColums budgetReporting" style="display: none">
+        <div class="plannedCost">
+            <h3>
+                <span>Marketing Revenue</span>
+                <br />
+            </h3>
+            <div style="clear: both;"></div>
+        </div>
+        <div class="budgetCompare">
+            <div id="RevenueActualDiv" class="header-right-blocks">
+                <p class="source-sans-probold">Actual</p>
+                <p class="value source-sans-prolight" style="font-size: 30px;" id="revenueActual"></p>
+                <h5 id="revenueActualPercentage"></h5>
+            </div>
+            <div id="RevenueProjectedDiv" class="header-right-blocks block-last">
+                <p class="source-sans-probold">Goal</p>
+                <p class="value source-sans-prolight" id="revenueProjected" style="font-size: 30px;"></p>
+                <p class="ellipsis-block FormatingBlock">Revenue</p>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="conversionHeader" class="budgetColums budgetReporting" style="display: none">
+        <div class="plannedCost">
+            <h3>
+                <span>Waterfall Conversion</span>
+                <br />
+            </h3>
+            <div style="clear: both;"></div>
+        </div>
+        <div class="budgetCompare">
+            <div id="mqlActualDiv" class="header-right-blocks">
+                <p class="source-sans-probold">Actual</p>
+                <p class="value source-sans-prolight" id="mqlActual" style="font-size: 30px;"></p>
+                <h5 id="mqlActualPercentage"></h5>
+            </div>
+            <div id="mqlProjectedDiv" class="header-right-blocks block-last">
+                <p class="source-sans-probold">Goal</p>
+                <p class="value source-sans-prolight" id="mqlProjected" style="font-size: 30px;"></p>
+                <p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("MQL")</p>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="divMainReportPart" class="margin_top20">
+    </div>
+
+    <div id="DivShareReport">
+    </div>
+
 </div>
 <script type="text/javascript">
     var IsCardDetailsClick = false; // for #1489
@@ -2147,6 +2152,7 @@
                 OwnerId: OwnerId
             },
             success: function (response) {
+                
                 $('#divMainReportPart').html('');
                 $('#divMainReportPart').html(response);
                 isAllowClick = true;
@@ -3561,18 +3567,18 @@
     }
     // Add by nishant sheth
     // Desc :: To resolve #1958 observation for graph going out side frame
-    $(Highcharts.charts).each(function (i, chart) {
-        if (chart != undefined) {
-            var containerdiv = $($(chart.container).parent());
-            if ($(containerdiv).css("display") == "block") {
-                var height = containerdiv.height();
-                var width = containerdiv.width();
-                if (height != undefined && width != undefined && height > 0 && width > 0) {
-                    chart.setSize(width, height);
-                }
-            }
-        }
-    });
+    //$(Highcharts.charts).each(function (i, chart) {
+    //    if (chart != undefined) {
+    //        var containerdiv = $($(chart.container).parent());
+    //        if ($(containerdiv).css("display") == "block") {
+    //            var height = containerdiv.height();
+    //            var width = containerdiv.width();
+    //            if (height != undefined && width != undefined && height > 0 && width > 0) {
+    //                chart.setSize(width, height);
+    //            }
+    //        }
+    //    }
+    //});
 
 }, function () {
    
@@ -3588,6 +3594,7 @@
     // Desc :: To handle the gridview resize with hide toggle button #1958
     var ganttwidth = $("#gridbox").width();
     if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+        //debugger;
         var ganttwidth = $("#gridbox").width();
         var totalWidth = ganttwidth - 230;
         $("#gridbox").attr("width", totalWidth);
@@ -3595,18 +3602,18 @@
     }
     // Add by nishant sheth
     // Desc :: To resolve #1958 observation for graph going out side frame
-    $(Highcharts.charts).each(function (i, chart) {
-        if (chart != undefined) {
-            var containerdiv = $($(chart.container).parent());
-            if ($(containerdiv).css("display") == "block") {
-                var height = containerdiv.height();
-                var width = containerdiv.width();
-                if (height != undefined && width != undefined && height > 0 && width > 0) {
-                    chart.setSize(width, height);
-                }
-            }
-        }
-    });
+    //$(Highcharts.charts).each(function (i, chart) {
+    //    if (chart != undefined) {
+    //        var containerdiv = $($(chart.container).parent());
+    //        if ($(containerdiv).css("display") == "block") {
+    //            var height = containerdiv.height();
+    //            var width = containerdiv.width();
+    //            if (height != undefined && width != undefined && height > 0 && width > 0) {
+    //                chart.setSize(width, height);
+    //            }
+    //        }
+    //    }
+    //});
 
 
 });

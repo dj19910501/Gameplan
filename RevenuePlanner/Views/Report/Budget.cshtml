@@ -15,24 +15,24 @@
     //Insertation end #2416 .
 }
 <div class="budgetReport">
-    <div style="margin-left: 18px; margin-right: 20px; margin-bottom: 10px; width: 97%; float: left;">
+    <div class="budgetReportHeader">
         <div class="title-header source-sans-proregular bold budget-title">
             <div style="float: right;">
-                @Html.Label("View By:", new { id = "lblViewBy",style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important" })
-               
-                    @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.ReportTabType.Plan.ToString()), new { @class = "ddlStyleReport hide" })
-               
+                @Html.Label("View By:", new { id = "lblViewBy", style = "font-family:Helvetica Neue,Helvetica,Arial,sans-serif !important" })
+
+                @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.ReportTabType.Plan.ToString()), new { @class = "ddlStyleReport hide" })
+
                 <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;line-height:1.1;">
-                  
-                    @Html.DropDownList("ddlAllocateViewBy",new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", selectedViewBy), new { @class = "ddlStyleReport hide" })
-               </span>
+
+                    @Html.DropDownList("ddlAllocateViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", selectedViewBy), new { @class = "ddlStyleReport hide" })
+                </span>
             </div>
             <h2>Budget Summary</h2>
         </div>
 
     </div>
 
-    <div id="divTabData" style="margin-top: 20px;margin-bottom: 30px; clear: left;"></div>
+    <div id="divTabData" style="margin-top: 20px;margin-bottom: 30px;"></div>
 </div>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect_v1.js")"></script>
