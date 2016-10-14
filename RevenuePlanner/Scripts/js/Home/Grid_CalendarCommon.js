@@ -1560,17 +1560,6 @@ $(".searchDropdown li a").click(function () {
         $('#ExpSearch').css('display', 'block');
         $('#ExpClose').css('display', 'none');
     }
-    if ($('#btnbudget').hasClass('P-icon-active')) {
-        LoadBudgetGrid();
-    }
-    else if ($('#btngridcalendar').addClass('P-icon-active') && isCalendarView==true)
-    {
-        BindPlanCalendar();
-    }
-    else {
-        $('#btngridcalendar').removeClass('P-icon-active');
-    BindHomeGrid();
-}
 });
 
 //Search button click
