@@ -1805,6 +1805,17 @@ function BindViewSelections(strUrl) {
 // ViewBy Change Event.
 $("#ddlTabViewBy").change(function () {
     RemoveAllHoneyCombData();
+    //handle package unpackage
+    AddRemovePackageItems = {
+        RemoveId: [],
+        AddItemId: [],
+    };
+
+    AnchorTaskIdsList = {
+        Id: [],
+        Value: []
+    };
+    //End
     if ($('#IsGridView').val().toLowerCase() == "true") {
         LoadPlanGrid();
         $("#GridGanttContent").hide();
@@ -2070,8 +2081,14 @@ function CallUnPackageHoneyComb() {
                         HomeGrid.cells(rowId, TaskNameColIndex).setValue(getvalue);
                     }
 
-                     if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
-                      HomeGrid.clearAll();
+                    if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+                        HomeGrid.clearAll();
+                        $("#gridbox").hide();
+                        $('#exp-serach').css('display', 'none');
+                        $("#goalwrapper").hide();
+                        $('#exp-serach').css('display', 'none');
+                        $("#NodatawithfilterGrid").show();
+                        
                      }
                 }
                 else {
@@ -2131,6 +2148,7 @@ function CallUnPackageHoneyComb() {
                             $('#lblMarkringActivitiestitle').hide();
                             $('#divCollaborator').hide();
                             $('#divCollaboratorCount').hide(); // Added for #2112
+                            $('#exp-serach').css('display', 'none');
                             $("#NodatawithfilterCalendar").show();
                         }
 
@@ -2316,6 +2334,11 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
                 ShowMessage(false, PackageUnsuccessful, 3000);
                 if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
                     HomeGrid.clearAll();
+                    $("#gridbox").hide();
+                    $('#exp-serach').css('display', 'none');
+                    $("#goalwrapper").hide();
+                    $('#exp-serach').css('display', 'none');
+                    $("#NodatawithfilterGrid").show();
                 }
 
             }
@@ -2460,6 +2483,7 @@ function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totalleng
                     $('#lblMarkringActivitiestitle').hide();
                     $('#divCollaborator').hide();
                     $('#divCollaboratorCount').hide(); // Added for #2112
+                    $('#exp-serach').css('display', 'none');
                     $("#NodatawithfilterCalendar").show();
                 }
 
