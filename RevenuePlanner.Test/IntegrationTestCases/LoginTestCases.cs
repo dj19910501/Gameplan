@@ -35,11 +35,10 @@ namespace RevenuePlanner.Test.IntegrationHelpers
             objLoginController.ControllerContext = new ControllerContext(MockHelpers.FakeUrlHelper.FakeHttpContext(), new RouteData(), objLoginController);
             objLoginController.Url = MockHelpers.FakeUrlHelper.UrlHelper();
             PlanId = DataHelper.GetPlanId();
-            filepath = ConfigurationManager.AppSettings["InputDataExcelFileLocation"].ToString().Replace("\\", "\\\\");
         }
 
-        [DeploymentItem("PL01.xls")]
-        [TestMethod, DataSource("System.Data.Odbc", @"Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=PL01.xls;DefaultDir=D:\\SeptClone2016\\Gameplan\\RevenuePlanner.Test\\Resource\\", "Login$", DataAccessMethod.Sequential)]
+        [TestMethod()]
+        [DataSource("Login")]
         public void Login()
         {
             try
@@ -73,80 +72,6 @@ namespace RevenuePlanner.Test.IntegrationHelpers
             {
                 throw e;
             }
-
         }
-
-        #region Comments
-        //[TestMethod]
-        //public void LoginWithParemeter()
-        //{
-
-        //    Console.WriteLine("To Create Login View.\n");
-
-        //    Excel.Workbook WB = cm.GetExcel("PL01.xls");
-        //    int worksheetcount = WB.Worksheets.Count;
-        //    Excel.Worksheet wks = (Excel.Worksheet)WB.Worksheets[1];
-
-        //    string UserEmail = ((Excel.Range)wks.Cells[2, 1]).Value;
-        //    string Password = ((Excel.Range)wks.Cells[2, 2]).Value;
-
-        //    HttpContext.Current = IntegrationDataHelper.SetUserAndPermission(true, UserEmail, Password);
-        //    Sessions.User.CID = DataHelper.GetClientId(PlanId);
-
-        //    LoginModel login = new LoginModel();
-        //    login.Password = Password;
-        //    login.UserEmail = UserEmail;
-
-        //    string returnURL = string.Empty;
-        //    var result = objLoginController.Index(login, returnURL) as RedirectToRouteResult;
-
-        //    Assert.AreEqual("Index", result.RouteValues["Action"]);
-        //    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + result.RouteValues["Action"]);
-
-        //    Assert.AreEqual("Home", result.RouteValues["Controller"]);
-        //    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Controller : " + result.RouteValues["Controller"]);
-
-        //    Assert.AreEqual("Home", result.RouteValues["ActiveMenu"]);
-        //    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Active menu : " + result.RouteValues["ActiveMenu"]);
-        //}
-        //[TestMethod]
-        //public void LoginWithParemeter1()
-        //{
-
-        //    Console.WriteLine("To Create Login View.\n");
-
-        //    var excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + fileLocation + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
-        //    IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(Request.Files[0].InputStream);
-        //    excelReader.IsFirstRowAsColumnNames = true;
-        //    ds = excelReader.AsDataSet();
-
-
-        //    Excel.Workbook WB = cm.GetExcel("PL01.xls");
-        //    int worksheetcount = WB.Worksheets.Count;
-        //    Excel.Worksheet wks = (Excel.Worksheet)WB.Worksheets[1];
-
-        //    string UserEmail = ((Excel.Range)wks.Cells[2, 1]).Value;
-        //    string Password = ((Excel.Range)wks.Cells[2, 2]).Value;
-
-        //    HttpContext.Current = IntegrationDataHelper.SetUserAndPermission(true, UserEmail, Password);
-        //    Sessions.User.CID = DataHelper.GetClientId(PlanId);
-
-        //    LoginModel login = new LoginModel();
-        //    login.Password = Password;
-        //    login.UserEmail = UserEmail;
-
-        //    string returnURL = string.Empty;
-        //    var result = objLoginController.Index(login, returnURL) as RedirectToRouteResult;
-
-        //    Assert.AreEqual("Index", result.RouteValues["Action"]);
-        //    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Action : " + result.RouteValues["Action"]);
-
-        //    Assert.AreEqual("Home", result.RouteValues["Controller"]);
-        //    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Controller : " + result.RouteValues["Controller"]);
-
-        //    Assert.AreEqual("Home", result.RouteValues["ActiveMenu"]);
-        //    Console.WriteLine("LoginController - Index With Parameters \n The assert value of Active menu : " + result.RouteValues["ActiveMenu"]);
-        //}
-        #endregion
     }
 }
