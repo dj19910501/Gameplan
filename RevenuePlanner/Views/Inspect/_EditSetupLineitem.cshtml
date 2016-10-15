@@ -2,7 +2,6 @@
 @using RevenuePlanner.Helpers
 @{
     var IsLineItemAddEdit = Model.IsLineItemAddEdit;
-    
     string campaignTitle = Convert.ToString(ViewBag.CampaignTitle);
     string programTitle = Convert.ToString(ViewBag.ProgramTitle);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
@@ -53,144 +52,7 @@
      left: -3px !important;
     top: 29px !important;
      min-width:205px;
-    }@*
-    .finance_mapping div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue
-    {
-    background: #fff !important;
-    border:none !important  ;
     }
-    .finance_mapping div.gridbox_dhx_skyblue.gridbox table.obj tr td.cellselected, div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected {
-     background: #fff !important;
-    }
-  .finance_mapping div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td {
-     background: #fff !important;
-    }
-
-   @*.finance_mapping div.gridbox {
-        height : 100% ! important;
-    }
-
-
-    #CustomHtmlHelperfieldforMapping table {
-    border-collapse: inherit !important ;
-}
-    /*by bheru 19-10-2015*/
-    .finance_mapping  div.gridbox_dhx_skyblue.gridbox
-    {
-    border-top:1px solid #e7e7e7 !important;
-    border-left:1px solid #e7e7e7 !important;
-    border-right:1px solid #eeeeee !important;
-    border-radius:4px!important ;
-    }
-  .finance_mapping  div.gridbox_dhx_skyblue.gridbox table.obj tr td
-    {
-      border-bottom: 1px solid #dfdfdf;
-     border-left: 0 none;
-     border-top:none;
-     border-right: 0 none;
-    font-family: source_sans_prolight,Arial,sans-serif;
-    color:#000;
-    font-size:14px;
-    padding-left: 20px;
-    height: 36px;
-    }
-    .finance_mapping   .treegrid_cell > span {
-  padding-left: 7px;
-  vertical-align: middle;
-}
-   .finance_mapping div.gridbox_dhx_skyblue.gridbox table.obj tr td input[type="text"] {
-    background-color: #f2f2f2;
-    border: 1px solid #d1d1d1;
-    color: #6D6D6D;
-    box-shadow: none;
-    min-height: auto !important;
-    width: 38px;
-    text-align: center;
-    margin-right: 12px;
-    padding: 0;
-    margin: 0 !important;
-    height: 23px;
-}
-   .finance_mapping div.gridbox_dhx_skyblue.gridbox .ftr, div.gridbox_dhx_skyblue.gridbox .xhdr, div.gridbox_dhx_skyblue table.hdr tr td {
-
-  color: #000000;
-  font-family: source_sans_prosemibold,Arial,sans-serif;
-  font-size: 14px;
-  overflow: visible;
-  padding-left: 40px;
-}
-   div.gridbox_dhx_skyblue.gridbox .xhdr
-    {
-    padding-left:0px;
-    height:auto !important;
-    }
-   .finance_mapping  div.gridbox_dhx_skyblue table.hdr tr td:last-child
-    {
-        padding-left:0;
-
-    }
-    div.gridbox_dhx_skyblue table.hdr tr td
-    {
-    border-bottom: 1px solid #dfdfdf;
-     border-left: 0 none;
-     border-top:none;
-     border-right: 0 none;
-    }
-  .finance_mapping  div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell
-    {
-     color:#000000;
-    padding-left: 8px !important;
-   text-align: left;
-    font-weight: normal;
-}
-    .finance_mapping
-    {
-    border-bottom: medium none;
-    }
-    div.gridbox.gridbox_dhx_skyblue table.hdr td
-    {
-         border-bottom: 1px solid #dfdfdf;
-     border-left: 0 none;
-     border-top:none;
-     border-right: 0 none;
-
-    }
-    .finance_mapping div.gridbox_dhx_skyblue table.hdr tr td
-    {
-    height:25px;
-    vertical-align: middle;
-    }
-    .finance_mapping div.gridbox.gridbox_dhx_skyblue table.obj tr td .treegrid_cell img:nth-child(2)
-    {
-    display:none\9;
-    }
-   _:-ms-input-placeholder, :root   .finance_mapping div.gridbox.gridbox_dhx_skyblue table.obj tr td .treegrid_cell img:nth-child(2)
-    {
-      display:none  ;
-    }
-    .finance_mapping div.gridbox.gridbox_dhx_skyblue table.obj tr td span input
-    {
-     background-color: transparent\9;
-         border: none\9;
-    }
-   _:-ms-input-placeholder, :root .finance_mapping div.gridbox.gridbox_dhx_skyblue table.obj tr td span input
-    {
-        background-color: transparent;
-         border: none;
-    }
-    .finance_mapping div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell
-    {
-    padding-left:0px;
-    font-weight: 600;
-    }
-
-  .finance_mapping  div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td, div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td
-    {
-    border-top:none !important;
-     border-right: none !important;
-    }*@
-    /*by bheru 19-10-2015*/
-
     /* Add By Nishant Sheth #2324 line item custom field text box overwrite on div*/
     .span12.input-small.input-setup.light-blue-background
     {
@@ -198,7 +60,7 @@
     }
     .inspect-column-parent input{/*#2324 */
     width: calc(100% - 14px);
-} 
+}
 </style>
 @using (Html.BeginForm())
 {
@@ -288,14 +150,7 @@
     <div id="CustomHtmlHelperfieldforMapping" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent finance_mapping margin-left">
         @HtmlHelpers.GenerateMappingFieldsForInspectPopup(Model.PlanLineItemId, Enums.InspectPopupMode.Edit.ToString())
     </div>
-    @*<div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
-            <div class="span2 btn-save" style="width: 80px;">
-                <button id="save_LineItem" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save </button>
-            </div>
-            <div class="span2">
-                <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
-            </div>
-        </div>*@
+ 
     <!-- Added by Arpita Soni for Ticket #2212 on 05/24/2016 -->
     if (Sessions.AppMenus.Where(x => x.Code.ToLower() == Enums.ActiveMenu.MarketingBudget.ToString().ToLower()).Any())
     {
@@ -327,19 +182,6 @@
             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
         }
     }
-
-
-    //var DropdownTop = 0;
-    //$(".pop-body-wraper").scroll(function () {
-
-    //    var DropdownToPos = $(this).scrollTop();
-    //    if (DropdownToPos > DropdownTop) {
-    //        $('#treeviewddl').removeClass('fieldmapping-dropdown');
-    //    } else {
-    //        $('#treeviewddl').addClass('fieldmapping-dropdown')
-    //    }
-    //    DropdownTop = DropdownToPos;
-    //});
    var GridData;
    
     // Add By Nishant Sheth
@@ -369,11 +211,9 @@
 
         TreeViewDdl.enableDistributedParsing(true, 10, 0.1);
         TreeViewDdl.parse(GridData, "json");
-        
 
         TreeViewDdl.attachEvent("onFilterEnd", FilterEnd);
         TreeViewDdl.collapseAll();
-        //OpenSelectedValues();
       }
     // Add By Nishant Sheth
     // Desc :: Call function to onclick chekbox 
@@ -602,49 +442,7 @@
             // End
         }
     }
-    //function ddlcheckboxclick(items)
-    //{
-    //    ValueChanged = true;
-    //    $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text("");
-    //    if(items.checked)
-    //    {
-    //        ListOfItmeCheck.Ids.push(items.id);
-    //        ListOfItmeCheck.values.push(items.title);
-    //        DivideEqualInputValueForMapping();
-    //        $('#'+ 'wt_'+ items.id).addClass('mappingtextboxblue');
-    //    }
-    //    else{
-    //        var index = ListOfItmeCheck.Ids.indexOf(items.id);
-    //        if (index >= 0) {
-    //            ListOfItmeCheck.Ids.splice( index, 1 );
-    //            ListOfItmeCheck.values.splice( index, 1 );
-    //            $('#'+ 'wt_'+ items.id).val("");
-    //            if ($('#'+ 'wt_'+ items.id).hasClass('error')) {
-    //                $('#'+ 'wt_'+ items.id).removeClass('error')
-    //            }
-    //            if ($('#'+ 'wt_'+ items.id).hasClass('mappingtextboxblue')) {
-    //                $('#'+ 'wt_'+ items.id).removeClass('mappingtextboxblue')
-    //            }
-    //            DivideEqualInputValueForMapping();
-    //        }
-    //    }
-    //    var Selectedvalue = "";
-    //    for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
-    //    {
-    //        Selectedvalue += ListOfItmeCheck.values[i]+', ';
-    //    }
-
-    //    if (Selectedvalue.indexOf(',') > 0) {
-    //        Selectedvalue = Selectedvalue.slice(0, -2);
-    //        $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text(Selectedvalue);
-    //        $('.span3').find('#dropdown_new_btn_FieldMapping p:first').attr('title', Selectedvalue);
-    //    }
-    //    else {
-    //        $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text('Please Select');
-    //    }
-
-    //}
-
+   
     $('#treeviewddl').find('input[alt_id=txtweight]').live('keydown', function (e) {
         // Allow: backspace, delete, tab, escape, enter and .
         if ($.inArray(e.keyCode, [8, 9, 27, 13, 46]) !== -1 ||
@@ -744,11 +542,7 @@
             }
             totalWeightage += parseFloat(Weights.values[i]);
         };
-
     }
-
-
-
     //End
 
     $(document).ready(function () {
@@ -773,7 +567,6 @@
         $("#successMessageViewLineItem").slideUp(50);
         $("#errorMessageEditLineitem").slideUp(50);
         $('.currency_dollar').priceFormat({ prefix: CurrencySybmol, centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-        //$(".simpleSelectBox select").selectbox();
         $('#LineItemTypeId').multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
@@ -807,19 +600,15 @@
         $('#dropdown_new_btn_FieldMapping').click(function () {
             $('#treeviewddl').addClass('dropdown-wrapper'); //changed by Bhumika to solve topoffset error 3-5-2016
             if (varIsBudgetEnable) {
-            //if ($(this).next().css("display") == "none") {
             if ($('.dropdown-wrapper').css("display") == "none") {     
-                //$('#treeviewddl').addClass('fieldmapping-dropdown');
                     // Modfied By Nishant Sheth
                     // Desc :: #2240 Opening of Multiple Drop Down
-                    //$('.dropdown-wrapper').css("display", "block");
                     $('#treeviewddl').css("display", "block");
                 
             }
             else {               
                     // Modfied By Nishant Sheth
                     // Desc :: #2240 Opening of Multiple Drop Down
-                    //$('.dropdown-wrapper').css("display", "none");
                     $('#treeviewddl').css("display", "none");
                 }
             }
@@ -827,26 +616,11 @@
 
         var DropdownTop = 0;
         $(".pop-body-wraper").scroll(function () {
-            //$('#dropdown_new_btn_FieldMapping').click(function () {
-            //    alert('1');
-            //    $('#treeviewddl').addClass('fieldmapping-dropdown');
-            //});
-            //var DropdownToPos = $(this).scrollTop();
-            //if (DropdownToPos > DropdownTop) {
-            //    $('.dropdown-wrapper').removeClass('dropup');
-            //} else {
-            //    $('.dropdown-wrapper').addClass('dropup')
-            //}
-            //DropdownTop = DropdownToPos;
             var scrollTop = $(this).scrollTop();
             $('.dropdown_new_btn').click(function () {
 
-                //$(this).each(function () {
-                // alert('hi3');
                 // get the top offset of the dropdown (distance from top of the page)
                 var dropdown_div = $(this).next('.dropdown-wrapper');               
-                //dropdown_div.css('cssText', 'display: block !important');
-                //var dropdown_height = dropdown_div.height();
                 var topOffset = dropdown_div.offset().top;
                 // calculate the dropdown offset relative to window position
                 var relativeOffset = topOffset - scrollTop;
@@ -863,22 +637,6 @@
                     dropdown_div.removeClass("dropup");
                 }
             });
-            //===== For Design Purpouse ======
-            //if(dropdowntop >= (windownheight - 200)) {
-            //    $('.dropdown-wrapper').removeClass('dropup');
-            //}
-            //elseif (dropdowntop >= (windownheight - 300)) {
-            //    $('.dropdown-wrapper').addClass('dropup')
-            //}
-            //var dropdowntop = $('.dropdown_new_btn').offset().top;
-            //var windownheight = $(window).height();
-            //if (dropdowntop >= (windownheight - 186)) {
-            //    alert('test1');
-            //    $('.dropdown-wrapper').removeClass('dropup');
-            //} else if (dropdowntop >= (windownheight - 300)) {
-            //    alert('test2');
-            //    $('.dropdown-wrapper').addClass('dropup')
-            //}
         });
 
         
@@ -892,26 +650,21 @@
         if ('@isOtherLineitem.ToString().ToLower()' == 'true') {
             $("#lblType").css("display", "none");
             $("#ddlTypeArea").css("display", "none");
-            //$('#txtLineItemCost').attr("readonly", "true");
-            //    $("#lblLineitemTitle").css('display', 'block');
-            //    $("#txtTitle").css('display', 'none');
         }
         //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
         $('.input-setup').addClass('light-blue-background');
         $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
         //End - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
         
-        //$('.dropdown_new_btn').click();
-        //$("#treeviewddl").css("width","0px");
-        //$("#treeviewddl").css("display","none");
         //added by devanshi reg pl #2213
         $(".allocatecost").on("click", function (e) {
             var result = SetupSaveLineitem();
             if (result) {
-                var lineitemid = $("#PlanLineItemId").val();
-                var pid = $("#hdnPlanId").val();
-                var redirecturl = '@Url.Action("Budgeting", "Plan")' + '?PlanId=' + pid + '&selectedid=' + lineitemid + '&type=plan&ItemType=LineItem';
-                window.location = redirecturl;
+                // Modified by Arpita Soni to redirect to plan budget screen
+                $('#IsGridView').val('false');
+                $('#btnbudget').addClass('P-icon-active');
+                IsBudgetGrid = true;
+                $('.close-x-big-icon').trigger('click');
             }
         });
     });
@@ -971,18 +724,10 @@
     });
     function SetupSaveLineitem() {
         var returnparameter = false;
-        //  $("#save_LineItem").click(function () {
         var iserror = false;
         var lineItemTitle = htmlEncode($('#txtTitle').val());
 
-        @*  //#1642 Added By Bhavesh 09-Oct-2015
-      if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
-            var errorMsg = "You can't use 'Other' as title.";
-            ShowError(errorMsg);
-            return false;
-        }*@
         // //#1642 Added By Bhavesh 09-Oct-2015
-        //if ($('#txtTitle').val().toString().toLowerCase().trim() != 'Common.DefaultLineItemTitle.ToLower()') {
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
                 if ($(this).val() == '') {
@@ -1004,17 +749,6 @@
             }
         })
 
-        //$('form').find('.sbSelector').each(function () {
-        //    if ($(this).parent().prev().attr('require') == 'true') {
-        //        if ($(this).text() == 'Please Select') {
-        //            $(this).addClass("error");
-        //            iserror = true;
-        //        }
-        //        else {
-        //            $(this).removeClass("error");
-        //        }
-        //    }
-        //});
         //// RequireField validation for Owner Dropdown
         //Added By Komal Rawal for #1974
         //Desc: To Enable edit owner feature from Lineitem popup
@@ -1055,7 +789,6 @@
                     Name: ListOfItmeCheck.values[i],
                     Weightage: Weights.values[i] != '' ? Weights.values[i] : '100',
                 });
-                //   var IsWeightError = $('#'+ Weights.txtId[i]).hasClass('error');
             }
 
             if (totalWeightage != 100) {
@@ -1133,50 +866,24 @@
                         planTacticId = data.planTacticID;
                         $("#hdnPlanLineItemID").val(planLineItemId);
                         $('#lblLineitemTitle').text(lineItemTitle);
-                        // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                        @* if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
-                            var ChangedTab = "Setup";
-                            if (tabtext != "") {
-                                ChangedTab = tabtext;
-                            }
-                            var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                            if (ChangedTab == "Setup") {
-                                inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                            }
-                            loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                            //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);
-                        }*@
-                        // else{
-                        //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
-
+                      
                         if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                             $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
                             $("#hdnBudgetingIsSave").val("true");
                         }
-                        else {
-                            //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
-                        }
                         returnparameter = true;
-                        //}
                         // Added by Viral regarding PL ticket #2434.
                         if (isUpdate == null || isUpdate == 'undefined' || isUpdate == '' || isUpdate.toString() == "0") {
                             logMixpanelTrack("New Line Item:" + escape(lineItemTitle)); // log New Line Item created event to mixpanel.
                         }
                     }
                     else {
-
                         ShowError(data.msg);
-                        //if(data.strmsg != "")
-                        //{
-
-                        //    ShowError(data.strmsg);
-                        //}
                         returnparameter = false;
                     }
                 }
             }
         });
-        //   });
         return returnparameter;
     }
 
