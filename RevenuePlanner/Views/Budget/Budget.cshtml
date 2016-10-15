@@ -243,9 +243,9 @@
         }
         eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
         SetselectedRow();
-
-        HomeGrid.objBox.scrollTop = scrollstate.y;
-
+        setTimeout(function () {
+            HomeGrid.objBox.scrollTop = scrollstate.y;
+        }, 100);
     }
 
     var value;

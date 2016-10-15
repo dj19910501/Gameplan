@@ -148,11 +148,12 @@
         if (cookie.indexOf("gridOpenplangridState") > -1) {
       
             HomeGrid.collapseAll();
-            //  setTimeout(function () {
+            
             HomeGrid.loadOpenStates("plangridState");
+            setTimeout(function () {
             HomeGrid.objBox.scrollTop = scrollstate.y;
 
-            //  }, 200);
+             }, 100);
         }
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
 
