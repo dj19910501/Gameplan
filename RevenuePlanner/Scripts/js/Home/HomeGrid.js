@@ -314,8 +314,7 @@ function formatDate(d) {
     return addZero(d.getMonth() + 1) + "/" + addZero(d.getDate()) + "/" + d.getFullYear();
 }
 
-function SetColumUpdatedValue(CellInd, diff) {
-    debugger;
+function SetColumUpdatedValue(CellInd, diff) {    
     progActVal = HomeGrid.cells(progid, CellInd).getAttribute("actval");
     CampActVal = HomeGrid.cells(campid, CellInd).getAttribute("actval");
     PlanActVal = HomeGrid.cells(planid, CellInd).getAttribute("actval");
@@ -328,7 +327,7 @@ function SetColumUpdatedValue(CellInd, diff) {
 }
 
 
-function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {    
     updatetype = HomeGrid.cells(rowId, ActivitypeHidden).getValue();
     var Id;
     var UpdateColumn;
@@ -357,7 +356,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
     AssignParentIds(rowId);
     UpdateColumn = HomeGrid.getColumnId(Colind, 0);
-    var type = HomeGrid.getColType(cellInd);
+    var type = HomeGrid.getColType(cellInd);    
     var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
     if (stage == 0) {
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
@@ -447,8 +446,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             this.editor.obj.value = (ReplaceCC(psv[0]));
         }
     }
-    if (stage == 2) {
-        debugger;
+    if (stage == 2) {        
         if (nValue != null && nValue != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
             var oldAssetType = '';
             var NewValue = htmlDecode(nValue);
@@ -896,7 +894,7 @@ function AssignParentIds(rowId) {
         planid = HomeGrid.getParentId(rowId);
     }
     else if (updatetype.toLowerCase() == secPlan) {
-        planid = HomeGrid.getParentId(rowId);
+        planid = rowId;
     }
 }
 function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
@@ -968,8 +966,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                 diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
                 HomeGrid.cells(rowid, MQLColIndex).setAttribute("actval", mqlConversion);
                 SetColumUpdatedValue(MQLColIndex, diff);
-            }
-            debugger;
+            }            
             HomeGrid.cells(progid, MQLColIndex).setValue(numberWithCommas(newProgVal), false);
             HomeGrid.cells(campid, MQLColIndex).setValue(numberWithCommas(newCampVal), false);
             HomeGrid.cells(planid, MQLColIndex).setValue(numberWithCommas(newPlanVal), false);
@@ -993,7 +990,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                         HomeGrid.cells(rowid, TargetStageGoalColIndex).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
                         RefershPlanHeaderCalc();
                     }
-                    debugger;
+                    
                     if (UpdateColumn == TacticTypeId) {
                         var PlanIds = HomeGrid.cells(planid, GridHiddenId).getValue()
                         $("#ulTacticType li input[type=checkbox]").each(function () {
