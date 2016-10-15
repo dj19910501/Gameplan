@@ -8570,7 +8570,7 @@ UNION ALL
 		,StartDate
 		,EndDate
 		,ColorCode
-		,0 LinkTacticId
+		,ISNULL(LinkedLineItemId, 0) LinkTacticId
 		,0 TacticTypeId
 		,NULL MachineName
 		,CreatedBy
@@ -8619,6 +8619,7 @@ UNION ALL
 					,PCPTLA.Value as AValue
 					,'Actual'+PCPTLA.Period as APeriod
 					,PCPTL.Cost
+					,PCPTL.LinkedLineItemId
 				FROM @tmp H
 					INNER JOIN Plan_Campaign_Program_Tactic_LineItem PCPTL ON H.EntityId=PCPTL.PlanLineItemId 
 					INNER JOIN Plan_Campaign_Program_Tactic PCPT ON PCPTL.PlanTacticId=PCPT.PlanTacticId
