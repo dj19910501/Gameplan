@@ -5742,7 +5742,7 @@ IF ( LOWER(@Type)='tactic')
 	IF Exists (select top 1 PlanTacticId from [Plan_Campaign_Program_Tactic] where PlanTacticId =  @EntityId and [Status] IN('In-Progress','Complete','Approved') )
 			BEGIN
 
-			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId  AND IsDeleted=0)
+			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId  AND IsDeleted=0 and LineItemTypeId IS NOT NULL)
 			BEGIN			
 		
 			IF EXISTS (SELECT * from Plan_Campaign_Program_Tactic_Actual WHERE PlanTacticId = @EntityId AND Period = 'Y1' and StageTitle='Cost')
@@ -7344,7 +7344,7 @@ IF (LOWER(@Type)='tactic')
 		IF Exists (select top 1 PlanTacticId from Plan_Campaign_Program_Tactic where PlanTacticId =  @EntityId and [Status] IN('In-Progress','Complete','Approved'))
 			BEGIN
 
-			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId  AND IsDeleted=0)
+			IF NOT EXISTS(Select * from Plan_Campaign_Program_Tactic_LineItem where PlanTacticId =  @EntityId  AND IsDeleted=0 and LineItemTypeId IS NOT NULL)
 			BEGIN			
 
 				IF EXISTS (SELECT * FROM tempdb.sys.objects WHERE object_id = OBJECT_ID(N'tempdb..#tempDataActualTactic') AND type in (N'U'))
