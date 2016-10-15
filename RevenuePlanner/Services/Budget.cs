@@ -346,7 +346,7 @@ namespace RevenuePlanner.Services
                 Linkedstring = HttpUtility.HtmlEncode(((IsExtendedTactic == true && LinkedTacticId == null) ?
                                     "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" :
                                         ((IsExtendedTactic == true && LinkedTacticId != null) || (LinkedTacticId != null)) ?
-                                        "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + (!string.IsNullOrEmpty(Entity.LinkedPlanName) ?
+                                        "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + (string.IsNullOrEmpty(Entity.LinkedPlanName) ?
                                         null :
                                     Entity.LinkedPlanName.Replace("'", "&#39;")) + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : ""));
             }            

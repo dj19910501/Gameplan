@@ -1598,7 +1598,7 @@ namespace RevenuePlanner.Services
                         Linkedstring = ((IsExtendedTactic == true && LinkedTacticId == null) ?
                                                         "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" :
                                                         ((IsExtendedTactic == true && LinkedTacticId != null) || (LinkedTacticId != null)) ? "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='"
-                                                      + (!string.IsNullOrEmpty(LinkedPlanName) ? null
+                                                      + (string.IsNullOrEmpty(LinkedPlanName) ? null
                                                         : HttpUtility.HtmlEncode(LinkedPlanName).Replace("'", "&#39;"))
                                                        + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "");
                         objres.IsExtendTactic = IsExtendedTactic;
