@@ -293,7 +293,9 @@ namespace RevenuePlanner.Services
                         ActualY10 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY22"])), PlanExchangeRate),
                         ActualY11 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY23"])), PlanExchangeRate),
                         ActualY12 = objCurrency.GetValueByExchangeRate(Common.ParseDoubleValue(Convert.ToString(row["ActualY24"])), PlanExchangeRate)
-                    }
+                    },
+                    ChildMonthValues = new BudgetMonth(),
+                    ChildNextYearMonthValues = new BudgetMonth()
                 }).ToList();
             }
             return model;
@@ -867,6 +869,16 @@ namespace RevenuePlanner.Services
                     objTotalCost.value = Convert.ToString(Entity.TotalAllocatedCost);
                     objTotalCost.locked = Entity.isCostEditable && !isOtherLineItem ? CellNotLocked : CellLocked;
                     objTotalCost.style = Entity.isCostEditable && !isOtherLineItem ? string.Empty : NotEditableCellStyle;
+                    if (Common.ParseDoubleValue(objTotalCost.value) > Common.ParseDoubleValue(objTotalBudget.value) && Entity.ActivityType != ActivityType.ActivityLineItem)
+                    {
+                        objTotalCost.style = objTotalCost.style + RedCornerStyle;
+                        objTotalCost.actval = CostFlagVal;
+                    }
+                    if (ChildTotalBudget > Common.ParseDoubleValue(objTotalBudget.value))
+                    {
+                        objTotalBudget.style = objTotalBudget.style + OrangeCornerStyle;
+                        objTotalBudget.actval = BudgetFlagval;
+                    }
                 }
                 else
                 {
@@ -881,16 +893,7 @@ namespace RevenuePlanner.Services
                     objTotalCost.style = NotEditableCellStyle;
                 }
 
-                if (Common.ParseDoubleValue(objTotalCost.value) > Common.ParseDoubleValue(objTotalBudget.value) && Entity.ActivityType!=ActivityType.ActivityLineItem)
-                {
-                    objTotalCost.style = objTotalCost.style + RedCornerStyle;
-                    objTotalCost.actval = CostFlagVal;
-                }
-                if (ChildTotalBudget > Common.ParseDoubleValue(objTotalBudget.value))
-                {
-                    objTotalBudget.style = objTotalBudget.style + OrangeCornerStyle;
-                    objTotalBudget.actval = BudgetFlagval;
-                }
+
                 BudgetDataObjList.Add(objTotalBudget);
                 BudgetDataObjList.Add(objTotalCost);
                 BudgetDataObjList.Add(objTotalActual);
@@ -920,7 +923,7 @@ namespace RevenuePlanner.Services
                 }
                 else if (!isMultiYear)
                 {
-                    BudgetDataObjList = CampignNextYearQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, isViewBy, isOtherLineitem);
+                    BudgetDataObjList = CampignNextYearQuarterlyAllocation(Entity, isTactic, isLineItem, BudgetDataObjList, IsMulityearPlan, isViewBy, isOtherLineitem);
                 }
                 else
                 {
@@ -1446,85 +1449,100 @@ namespace RevenuePlanner.Services
             List<CustomField_Entity> lstAllTacticCustomFieldEntities = Entities.Where(customFieldEntity => customfieldids.Contains(customFieldEntity.CustomFieldId))
                                                                                                 .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
             List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId, true);
-            foreach (PlanBudgetModel item in BudgetModel)
-            {
-                //Set permission for editing cell for respective entities
-                if (item.ActivityType == ActivityType.ActivityPlan)
-                {
-                    //chek user's plan edit permsion or user is owner
+
+
+            #region "Set Permissions"
+            #region "Set Plan Permission"
                     bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                    if (item.CreatedBy == UserId || IsPlanEditAllAuthorized)
-                    {
-                        item.isBudgetEditable = true;
-                        item.isEntityEditable = true;
-                    }
-                    else if (lstSubordinatesIds.Contains(item.CreatedBy))
-                    {
-                        item.isBudgetEditable = true;
-                        item.isEntityEditable = true;
-                    }
-                }
-                else if (item.ActivityType == ActivityType.ActivityCampaign)
+
+            if (IsPlanEditAllAuthorized)
+            {
+                BudgetModel.Where(item => item.ActivityType == ActivityType.ActivityPlan)
+                            .ToList().ForEach(item =>
+                            {
+                                item.isBudgetEditable = item.isEntityEditable = true;
+                            });
+            }
+            else
+            {
+                BudgetModel.Where(item => (item.ActivityType == ActivityType.ActivityPlan) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+                           .ToList().ForEach(item =>
+                           {
+                               item.isBudgetEditable = item.isEntityEditable = true;
+                           });
+            }
+            #endregion
+
+            int allwTaccount = 0;
+            List<string> lstTacs = BudgetModel.Where(item => item.ActivityType == ActivityType.ActivityTactic).Select(t => t.Id).ToList();
+            List<int> tIds = lstTacs.ConvertAll(s => Int32.Parse(s));
+            List<int> lstAllAllowedTacIds = Common.GetEditableTacticListPO(UserId, ClientId, tIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
+
+            #region "Set Campaign Permission"
+            BudgetModel.Where(item => (item.ActivityType == ActivityType.ActivityCampaign) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+                       .ToList().ForEach(item =>
                 {
                     //chek user is subordinate or user is owner
                     if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
                     {
                         List<int> planTacticIds = new List<int>();
-                        List<int> lstAllowedEntityIds = new List<int>();
                         //to find tactic level permission ,first get program list and then get respective tactic list of program which will be used to get editable tactic list
                         List<string> modelprogramid = BudgetModel.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList();
                         planTacticIds = BudgetModel.Where(m => m.ActivityType == ActivityType.ActivityTactic && modelprogramid.Contains(m.ParentActivityId)).Select(m => Convert.ToInt32(m.Id)).ToList();
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
-                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                               //lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
+                               allwTaccount = lstAllAllowedTacIds.Where(t => planTacticIds.Contains(t)).Count();
+                               if (allwTaccount == planTacticIds.Count)
                         {
-                            item.isBudgetEditable = true;
-                            item.isEntityEditable = true;
+                                   item.isBudgetEditable = item.isEntityEditable = true;
                         }
                         else
                         {
-                            item.isBudgetEditable = false;
-                            item.isEntityEditable = false;
-                        }
-                    }
-                }
-                else if (item.ActivityType == ActivityType.ActivityProgram)
+                                   item.isBudgetEditable = item.isEntityEditable = false;
+                               }
+                           }
+
+                       });
+            #endregion
+
+            #region "Set Program Permission"
+
+            BudgetModel.Where(item => (item.ActivityType == ActivityType.ActivityProgram) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+                   .ToList().ForEach(item =>
                 {
+
                     //chek user is subordinate or user is owner
                     if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
                     {
                         List<int> planTacticIds = new List<int>();
-                        List<int> lstAllowedEntityIds = new List<int>();
                         //to find tactic level permission , get respective tactic list of program which will be used to get editable tactic list
                         planTacticIds = BudgetModel.Where(m => m.ActivityType == ActivityType.ActivityTactic && m.ParentActivityId == item.ActivityId).Select(m => Convert.ToInt32(m.Id)).ToList();
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
-                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                           allwTaccount = lstAllAllowedTacIds.Where(t => planTacticIds.Contains(t)).Count();
+                           if (allwTaccount == planTacticIds.Count)
                         {
-                            item.isBudgetEditable = true;
-                            item.isEntityEditable = true;
+                               item.isBudgetEditable = item.isEntityEditable = true;
                         }
                         else
                         {
-                            item.isBudgetEditable = false;
-                            item.isEntityEditable = false;
-                        }
-                    }
-                }
-                else if (item.ActivityType == ActivityType.ActivityTactic)
+                               item.isBudgetEditable = item.isEntityEditable = false;
+                           }
+                       }
+                   });
+            #endregion
+
+            #region "Set Tactic Permission"
+
+
+            BudgetModel.Where(item => (item.ActivityType == ActivityType.ActivityTactic) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+                   .ToList().ForEach(item =>
                 {
                     //chek user is subordinate or user is owner
                     if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
                     {
-                        List<int> planTacticIds = new List<int>();
-                        List<int> lstAllowedEntityIds = new List<int>();
-                        planTacticIds.Add(Convert.ToInt32(item.Id));
-                        bool isLineItem = BudgetModel.Where(ent => ent.ParentActivityId == item.ActivityId && ent.LineItemTypeId != null).Any();
-                        //Check tactic is editable or not
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
-                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                           bool isLineItem = BudgetModel.Where(ent => ent.ParentActivityId == item.ActivityId && item.LineItemTypeId != null).Any();
+                           ////Check tactic is editable or not
+                           if (lstAllAllowedTacIds.Any(t => t == Convert.ToInt32(item.Id)))
                         {
-                            item.isBudgetEditable = true;
-                            item.isCostEditable = true;
-                            item.isEntityEditable = true;
+                               item.isBudgetEditable = item.isCostEditable = item.isEntityEditable = true;
                             if (!isLineItem)
                             {
                                 item.isActualEditable = true;
@@ -1532,13 +1550,15 @@ namespace RevenuePlanner.Services
                         }
                         else
                         {
-                            item.isBudgetEditable = false;
-                            item.isCostEditable = false;
-                            item.isEntityEditable = false;
-                        }
-                    }
-                }
-                else if (item.ActivityType == ActivityType.ActivityLineItem)
+                               item.isBudgetEditable = item.isCostEditable = item.isEntityEditable = false;
+                           }
+                       }
+                   });
+            #endregion
+
+            #region "Set LineItem Permission"
+            BudgetModel.Where(item => (item.ActivityType == ActivityType.ActivityLineItem) && ((item.CreatedBy == UserId) || (lstSubordinatesIds.Contains(item.CreatedBy))))
+                   .ToList().ForEach(item =>
                 {
                     int tacticOwner = 0;
                     if (BudgetModel.Where(m => m.ActivityId == item.ParentActivityId).Any())
@@ -1549,27 +1569,20 @@ namespace RevenuePlanner.Services
                     //chek user is subordinate or user is owner of line item or user is owner of tactic
                     if (item.CreatedBy == UserId || tacticOwner == UserId || lstSubordinatesIds.Contains(tacticOwner))
                     {
-                        List<int> planTacticIds = new List<int>();
-                        List<int> lstAllowedEntityIds = new List<int>();
-
-                        planTacticIds.Add(Convert.ToInt32(item.ParentId));
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(UserId, ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
-                        if (lstAllowedEntityIds.Count == planTacticIds.Count)
+                           if (lstAllAllowedTacIds.Any(t => t == Convert.ToInt32(item.ParentId)))
                         {
-                            item.isActualEditable = true;
-                            item.isCostEditable = true;
-                            item.isEntityEditable = true;
+                               item.isActualEditable = item.isCostEditable = item.isEntityEditable = true;
                         }
                         else
                         {
-                            item.isActualEditable = false;
-                            item.isCostEditable = false;
-                            item.isEntityEditable = false;
-                        }
+                               item.isActualEditable = item.isCostEditable = item.isEntityEditable = false;
+                           }
+                       }
+                   });
+            #endregion
 
-                    }
-                }
-            }
+            #endregion
+
             return BudgetModel;
         }
 
@@ -1644,11 +1657,7 @@ namespace RevenuePlanner.Services
         private List<PlanBudgetModel> CalculateBottomUp(List<PlanBudgetModel> model, string ParentActivityType, string ChildActivityType, string ViewBy)
         {
             double totalMonthCostSum = 0;
-            // int _ViewById = ViewBy;            
-            BudgetMonth childBudget;
-            BudgetMonth childNextYearBudget;
-            BudgetMonth parent;
-            BudgetMonth parentNextYear;
+
             foreach (PlanBudgetModel l in model.Where(_mdl => _mdl.ActivityType == ParentActivityType))
             {
                 //// check if ViewBy is Campaign selected then set weightage value to 100;
@@ -1658,195 +1667,200 @@ namespace RevenuePlanner.Services
                     weightage = l.Weightage;
                 }
                 weightage = weightage / 100;
-                childBudget = new BudgetMonth();
-                childNextYearBudget = new BudgetMonth();
-                parent = new BudgetMonth();
-                parentNextYear = new BudgetMonth();
 
-                if (l.ActivityType != ActivityType.ActivityTactic || model.Where(m => m.ParentActivityId == l.ActivityId && m.LineItemTypeId != null && m.ActivityType==ActivityType.ActivityLineItem).Any())
+                List<PlanBudgetModel> childs = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).ToList();
+                if (l.ActivityType != ActivityType.ActivityTactic || model.Where(m => m.ParentActivityId == l.ActivityId && m.LineItemTypeId != null && m.ActivityType == ActivityType.ActivityLineItem).Any() && childs != null)
                 {
-                    parent.ActualY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY1 * weightage)) ?? 0;
-                    parent.ActualY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY2 * weightage)) ?? 0;
-                    parent.ActualY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY3 * weightage)) ?? 0;
-                    parent.ActualY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY4 * weightage)) ?? 0;
-                    parent.ActualY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY5 * weightage)) ?? 0;
-                    parent.ActualY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY6 * weightage)) ?? 0;
-                    parent.ActualY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY7 * weightage)) ?? 0;
-                    parent.ActualY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY8 * weightage)) ?? 0;
-                    parent.ActualY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY9 * weightage)) ?? 0;
-                    parent.ActualY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY10 * weightage)) ?? 0;
-                    parent.ActualY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY11 * weightage)) ?? 0;
-                    parent.ActualY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.ActualY12 * weightage)) ?? 0;
+                    if (childs != null)
+                    {
+                        l.MonthValues.ActualY1 = childs.Sum(line => (double?)(line.MonthValues.ActualY1 * weightage)) ?? 0;
+                        l.MonthValues.ActualY2 = childs.Sum(line => (double?)(line.MonthValues.ActualY2 * weightage)) ?? 0;
+                        l.MonthValues.ActualY3 = childs.Sum(line => (double?)(line.MonthValues.ActualY3 * weightage)) ?? 0;
+                        l.MonthValues.ActualY4 = childs.Sum(line => (double?)(line.MonthValues.ActualY4 * weightage)) ?? 0;
+                        l.MonthValues.ActualY5 = childs.Sum(line => (double?)(line.MonthValues.ActualY5 * weightage)) ?? 0;
+                        l.MonthValues.ActualY6 = childs.Sum(line => (double?)(line.MonthValues.ActualY6 * weightage)) ?? 0;
+                        l.MonthValues.ActualY7 = childs.Sum(line => (double?)(line.MonthValues.ActualY7 * weightage)) ?? 0;
+                        l.MonthValues.ActualY8 = childs.Sum(line => (double?)(line.MonthValues.ActualY8 * weightage)) ?? 0;
+                        l.MonthValues.ActualY9 = childs.Sum(line => (double?)(line.MonthValues.ActualY9 * weightage)) ?? 0;
+                        l.MonthValues.ActualY10 = childs.Sum(line => (double?)(line.MonthValues.ActualY10 * weightage)) ?? 0;
+                        l.MonthValues.ActualY11 = childs.Sum(line => (double?)(line.MonthValues.ActualY11 * weightage)) ?? 0;
+                        l.MonthValues.ActualY12 = childs.Sum(line => (double?)(line.MonthValues.ActualY12 * weightage)) ?? 0;
 
-                    parentNextYear.ActualY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY1 * weightage)) ?? 0;
-                    parentNextYear.ActualY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY2 * weightage)) ?? 0;
-                    parentNextYear.ActualY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY3 * weightage)) ?? 0;
-                    parentNextYear.ActualY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY4 * weightage)) ?? 0;
-                    parentNextYear.ActualY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY5 * weightage)) ?? 0;
-                    parentNextYear.ActualY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY6 * weightage)) ?? 0;
-                    parentNextYear.ActualY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY7 * weightage)) ?? 0;
-                    parentNextYear.ActualY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY8 * weightage)) ?? 0;
-                    parentNextYear.ActualY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY9 * weightage)) ?? 0;
-                    parentNextYear.ActualY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY10 * weightage)) ?? 0;
-                    parentNextYear.ActualY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY11 * weightage)) ?? 0;
-                    parentNextYear.ActualY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.ActualY12 * weightage)) ?? 0;
+
+
+                        l.NextYearMonthValues.ActualY1 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY1 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY2 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY2 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY3 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY3 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY4 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY4 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY5 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY5 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY6 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY6 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY7 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY7 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY8 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY8 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY9 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY9 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY10 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY10 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY11 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY11 * weightage)) ?? 0;
+                        l.NextYearMonthValues.ActualY12 = childs.Sum(line => (double?)(line.NextYearMonthValues.ActualY12 * weightage)) ?? 0;
                 }
                 else
                 {
-                    parent.ActualY1 = l.MonthValues.ActualY1;
-                    parent.ActualY2 = l.MonthValues.ActualY2;
-                    parent.ActualY3 = l.MonthValues.ActualY3;
-                    parent.ActualY4 = l.MonthValues.ActualY4;
-                    parent.ActualY5 = l.MonthValues.ActualY5;
-                    parent.ActualY6 = l.MonthValues.ActualY6;
-                    parent.ActualY7 = l.MonthValues.ActualY7;
-                    parent.ActualY8 = l.MonthValues.ActualY8;
-                    parent.ActualY9 = l.MonthValues.ActualY9;
-                    parent.ActualY10 = l.MonthValues.ActualY10;
-                    parent.ActualY11 = l.MonthValues.ActualY11;
-                    parent.ActualY12 = l.MonthValues.ActualY12;
+                        l.MonthValues.ActualY1 = 0;
+                        l.MonthValues.ActualY2 = 0;
+                        l.MonthValues.ActualY3 = 0;
+                        l.MonthValues.ActualY4 = 0;
+                        l.MonthValues.ActualY5 = 0;
+                        l.MonthValues.ActualY6 = 0;
+                        l.MonthValues.ActualY7 = 0;
+                        l.MonthValues.ActualY8 = 0;
+                        l.MonthValues.ActualY9 = 0;
+                        l.MonthValues.ActualY10 = 0;
+                        l.MonthValues.ActualY11 = 0;
+                        l.MonthValues.ActualY12 = 0;
 
-                    parentNextYear.ActualY1 = l.NextYearMonthValues.ActualY1;
-                    parentNextYear.ActualY2 = l.NextYearMonthValues.ActualY2;
-                    parentNextYear.ActualY3 = l.NextYearMonthValues.ActualY3;
-                    parentNextYear.ActualY4 = l.NextYearMonthValues.ActualY4;
-                    parentNextYear.ActualY5 = l.NextYearMonthValues.ActualY5;
-                    parentNextYear.ActualY6 = l.NextYearMonthValues.ActualY6;
-                    parentNextYear.ActualY7 = l.NextYearMonthValues.ActualY7;
-                    parentNextYear.ActualY8 = l.NextYearMonthValues.ActualY8;
-                    parentNextYear.ActualY9 = l.NextYearMonthValues.ActualY9;
-                    parentNextYear.ActualY10 = l.NextYearMonthValues.ActualY10;
-                    parentNextYear.ActualY11 = l.NextYearMonthValues.ActualY11;
-                    parentNextYear.ActualY12 = l.NextYearMonthValues.ActualY12;
+                        l.NextYearMonthValues.ActualY1 = 0;
+                        l.NextYearMonthValues.ActualY2 = 0;
+                        l.NextYearMonthValues.ActualY3 = 0;
+                        l.NextYearMonthValues.ActualY4 = 0;
+                        l.NextYearMonthValues.ActualY5 = 0;
+                        l.NextYearMonthValues.ActualY6 = 0;
+                        l.NextYearMonthValues.ActualY7 = 0;
+                        l.NextYearMonthValues.ActualY8 = 0;
+                        l.NextYearMonthValues.ActualY9 = 0;
+                        l.NextYearMonthValues.ActualY10 = 0;
+                        l.NextYearMonthValues.ActualY11 = 0;
+                        l.NextYearMonthValues.ActualY12 = 0;
+                    }
                 }
 
-                if (string.Compare(ParentActivityType, ActivityType.ActivityTactic,true)<0)
+                if (string.Compare(ParentActivityType, ActivityType.ActivityTactic, true) < 0 && childs != null)
                 {
-                    parent.CostY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY1 * weightage)) ?? 0;
-                    parent.CostY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY2 * weightage)) ?? 0;
-                    parent.CostY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY3 * weightage)) ?? 0;
-                    parent.CostY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY4 * weightage)) ?? 0;
-                    parent.CostY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY5 * weightage)) ?? 0;
-                    parent.CostY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY6 * weightage)) ?? 0;
-                    parent.CostY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY7 * weightage)) ?? 0;
-                    parent.CostY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY8 * weightage)) ?? 0;
-                    parent.CostY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY9 * weightage)) ?? 0;
-                    parent.CostY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY10 * weightage)) ?? 0;
-                    parent.CostY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY11 * weightage)) ?? 0;
-                    parent.CostY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.CostY12 * weightage)) ?? 0;
+                    if (childs != null)
+                    {
+                        l.MonthValues.CostY1 = childs.Sum(line => (double?)(line.MonthValues.CostY1 * weightage)) ?? 0;
+                        l.MonthValues.CostY2 = childs.Sum(line => (double?)(line.MonthValues.CostY2 * weightage)) ?? 0;
+                        l.MonthValues.CostY3 = childs.Sum(line => (double?)(line.MonthValues.CostY3 * weightage)) ?? 0;
+                        l.MonthValues.CostY4 = childs.Sum(line => (double?)(line.MonthValues.CostY4 * weightage)) ?? 0;
+                        l.MonthValues.CostY5 = childs.Sum(line => (double?)(line.MonthValues.CostY5 * weightage)) ?? 0;
+                        l.MonthValues.CostY6 = childs.Sum(line => (double?)(line.MonthValues.CostY6 * weightage)) ?? 0;
+                        l.MonthValues.CostY7 = childs.Sum(line => (double?)(line.MonthValues.CostY7 * weightage)) ?? 0;
+                        l.MonthValues.CostY8 = childs.Sum(line => (double?)(line.MonthValues.CostY8 * weightage)) ?? 0;
+                        l.MonthValues.CostY9 = childs.Sum(line => (double?)(line.MonthValues.CostY9 * weightage)) ?? 0;
+                        l.MonthValues.CostY10 = childs.Sum(line => (double?)(line.MonthValues.CostY10 * weightage)) ?? 0;
+                        l.MonthValues.CostY11 = childs.Sum(line => (double?)(line.MonthValues.CostY11 * weightage)) ?? 0;
+                        l.MonthValues.CostY12 = childs.Sum(line => (double?)(line.MonthValues.CostY12 * weightage)) ?? 0;
 
-                    parentNextYear.CostY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY1 * weightage)) ?? 0;
-                    parentNextYear.CostY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY2 * weightage)) ?? 0;
-                    parentNextYear.CostY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY3 * weightage)) ?? 0;
-                    parentNextYear.CostY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY4 * weightage)) ?? 0;
-                    parentNextYear.CostY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY5 * weightage)) ?? 0;
-                    parentNextYear.CostY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY6 * weightage)) ?? 0;
-                    parentNextYear.CostY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY7 * weightage)) ?? 0;
-                    parentNextYear.CostY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY8 * weightage)) ?? 0;
-                    parentNextYear.CostY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY9 * weightage)) ?? 0;
-                    parentNextYear.CostY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY10 * weightage)) ?? 0;
-                    parentNextYear.CostY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY11 * weightage)) ?? 0;
-                    parentNextYear.CostY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.CostY12 * weightage)) ?? 0;
 
-                    totalMonthCostSum = parent.CostY1 + parent.CostY2 + parent.CostY3 + parent.CostY4 + parent.CostY5 + parent.CostY6 + parent.CostY7 + parent.CostY8 + parent.CostY9 + parent.CostY10 + parent.CostY11 + parent.CostY12
-                        + parentNextYear.CostY1 + parentNextYear.CostY2 + parentNextYear.CostY3 + parentNextYear.CostY4 + parentNextYear.CostY5 + parentNextYear.CostY6 + parentNextYear.CostY7 + parentNextYear.CostY8 + parentNextYear.CostY9 + parentNextYear.CostY10 + parentNextYear.CostY11 + parentNextYear.CostY12;
+                        l.NextYearMonthValues.CostY1 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY1 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY2 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY2 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY3 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY3 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY4 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY4 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY5 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY5 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY6 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY6 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY7 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY7 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY8 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY8 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY9 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY9 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY10 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY10 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY11 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY11 * weightage)) ?? 0;
+                        l.NextYearMonthValues.CostY12 = childs.Sum(line => (double?)(line.NextYearMonthValues.CostY12 * weightage)) ?? 0;
+
+                        totalMonthCostSum = l.MonthValues.CostY1 + l.MonthValues.CostY2 + l.MonthValues.CostY3 + l.MonthValues.CostY4 + l.MonthValues.CostY5 + l.MonthValues.CostY6 + l.MonthValues.CostY7 + l.MonthValues.CostY8 + l.MonthValues.CostY9 + l.MonthValues.CostY10 + l.MonthValues.CostY11 + l.MonthValues.CostY12
+                            + l.NextYearMonthValues.CostY1 + l.NextYearMonthValues.CostY2 + l.NextYearMonthValues.CostY3 + l.NextYearMonthValues.CostY4 + l.NextYearMonthValues.CostY5 + l.NextYearMonthValues.CostY6 + l.NextYearMonthValues.CostY7 + l.NextYearMonthValues.CostY8 + l.NextYearMonthValues.CostY9 + l.NextYearMonthValues.CostY10 + l.NextYearMonthValues.CostY11 + l.NextYearMonthValues.CostY12;
                 }
                 else
                 {
-                    parent.CostY1 = l.MonthValues.CostY1;
-                    parent.CostY2 = l.MonthValues.CostY2;
-                    parent.CostY3 = l.MonthValues.CostY3;
-                    parent.CostY4 = l.MonthValues.CostY4;
-                    parent.CostY5 = l.MonthValues.CostY5;
-                    parent.CostY6 = l.MonthValues.CostY6;
-                    parent.CostY7 = l.MonthValues.CostY7;
-                    parent.CostY8 = l.MonthValues.CostY8;
-                    parent.CostY9 = l.MonthValues.CostY9;
-                    parent.CostY10 = l.MonthValues.CostY10;
-                    parent.CostY11 = l.MonthValues.CostY11;
-                    parent.CostY12 = l.MonthValues.CostY12;
+                        l.MonthValues.CostY1 = 0;
+                        l.MonthValues.CostY2 = 0;
+                        l.MonthValues.CostY3 = 0;
+                        l.MonthValues.CostY4 = 0;
+                        l.MonthValues.CostY5 = 0;
+                        l.MonthValues.CostY6 = 0;
+                        l.MonthValues.CostY7 = 0;
+                        l.MonthValues.CostY8 = 0;
+                        l.MonthValues.CostY9 = 0;
+                        l.MonthValues.CostY10 = 0;
+                        l.MonthValues.CostY11 = 0;
+                        l.MonthValues.CostY12 = 0;
 
-                    parentNextYear.CostY1 = l.NextYearMonthValues.CostY1;
-                    parentNextYear.CostY2 = l.NextYearMonthValues.CostY2;
-                    parentNextYear.CostY3 = l.NextYearMonthValues.CostY3;
-                    parentNextYear.CostY4 = l.NextYearMonthValues.CostY4;
-                    parentNextYear.CostY5 = l.NextYearMonthValues.CostY5;
-                    parentNextYear.CostY6 = l.NextYearMonthValues.CostY6;
-                    parentNextYear.CostY7 = l.NextYearMonthValues.CostY7;
-                    parentNextYear.CostY8 = l.NextYearMonthValues.CostY8;
-                    parentNextYear.CostY9 = l.NextYearMonthValues.CostY9;
-                    parentNextYear.CostY10 = l.NextYearMonthValues.CostY10;
-                    parentNextYear.CostY11 = l.NextYearMonthValues.CostY11;
-                    parentNextYear.CostY12 = l.NextYearMonthValues.CostY12;
+                        l.NextYearMonthValues.CostY1 = 0;
+                        l.NextYearMonthValues.CostY2 = 0;
+                        l.NextYearMonthValues.CostY3 = 0;
+                        l.NextYearMonthValues.CostY4 = 0;
+                        l.NextYearMonthValues.CostY5 = 0;
+                        l.NextYearMonthValues.CostY6 = 0;
+                        l.NextYearMonthValues.CostY7 = 0;
+                        l.NextYearMonthValues.CostY8 = 0;
+                        l.NextYearMonthValues.CostY9 = 0;
+                        l.NextYearMonthValues.CostY10 = 0;
+                        l.NextYearMonthValues.CostY11 = 0;
+                        l.NextYearMonthValues.CostY12 = 0;
+                    }
                 }
 
-                parent.BudgetY1 = l.MonthValues.BudgetY1;
-                parent.BudgetY2 = l.MonthValues.BudgetY2;
-                parent.BudgetY3 = l.MonthValues.BudgetY3;
-                parent.BudgetY4 = l.MonthValues.BudgetY4;
-                parent.BudgetY5 = l.MonthValues.BudgetY5;
-                parent.BudgetY6 = l.MonthValues.BudgetY6;
-                parent.BudgetY7 = l.MonthValues.BudgetY7;
-                parent.BudgetY8 = l.MonthValues.BudgetY8;
-                parent.BudgetY9 = l.MonthValues.BudgetY9;
-                parent.BudgetY10 = l.MonthValues.BudgetY10;
-                parent.BudgetY11 = l.MonthValues.BudgetY11;
-                parent.BudgetY12 = l.MonthValues.BudgetY12;
+                if (childs != null)
+                {
+                    l.ChildMonthValues.BudgetY1 = childs.Sum(line => (double?)(line.MonthValues.BudgetY1)) ?? 0;
+                    l.ChildMonthValues.BudgetY2 = childs.Sum(line => (double?)(line.MonthValues.BudgetY2)) ?? 0;
+                    l.ChildMonthValues.BudgetY3 = childs.Sum(line => (double?)(line.MonthValues.BudgetY3)) ?? 0;
+                    l.ChildMonthValues.BudgetY4 = childs.Sum(line => (double?)(line.MonthValues.BudgetY4)) ?? 0;
+                    l.ChildMonthValues.BudgetY5 = childs.Sum(line => (double?)(line.MonthValues.BudgetY5)) ?? 0;
+                    l.ChildMonthValues.BudgetY6 = childs.Sum(line => (double?)(line.MonthValues.BudgetY6)) ?? 0;
+                    l.ChildMonthValues.BudgetY7 = childs.Sum(line => (double?)(line.MonthValues.BudgetY7)) ?? 0;
+                    l.ChildMonthValues.BudgetY8 = childs.Sum(line => (double?)(line.MonthValues.BudgetY8)) ?? 0;
+                    l.ChildMonthValues.BudgetY9 = childs.Sum(line => (double?)(line.MonthValues.BudgetY9)) ?? 0;
+                    l.ChildMonthValues.BudgetY10 = childs.Sum(line => (double?)(line.MonthValues.BudgetY10)) ?? 0;
+                    l.ChildMonthValues.BudgetY11 = childs.Sum(line => (double?)(line.MonthValues.BudgetY11)) ?? 0;
+                    l.ChildMonthValues.BudgetY12 = childs.Sum(line => (double?)(line.MonthValues.BudgetY12)) ?? 0;
 
-                parentNextYear.BudgetY1 = l.NextYearMonthValues.BudgetY1;
-                parentNextYear.BudgetY2 = l.NextYearMonthValues.BudgetY2;
-                parentNextYear.BudgetY3 = l.NextYearMonthValues.BudgetY3;
-                parentNextYear.BudgetY4 = l.NextYearMonthValues.BudgetY4;
-                parentNextYear.BudgetY5 = l.NextYearMonthValues.BudgetY5;
-                parentNextYear.BudgetY6 = l.NextYearMonthValues.BudgetY6;
-                parentNextYear.BudgetY7 = l.NextYearMonthValues.BudgetY7;
-                parentNextYear.BudgetY8 = l.NextYearMonthValues.BudgetY8;
-                parentNextYear.BudgetY9 = l.NextYearMonthValues.BudgetY9;
-                parentNextYear.BudgetY10 = l.NextYearMonthValues.BudgetY10;
-                parentNextYear.BudgetY11 = l.NextYearMonthValues.BudgetY11;
-                parentNextYear.BudgetY12 = l.NextYearMonthValues.BudgetY12;
+                    l.ChildNextYearMonthValues.BudgetY1 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY1)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY2 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY2)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY3 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY3)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY4 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY4)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY5 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY5)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY6 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY6)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY7 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY7)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY8 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY8)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY9 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY9)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY10 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY10)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY11 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY11)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY12 = childs.Sum(line => (double?)(line.NextYearMonthValues.BudgetY12)) ?? 0;
+                }
+                else
+                {
+                    l.ChildMonthValues.BudgetY1 = 0;
+                    l.ChildMonthValues.BudgetY2 = 0;
+                    l.ChildMonthValues.BudgetY3 = 0;
+                    l.ChildMonthValues.BudgetY4 = 0;
+                    l.ChildMonthValues.BudgetY5 = 0;
+                    l.ChildMonthValues.BudgetY6 = 0;
+                    l.ChildMonthValues.BudgetY7 = 0;
+                    l.ChildMonthValues.BudgetY8 = 0;
+                    l.ChildMonthValues.BudgetY9 = 0;
+                    l.ChildMonthValues.BudgetY10 = 0;
+                    l.ChildMonthValues.BudgetY11 = 0;
+                    l.ChildMonthValues.BudgetY12 = 0;
 
-                childBudget.BudgetY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY1)) ?? 0;
-                childBudget.BudgetY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY2)) ?? 0;
-                childBudget.BudgetY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY3)) ?? 0;
-                childBudget.BudgetY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY4)) ?? 0;
-                childBudget.BudgetY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY5)) ?? 0;
-                childBudget.BudgetY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY6)) ?? 0;
-                childBudget.BudgetY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY7)) ?? 0;
-                childBudget.BudgetY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY8)) ?? 0;
-                childBudget.BudgetY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY9)) ?? 0;
-                childBudget.BudgetY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY10)) ?? 0;
-                childBudget.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY11)) ?? 0;
-                childBudget.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthValues.BudgetY12)) ?? 0;
+                    l.ChildNextYearMonthValues.BudgetY1 = 0;
+                    l.ChildNextYearMonthValues.BudgetY2 = 0;
+                    l.ChildNextYearMonthValues.BudgetY3 = 0;
+                    l.ChildNextYearMonthValues.BudgetY4 = 0;
+                    l.ChildNextYearMonthValues.BudgetY5 = 0;
+                    l.ChildNextYearMonthValues.BudgetY6 = 0;
+                    l.ChildNextYearMonthValues.BudgetY7 = 0;
+                    l.ChildNextYearMonthValues.BudgetY8 = 0;
+                    l.ChildNextYearMonthValues.BudgetY9 = 0;
+                    l.ChildNextYearMonthValues.BudgetY10 = 0;
+                    l.ChildNextYearMonthValues.BudgetY11 = 0;
+                    l.ChildNextYearMonthValues.BudgetY12 = 0;
+                }
 
-                childNextYearBudget.BudgetY1 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY1)) ?? 0;
-                childNextYearBudget.BudgetY2 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY2)) ?? 0;
-                childNextYearBudget.BudgetY3 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY3)) ?? 0;
-                childNextYearBudget.BudgetY4 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY4)) ?? 0;
-                childNextYearBudget.BudgetY5 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY5)) ?? 0;
-                childNextYearBudget.BudgetY6 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY6)) ?? 0;
-                childNextYearBudget.BudgetY7 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY7)) ?? 0;
-                childNextYearBudget.BudgetY8 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY8)) ?? 0;
-                childNextYearBudget.BudgetY9 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY9)) ?? 0;
-                childNextYearBudget.BudgetY10 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY10)) ?? 0;
-                childNextYearBudget.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY11)) ?? 0;
-                childNextYearBudget.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.NextYearMonthValues.BudgetY12)) ?? 0;
-
-                PlanBudgetModel Entity = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault();
-                Entity.MonthValues = parent;
-                Entity.NextYearMonthValues = parentNextYear;
-                Entity.ChildMonthValues = childBudget;
-                Entity.ChildNextYearMonthValues = childNextYearBudget;
                 if (l.ActivityType != ActivityType.ActivityTactic)
                 {
-                    Entity.TotalAllocatedCost = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalAllocatedCost) ?? 0;
-                    Entity.UnallocatedCost = Entity.TotalAllocatedCost - totalMonthCostSum;
+                    l.TotalAllocatedCost = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalAllocatedCost) ?? 0;
+                    l.UnallocatedCost = l.TotalAllocatedCost - totalMonthCostSum;
                 }
                 if (l.ActivityType != ActivityType.ActivityTactic || model.Where(m => m.ParentActivityId == l.ActivityId && m.LineItemTypeId != null && m.ActivityType == ActivityType.ActivityLineItem).Any())
                 {
-                    Entity.TotalActuals = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalActuals) ?? 0;   
+                    l.TotalActuals = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalActuals) ?? 0;
                 }
-                //}
             }
 
             return model;
