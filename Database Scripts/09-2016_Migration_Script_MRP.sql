@@ -6772,7 +6772,7 @@ Declare @Sum float;	DECLARE @newValue FLOAT;
 			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataFinal where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId
 			--start kausha 
-			IF(@newValue!='')
+			IF(@newValue!=@Sum)
 			BEGIN
 
 			if(@Sum<@newValue)
@@ -6799,7 +6799,7 @@ Declare @Sum float;	DECLARE @newValue FLOAT;
 
 			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataFinal where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -6823,7 +6823,7 @@ Declare @Sum float;	DECLARE @newValue FLOAT;
 
 				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataFinal where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -6848,7 +6848,7 @@ Declare @Sum float;	DECLARE @newValue FLOAT;
 		
 			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataFinal where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -6894,7 +6894,7 @@ IF ( @Type='Campaign')
 
 			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalCampaign where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -6918,7 +6918,7 @@ IF ( @Type='Campaign')
 
 			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalCampaign where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -6942,7 +6942,7 @@ IF ( @Type='Campaign')
 		
 			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalCampaign where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -6966,7 +6966,7 @@ IF ( @Type='Campaign')
 
 			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalCampaign where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Campaign'
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7014,7 +7014,7 @@ IF ( @Type='Program')
 
 			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalProgram where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7038,7 +7038,7 @@ IF ( @Type='Program')
 
 				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalProgram where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7063,7 +7063,7 @@ IF ( @Type='Program')
 		
 				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalProgram where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7088,7 +7088,7 @@ IF ( @Type='Program')
 		
 				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalProgram where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Program'
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7137,7 +7137,7 @@ IF ( @Type='Tactic')
 			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalTactic where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7161,7 +7161,7 @@ IF ( @Type='Tactic')
 			SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalTactic where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7187,7 +7187,7 @@ IF ( @Type='Tactic')
 				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalTactic where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7212,7 +7212,7 @@ IF ( @Type='Tactic')
 				SELECT @Sum=ISNULL(SUM(value),0) from #tempDataFinalTactic where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7728,7 +7728,7 @@ IF (LOWER(@Type)='tactic')
 			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataActualTactic where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7752,7 +7752,7 @@ IF (LOWER(@Type)='tactic')
 			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataActualTactic where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7779,7 +7779,7 @@ IF (LOWER(@Type)='tactic')
 				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataActualTactic where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7805,7 +7805,7 @@ IF (LOWER(@Type)='tactic')
 				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataActualTactic where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='Tactic'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7875,7 +7875,7 @@ IF (LOWER(@Type)='lineitem')
 			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y1','Y2','Y3')		
 			SELECT @newValue=Q1 from #TempDiffer WHERE ActivityId = @EntityId and LOWEr([ActivityType])='lineitem'
 			
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7899,7 +7899,7 @@ IF (LOWER(@Type)='lineitem')
 			SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y4','Y5','Y6')		
 			SELECT @newValue=Q2 from #TempDiffer WHERE ActivityId = @EntityId and [ActivityType]='lineitem'
 			
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7926,7 +7926,7 @@ IF (LOWER(@Type)='lineitem')
 				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y7','Y8','Y9')		
 			SELECT @newValue=Q3 from #TempDiffer WHERE ActivityId = @EntityId and LOWER([ActivityType])='lineitem'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7952,7 +7952,7 @@ IF (LOWER(@Type)='lineitem')
 				SELECT @Sum=ISNULL(ISNULL(SUM(value),0),0) from #tempDataLineItemActual where Period in('Y10','Y11','Y12')		
 			SELECT @newValue=Q4 from #TempDiffer WHERE ActivityId = @EntityId and LOWER([ActivityType])='lineitem'
 
-				IF(@newValue!='')
+				IF(@newValue!=@Sum)
 			BEGIN
 				if(@Sum<@newValue)
 					BEGIN
@@ -7994,12 +7994,6 @@ END
 
 --Insertation End #2623 import multiple plan
 
-Go
---Insertation End #2623 import multiple plan
-
-
-Go
---Insertation End #2623 import multiple plan
 Go
 
 -- =============================================
