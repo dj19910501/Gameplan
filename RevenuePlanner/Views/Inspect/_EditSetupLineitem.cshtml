@@ -662,9 +662,11 @@
             if (result) {
                 // Modified by Arpita Soni to redirect to plan budget screen
                 $('#IsGridView').val('false');
+                isCalendarView = false;
                 $('#btnbudget').addClass('P-icon-active');
                 IsBudgetGrid = true;
                 $('.close-x-big-icon').trigger('click');
+                ShowHideDataonBudgetScreen();
             }
         });
     });
