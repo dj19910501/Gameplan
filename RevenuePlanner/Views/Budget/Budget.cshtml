@@ -739,7 +739,7 @@
                     var parent = ["plan", "campaign", "program"];
                     var parentUppercase = ["Plan", "Campaign", "Program"];
                     var child = ["Campaign", "Program", "Tactic"];
-                    HomeGrid.cells(ParentId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
+                    HomeGrid.cells(ParentId, cellInd).setAttribute("title", ParentTypeId + "'s cost is over it's budget.");
                 }
                 else {
                     var locked = HomeGrid.cells(ParentId, cellInd).getAttribute("locked");

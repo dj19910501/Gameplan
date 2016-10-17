@@ -1538,7 +1538,7 @@ namespace RevenuePlanner.Services
                     //chek user is subordinate or user is owner
                     if (item.CreatedBy == UserId || lstSubordinatesIds.Contains(item.CreatedBy))
                     {
-                           bool isLineItem = BudgetModel.Where(ent => ent.ParentActivityId == item.ActivityId && item.LineItemTypeId != null).Any();
+                        bool isLineItem = BudgetModel.Where(ent => ent.ParentActivityId == item.ActivityId && ent.LineItemTypeId != null).Any();
                            ////Check tactic is editable or not
                            if (lstAllAllowedTacIds.Any(t => t == Convert.ToInt32(item.Id)))
                         {
