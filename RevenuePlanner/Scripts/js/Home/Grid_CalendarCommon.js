@@ -1026,14 +1026,16 @@ function CloseIconClick() {
                     GlobalSearch();
                 }
             }
-            else if (IsBudgetGrid) {   
-HomeGrid.saveOpenStates("plangridState");
+            else if (IsBudgetGrid) {
+                if (isDataModified) {
+                    HomeGrid.saveOpenStates("plangridState");
                     scrollstate = {
                         y: HomeGrid.objBox.scrollTop,
                         x: HomeGrid.objBox.scrollLeft,
                     }
-                LoadBudgetGrid();
-                $('#divPlanEditButtonHome').click();
+                    LoadBudgetGrid();
+                    $('#divPlanEditButtonHome').click();
+                }
             }
         }
         $(".datepicker.dropdown-menu").each(function () {

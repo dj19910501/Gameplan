@@ -135,8 +135,10 @@
             HomeGrid.attachEvent("onOpenEnd", function (id, state) {
                 if (state == "1") {
                     SetFlagTooltip();
-                    SetTooltip();
-                }
+                    setTimeout(function () {
+                        SetTooltip();
+                    }, 200);
+                }                
             });
 
             HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
