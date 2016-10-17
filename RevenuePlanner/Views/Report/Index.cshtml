@@ -1138,6 +1138,8 @@
         else if ('@ActiveReportMenu' == "Overview") {
             //$('.summary').addClass('active');
             $('.menu-content li').removeClass('active');
+            //Added following code for selection of summary tab when click on measure tab.
+            $('.menu-content li.summary').addClass('active');
             setTimeout(function () {
                 $('.summary').each(function () {
                     if ($(this).attr('DashFrom') == 'Measure') {
