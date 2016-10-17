@@ -485,7 +485,13 @@
                     HomeGrid.cells(GetParentId, cellInd).setAttribute("title", parentUppercase[p_ind] + " Budget is less than the budget for it's " + child[p_ind] + ".");
                 }
                 else {
-                    HomeGrid.setCellTextStyle(GetParentId, cellInd, "");
+                    var locked = HomeGrid.cells(GetParentId, cellInd).getAttribute("locked");
+                    if ((locked != null && locked != "") && locked == "1") {
+                        HomeGrid.setCellTextStyle(GetParentId, cellInd, "color:#a2a2a2 !important;");
+                    }
+                    else {
+                        HomeGrid.setCellTextStyle(GetParentId, cellInd, "");
+                    }
                 }
             }            
         }
@@ -514,7 +520,13 @@
             HomeGrid.cells(rowId, cellInd).setAttribute("title", parentUppercase[p_ind] + " Budget is less than the budget for it's " + child[p_ind] + ".");
         }
         else {
-            HomeGrid.setCellTextStyle(rowId, cellInd, "");
+            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+            if ((locked != null && locked != "") && locked == "1") {
+                HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;");
+            }
+            else {
+                HomeGrid.setCellTextStyle(rowId, cellInd, "");
+            }
         }
 
         var BudgetVal = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
@@ -533,7 +545,13 @@
             HomeGrid.cells(rowId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
         }
         else {
-            HomeGrid.setCellTextStyle(rowId, cellInd + 1, "");
+            var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("locked");
+            if ((locked != null && locked != "") && locked == "1") {
+                HomeGrid.setCellTextStyle(rowId, cellInd + 1, "color:#a2a2a2 !important;");
+            }
+            else {
+                HomeGrid.setCellTextStyle(rowId, cellInd + 1, "");
+            }
         }
     }
 
@@ -641,7 +659,13 @@
             HomeGrid.cells(rowId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
         }
         else {
-            HomeGrid.setCellTextStyle(rowId, cellInd, "");
+            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+            if ((locked != null && locked != "") && locked == "1") {
+                HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;");
+            }
+            else {
+                HomeGrid.setCellTextStyle(rowId, cellInd, "");
+            }
         }
 
         var parent = ["plan", "campaign", "program"];
@@ -695,7 +719,13 @@
                     HomeGrid.cells(ParentId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
                 }
                 else {
-                    HomeGrid.setCellTextStyle(ParentId, cellInd, "");
+                    var locked = HomeGrid.cells(ParentId, cellInd).getAttribute("locked");
+                    if ((locked != null && locked != "") && locked == "1") {
+                        HomeGrid.setCellTextStyle(ParentId, cellInd, "color:#a2a2a2 !important;");
+                    }
+                    else {
+                        HomeGrid.setCellTextStyle(ParentId, cellInd, "");
+                    }
                 }
 
                 //Parent UnAllocated Cost
