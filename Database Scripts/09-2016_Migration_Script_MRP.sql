@@ -8917,6 +8917,71 @@ GO
 /* End - Added by Arpita Soni for Ticket #2622 on 10/03/2016 */
 
 
+--Dropping the unused tables from production database as discussed during the code read meeting on 6th October, 2016.
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('Plan_Campaign_Program_Tactic_2538'))
+DROP TABLE [Plan_Campaign_Program_Tactic_2538]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('Plan_Campaign_Program_Tactic_Cost_2538'))
+DROP TABLE [Plan_Campaign_Program_Tactic_Cost_2538]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('Plan_Campaign_Program_Tactic_LineItem_2538'))
+DROP TABLE [Plan_Campaign_Program_Tactic_LineItem_2538]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('Plan_Campaign_Program_Tactic_LineItem_Cost_2538'))
+DROP TABLE [Plan_Campaign_Program_Tactic_LineItem_Cost_2538]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('Plan_Campaign_Program_Tactic_BKP_15Feb2015'))
+DROP TABLE [Plan_Campaign_Program_Tactic_BKP_15Feb2015]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('Plan_Campaign_Program_Tactic_Temp'))
+DROP TABLE [Plan_Campaign_Program_Tactic_Temp]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('Plan_Team'))
+DROP TABLE [Plan_Team]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('ZZZ_Campaigns'))
+DROP TABLE [ZZZ_Campaigns]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('ZZZ_MarketoID'))
+DROP TABLE [ZZZ_MarketoID]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('ZZZ_Tactics'))
+DROP TABLE [ZZZ_Tactics]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('ZZZ_URL_APAC'))
+DROP TABLE [ZZZ_URL_APAC]
+GO
+
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('ZZZ_URL_EMEA'))
+DROP TABLE [ZZZ_URL_EMEA]
+GO
+
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('ZZZ_URL_Global'))
+DROP TABLE [ZZZ_URL_Global]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('ZZZ_URL_LA'))
+DROP TABLE [ZZZ_URL_LA]
+GO
+
+IF EXISTS (SELECT *FROM sys.objects WHERE OBJECT_ID = OBJECT_ID('ZZZ_URL_NA'))
+DROP TABLE [ZZZ_URL_NA]
+GO
+--End
+
+
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
