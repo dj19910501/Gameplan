@@ -557,7 +557,7 @@ namespace RevenuePlanner.Services
         }
 
         // Below dictionary for default columns list of home grid // We are set the dhtmlx header properties 
-        private Dictionary<string, PlanHead> lstHomeGrid_Default_Columns()
+        private Dictionary<string, PlanHead> lstHomeGrid_Default_Columns(bool IsIntegration=false)
         {
             Dictionary<string, PlanHead> lstColumns = new Dictionary<string, PlanHead>();
 
@@ -662,42 +662,45 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Revenue) + ColumnManagmentIcon
             });
             #region add integration ids
-            lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Eloquaid), new PlanHead
+            if (IsIntegration)
             {
-                type = "ro",
-                align = "center",
-                id = Convert.ToString(Enums.IntegrationIdType.Eloquaid),
-                sort = "str",
-                width = 250,
-                value = Enums.Integration_Column[Enums.IntegrationIdType.Eloquaid.ToString()] + ColumnManagmentIcon
-            });
-            lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Salesforceid), new PlanHead
-            {
-                type = "ro",
-                align = "center",
-                id = Convert.ToString(Enums.IntegrationIdType.Salesforceid),
-                sort = "str",
-                width = 250,
-                value = Enums.Integration_Column[Enums.IntegrationIdType.Salesforceid.ToString()] + ColumnManagmentIcon
-            });
-            lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Marketoid), new PlanHead
-            {
-                type = "ro",
-                align = "center",
-                id = Convert.ToString(Enums.IntegrationIdType.Marketoid),
-                sort = "str",
-                width = 250,
-                value = Enums.Integration_Column[Enums.IntegrationIdType.Marketoid.ToString()] + ColumnManagmentIcon
-            });
-            lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.WorkFrontid), new PlanHead
-            {
-                type = "ro",
-                align = "center",
-                id = Convert.ToString(Enums.IntegrationIdType.WorkFrontid),
-                sort = "str",
-                width = 250,
-                value = Enums.Integration_Column[Enums.IntegrationIdType.WorkFrontid.ToString()] + ColumnManagmentIcon
-            });
+                lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Eloquaid), new PlanHead
+                {
+                    type = "ro",
+                    align = "center",
+                    id = Convert.ToString(Enums.IntegrationIdType.Eloquaid),
+                    sort = "str",
+                    width = 250,
+                    value = Enums.Integration_Column[Enums.IntegrationIdType.Eloquaid.ToString()] + ColumnManagmentIcon
+                });
+                lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Salesforceid), new PlanHead
+                {
+                    type = "ro",
+                    align = "center",
+                    id = Convert.ToString(Enums.IntegrationIdType.Salesforceid),
+                    sort = "str",
+                    width = 250,
+                    value = Enums.Integration_Column[Enums.IntegrationIdType.Salesforceid.ToString()] + ColumnManagmentIcon
+                });
+                lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Marketoid), new PlanHead
+                {
+                    type = "ro",
+                    align = "center",
+                    id = Convert.ToString(Enums.IntegrationIdType.Marketoid),
+                    sort = "str",
+                    width = 250,
+                    value = Enums.Integration_Column[Enums.IntegrationIdType.Marketoid.ToString()] + ColumnManagmentIcon
+                });
+                lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.WorkFrontid), new PlanHead
+                {
+                    type = "ro",
+                    align = "center",
+                    id = Convert.ToString(Enums.IntegrationIdType.WorkFrontid),
+                    sort = "str",
+                    width = 250,
+                    value = Enums.Integration_Column[Enums.IntegrationIdType.WorkFrontid.ToString()] + ColumnManagmentIcon
+                });
+            }
             #endregion
             return lstColumns;
         }
@@ -783,7 +786,7 @@ namespace RevenuePlanner.Services
             if (UserSelctedDefaultcolumnsList != null && UserSelctedDefaultcolumnsList.Count > 0)
             {
                 // Get the default/common list of header object 
-                lstDefaultCols = lstHomeGrid_Default_Columns()
+                lstDefaultCols = lstHomeGrid_Default_Columns(true)
                     .Where(a => UserSelctedDefaultcolumnsList.Contains(a.Value.id.ToLower()))
                     .Select(a => a.Value).OrderBy(a => UserSelctedDefaultcolumnsList.IndexOf(a.id.ToLower()))
                         .ToList();
