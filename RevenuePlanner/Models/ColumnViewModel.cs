@@ -21,6 +21,8 @@ namespace RevenuePlanner.Models
         public string CutomfieldName { get; set; }
         public bool IsChecked { get; set; }
         public int ParentID { get; set; }
+        public string FieldType { get; set; }
+
     }
     public class AttributeDetail
     {
@@ -36,6 +38,7 @@ namespace RevenuePlanner.Models
         public string EntityType { get; set; }
         public string CustomfiledType { get; set; }
         public bool IsRequired { get; set; }
+        public string FieldType { get; set; }
     }
     public class CustomfieldOption
     {

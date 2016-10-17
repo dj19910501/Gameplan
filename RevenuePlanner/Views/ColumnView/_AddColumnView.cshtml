@@ -37,11 +37,11 @@
                             <span class="chkAttributes-block">
                                 @if (attr.ParentID == 0)
                                 {
-                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox" checked="@attr.IsChecked" />
+                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox" checked="@attr.IsChecked" fieldtype="@attr.FieldType" />
                                 }
                                 else
                                 {
-                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox" disabled="disabled" parentid="@attr.ParentID.ToString()" checked="@attr.IsChecked" />
+                                    <input type="checkbox" id="chk-@attr.CustomFieldId" name="@entity.EntityType" value="@attr.CustomFieldId" class="attr-checkbox" disabled="disabled" parentid="@attr.ParentID.ToString()" checked="@attr.IsChecked" fieldtype="@attr.FieldType" />
 
                                 }
                                 <span for="chk-@attr.CustomFieldId" class="attr-fildname" title="@attr.CutomfieldName">@attr.CutomfieldName</span>
@@ -65,6 +65,7 @@
         var Isselectall = '@ViewBag.IsSelectAll';
         if (Isselectall.toLowerCase() == 'true') {
             $(".addview-wrap").find(".category[entitytpe='Common']").find("input:checkbox").attr("checked", "checked");
+            $(".addview-wrap").find(".category[entitytpe='Common']").find("input:checkbox[fieldtype='Integration']").removeAttr("checked");
         }
         if (Isgrid.toLocaleLowerCase() == "true") {
             $(".chkAttributes").each(function () {
@@ -171,7 +172,7 @@
 
                 url: '@Url.Action("SaveColumnView", "ColumnView")', // we are calling json method
                 type: 'post',
-                async:false,
+                async: false,
                 dataType: 'json',
                 contentType: 'application/json',
                 data: "{'AttributeDetail':" + (_ColumnView) + ",'Isgrid':'" + Isgrid + "'}",

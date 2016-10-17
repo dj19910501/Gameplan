@@ -1730,6 +1730,22 @@ namespace RevenuePlanner.Helpers
            {"Owner","Owner"},
            {"TargetStageGoal","Target Stage Goal"}
        };
+        // Added by devanshi for integration ids in plan grid
+        public enum IntegrationIdType
+        {
+            Eloquaid,
+            Salesforceid,
+            Marketoid,
+            WorkFrontid
+        }
+        public static Dictionary<string, string> Integration_Column = new Dictionary<string, string>()
+       {
+           {IntegrationIdType.Eloquaid.ToString(), "Eloqua Id"},
+           {IntegrationIdType.Salesforceid.ToString(),"Salesforce Id"},
+           {IntegrationIdType.Marketoid.ToString(),"Marketo Id"},
+           {IntegrationIdType.WorkFrontid.ToString(),"WorkFront Id"}
+      
+       };
         //end
         public enum TacticDates
         {

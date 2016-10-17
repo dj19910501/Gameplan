@@ -661,6 +661,44 @@ namespace RevenuePlanner.Services
                 width = 150,
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Revenue) + ColumnManagmentIcon
             });
+            #region add integration ids
+            lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Eloquaid), new PlanHead
+            {
+                type = "ro",
+                align = "center",
+                id = Convert.ToString(Enums.IntegrationIdType.Eloquaid),
+                sort = "str",
+                width = 250,
+                value = Enums.Integration_Column[Enums.IntegrationIdType.Eloquaid.ToString()] + ColumnManagmentIcon
+            });
+            lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Salesforceid), new PlanHead
+            {
+                type = "ro",
+                align = "center",
+                id = Convert.ToString(Enums.IntegrationIdType.Salesforceid),
+                sort = "str",
+                width = 250,
+                value = Enums.Integration_Column[Enums.IntegrationIdType.Salesforceid.ToString()] + ColumnManagmentIcon
+            });
+            lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Marketoid), new PlanHead
+            {
+                type = "ro",
+                align = "center",
+                id = Convert.ToString(Enums.IntegrationIdType.Marketoid),
+                sort = "str",
+                width = 250,
+                value = Enums.Integration_Column[Enums.IntegrationIdType.Marketoid.ToString()] + ColumnManagmentIcon
+            });
+            lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.WorkFrontid), new PlanHead
+            {
+                type = "ro",
+                align = "center",
+                id = Convert.ToString(Enums.IntegrationIdType.WorkFrontid),
+                sort = "str",
+                width = 250,
+                value = Enums.Integration_Column[Enums.IntegrationIdType.WorkFrontid.ToString()] + ColumnManagmentIcon
+            });
+            #endregion
             return lstColumns;
         }
 
@@ -1484,6 +1522,11 @@ namespace RevenuePlanner.Services
                             {
                                 objPlanData.locked = IsEditable;
                             }
+                        }
+                        if (pair.Name == Convert.ToString(Enums.IntegrationIdType.Eloquaid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.WorkFrontid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.Marketoid)
+                            || pair.Name == Convert.ToString(Enums.IntegrationIdType.Salesforceid))
+                        {
+                            cellTextColor = objHomeGridProp.stylecolorgray;
                         }
                         objPlanData.style = cellTextColor;
                     }

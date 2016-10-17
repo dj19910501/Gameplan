@@ -479,6 +479,12 @@ namespace RevenuePlanner.Models
                 }
             }
         }
+        //integrationids
+        public string Eloquaid { get; set; }
+        public string Marketoid { get; set; }
+        public string WorkFrontid { get; set; }
+        public string Salesforceid { get; set; }
+        //end
         //Permission variables
         public bool IsCreatePermission { get; set; }
         public bool IsRowPermission { get; set; }
@@ -723,6 +729,12 @@ namespace RevenuePlanner.Models
                 }
             }
         }
+        //integrationids
+        public string Eloquaid { get; set; }
+        public string Marketoid { get; set; }
+        public string WorkFrontid { get; set; }
+        public string Salesforceid { get; set; }
+        //end
         public string PackageTacticIds { get; set; }
         public string PlanYear { get; set; }
 

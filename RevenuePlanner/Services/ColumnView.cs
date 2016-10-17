@@ -159,6 +159,7 @@ namespace RevenuePlanner.Services
                             CutomfieldName = Convert.ToString(row.Value),
                             ParentID = 0
                         }).ToList();
+                        
 
                         //adding the mql column of grid separately as the mql title changes as per client configuration. 
                         List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
@@ -181,6 +182,17 @@ namespace RevenuePlanner.Services
                          };
                         BasicFields.Add(revenuefield);
 
+                        //adding the integration field of the grid
+                        List<CustomAttribute> IntegrationFields = Enums.Integration_Column.Select(row => new CustomAttribute
+                        {
+                            EntityType = "Common",
+                            CustomFieldId = Convert.ToString(row.Key),
+                            CutomfieldName = Convert.ToString(row.Value),
+                            ParentID = 0,
+                            FieldType="Integration"
+                        }).ToList();
+                        BasicFields.AddRange(IntegrationFields);
+
                         BasicFields.AddRange(columnattribute);
                     }
 
@@ -193,7 +205,8 @@ namespace RevenuePlanner.Services
                             CustomFieldId = atr.CustomFieldId,
                             CutomfieldName = atr.CutomfieldName,
                             ParentID = atr.ParentID,
-                            IsChecked = SelectedCustomfieldID.Contains(atr.CustomFieldId) ? true : false
+                            IsChecked = SelectedCustomfieldID.Contains(atr.CustomFieldId) ? true : false,
+                            FieldType = atr.FieldType
                         }).ToList()
                     }).ToList();
                 }

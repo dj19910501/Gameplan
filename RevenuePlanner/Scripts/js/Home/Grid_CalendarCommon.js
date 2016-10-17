@@ -2713,7 +2713,7 @@ function SetselectedRow()
         var rowid;
         if (id != undefined && id != 'undefined') {
             rowid = id[0];
-            //HomeGrid.openItem(rowid);
+            HomeGrid.openItem(rowid);
             ItemIndex = HomeGrid.getRowIndex(rowid);
             state0 = ItemIndex;
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);

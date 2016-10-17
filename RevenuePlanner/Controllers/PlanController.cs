@@ -7251,7 +7251,7 @@ namespace RevenuePlanner.Controllers
 
                                 
                                 List<CustomFieldDependency> CsutomfieldDependancy = db.CustomFieldDependencies.Where(a=>a.CustomField.ClientId==Sessions.User.CID).ToList();
-                                List<int> optionids = customfieldoption.Where(a => DeleteOption.Contains(a.Value)).Select(a => a.CustomFieldOptionId).ToList();
+                                List<int> optionids = customfieldoption.Where(a => DeleteOption.Contains(a.Value) && a.CustomFieldId == CustomFieldId).Select(a => a.CustomFieldOptionId).ToList();
                                 dependantcustomfieldid = DeleteDependantCustomfield(optionids, CsutomfieldDependancy, prevCustomFieldList, dependantcustomfieldid);
                               
                             }
