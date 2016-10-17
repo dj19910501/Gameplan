@@ -114,11 +114,14 @@ namespace RevenuePlanner.Services
             model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, viewBy);//// Calculate monthly Plan budget from it's child budget i.e Campaign
 
             #endregion
-
+            if (viewBy.Contains(PlanGanttTypes.Custom.ToString()))
+            {
             model = SetLineItemCostByWeightage(model, viewBy);//// Set LineItem monthly budget cost by it's parent tactic weightage.
+            }
+           
 
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
-            objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, model, year);
+            objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, year);
 
             objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy, UserID, ClientId, year, viewBy);//create model to bind data in grid as per DHTMLx grid format.
 
@@ -510,9 +513,6 @@ namespace RevenuePlanner.Services
 
         public BudgetDHTMLXGridModel CreateDhtmlxFormattedBudgetData(BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string AllocatedBy, int UserID, int ClientId, string Year, string viewBy)
         {
-
-
-
             List<BudgetDHTMLXGridDataModel> gridjsonlist = new List<BudgetDHTMLXGridDataModel>();
 
             if (viewBy != PlanGanttTypes.Tactic.ToString())
@@ -728,7 +728,7 @@ namespace RevenuePlanner.Services
             return gridjsonlist;
         }
 
-        private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, List<PlanBudgetModel> model, string Year)
+        private BudgetDHTMLXGridModel GenerateHeaderString(string AllocatedBy, BudgetDHTMLXGridModel objBudgetDHTMLXGrid, string Year)
         {
             string firstYear = Common.GetInitialYearFromTimeFrame(Year);
             string lastYear = string.Empty;
@@ -1588,13 +1588,9 @@ namespace RevenuePlanner.Services
 
         private List<PlanBudgetModel> ManageLineItems(List<PlanBudgetModel> model)
         {
-            BudgetMonth lineDiff;
-            BudgetMonth NextYearlineDiff;
             foreach (PlanBudgetModel l in model.Where(l => l.ActivityType == ActivityType.ActivityTactic))
             {
                 //// Calculate Line items Difference.
-                lineDiff = new BudgetMonth();
-                NextYearlineDiff = new BudgetMonth();
                 List<PlanBudgetModel> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
                 PlanBudgetModel otherLine = lines.Where(ol => ol.LineItemTypeId == null).FirstOrDefault();
                 lines = lines.Where(ol => ol.LineItemTypeId != null).ToList();
@@ -1603,50 +1599,47 @@ namespace RevenuePlanner.Services
                 {
                     if (lines.Count > 0)
                     {
-                        lineDiff.CostY1 = l.MonthValues.CostY1 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY1) ?? 0;
-                        lineDiff.CostY2 = l.MonthValues.CostY2 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY2) ?? 0;
-                        lineDiff.CostY3 = l.MonthValues.CostY3 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY3) ?? 0;
-                        lineDiff.CostY4 = l.MonthValues.CostY4 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY4) ?? 0;
-                        lineDiff.CostY5 = l.MonthValues.CostY5 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY5) ?? 0;
-                        lineDiff.CostY6 = l.MonthValues.CostY6 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY6) ?? 0;
-                        lineDiff.CostY7 = l.MonthValues.CostY7 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY7) ?? 0;
-                        lineDiff.CostY8 = l.MonthValues.CostY8 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY8) ?? 0;
-                        lineDiff.CostY9 = l.MonthValues.CostY9 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY9) ?? 0;
-                        lineDiff.CostY10 = l.MonthValues.CostY10 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY10) ?? 0;
-                        lineDiff.CostY11 = l.MonthValues.CostY11 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY11) ?? 0;
-                        lineDiff.CostY12 = l.MonthValues.CostY12 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY12) ?? 0;
+                        otherLine.MonthValues.CostY1 = l.MonthValues.CostY1 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY1) ?? 0;
+                        otherLine.MonthValues.CostY2 = l.MonthValues.CostY2 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY2) ?? 0;
+                        otherLine.MonthValues.CostY3 = l.MonthValues.CostY3 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY3) ?? 0;
+                        otherLine.MonthValues.CostY4 = l.MonthValues.CostY4 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY4) ?? 0;
+                        otherLine.MonthValues.CostY5 = l.MonthValues.CostY5 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY5) ?? 0;
+                        otherLine.MonthValues.CostY6 = l.MonthValues.CostY6 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY6) ?? 0;
+                        otherLine.MonthValues.CostY7 = l.MonthValues.CostY7 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY7) ?? 0;
+                        otherLine.MonthValues.CostY8 = l.MonthValues.CostY8 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY8) ?? 0;
+                        otherLine.MonthValues.CostY9 = l.MonthValues.CostY9 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY9) ?? 0;
+                        otherLine.MonthValues.CostY10 = l.MonthValues.CostY10 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY10) ?? 0;
+                        otherLine.MonthValues.CostY11 = l.MonthValues.CostY11 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY11) ?? 0;
+                        otherLine.MonthValues.CostY12 = l.MonthValues.CostY12 - lines.Sum(lmon => (double?)lmon.MonthValues.CostY12) ?? 0;
 
-                        NextYearlineDiff.CostY1 = l.MonthValues.CostY1 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY1) ?? 0;
-                        NextYearlineDiff.CostY2 = l.MonthValues.CostY2 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY2) ?? 0;
-                        NextYearlineDiff.CostY3 = l.MonthValues.CostY3 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY3) ?? 0;
-                        NextYearlineDiff.CostY4 = l.MonthValues.CostY4 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY4) ?? 0;
-                        NextYearlineDiff.CostY5 = l.MonthValues.CostY5 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY5) ?? 0;
-                        NextYearlineDiff.CostY6 = l.MonthValues.CostY6 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY6) ?? 0;
-                        NextYearlineDiff.CostY7 = l.MonthValues.CostY7 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY7) ?? 0;
-                        NextYearlineDiff.CostY8 = l.MonthValues.CostY8 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY8) ?? 0;
-                        NextYearlineDiff.CostY9 = l.MonthValues.CostY9 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY9) ?? 0;
-                        NextYearlineDiff.CostY10 = l.MonthValues.CostY10 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY10) ?? 0;
-                        NextYearlineDiff.CostY11 = l.MonthValues.CostY11 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY11) ?? 0;
-                        NextYearlineDiff.CostY12 = l.MonthValues.CostY12 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY12) ?? 0;
+                        otherLine.NextYearMonthValues.CostY1 = l.MonthValues.CostY1 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY1) ?? 0;
+                        otherLine.NextYearMonthValues.CostY2 = l.MonthValues.CostY2 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY2) ?? 0;
+                        otherLine.NextYearMonthValues.CostY3 = l.MonthValues.CostY3 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY3) ?? 0;
+                        otherLine.NextYearMonthValues.CostY4 = l.MonthValues.CostY4 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY4) ?? 0;
+                        otherLine.NextYearMonthValues.CostY5 = l.MonthValues.CostY5 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY5) ?? 0;
+                        otherLine.NextYearMonthValues.CostY6 = l.MonthValues.CostY6 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY6) ?? 0;
+                        otherLine.NextYearMonthValues.CostY7 = l.MonthValues.CostY7 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY7) ?? 0;
+                        otherLine.NextYearMonthValues.CostY8 = l.MonthValues.CostY8 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY8) ?? 0;
+                        otherLine.NextYearMonthValues.CostY9 = l.MonthValues.CostY9 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY9) ?? 0;
+                        otherLine.NextYearMonthValues.CostY10 = l.MonthValues.CostY10 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY10) ?? 0;
+                        otherLine.NextYearMonthValues.CostY11 = l.MonthValues.CostY11 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY11) ?? 0;
+                        otherLine.NextYearMonthValues.CostY12 = l.MonthValues.CostY12 - lines.Sum(lmon => (double?)lmon.NextYearMonthValues.CostY12) ?? 0;
 
-                        
-
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthValues = lineDiff;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().NextYearMonthValues = NextYearlineDiff;
+                      
                         double allocated = l.TotalAllocatedCost - lines.Sum(l1 => l1.TotalAllocatedCost);
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().TotalAllocatedCost = allocated;                                                
+                        otherLine.TotalAllocatedCost = allocated;
                     }
                     else
                     {
-                        PlanBudgetModel Balance = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault();//.TotalActuals = l.TotalActuals;
-                        Balance.TotalActuals = l.TotalActuals;
-                        Balance.MonthValues = l.MonthValues;
-                        Balance.NextYearMonthValues = l.NextYearMonthValues;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().TotalAllocatedCost = l.TotalAllocatedCost < 0 ? 0 : l.TotalAllocatedCost;                        
+                       // PlanBudgetModel Balance = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault();//.TotalActuals = l.TotalActuals;
+                        otherLine.TotalActuals = l.TotalActuals;
+                        otherLine.MonthValues = l.MonthValues;
+                        otherLine.NextYearMonthValues = l.NextYearMonthValues;
+                        otherLine.TotalAllocatedCost = l.TotalAllocatedCost < 0 ? 0 : l.TotalAllocatedCost;                        
                     }
                     // Calculate Balance UnAllocated Cost
                     double BalanceUnallocatedCost = l.UnallocatedCost - lines.Sum(lmon => lmon.UnallocatedCost);
-                    model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.LineItemTypeId == null).FirstOrDefault().UnallocatedCost = BalanceUnallocatedCost;
+                    otherLine.UnallocatedCost = BalanceUnallocatedCost;
                     
                 }
             }
