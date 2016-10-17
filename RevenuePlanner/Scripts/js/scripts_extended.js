@@ -73,7 +73,8 @@ function FormatCurrency(amount, showDecimals) {
     if (isNaN(i)) { i = 0.00; }
     var minus = false;
     if (i < 0) { minus = true; }
-    i = Math.abs(i);
+    // Commented by Arpita Soni on 10/17/2016 to handle negative values for balance
+    // i = Math.abs(i); 
     i = parseInt((i + .005) * 100);
     i = i / 100;
     s = new String(i);
@@ -83,7 +84,8 @@ function FormatCurrency(amount, showDecimals) {
     }
     //s = minus + s;
     //s = '$' + FormatCommas(s, showDecimals);//Commented by Rahul Shah for PL #2498.
-    s = CurrencySybmol + FormatCommas(s, showDecimals); //Added by Rahul Shah for PL #2498.
+    // Modified by Arpita Soni to handle negative values for balance
+    s = CurrencySybmol + FormatCommasBudget(s, showDecimals, false); //Added by Rahul Shah for PL #2498.
     //// Start - Commented By Sohel Pathan on 23/07/2014 for PL ticket #597
     //if (minus)
     //    s = "(" + s + ")";
@@ -122,23 +124,27 @@ function FormatCommas(amount, showDecimals) {
 }
 
 
-function FormatCommasBudget(amount, showDecimals , showCurrencySymbol) {
+function FormatCommasBudget(amount, showDecimals, showCurrencySymbol) {
     if (showDecimals == null)
         showDecimals = true;
     var delimiter = ","; // replace comma if desired
     var a = amount.split('.', 2)
     var d = a[1];
     var i = parseInt(a[0]);
+    // Added by Arpita Soni on 10/17/2016 to handle negative values for balance
+    var limit = 3;
     if (isNaN(i)) { return ''; }
     var minus = '';
-    if (i < 0) { minus = '-'; }
+    if (i < 0) { minus = '-'; limit = 4; }
     i = Math.abs(i);
     var n = new String(i);
     var a = [];
-    while (n.length > 3) {
-        var nn = n.substr(n.length - 3);
+    
+    
+    while (n.length > limit) {
+        var nn = n.substr(n.length - limit);
         a.unshift(nn);
-        n = n.substr(0, n.length - 3);
+        n = n.substr(0, n.length - limit);
     }
     if (n.length > 0) { a.unshift(n); }
     n = a.join(delimiter);
@@ -476,7 +482,10 @@ function setBootstrapTooltip(lableId, value, maxSize, iscurrency, decimaldigit) 
     var roundValue = (Math.round(parseFloat(numericval) * 100) / 100);
     var splitvalue = roundValue.toString().split(".");
     var lengthvalue = splitvalue[0].toString().length;
-
+    // Added by Arpita Soni on 10/17/2016 to handle negative values for balance
+    if (parseFloat(numericval) < 0) {
+        maxSize = maxSize + 1;
+    }
     if (lengthvalue >= maxSize) {
         if (iscurrency) {
             //Modified by Rahul Shah for PL #2498 & #2499

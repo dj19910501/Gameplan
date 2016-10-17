@@ -8,15 +8,19 @@
     int StartYear = Convert.ToInt32(ViewBag.StartYear);
     int YearDiffrence = Convert.ToInt32(ViewBag.YearDiffrence);
     string CurrencySymbol = Sessions.PlanCurrencySymbol; // Add By Rahul Shah #2511
-
-
+    string BalLineItemId = string.Empty;
+    bool IsOnlyBalLineItem = false;
+    if(lineItemList.Where(x=>x.LineItemTypeId != null).Count() == 0){
+        IsOnlyBalLineItem = true;
+    }
 }
 <style type="text/css">
-    .disabled-row >th {
-        background-color:#EEE!important;
+    .disabled-row > th {
+        background-color: #EEE!important;
     }
+
     .border-none {
-    border:none!important;
+        border: none!important;
     }
 
     .disabled-input-ActualPopup {
@@ -31,7 +35,8 @@
         margin-top: 30px !important;
         margin-left: 28px;
     }
-    .actual_cancel:hover, .actual_cancel:focus {
+
+        .actual_cancel:hover, .actual_cancel:focus {
             color: gray;
         }
 </style>
@@ -90,6 +95,7 @@
                         foreach (var item in lineItemList)
                         {
                             string rawId = "trLine_title" + item.PlanLineItemId;
+                            
                         <tr class="height42 lines" id="@rawId">
                             <th class="font3F3F3F actual-popup-tile" style="font-weight:normal;" title="@item.Title">@item.Title</th>
                         </tr>
@@ -147,21 +153,19 @@
                         @for (int j = 1; j <= (12 * (YearDiffrence + 1)); j++)
                         {
                             string costIds = "Cost-Y" + j;
-                            var costPeriod="Y"+j.ToString();
+                            var costPeriod = "Y" + j.ToString();
                             string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
-                             if (lineItemList.Count <= 0)
-                             {
+                            if (IsOnlyBalLineItem)
+                            {
                             <th class="border-r font3F3F3F ">
                                     <input id="@costIds" class= "input-actual text-align-right width75px currency_dollar input-table" placeholder="- - -" maxlength="@maxL">
                             </th>
-                             }
-                             else
-                             {
+                            }
+                            else
+                            {
                                  <th class="border-r font3F3F3F text-align-right" ov="0" id="@costIds">- - - 
-                                     
-                                     
                             </th>
-                             }
+                            }
                         }
                     </tr>
                     @if (lineItemList.Count > 0)
@@ -169,22 +173,33 @@
                         foreach (var item in lineItemList)
                         {
                             planLineItemIds += item.PlanLineItemId + ",";
-                            string rawId="trLine"+item.PlanLineItemId;
+                            string rawId = "trLine" + item.PlanLineItemId;
                              <tr class="height42 lines" id="@rawId">
-                                @for (int j = 1; j <= (12 * (YearDiffrence + 1)); j++)
-                        {
-                            string lineItemIds = @item.PlanLineItemId+"-Y" + j;
-                            string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
-                            
-                            <th class="border-r font3F3F3F ">
-                                    <input id="@lineItemIds" class= "input-actual text-align-right width75px currency_dollar input-table" placeholder="- - -" maxlength="@maxL">
+                            @for (int j = 1; j <= (12 * (YearDiffrence + 1)); j++)
+                            {
+                                string lineItemIds = @item.PlanLineItemId + "-Y" + j;
+                                string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
+                                
+                                <span></span>
+                            if (item.LineItemTypeId != null && item.LineItemTypeId != 0)
+                            {
+                              <th class="border-r font3F3F3F ">
+                                        <input id='@lineItemIds' class= "input-actual text-align-right width75px currency_dollar input-table" placeholder="- - -" maxlength='@maxL'>
+                                </th>    
+                            }
+                            else
+                            {
+                                BalLineItemId = Convert.ToString(item.PlanLineItemId);
+                                 <th class="border-r font3F3F3F text-align-right" ov="0" id="@lineItemIds">- - - 
                             </th>
-                            
-                        }
-                                 </tr>
+                            }
+                             
+                            }
+                             </tr>
                         }
                         planLineItemIds = planLineItemIds.Remove(planLineItemIds.Length - 1, 1);
                     }
+                    
                     <tr class="height42">
                         @for (var i = 0; i < (YearDiffrence + 1); i++)
                         {
@@ -251,18 +266,18 @@
                             @*<input id="lblTotalCost" class="backgroundC6EBF3 font3F3F3F text-align-right width75px currency_dollar" placeholder="- - -" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" value="@tacticActual.CostActual"></th>*@
                     </tr>
                      @if (lineItemList.Count > 0)
-                    {
-                        
-                        foreach (var item in lineItemList)
-                        {
-                            string projectedId="lblProjected-"+item.PlanLineItemId;
-                            string totalId = "lblTotal-" + item.PlanLineItemId;
+                     {
+
+                         foreach (var item in lineItemList)
+                         {
+                             string projectedId = "lblProjected-" + item.PlanLineItemId;
+                             string totalId = "lblTotal-" + item.PlanLineItemId;
                              <tr class="height42">
                         <th id="@projectedId" class="text-align-right height22 projected padding-bottom9 font3F3F3F border-none">@item.Cost</th>  @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@ 
                         <th id="@totalId" class="border-r font3F3F3F text-align-right border-none"></th>
                     </tr>
-                        }
-                    }
+                         }
+                     }
                     <tr class="height42">
                         <th id="roiP" class="text-align-right height22 projected setBudget padding-bottom9 font3F3F3F border-none">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                         <th id="roiT" class="border-r font3F3F3F text-align-right addFormatterActualNumber border-none">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
@@ -280,14 +295,7 @@
                 <label id="last-updated" class="pull-left last-updated" style="Width:45%;">@ViewBag.UpdatedBy</label>
                 <label id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
-           @* <div class="wraper-btns cf border-top-div-TacticPopUp" id="SaveTacticActualSection" style="display:none;">
-                <div class="span2 btn-save">
-                    <button id="btnUploadResult" class="btn buttom-width resize-drop-button without-border-buttom btn-blue text-shadow-blue source-sans-proregular margin-top23" style="float:left;" type="button">Update Actuals</button>
-                </div>
-                <div class="span2">
-                    <button id="cancelTacticActuals" class="close-form btn-link source-sans-proregular margin-top23 actual_cancel" type="button">Cancel</button>
-                </div>
-            </div>*@
+        
         </div>
     </div>
 <!--end content-panel-tab-->
@@ -311,18 +319,11 @@
             $('#SaveTacticActualSection').css('display', 'block');
         }
 
-       
+
         $("#divActualInner").css('display', 'block');
         if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
             $("#divActualInner").empty();
             $("#divActualInner").append(ActualTab());
-           // $("#lblTacticTitle").show();
-          //  $("#txtTacticTitle").hide();
-            //// Commented By: Arpita Soni on 1/7/2015.
-            //// Ticket: 1067 
-            //$("#EditForm").on("click", function (e) { // Commented by Arpita Soni for ticket #1067
-            //    loadReview(planTacticId, "Setup");
-            //});
         }
         else {
             $.ajax({
@@ -335,18 +336,20 @@
                     TacticActual = r.actualData;
                     if (r.IsLineItemForTactic) {
                         $("#trCost").addClass("disabled-row");
-                            $("#tr_titleCost").addClass("disabled-row");
+                        $("#tr_titleCost").addClass("disabled-row");
                         $("#tr_rightCost").addClass("disabled-row");
+                        // Added by Arpita Soni to disable balance line item row for actuals
+                        $("#trLine" + '@BalLineItemId').addClass("disabled-row");
+                        $("#trLine_title" + '@BalLineItemId').addClass("disabled-row");
                         LineItemActual = r.ActualCostAllocationData;
                         fillLineItemValue();
                     }
-                    
                     fillTacticActualTable();
                     getLoadActual();
                     AssignDefaultValue(); // added by dharmraj, #547
                     fillTotalActualCost();
-                    
-                    
+
+
                     // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
                     $('.setBudget').each(function () {
                         SetBudget("#" + $(this).attr('id'));  // Modified By : Viral Kadiya Internal Review Points 10/29/2014.
@@ -383,15 +386,15 @@
                 for (i in LineItemActual) {
                     $("#" + LineItemActual[i].PlanLineItemId + "-" + LineItemActual[i].Period).val(LineItemActual[i].Value);
                     $("#" + LineItemActual[i].PlanLineItemId + "-" + LineItemActual[i].Period).attr('ov', LineItemActual[i].Value);
-                   //Calculation for sum of month wise total cost
+                    //Calculation for sum of month wise total cost
                     if ($("#Cost-" + LineItemActual[i].Period).attr('ov') != '') {
                         var costForMonth = parseFloat($("#Cost-" + LineItemActual[i].Period).attr('ov'));
                         var finalCost = costForMonth + parseFloat(LineItemActual[i].Value);
-                        $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(),true));
+                        $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(), true));
                         //$("#Cost-" + LineItemActual[i].Period).text(finalCost.toString());
                         $("#Cost-" + LineItemActual[i].Period).attr('ov', finalCost.toString());
                         SetBudget("#Cost-" + LineItemActual[i].Period); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
-                       
+
                     }
                     else {
                         var finalCost = parseFloat(LineItemActual[i].Value);
@@ -400,17 +403,17 @@
                         $("#Cost-" + LineItemActual[i].Period).attr('ov', finalCost.toString());
                         SetBudget("#Cost-" + LineItemActual[i].Period); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
                     }
-                    
+
                 }
-                 //Calculation for sum of total line item's cost
+                //Calculation for sum of total line item's cost
                 if ('@planLineItemIds' != '') {
                     var ids = '@planLineItemIds'.split(',');
                     if (ids.length > 0) {
 
                         for (var i = 0; i < ids.length; i++) {
-                        var totalLineCost = 0;
-
-                        $("#trLine" + ids[i].toString()).find('input').each(function () {
+                            var totalLineCost = 0;
+                            
+                            $("#trLine" + ids[i].toString()).find('input').each(function () {
                                 if ($(this).val().trim() != '') {
                                     var currentValue = $(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '');
                                     //if (currentValue.match('^(0|[1-9][0-9]*)$')) {
@@ -420,9 +423,7 @@
                                     }
                                 }
                             });
-
                             document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = totalLineCost;
-
                             document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = FormatCurrency(totalLineCost.toString(), true);
                             //SetBudget("#lblTotal-" + ids[i].toString());
                             $("#lblTotal-" + ids[i].toString()).attr('ov', parseFloat(totalLineCost.toString()));
@@ -444,67 +445,61 @@
         $('.lines').find('input').each(function () {
             $(this).keyup(function () {
                 var currentValue = $(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '');
-                    currentValue = currentValue == '' ? "0" : currentValue;
-                    //if (currentValue.match('^(0|[1-9][0-9]*)+(\.[0-9][0-9]?)$'))
-                    //{
-                    //    alert('currentValue:' + currentValue);
-                    //}
-                //if (currentValue.match('^(0|[1-9][0-9]*)$')) {
-                    if (currentValue.match(_decmlRegex) || currentValue == "0") {
-                        
-                        /*Start - Total of line item actuals for month*/
-                        var arr = $(this).attr('id').split('-')
-                        var totalcost = 0;
-                        var oldMonthTotalCost = 0;
-                        var parentTotalCost = 0;
-                        if (ReplaceCC($("#Cost-" + arr[1]).attr('ov')) != '') {
-                            
-                            oldMonthTotalCost = parseFloat($("#Cost-" + arr[1]).attr('ov'));
-                        }
-                        var oldValue = 0;
-                        if ($(this).attr('ov') != '' && typeof $(this).attr('ov') != 'undefined') {
-                            oldValue =parseFloat($(this).attr('ov'));
-                        }
-                        
-                        totalcost = (oldMonthTotalCost + parseFloat(currentValue)) - oldValue;
-                        
-                        $("#Cost-" + arr[1]).text(FormatCurrency(totalcost.toString(),true));
-                        SetBudget("#Cost-" + arr[1]);   //UnCommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
-                        $("#Cost-" + arr[1]).attr('ov', totalcost.toString());
-                        /*End - Total of line item actuals for month*/
+                currentValue = currentValue == '' ? "0" : currentValue;
+                if (currentValue.match(_decmlRegex) || currentValue == "0") {
+                    /*Start - Total of line item actuals for month*/
+                    var arr = $(this).attr('id').split('-')
+                    var totalcost = 0;
+                    var oldMonthTotalCost = 0;
+                    var parentTotalCost = 0;
+                    if (ReplaceCC($("#Cost-" + arr[1]).attr('ov')) != '') {
 
-                        /*Start Total actual cost*/
-                        if ($("#lblTotalCost").attr('ov') != '') {
-                            parentTotalCost = parseFloat($("#lblTotalCost").attr('ov'));
-                        }
-                        parentTotalCost = (parentTotalCost + parseFloat(currentValue)) - oldValue;
-                        
-                        $("#lblTotalCost").html(FormatCurrency(parentTotalCost.toString(), true));
-                        $("#lblTotalCost").attr('ov', parseFloat(parentTotalCost.toString()));
-                        SetBudget('#lblTotalCost'); //UnCommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
-                        /*End - Total actual cost*/
-                        /*start Particular line item actual cost*/
-                        var oldLineItemTotal = 0;
-                        var TotalLineItemValue = 0;
-                        if ($("#lblTotal-" + arr[0]).attr('ov') != '') {
-                            oldLineItemTotal = parseFloat($("#lblTotal-" + arr[0]).attr('ov'));
-                        }
-                        TotalLineItemValue = (oldLineItemTotal + parseFloat(currentValue)) - oldValue;
-                        $("#lblTotal-" + arr[0]).text(FormatCurrency(TotalLineItemValue.toString(),true));
-                        $("#lblTotal-" + arr[0]).attr('ov', TotalLineItemValue.toString());
-                        var _val = $("#lblTotal-" + arr[0]).html();
-                        SetBudget("#lblTotal-" + arr[0]);   //UnCommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
-                        /*End Particular line item actual cost*/
-                        //calculateRIO();
-                        //$(this).text(FormatCurrency(currentValue, true));
-                        $(this).attr('ov', currentValue);
+                        oldMonthTotalCost = parseFloat($("#Cost-" + arr[1]).attr('ov'));
+                    }
+                    var oldValue = 0;
+                    if ($(this).attr('ov') != '' && typeof $(this).attr('ov') != 'undefined') {
+                        oldValue = parseFloat($(this).attr('ov'));
+                    }
+
+                    totalcost = (oldMonthTotalCost + parseFloat(currentValue)) - oldValue;
+
+                    $("#Cost-" + arr[1]).text(FormatCurrency(totalcost.toString(), true));
+                    SetBudget("#Cost-" + arr[1]);   //UnCommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+                    $("#Cost-" + arr[1]).attr('ov', totalcost.toString());
+                    /*End - Total of line item actuals for month*/
+
+                    /*Start Total actual cost*/
+                    if ($("#lblTotalCost").attr('ov') != '') {
+                        parentTotalCost = parseFloat($("#lblTotalCost").attr('ov'));
+                    }
+                    parentTotalCost = (parentTotalCost + parseFloat(currentValue)) - oldValue;
+
+                    $("#lblTotalCost").html(FormatCurrency(parentTotalCost.toString(), true));
+                    $("#lblTotalCost").attr('ov', parseFloat(parentTotalCost.toString()));
+                    SetBudget('#lblTotalCost'); //UnCommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+                    /*End - Total actual cost*/
+                    /*start Particular line item actual cost*/
+                    var oldLineItemTotal = 0;
+                    var TotalLineItemValue = 0;
+                    if ($("#lblTotal-" + arr[0]).attr('ov') != '') {
+                        oldLineItemTotal = parseFloat($("#lblTotal-" + arr[0]).attr('ov'));
+                    }
+                    TotalLineItemValue = (oldLineItemTotal + parseFloat(currentValue)) - oldValue;
+                    $("#lblTotal-" + arr[0]).text(FormatCurrency(TotalLineItemValue.toString(), true));
+                    $("#lblTotal-" + arr[0]).attr('ov', TotalLineItemValue.toString());
+                    var _val = $("#lblTotal-" + arr[0]).html();
+                    SetBudget("#lblTotal-" + arr[0]);   //UnCommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+                    /*End Particular line item actual cost*/
+                    //calculateRIO();
+                    //$(this).text(FormatCurrency(currentValue, true));
+                    $(this).attr('ov', currentValue);
                 }
 
             });
         });
         function fillTotalActualCost() {
             var cost = 0;
-            if ('@planLineItemIds' != '') {
+            if ('@planLineItemIds' != '' && '@Convert.ToString(IsOnlyBalLineItem).ToLower()' == 'false') {
                 $("#trCost").find('th').each(function () {
                     if ($(this).attr('ov') != '' && typeof $(this).attr('ov') != 'undefined') {
                         var currentValue = $(this).attr('ov');
@@ -512,23 +507,32 @@
                             cost += parseFloat(currentValue);
                         }
                     }
-
                 });
+               
             }
             else {
                 $("#trCost").find('input').each(function () {
                     if ($(this).val().trim() != '') {
                         var currentValue = $(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '');
                         if (currentValue.match(_decmlRegex)) {
+                            console.log($(this));
+                            var BalPeriodId =  '#' + $(this).attr('id').replace('Cost', '@BalLineItemId');
+                            $(BalPeriodId).text(currentValue);
+                            SetBudget(BalPeriodId);
+                            $(BalPeriodId).attr('ov', parseFloat(currentValue.toString())).toString();
+
                             cost += parseFloat(currentValue);
                         }
                     }
-
                 });
+                $("#lblTotal-" + '@BalLineItemId').html(FormatCurrency(cost.toString(), true));
+                SetBudget("#lblTotal-" + '@BalLineItemId'); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+                $("#lblTotal-" + '@BalLineItemId').attr('ov', parseFloat(cost.toString())).toString();
             }
             $("#lblTotalCost").html(FormatCurrency(cost.toString(), true));
             SetBudget("#lblTotalCost"); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
             $("#lblTotalCost").attr('ov', parseFloat(cost.toString())).toString();
+
             calculateRIO();
         }
         /*End Added by Mitesh Vaishnav for PL ticket #695*/
@@ -550,8 +554,8 @@
                 inqP = inqP.innerHTML;
                 document.getElementById('inqP').innerHTML = FormatCommas(inqP, false);
             }
-            
-            
+
+
             var projStageValue = document.getElementById('lblTotalProjectedStageValue');
             if (projStageValue != null && projStageValue != 'undefined' && projStageValue != '') {
                 projStageValue = projStageValue.innerHTML;
@@ -559,20 +563,20 @@
             }
 
             if (document.getElementById('mqlP') != null)
-            document.getElementById('mqlP').innerHTML = FormatCommas(document.getElementById('mqlP').innerHTML, false);
+                document.getElementById('mqlP').innerHTML = FormatCommas(document.getElementById('mqlP').innerHTML, false);
 
             if (document.getElementById('lblTotalMQL') != null)
-            document.getElementById('lblTotalMQL').innerHTML = FormatCommas(document.getElementById('lblTotalMQL').innerHTML, false);
+                document.getElementById('lblTotalMQL').innerHTML = FormatCommas(document.getElementById('lblTotalMQL').innerHTML, false);
 
             document.getElementById('cwP').innerHTML = number_format(document.getElementById('cwP').innerHTML, 0, 0, ',');  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
             document.getElementById('lblTotalCW').innerHTML = FormatCommas(document.getElementById('lblTotalCW').innerHTML, false);
-            
+
             document.getElementById('rP').innerHTML = FormatCurrency(document.getElementById('rP').innerHTML, true);   // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             document.getElementById('lblTotalRevenue').innerHTML = FormatCurrency(document.getElementById('lblTotalRevenue').innerHTML, true);
 
             document.getElementById('cP').innerHTML = FormatCurrency(document.getElementById('cP').innerHTML, true);    // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
             document.getElementById('lblTotalCost').innerHTML = FormatCurrency(document.getElementById('lblTotalCost').innerHTML, true);
-           
+
 
             var pcost = $("#hdnCp").val();  // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             if (pcost != 0 && !isNaN(pcost)) {
@@ -590,10 +594,8 @@
                     var currentValue = $(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '');
                     currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
                     var _isCurrency = $(this).hasClass("currency_dollar");
-                //if (currentValue.match('^(0|[1-9][0-9]*)+(\.[0-9][0-9]?)$')){
 
                     if (!_isCurrency && currentValue.match(_intRegex)) {
-                        //  $(this).removeClass("error");
                         var arr = (this).id.split('-');
                         var ida = "lblTotal" + arr[0];
                         var totalvalue = 0;
@@ -603,22 +605,14 @@
                                 totalvalue = cvalue + parseFloat(totalvalue);
                             }
                         });
-                        //if (arr[0] == 'Revenue' || arr[0]=='Cost') {
-                        //    document.getElementById(ida).innerHTML = totalvalue;
-                        //    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
-                        //    SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-                        //        $("#" + ida).attr('ov',totalvalue.toString());
-                        //    }
-                        //else {
-                            $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
-                            document.getElementById(ida).innerHTML = totalvalue;
-                            document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
-                            SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-                        //}
+                        $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
+                        document.getElementById(ida).innerHTML = totalvalue;
+                        document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
+                        SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
 
                         calculateRIO();
                     }
-                    
+
                     if ((_isCurrency) && (currentValue.match(_decmlRegex))) {
                         var arr = (this).id.split('-');
                         var ida = "lblTotal" + arr[0];
@@ -629,21 +623,28 @@
                                 totalvalue = cvalue + parseFloat(totalvalue);
                             }
                         });
+                        
+                        var BalLineItemId = '@BalLineItemId' + '-' + arr[1];
+                        var BalTotal = "lblTotal-" + '@BalLineItemId';
                         if (arr[0] == 'Revenue' || arr[0] == 'Cost') {
                             document.getElementById(ida).innerHTML = totalvalue;
                             document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
                             SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                             $("#" + ida).attr('ov', totalvalue.toString());
+
+                            $('#' + BalLineItemId).text(FormatCurrency(currentValue, true));
+                            $('#' + BalLineItemId).attr('ov', parseFloat(currentValue.toString()));
+
+                            document.getElementById(BalTotal).innerHTML = totalvalue;
+                            document.getElementById(BalTotal).innerHTML = FormatCurrency(document.getElementById(BalTotal).innerHTML, true);
+                            SetBudget('#' + BalTotal);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                            $("#" + BalTotal).attr('ov', totalvalue.toString());
+
+                            
                         }
-                        //else {
-                        //    $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
-                        //    document.getElementById(ida).innerHTML = totalvalue;
-                        //    document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
-                        //    SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-                        //}
                         calculateRIO();
                     }
-            });
+                });
         });
 
         // Modified by dharmraj for implement new formula to calculate ROI, #533
@@ -665,10 +666,10 @@
             // Add By Nishant Sheth
             // To Apply Curenncy format
             document.getElementById('roiP').innerHTML = FormatCurrency(document.getElementById('roiP').innerHTML, true);
-        }   
+        }
 
 
-        
+
         //Start-Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
         $("#cancelTacticActuals").click(function () {
             CancelEvent();
@@ -688,12 +689,12 @@
         }
         $("#SaveTacticActualSection").css("display", "none");
 
-        var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();  
+        var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();
         if (IsEditable == 'View') {                                 // check current page mode is editable or not.
             $('.input-actual').removeClass('backgroundC6EBF3');
             $('.input-actual').removeClass('input-table');
             $('.input-actual').addClass('disabled-input-ActualPopup');
-            $('.input-actual').prop('readonly', true);                  
+            $('.input-actual').prop('readonly', true);
             $("#SaveTacticActualSection").css("display", "none");       // hide Update & Cancel button
         }
         else {
@@ -707,7 +708,7 @@
     });
 
 
-   
+
 
     //Modified for #1213 by Komal Rawal - Function to save the data on Tab change called from inspect popup
     function SaveActual() {
@@ -717,54 +718,54 @@
         var _IntgerRegex = '^(0|[0-9][0-9]*)$';
         var ReturnParameter = SaveTitle();
         if (ReturnParameter == false) {
-              $('#InspectTab').removeClass('SpanDisable');
-                return false;
-            }
-        
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+
         //$("#btnUploadResult").click(function () {
-            var title = htmlEncode($('#txtTacticTitle').val()); // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
-            var _tactic = [];
-            var _LineItems = [];
-            var isError = false;
-            var isData = false;
-            var isLineItem = false;
+        var title = htmlEncode($('#txtTacticTitle').val()); // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
+        var _tactic = [];
+        var _LineItems = [];
+        var isError = false;
+        var isData = false;
+        var isLineItem = false;
+        //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
+        var totalProjectedStageValueActual = $("#hdnlblTotalProjectedStageValue").val();
+
+        var totalMQLActual;
+        if (document.getElementById('lblTotalMQL') != null) {
             //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
-            var totalProjectedStageValueActual = $("#hdnlblTotalProjectedStageValue").val();
+            totalMQLActual = $("#hdnlblTotalMQL").val();
+        }
 
-            var totalMQLActual;
-            if (document.getElementById('lblTotalMQL') != null) {
-                //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
-                totalMQLActual = $("#hdnlblTotalMQL").val();
-            }
+        var totalCWActual = (document.getElementById('lblTotalCW').innerHTML).trim().replace(/,/g, '').replace(CurrencySybmol, '');
+        var totalRevenueActual = (document.getElementById('lblTotalRevenue').innerHTML).trim().replace(/,/g, '').replace(CurrencySybmol, '');
+        var totalCostActual = $('#lblTotalCost').val().trim().replace(/,/g, '').replace(CurrencySybmol, '');
+        var totalROI = (document.getElementById('roiP').innerHTML).trim().replace(/,/g, '').replace(CurrencySybmol, '');
+        var totalROIActual = (document.getElementById('roiT').innerHTML).trim().replace(/,/g, '').replace(CurrencySybmol, '');
+        $("#errorMessage").css("display", "none");
+        $("#successMessage").css("display", "none");
+        $('#tblActual').find('input').each(function () {
 
-            var totalCWActual = (document.getElementById('lblTotalCW').innerHTML).trim().replace(/,/g, '').replace(CurrencySybmol, '');
-            var totalRevenueActual = (document.getElementById('lblTotalRevenue').innerHTML).trim().replace(/,/g, '').replace(CurrencySybmol, '');
-            var totalCostActual = $('#lblTotalCost').val().trim().replace(/,/g, '').replace(CurrencySybmol, '');
-            var totalROI = (document.getElementById('roiP').innerHTML).trim().replace(/,/g, '').replace(CurrencySybmol, '');
-            var totalROIActual = (document.getElementById('roiT').innerHTML).trim().replace(/,/g, '').replace(CurrencySybmol, '');
-            $("#errorMessage").css("display", "none");
-            $("#successMessage").css("display", "none");
-            $('#tblActual').find('input').each(function () {
-                
-                if ($(this).val().trim() != '') {
-                    var _isCurrency = $(this).hasClass("currency_dollar");
-                    //alert(_isCurrency);
-                    if ((!_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '').match(_IntgerRegex))) {
-                        $(this).removeClass("error");
-                    }
-                    else if ((_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('.', '').replace(CurrencySybmol, '').match(_decimalRegex))) {
-                        $(this).removeClass("error");
-                    }
-                    else {
-                        $(this).addClass("error");
-                        isError = true;
-                    }
+            if ($(this).val().trim() != '') {
+                var _isCurrency = $(this).hasClass("currency_dollar");
+                //alert(_isCurrency);
+                if ((!_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '').match(_IntgerRegex))) {
+                    $(this).removeClass("error");
+                }
+                else if ((_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('.', '').replace(CurrencySybmol, '').match(_decimalRegex))) {
+                    $(this).removeClass("error");
+                }
+                else {
+                    $(this).addClass("error");
+                    isError = true;
+                }
 
-                    var arr = (this).id.split('-');
-                    var thisValue = $(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '');
-                    //Modified by Kalpesh Sharma : Functional and Internal review points
-                    if (thisValue != '') {
-                            if (!$(this).parent().parent().hasClass('lines')) {
+                var arr = (this).id.split('-');
+                var thisValue = $(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '');
+                //Modified by Kalpesh Sharma : Functional and Internal review points
+                if (thisValue != '') {
+                    if (!$(this).parent().parent().hasClass('lines')) {
 
                         _tactic.push({
                             PlanTacticId: planTacticId,
@@ -783,36 +784,36 @@
                         });
                         isData = true;
 
-                            }
-                            else {
-                                _LineItems.push({
-                                    PlanLineItemId: arr[0],
-                                    Period: arr[1],
-                                    Value: thisValue
-                                });
-                                isLineItem = true;
-                            }
-                        }
-                        
+                    }
+                    else {
+                        _LineItems.push({
+                            PlanLineItemId: arr[0],
+                            Period: arr[1],
+                            Value: thisValue
+                        });
+                        isLineItem = true;
+                    }
                 }
-                else {
-                    $(this).removeClass("error");
-                }
-                
-            });
-            // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
-            if (title == '') {
-                isError = true;
+
             }
-            if (isError) {
-                $("#errorMessage").css("display", "block");
-                /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
-                $('#InspectTab').removeClass('SpanDisable');
-                return false;
+            else {
+                $(this).removeClass("error");
             }
-            if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
-                var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
+
+        });
+        // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
+        if (title == '') {
+            isError = true;
+        }
+        if (isError) {
+            $("#errorMessage").css("display", "block");
+            /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
+            $('#InspectTab').removeClass('SpanDisable');
+            return false;
+        }
+        if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
+            var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
                 var msgdisplay = msg.replace('{0}', FormatCommas(totalMQLActual.toString())).replace('{1}', '@ViewBag.TacticStageTitle').replace('{3}', '@ViewBag.TacticStageTitle').replace('{2}', FormatCommas(totalProjectedStageValueActual.toString())).replace(/{4\}/g, '@MQlTitle');
                 $("#spanMessageError").text(msgdisplay);
                 $("#errorMessage").css("display", "block");
@@ -839,7 +840,7 @@
             $("#errorMessage").css("display", "none");
             $.ajax({
                 contentType: 'application/json; charset=utf-8',
-                async : false,
+                async: false,
                 dataType: 'json',
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/UploadResult/")',
@@ -860,7 +861,7 @@
                                 }
                                 else {
                                     // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-                                  //  RefreshCurrentTab(requestedModule, 0, 0, 0);
+                                    //  RefreshCurrentTab(requestedModule, 0, 0, 0);
                                 }
                                 returnparameter = true;
                             }
@@ -869,13 +870,13 @@
                                 $("#spanMessageError").empty();
                                 $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                                 returnparameter = false;
-                        }
+                            }
                             returnparameter = true;
                         }
-                    else {
+                        else {
                             ShowError(data.errormsg);
                             returnparameter = false;
-                    }
+                        }
                     }
                 },
                 error: function () {
@@ -887,7 +888,7 @@
             });
 
 
-    }
+        }
         //Start-Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
         $("#cancelTacticActuals").click(function () {
             CancelEvent();
@@ -907,12 +908,12 @@
         }
         $("#SaveTacticActualSection").css("display", "none");
 
-        var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();  
+        var IsEditable = $("#hdnTacticBudgetAllocationOpt").val();
         if (IsEditable == 'View') {                                 // check current page mode is editable or not.
             $('.input-actual').removeClass('backgroundC6EBF3');
             $('.input-actual').removeClass('input-table');
             $('.input-actual').addClass('disabled-input-ActualPopup');
-            $('.input-actual').prop('readonly', true);                  
+            $('.input-actual').prop('readonly', true);
             $("#SaveTacticActualSection").css("display", "none");       // hide Update & Cancel button
         }
         else {
@@ -923,12 +924,12 @@
             $("#SaveTacticActualSection").css("display", "block");
         }
         //End - Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.
-   // }
-function ShowError(value) {
-    $("#modal-container-186470").scrollTop(0);
-    $("#errorMessage").css("display", "block");
-    $("#errorMessage").slideDown(400);
-    $("#spanMessageError").empty();
-    $("#spanMessageError").text(value);
-}
+        // }
+        function ShowError(value) {
+            $("#modal-container-186470").scrollTop(0);
+            $("#errorMessage").css("display", "block");
+            $("#errorMessage").slideDown(400);
+            $("#spanMessageError").empty();
+            $("#spanMessageError").text(value);
+        }
 </script>

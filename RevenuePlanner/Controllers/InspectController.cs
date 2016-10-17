@@ -3108,6 +3108,7 @@ namespace RevenuePlanner.Controllers
             {
                 PlanLineItemId = LList.PlanLineItemId,
                 Title = LList.Title,
+                LineItemTypeId = LList.LineItemTypeId,
                 Cost = objCurrency.GetValueByExchangeRate(LList.Cost, PlanExchangeRate)
 
             }).ToList();
