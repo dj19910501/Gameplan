@@ -155,7 +155,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
-                string url = ApiUrl + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.ID + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                string url = ApiUrl + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
                 string result = string.Empty;
                 try
                 {
@@ -5594,6 +5594,7 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public async Task<ActionResult> GetOverviewData(string timeframeOption, string isQuarterly = "Quarterly")
         {
+            DateTime dt = DateTime.Now;
             // Add BY Nishant Sheth 
             // Desc : Handle timeframeOption is undefined for #1409
             if (timeframeOption.ToLower() == "undefined")
@@ -6521,6 +6522,7 @@ namespace RevenuePlanner.Controllers
                 throw ex;
             }
             await Task.Delay(1);
+            DateTime dt1 = DateTime.Now;
             return PartialView("_Overview", objReportOverviewModel);
         }
 
