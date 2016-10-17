@@ -8356,27 +8356,20 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public static List<MultiYearModel> CalculatePlannedCostTacticslist(List<int> PlanTacticIds)
         {
-          
             PlanExchangeRate = Sessions.PlanExchangeRate;
             List<MultiYearModel> MultiYearList = new List<MultiYearModel>();
             List<String> ApprovedTacticStatus = Common.GetStatusListAfterApproved();
-
             string PeriodPrefix = "Y";
             using (MRPEntities db = new MRPEntities())
             {
-                List<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem = db.Plan_Campaign_Program_Tactic_LineItem.ToList();
-                List<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
-                List<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost = db.Plan_Campaign_Program_Tactic_Cost.ToList();
-                int TacticId;
                 int TacticLength = PlanTacticIds.Count;
-                List<Plan_Campaign_Program_Tactic_LineItem> listlineitems;
                 for (int i = 0; i < TacticLength; i++)
                 {
-                    TacticId = PlanTacticIds[i];
-                    listlineitems = Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && !ln.IsDeleted && ln.LineItemTypeId != null).Select(ln => ln).ToList();
+                    int TacticId = PlanTacticIds[i];
+                    var listlineitems = db.Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && !ln.IsDeleted && ln.LineItemTypeId != null).Select(ln => ln).ToList();
                     List<int> lineitemIds = listlineitems.Select(ln => ln.PlanLineItemId).ToList();
-                    var tacCostData = Plan_Campaign_Program_Tactic_Cost.Where(Cost => Cost.PlanTacticId.Equals(TacticId)).Select(cost => cost).ToList();
-                    var LineCostListData = Plan_Campaign_Program_Tactic_LineItem_Cost.Where(Cost => lineitemIds.Contains(Cost.PlanLineItemId)).ToList();
+                    var tacCostData = db.Plan_Campaign_Program_Tactic_Cost.Where(Cost => Cost.PlanTacticId.Equals(TacticId)).Select(cost => cost).ToList();
+                    var LineCostListData = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(Cost => lineitemIds.Contains(Cost.PlanLineItemId)).ToList();
                     if (lineitemIds.Count > 0)
                     {
 
@@ -8407,7 +8400,7 @@ namespace RevenuePlanner.Helpers
                     }
 
                     var LineItemCostSum = LineCostListData.Select(a => a.Value).Sum();
-                    var OtherLineItem = Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && ln.LineItemTypeId == null && ln.IsDeleted.Equals(false)).FirstOrDefault();
+                    var OtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && ln.LineItemTypeId == null && ln.IsDeleted.Equals(false)).FirstOrDefault();
                     if (OtherLineItem != null)
                     {
                         foreach (var taccost in tacCostData)
@@ -8429,7 +8422,6 @@ namespace RevenuePlanner.Helpers
                 }
 
             }
-          
             return MultiYearList;
         }
         #endregion
