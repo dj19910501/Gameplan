@@ -528,57 +528,61 @@
         for (var i = 0; i < arrChildNodeIds.length; i++) {
             ChildTotal = parseFloat(ChildTotal + parseFloat(HomeGrid.cells(arrChildNodeIds[i], cellInd).getValue()));
         }
-        if (ChildTotal > ParentCost) {
-            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
-            if ((locked != null && locked != "") && locked == "1") {
-                HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important; background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
-            }
-            else {
-                HomeGrid.setCellTextStyle(rowId, cellInd, "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
-            }
-            var parent = ["plan", "campaign", "program"];
-            var parentUppercase = ["Plan", "Campaign", "Program"];
-            var child = ["Campaign", "Program", "Tactic"];
-            var TypeIndex = HomeGrid.getColIndexById("Type");
-            var Type = HomeGrid.cells(rowId, TypeIndex).getValue();
-            var p_ind = parent.indexOf(Type.toLowerCase());
-            HomeGrid.cells(rowId, cellInd).setAttribute("title", parentUppercase[p_ind] + " Budget is less than the budget for it's " + child[p_ind] + ".");
-        }
-        else {
-            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
-            if ((locked != null && locked != "") && locked == "1") {
-                HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;");
-            }
-            else {
-                HomeGrid.setCellTextStyle(rowId, cellInd, "");
-            }
-            HomeGrid.cells(rowId, cellInd).setAttribute("title", "");
-        }
 
-        var BudgetVal = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
-        var PlannedVal = parseFloat(HomeGrid.cells(rowId, cellInd + 1).getValue());
-        if (PlannedVal > BudgetVal) {
-            var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("locked");
-            if ((locked != null && locked != "") && locked == "1") {
-                HomeGrid.setCellTextStyle(rowId, cellInd + 1, "color:#a2a2a2 !important; background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+        var TypeIndex = HomeGrid.getColIndexById("Type");
+        var Type = HomeGrid.cells(rowId, TypeIndex).getValue();
+
+        if (Type.toLowerCase() != 'lineitem') {
+            if (ChildTotal > ParentCost) {
+                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+                if ((locked != null && locked != "") && locked == "1") {
+                    HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important; background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+                }
+                else {
+                    HomeGrid.setCellTextStyle(rowId, cellInd, "background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+                }
+                var parent = ["plan", "campaign", "program"];
+                var parentUppercase = ["Plan", "Campaign", "Program"];
+                var child = ["Campaign", "Program", "Tactic"];
+                var p_ind = parent.indexOf(Type.toLowerCase());
+                HomeGrid.cells(rowId, cellInd).setAttribute("title", parentUppercase[p_ind] + " Budget is less than the budget for it's " + child[p_ind] + ".");
             }
             else {
-                HomeGrid.setCellTextStyle(rowId, cellInd + 1, "background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+                if ((locked != null && locked != "") && locked == "1") {
+                    HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;");
+                }
+                else {
+                    HomeGrid.setCellTextStyle(rowId, cellInd, "");
+                }
+                HomeGrid.cells(rowId, cellInd).setAttribute("title", "");
             }
-            var parent = ["plan", "campaign", "program"];
-            var parentUppercase = ["Plan", "Campaign", "Program"];
-            var child = ["Campaign", "Program", "Tactic"];
-            HomeGrid.cells(rowId, cellInd + 1).setAttribute("title", Type + "'s cost is over it's budget.");
-        }
-        else {
-            var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("locked");
-            if ((locked != null && locked != "") && locked == "1") {
-                HomeGrid.setCellTextStyle(rowId, cellInd + 1, "color:#a2a2a2 !important;");
+
+            var BudgetVal = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
+            var PlannedVal = parseFloat(HomeGrid.cells(rowId, cellInd + 1).getValue());
+            if (PlannedVal > BudgetVal) {
+                var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("locked");
+                if ((locked != null && locked != "") && locked == "1") {
+                    HomeGrid.setCellTextStyle(rowId, cellInd + 1, "color:#a2a2a2 !important; background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+                }
+                else {
+                    HomeGrid.setCellTextStyle(rowId, cellInd + 1, "background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+                }
+                var parent = ["plan", "campaign", "program"];
+                var parentUppercase = ["Plan", "Campaign", "Program"];
+                var child = ["Campaign", "Program", "Tactic"];
+                HomeGrid.cells(rowId, cellInd + 1).setAttribute("title", Type + "'s cost is over it's budget.");
             }
             else {
-                HomeGrid.setCellTextStyle(rowId, cellInd + 1, "");
+                var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("locked");
+                if ((locked != null && locked != "") && locked == "1") {
+                    HomeGrid.setCellTextStyle(rowId, cellInd + 1, "color:#a2a2a2 !important;");
+                }
+                else {
+                    HomeGrid.setCellTextStyle(rowId, cellInd + 1, "");
+                }
+                HomeGrid.cells(rowId, cellInd + 1).setAttribute("title", "");
             }
-            HomeGrid.cells(rowId, cellInd + 1).setAttribute("title", "");
         }
     }
 
@@ -668,32 +672,32 @@
         //Roll Up Function
         if (Type.toLowerCase() != 'lineitem') {
             RollUpCost(rowId, cellInd, AmtDiff, IsTotalCost, Type);
-        }
 
-        var PlannedVal = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
-        var BudgetVal = parseFloat(HomeGrid.cells(rowId, cellInd - 1).getValue());
-        if (PlannedVal > BudgetVal) {
-            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
-            if ((locked != null && locked != "") && locked == "1") {
-                HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+            var PlannedVal = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
+            var BudgetVal = parseFloat(HomeGrid.cells(rowId, cellInd - 1).getValue());
+            if (PlannedVal > BudgetVal) {
+                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+                if ((locked != null && locked != "") && locked == "1") {
+                    HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+                }
+                else {
+                    HomeGrid.setCellTextStyle(rowId, cellInd, "background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+                }
+                var parent = ["plan", "campaign", "program"];
+                var parentUppercase = ["Plan", "Campaign", "Program"];
+                var child = ["Campaign", "Program", "Tactic"];
+                HomeGrid.cells(rowId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
             }
             else {
-                HomeGrid.setCellTextStyle(rowId, cellInd, "background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
+                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+                if ((locked != null && locked != "") && locked == "1") {
+                    HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;");
+                }
+                else {
+                    HomeGrid.setCellTextStyle(rowId, cellInd, "");
+                }
+                HomeGrid.cells(rowId, cellInd).setAttribute("title", "");
             }
-            var parent = ["plan", "campaign", "program"];
-            var parentUppercase = ["Plan", "Campaign", "Program"];
-            var child = ["Campaign", "Program", "Tactic"];
-            HomeGrid.cells(rowId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
-        }
-        else {
-            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
-            if ((locked != null && locked != "") && locked == "1") {
-                HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;");
-            }
-            else {
-                HomeGrid.setCellTextStyle(rowId, cellInd, "");
-            }
-            HomeGrid.cells(rowId, cellInd).setAttribute("title", "");
         }
     }
 
