@@ -1377,7 +1377,15 @@ function OpentCopyPopup(obj, isProceed) {
             else {
                 linkItemId = $(obj).attr('entityid').replace("_", "");
             }
-            var selectedcell = HomeGrid.findCell(linkItemId, colSplitId, true);
+            var selectedcell;
+            if (IsBudgetGrid) {
+                var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
+                selectedcell = HomeGrid.findCell(linkItemId, ActivityIdindex, true);
+            }
+            else {
+                selectedcell = HomeGrid.findCell(linkItemId, colSplitId, true);
+            }
+            
             var id = selectedcell[0];
             var rowid = id[0];
             ItemIndex = HomeGrid.getRowIndex(rowid);
