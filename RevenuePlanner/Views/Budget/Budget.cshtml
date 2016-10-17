@@ -78,6 +78,14 @@
     var eventidonedit = 0;
     var noplan = '@Sessions.IsNoPlanCreated';
     $(document).ready(function () {
+        // Below function created for #2607 Resolve point-42 header and data column alignment issue - Bhumika
+        //To check scroll
+        (function ($) {
+            $.fn.hasScrollBar = function () {
+                return this.get(0).scrollHeight > this.height();
+            }
+        })(jQuery);
+        
         var GridRowId = '@GridFirstrowId';
         $('#divgridview').addClass('budget-grid');
         if (GridRowId != '' || noplan.toLowerCase() == 'true') {
@@ -133,6 +141,7 @@
             HomeGrid.splitAt(colSplitId);
 
             HomeGrid.attachEvent("onOpenEnd", function (id, state) {
+                ManageBorderBoxClass(); //#2607
                 if (state == "1") {
                     SetFlagTooltip();
                     setTimeout(function () {
@@ -249,8 +258,21 @@
         setTimeout(function () {
             HomeGrid.objBox.scrollTop = scrollstate.y;
         }, 100);
+        ManageBorderBoxClass() //#2607
     }
-
+    // Below function created for #2607 Resolve point-42 header and data column alignment issue - Bhumika
+    function ManageBorderBoxClass() {
+        $('.objbox').each(function () {
+            if ($(this).hasScrollBar()) {
+                //true
+                $("#gridbox").addClass("border-box");
+            }
+            else {
+                //false
+                $("#gridbox").removeClass("border-box");
+            }
+        });
+    }
     var value;
     var TacticName;
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {

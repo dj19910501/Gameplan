@@ -1565,14 +1565,27 @@ color: #89CEDE;
 #divgridview  #gridbox div:nth-child(2) > .objbox table.obj{width:100% !important}/* specilly applied on Budget grid*/
 
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr tr:first-child{height:0 !important}
-#divgridview.budget-grid div.gridbox table.hdr,
-#divgridview.budget-grid div.gridbox table.obj {
+#divgridview.budget-grid div:nth-child(2) > .objbox table.obj{margin-right: 20px !important;}
+
+/*#divgridview.budget-grid div.gridbox table.hdr {
+    -webkit-box-sizing: border-box !important;
+  -moz-box-sizing: border-box !important;
+  box-sizing: border-box !important;
+}*/
+/* #2607 Resolve column alignment issue on Budget grid when less column and scroll appear */
+#divgridview.budget-grid div.gridbox table.hdr {
   -webkit-box-sizing: content-box !important;
   -moz-box-sizing: content-box !important;
   box-sizing: content-box !important;
+  padding-right:0 !important
+}
+#divgridview.budget-grid div.gridbox.border-box table.hdr {
+    -webkit-box-sizing: border-box !important;
+  -moz-box-sizing: border-box !important;
+  box-sizing: border-box !important;
+  padding-right:20px !important
 }
 
-#divgridview.budget-grid div:nth-child(2) > .objbox table.obj{margin-right: 20px !important;}
 /* ============== Search box CSS ================ */
 /*#divgridview .xhdr{ height: 37px !important; }*/
 
