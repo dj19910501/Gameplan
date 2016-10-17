@@ -492,6 +492,7 @@
                     else {
                         HomeGrid.setCellTextStyle(GetParentId, cellInd, "");
                     }
+                    HomeGrid.cells(GetParentId, cellInd).setAttribute("title", "");
                 }
             }            
         }
@@ -527,6 +528,7 @@
             else {
                 HomeGrid.setCellTextStyle(rowId, cellInd, "");
             }
+            HomeGrid.cells(rowId, cellInd).setAttribute("title", "");
         }
 
         var BudgetVal = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
@@ -542,7 +544,7 @@
             var parent = ["plan", "campaign", "program"];
             var parentUppercase = ["Plan", "Campaign", "Program"];
             var child = ["Campaign", "Program", "Tactic"];
-            HomeGrid.cells(rowId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
+            HomeGrid.cells(rowId, cellInd + 1).setAttribute("title", Type + "'s cost is over it's budget.");
         }
         else {
             var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("locked");
@@ -552,6 +554,7 @@
             else {
                 HomeGrid.setCellTextStyle(rowId, cellInd + 1, "");
             }
+            HomeGrid.cells(rowId, cellInd + 1).setAttribute("title", "");
         }
     }
 
@@ -666,12 +669,8 @@
             else {
                 HomeGrid.setCellTextStyle(rowId, cellInd, "");
             }
+            HomeGrid.cells(rowId, cellInd).setAttribute("title", "");
         }
-
-        var parent = ["plan", "campaign", "program"];
-        var parentUppercase = ["Plan", "Campaign", "Program"];
-        var child = ["Campaign", "Program", "Tactic"];
-        HomeGrid.cells(rowId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
     }
 
     function SetBalanceCost(arrChildNodeId, cellInd, Type, AmtDiff, IsTotalCost, LineItemTotal, nValue, ParentCost) {
@@ -726,6 +725,7 @@
                     else {
                         HomeGrid.setCellTextStyle(ParentId, cellInd, "");
                     }
+                    HomeGrid.cells(ParentId, cellInd).setAttribute("title", "");
                 }
 
                 //Parent UnAllocated Cost
