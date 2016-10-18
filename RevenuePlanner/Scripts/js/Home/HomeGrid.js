@@ -301,6 +301,8 @@ function SaveMoveTactic() {
         data: { UpdateType: "tactic", UpdateColumn: "ParentID", UpdateVal: destinatinId, Id: parseInt(sourseid) },
         dataType: 'json',
         success: function (states) {
+            HomeGrid.saveOpenStates("plangridState");
+
             LoadPlanGrid();
         }
     });
@@ -668,6 +670,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                         dataType: 'json',
                         success: function (states) {
+                            HomeGrid.saveOpenStates("plangridState");
+
                             if (states.errormsg != null && states.errormsg.trim() != "") {
                                 alert(states.errormsg.trim());
                                 HomeGrid.cells(rowId, cellInd).setValue(oValue);
@@ -712,6 +716,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         },
                         dataType: 'json',
                         success: function (states) {
+                            HomeGrid.saveOpenStates("plangridState");
+
                             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
                             var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
 
@@ -985,6 +991,8 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                 dataType: 'json',
 
                 success: function (states) {
+                    HomeGrid.saveOpenStates("plangridState");
+
                     if (UpdateColumn == TargetStageGoalId) {
                         var psv = HomeGrid.getUserData(rowid, "stage");
                         HomeGrid.cells(rowid, TargetStageGoalColIndex).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);

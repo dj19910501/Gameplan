@@ -135,7 +135,6 @@
 
             }
             HomeGrid.parse(GridDataHomeGrid, "json");
-            HomeGrid.collapseAll();
 
             var colSplitId = HomeGrid.getColIndexById("BudgetCost");
             HomeGrid.splitAt(colSplitId);
@@ -200,9 +199,17 @@
 
             //setTimeout(function () {
             HomeGrid.setSizes();
-            HomeGrid.loadOpenStates("plangridState");
+            var cookie = document.cookie;
+            if (cookie.indexOf("gridOpenplangridState") > -1) {
 
-            HomeGrid.objBox.scrollTop = scrollstate.y;
+                HomeGrid.collapseAll();
+
+                HomeGrid.loadOpenStates("plangridState");
+                setTimeout(function () {
+                    HomeGrid.objBox.scrollTop = scrollstate.y;
+
+                }, 100);
+            }
 
             //}, 200);
             LoadAfterParsing();

@@ -956,7 +956,11 @@ var SavePresetValue = false;
 function UpdateResult() {
     IsUpdate = true;
     isRequest = false;
+    var PreviousPlanIds = filters.PlanIDs;
+
     GetFilterIds();
+    var CurrentPlanIds = filters.PlanIDs;
+
     RemoveAllHoneyCombData();
     //if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
     if ($('#IsGridView').val().toLowerCase() == "true" && !IsBudgetGrid) {
@@ -1008,15 +1012,20 @@ function UpdateResult() {
         var OwnerIds = filters.OwnerIds;
         var TacticTypeids = filters.TacticTypeids;
         var StatusIds = filters.StatusIds;
+        Resetopenstate(PreviousPlanIds, CurrentPlanIds);
         LoadPlanGrid();
         $("#totalEntity").text(ExportSelectedIds.TaskID.length);
 
     }
     else if (IsBudgetGrid) {
         HomeGrid.saveOpenStates("plangridState");
+        Resetopenstate(PreviousPlanIds, CurrentPlanIds);
         LoadBudgetGrid();
     }
     else {
+        SetcookieforSaveState();
+        Resetopenstate(PreviousPlanIds, CurrentPlanIds);
+        GetOpenCloseState();
         BindPlanCalendar();
     }
     RefershPlanHeaderCalc();
@@ -1028,7 +1037,32 @@ function UpdateResult() {
 
     BindViewSelections(urlContent + 'Home/GetViewBylistData');
 }
+function Resetopenstate(PreviousPlanIds, CurrentPlanIds)
+{
+    if ($(PreviousPlanIds).not(CurrentPlanIds).length != 0 || $(CurrentPlanIds).not(PreviousPlanIds).length != 0) {
+        var cookie = document.cookie;
+        if (cookie.indexOf("gridOpenplangridState") > -1) {
+            var cookies = cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                if (cookies[i].indexOf("gridOpenplangridState") > -1) {
+                    cookies.splice(i, 1);
+                }
+            }
+            createCookie("gridOpenplangridState", "", -1);
+        }
+    }
 
+}
+
+function createCookie(name, value, days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
 function GetPlanIds() {
     filters.PlanIDs = [];
     $("#ulSelectedPlans li input[type=checkbox]:checked").each(function () {

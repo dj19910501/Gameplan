@@ -632,7 +632,7 @@ namespace RevenuePlanner.Services
                 {
                     CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                     CampaignRowsObj.id = bmc.TaskId;//ActivityType.ActivityCampaign + "_" + HttpUtility.HtmlEncode(bmc.ActivityId);
-                    CampaignRowsObj.open = null;
+                    CampaignRowsObj.open = Open;
 
                     bool IsCampCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmc.CreatedBy == UserID || lstSubordinatesIds.Contains(bmc.CreatedBy)) ? true : false : true;
 
