@@ -1049,6 +1049,8 @@ function Resetopenstate(PreviousPlanIds, CurrentPlanIds)
                 }
             }
             createCookie("gridOpenplangridState", "", -1);
+            isCopyTacticHomeGrid = 0;
+            isEditTacticHomeGrid = 0;
         }
     }
 

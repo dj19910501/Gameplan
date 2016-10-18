@@ -3248,7 +3248,7 @@ BEGIN
 					tac.EndDate as 'endDate',
 					Null as 'duration',
 					0 as 'progress',
-					Null as 'open',
+					'0' as 'open',
 					CASE
 						WHEN (tac.[Status] = @submitStatus) THEN '1' ELSE '0'
 					END as 'isSubmitted',
@@ -3370,7 +3370,7 @@ BEGIN
 
 		-- Insert Tactic Data to local table @tblPrograms
 		BEGIN
-			INSERT INTO @tblPrograms(id,[text],machineName,[start_date],endDate,progress,parent,colorcode,PlanProgramId,[Status],TacticType,CreatedBy,[type],PlanId,PYear)
+			INSERT INTO @tblPrograms(id,[text],machineName,[start_date],endDate,progress,[open],parent,colorcode,PlanProgramId,[Status],TacticType,CreatedBy,[type],PlanId,PYear)
 
 			SELECT 
 					ent.TaskId as 'id',
@@ -3384,6 +3384,7 @@ BEGIN
 					ent.EndDate as 'endDate',
 					--Null as 'duration',
 					0 as 'progress',
+					'0' as [open],
 					ent.ParentTaskId as 'parent',
 					--NULL as 'color',
 					ent.ColorCode as 'colorcode',
@@ -3509,7 +3510,7 @@ BEGIN
 
 		-- Insert Campaign Data to local table @tblCampaigns
 		BEGIN
-			INSERT INTO @tblCampaigns(id,[text],[start_date],endDate,progress,parent,colorcode,PlanCampaignId,[Status],TacticType,CreatedBy,[type],PlanId,PYear)
+			INSERT INTO @tblCampaigns(id,[text],[start_date],endDate,progress,[open],parent,colorcode,PlanCampaignId,[Status],TacticType,CreatedBy,[type],PlanId,PYear)
 
 			SELECT 
 					ent.TaskId as 'id',
@@ -3522,6 +3523,7 @@ BEGIN
 					ent.EndDate as 'endDate',
 					--Null as 'duration',
 					0 as 'progress',
+					'1' as [open],
 					ent.ParentTaskId as 'parent',
 					ent.ColorCode as 'colorcode',
 					ent.EntityId as 'PlanCampaignId',
@@ -3643,12 +3645,13 @@ BEGIN
 
 		-- Insert Plan Data to local table @tblPlans
 		BEGIN
-			INSERT INTO @tblPlans(id,[text],progress,parent,colorcode,[Status],TacticType,CreatedBy,[type],PlanId,PYear)
+			INSERT INTO @tblPlans(id,[text],progress,[open],parent,colorcode,[Status],TacticType,CreatedBy,[type],PlanId,PYear)
 
 			SELECT 
 					ent.TaskId as 'id',
 					ent.EntityTitle as 'text',
 					0 as 'progress',
+					'1' as [open],
 					ent.ParentTaskId as 'parent',
 					ent.ColorCode as 'colorcode',
 					ent.[Status] as 'Status',

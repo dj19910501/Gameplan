@@ -128,13 +128,16 @@ $('#btnbudget').click(function () {
             y: HomeGrid.objBox.scrollTop,
             x: HomeGrid.objBox.scrollLeft,
         }
+        HomeGrid.saveOpenStates("plangridState");
+    }
+    else {
+        SetcookieforSaveState();
     }
     isCalendarView = false;
     IsGridView = false;
     $('#IsGridView').val('false');
     $('#ChangeView').hide();
     $('#exp-serach').css('display', 'none');
-    HomeGrid.saveOpenStates("plangridState");		 
     RemoveAllHoneyCombData();
     RefershPlanHeaderCalc();
     LoadBudgetGrid();
