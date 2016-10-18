@@ -8894,7 +8894,7 @@ SET NOCOUNT ON;
 			,C.Name AS 'CustomFieldName' 
 			,C.CustomFieldTypeId 
 			,C.IsRequired
-			,C.EntityType
+			,ET.EntityTypeId AS EntityType 
 			,C.AbbreviationForMulti
 			,@CustomFieldTypeText As 'CustomFieldType'
 			,'custom_'+CAST (C.CustomFieldId AS VARCHAR(100))+':'+C.EntityType AS CustomUniqueId
@@ -8904,6 +8904,7 @@ SET NOCOUNT ON;
 			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' FROM CustomFieldType CT
 				WHERE CT.Name=@CustomFieldTypeText 
 				AND CT.CustomFieldTypeId = C.CustomFieldTypeId)CT
+			CROSS APPLY (SELECT * FROM EntityType WHERE Name = C.EntityType) ET 
 			WHERE ClientId=@ClientId
 					AND IsDeleted=0
 			UNION ALL
@@ -8912,7 +8913,7 @@ SET NOCOUNT ON;
 			,C.Name AS 'CustomFieldName' 
 			,C.CustomFieldTypeId 
 			,C.IsRequired
-			,C.EntityType
+			,ET.EntityTypeId AS EntityType 
 			,C.AbbreviationForMulti
 			,@CustomFieldTypeDropDown AS 'CustomFieldType'
 			,'custom_'+CAST (C.CustomFieldId AS VARCHAR(100))+':'+C.EntityType AS CustomUniqueId
@@ -8929,6 +8930,7 @@ SET NOCOUNT ON;
 								C.CustomFieldId = CP.CustomFieldId
 							GROUP BY CP.CustomFieldId
 							HAVING COUNT(CP.CustomFieldOptionId)>0) CP
+			CROSS APPLY (SELECT * FROM EntityType WHERE Name = C.EntityType) ET
 			WHERE ClientId=@ClientId
 					AND IsDeleted=0
 					
@@ -8946,7 +8948,7 @@ SET NOCOUNT ON;
 				SELECT CE.CustomFieldId
 					,Hireachy.EntityId
 					,CE.Value
-					,Hireachy.EntityType
+					,Hireachy.EntityTypeId AS EntityType
 					,C.CustomFieldType	
 					,Hireachy.EntityType +'_'+CAST(CE.EntityId AS VARCHAR) AS 'UniqueId'
 					,CE.UnrestrictedText AS 'Text'
@@ -8973,11 +8975,11 @@ SET NOCOUNT ON;
 									AND Hireachy.EntityId = CE.EntityId ) CE
 				OUTER APPLY (SELECT * FROM @UserRestrictedValues RV WHERE C.CustomFieldId = RV.CustomFieldId) RV
 							UNION ALL 
-							SELECT C.CustomFieldId,NULL,NULL,NULL,CT.CustomFieldType
-							,NULL AS 'UniqueId',
-							NULL
+							SELECT C.CustomFieldId,NULL,NULL,ET.EntityTypeId,CT.CustomFieldType
+							,NULL AS 'UniqueId',NULL
 							,NULL AS 'RestrictedText'
 							,NULL AS 'RestrictedValue' FROM CustomField C 
+							CROSS APPLY (SELECT * FROM EntityType WHERE Name = C.EntityType) ET  
 							CROSS APPLY (SELECT Item FROM @CustomFieldIds selCol 
 											WHERE selCol.Item = C.CustomFieldId) selCol
 									CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT 
