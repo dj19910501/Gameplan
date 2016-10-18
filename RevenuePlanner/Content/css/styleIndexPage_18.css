@@ -1539,6 +1539,7 @@ color: #89CEDE;
     font-weight: normal;
     width: auto;
     padding:0 3px;
+    font-family: source_sans_prosemibold, Arial, sans-serif;
 }
 
 .task-tbl  #divgridview #gridbox { min-height:100%; border:0 !important}

@@ -13515,6 +13515,8 @@ input.serach-input {
 	/*overflow-x:hidden;*/
 	/*overflow-y: auto;*/
 	transition: width 0.1s ease-in-out 0.1s;
+    -moz-transition: width 0.1s ease-in-out 0.1s;
+    -webkit-transition: width 0.1s ease-in-out 0.1s;
 	background: #f0f0f0;
 }
 #content_wraper {
@@ -13529,7 +13531,11 @@ input.serach-input {
 	min-height: 300px;
 	vertical-align: top;
 	width: calc(100% - 281px);
+    width: -webkit-calc(100% - 281px);
+    width: -moz-calc(100% - 281px);
 	transition: margin 0.1s ease-in-out 0.1s;
+    -moz-transition: margin 0.1s ease-in-out 0.1s;
+    -webkit-transition: margin 0.1s ease-in-out 0.1s;
 }
 .sidebar-toogle {
 	left: 279px;
@@ -13573,30 +13579,34 @@ input.serach-input {
 
 /* On Measure tab */
 .highcharts-container, .highcharts-container svg, .highcharts-container chart{width:100% !important; max-width:100% !important}
-/*.highcharts-container{max-width:80% !important; overflow:auto}*/
-#divTabData {
-    margin: 0;
-    overflow: hidden !important;
-    width:60% !important;
-    padding-left: 20px;
-    box-sizing: border-box;
-}
+.budgetReportHeader .selectBox{float:right}
+/* CSS hack to resolve Gridbox table width issue only on finanace page Start*/
 #divTabData #gridbox{
-    width:99.5% !important; 
+    width:1280px !important; 
+    /*max-width:1280px;*/
     min-height: 100%;
     overflow: hidden;
     border: 1px solid #ccc;
 }
-#divTabData #gridbox table{ width: 100% !important;}
-#divMainReportPart{
-    float: left;
-    width: 100%;
-    box-sizing: border-box;
+  .slideLeft  #divTabData #gridbox {
+    width: 1500px !important;
 }
-.slideLeft #divTabData{width: 75%;}
-.budgetReportHeader{padding-left: 18px; margin-bottom: 10px; width: 100%; float: left;}
-.budgetReportHeader .selectBox{float:right}
-
+@media (min-width: 1650px) {
+    /*#divMainReportPart{width: 80.5%;}
+    .slideLeft #divMainReportPart {width: 85%;}*/
+}
+@media (max-width: 1599px) {
+    #divTabData #gridbox {
+        width: 950px !important;
+    }
+   .slideLeft  #divTabData #gridbox {
+    width: 1080px !important;
+}
+}
+/* End */
+#ddlCustomTimeFrame .sbHolder { /* Resolve issue on custom report - Measure Tab*/
+    z-index: 1499;
+}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
