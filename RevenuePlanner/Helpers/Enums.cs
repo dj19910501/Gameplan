@@ -746,7 +746,16 @@ namespace RevenuePlanner.Helpers
             TargetStageGoal,
             MQL,
             [Description("Revenue")]
-            Revenue
+            Revenue,
+            // Added by Arpita Soni to resolve issue in loading grid with integration ids
+            [Description("Eloqua Id")]
+            Eloquaid,
+            [Description("WorkFront Id")]
+            WorkFrontid,
+            [Description("Salesforce Id")]
+            Salesforceid,
+            [Description("Marketo Id")]
+            Marketoid,
         }
         
 
