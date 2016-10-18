@@ -1,3 +1,38 @@
+--Added EntityType table for performance reason #2695 - performance improvement for grid view
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF  NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'EntityType' and TABLE_SCHEMA = 'dbo')
+CREATE TABLE [dbo].[EntityType](
+	[EntityTypeID] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [varchar](50) NULL,
+	[Description] [varchar](150) NULL,
+ CONSTRAINT [PK_EntityType] PRIMARY KEY CLUSTERED 
+(
+	[EntityTypeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+IF NOT EXISTS (SELECT 1 FROM EntityType)
+BEGIN 
+	SET IDENTITY_INSERT [dbo].[EntityType] ON 
+	INSERT [dbo].[EntityType] ([EntityTypeID], [Name], [Description]) VALUES (1, N'Plan', NULL)
+	INSERT [dbo].[EntityType] ([EntityTypeID], [Name], [Description]) VALUES (2, N'Campaign', NULL)
+	INSERT [dbo].[EntityType] ([EntityTypeID], [Name], [Description]) VALUES (3, N'Program', NULL)
+	INSERT [dbo].[EntityType] ([EntityTypeID], [Name], [Description]) VALUES (4, N'Tactic', NULL)
+	INSERT [dbo].[EntityType] ([EntityTypeID], [Name], [Description]) VALUES (5, N'ImprovementTactic', NULL)
+	INSERT [dbo].[EntityType] ([EntityTypeID], [Name], [Description]) VALUES (6, N'Lineitem', NULL)
+	INSERT [dbo].[EntityType] ([EntityTypeID], [Name], [Description]) VALUES (7, N'MediaCode', NULL)
+	SET IDENTITY_INSERT [dbo].[EntityType] OFF
+END 
+GO
+
 --#2695 - performance improvement for grid view
 --
 --Add VARCHAR columns to speed up search 
@@ -360,7 +395,7 @@ SET NOCOUNT ON;
 			,C.Name AS 'CustomFieldName' 
 			,C.CustomFieldTypeId 
 			,C.IsRequired
-			,C.EntityType
+			,ET.EntityTypeId AS EntityType
 			,C.AbbreviationForMulti
 			,@CustomFieldTypeText As 'CustomFieldType'
 			,'custom_'+CAST (C.CustomFieldId AS VARCHAR(100))+':'+C.EntityType AS CustomUniqueId
@@ -370,6 +405,7 @@ SET NOCOUNT ON;
 			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' FROM CustomFieldType CT
 				WHERE CT.Name=@CustomFieldTypeText 
 				AND CT.CustomFieldTypeId = C.CustomFieldTypeId)CT
+			CROSS APPLY (SELECT * FROM EntityType WHERE Name = C.EntityType) ET 
 			WHERE ClientId=@ClientId
 					AND IsDeleted=0
 			UNION ALL
@@ -378,7 +414,7 @@ SET NOCOUNT ON;
 			,C.Name AS 'CustomFieldName' 
 			,C.CustomFieldTypeId 
 			,C.IsRequired
-			,C.EntityType
+			,ET.EntityTypeId AS EntityType
 			,C.AbbreviationForMulti
 			,@CustomFieldTypeDropDown AS 'CustomFieldType'
 			,'custom_'+CAST (C.CustomFieldId AS VARCHAR(100))+':'+C.EntityType AS CustomUniqueId
@@ -395,6 +431,7 @@ SET NOCOUNT ON;
 								C.CustomFieldId = CP.CustomFieldId
 							GROUP BY CP.CustomFieldId
 							HAVING COUNT(CP.CustomFieldOptionId)>0) CP
+			CROSS APPLY (SELECT * FROM EntityType WHERE Name = C.EntityType) ET 
 			WHERE ClientId=@ClientId
 					AND IsDeleted=0
 					
@@ -410,7 +447,7 @@ SET NOCOUNT ON;
 				SELECT CE.CustomFieldId
 					,Hireachy.EntityId
 					,CE.Value
-					,Hireachy.EntityType
+					,Hireachy.EntityTypeId AS EntityType
 					,C.CustomFieldType	
 					,Hireachy.EntityType +'_'+CAST(CE.EntityId AS VARCHAR) AS 'UniqueId'
 					,(  
@@ -447,8 +484,9 @@ SET NOCOUNT ON;
 										ON RE.CustomFieldId = CE.CustomFieldId AND RE.UserId = @UserId
 								WHERE C.CustomFieldId = CE.CustomFieldId
 									AND Hireachy.EntityId = CE.EntityId ) CE
+
 							UNION ALL 
-							SELECT C.CustomFieldId,NULL,NULL,NULL,CT.CustomFieldType
+							SELECT C.CustomFieldId,NULL,NULL,1,CT.CustomFieldType
 							,NULL AS 'UniqueId',
 							NULL FROM CustomField C 
 							CROSS APPLY (SELECT Item FROM @CustomFieldIds selCol 
@@ -461,8 +499,6 @@ SET NOCOUNT ON;
 				) A
 	GROUP BY A.CustomFieldId, A.EntityId
 							
-			
-
 END
 GO
 
@@ -926,25 +962,17 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGet
 DROP FUNCTION [dbo].[fnGetEntitieHirarchyByPlanId]
 GO
 
--- Modified by Viral to correct the function name
--- added by devanshi for 1947 : add integration ids
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetEntityHirarchyByPlanId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[fnGetEntityHirarchyByPlanId]
+GO
 
-/****** Object:  UserDefinedFunction [dbo].[fnGetEntityHierarchyByPlanId]    Script Date: 10/17/2016 10:19:23 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetEntityHierarchyByPlanId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 DROP FUNCTION [dbo].[fnGetEntityHierarchyByPlanId]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnGetEntityHierarchyByPlanId]    Script Date: 10/17/2016 10:19:23 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetEntityHierarchyByPlanId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
-BEGIN
-execute dbo.sp_executesql @statement = N'
 --This function will return all the enties with hirarchy
 --Multiple plan ids can be passed saperated by comma
 --If we pass null then it will retuen all plans hirarchy data
-CREATE FUNCTION [dbo].[fnGetEntityHierarchyByPlanId] ( @PlanIds NVARCHAR(MAX),@TimeFrame VARCHAR(20)='''',@isGrid bit=0)
+CREATE FUNCTION [dbo].[fnGetEntityHierarchyByPlanId] ( @PlanIds NVARCHAR(MAX),@TimeFrame VARCHAR(20)='',@isGrid bit=0)
 RETURNS @Entities TABLE (
 			UniqueId		NVARCHAR(30), 
 			EntityId		BIGINT,
@@ -952,6 +980,7 @@ RETURNS @Entities TABLE (
 			ParentEntityId	BIGINT, 
 			ParentUniqueId	NVARCHAR(30),
 			EntityType		NVARCHAR(15), 
+			EntityTypeID	INT, 
 			ColorCode		NVARCHAR(7),
 			[Status]		NVARCHAR(15), 
 			StartDate		DATETIME, 
@@ -982,24 +1011,24 @@ BEGIN
 	DECLARE @EndDate DateTime   --End date perameter to filter entities e.g. campaign,program and tactic
 
 	--Set first year with first start date of year and last year with last date of year
-	IF (@TimeFrame IS NOT NULL AND @TimeFrame <>'''')
+	IF (@TimeFrame IS NOT NULL AND @TimeFrame <>'')
 		BEGIN
 			INSERT INTO @TimeFrameDatesAndYear
-			SELECT Item as PlanYear from dbo.SplitString(@TimeFrame,''-'')--split timeframe parameter e.g. 2015-2016
+			SELECT Item as PlanYear from dbo.SplitString(@TimeFrame,'-')--split timeframe parameter e.g. 2015-2016
 	
 			SELECT @MinYear=CONVERT(VARCHAR,( MIN(CONVERT(INT,PlanYear)))),@MaxYear=CONVERT(VARCHAR,( MAX(CONVERT(INT,PlanYear)))) FROM @TimeFrameDatesAndYear --Set Minimum & Maximum year
 	
-			SET @StartDate= CONVERT(DATETIME,@MinYear+''-01-01 00:00:00'') --Set first date of minimum year
-			SET @EndDate= CONVERT(DATETIME,@MaxYear+''-12-31 00:00:00'')   --Set Last date of maximum year
+			SET @StartDate= CONVERT(DATETIME,@MinYear+'-01-01 00:00:00') --Set first date of minimum year
+			SET @EndDate= CONVERT(DATETIME,@MaxYear+'-12-31 00:00:00')   --Set Last date of maximum year
 
 		END
 	
 	;WITH FilteredPlan AS(
-		SELECT ''Plan'' EntityType
-		,''P_'' + CAST(P.PlanId AS NVARCHAR(10)) UniqueId
+		SELECT 'Plan' EntityType
+		,'P_' + CAST(P.PlanId AS NVARCHAR(10)) UniqueId
 		,P.PlanId EntityId, P.Title EntityTitle,NULL ParentEntityId,NULL ParentUniqueId, P.Status, NULL StartDate, NULL EndDate,P.CreatedBy 
 		,CAST(P.PlanId AS NVARCHAR(50)) AS AltId
-		,''L''+CAST(P.PlanId AS NVARCHAR(50)) AS TaskId
+		,'L'+CAST(P.PlanId AS NVARCHAR(50)) AS TaskId
 		,NULL AS ParentTaskId
 		,P.PlanId
 		,P.ModelId
@@ -1011,14 +1040,14 @@ BEGIN
 				
 			AND (
 					@PlanIds IS NULL 
-					OR P.PlanId IN (SELECT DISTINCT dimension FROM dbo.fnSplitString(@PlanIds,'',''))
+					OR P.PlanId IN (SELECT DISTINCT dimension FROM dbo.fnSplitString(@PlanIds,','))
 				)
 	),
 	Campaigns AS (
-		SELECT ''Campaign'' EntityType,''P_C_'' + CAST(C.PlanCampaignId AS NVARCHAR(10)) UniqueId,C.PlanCampaignId EntityId, C.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, C.Status, C.StartDate StartDate, C.EndDate EndDate,C.CreatedBy 
-		,CAST(C.PlanId AS NVARCHAR(500))+''_''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS AltId
-		,CAST(P.TaskId AS NVARCHAR(500))+''_C''+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS TaskId
-		,''L''+CAST(C.PlanId  AS NVARCHAR(500)) AS ParentTaskId
+		SELECT 'Campaign' EntityType,'P_C_' + CAST(C.PlanCampaignId AS NVARCHAR(10)) UniqueId,C.PlanCampaignId EntityId, C.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, C.Status, C.StartDate StartDate, C.EndDate EndDate,C.CreatedBy 
+		,CAST(C.PlanId AS NVARCHAR(500))+'_'+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+'_C'+CAST(C.PlanCampaignId AS NVARCHAR(50)) AS TaskId
+		,'L'+CAST(C.PlanId  AS NVARCHAR(500)) AS ParentTaskId
 		,P.PlanId
 		,P.ModelId
 		,null as Eloquaid,null as Marketoid,c.IntegrationWorkFrontProgramID as WorkFrontid,c.IntegrationInstanceCampaignId as Salesforceid
@@ -1028,10 +1057,10 @@ BEGIN
 		WHERE C.IsDeleted = 0 AND (@isGrid=1 OR (C.StartDate>=@StartDate AND C.StartDate<=@EndDate) OR (C.EndDate>=@StartDate AND C.EndDate<=@EndDate))
 	),
 	Programs AS (
-		SELECT ''Program'' EntityType,''P_C_P_'' + CAST(P.PlanProgramId AS NVARCHAR(10)) UniqueId,P.PlanProgramId EntityId, P.Title EntityTitle, C.EntityId ParentEntityId,C.UniqueId ParentUniqueId, P.Status, P.StartDate StartDate, P.EndDate EndDate,P.CreatedBy 
-		,CAST(P.PlanCampaignId AS NVARCHAR(500))+''_''+CAST(P.PlanProgramId AS NVARCHAR(50)) As AltId
-		,CAST(C.TaskId AS NVARCHAR(500))+''_P''+CAST(P.PlanProgramId AS NVARCHAR(50)) As TaskId
-		,CAST(C.ParentTaskId AS NVARCHAR(500))+''_C''+CAST(P.PlanCampaignId AS NVARCHAR(50)) As ParentTaskId
+		SELECT 'Program' EntityType,'P_C_P_' + CAST(P.PlanProgramId AS NVARCHAR(10)) UniqueId,P.PlanProgramId EntityId, P.Title EntityTitle, C.EntityId ParentEntityId,C.UniqueId ParentUniqueId, P.Status, P.StartDate StartDate, P.EndDate EndDate,P.CreatedBy 
+		,CAST(P.PlanCampaignId AS NVARCHAR(500))+'_'+CAST(P.PlanProgramId AS NVARCHAR(50)) As AltId
+		,CAST(C.TaskId AS NVARCHAR(500))+'_P'+CAST(P.PlanProgramId AS NVARCHAR(50)) As TaskId
+		,CAST(C.ParentTaskId AS NVARCHAR(500))+'_C'+CAST(P.PlanCampaignId AS NVARCHAR(50)) As ParentTaskId
 		,C.PlanId
 		,C.ModelId
 		,null as Eloquaid,null as Marketoid,null as WorkFrontid,P.IntegrationInstanceProgramId as Salesforceid
@@ -1040,10 +1069,10 @@ BEGIN
 		WHERE P.IsDeleted = 0 AND (@isGrid=1 OR (P.StartDate>=@StartDate AND P.StartDate<=@EndDate) OR (P.EndDate>=@StartDate AND P.EndDate<=@EndDate))
 	),
 	Tactics AS (
-		SELECT ''Tactic'' EntityType,''P_C_P_T_'' + CAST(T.PlanTacticId AS NVARCHAR(10)) UniqueId,T.PlanTacticId EntityId, T.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, T.Status, T.StartDate StartDate, T.EndDate EndDate,T.CreatedBy 
-		,CAST(T.PlanProgramId AS NVARCHAR(500))+''_''+CAST(T.PlanTacticId AS NVARCHAR(50)) As AltId
-		,CAST(P.TaskId AS NVARCHAR(500))+''_T''+CAST(T.PlanTacticId AS NVARCHAR(50)) As TaskId
-		,CAST(P.ParentTaskId AS NVARCHAR(500))+''_P''+CAST(T.PlanProgramId AS NVARCHAR(50)) As ParentTaskId
+		SELECT 'Tactic' EntityType,'P_C_P_T_' + CAST(T.PlanTacticId AS NVARCHAR(10)) UniqueId,T.PlanTacticId EntityId, T.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId, T.Status, T.StartDate StartDate, T.EndDate EndDate,T.CreatedBy 
+		,CAST(T.PlanProgramId AS NVARCHAR(500))+'_'+CAST(T.PlanTacticId AS NVARCHAR(50)) As AltId
+		,CAST(P.TaskId AS NVARCHAR(500))+'_T'+CAST(T.PlanTacticId AS NVARCHAR(50)) As TaskId
+		,CAST(P.ParentTaskId AS NVARCHAR(500))+'_P'+CAST(T.PlanProgramId AS NVARCHAR(50)) As ParentTaskId
 		,P.PlanId
 		,P.ModelId
 		,T.IntegrationInstanceEloquaId as Eloquaid,T.IntegrationInstanceMarketoID as Marketoid,T.IntegrationWorkFrontProjectID as WorkFrontid,T.IntegrationInstanceTacticId as Salesforceid
@@ -1052,10 +1081,10 @@ BEGIN
 		WHERE T.IsDeleted = 0 AND (@isGrid=1 OR (T.StartDate>=@StartDate AND T.StartDate<=@EndDate) OR (T.EndDate>=@StartDate AND T.EndDate<=@EndDate))
 	),
 	LineItems AS (
-		SELECT ''LineItem'' EntityType,''P_C_P_T_L_'' + CAST(L.PlanLineItemId AS NVARCHAR(10)) UniqueId,L.PlanLineItemId EntityId, L.Title EntityTitle, T.EntityId ParentEntityId,T.UniqueId ParentUniqueId, NULL Status, L.StartDate StartDate, L.EndDate EndDate,L.CreatedBy 
-		,CAST(L.PlanTacticId AS NVARCHAR(500))+''_''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As AltId
-		,CAST(T.TaskId AS NVARCHAR(500))+''_X''+CAST(L.PlanLineItemId AS NVARCHAR(50)) As TaskId
-		,CAST(T.ParentTaskId AS NVARCHAR(500))+''_T''+CAST(L.PlanTacticId AS NVARCHAR(50)) As ParentTaskId
+		SELECT 'LineItem' EntityType,'P_C_P_T_L_' + CAST(L.PlanLineItemId AS NVARCHAR(10)) UniqueId,L.PlanLineItemId EntityId, L.Title EntityTitle, T.EntityId ParentEntityId,T.UniqueId ParentUniqueId, NULL Status, L.StartDate StartDate, L.EndDate EndDate,L.CreatedBy 
+		,CAST(L.PlanTacticId AS NVARCHAR(500))+'_'+CAST(L.PlanLineItemId AS NVARCHAR(50)) As AltId
+		,CAST(T.TaskId AS NVARCHAR(500))+'_X'+CAST(L.PlanLineItemId AS NVARCHAR(50)) As TaskId
+		,CAST(T.ParentTaskId AS NVARCHAR(500))+'_T'+CAST(L.PlanTacticId AS NVARCHAR(50)) As ParentTaskId
 		,T.PlanId
 		,T.ModelId
 		,null as Eloquaid,null as Marketoid,null as WorkFrontid,null as Salesforceid
@@ -1085,10 +1114,10 @@ BEGIN
 		FROM Tactics as T
 		-- Get ROI PackageIds for respective AnchorTacticId
 		LEFT JOIN (SELECT AnchorTacticID,PackageIds=
-				STUFF((SELECT '', '' + Cast(PlanTacticId as varchar)
+				STUFF((SELECT ', ' + Cast(PlanTacticId as varchar)
 				       FROM ROI_PackageDetail b 
 				       WHERE b.AnchorTacticID = a.AnchorTacticID 
-				      FOR XML PATH('''')), 1, 2, '''')
+				      FOR XML PATH('')), 1, 2, '')
 				FROM Tactics as T1
 				JOIN ROI_PackageDetail as a on T1.EntityId = a.AnchorTacticID
 				GROUP BY a.AnchorTacticID
@@ -1099,18 +1128,14 @@ BEGIN
 		SELECT UniqueId, EntityId,EntityTitle, ParentEntityId,ParentUniqueId,EntityType, NULL as ColorCode,Status,StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId, Null as ROIPackageIds ,EloquaId,MarketoId,WorkfrontID,SalesforceId
 		FROM LineItems
 
-		-- Get Entity ColorCode from ''EntityTypeColor'' table
-		Update @Entities SET ColorCode = C.ColorCode
+		-- Get Entity ColorCode from 'EntityTypeColor' table
+		Update @Entities SET ColorCode = C.ColorCode, EntityTypeID = T.EntityTypeID
 		FROM @Entities E
 		LEFT JOIN EntityTypeColor C ON C.EntityType = E.EntityType
+		LEFT JOIN EntityType T ON T.Name = E.EntityType
 	
 	RETURN
 END
-
-
-' 
-END
-
 GO
 
 
@@ -1123,16 +1148,14 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetFilterEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
-BEGIN
-execute dbo.sp_executesql @statement = N'
+
 CREATE FUNCTION [dbo].[fnGetFilterEntityHierarchy]
 (
-	@planIds varchar(max)='''',
-	@ownerIds nvarchar(max)='''',
-	@tactictypeIds varchar(max)='''',
-	@statusIds varchar(max)='''',
-	@TimeFrame varchar(20)='''',
+	@planIds varchar(max)='',
+	@ownerIds nvarchar(max)='',
+	@tactictypeIds varchar(max)='',
+	@statusIds varchar(max)='',
+	@TimeFrame varchar(20)='',
 	@isGrid bit=0
 )
 
@@ -1143,6 +1166,7 @@ RETURNS @Entities TABLE (
 			ParentEntityId	BIGINT, 
 			ParentUniqueId	NVARCHAR(30),
 			EntityType		NVARCHAR(15), 
+			EntityTypeId	INT, 
 			ColorCode		NVARCHAR(7),
 			[Status]		NVARCHAR(15), 
 			StartDate		DATETIME, 
@@ -1163,8 +1187,8 @@ AS
 BEGIN
 
 
-Declare @entTactic varchar(8)=''Tactic''
-Declare @entLineItem varchar(10)=''LineItem''
+Declare @entTactic varchar(8)='Tactic'
+Declare @entLineItem varchar(10)='LineItem'
 
 Declare @HierarchyEntities TABLE (
 			UniqueId		NVARCHAR(30), 
@@ -1173,6 +1197,7 @@ Declare @HierarchyEntities TABLE (
 			ParentEntityId	BIGINT, 
 			ParentUniqueId	NVARCHAR(30),
 			EntityType		NVARCHAR(15), 
+			EntityTypeId	INT, 
 			ColorCode		NVARCHAR(7),
 			[Status]		NVARCHAR(15), 
 			StartDate		DATETIME, 
@@ -1199,6 +1224,7 @@ UniqueId
 ,ParentEntityId	
 ,ParentUniqueId	
 ,EntityType		
+,EntityTypeId		
 ,ColorCode		
 ,[Status]		
 ,StartDate		
@@ -1225,8 +1251,8 @@ Select * from @HierarchyEntities
 ,tac as (
 	Select distinct ent.* 
 	FROM FilteredEnt as ent
-	Join [Plan_Campaign_Program_Tactic] as tac on ent.EntityId = tac.PlanTacticId and ent.EntityType=@entTactic AND tac.[Status] IN (select val from comma_split(@statusIds,'','')) and  tac.[CreatedBy] IN (select case when val = '''' then null else Convert(int,val) end from comma_split(@ownerIds,'',''))
-	Join [TacticType] as typ on tac.TacticTypeId = typ.TacticTypeId and typ.IsDeleted=''0'' and typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,'',''))
+	Join [Plan_Campaign_Program_Tactic] as tac on ent.EntityId = tac.PlanTacticId and ent.EntityType=@entTactic AND tac.[Status] IN (select val from comma_split(@statusIds,',')) and  tac.[CreatedBy] IN (select case when val = '' then null else Convert(int,val) end from comma_split(@ownerIds,','))
+	Join [TacticType] as typ on tac.TacticTypeId = typ.TacticTypeId and typ.IsDeleted='0' and typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,','))
 	where ent.EntityType = @entTactic
 )
 ,line as (
@@ -1237,7 +1263,7 @@ Select * from @HierarchyEntities
 )
 
 INSERT INTO @Entities
-select * from FilteredEnt where EntityType not in (''Tactic'',''LineItem'')
+select * from FilteredEnt where EntityTypeId not in (4/*Tactic*/,6 /*LineItem*/)
 union all
 SELECT * FROM tac 
 union all
@@ -1247,23 +1273,13 @@ RETURN
 
 END
 
-' 
-END
-
 GO
 
 /****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 10/18/2016 1:56:42 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnViewByEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 DROP FUNCTION [dbo].[fnViewByEntityHierarchy]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnViewByEntityHierarchy]    Script Date: 10/18/2016 1:56:42 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnViewByEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
-BEGIN
-execute dbo.sp_executesql @statement = N'
+
 -- =============================================
 -- Author:		Viral
 -- Create date: 09/23/2016
@@ -1276,7 +1292,7 @@ CREATE FUNCTION [dbo].[fnViewByEntityHierarchy]
 	@tactictypeIds varchar(max),
 	@statusIds varchar(max),
 	@ViewBy varchar(500),
-	@TimeFrame varchar(20)='''',
+	@TimeFrame varchar(20)='',
 	@isGrid bit=0
 )
 RETURNS 
@@ -1287,6 +1303,7 @@ RETURNS
 			ParentEntityId	BIGINT, 
 			ParentUniqueId	NVARCHAR(30),
 			EntityType		NVARCHAR(15), 
+			EntityTypeId	INT, 
 			ColorCode		NVARCHAR(7),
 			[Status]		NVARCHAR(15), 
 			StartDate		DATETIME, 
@@ -1306,31 +1323,36 @@ RETURNS
 AS
 BEGIN
 
-	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Tactic'')	
-	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Status'',''2016'',0)
-	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''Stage'')
-	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''TacticCustom71'')
-	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''ProgramCustom18'')
-	--Select * from fnViewByEntityHierarchy(''20220'',''104'',''31104,31121'',''Created,Complete,Approved,Declined,Submitted,In-Progress'',''CampaignCustom3'')
+	--Select * from fnViewByEntityHierarchy('20220','104','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','Tactic')	
+	--Select * from fnViewByEntityHierarchy('20220','104','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','Status','2016',0)
+	--Select * from fnViewByEntityHierarchy('20220','104','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','Stage')
+	--Select * from fnViewByEntityHierarchy('20220','104','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','TacticCustom71')
+	--Select * from fnViewByEntityHierarchy('20220','104','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','ProgramCustom18')
+	--Select * from fnViewByEntityHierarchy('20220','104','31104,31121','Created,Complete,Approved,Declined,Submitted,In-Progress','CampaignCustom3')
 	
 	-- Declare Local variables
 	BEGIN
-			Declare @stage varchar(10)=''Stage''
-			Declare @ROIPackage varchar(20)=''ROI Package''
-			Declare @Status varchar(20)=''Status''
-			Declare @custom varchar(50)=''Custom''
+			Declare @stage varchar(10)='Stage'
+			Declare @ROIPackage varchar(20)='ROI Package'
+			Declare @Status varchar(20)='Status'
+			Declare @custom varchar(50)='Custom'
 			
-			Declare @entType varchar(50)
-			Declare @entTactic varchar(50)=''Tactic''
-			Declare @entProgram varchar(50)=''Program''
-			Declare @entCampaign varchar(50)=''Campaign''
-			Declare @entPlan varchar(50)=''Plan''
+			Declare @entTactic varchar(50)='Tactic'
+			Declare @entProgram varchar(50)='Program'
+			Declare @entCampaign varchar(50)='Campaign'
+			Declare @entPlan varchar(50)='Plan'
+			
+			Declare @entTypeId INT
+			Declare @entTacticId INT = 4
+			Declare @entProgramId INT = 3
+			Declare @entCampaignId INT = 2
+			Declare @entPlanId INT = 1
 			
 			Declare @custmEntityTypeId int 
-			Declare @custCampaign varchar(20)=''CampaignCustom''
-			Declare @custProgram varchar(20)=''ProgramCustom''
-			Declare @custTactic varchar(20)=''TacticCustom''
-			Declare @isCustom bit=''0''
+			Declare @custCampaign varchar(20)='CampaignCustom'
+			Declare @custProgram varchar(20)='ProgramCustom'
+			Declare @custTactic varchar(20)='TacticCustom'
+			Declare @isCustom bit='0'
 			
 			Declare @ResultViewByHierarchyEntities TABLE (
 						UniqueId		NVARCHAR(30), 
@@ -1339,6 +1361,7 @@ BEGIN
 						ParentEntityId	BIGINT, 
 						ParentUniqueId	NVARCHAR(30),
 						EntityType		NVARCHAR(15), 
+						EntityTypeId	INT, 
 						ColorCode		NVARCHAR(7),
 						[Status]		NVARCHAR(15), 
 						StartDate		DATETIME, 
@@ -1365,6 +1388,7 @@ BEGIN
 						ParentEntityId	BIGINT, 
 						ParentUniqueId	NVARCHAR(30),
 						EntityType		NVARCHAR(15), 
+						EntityTypeId	INT, 
 						ColorCode		NVARCHAR(7),
 						[Status]		NVARCHAR(15), 
 						StartDate		DATETIME, 
@@ -1398,8 +1422,8 @@ BEGIN
 			BEGIN
 				
 				INSERT Into @ResultEntities(
-							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)		
-				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)		
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
 				FROM		fnGetFilterEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@TimeFrame,@isGrid)
 	
 				RETURN
@@ -1408,8 +1432,8 @@ BEGIN
 			BEGIN
 				-- GET Data with applying required filter and insert into local table to re use for further process.
 				INSERT Into @vwEntities(
-							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)		
-				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)		
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
 				FROM		fnGetFilterEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@TimeFrame,@isGrid)
 			END
 	
@@ -1417,93 +1441,93 @@ BEGIN
 			-- Insert distinct ViewBy values of Tactics.
 			If(@ViewBy = @Status)
 			BEGIN
-				SET @entType = @entTactic	-- Prepared View by structure based on Tactic
+				SET @entTypeId = @entTacticId	-- Prepared View by structure based on Tactic
 	
 				Insert Into @distViewByValues(ViewByTitle,ViewById) 
-				Select Distinct [Status],[Status] from @vwEntities where EntityType=@entType
+				Select Distinct [Status],[Status] from @vwEntities where EntityTypeId=@entTypeId
 	
 				Insert Into @tblEntityViewByMapping(EntityId,ViewByValue)
-				Select Distinct EntityId,[Status] from @vwEntities where EntityType=@entType
+				Select Distinct EntityId,[Status] from @vwEntities where EntityTypeId=@entTypeId
 			END
 			
 			ELSE If(@ViewBy = @stage)
 			BEGIN
-				SET @entType = @entTactic	-- Prepared View by structure based on Tactic
+				SET @entTypeId = @entTacticId	-- Prepared View by structure based on Tactic
 			
 			-- Insert Distict ViewBy values to local table to show 1st as parent record into Calendar or Grid.
 				Insert Into @distViewByValues(ViewByTitle,ViewById)
 				Select Distinct S.Title,Cast(S.StageId as varchar) from @vwEntities as H
-				Join Plan_Campaign_Program_Tactic as T on H.EntityId = T.PlanTacticId and EntityType=@entType
-				JOIN Stage as S on T.StageId = S.StageId and S.IsDeleted=''0''
+				Join Plan_Campaign_Program_Tactic as T on H.EntityId = T.PlanTacticId and EntityTypeId=@entTypeId
+				JOIN Stage as S on T.StageId = S.StageId and S.IsDeleted='0'
 	
 				-- Insert Entity and ViewBy value mapping records to local table for further process.
 				Insert Into @tblEntityViewByMapping(EntityId,ViewByValue)
 				Select Distinct H.EntityId,Cast(S.StageId as varchar) from @vwEntities as H
-				Join Plan_Campaign_Program_Tactic as T on H.EntityId = T.PlanTacticId and EntityType=@entType
-				JOIN Stage as S on T.StageId = S.StageId and S.IsDeleted=''0''
+				Join Plan_Campaign_Program_Tactic as T on H.EntityId = T.PlanTacticId and EntityTypeId=@entTypeId
+				JOIN Stage as S on T.StageId = S.StageId and S.IsDeleted='0'
 	
 			END
 			
 			ELSE If(@ViewBy = @ROIPackage)
 			Begin
-				SET @entType = @entTactic	-- Prepared View by structure based on Tactic
+				SET @entTypeId = @entTacticId	-- Prepared View by structure based on Tactic
 	
 				-- Insert Distict ViewBy values to local table to show 1st as parent record into Calendar or Grid.
 				Insert Into @distViewByValues(ViewByTitle,ViewById)
 				Select Distinct H.EntityTitle,Cast(H.EntityId  as varchar(max)) FROM @vwEntities as H
 				JOIN ROI_PackageDetail as ROI ON H.EntityId = ROI.AnchorTacticID
-				WHERE H.EntityType=@entType
+				WHERE H.EntityTypeId=@entTypeId
 	
 				-- Insert Entity and ViewBy value mapping records to local table for further process.
 				Insert Into @tblEntityViewByMapping(EntityId,ViewByValue)
 				Select Distinct H.EntityId,Cast(ROI.AnchorTacticID as varchar)  FROM @vwEntities as H
 				JOIN ROI_PackageDetail as ROI ON H.EntityId = ROI.PlanTacticId
-				WHERE H.EntityType=@entType
+				WHERE H.EntityTypeId=@entTypeId
 			END
 	
 			ELSE 
 			BEGIN
 				
 				-- Identify that view by custom value is Campaign type or not
-				IF EXISTS(SELECT 1 WHERE @ViewBy like ''%''+@custCampaign+''%'')
+				IF EXISTS(SELECT 1 WHERE @ViewBy like '%'+@custCampaign+'%')
 				BEGIN
-					SET @entType = @entCampaign
-					SET @isCustom = ''1''
-					SET @custmEntityTypeId = REPLACE(@ViewBy,@custCampaign,'''')
+					SET @entTypeId = @entCampaignId
+					SET @isCustom = '1'
+					SET @custmEntityTypeId = REPLACE(@ViewBy,@custCampaign,'')
 				END
 	
 				-- Identify that view by custom value is Program type or not
-				ELSE IF EXISTS(SELECT 1 WHERE @ViewBy like ''%''+@custProgram+''%'')
+				ELSE IF EXISTS(SELECT 1 WHERE @ViewBy like '%'+@custProgram+'%')
 				BEGIN
-					SET @entType = @entProgram
-					SET @isCustom = ''1''
-					SET @custmEntityTypeId = REPLACE(@ViewBy,@custProgram,'''')
+					SET @entTypeId = @entProgramId
+					SET @isCustom = '1'
+					SET @custmEntityTypeId = REPLACE(@ViewBy,@custProgram,'')
 				END
 				
 				-- Identify that view by custom value is Tactic type or not
-				ELSE IF EXISTS(SELECT 1 WHERE @ViewBy like ''%''+@custTactic+''%'')
+				ELSE IF EXISTS(SELECT 1 WHERE @ViewBy like '%'+@custTactic+'%')
 				BEGIN
-					SET @entType = @entTactic
-					SET @isCustom = ''1''
-					SET @custmEntityTypeId = REPLACE(@ViewBy,@custTactic,'''')
+					SET @entTypeId = @entTacticId
+					SET @isCustom = '1'
+					SET @custmEntityTypeId = REPLACE(@ViewBy,@custTactic,'')
 				END
 	
-				IF(@isCustom =''1'')	-- If View by selection is Customfield then 
+				IF(@isCustom ='1')	-- If View by selection is Customfield then 
 				BEGIN
 	
 					-- Insert Distict ViewBy values to local table to show 1st as parent record into Calendar or Grid.
 					Insert Into @distViewByValues(ViewByTitle,ViewById) 
 					Select Distinct CFO.Value,Cast(CFO.CustomFieldOptionId as varchar) from @vwEntities as H
-					JOIN CustomField_Entity as CE on H.EntityId = CE.EntityId and H.EntityType=@entType and CE.CustomFieldId=@custmEntityTypeId
-					JOIN CustomFieldOption as CFO on CE.CustomFieldId = CFO.CustomFieldId and CFO.CustomFieldOptionId=CE.Value and CFO.IsDeleted=''0''
-					where H.EntityType=@entType
+					JOIN CustomField_Entity as CE on H.EntityId = CE.EntityId and H.EntityTypeId=@entTypeId and CE.CustomFieldId=@custmEntityTypeId
+					JOIN CustomFieldOption as CFO on CE.CustomFieldId = CFO.CustomFieldId and CFO.CustomFieldOptionId=CE.Value and CFO.IsDeleted='0'
+					where H.EntityTypeId=@entTypeId
 	
 					-- Insert Entity and ViewBy value mapping records to local table for further process.
 					Insert Into @tblEntityViewByMapping(EntityId,ViewByValue)
 					Select Distinct H.EntityId,Cast(CFO.CustomFieldOptionId as varchar) from @vwEntities as H
-					JOIN CustomField_Entity as CE on H.EntityId = CE.EntityId and H.EntityType=@entType and CE.CustomFieldId=@custmEntityTypeId
-					JOIN CustomFieldOption as CFO on CE.CustomFieldId = CFO.CustomFieldId and CFO.CustomFieldOptionId=CE.Value and CFO.IsDeleted=''0''
-					where H.EntityType=@entType
+					JOIN CustomField_Entity as CE on H.EntityId = CE.EntityId and H.EntityTypeId=@entTypeId and CE.CustomFieldId=@custmEntityTypeId
+					JOIN CustomFieldOption as CFO on CE.CustomFieldId = CFO.CustomFieldId and CFO.CustomFieldOptionId=CE.Value and CFO.IsDeleted='0'
+					where H.EntityTypeId=@entTypeId
 				END
 			END
 	
@@ -1511,20 +1535,20 @@ BEGIN
 			-- Insert Distinct view by values to Result set.
 			INSERT INTO @ResultViewByHierarchyEntities(
 						EntityTitle,[EntityType],ViewByTitle,TaskId)
-			SELECT		ViewByTitle,@ViewBy,ViewByTitle,''Z''+ViewById 
+			SELECT		ViewByTitle,@ViewBy,ViewByTitle,'Z'+ViewById 
 			FROM		@distViewByValues
 	
 			-- Insert Entity(based on value @entType set) for all ViewBy
 			INSERT INTO @ResultViewByHierarchyEntities
-			SELECT		H.UniqueId ,H.EntityId ,H.EntityTitle ,H.ParentEntityId ,H.ParentUniqueId ,H.EntityType ,H.ColorCode,H.[Status],H.StartDate,H.EndDate,H.CreatedBy,H.AltId			
-						,''Z''+R.ViewByValue+''_''+H.TaskId		
-						,''Z''+R.ViewByValue+''_''+H.ParentTaskId
-						,H.PlanId ,H.ModelId ,
+			SELECT		H.UniqueId ,H.EntityId ,H.EntityTitle ,H.ParentEntityId ,H.ParentUniqueId ,H.EntityType, H.EntityTypeId,H.ColorCode,H.[Status],H.StartDate,H.EndDate,H.CreatedBy,H.AltId			
+						,'Z'+R.ViewByValue+'_'+H.TaskId		
+						,'Z'+R.ViewByValue+'_'+H.ParentTaskId
+						,H.PlanId ,H.ModelId ,R.ViewByValue,
 						H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
-						R.ViewByValue,H.ROIPackageIds
+						 H.ROIPackageIds
 			FROM		@distViewByValues as DV
 			JOIN		@tblEntityViewByMapping as R on DV.ViewById = R.ViewByValue
-			JOIN		@vwEntities as H on R.EntityId = H.EntityId and H.EntityType=@entType
+			JOIN		@vwEntities as H on R.EntityId = H.EntityId and H.EntityTypeId=@entTypeId
 			
 	
 			-- Get Parent Hierarchy
@@ -1540,7 +1564,7 @@ BEGIN
 				Insert Into @prntEntityTable(ParentUniqueId,ViewByTitle)
 				Select Distinct R.ParentUniqueId,R.ViewByTitle
 				FROM @ResultViewByHierarchyEntities as R
-				JOIN @distViewByValues as V on R.ViewByTitle  = V.ViewById and R.EntityType=@entType
+				JOIN @distViewByValues as V on R.ViewByTitle  = V.ViewById and R.EntityTypeId=@entTypeId
 				Group By R.ViewByTitle,R.ParentUniqueId
 	
 				
@@ -1548,9 +1572,9 @@ BEGIN
 				(
 						
 						(
-							SELECT	H.UniqueId ,H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId			
-									,''Z''+C.ViewByTitle+''_''+H.TaskId as TaskId
-									,''Z''+C.ViewByTitle+''_''+H.ParentTaskId as ParentTaskId
+							SELECT	H.UniqueId ,H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.EntityTypeId, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId			
+									,'Z'+C.ViewByTitle+'_'+H.TaskId as TaskId
+									,'Z'+C.ViewByTitle+'_'+H.ParentTaskId as ParentTaskId
 									,H.PlanId, H.ModelId, C.ViewByTitle,
 									H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
 									H.ROIPackageIds
@@ -1563,9 +1587,9 @@ BEGIN
 	
 						(
 							-- Get recursive parents data based
-							SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy ,H.AltId		
-									,''Z''+P.ViewByTitle+''_''+H.TaskId as TaskId
-									,''Z''+P.ViewByTitle+''_''+H.ParentTaskId as ParentTaskId
+							SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.EntityTypeId, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy ,H.AltId		
+									,'Z'+P.ViewByTitle+'_'+H.TaskId as TaskId
+									,'Z'+P.ViewByTitle+'_'+H.ParentTaskId as ParentTaskId
 									,H.PlanId, H.ModelId, P.ViewByTitle,
 									H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
 									H.ROIPackageIds
@@ -1578,31 +1602,31 @@ BEGIN
 				
 	
 				INSERT INTO @ResultViewByHierarchyEntities(
-							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
-				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds 
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds 
 				FROM		prnt
 			
 			END
 	
 			-- Get Child hierarchy data
 			BEGIN
-				IF(@isCustom =''1'')	-- Identify that view by is Custom field or not
+				IF(@isCustom ='1')	-- Identify that view by is Custom field or not
 				BEGIN
 	
 					;WITH child AS 
 					(
 						(
 							-- Get Parent records from @ResultViewByHierarchyEntities to create child hierarchy data.
-							SELECT	UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
+							SELECT	UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
 							FROM	@ResultViewByHierarchyEntities 
-							WHERE	EntityType=@entType
+							WHERE	EntityTypeId=@entTypeId
 						)
 							UNION ALL 
 	
 						(
 							-- Get recursive child data based on above parents query
-							SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId,
-									Cast(''Z''+C.ViewByTitle+''_''+H.TaskId as nvarchar(500))  as TaskId,
+							SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.EntityTypeId, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId,
+									Cast('Z'+C.ViewByTitle+'_'+H.TaskId as nvarchar(500))  as TaskId,
 									C.TaskId as ParentTaskId,
 									H.PlanId, H.ModelId, C.ViewByTitle,
 									H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
@@ -1615,33 +1639,33 @@ BEGIN
 					--select * from child
 	
 					INSERT INTO @ResultViewByHierarchyEntities (
-								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
-					SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds 
+								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
+					SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds 
 					FROM		child 
-					WHERE EntityType <> @entType
+					WHERE EntityTypeId <> @entTypeId
 				END
 				ELSE
 				BEGIN
 					INSERT INTO @ResultViewByHierarchyEntities (
-								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
+								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
 				
-					SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId,
-							''Z''+R.ViewByTitle+''_''+H.TaskId,
+					SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType,H.EntityTypeId, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId,
+							'Z'+R.ViewByTitle+'_'+H.TaskId,
 							R.TaskId, H.PlanId, H.ModelId, R.ViewByTitle,
 							H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
 							 H.ROIPackageIds
 					FROM	@ResultViewByHierarchyEntities as R
-					JOIN	@vwEntities H on R.UniqueId  = H.ParentUniqueId and R.EntityType=@entType
+					JOIN	@vwEntities H on R.UniqueId  = H.ParentUniqueId and R.EntityTypeId=@entTypeId
 				END
 			END
 	
 			-- Update Unique & ParentUniqueId
-			Update @ResultViewByHierarchyEntities SET UniqueId=''Z''+ViewByTitle+''_''+UniqueId,ParentUniqueId=''Z''+ViewByTitle+''_''+ParentUniqueId
+			Update @ResultViewByHierarchyEntities SET UniqueId='Z'+ViewByTitle+'_'+UniqueId,ParentUniqueId='Z'+ViewByTitle+'_'+ParentUniqueId
 			where EntityType <> @ViewBy
 
 
 			-- Update Plan ParentUniqueId & ParentTaskID value
-			Update @ResultViewByHierarchyEntities set ParentTaskId = ''Z''+ViewByTitle,ParentUniqueId = ''Z''+ViewByTitle 
+			Update @ResultViewByHierarchyEntities set ParentTaskId = 'Z'+ViewByTitle,ParentUniqueId = 'Z'+ViewByTitle 
 			WHERE	EntityType=@entPlan 
 
 			-- Update UniqueId value
@@ -1650,15 +1674,12 @@ BEGIN
 	
 			-- Insert data to result set.
 			Insert INTO @ResultEntities (
-						UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
-			SELECT		Distinct UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
+						UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
+			SELECT		Distinct UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
 			FROM		@ResultViewByHierarchyEntities
 	
 	
 		RETURN 
-END
-
-' 
 END
 
 GO
@@ -8979,7 +9000,7 @@ BEGIN
 				Hireachy.EntityTitle,		
 				Hireachy.ParentEntityId	,
 				Hireachy.ParentUniqueId	,
-				Hireachy.EntityType	,	
+				Hireachy.EntityTypeId As EntityType	,	
 				Hireachy.ColorCode,		
 				Hireachy.[Status],		
 				Hireachy.StartDate,		
@@ -9058,9 +9079,7 @@ BEGIN
 						AND Hireachy.EntityId = LineItem.PlanLineItemId) LineItem
 	OUTER APPLY (SELECT Stage.Title,Stage.StageId,Stage.[Level] FROM Stage WITH (NOLOCK) WHERE Tactic.StageId = Stage.StageId AND Stage.IsDeleted=0) Stage
 END
-
 GO
-
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version

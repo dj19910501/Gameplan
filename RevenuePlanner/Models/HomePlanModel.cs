@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+using RevenuePlanner.Helpers;
 
 namespace RevenuePlanner.Models
 {
@@ -414,7 +415,7 @@ namespace RevenuePlanner.Models
 
         public string OwnerName { get; set; }
 
-        public string EntityType { get; set; }
+        public Enums.EntityType EntityType { get; set; }
         private Int64? _ParentEntityId;
         public Nullable<Int64> ParentEntityId
         {
@@ -521,7 +522,7 @@ namespace RevenuePlanner.Models
             }
         }
         public string ParentUniqueId { get; set; }
-        public string EntityType { get; set; }
+        public Enums.EntityType EntityType { get; set; }
         public string ColorCode { get; set; }
         public string Status { get; set; }
         public Nullable<DateTime> StartDate { get; set; }
@@ -749,7 +750,7 @@ namespace RevenuePlanner.Models
     // Class for grid row permission for edit or not
     public class EntityPermissionRowWise
     {
-        public string EntityType { get; set; }
+        public Enums.EntityType EntityType { get; set; }
         public string EntityId { get; set; }
         public bool IsRowPermission { get; set; }
         public string LineItemType { get; set; }
@@ -768,7 +769,7 @@ namespace RevenuePlanner.Models
     public class CustomfieldPivotData
     {
         public string UniqueId { get; set; }
-        public string EntityType { get; set; }
+        public Enums.EntityType EntityType { get; set; }
         public List<PlandataobjColumn> CustomFieldData { get; set; }
     }
 
@@ -780,7 +781,7 @@ namespace RevenuePlanner.Models
         public string CustomFieldName { get; set; }
         public int CustomFieldTypeId { get; set; }
         public bool IsRequired { get; set; }
-        public string EntityType { get; set; }
+        public Enums.EntityType EntityType { get; set; }
         public string AbbreviationForMulti { get; set; }
         public string CustomFieldType { get; set; }
         public string CustomUniqueId { get; set; }
@@ -809,7 +810,7 @@ namespace RevenuePlanner.Models
                 }
             }
         }
-        public string EntityType { get; set; }
+        public Enums.EntityType EntityType { get; set; }
         private int? _CustomFieldId;
         public Nullable<int> CustomFieldId
         {

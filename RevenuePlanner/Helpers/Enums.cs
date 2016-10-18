@@ -1067,7 +1067,7 @@ namespace RevenuePlanner.Helpers
         public enum EntityType
         {
             //Modified for #1282
-            Plan,
+            Plan=1,
             Campaign,
             Program,
             Tactic,
