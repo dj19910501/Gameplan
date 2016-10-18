@@ -211,7 +211,7 @@ namespace RevenuePlanner.Services
                     // Add Column id same as attribute id where attribute type is common
                     if (string.Compare(a.AttributeType, Convert.ToString(Enums.HomeGridColumnAttributeType.Common), true) == 0 && !(lstHomeGrid_Hidden_And_Default_Columns().Select(hidden => hidden.Key.ToString()).Contains(a.AttributeId)))
                     { usercolindex.Add((usercolindex.Count + 1), a.AttributeId); }
-                    else if (string.Compare(a.AttributeType, Convert.ToString(Enums.HomeGridColumnAttributeType.Common), true) == 1)
+                    else if (string.Compare(a.AttributeType, Convert.ToString(Enums.HomeGridColumnAttributeType.Common), true) != 0)
                     { usercolindex.Add((usercolindex.Count + 1), ("custom_" + a.AttributeId + ":" + a.AttributeType)); } // Add Column id with custom_CustomFieldId:EntityType combination
                 });
             }
@@ -637,7 +637,7 @@ namespace RevenuePlanner.Services
                 type = "ed",
                 align = "center",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal),
-                sort = "int",
+                sort = "str",
                 width = 150,
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal) + ColumnManagmentIcon
             });
@@ -647,7 +647,7 @@ namespace RevenuePlanner.Services
                 type = "ron",
                 align = "center",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL),
-                sort = "int",
+                sort = "str",
                 width = 150,
                 value = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL) // Here we not set ColumnManagmentIcon because MQl Title will be different for clients it will be set when list get
             });
@@ -657,7 +657,7 @@ namespace RevenuePlanner.Services
                 type = "ron",
                 align = "center",
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue),
-                sort = "int",
+                sort = "str",
                 width = 150,
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Revenue) + ColumnManagmentIcon
             });

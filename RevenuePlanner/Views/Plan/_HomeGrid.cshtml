@@ -93,8 +93,7 @@
         HomeGrid.setImagePath(imgpath);
         HomeGrid.enableDragAndDrop(true);
         HomeGrid.enableAutoHeight(false);
-        HomeGrid.enableAutoWidth(false);
-        HomeGrid.setNumberFormat("" + CurrencySybmol + "0,000", 6, ".", ",");
+        HomeGrid.enableAutoWidth(false);        
         HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
             if (IsManageviewClick) {
                 IsManageviewClick = false;
@@ -138,7 +137,7 @@
         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
         HomeGrid.parse(GridDataHomeGrid, "json");
         GridHideColumn();  ///Calling Hide column function
-
+        
         HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
         colSplitId = HomeGrid.getColIndexById(AddId);
         HomeGrid.splitAt(colSplitId + 1);

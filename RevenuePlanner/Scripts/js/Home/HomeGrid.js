@@ -449,7 +449,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
     }
     if (stage == 2) {        
-        if (nValue != null && nValue != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
+        if (nValue.trim() != null && nValue.trim() != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
             var oldAssetType = '';
             var NewValue = htmlDecode(nValue);
             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
@@ -787,7 +787,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                     HomeGrid.cells(rowId, cellInd).setValue(oValue);
                                     return false;
                                 }
-                                var StartDate = HomeGrid.cells(rowId, 4).getValue();
+                                var StartDate = HomeGrid.cells(rowId, StartDateColIndex).getValue();
                                 var StartYear = new Date(StartDate).getFullYear(); //StartDate.split('/')[2];
                                 var EndYear = new Date(nValue).getFullYear();  //nValue.split('/')[2];
                                 var YearDiff = EndYear - StartYear;
@@ -953,37 +953,39 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
             tactictid: parseInt(TacticID), TacticTypeId: parseInt(TacticTypeID), projectedStageValue: StageValue, RedirectType: isAssortment, isTacticTypeChange: true, StageID: stageid
         },
         success: function (data) {
-            var tactActMqlVal = HomeGrid.cells(rowid, MQLColIndex).getAttribute("actval");
-            var mqlConversion = 0;
-            if (data.revenue != null)
-                revenue = data.revenue;
-            if (data.mql == 'N/A') {
-                HomeGrid.setCellExcellType(rowid, MQLColIndex, "ro");
-                HomeGrid.cells(rowid, MQLColIndex).setValue(data.mql);
-                diff = parseInt(-tactActMqlVal);
-                SetColumUpdatedValue(MQLColIndex, diff);
-            }
-            else {
-                if (data.mql != null) {
-                    mqlConversion = data.mql;
+            if (MQLColIndex != undefined && MQLColIndex != null) {
+                var tactActMqlVal = HomeGrid.cells(rowid, MQLColIndex).getAttribute("actval");
+                var mqlConversion = 0;
+                if (data.revenue != null)
+                    revenue = data.revenue;
+                if (data.mql == 'N/A') {
+                    HomeGrid.setCellExcellType(rowid, MQLColIndex, "ro");
+                    HomeGrid.cells(rowid, MQLColIndex).setValue(data.mql);
+                    diff = parseInt(-tactActMqlVal);
+                    SetColumUpdatedValue(MQLColIndex, diff);
                 }
-                var mqlValue = mqlConversion.toString();
-                HomeGrid.cells(rowid, MQLColIndex).setValue(numberWithCommas(mqlValue));
-                diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
-                HomeGrid.cells(rowid, MQLColIndex).setAttribute("actval", mqlConversion);
-                SetColumUpdatedValue(MQLColIndex, diff);
-            }            
-            HomeGrid.cells(progid, MQLColIndex).setValue(numberWithCommas(newProgVal), false);
-            HomeGrid.cells(campid, MQLColIndex).setValue(numberWithCommas(newCampVal), false);
-            HomeGrid.cells(planid, MQLColIndex).setValue(numberWithCommas(newPlanVal), false);
-            HomeGrid.cells(rowid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(revenue));
-            var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getAttribute("actval");
-            diff = parseInt(revenue) - parseInt(tactActRevenuVal.toString().replace(/\,/g, '').replace(CurrencySybmol, ''));
-            SetColumUpdatedValue(RevenueColIndex, diff);
-            HomeGrid.cells(progid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newProgVal));
-            HomeGrid.cells(campid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newCampVal));
-            HomeGrid.cells(planid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newPlanVal));
-            HomeGrid.cells(rowid, RevenueColIndex).setAttribute("actval", revenue);
+                else {
+                    if (data.mql != null) {
+                        mqlConversion = data.mql;
+                    }
+                    var mqlValue = mqlConversion.toString();
+                    HomeGrid.cells(rowid, MQLColIndex).setValue(numberWithCommas(mqlValue));
+                    diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
+                    HomeGrid.cells(rowid, MQLColIndex).setAttribute("actval", mqlConversion);
+                    SetColumUpdatedValue(MQLColIndex, diff);
+                }
+                HomeGrid.cells(progid, MQLColIndex).setValue(numberWithCommas(newProgVal), false);
+                HomeGrid.cells(campid, MQLColIndex).setValue(numberWithCommas(newCampVal), false);
+                HomeGrid.cells(planid, MQLColIndex).setValue(numberWithCommas(newPlanVal), false);
+                HomeGrid.cells(rowid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(revenue));
+                var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getAttribute("actval");
+                diff = parseInt(revenue) - parseInt(tactActRevenuVal.toString().replace(/\,/g, '').replace(CurrencySybmol, ''));
+                SetColumUpdatedValue(RevenueColIndex, diff);
+                HomeGrid.cells(progid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newProgVal));
+                HomeGrid.cells(campid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newCampVal));
+                HomeGrid.cells(planid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newPlanVal));
+                HomeGrid.cells(rowid, RevenueColIndex).setAttribute("actval", revenue);
+            }
             $.ajax({
                 type: 'POST',
                 url: urlContent + 'Plan/SaveGridDetail',
