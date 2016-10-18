@@ -2170,7 +2170,8 @@ namespace RevenuePlanner.Controllers
             foreach (var tactic in Tacticdata)
             {
                 int id = tactic.TacticObj.PlanTacticId;
-                var InnerLineItemListIds = LineItemList.Where(l => l.PlanTacticId == id).Select(line => line.PlanLineItemId).ToList();
+                // Modified by Arpita Soni to handle tactic when there is only balance line item into tactic 
+                var InnerLineItemListIds = LineItemList.Where(l => l.PlanTacticId == id && l.LineItemTypeId != null).Select(line => line.PlanLineItemId).ToList();
                 if (InnerLineItemListIds.Count() > 0)
                 {
                     innerLineItemActualList = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
