@@ -670,7 +670,7 @@ namespace RevenuePlanner.Services
                     align = "center",
                     id = Convert.ToString(Enums.IntegrationIdType.Eloquaid),
                     sort = "str",
-                    width = 250,
+                    width = 160,
                     value = Enums.Integration_Column[Enums.IntegrationIdType.Eloquaid.ToString()] + ColumnManagmentIcon
                 });
                 lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Salesforceid), new PlanHead
@@ -679,7 +679,7 @@ namespace RevenuePlanner.Services
                     align = "center",
                     id = Convert.ToString(Enums.IntegrationIdType.Salesforceid),
                     sort = "str",
-                    width = 250,
+                    width = 220,
                     value = Enums.Integration_Column[Enums.IntegrationIdType.Salesforceid.ToString()] + ColumnManagmentIcon
                 });
                 lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Marketoid), new PlanHead
@@ -688,7 +688,7 @@ namespace RevenuePlanner.Services
                     align = "center",
                     id = Convert.ToString(Enums.IntegrationIdType.Marketoid),
                     sort = "str",
-                    width = 250,
+                    width = 160,
                     value = Enums.Integration_Column[Enums.IntegrationIdType.Marketoid.ToString()] + ColumnManagmentIcon
                 });
                 lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.WorkFrontid), new PlanHead
