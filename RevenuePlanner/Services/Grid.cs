@@ -252,32 +252,22 @@ namespace RevenuePlanner.Services
             // Check is user select Planned Cost column in column saved view
             bool IsPlanCostColumn = UserDefinedColumns.Where(a =>
                a.ToLower() == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost).ToLower()).Any();
-            if (IsPlanCostColumn)
-            {
-                // Round up the Planned Cost value for Program/Campaign/Plan
-                GridHireachyData = RoundupValues(GridHireachyData, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost));
-            }
 
             // Check is user select Revenue column in column saved view
             bool IsRevenueColumn = UserDefinedColumns.Where(a =>
                 a.ToLower() == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue).ToLower()).Any();
-            if (IsRevenueColumn)
-            {
-                // Round up the Revenue value for Program/Campaign/Plan
-                GridHireachyData = RoundupValues(GridHireachyData, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue));
-            }
 
             // Check is user select MQL column in column saved view
             bool IsMQLColumn = UserDefinedColumns.Where(a =>
                a.ToLower() == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL).ToLower()).Any();
-            if (IsMQLColumn)
-            {
-                // Round up the MQL value for Program/Campaign/Plan
-                GridHireachyData = RoundupValues(GridHireachyData, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL));
-            }
+
+            GridHireachyData = RoundupValues(GridHireachyData, IsPlanCostColumn, IsRevenueColumn, IsMQLColumn);
 
             // Get selected columns data
             List<PlanGridColumnData> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
+            //List<PlanGridColumnData> lstSelectedColumnsData = new List<PlanGridColumnData>(GridHireachyData.Count);
+            //GridHireachyData.ForEach(a => lstSelectedColumnsData.Add(Projection(a, UserDefinedColumns, viewBy)));
+
 
             // Merge header of plan grid with custom fields
             ListOfDefaultColumnHeader.AddRange(GridCustomHead(ListOfCustomData.CustomFields, customColumnslist));
@@ -306,7 +296,7 @@ namespace RevenuePlanner.Services
         /// </summary>
         private List<Int64> GetEditableTacticIds(List<GridDefaultModel> GridHireachyData, GridCustomColumnData ListOfCustomData, int UserId, int ClientId)
         {
-            List<int> lstTacticIds = GridHireachyData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower()).Select(a => int.Parse(a.EntityId.ToString())).ToList();
+            List<int> lstTacticIds = GridHireachyData.Where(a => a.EntityType == Enums.EntityType.Tactic).Select(a => int.Parse(a.EntityId.ToString())).ToList();
             List<CustomField_Entity> customfieldEntitylist = new List<CustomField_Entity>();
             List<Int64> lsteditableEntityIds = new List<Int64>();
             if (ListOfCustomData != null && ListOfCustomData.CustomFields != null && ListOfCustomData.CustomFieldValues != null)
@@ -353,7 +343,7 @@ namespace RevenuePlanner.Services
             List<GridDefaultModel> CopyGridData = GridData; // Copy the grid data to get it's Childs data
             CopyGridData.ForEach(a =>
             {
-                if (string.Compare(a.EntityType, Convert.ToString(Enums.EntityType.Plan), true) == 0)
+                if (a.EntityType == Enums.EntityType.Plan)
                 {
                     int year = int.Parse(a.PlanYear);
                     DateTime firstDay = new DateTime(year, 1, 1);
@@ -471,14 +461,14 @@ namespace RevenuePlanner.Services
         /// Add by Nishant Sheth
         /// set open/close entity state for respective entity
         /// </summary>
-        public string GridEntityOpenState(string EntityType, int ChildernCount)
+        public string GridEntityOpenState(Enums.EntityType EntityType, int ChildernCount)
         {
-            if (string.Compare(EntityType, Convert.ToString(Enums.EntityType.Plan), true) == 0)
+            if (EntityType == Enums.EntityType.Plan)
             {
                 if (ChildernCount > 0)
                     return objHomeGridProp.openstateone;
             }
-            else if (string.Compare(EntityType, Convert.ToString(Enums.EntityType.Campaign), true) == 0)
+            else if (EntityType == Enums.EntityType.Campaign)
             {
                 if (ChildernCount > 0)
                     return objHomeGridProp.openstateone;
@@ -816,96 +806,52 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Below method use for round up values of 
         /// </summary>
-        public List<GridDefaultModel> RoundupValues(List<GridDefaultModel> DataList, string ColumnName)
+        private static List<Enums.EntityType> EntityTypeOrder = new List<Enums.EntityType>()// Variable use for ordering data list
         {
-            List<string> EntityTypeOrder = new List<string>();// Variable use for ordering data list
-            EntityTypeOrder.Add(Enums.EntityType.Lineitem.ToString().ToLower());
-            EntityTypeOrder.Add(Enums.EntityType.Tactic.ToString().ToLower());
-            EntityTypeOrder.Add(Enums.EntityType.Program.ToString().ToLower());
-            EntityTypeOrder.Add(Enums.EntityType.Campaign.ToString().ToLower());
-            EntityTypeOrder.Add(Enums.EntityType.Plan.ToString().ToLower());
+            Enums.EntityType.Lineitem,
+            Enums.EntityType.Tactic,
+            Enums.EntityType.Program,
+            Enums.EntityType.Campaign,
+//            Enums.EntityType.Plan //since plan has no parent 
+        };
 
-            // Order by entity type from 'Plan -> Lineitem' to 'Lineitem -> Plan'
-            // Here is anonymous variable so need to use var type
-            var ListofParentIds = DataList
-                .Select(a => new
+        public List<GridDefaultModel> RoundupValues(List<GridDefaultModel> DataList, bool IsPlannedCostNeeded, bool IsRevenueNeeded, bool IsMQLNeeded)
+        {
+            if (!IsPlannedCostNeeded && !IsRevenueNeeded && !IsMQLNeeded)
+                return DataList; //no roundup is needed
+
+            var dataDictionary = DataList.ToDictionary(a => a.UniqueId);
+
+            if (IsRevenueNeeded) {
+                EntityTypeOrder.ForEach(et => {
+                    DataList.Where(a => a.EntityType == et)
+                    .Select(a => new { UniqueId = a.ParentUniqueId, Revenue = (decimal)a.Revenue })
+                    .GroupBy(a => a.UniqueId, (k, d) => new { UniqueId = k, Revenue = d.Sum(a => a.Revenue) })
+                    .ToList()
+                    .ForEach(a => dataDictionary[a.UniqueId].Revenue = a.Revenue);
+                });
+            };
+
+            if (IsMQLNeeded) {
+                EntityTypeOrder.ForEach(et =>
                 {
-                    a.ParentUniqueId,
-                    a.EntityType
-                }).Distinct()
-            .OrderBy(a => EntityTypeOrder.IndexOf(a.EntityType.ToLower()))
-            .ToList();
+                    DataList.Where(a => a.EntityType == et)
+                   .Select(a => new { UniqueId = a.ParentUniqueId, MQL = a.MQL })
+                   .GroupBy(a => a.UniqueId, (k, d) => new { UniqueId = k, MQL = d.Sum(a => (long)a.MQL) })
+                   .ToList().ForEach(a => dataDictionary[a.UniqueId].MQL = a.MQL);
+                });
+            };
 
-            if (string.Compare(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue), ColumnName, true) == 0)
-            {
-                //Roundup the values from child to parent
-                List<decimal?> RevenueList = new List<decimal?>();
-
-                foreach (var ParentDetail in ListofParentIds)
+            if (IsPlannedCostNeeded) {
+                EntityTypeOrder.ForEach(et =>
                 {
-                    if (string.Compare(ParentDetail.EntityType, Convert.ToString(Enums.EntityType.Lineitem), true) != 0)
-                    {
-                        // Get list of Revenues for that Childs
-                        RevenueList = DataList.Where(a => a.ParentUniqueId == ParentDetail.ParentUniqueId)
-                               .Select(a => a.Revenue).ToList();
+                    DataList.Where(a => a.EntityType == et)
+                    .Select(a => new { UniqueId = a.ParentUniqueId, PlanCost = (double)a.PlannedCost })
+                    .GroupBy(a => a.UniqueId, (k, d) => new { UniqueId = k, PlanCost = d.Sum(a => a.PlanCost) })
+                    .ToList().ForEach(a => dataDictionary[a.UniqueId].PlannedCost = a.PlanCost);
+                });
+            };
 
-                        // Check there is any parent or not
-                        bool CheckisParent = DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).Any();
-                        if (CheckisParent && RevenueList.Count > 0)
-                        {
-                            // Assign the sum of value to parent
-                            DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).FirstOrDefault()
-                                .Revenue = RevenueList.Sum(ab => ab.Value);
-                        }
-                    }
-                }
-            }
-            else if (string.Compare(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL), ColumnName, true) == 0)
-            {
-                //Roundup the values from child to parent
-                List<Int64?> MqlList = new List<Int64?>();
-                foreach (var ParentDetail in ListofParentIds)
-                {
-                    if (string.Compare(ParentDetail.EntityType, Convert.ToString(Enums.EntityType.Lineitem), true) != 0)
-                    {
-                        // Get list of Mql for that Childs
-                        MqlList = DataList.Where(a => a.ParentUniqueId == ParentDetail.ParentUniqueId && a.MQL != null)
-                           .Select(a => a.MQL).ToList();
-
-                        // Check there is any parent or not
-                        bool CheckisParent = DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).Any();
-                        if (CheckisParent && MqlList.Count > 0)
-                        {
-                            // Assign the sum of value to parent
-                            DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).FirstOrDefault()
-                               .MQL = MqlList.Sum(ab => ab.Value);
-                        }
-                    }
-                }
-            }
-            else if (string.Compare(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost), ColumnName, true) == 0)
-            {
-                //Roundup the values from child to parent
-                List<double?> CostList = new List<double?>();
-                foreach (var ParentDetail in ListofParentIds)
-                {
-                    if (string.Compare(ParentDetail.EntityType, Convert.ToString(Enums.EntityType.Lineitem), true) != 0)
-                    {
-                        // Get list of Mql for that Childs
-                        CostList = DataList.Where(a => a.ParentUniqueId == ParentDetail.ParentUniqueId && a.PlannedCost != null)
-                           .Select(a => a.PlannedCost).ToList();
-
-                        // Check there is any parent or not
-                        bool CheckisParent = DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).Any();
-                        if (CheckisParent && CostList.Count > 0)
-                        {
-                            // Assign the sum of value to parent
-                            DataList.Where(a => a.UniqueId == ParentDetail.ParentUniqueId).FirstOrDefault()
-                               .PlannedCost = CostList.Sum(ab => ab.Value);
-                        }
-                    }
-                }
-            }
             return DataList;
         }
         #endregion
@@ -955,19 +901,19 @@ namespace RevenuePlanner.Services
                 EntitydataobjItem = new List<Plandataobj>();
 
                 // Get list of custom field values for particular entity based on pivoted entities list
-                List<PlandataobjColumn> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId == (Row.EntityType + "_" + Row.EntityId))
+                List<PlandataobjColumn> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId == (Row.EntityType.ToString() + "_" + Row.EntityId))
                                            .Select(a => a.CustomFieldData).FirstOrDefault();
                 if (lstCustomfieldData == null && CustomFieldData.CustomFields != null)
                 {
                     List<PlandataobjColumn> ItemEmptylist = new List<PlandataobjColumn>(); // Variable for empty list of custom fields value to assign entity 
                     // Get list of custom fields by entity type
-                    List<string> EntityCustomFields = CustomFieldData.CustomFields.Where(a => a.EntityType.ToLower() == Row.EntityType.ToLower()).Select(a => a.CustomFieldId.ToString()).ToList();
+                    List<string> EntityCustomFields = CustomFieldData.CustomFields.Where(a => a.EntityType == Row.EntityType).Select(a => a.CustomFieldId.ToString()).ToList();
                     // Get list of custom column indexes from custom field list
                     List<int> Colindexes = customColumnslist.Select((s, k) => new { Str = s, Index = k })
                                                 .Where(x => EntityCustomFields.Contains(x.Str))
                                                 .Select(x => x.Index).ToList();
                     // Set custom field is editable or not for respective entities
-                    if (string.Compare(Row.EntityType, Enums.EntityType.Lineitem.ToString().ToLower(), true) == 0 && string.IsNullOrEmpty(Row.LineItemType))
+                    if (Row.EntityType == Enums.EntityType.Lineitem && string.IsNullOrEmpty(Row.LineItemType))
                     {
                         Row.IsRowPermission = false;
                     }
@@ -1068,29 +1014,29 @@ namespace RevenuePlanner.Services
             if (objPermission.PlanCreate == true)
             {
                 // Update create plan permission 
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower()).ToList()
+                lstData.Where(a => a.EntityType == Enums.EntityType.Plan).ToList()
                     .ForEach(a => a.IsCreatePermission = true);
             }
             else
             {
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() &&
+                lstData.Where(a => a.EntityType == Enums.EntityType.Plan &&
                     (((a.Owner.HasValue) && lstSubordinatesIds.Contains(a.Owner.Value)) || a.Owner == UserId))
                     .ToList().ForEach(a => a.IsCreatePermission = true);
             }
             // Update row permission for plan for created by
 
-            if (lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() && a.Owner == UserId).Any())
+            if (lstData.Where(a => a.EntityType == Enums.EntityType.Plan && a.Owner == UserId).Any())
             {
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() && a.Owner == UserId).ToList().ForEach(a => a.IsRowPermission = true);
+                lstData.Where(a => a.EntityType == Enums.EntityType.Plan && a.Owner == UserId).ToList().ForEach(a => a.IsRowPermission = true);
             }
             else if (objPermission.PlanEditAll == true)
             {
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower()).ToList()
+                lstData.Where(a => a.EntityType == Enums.EntityType.Plan).ToList()
                     .ForEach(a => a.IsRowPermission = true);
             }
             else if (objPermission.PlanEditSubordinates == true)
             {
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower() && ((a.Owner.HasValue) && lstSubordinatesIds.Contains(a.Owner.Value)))
+                lstData.Where(a => a.EntityType == Enums.EntityType.Plan && ((a.Owner.HasValue) && lstSubordinatesIds.Contains(a.Owner.Value)))
                     .ToList().ForEach(a => a.IsRowPermission = true);
             }
             return lstData;
@@ -1104,21 +1050,21 @@ namespace RevenuePlanner.Services
             if (objPermission.PlanCreate == false)
             {
                 // Update create campaign permission 
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower() &&
+                lstData.Where(a => a.EntityType == Enums.EntityType.Campaign &&
                     (a.Owner == UserId || ((a.Owner.HasValue) && lstSubordinatesIds.Contains(a.Owner.Value)))).ToList()
                     .ForEach(a => a.IsCreatePermission = true);
             }
             else
             {
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower())
+                lstData.Where(a => a.EntityType == Enums.EntityType.Campaign)
                     .ToList().ForEach(a => a.IsCreatePermission = true);
             }
             // Update campaign edit permission
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower() && a.Owner == UserId).ToList()
+            lstData.Where(a => a.EntityType == Enums.EntityType.Campaign && a.Owner == UserId).ToList()
                 .ForEach(a => a.IsRowPermission = true);
 
             // Set edit permission if it's child's tactic is editable
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower()).ToList().ForEach(a =>
+            lstData.Where(a => a.EntityType == Enums.EntityType.Campaign).ToList().ForEach(a =>
             {
                 var CampProgramList = lstData.Where(camp => camp.ParentUniqueId == a.UniqueId).Select(camp => camp.UniqueId).ToList(); // Get Campaign's Program List 
                 var ProgramTacticList = lstData.Where(prg => CampProgramList.Contains(prg.ParentUniqueId)).Select(prg => prg.EntityId).ToList(); // Get Program's Tactic
@@ -1139,20 +1085,20 @@ namespace RevenuePlanner.Services
             if (objPermission.PlanCreate == false)
             {
                 // Update create program permission 
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower() &&
+                lstData.Where(a => a.EntityType == Enums.EntityType.Program &&
                     ((a.Owner.HasValue) && ((a.Owner.Value == UserId) || lstSubordinatesIds.Contains(a.Owner.Value)))).ToList()
                     .ForEach(a => a.IsCreatePermission = true);
             }
             else
             {
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower())
+                lstData.Where(a => a.EntityType == Enums.EntityType.Program)
                     .ToList().ForEach(a => a.IsCreatePermission = true);
             }
             //Update program edit permission
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower() && a.Owner == UserId).ToList()
+            lstData.Where(a => a.EntityType == Enums.EntityType.Program && a.Owner == UserId).ToList()
                .ForEach(a => a.IsRowPermission = true);
             // Set edit permission if it's child's tactic is editable
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower()).ToList().ForEach(a =>
+            lstData.Where(a => a.EntityType == Enums.EntityType.Program).ToList().ForEach(a =>
                {
                    var ProgramTacticList = lstData.Where(prg => prg.ParentUniqueId == a.UniqueId).Select(prg => prg.EntityId).ToList();// Get Program's Tactic
                    var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
@@ -1172,21 +1118,21 @@ namespace RevenuePlanner.Services
             if (objPermission.PlanCreate == false)
             {
                 // Update create tactic permission 
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower() &&
+                lstData.Where(a => a.EntityType == Enums.EntityType.Tactic &&
                     ((a.Owner.HasValue) && ((a.Owner.Value == UserId) || lstSubordinatesIds.Contains(a.Owner.Value)))).ToList()
                     .ForEach(a => a.IsCreatePermission = true);
             }
             else
             {
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
+                lstData.Where(a => a.EntityType == Enums.EntityType.Tactic)
                     .ToList().ForEach(a => a.IsCreatePermission = true);
             }
             //Update tactic edit permission
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower() &&
+            lstData.Where(a => a.EntityType == Enums.EntityType.Tactic &&
                    ((a.Owner.HasValue) && ((a.Owner.Value == UserId) || lstSubordinatesIds.Contains(a.Owner.Value)))).ToList()
                    .ForEach(a => a.IsRowPermission = true);
 
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower()
+            lstData.Where(a => a.EntityType == Enums.EntityType.Tactic
                 && ((a.Owner.HasValue) && lstSubordinatesIds.Contains(a.Owner.Value))
                 && ((a.EntityId.HasValue) && lsteditableEntityIds.Contains(a.EntityId.Value)))
                 .ToList().ForEach(a => a.IsRowPermission = true);
@@ -1201,21 +1147,21 @@ namespace RevenuePlanner.Services
             if (objPermission.PlanCreate == false)
             {
                 // Update line item create permission 
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower() &&
+                lstData.Where(a => a.EntityType == Enums.EntityType.Lineitem &&
                     ((a.Owner.HasValue) && ((a.Owner.Value == UserId) || lstSubordinatesIds.Contains(a.Owner.Value)))).ToList()
                     .ForEach(a => a.IsCreatePermission = true);
             }
             else
             {
-                lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
+                lstData.Where(a => a.EntityType == Enums.EntityType.Lineitem)
                     .ToList().ForEach(a => a.IsCreatePermission = true);
             }
             //Update line item edit permission
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower() && a.Owner == UserId).ToList()
+            lstData.Where(a => a.EntityType == Enums.EntityType.Lineitem && a.Owner == UserId).ToList()
                    .ForEach(a => a.IsRowPermission = true);
 
             // Update line item edit permission if tactic is editable
-            lstData.Where(a => a.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
+            lstData.Where(a => a.EntityType == Enums.EntityType.Lineitem)
                 .ToList().ForEach(a =>
                 {
                     var IsTacticEditable = lstData.Where(ab => ab.UniqueId == a.ParentUniqueId).Select(ab => ab.IsRowPermission).FirstOrDefault();
@@ -1246,18 +1192,18 @@ namespace RevenuePlanner.Services
         /// Set the user data for entities
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Planuserdatagrid GridUserData(string EntityType, string UniqueId, List<GridDefaultModel> DataList)
+        public Planuserdatagrid GridUserData(Enums.EntityType EntityType, string UniqueId, List<GridDefaultModel> DataList)
         {
             Planuserdatagrid objUserData = new Planuserdatagrid();
-            if (string.Compare(EntityType, Convert.ToString(Enums.EntityType.Campaign), true) == 0)
+            if (EntityType == Enums.EntityType.Campaign)
             {
                 objUserData = CampaignUserData(DataList, UniqueId);
             }
-            else if (string.Compare(EntityType, Convert.ToString(Enums.EntityType.Program), true) == 0)
+            else if (EntityType == Enums.EntityType.Program)
             {
                 objUserData = ProgramUserData(DataList, UniqueId);
             }
-            else if (string.Compare(EntityType, Convert.ToString(Enums.EntityType.Tactic), true) == 0)
+            else if (EntityType == Enums.EntityType.Tactic)
             {
                 if (!string.IsNullOrEmpty(UniqueId))
                 {
@@ -1270,7 +1216,7 @@ namespace RevenuePlanner.Services
                     }
                 }
             }
-            else if (string.Compare(EntityType, Convert.ToString(Enums.EntityType.Lineitem), true) == 0)
+            else if (EntityType == Enums.EntityType.Lineitem)
             {
                 if (!string.IsNullOrEmpty(UniqueId))
                 {
@@ -1397,7 +1343,9 @@ namespace RevenuePlanner.Services
                 if (pair.Property != null)
                 {
                     objPlanData.column = pair.Name;
-                    objres.EntityType = GetvalueFromObject(RowData, "EntityType");
+                    objPlanData.value = GetvalueFromObject(RowData, pair.Name);
+                    objres.EntityType = (Enums.EntityType) Enum.Parse(typeof(Enums.EntityType), GetvalueFromObject(RowData, "EntityType"));
+
                     if (objres.IsRowPermission == true)
                     {
                         IsEditable = objHomeGridProp.lockedstatezero;
@@ -1409,41 +1357,63 @@ namespace RevenuePlanner.Services
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
 
-                    // Check Entity Type is line item and is other line item or not
-                    if (string.Compare(objres.EntityType, Enums.EntityType.Lineitem.ToString(), true) == 0 && string.IsNullOrEmpty(objres.LineItemType))
+                    Enums.HomeGrid_Default_Hidden_Columns columnName = (Enums.HomeGrid_Default_Hidden_Columns)Enum.Parse(typeof(Enums.HomeGrid_Default_Hidden_Columns), pair.Name);
+                    switch (objres.EntityType)
                     {
-                        IsEditable = objHomeGridProp.lockedstateone;
-                        cellTextColor = objHomeGridProp.stylecolorgray;
-                    }
-
-                    if ((pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate)) &&
-                            (objres.EntityType.ToUpper().ToString() == Enums.EntityType.Lineitem.ToString().ToUpper()) ||
-                            ((viewBy.ToUpper() != PlanGanttTypes.Tactic.ToString().ToUpper()) && (objres.EntityType.ToUpper().ToString() == viewBy.ToUpper()))
-                           )
-                    {
-                        objPlanData.value = "-";
-                        objPlanData.actval = "-";
-                        objPlanData.locked = objHomeGridProp.lockedstateone;
-                        cellTextColor = objHomeGridProp.stylecolorgray;
-                    }
-                    else
-                    {
-                        objPlanData.value = GetvalueFromObject(RowData, pair.Name);
-                        // set ids for line item type and tactic type
-                        if (objres.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
-                        {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString()) // Consider as line item type
+                        case Enums.EntityType.Lineitem:
+                            // Check Entity Type is line item and is other line item or not
+                            if (string.IsNullOrEmpty(objres.LineItemType))
                             {
-                                objPlanData.actval = GetvalueFromObject(RowData, "LineItemTypeId");
+                                IsEditable = objHomeGridProp.lockedstateone;
+                                cellTextColor = objHomeGridProp.stylecolorgray;
+                            }
+
+                            if ((columnName == Enums.HomeGrid_Default_Hidden_Columns.StartDate
+                                    || columnName == Enums.HomeGrid_Default_Hidden_Columns.EndDate)
+                                 || (viewBy.ToUpper() != PlanGanttTypes.Tactic.ToString().ToUpper())
+                                    && (objres.EntityType.ToString().ToUpper() == viewBy.ToUpper()))
+                            {
+                                objPlanData.value = "-";
+                                objPlanData.actval = "-";
+                                objPlanData.locked = objHomeGridProp.lockedstateone;
+                                cellTextColor = objHomeGridProp.stylecolorgray;
                             }
                             else
                             {
-                                objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                                // set ids for line item type and tactic type
+                                if (columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType) // Consider as line item type
+                                {
+                                    objPlanData.actval = GetvalueFromObject(RowData, "LineItemTypeId");
+                                }
+                                else
+                                {
+                                    objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                                }
+
+                                if (columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType
+                                    || columnName == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost)
+                                {
+                                    objPlanData.locked = !string.IsNullOrEmpty(objres.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
+                                }
+                                else if (columnName == Enums.HomeGrid_Default_Hidden_Columns.StartDate
+                                        || columnName == Enums.HomeGrid_Default_Hidden_Columns.EndDate
+                                        || columnName == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal
+                                        || columnName == Enums.HomeGrid_Default_Hidden_Columns.Owner
+                                        || columnName == Enums.HomeGrid_Default_Hidden_Columns.Status
+                                        || columnName == Enums.HomeGrid_Default_Hidden_Columns.AssetType)
+                                {
+                                    objPlanData.locked = objHomeGridProp.lockedstateone;
+                                    cellTextColor = objHomeGridProp.stylecolorgray;
+                                }
+                                else
+                                {
+                                    objPlanData.locked = IsEditable;
+                                }
                             }
-                        }
-                        else if (objres.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
-                        {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString())
+
+                            break;
+                        case Enums.EntityType.Tactic:
+                            if (columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType)
                             {
                                 objPlanData.actval = GetvalueFromObject(RowData, "TacticTypeId");
                             }
@@ -1451,20 +1421,9 @@ namespace RevenuePlanner.Services
                             {
                                 objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
                             }
-                        }
-                        else
-                        {
-                            objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
-                        }
 
-                        if (objres.EntityType.ToLower() == Enums.EntityType.Lineitem.ToString().ToLower())
-                        {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString())
-                            {
-                                objPlanData.locked = !string.IsNullOrEmpty(objres.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
-                            }
-                            else if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString()
-                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Owner.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
+                            if (columnName == Enums.HomeGrid_Default_Hidden_Columns.Status
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.AssetType)
                             {
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
                                 cellTextColor = objHomeGridProp.stylecolorgray;
@@ -1473,10 +1432,13 @@ namespace RevenuePlanner.Services
                             {
                                 objPlanData.locked = IsEditable;
                             }
-                        }
-                        else if (objres.EntityType.ToLower() == Enums.EntityType.Tactic.ToString().ToLower())
-                        {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
+                            break;
+                        case Enums.EntityType.Program:
+                            if (columnName == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.Status
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.AssetType)
                             {
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
                                 cellTextColor = objHomeGridProp.stylecolorgray;
@@ -1485,11 +1447,13 @@ namespace RevenuePlanner.Services
                             {
                                 objPlanData.locked = IsEditable;
                             }
-                        }
-                        else if (objres.EntityType.ToLower() == Enums.EntityType.Program.ToString().ToLower())
-                        {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString()
-                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
+                            break;
+                        case Enums.EntityType.Campaign:
+                            if (columnName == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.Status
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.AssetType)
                             {
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
                                 cellTextColor = objHomeGridProp.stylecolorgray;
@@ -1498,11 +1462,16 @@ namespace RevenuePlanner.Services
                             {
                                 objPlanData.locked = IsEditable;
                             }
-                        }
-                        else if (objres.EntityType.ToLower() == Enums.EntityType.Campaign.ToString().ToLower())
-                        {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString()
-                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
+                            break;
+
+                        case Enums.EntityType.Plan:
+                            if (columnName == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.StartDate
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.EndDate
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.Status
+                                || columnName == Enums.HomeGrid_Default_Hidden_Columns.AssetType)
                             {
                                 objPlanData.locked = objHomeGridProp.lockedstateone;
                                 cellTextColor = objHomeGridProp.stylecolorgray;
@@ -1511,32 +1480,18 @@ namespace RevenuePlanner.Services
                             {
                                 objPlanData.locked = IsEditable;
                             }
-                        }
-                        else if (objres.EntityType.ToLower() == Enums.EntityType.Plan.ToString().ToLower())
-                        {
-                            if (pair.Name == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TacticType.ToString()
-                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.StartDate.ToString()
-                                || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.EndDate.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.Status.ToString() || pair.Name == Enums.HomeGrid_Default_Hidden_Columns.AssetType.ToString())
-                            {
-                                objPlanData.locked = objHomeGridProp.lockedstateone;
-                                cellTextColor = objHomeGridProp.stylecolorgray;
-                            }
-                            else
-                            {
-                                objPlanData.locked = IsEditable;
-                            }
-                        }
-                        if (pair.Name == Convert.ToString(Enums.IntegrationIdType.Eloquaid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.WorkFrontid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.Marketoid)
-                            || pair.Name == Convert.ToString(Enums.IntegrationIdType.Salesforceid))
-                        {
-                            cellTextColor = objHomeGridProp.stylecolorgray;
-                        }
-                        objPlanData.style = cellTextColor;
+                            break;
                     }
+                    if (pair.Name == Convert.ToString(Enums.IntegrationIdType.Eloquaid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.WorkFrontid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.Marketoid)
+                        || pair.Name == Convert.ToString(Enums.IntegrationIdType.Salesforceid))
+                    {
+                        cellTextColor = objHomeGridProp.stylecolorgray;
+                    }
+                    objPlanData.style = cellTextColor;
                 }
+                objPlanData.style = cellTextColor;
                 lstPlanData.Add(objPlanData);
             }
-
             objres.lstdata = lstPlanData;
             return objres;
         }
@@ -1555,7 +1510,7 @@ namespace RevenuePlanner.Services
                 {
                     lstPlanData.Add(new PlandataobjColumn
                     {
-                        value = objres.EntityType, // Set Entity Type like Plan/Campaign etc...
+                        value = objres.EntityType.ToString(), // Set Entity Type like Plan/Campaign etc...
                         column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType)
                     });
                 }
@@ -1604,13 +1559,13 @@ namespace RevenuePlanner.Services
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
                     // Check Entity Type is line item and is other line item or not
-                    if (string.Compare(objres.EntityType, Enums.EntityType.Lineitem.ToString(), true) == 0 && string.IsNullOrEmpty(objres.LineItemType))
+                    if (objres.EntityType == Enums.EntityType.Lineitem && string.IsNullOrEmpty(objres.LineItemType))
                     {
                         IsEditable = objHomeGridProp.lockedstateone;
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
 
-                    if (string.Compare(objres.EntityType, Convert.ToString(Enums.EntityType.Tactic), true) == 0)
+                    if (objres.EntityType == Enums.EntityType.Tactic)
                     {
                         // Get Anchor Tactic Id
                         string AnchorTacticId = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType().GetProperty("AnchorTacticID").GetValue(RowData, new object[0])));
@@ -1692,7 +1647,7 @@ namespace RevenuePlanner.Services
             objres.ParentTaskId = GetvalueFromObject(RowData, "ParentTaskId");
             objres.UniqueId = GetvalueFromObject(RowData, "UniqueId");
             objres.ParentUniqueId = GetvalueFromObject(RowData, "ParentUniqueId");
-            objres.EntityType = GetvalueFromObject(RowData, "EntityType");
+            objres.EntityType = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), GetvalueFromObject(RowData, "EntityType"));
             objres.OwnerName = GetvalueFromObject(RowData, "OwnerName");
 
             Int64.TryParse(GetvalueFromObject(RowData, "ParentEntityId"), out ParentEntityId);
@@ -1727,58 +1682,82 @@ namespace RevenuePlanner.Services
         private string GetvalueFromObject(object RowData, string ColumnName)
         {
             string objVal = null;
-            if (string.Compare(ColumnName, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.StartDate), true) == 0 ||
-                string.Compare(ColumnName, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.EndDate), true) == 0)
+            Enums.HomeGrid_Default_Hidden_Columns columnType;
+            bool succeeded = Enum.TryParse(ColumnName, true, out columnType);
+            if (succeeded)
             {
-                objVal = Convert.ToDateTime(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0])).ToString("MM/dd/yyyy");
-            }
-            else if (string.Compare(ColumnName, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost), true) == 0)
-            {
-                string Cost = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
-                double PlannedCost = 0;
-                double.TryParse(Convert.ToString(Cost), out PlannedCost);
-                objVal = PlanCurrencySymbol + FormatNumber(objCurrency.GetValueByExchangeRate(PlannedCost, PlanExchangeRate), 2);
-            }
-            else if (string.Compare(ColumnName, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal), true) == 0)
-            {
-                string ProjectedStageValue = Convert.ToString(RowData.GetType().GetProperty("ProjectedStageValue").GetValue(RowData, new object[0]));
-                string ProjectedStage = Convert.ToString(RowData.GetType().GetProperty("ProjectedStage").GetValue(RowData, new object[0]));
-
-                if (!string.IsNullOrEmpty(ProjectedStageValue) && !string.IsNullOrEmpty(ProjectedStage))
+                switch (columnType)
                 {
-                    objVal = Convert.ToString((Math.Round(Convert.ToDouble(ProjectedStageValue)) > 0 ?
-                        Math.Round(Convert.ToDouble(ProjectedStageValue)).ToString("#,#") : "0") + " " + ProjectedStage);
+                    case Enums.HomeGrid_Default_Hidden_Columns.StartDate:
+                    case Enums.HomeGrid_Default_Hidden_Columns.EndDate:
+                        objVal = Convert.ToDateTime(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0])).ToString("MM/dd/yyyy");
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.PlannedCost: 
+                        string Cost = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                        double PlannedCost = 0;
+                        double.TryParse(Convert.ToString(Cost), out PlannedCost);
+                        objVal = PlanCurrencySymbol + FormatNumber(objCurrency.GetValueByExchangeRate(PlannedCost, PlanExchangeRate), 2);
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal:
+                        string ProjectedStageValue = Convert.ToString(RowData.GetType().GetProperty("ProjectedStageValue").GetValue(RowData, new object[0]));
+                        string ProjectedStage = Convert.ToString(RowData.GetType().GetProperty("ProjectedStage").GetValue(RowData, new object[0]));
+
+                        if (!string.IsNullOrEmpty(ProjectedStageValue) && !string.IsNullOrEmpty(ProjectedStage))
+                        {
+                            objVal = Convert.ToString((Math.Round(Convert.ToDouble(ProjectedStageValue)) > 0 ?
+                                Math.Round(Convert.ToDouble(ProjectedStageValue)).ToString("#,#") : "0") + " " + ProjectedStage);
+                        }
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.MQL:
+                        string MQL = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                        double PlannedMQL = 0;
+                        double.TryParse(Convert.ToString(MQL), out PlannedMQL);
+                        objVal = FormatNumber(PlannedMQL, 1);
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.Revenue:
+                        string Revenue = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                        double PlannedRevenue = 0;
+                        double.TryParse(Convert.ToString(Revenue), out PlannedRevenue);
+                        objVal = PlanCurrencySymbol + FormatNumber(PlannedRevenue, 2);
+                        break;
+                    default:
+                        if (string.Compare(Convert.ToString(RowData.GetType().GetProperty("EntityType").GetValue(RowData, new object[0])).ToLower(), Enums.EntityType.Lineitem.ToString().ToLower()) == 0)
+                        {
+                            if (columnType == Enums.HomeGrid_Default_Hidden_Columns.TacticType)
+                            {
+                                objVal = Convert.ToString(RowData.GetType().GetProperty("LineItemType").GetValue(RowData, new object[0]));
+                            }
+                            else
+                            {
+                                objVal = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                            }
+                        }
+                        else
+                        {
+                            objVal = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                        }
+                        break;
                 }
             }
-            else if (string.Compare(ColumnName, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL), true) == 0)
+            else
             {
-                string MQL = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
-                double PlannedMQL = 0;
-                double.TryParse(Convert.ToString(MQL), out PlannedMQL);
-                objVal = FormatNumber(PlannedMQL, 1);
-            }
-            else if (string.Compare(ColumnName, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue), true) == 0)
-            {
-                string Revenue = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
-                double PlannedRevenue = 0;
-                double.TryParse(Convert.ToString(Revenue), out PlannedRevenue);
-                objVal = PlanCurrencySymbol + FormatNumber(PlannedRevenue, 2);
-            }
-            else if (string.Compare(Convert.ToString(RowData.GetType().GetProperty("EntityType").GetValue(RowData, new object[0])).ToLower(), Enums.EntityType.Lineitem.ToString().ToLower()) == 0)
-            {
-                if (string.Compare(ColumnName, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType), true) == 0)
+                if (string.Compare(Convert.ToString(RowData.GetType().GetProperty("EntityType").GetValue(RowData, new object[0])).ToLower(), Enums.EntityType.Lineitem.ToString().ToLower()) == 0)
                 {
-                    objVal = Convert.ToString(RowData.GetType().GetProperty("LineItemType").GetValue(RowData, new object[0]));
+                    if (columnType == Enums.HomeGrid_Default_Hidden_Columns.TacticType)
+                    {
+                        objVal = Convert.ToString(RowData.GetType().GetProperty("LineItemType").GetValue(RowData, new object[0]));
+                    }
+                    else
+                    {
+                        objVal = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                    }
                 }
                 else
                 {
                     objVal = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
                 }
-            }
-            else
-            {
-                objVal = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
-            }
+            } 
+            
             return objVal;
         }
 
@@ -1788,29 +1767,21 @@ namespace RevenuePlanner.Services
         /// </summary>
         private string AddColumnString(PlanGridColumnData Row)
         {
-            string addColumn = string.Empty;
-            if (string.Compare(Row.EntityType, Convert.ToString(Enums.EntityType.Plan), true) == 0)
+            switch (Row.EntityType)
             {
-                return PlanAddString(Row);
-            }
-            else if (string.Compare(Row.EntityType, Convert.ToString(Enums.EntityType.Campaign), true) == 0)
-            {
-                return CampaignAddString(Row);
-            }
-            else if (string.Compare(Row.EntityType, Convert.ToString(Enums.EntityType.Program), true) == 0)
-            {
-                return ProgroamAddString(Row);
-            }
-            else if (string.Compare(Row.EntityType, Convert.ToString(Enums.EntityType.Tactic), true) == 0)
-            {
-                return TacticAddString(Row);
-            }
-            else if (string.Compare(Row.EntityType, Convert.ToString(Enums.EntityType.Lineitem), true) == 0)
-            {
-                return LineItemAddString(Row);
+                case Enums.EntityType.Plan:
+                    return PlanAddString(Row);
+                case Enums.EntityType.Campaign:
+                    return CampaignAddString(Row);
+                case Enums.EntityType.Program:
+                    return ProgroamAddString(Row);
+                case Enums.EntityType.Tactic:
+                    return TacticAddString(Row);
+                case Enums.EntityType.Lineitem:
+                    return LineItemAddString(Row);
             }
 
-            return addColumn;
+            return string.Empty;
         }
 
         // Set the Plan add icon html string
@@ -1937,13 +1908,13 @@ namespace RevenuePlanner.Services
                     #region "Declare & Initialize local Variables"
                     List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
                     List<string> lstFilteredCustomFieldOptionIds = new List<string>();
-                    string tacticType = Enums.EntityType.Tactic.ToString().ToUpper();
+                    Enums.EntityType tacticType = Enums.EntityType.Tactic;
                     string[] filteredCustomFields = string.IsNullOrWhiteSpace(fltrCustomfields) ? null : fltrCustomfields.Split(',');
-                    List<GridDefaultModel> tacData = allData.Where(tac => tac.EntityType != null && tac.EntityType.ToUpper() == tacticType).ToList();
+                    List<GridDefaultModel> tacData = allData.Where(tac => tac.EntityType == tacticType).ToList();
                     List<int> lstTacticIds = tacData.Select(tactic => (int)tactic.EntityId).ToList();
                     #endregion
 
-                    resultData = allData.Where(tac => tac.EntityType != null && tac.EntityType.ToUpper() != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
+                    resultData = allData.Where(tac => tac.EntityType != tacticType).ToList(); // Set Plan,Campaign,Program data to result dataset.
                     if (filteredCustomFields != null)
                     {
                         string[] splittedCustomField;
@@ -2322,12 +2293,12 @@ namespace RevenuePlanner.Services
                 }
                 if (EntityRowPermission != null)
                 {
-                    isRowPermission = EntityRowPermission.Where(a => a.EntityType.ToLower() == EntityType.ToLower() && a.EntityId == EntityId)
+                    isRowPermission = EntityRowPermission.Where(a => a.EntityType.ToString() == EntityType && a.EntityId == EntityId)
                         .Select(a => a.IsRowPermission).FirstOrDefault();
                 }
             }
             // Get list of custom fields by entity type
-            List<string> EntityCustomFields = CustomFields.Where(a => a.EntityType.ToLower() == EntityType.ToLower()).Select(a => a.CustomFieldId.ToString()).ToList();
+            List<string> EntityCustomFields = CustomFields.Where(a => a.EntityType.ToString() == EntityType).Select(a => a.CustomFieldId.ToString()).ToList();
             // Get list of custom column indexes from custom field list
             IEnumerable<int> Colindexes = columns.Select((s, k) => new { Str = s, Index = k })
                                         .Where(x => EntityCustomFields.Contains(x.Str))
