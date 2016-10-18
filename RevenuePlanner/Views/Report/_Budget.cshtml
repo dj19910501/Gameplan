@@ -98,8 +98,31 @@
         top: 44px !important;
         width: 15px;
     }
+/* CSS hack to resolve Gridbox table width issue only on finanace page Start*/
+ /*#content_wraper {
+	float: left !important;    
+    display: inline-block !important;
+}*/
+  #divMainReportPart{
+    float: left;
+    /*width: 71.5%;*/
+    width: 100%;
+}
+/*.slideLeft #divMainReportPart {
+    width: 75%;
+}*/
+
+.budgetReportHeader{padding-left: 18px; margin-bottom: 10px; width: 100%; float: left;}
+ #divTabData {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/*#divTabData #gridbox .hdr tr:first-child, #divTabData #gridbox .obj tr:first-child{display:none !important}*/
+
+/* End */
 </style>
-<div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid"></div>
+<div id="gridbox" style="background-color: white; width: 100%;" class="financeReportGrid clearfix"></div>
 
 <script type="text/javascript">
 
@@ -181,6 +204,7 @@
     }
 
     var HomeGrid;
+    var budgetWidth;
     var editidonOpenEnd = 0;
     function BindBudgetGrid() {
 
@@ -189,6 +213,7 @@
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
         HomeGrid.setImageSize(1, 1);
+        budgetWidth = '@Model.Width';//new
         HomeGrid.setHeader('@Model.SetHeader');
         HomeGrid.attachHeader(@Html.Raw(Json.Encode(Model.AttachHeader)));
         HomeGrid.setColTypes('@Model.ColType');
@@ -197,6 +222,7 @@
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
         HomeGrid.setEditable(false);
+        HomeGrid.setSizes();
         HomeGrid.init();
         setTimeout(function () {
             HomeGrid.setSizes();
