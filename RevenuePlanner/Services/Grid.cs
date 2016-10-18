@@ -286,7 +286,7 @@ namespace RevenuePlanner.Services
             {
                 ListOfDefaultColumnHeader = (from colsort in usercolindex
                                              join HeaderCol in ListOfDefaultColumnHeader
-                                                 on colsort.Value equals HeaderCol.id
+                                                 on colsort.Value.ToLower() equals HeaderCol.id.ToLower()
                                              orderby colsort.Key
                                              select HeaderCol).ToList();
 
@@ -1023,7 +1023,7 @@ namespace RevenuePlanner.Services
             {
                 lstOrderData = (from colsort in usercolindex
                                 join lstData in lstOrderData
-                                    on colsort.Value equals lstData.column
+                                    on colsort.Value.ToLower() equals lstData.column.ToLower()
                                 orderby colsort.Key
                                 select lstData).ToList();
             }

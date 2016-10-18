@@ -385,11 +385,11 @@ SET NOCOUNT ON;
 			FROM CustomField  C
 			CROSS APPLY (SELECT Item FROM @CustomFieldIds selCol 
 						WHERE selCol.Item = C.CustomFieldId) selCol
-			CROSS APPLY (	SELECT CT.Name AS 'CustomFieldType' 
+			CROSS APPLY (SELECT CT.Name AS 'CustomFieldType' 
 							FROM CustomFieldType CT
 							WHERE CT.Name=@CustomFieldTypeDropDown 
 								AND CT.CustomFieldTypeId = C.CustomFieldTypeId)CT
-			CROSS APPLY (	SELECT CP.CustomFieldId 
+			CROSS APPLY (SELECT CP.CustomFieldId 
 							FROM CustomFieldOption CP
 							WHERE 
 								C.CustomFieldId = CP.CustomFieldId
@@ -399,7 +399,7 @@ SET NOCOUNT ON;
 					AND IsDeleted=0
 					
 	-- Get list of Entity custom fields values
-	SELECT 
+		SELECT 
 		A.EntityId
 		,MAX(A.EntityType) EntityType
 		,A.CustomFieldId
@@ -413,12 +413,18 @@ SET NOCOUNT ON;
 					,Hireachy.EntityType
 					,C.CustomFieldType	
 					,Hireachy.EntityType +'_'+CAST(CE.EntityId AS VARCHAR) AS 'UniqueId'
-					,(  CASE WHEN C.IsRequired=1
+					,(  
+					CASE WHEN C.EntityType = 'Tactic'
+					THEN
+						CASE WHEN C.IsRequired=1 AND C.CustomFieldType = @CustomFieldTypeDropDown
 							 THEN 
 								CE.RestrictedText
 							 ELSE 
 								CE.UnRestrictedText
-						END ) AS 'Text'
+						END 
+					ELSE 
+						CE.UnRestrictedText
+					END) AS 'Text'
 				FROM dbo.fnGetFilterEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds,@TimeFrame,@Isgrid) Hireachy 
 				CROSS APPLY (SELECT C.CustomFieldId
 									,C.EntityType
@@ -441,8 +447,22 @@ SET NOCOUNT ON;
 										ON RE.CustomFieldId = CE.CustomFieldId AND RE.UserId = @UserId
 								WHERE C.CustomFieldId = CE.CustomFieldId
 									AND Hireachy.EntityId = CE.EntityId ) CE
+							UNION ALL 
+							SELECT C.CustomFieldId,NULL,NULL,NULL,CT.CustomFieldType
+							,NULL AS 'UniqueId',
+							NULL FROM CustomField C 
+							CROSS APPLY (SELECT Item FROM @CustomFieldIds selCol 
+											WHERE selCol.Item = C.CustomFieldId) selCol
+									CROSS APPLY(SELECT Name AS 'CustomFieldType' FROM CustomFieldType CT 
+											WHERE C.CustomFieldTypeId = CT.CustomFieldTypeId)CT 
+									WHERE C.ClientId = @ClientId 
+									AND C.IsDeleted = 0 
+									AND C.EntityType IN('Campaign','Program','Tactic','Lineitem') 
 				) A
 	GROUP BY A.CustomFieldId, A.EntityId
+							
+			
+
 END
 GO
 
