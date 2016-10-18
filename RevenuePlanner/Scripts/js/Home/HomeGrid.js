@@ -448,7 +448,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             this.editor.obj.value = (ReplaceCC(psv[0]));
         }
     }
-    if (stage == 2) {        
+    if (stage == 2) {
         if (nValue.trim() != null && nValue.trim() != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
             var oldAssetType = '';
             var NewValue = htmlDecode(nValue);
@@ -667,7 +667,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     $.ajax({
                         type: 'POST',
                         url: urlContent + 'Plan/SaveGridDetail',
-                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
+                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id), CustomFieldInput: _customFieldValues, ColumnType: type.toString(), oValue: oValue.toString() },
                         dataType: 'json',
                         success: function (states) {
                             HomeGrid.saveOpenStates("plangridState");

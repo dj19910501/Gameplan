@@ -7272,7 +7272,7 @@ namespace RevenuePlanner.Controllers
                                         value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
                                     }
 
-                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "" && ColumnType.ToString().ToUpper() != Enums.ColumnType.ed.ToString().ToUpper())
+                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "")
                                     {
                                         objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = id;
@@ -7494,7 +7494,7 @@ namespace RevenuePlanner.Controllers
                                 CustomField_Entity objcustomFieldEntity;
                                 foreach (var item in customFields)
                                 {
-                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "" && ColumnType.ToString().ToUpper() != Enums.ColumnType.ed.ToString().ToUpper())
+                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "")
                                     {
                                         objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = id;
@@ -7600,7 +7600,7 @@ namespace RevenuePlanner.Controllers
                                 CustomField_Entity objcustomFieldEntity;
                                 foreach (var item in customFields)
                                 {
-                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "" && ColumnType.ToString().ToUpper() != Enums.ColumnType.ed.ToString().ToUpper())
+                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "")
                                     {
                                         objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = id;
@@ -7739,7 +7739,96 @@ namespace RevenuePlanner.Controllers
                     {
                         objLineitem.CreatedBy = Convert.ToInt32(UpdateVal);
                     }
+                    else if (UpdateColumn.ToString().IndexOf("custom") >= 0)
+                    {
+                        if (CustomFieldInput != null && CustomFieldInput != "")
+                        {
+                            List<CustomFieldStageWeight> customFields = JsonConvert.DeserializeObject<List<CustomFieldStageWeight>>(CustomFieldInput); //Deserialize Json Data to List.
+                            int CustomFieldId = customFields.Select(cust => cust.CustomFieldId).FirstOrDefault(); // Get Custom Field Id 
+                            List<string> CustomfieldValue = customFields.Select(cust => cust.Value).ToList();// Get Custom Field Option Value
+                            List<CustomFieldOption> customfieldoption = db.CustomFieldOptions.Where(a => a.CustomField.ClientId == Sessions.User.CID).ToList();
+                            Dictionary<int, string> CustomFieldOptionIds = new Dictionary<int, string>();
+                            CustomFieldOptionIds = customfieldoption.Where(log => log.CustomFieldId == CustomFieldId && CustomfieldValue.Contains(log.Value)).ToDictionary(log => log.CustomFieldOptionId, log => log.Value.ToString());// Get Key Value pair for Customfield option id and its value according to Value.
 
+
+                            List<CustomField_Entity> prevCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == id && custField.CustomField.EntityType == UpdateType).ToList();
+
+                            if (!string.IsNullOrEmpty(oValue) && ColumnType.ToString().ToUpper() != Enums.ColumnType.ed.ToString().ToUpper())
+                            {
+                                List<string> oOptionList = oValue.Split(',').ToList();
+                                List<string> NOptionList = CustomFieldOptionIds.Values.ToList();
+                                List<string> DeleteOption = oOptionList.Except(NOptionList).ToList();
+
+
+                                List<CustomFieldDependency> CsutomfieldDependancy = db.CustomFieldDependencies.Where(a => a.CustomField.ClientId == Sessions.User.CID).ToList();
+                                List<int> optionids = customfieldoption.Where(a => DeleteOption.Contains(a.Value) && a.CustomFieldId == CustomFieldId).Select(a => a.CustomFieldOptionId).ToList();
+                                dependantcustomfieldid = DeleteDependantCustomfield(optionids, CsutomfieldDependancy, prevCustomFieldList, dependantcustomfieldid);
+
+                            }
+                            prevCustomFieldList.Where(custField => custField.CustomFieldId == CustomFieldId).ToList().ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
+                            if (customFields.Count != 0)
+                            {
+                                CustomField_Entity objcustomFieldEntity;
+                                string value = string.Empty;
+                                foreach (var item in customFields)
+                                {
+
+                                    if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                    {
+                                        value = item.Value.Trim().ToString();
+                                    }
+                                    else
+                                    {
+                                        value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
+                                    }
+
+                                    if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "")
+                                    {
+                                        objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = id;
+                                        objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
+
+                                        objcustomFieldEntity.Value = value;
+
+                                        objcustomFieldEntity = AssignValuetoCommonProperties(objcustomFieldEntity, item);
+                                        db.CustomField_Entity.Add(objcustomFieldEntity);
+                                    }
+                                }
+                            }
+
+                            if (linkedLineItemId > 0)
+                            {
+                                List<CustomField_Entity> prevLinkCustomFieldList = db.CustomField_Entity.Where(custField => custField.EntityId == linkedLineItemId && custField.CustomField.EntityType == UpdateType && custField.CustomFieldId == CustomFieldId).ToList();
+                                prevLinkCustomFieldList.ForEach(custField => db.Entry(custField).State = EntityState.Deleted);
+
+                                if (customFields.Count != 0)
+                                {
+                                    CustomField_Entity objcustomFieldEntity;
+                                    foreach (var item in customFields)
+                                    {
+                                        if (item.Value.Trim().ToString() != null && item.Value.Trim().ToString() != "")
+                                        {
+                                            objcustomFieldEntity = new CustomField_Entity();
+                                            objcustomFieldEntity.EntityId = linkedLineItemId;
+                                            objcustomFieldEntity.CustomFieldId = item.CustomFieldId;
+                                            if (ColumnType.ToString().ToUpper() == Enums.ColumnType.ed.ToString().ToUpper())
+                                            {
+                                                objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                            }
+                                            else
+                                            {
+                                                objcustomFieldEntity.Value = CustomFieldOptionIds.Where(cust => cust.Value.Equals(item.Value.Trim().ToString())).Select(cust => cust.Key.ToString()).FirstOrDefault();
+                                            }
+
+                                            objcustomFieldEntity = AssignValuetoCommonProperties(objcustomFieldEntity, item);
+                                            db.CustomField_Entity.Add(objcustomFieldEntity);
+                                        }
+                                    }
+                                }
+                            }
+                            db.SaveChanges();
+                        }
+                    }
                     objLineitem.ModifiedBy = Sessions.User.ID;
                     objLineitem.ModifiedDate = DateTime.Now;
                     db.Entry(objLineitem).State = EntityState.Modified;
