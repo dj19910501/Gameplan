@@ -150,7 +150,14 @@ namespace RevenuePlanner.Services
                             ParentID = Convert.ToInt32(row["ParentId"])
 
                         }).ToList();
-
+                        List<CustomAttribute> finalCustomFieldList = new List<CustomAttribute>();
+                        foreach (var item in columnattribute.Where(cfParent => cfParent.ParentID == 0).ToList())
+                        {
+                            finalCustomFieldList.Add(item);
+                            setCustomFieldHierarchy(int.Parse(item.CustomFieldId), columnattribute, ref finalCustomFieldList);
+                          
+                        }
+                        columnattribute = finalCustomFieldList;
                         //adding the basic fields of the grid
                         BasicFields = Enums.CommonGrid_Column.Select(row => new CustomAttribute
                         {
@@ -195,7 +202,7 @@ namespace RevenuePlanner.Services
 
                         BasicFields.AddRange(columnattribute);
                     }
-
+                   
                     //adding all attributes to single list.
                     allattributeList = BasicFields.GroupBy(a => a.EntityType, StringComparer.OrdinalIgnoreCase).Select(a => new ColumnViewEntity
                     {
@@ -209,6 +216,7 @@ namespace RevenuePlanner.Services
                             FieldType = atr.FieldType
                         }).ToList()
                     }).ToList();
+                  
                 }
                 else
                 {
@@ -226,7 +234,18 @@ namespace RevenuePlanner.Services
           
             return allattributeList;
         }
-
+        //function to apply depedancy order for custom fields.
+        public static void setCustomFieldHierarchy(int parentId, List<CustomAttribute> lstCustomField, ref List<CustomAttribute> finalList)
+        {
+            foreach (var item in lstCustomField.Where(cf => cf.ParentID == parentId).ToList())
+            {
+                finalList.Add(item);
+                if (lstCustomField.Where(cf => cf.ParentID == int.Parse(item.CustomFieldId)).Any())
+                {
+                    setCustomFieldHierarchy(int.Parse(item.CustomFieldId), lstCustomField, ref finalList);
+                }
+            }
+        }
         public int UpdateColumnView(User_CoulmnView columnview, bool Isgrid, int UserId, string xmlElements)
         {
             int result = 0;
