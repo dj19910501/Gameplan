@@ -14387,7 +14387,8 @@ namespace RevenuePlanner.Controllers
                 List<Plan_Campaign_Program_Tactic_Actual> _revActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
 
                 TacticIds = _TacticData.Select(tac => tac.TacticObj.PlanTacticId).ToList();
-                lstTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(line => TacticIds.Contains(line.PlanTacticId) && line.IsDeleted == false).ToList();
+                // Modified by Arpita Soni to display actuals of tactic in report when there is no line items except balance
+                lstTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(line => TacticIds.Contains(line.PlanTacticId) && line.IsDeleted == false && line.LineItemTypeId != null).ToList();
                 var lineitemsids = lstTacticLineItem.Select(ln => ln.PlanLineItemId).ToList();
                 tblLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineActual => lineitemsids.Contains(lineActual.PlanLineItemId)).ToList();
                 tblLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(line => lineitemsids.Contains(line.PlanLineItemId)).ToList();

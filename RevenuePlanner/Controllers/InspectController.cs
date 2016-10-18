@@ -4151,11 +4151,19 @@ namespace RevenuePlanner.Controllers
                                 objPlanTactic.AddBalanceLineItem(tacticId, pcpobj.Cost, form.OwnerId);
                                 // End - Modified by Arpita Soni for Ticket #2634 on 09/22/2016
 
-                                //// Insert LineItem for the Tactic.
                                 if (pcpobj.Cost > 0)
                                 {
-                                    //Added by Komal Rawal for #1217
+                                    // Added by Arpita Soni to add cost into first month while creation of tactic(Cost Allocation)
                                     int startmonth = pcpobj.StartDate.Month;
+                                    Plan_Campaign_Program_Tactic_Cost objTacCost = new Plan_Campaign_Program_Tactic_Cost();
+                                    objTacCost.PlanTacticId = tacticId;
+                                    objTacCost.Period = PeriodChar + startmonth;
+                                    objTacCost.Value = pcpobj.Cost; //modified for 1229
+                                    objTacCost.CreatedBy = Sessions.User.ID;
+                                    objTacCost.CreatedDate = DateTime.Now;
+                                    db.Entry(objTacCost).State = EntityState.Added;
+
+                                    //Added by Komal Rawal for #1217
                                     Plan_Campaign_Program_Tactic_Budget obPlanCampaignProgramTacticBudget = new Plan_Campaign_Program_Tactic_Budget();
                                     obPlanCampaignProgramTacticBudget.PlanTacticId = tacticId;
                                     obPlanCampaignProgramTacticBudget.Period = PeriodChar + startmonth;
@@ -4194,6 +4202,7 @@ namespace RevenuePlanner.Controllers
                                 //// Save custom fields value for particular Tactic
                                 if (customFields.Count != 0)
                                 {
+
                                     CustomField_Entity objcustomFieldEntity;
                                     foreach (var item in customFields)
                                     {
