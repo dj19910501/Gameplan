@@ -1067,7 +1067,7 @@
             if (statusValue == "Submit for Approval") {
                 if(isRequiredTacticfield)
                 {
-                    ShowError("Status of this tactic is " + '@tacticReview.Status.ToString()' + " " +'@RevenuePlanner.Helpers.Common.objCached.ValidateForPartialField');
+                    ShowError('@RevenuePlanner.Helpers.Common.objCached.ValidateForPartialField');
                     return false;
                 }
                 stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";

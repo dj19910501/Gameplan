@@ -1231,7 +1231,7 @@
 	</Field>
   <Field>
 		<Name>ValidateForPartialField</Name>
-		<value>Please fill all required fields on Setup tab.</value>
+		<value>Please fill all required fields in order to submit it for approval.</value>
 	</Field>
 	<!--//end for #2469 alert message.-->
 </Messages>
