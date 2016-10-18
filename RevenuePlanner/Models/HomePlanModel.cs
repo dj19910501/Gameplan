@@ -788,6 +788,15 @@ namespace RevenuePlanner.Models
     }
 
     // Add By Nishant Sheth
+    // Get list of view only and none permission custom field option
+    public class UserRestrictedValues
+    {
+        public int CustomFieldId { get; set; }
+        public string Text { get; set; }
+        public string Value { get; set; }
+    }
+
+    // Add By Nishant Sheth
     // Get list of Entity custom field values
     public class GridCustomFieldEntityValues
     {
@@ -833,6 +842,8 @@ namespace RevenuePlanner.Models
         public string Value { get; set; }
         public string UniqueId { get; set; }
         public string Text { get; set; }
+        public string RestrictedText { get; set; }
+        public string RestrictedValue { get; set; }
     }
 
     // Add By Nishant Sheth

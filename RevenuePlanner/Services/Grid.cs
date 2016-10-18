@@ -398,6 +398,7 @@ namespace RevenuePlanner.Services
             EntityCustomDataValues = data.CustomFieldValues.ToPivotList(item => item.CustomFieldId,
                      item => item.UniqueId,
                         items => items.Max(a => a.Text)
+                        , items => items.Max(a => a.RestrictedText)
                         , selectedCustomColumns
                         , data.CustomFields
                         , EntityRowPermission)
@@ -2225,6 +2226,7 @@ namespace RevenuePlanner.Services
         Func<T, TColumn> columnSelector,
         Expression<Func<T, TRow>> rowSelector,
         Func<IEnumerable<T>, TData> dataSelector,
+        Func<IEnumerable<T>, TData> dataRestrictedValue,
          List<string> selectedColumns,
             List<GridCustomFields> CustomFields,
             List<EntityPermissionRowWise> EntityRowPermission
@@ -2251,14 +2253,21 @@ namespace RevenuePlanner.Services
                                          rowGroup,
                                          c => c,
                                          r => columnSelector(r),
-                                         (c, columnGroup) => dataSelector(columnGroup))
+                                         (c, columnGroup) => dataSelector(columnGroup)),
+                                     RestrictedValues = columns.GroupJoin(
+                                         rowGroup,
+                                         c => c,
+                                         r => columnSelector(r),
+                                         (c, columnGroup) => dataRestrictedValue(columnGroup))
                                  }).ToList();
 
                 foreach (var row in rows)
                 {
                     var items = row.Values.Cast<object>().ToList();
+                    var Restricteditems = row.RestrictedValues.Cast<object>().ToList();
                     items.Insert(0, row.Key);
-                    CustomfieldPivotData obj = GetAnonymousObject(cols, items, CustomFields, EntityRowPermission);
+                    Restricteditems.Insert(0, row.Key);
+                    CustomfieldPivotData obj = GetAnonymousObject(cols, items, Restricteditems, CustomFields, EntityRowPermission);
                     arr.Add(obj);
                 }
             }
@@ -2270,7 +2279,7 @@ namespace RevenuePlanner.Services
         /// get values for pivoting entities
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static dynamic GetAnonymousObject(IEnumerable<string> columns, IEnumerable<object> values, List<GridCustomFields> CustomFields, List<EntityPermissionRowWise> EntityRowPermission)
+        private static dynamic GetAnonymousObject(IEnumerable<string> columns, IEnumerable<object> values, IEnumerable<object> Restricteditems, List<GridCustomFields> CustomFields, List<EntityPermissionRowWise> EntityRowPermission)
         {
             CustomfieldPivotData objCustomPivotData = new CustomfieldPivotData();
             List<PlandataobjColumn> lstCustomFieldData = new List<PlandataobjColumn>();
@@ -2317,7 +2326,24 @@ namespace RevenuePlanner.Services
                     {
                         if (!string.IsNullOrEmpty(Convert.ToString(values.ElementAt<object>(i))))
                         {
-                            DataValue = Convert.ToString(values.ElementAt<object>(i));
+                            List<string> restrictedText = new List<string>();
+                            List<string> Text = new List<string>();
+                            if (!string.IsNullOrEmpty(Convert.ToString(Restricteditems.ElementAt<object>(i))))
+                            {
+                                restrictedText = Convert.ToString(Restricteditems.ElementAt<object>(i)).Split(',').ToList();
+                            }
+                            if (!string.IsNullOrEmpty(Convert.ToString(values.ElementAt<object>(i))))
+                            {
+                                Text = Convert.ToString(values.ElementAt<object>(i)).Split(',').ToList();
+                            }
+                            if (restrictedText.Count > 0)
+                            {
+                                DataValue = string.Join(",", Text.Intersect(restrictedText).ToArray());
+                            }
+                            else
+                            {
+                                DataValue = string.Join(",", Text);
+                            }
                         }
                     }
                     if (isRowPermission)
