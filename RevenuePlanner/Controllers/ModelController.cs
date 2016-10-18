@@ -1340,7 +1340,7 @@ namespace RevenuePlanner.Controllers
                     //Begin added by Brad Gray 7/28/2015 PL#1374, #1373
                     IntegrationInstance intInstanceProjMgmt = objModel.IntegrationInstance6;
                     bool isIntegratedWithWorkFront = false;
-                    var Marketoinstance = objModel.IntegrationInstance6;
+                    var Marketoinstance = objModel.IntegrationInstance3;
 
                     List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
                     if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString()))
