@@ -155,7 +155,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
-                string url = ApiUrl + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                string url = ApiUrl + "api/Dashboard/GetdashboardListUserWise?UserId=" + Sessions.User.ID + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
                 string result = string.Empty;
                 try
                 {
