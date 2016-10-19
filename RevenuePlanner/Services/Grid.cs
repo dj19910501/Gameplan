@@ -537,7 +537,7 @@ namespace RevenuePlanner.Services
                         // Read the xml data from user column view
                         List<AttributeDetail> items = objColumnView.UserSavedColumnAttribute(doc);
                         // Set default columns values
-                        headobjlist.AddRange(GetUserDefaultColumnsProp(items, MQLTitle, ref  UserDefinedColumns));
+                        headobjlist.AddRange(GetUserDefaultColumnsProp(items, MQLTitle, ref UserDefinedColumns));
                         // Add custom field columns to that user have selected from column manage view
                         customColumnslist = items.Where(a => a.AttributeType.ToLower() != Convert.ToString(Enums.HomeGridColumnAttributeType.Common).ToLower())
                                             .Select(a => a.AttributeId).ToList();
@@ -906,7 +906,7 @@ namespace RevenuePlanner.Services
                 EntitydataobjItem = new List<Plandataobj>();
 
                 // Get list of custom field values for particular entity based on pivoted entities list
-                List<PlandataobjColumn> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId == (Row.EntityType.ToString() + "_" + Row.EntityId))
+                List<PlandataobjColumn> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId.ToLower() == (Row.EntityType.ToString().ToLower() + "_" + Row.EntityId))
                                            .Select(a => a.CustomFieldData).FirstOrDefault();
                 if (lstCustomfieldData == null && CustomFieldData.CustomFields != null)
                 {
@@ -1761,12 +1761,12 @@ namespace RevenuePlanner.Services
                         objVal = string.Empty;
                         if (string.Compare(Convert.ToString(RowData.EntityType).ToLower(), Enums.EntityType.Lineitem.ToString().ToLower()) == 0)
                         {
-                                objVal = Convert.ToString(RowData.LineItemType);
-                            }
-                            else
-                            {
-                                objVal = Convert.ToString(RowData.TacticType);
-                            }
+                            objVal = Convert.ToString(RowData.LineItemType);
+                        }
+                        else
+                        {
+                            objVal = Convert.ToString(RowData.TacticType);
+                        }
                         break;
                     case Enums.HomeGrid_Default_Hidden_Columns.Owner:
                         objVal = Convert.ToString(RowData.Owner);
@@ -2350,12 +2350,12 @@ namespace RevenuePlanner.Services
                 }
                 if (EntityRowPermission != null)
                 {
-                    isRowPermission = EntityRowPermission.Where(a => a.EntityType.ToString() == EntityType && a.EntityId == EntityId)
+                    isRowPermission = EntityRowPermission.Where(a => a.EntityType.ToString().ToLower() == EntityType.ToLower() && a.EntityId == EntityId)
                         .Select(a => a.IsRowPermission).FirstOrDefault();
                 }
             }
             // Get list of custom fields by entity type
-            List<string> EntityCustomFields = CustomFields.Where(a => a.EntityType.ToString() == EntityType).Select(a => a.CustomFieldId.ToString()).ToList();
+            List<string> EntityCustomFields = CustomFields.Where(a => a.EntityType.ToString().ToLower() == EntityType.ToLower()).Select(a => a.CustomFieldId.ToString()).ToList();
             // Get list of custom column indexes from custom field list
             IEnumerable<int> Colindexes = columns.Select((s, k) => new { Str = s, Index = k })
                                         .Where(x => EntityCustomFields.Contains(x.Str))
