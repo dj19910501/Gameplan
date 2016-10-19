@@ -1515,12 +1515,20 @@ color: #89CEDE;
 }
 .task-tbl .gantt_task .gantt_scale_line:first-child {height:23px !important;  line-height:23px !important}
 
-
-.task-tbl .gantt_task  .gantt_task_scale  .gantt_scale_cell{font-weight:normal !important; text-align:center}
-.task-tbl .gantt_task > .gantt_task_scale > .gantt_scale_line:first-child > .gantt_scale_cell {font-size:12px !important; }
+.task-tbl .gantt_task  .gantt_task_scale  .gantt_scale_cell{
+    font-family: Tahoma,Helvetica;
+    font-weight: bold;
+    padding-left:0;
+    text-align:center;
+    font-size: 12px;
+}
+.task-tbl .gantt_task > .gantt_task_scale > .gantt_scale_line:first-child > .gantt_scale_cell {font-size:11px !important; }
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr tr:nth-child(2) td:nth-child(4){min-width:350px !important}
-
-
+.task-tbl .gantt_task_scale .gantt_scale_cell {
+    font-family: Tahoma,Helvetica;
+    font-weight: bold;
+    padding-left:0;
+}
 /* =========== Grid and Budget  View CSS ======== */
 .task-tbl #divgridview .xhdr, .task-tbl #divgridview .hdr{ height: 54px !important; }
 .task-tbl #divgridview.budget-grid .xhdr, .task-tbl #divgridview.budget-grid .hdr{ height: 54px !important; }
@@ -1536,10 +1544,11 @@ color: #89CEDE;
 .task-tbl table.obj.row20px tr td .treegrid_cell a{color:#000}
 .task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
     color: #808080;
-    font-weight: normal;
+    font-family: Tahoma,Helvetica;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0 3px;
     width: auto;
-    padding:0 3px;
-    font-family: source_sans_prosemibold, Arial, sans-serif;
 }
 
 .task-tbl  #divgridview #gridbox { min-height:100%; border:0 !important}

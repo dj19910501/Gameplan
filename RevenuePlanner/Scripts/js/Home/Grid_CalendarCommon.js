@@ -569,7 +569,10 @@ function DisplayPopUpMenu(obj, e) {
     var target = $(e.target);
     var targetOffset = target.offset().top;
     var scrollPosition = $(window).scrollTop();
-
+    var targetHeight = target.height();
+    var contentHeight = $('#popupType').outerHeight();
+    var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+    var UlBottomOffset = $(window).height() - targetHeight - targetOffset;//Added by Bhumika to resolve issue popup cutout when no space at bottom
     if ($('#popupType').css('display') != 'none') {
         if (scrollPosition <= targetOffset) {
             $('#popupType').css({
@@ -578,14 +581,22 @@ function DisplayPopUpMenu(obj, e) {
             });
         }
         else {
-            var targetHeight = target.height();
-            var contentHeight = $('#popupType').outerHeight();
-            var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+            //var targetHeight = target.height();
+            //var contentHeight = $('#popupType').outerHeight();
+            //var targetBottomOffset = targetOffset + targetHeight - contentHeight;            
             $('#popupType').css({
                 'top': targetBottomOffset,
                 'left': left,
             });
         }
+        
+    }
+    //Added by Bhumika to resolve issue popup cutout when no space at bottom
+    if (UlBottomOffset <= contentHeight) {
+        $("#popupType").css("margin-top","-100px");
+    }
+    else {
+        $("#popupType").css("margin-top", "0px");
     }
     e.stopPropagation();
     $("#NewPlan").click(function (e) {
