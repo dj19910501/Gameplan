@@ -1258,15 +1258,12 @@ namespace RevenuePlanner.Helpers
         #region Plan
         public static List<Plan> GetPlan(bool isFromReport = false)
         {
-            // Modified by Arpita Soni for performance
             //// Getting active model of client. 
-            List<int> modelIds = db.Models.Where(m => m.ClientId == Sessions.User.CID && m.IsDeleted == false).Select(m => m.ModelId).ToList();
+            var modelIds = db.Models.Where(m => m.ClientId == Sessions.User.CID && m.IsDeleted == false).Select(m => m.ModelId).ToList();
 
             //// Getting active plans of ModelId(s).
-            List<Plan> activePlan = (from p in db.Plans 
-                                     join modelId in modelIds on p.ModelId equals modelId
-                                     where p.IsActive == true && p.IsDeleted == false
-                                     select p).ToList();
+            var activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p).ToList();
+            
             return activePlan;
         }
 
