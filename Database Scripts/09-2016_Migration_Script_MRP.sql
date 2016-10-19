@@ -8752,7 +8752,7 @@ BEGIN
 				Hireachy.EntityTitle,		
 				Hireachy.ParentEntityId	,
 				Hireachy.ParentUniqueId	,
-				Hireachy.EntityTypeId As EntityType	,	
+				IsNull(Hireachy.EntityTypeId,0) As EntityType	,	
 				Hireachy.ColorCode,		
 				Hireachy.[Status],		
 				Hireachy.StartDate,		

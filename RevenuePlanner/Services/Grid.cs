@@ -1362,7 +1362,18 @@ namespace RevenuePlanner.Services
                 {
                     objPlanData.column = pair.Name;
                     objPlanData.value = GetvalueFromObject(RowData, pair.Name);
-                    
+                    // Added by Viral to set StartDate & EndDate values set null in case of View By Parent rows like Created, Approved stages.
+                    if (objres.EntityType.ToString().ToUpper() != Enums.EntityType.Plan.ToString().ToUpper()
+                        && objres.EntityType.ToString().ToUpper() != Enums.EntityType.Campaign.ToString().ToUpper()
+                        && objres.EntityType.ToString().ToUpper() != Enums.EntityType.Program.ToString().ToUpper()
+                        && objres.EntityType.ToString().ToUpper() != Enums.EntityType.Tactic.ToString().ToUpper()
+                        && objres.EntityType.ToString().ToUpper() != Enums.EntityType.Lineitem.ToString().ToUpper() && ((pair.Name == "StartDate") || (pair.Name == "EndDate")))
+                    {
+                        objPlanData.value = "-";
+                        objPlanData.actval = "-";
+                        objPlanData.locked = objHomeGridProp.lockedstateone;
+                        cellTextColor = objHomeGridProp.stylecolorgray;
+                    }
                     Enums.HomeGrid_Default_Hidden_Columns columnName = (Enums.HomeGrid_Default_Hidden_Columns)Enum.Parse(typeof(Enums.HomeGrid_Default_Hidden_Columns), pair.Name);
                     switch (objres.EntityType)
                     {
@@ -1664,7 +1675,10 @@ namespace RevenuePlanner.Services
 
             objres.AssetType = Convert.ToString(RowData.AssetType);
             objres.TacticType = Convert.ToString(RowData.TacticType);
-            if (objres.EntityType.ToString().ToUpper() != Enums.EntityType.Lineitem.ToString().ToUpper())
+            if (objres.EntityType.ToString().ToUpper() == Enums.EntityType.Plan.ToString().ToUpper()
+                || objres.EntityType.ToString().ToUpper() == Enums.EntityType.Campaign.ToString().ToUpper()
+                || objres.EntityType.ToString().ToUpper() == Enums.EntityType.Program.ToString().ToUpper()
+                || objres.EntityType.ToString().ToUpper() == Enums.EntityType.Tactic.ToString().ToUpper())
             {
                 objres.StartDate = RowData.StartDate;
                 objres.EndDate = RowData.EndDate;
