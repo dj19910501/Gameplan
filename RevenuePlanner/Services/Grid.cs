@@ -285,7 +285,7 @@ namespace RevenuePlanner.Services
             List<PlanDHTMLXGridDataModel> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
                      .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData, usercolindex))
                      .ToList();
-
+            
             objPlanMainDHTMLXGrid.head = ListOfDefaultColumnHeader;
             objPlanMainDHTMLXGrid.rows = griditems;
             return objPlanMainDHTMLXGrid;
@@ -548,7 +548,7 @@ namespace RevenuePlanner.Services
         }
 
         // Below dictionary for default columns list of home grid // We are set the dhtmlx header properties 
-        private Dictionary<string, PlanHead> lstHomeGrid_Default_Columns(bool IsIntegration=false)
+        private Dictionary<string, PlanHead> lstHomeGrid_Default_Columns(bool IsIntegration = false)
         {
             Dictionary<string, PlanHead> lstColumns = new Dictionary<string, PlanHead>();
 
@@ -823,8 +823,10 @@ namespace RevenuePlanner.Services
 
             var dataDictionary = DataList.ToDictionary(a => a.UniqueId);
 
-            if (IsRevenueNeeded) {
-                EntityTypeOrder.ForEach(et => {
+            if (IsRevenueNeeded)
+            {
+                EntityTypeOrder.ForEach(et =>
+                {
                     DataList.Where(a => a.EntityType == et)
                     .Select(a => new { UniqueId = a.ParentUniqueId, Revenue = (decimal)a.Revenue })
                     .GroupBy(a => a.UniqueId, (k, d) => new { UniqueId = k, Revenue = d.Sum(a => a.Revenue) })
@@ -833,7 +835,8 @@ namespace RevenuePlanner.Services
                 });
             };
 
-            if (IsMQLNeeded) {
+            if (IsMQLNeeded)
+            {
                 EntityTypeOrder.ForEach(et =>
                 {
                     DataList.Where(a => a.EntityType == et)
@@ -843,7 +846,8 @@ namespace RevenuePlanner.Services
                 });
             };
 
-            if (IsPlannedCostNeeded) {
+            if (IsPlannedCostNeeded)
+            {
                 EntityTypeOrder.ForEach(et =>
                 {
                     DataList.Where(a => a.EntityType == et)
@@ -943,6 +947,65 @@ namespace RevenuePlanner.Services
                 throw;
             }
             return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
+        }
+
+
+        PlanDHTMLXGridDataModel CreateItemGridCopy(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData, Dictionary<int, string> usercolindex)
+        {
+            List<PlanDHTMLXGridDataModel> children = new List<PlanDHTMLXGridDataModel>();
+            try
+            {
+                // Get entity Childs records
+                IEnumerable<PlanGridColumnData> lstChildren = GetChildrenGrid(DataList, Row.UniqueId);
+
+                // Call recursive if any other child entity
+                children = lstChildren
+                .Select(r => CreateItemGridCopy(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridDefaultData, usercolindex)).ToList();
+
+                EntitydataobjItem = new List<Plandataobj>();
+
+                // Get list of custom field values for particular entity based on pivoted entities list
+                List<PlandataobjColumn> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId == (Row.EntityType.ToString() + "_" + Row.EntityId))
+                                           .Select(a => a.CustomFieldData).FirstOrDefault();
+                if (lstCustomfieldData == null && CustomFieldData.CustomFields != null)
+                {
+                    List<PlandataobjColumn> ItemEmptylist = new List<PlandataobjColumn>(); // Variable for empty list of custom fields value to assign entity 
+                    // Get list of custom fields by entity type
+                    List<string> EntityCustomFields = CustomFieldData.CustomFields.Where(a => a.EntityType == Row.EntityType).Select(a => a.CustomFieldId.ToString()).ToList();
+                    // Get list of custom column indexes from custom field list
+                    List<int> Colindexes = customColumnslist.Select((s, k) => new { Str = s, Index = k })
+                                                .Where(x => EntityCustomFields.Contains(x.Str))
+                                                .Select(x => x.Index).ToList();
+                    // Set custom field is editable or not for respective entities
+                    if (Row.EntityType == Enums.EntityType.Lineitem && string.IsNullOrEmpty(Row.LineItemType))
+                    {
+                        Row.IsRowPermission = false;
+                    }
+                    if (Row.IsRowPermission)
+                    {
+                        for (int j = 0; j < EmptyCustomValues.Count; j++)
+                        {
+                            if (Colindexes.Contains(j))
+                            {
+                                ItemEmptylist.Add(new PlandataobjColumn { value = string.Empty, locked = objHomeGridProp.lockedstatezero, style = objHomeGridProp.stylecolorblack, column = EmptyCustomValues[j].column });
+                            }
+                            else
+                            { ItemEmptylist.Add(EmptyCustomValues[j]); }
+                        }
+                    }
+                    else
+                    { ItemEmptylist.AddRange(EmptyCustomValues); }
+                    lstCustomfieldData = ItemEmptylist;
+                }
+
+                // Set the values of row
+                EntitydataobjItem = GridDataRow(Row, EntitydataobjItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData, usercolindex);
+            }
+            catch
+            {
+                throw;
+            }
+            return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data1 = EntitydataobjItem.Select(a => a), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
         }
         #endregion
 
@@ -1312,7 +1375,7 @@ namespace RevenuePlanner.Services
         #region Select Specific Columns dynamic
         // From this method we pass the array of column list and select it's values
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public PlanGridColumnData Projection(object RowData, IEnumerable<string> props, string viewBy)
+        public PlanGridColumnData Projection(GridDefaultModel RowData, IEnumerable<string> props, string viewBy)
         {
             PlanGridColumnData objres = new PlanGridColumnData();
             if (RowData == null)
@@ -1345,7 +1408,7 @@ namespace RevenuePlanner.Services
                 {
                     objPlanData.column = pair.Name;
                     objPlanData.value = GetvalueFromObject(RowData, pair.Name);
-                    objres.EntityType = (Enums.EntityType) Enum.Parse(typeof(Enums.EntityType), GetvalueFromObject(RowData, "EntityType"));
+                    objres.EntityType = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(RowData.EntityType));
 
                     if (objres.IsRowPermission == true)
                     {
@@ -1384,7 +1447,7 @@ namespace RevenuePlanner.Services
                                 // set ids for line item type and tactic type
                                 if (columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType) // Consider as line item type
                                 {
-                                    objPlanData.actval = GetvalueFromObject(RowData, "LineItemTypeId");
+                                    objPlanData.actval = Convert.ToString(RowData.LineItemTypeId);
                                 }
                                 else
                                 {
@@ -1416,11 +1479,12 @@ namespace RevenuePlanner.Services
                         case Enums.EntityType.Tactic:
                             if (columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType)
                             {
-                                objPlanData.actval = GetvalueFromObject(RowData, "TacticTypeId");
+                                objPlanData.actval = Convert.ToString(RowData.TacticTypeId);
                             }
                             else
                             {
                                 objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+
                             }
 
                             if (columnName == Enums.HomeGrid_Default_Hidden_Columns.Status
@@ -1491,6 +1555,8 @@ namespace RevenuePlanner.Services
                     objPlanData.style = cellTextColor;
                 }
                 objPlanData.style = cellTextColor;
+                objPlanData.value = (objPlanData.value == null ? string.Empty : objPlanData.value);
+                objPlanData.actval = (objPlanData.actval == null ? string.Empty : objPlanData.actval);
                 lstPlanData.Add(objPlanData);
             }
             objres.lstdata = lstPlanData;
@@ -1631,48 +1697,48 @@ namespace RevenuePlanner.Services
         /// Update reference variable values for Add columns icon's html attribute values
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private PlanGridColumnData InsertAttributeValueforAddColumns(object RowData, PlanGridColumnData objres)
+        private PlanGridColumnData InsertAttributeValueforAddColumns(GridDefaultModel RowData, PlanGridColumnData objres)
         {
             Int64 ParentEntityId = 0;
             int LineItemTypeId = 0;
             int AnchorTacticID = 0;
             Int64 entityid = 0;
             int ownerId;
-            Int64.TryParse(GetvalueFromObject(RowData, "EntityId"), out entityid);
+            Int64.TryParse(Convert.ToString(RowData.EntityId), out entityid);
             objres.EntityId = entityid;
-            int.TryParse(GetvalueFromObject(RowData, "Owner"), out ownerId);
+            int.TryParse(Convert.ToString(RowData.Owner), out ownerId);
             objres.Owner = ownerId;
-            objres.AltId = GetvalueFromObject(RowData, "AltId");
-            objres.ColorCode = GetvalueFromObject(RowData, "ColorCode");
-            objres.TaskId = GetvalueFromObject(RowData, "TaskId");
-            objres.ParentTaskId = GetvalueFromObject(RowData, "ParentTaskId");
-            objres.UniqueId = GetvalueFromObject(RowData, "UniqueId");
-            objres.ParentUniqueId = GetvalueFromObject(RowData, "ParentUniqueId");
-            objres.EntityType = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), GetvalueFromObject(RowData, "EntityType"));
-            objres.OwnerName = GetvalueFromObject(RowData, "OwnerName");
+            objres.AltId = Convert.ToString(RowData.AltId);
+            objres.ColorCode = Convert.ToString(RowData.ColorCode);
+            objres.TaskId = Convert.ToString(RowData.TaskId);
+            objres.ParentTaskId = Convert.ToString(RowData.ParentTaskId);
+            objres.UniqueId = Convert.ToString(RowData.UniqueId);
+            objres.ParentUniqueId = Convert.ToString(RowData.ParentUniqueId);
+            objres.EntityType = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(RowData.EntityType));
+            objres.OwnerName = Convert.ToString(RowData.OwnerName);
 
-            Int64.TryParse(GetvalueFromObject(RowData, "ParentEntityId"), out ParentEntityId);
+            Int64.TryParse(Convert.ToString(RowData.ParentEntityId), out ParentEntityId);
             objres.ParentEntityId = ParentEntityId;
 
-            objres.AssetType = GetvalueFromObject(RowData, "AssetType");
-            objres.TacticType = GetvalueFromObject(RowData, "TacticType");
+            objres.AssetType = Convert.ToString(RowData.AssetType);
+            objres.TacticType = Convert.ToString(RowData.TacticType);
             if (objres.EntityType.ToString().ToUpper() != Enums.EntityType.Lineitem.ToString().ToUpper())
             {
-                objres.StartDate = Convert.ToDateTime(GetvalueFromObject(RowData, "StartDate"));
-                objres.EndDate = Convert.ToDateTime(GetvalueFromObject(RowData, "EndDate"));
+                objres.StartDate = RowData.StartDate;
+                objres.EndDate = RowData.EndDate;
             }
-            objres.Status = GetvalueFromObject(RowData, "Status");
-            objres.EntityTitle = GetvalueFromObject(RowData, "EntityTitle");
+            objres.Status = RowData.Status;
+            objres.EntityTitle = Convert.ToString(RowData.EntityTitle);
 
-            int.TryParse(GetvalueFromObject(RowData, "LineItemTypeId"), out LineItemTypeId);
+            int.TryParse(Convert.ToString(RowData.LineItemTypeId), out LineItemTypeId);
             objres.LineItemTypeId = LineItemTypeId;
-            objres.LineItemType = GetvalueFromObject(RowData, "LineItemType");
+            objres.LineItemType = Convert.ToString(RowData.LineItemType);
 
-            int.TryParse(GetvalueFromObject(RowData, "AnchorTacticID"), out AnchorTacticID);
+            int.TryParse(Convert.ToString(RowData.AnchorTacticID), out AnchorTacticID);
             objres.AnchorTacticID = AnchorTacticID;
 
-            objres.IsCreatePermission = bool.Parse(GetvalueFromObject(RowData, "IsCreatePermission"));
-            objres.IsRowPermission = bool.Parse(GetvalueFromObject(RowData, "IsRowPermission"));
+            objres.IsCreatePermission = bool.Parse(Convert.ToString(RowData.IsCreatePermission));
+            objres.IsRowPermission = bool.Parse(Convert.ToString(RowData.IsRowPermission));
             return objres;
         }
 
@@ -1680,7 +1746,7 @@ namespace RevenuePlanner.Services
         /// return cell value for plan grid data
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string GetvalueFromObject(object RowData, string ColumnName)
+        private string GetvalueFromObject(GridDefaultModel RowData, string ColumnName)
         {
             string objVal = null;
             Enums.HomeGrid_Default_Hidden_Columns columnType;
@@ -1690,19 +1756,21 @@ namespace RevenuePlanner.Services
                 switch (columnType)
                 {
                     case Enums.HomeGrid_Default_Hidden_Columns.StartDate:
-                    case Enums.HomeGrid_Default_Hidden_Columns.EndDate:
-                        objVal = Convert.ToDateTime(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0])).ToString("MM/dd/yyyy");
+                        objVal = Convert.ToDateTime(RowData.StartDate).ToString("MM/dd/yyyy");
                         break;
-                    case Enums.HomeGrid_Default_Hidden_Columns.PlannedCost: 
-                        string Cost = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                    case Enums.HomeGrid_Default_Hidden_Columns.EndDate:
+                        objVal = Convert.ToDateTime(RowData.EndDate).ToString("MM/dd/yyyy");
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.PlannedCost:
+                        string Cost = Convert.ToString(RowData.PlannedCost);
                         double PlannedCost = 0;
                         double.TryParse(Convert.ToString(Cost), out PlannedCost);
                         objVal = PlanCurrencySymbol + FormatNumber(objCurrency.GetValueByExchangeRate(PlannedCost, PlanExchangeRate), 2);
                         break;
                     case Enums.HomeGrid_Default_Hidden_Columns.TargetStageGoal:
-                        string ProjectedStageValue = Convert.ToString(RowData.GetType().GetProperty("ProjectedStageValue").GetValue(RowData, new object[0]));
-                        string ProjectedStage = Convert.ToString(RowData.GetType().GetProperty("ProjectedStage").GetValue(RowData, new object[0]));
-
+                        string ProjectedStageValue = Convert.ToString(RowData.ProjectedStageValue);
+                        string ProjectedStage = Convert.ToString(RowData.ProjectedStage);
+                        objVal = string.Empty;
                         if (!string.IsNullOrEmpty(ProjectedStageValue) && !string.IsNullOrEmpty(ProjectedStage))
                         {
                             objVal = Convert.ToString((Math.Round(Convert.ToDouble(ProjectedStageValue)) > 0 ?
@@ -1710,33 +1778,54 @@ namespace RevenuePlanner.Services
                         }
                         break;
                     case Enums.HomeGrid_Default_Hidden_Columns.MQL:
-                        string MQL = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                        string MQL = Convert.ToString(RowData.MQL);
                         double PlannedMQL = 0;
                         double.TryParse(Convert.ToString(MQL), out PlannedMQL);
                         objVal = FormatNumber(PlannedMQL, 1);
                         break;
                     case Enums.HomeGrid_Default_Hidden_Columns.Revenue:
-                        string Revenue = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                        string Revenue = Convert.ToString(RowData.Revenue);
                         double PlannedRevenue = 0;
                         double.TryParse(Convert.ToString(Revenue), out PlannedRevenue);
                         objVal = PlanCurrencySymbol + FormatNumber(PlannedRevenue, 2);
                         break;
-                    default:
-                        if (string.Compare(Convert.ToString(RowData.GetType().GetProperty("EntityType").GetValue(RowData, new object[0])).ToLower(), Enums.EntityType.Lineitem.ToString().ToLower()) == 0)
+                    case Enums.HomeGrid_Default_Hidden_Columns.Status:
+                        objVal = Convert.ToString(RowData.Status);
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.AssetType:
+                        objVal = Convert.ToString(RowData.AssetType);
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.TacticType:
+                        objVal = string.Empty;
+                        if (string.Compare(Convert.ToString(RowData.EntityType).ToLower(), Enums.EntityType.Lineitem.ToString().ToLower()) == 0)
                         {
                             if (columnType == Enums.HomeGrid_Default_Hidden_Columns.TacticType)
                             {
-                                objVal = Convert.ToString(RowData.GetType().GetProperty("LineItemType").GetValue(RowData, new object[0]));
+                                objVal = Convert.ToString(RowData.LineItemType);
                             }
                             else
                             {
-                                objVal = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
+                                objVal = Convert.ToString(RowData.TacticType);
                             }
                         }
-                        else
-                        {
-                            objVal = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
-                        }
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.Owner:
+                        objVal = Convert.ToString(RowData.Owner);
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.Eloquaid:
+                        objVal = Convert.ToString(RowData.Eloquaid);
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.Salesforceid:
+                        objVal = Convert.ToString(RowData.Salesforceid);
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.Marketoid:
+                        objVal = Convert.ToString(RowData.Marketoid);
+                        break;
+                    case Enums.HomeGrid_Default_Hidden_Columns.WorkFrontid:
+                        objVal = Convert.ToString(RowData.WorkFrontid);
+                        break;
+                    default:
+                        objVal = string.Empty;
                         break;
                 }
             }
@@ -1757,8 +1846,8 @@ namespace RevenuePlanner.Services
                 {
                     objVal = Convert.ToString(RowData.GetType().GetProperty(ColumnName).GetValue(RowData, new object[0]));
                 }
-            } 
-            
+            }
+
             return objVal;
         }
 
