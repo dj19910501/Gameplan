@@ -402,7 +402,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
 
                 GetCustomfieldOptionlist(id, entityid, cellInd);
 
-            }
+           }
         }
         opencombobox();
     }
@@ -698,10 +698,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                             if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
                                 var ids = states.DependentCustomfield;
-                                for (var i = 0; i < ids.length; i++) {
-                                    var colIndex = HomeGrid.getColIndexById(ids[i].CustomFieldId);
-                                    if (colIndex != undefined && colIndex != '')
-                                        HomeGrid.cells(rowId, colIndex).setValue(ids[i].OptionValue);
+                                if (ids != null && ids != undefined) {
+                                    for (var i = 0; i < ids.length; i++) {
+                                        var colIndex = HomeGrid.getColIndexById(ids[i].CustomFieldId);
+                                        if (colIndex != undefined && colIndex != '')
+                                            HomeGrid.cells(rowId, colIndex).setValue(ids[i].OptionValue);
+                                    }
                                 }
                             }
                         }
@@ -855,10 +857,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                             if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
                                 var ids = states.DependentCustomfield;
-                                for (var i = 0; i < ids.length; i++) {
-                                    var colIndex = HomeGrid.getColIndexById(ids[i].CustomFieldId);
-                                    if (colIndex != undefined && colIndex != '')
-                                        HomeGrid.cells(rowId, colIndex).setValue(ids[i].OptionValue);
+                                if (ids != null && ids != undefined) {
+                                    for (var i = 0; i < ids.length; i++) {
+                                        var colIndex = HomeGrid.getColIndexById(ids[i].CustomFieldId);
+                                        if (colIndex != undefined && colIndex != '')
+                                            HomeGrid.cells(rowId, colIndex).setValue(ids[i].OptionValue);
+                                    }
                                 }
                             }
                         }
@@ -1300,6 +1304,7 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
     var customoption = customfieldOptionList;
     var optionlist;
     var clistitem = [];
+    debugger;
     function filterbyparent(obj) {
         if (obj.customFieldId == customFieldId && obj.ParentOptionId != null && obj.ParentOptionId.length > 0)
             return true;
@@ -1309,6 +1314,7 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
     d = customoption.filter(filterbyparent);
 
     if (d != null && d.length > 0) {
+        debugger;
         var parentoptid = [];
         $.each(d, function (i, item) {
             if (parentoptid.indexOf(item.ParentOptionId[0]) < 0)
@@ -1325,6 +1331,7 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
                 parentoptionId: (parentoptid)
             },
             success: function (data) {
+                debugger;
                 if (data != null && data.optionlist != null && data.optionlist.length > 0)
                     optionlist = data.optionlist;
                 if (optionlist != null && optionlist.length > 0 && optionlist != undefined) {
