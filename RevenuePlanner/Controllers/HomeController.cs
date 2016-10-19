@@ -301,7 +301,6 @@ namespace RevenuePlanner.Controllers
 
         public async Task<JsonResult> GetActivityDistributionchart(string planid, string strtimeframe, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool IsGridView = false)
         {
-
             List<int> filteredPlanIds = new List<int>();
             string planYear = string.Empty;
             int Planyear;
@@ -321,8 +320,8 @@ namespace RevenuePlanner.Controllers
 
             if (string.IsNullOrEmpty(strtimeframe))
             {
-                List<Plan> lstPlans = new List<Plan>();
-                lstPlans = Common.GetPlan();
+                // Modified by Arpita Soni for performance
+                List<Plan> lstPlans = Common.GetPlan();
                 int planId;
                 Int32.TryParse(planid, out planId);
                 Plan objPlan = lstPlans.Where(x => x.PlanId == planId).FirstOrDefault();
@@ -333,7 +332,6 @@ namespace RevenuePlanner.Controllers
                 }
 
             }
-
             //// Set start and end date for calender
             Common.GetPlanGanttStartEndDate(planYear, strtimeframe, ref CalendarStartDate, ref CalendarEndDate);
             DataSet dsPlanCampProgTac = new DataSet();
@@ -356,19 +354,14 @@ namespace RevenuePlanner.Controllers
                 campplanid = lstCampaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && planIds.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
             }
             filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
-                campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
-
-
-
+                campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).Select(plan => plan.PlanId).ToList();
 
             //// Get planyear of the selected Plan
             if (strtimeframe.Contains("-") || IsMultiYearPlan)
             {
-
-                List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
-                lstActivityChartyears = GetmultipleyearActivityChartData(strtimeframe, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds);
-
-                return Json(new { lstchart = lstActivityChartyears.ToList(), strparam = strtimeframe }, JsonRequestBehavior.AllowGet);
+                // Modified by Arpita Soni for performance
+                List<ActivityChart> lstActivityChartyears = GetmultipleyearActivityChartData(strtimeframe, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds);
+                return Json(new { lstchart = lstActivityChartyears, strparam = strtimeframe }, JsonRequestBehavior.AllowGet);
             }
 
             var objPlan_Campaign_Program_Tactic = Common.GetSpCustomTacticList(dsPlanCampProgTac.Tables[3]).Where(tactic =>
@@ -414,7 +407,6 @@ namespace RevenuePlanner.Controllers
                 });
 
             }
-
             if ((filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0))
             {
                 lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
@@ -435,7 +427,6 @@ namespace RevenuePlanner.Controllers
 
                 }
             }
-
 
             //// Prepare an array of month as per selected dropdown paramter
             int[] monthArray = new int[12];
@@ -568,7 +559,6 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-
             //// Prepare Activity Chart list
             List<ActivityChart> lstActivityChart = new List<ActivityChart>();
             int MonthCount = monthArray.Count();
@@ -608,7 +598,6 @@ namespace RevenuePlanner.Controllers
                 lstActivityChart.Add(objActivityChart);
             }
             await Task.Delay(1);
-
             return Json(new { lstchart = lstActivityChart.ToList(), strtimeframe = strtimeframe }, JsonRequestBehavior.AllowGet); //Modified BY Komal rawal for #1929 proper Hud chart and count
         }
 

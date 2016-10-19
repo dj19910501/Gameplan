@@ -448,7 +448,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                    objUser.MID = form.ManagerId;     
+                    objUser.MID = form.ManagerId;
 
                     //// Create User with default Permissions.
                     //int retVal = objBDSServiceClient.CreateUserWithPermission(objUser, Sessions.ApplicationId, Sessions.User.ID);
@@ -685,7 +685,7 @@ namespace RevenuePlanner.Controllers
                             lstPrefCurrCode.Add(objItem1);
                         }
                     }
-                 
+
 
                     if (lstPrefCurrCode.Count > 0)
                     {
@@ -701,12 +701,12 @@ namespace RevenuePlanner.Controllers
                     {
                         objUserModel.PreferredCurrencyCode = Sessions.User.PreferredCurrencyCode;
                         //Insertation Start Assign Default Currency if user's preferd currency is removed.
-                        if(lstClientCurrency!=null)
+                        if (lstClientCurrency != null)
                         {
                             var data = lstClientCurrency.Where(w => w.ISOCurrencyCode == Sessions.User.PreferredCurrencyCode).FirstOrDefault();
                             if (data == null)
-                                objUserModel.PreferredCurrencyCode = lstClientCurrency.Where(w => w.IsDefault == true).Select(w => w.ISOCurrencyCode).FirstOrDefault();                           
-                                
+                                objUserModel.PreferredCurrencyCode = lstClientCurrency.Where(w => w.IsDefault == true).Select(w => w.ISOCurrencyCode).FirstOrDefault();
+
                         }
                         //Insertation end Assign Default Currency if user's preferd currency is removed.
 
@@ -778,7 +778,7 @@ namespace RevenuePlanner.Controllers
             foreach (var error in errors)
             {
                 if (error.Key == "Password" || error.Key == "ConfirmPassword" || error.Key == "Email" || error.Key == "NewManagerId")
-                    //why managerID = 0 causes invalid state ? TODO: zz
+                //why managerID = 0 causes invalid state ? TODO: zz
                 {
                     ModelState.Remove(error.Key);
                 }
@@ -1021,7 +1021,7 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-                
+
                 List<User_Notification> lstUserNotification = new List<User_Notification>();
                 lstUserNotification = db.User_Notification.Where(usrNotifctn => usrNotifctn.UserId == Sessions.User.ID).ToList();
 
@@ -1030,12 +1030,12 @@ namespace RevenuePlanner.Controllers
                 //// Remove all current Notifications set for User
                 if (lstUserNotification.Count > 0)
                 {
-                foreach (var item in lstUserNotification)
-                {
-                    db.Entry(item).State = EntityState.Modified;
-                    db.User_Notification.Remove(item);
+                    foreach (var item in lstUserNotification)
+                    {
+                        db.Entry(item).State = EntityState.Modified;
+                        db.User_Notification.Remove(item);
 
-                        }
+                    }
                     db.SaveChanges();
                 }
 
@@ -1059,7 +1059,7 @@ namespace RevenuePlanner.Controllers
                         db.User_Notification.Add(objUser_Notification);
 
                     }
-                        db.SaveChanges();
+                    db.SaveChanges();
                 }
 
 
@@ -1310,7 +1310,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 CacheObject objCache = new CacheObject();
-                var lstentity = objcommonalert.SearchEntities(Sessions.User.CID).OrderBy(a=>a.EntityTitle).ToList();
+                var lstentity = objcommonalert.SearchEntities(Sessions.User.CID).OrderBy(a => a.EntityTitle).ToList();
                 objCache.AddCache(Enums.CacheObject.ClientEntityList.ToString(), lstentity);
             }
             catch (Exception ex)
@@ -1564,70 +1564,65 @@ namespace RevenuePlanner.Controllers
         #region methods to get alert and notification summary
         public JsonResult GetAlertNotificationSummary()
         {
+            // Modified by Arpita Soni for performance
             int alertCount = 0;
-            List<AlertSummary> lstalertSummary = new List<AlertSummary>();
             int NotificationCount = 0;
+            List<AlertSummary> lstalertSummary = new List<AlertSummary>();
             List<NotificationSummary> lstnotificationSummary = new List<NotificationSummary>();
-            List<NotificationSummary> lstnotifications = new List<NotificationSummary>();
-            List<NotificationSummary> RequestList = new List<NotificationSummary>();
             try
             {
-                //if (Sessions.IsAlertPermission)
-                //{
-                    var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.ID);
-                    if (AllAlert != null && AllAlert.Count > 0)
+                List<Alert> AllAlert = objcommonalert.GetAlertAummary(Sessions.User.ID);
+                if (AllAlert != null && AllAlert.Count > 0)
+                {
+                    alertCount = AllAlert.Where(a => a.IsRead == false).Count();
+                    lstalertSummary = AllAlert.Take(5).Select(a => new AlertSummary
                     {
-                        alertCount = AllAlert.Where(a => a.IsRead == false && DateTime.Compare(a.DisplayDate.Date, DateTime.Now.Date) <= 0).ToList().Count();
-                        lstalertSummary = AllAlert.Select(a => new AlertSummary
-                            {
-                                Description = HttpUtility.HtmlDecode(a.Description.Trim()),
-                                AlertCreatedDate = Common.TimeAgo(a.CreatedDate),
-                                AlertId = a.AlertId
-                            }).Take(5).ToList();
-                    }
-                //}
+                        Description = HttpUtility.HtmlDecode(a.Description.Trim()),
+                        AlertCreatedDate = Common.TimeAgo(a.CreatedDate),
+                        AlertId = a.AlertId
+                    }).ToList();
+                }
                 #region code for get notification listing
-                var AllNotification = objcommonalert.GetNotificationListing(Sessions.User.ID);
+                List<User_Notification_Messages> AllNotification = objcommonalert.GetNotificationListing(Sessions.User.ID);
 
                 if (AllNotification != null && AllNotification.Count > 0)
                 {
-                    NotificationCount = AllNotification.Where(a => a.IsRead == false).ToList().Count();
+                    NotificationCount = AllNotification.Where(a => a.IsRead == false).Count();
 
-                    RequestList = (from objNotification in AllNotification
-                                   where objNotification.ActionName == "submitted"
-                                   group objNotification by objNotification.ComponentId into g
-                                   join objPlan in db.Plans on g.FirstOrDefault().ComponentId equals objPlan.PlanId
-                                   select new NotificationSummary
-                                   {
-                                       NotificationCreatedDate = Common.TimeAgo(g.FirstOrDefault().CreatedDate),
-                                       NotificationId = g.FirstOrDefault().NotificationId,
-                                       ActionName = g.FirstOrDefault().ActionName,
-                                       PlanTitle = objPlan.Title,
-                                       ComponentId = g.FirstOrDefault().ComponentId,
-                                       RequestCount = g.Count(),
-                                       EntityId = g.FirstOrDefault().EntityId
-                                   }).ToList();
+                    List<NotificationSummary> RequestList = (from objNotification in AllNotification
+                                                             where objNotification.ActionName == "submitted"
+                                                             group objNotification by objNotification.ComponentId into g
+                                                             join objPlan in db.Plans on g.FirstOrDefault().ComponentId equals objPlan.PlanId
+                                                             select new NotificationSummary
+                                                             {
+                                                                 NotificationCreatedDate = Common.TimeAgo(g.FirstOrDefault().CreatedDate),
+                                                                 NotificationId = g.FirstOrDefault().NotificationId,
+                                                                 ActionName = g.FirstOrDefault().ActionName,
+                                                                 PlanTitle = objPlan.Title,
+                                                                 ComponentId = g.FirstOrDefault().ComponentId,
+                                                                 RequestCount = g.Count(),
+                                                                 EntityId = g.FirstOrDefault().EntityId
+                                                             }).Take(5).ToList();
 
-                
-                    lstnotifications = AllNotification.Where(a => a.ActionName != "submitted").Select(a => new NotificationSummary
-                    {
-                        Description = ConvertString(a.Description),
-                        NotificationCreatedDate = Common.TimeAgo(a.CreatedDate),
-                        NotificationId = a.NotificationId,
-                        ActionName = a.ActionName,
-                        ComponentId = a.ComponentId,
-                        EntityId = a.EntityId
-                    }).ToList();
+                    List<NotificationSummary> lstnotifications = AllNotification.Where(a => a.ActionName != "submitted").Take(5)
+                                                                   .Select(a => new NotificationSummary
+                                                                    {
+                                                                        Description = ConvertString(a.Description),
+                                                                        NotificationCreatedDate = Common.TimeAgo(a.CreatedDate),
+                                                                        NotificationId = a.NotificationId,
+                                                                        ActionName = a.ActionName,
+                                                                        ComponentId = a.ComponentId,
+                                                                        EntityId = a.EntityId
+                                                                    }).ToList();
 
                     if (RequestList != null && RequestList.Count > 0)
                     {
                         RequestList.AddRange(lstnotifications);
-
                         lstnotificationSummary = RequestList.Take(5).ToList();
                     }
                     else
                     {
-                        lstnotificationSummary = lstnotifications.Take(5).ToList();
+                        lstnotificationSummary = lstnotifications;
                     }
 
                 }
@@ -1681,7 +1676,7 @@ namespace RevenuePlanner.Controllers
                     DataList = AllNotification.Select(a => new UserAlertsNotification
                     {
                         Description = ConvertString(a.Description),
-                        CreatedDate = Common.TimeAgo(a.CreatedDate,true),
+                        CreatedDate = Common.TimeAgo(a.CreatedDate, true),
                         NotificationId = a.NotificationId,
                         ActionName = a.ActionName,
                         PlanID = a.ComponentId,
@@ -1697,20 +1692,17 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                //if (Sessions.IsAlertPermission)
-                //{
-                    var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.ID);
-                    if (AllAlert != null && AllAlert.Count > 0)
+                var AllAlert = objcommonalert.GetAlertAummary(Sessions.User.ID);
+                if (AllAlert != null && AllAlert.Count > 0)
+                {
+                    DataList = AllAlert.Select(a => new UserAlertsNotification
                     {
-                        DataList = AllAlert.Select(a => new UserAlertsNotification
-                        {
-                            Description = HttpUtility.HtmlDecode(a.Description.Trim()),
-                            CreatedDate = Common.TimeAgo(a.CreatedDate,true),
-                            AlertId = a.AlertId
-                        }).ToList();
-                    }
-               // }
-                return PartialView("_AllAlertListing", DataList.AsEnumerable());
+                        Description = HttpUtility.HtmlDecode(a.Description.Trim()),
+                        CreatedDate = Common.TimeAgo(a.CreatedDate, true),
+                        AlertId = a.AlertId
+                    }).ToList();
+                }
+                return PartialView("_AllAlertListing", DataList);
             }
 
         }

@@ -1258,11 +1258,15 @@ namespace RevenuePlanner.Helpers
         #region Plan
         public static List<Plan> GetPlan(bool isFromReport = false)
         {
+            // Modified by Arpita Soni for performance
             //// Getting active model of client. 
-            var modelIds = db.Models.Where(m => m.ClientId == Sessions.User.CID && m.IsDeleted == false).Select(m => m.ModelId).ToList();
+            List<int> modelIds = db.Models.Where(m => m.ClientId == Sessions.User.CID && m.IsDeleted == false).Select(m => m.ModelId).ToList();
 
             //// Getting active plans of ModelId(s).
-            var activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p).ToList();
+            List<Plan> activePlan = (from p in db.Plans 
+                                     join modelId in modelIds on p.ModelId equals modelId
+                                     where p.IsActive == true && p.IsDeleted == false
+                                     select p).ToList();
             return activePlan;
         }
 
@@ -9060,6 +9064,7 @@ ln.IsDeleted.Equals(false)).FirstOrDefault();
         /// <param name="dt"></param>
         /// <returns></returns>
         #region Method for timestamp formation for Alert & Notifications
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string TimeAgo(DateTime dt, bool IsListing = false)
         {
             TimeSpan span = DateTime.Now - dt;
