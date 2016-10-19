@@ -696,6 +696,15 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                     LoadPlanGrid();
                                 }
                             }
+                            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
+                                var ids = states.DependentCustomfield;
+                                for (var i = 0; i < ids.length; i++) {
+                                    var originalColumnid = "custom_" + ids[i] + ":" + updatetype.toString();
+                                    var colIndex = HomeGrid.getColIndexById(originalColumnid);
+                                    if (colIndex != undefined && colIndex != '')
+                                        HomeGrid.cells(rowId, colIndex).setValue('');
+                                }
+                            }
                         }
                     });
                 }
@@ -843,6 +852,15 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 $('#ExpClose').css('display', 'none');
                                 $('#ExpSearch').css('display', 'block');
                                 GlobalSearch();
+                            }
+                            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
+                                var ids = states.DependentCustomfield;
+                                for (var i = 0; i < ids.length; i++) {
+                                    var originalColumnid = "custom_" + ids[i] + ":" + updatetype.toString();
+                                    var colIndex = HomeGrid.getColIndexById(originalColumnid);
+                                    if (colIndex != undefined && colIndex != '')
+                                        HomeGrid.cells(rowId, colIndex).setValue('');
+                                }
                             }
                         }
                     });
