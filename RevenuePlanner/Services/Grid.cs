@@ -809,7 +809,7 @@ namespace RevenuePlanner.Services
         /// </summary>
         private static List<Enums.EntityType> EntityTypeOrder = new List<Enums.EntityType>()// Variable use for ordering data list
         {
-            Enums.EntityType.Lineitem,
+            //Enums.EntityType.Lineitem,
             Enums.EntityType.Tactic,
             Enums.EntityType.Program,
             Enums.EntityType.Campaign,
