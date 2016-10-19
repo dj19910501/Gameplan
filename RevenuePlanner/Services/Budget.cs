@@ -37,7 +37,7 @@ namespace RevenuePlanner.Services
         public const string EndColumnIds = ",UnAllocatedCost,UnAllocatedBudget";
         public const string FixColType = "ro,ro,ro,ro,ro,ro,tree,ro,edn,edn,edn";
         public const string EndColType = ",ron,ron";
-        public const string FixcolWidth = "100,100,100,100,10,100,302,75,100,110,100";
+        public const string FixcolWidth = "100,100,100,100,10,100,302,75,110,110,110";
         public const string EndcolWidth = ",150,150";
         public const string FixColsorting = "na,na,na,na,na,na,na,na,int,int,int";
         public const string EndColsorting = ",int,int";
@@ -778,7 +778,7 @@ namespace RevenuePlanner.Services
 
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
                     colType = colType + ",edn,edn,edn";
-                    width = width + ",130,130,130";
+                    width = width + ",140,140,140";
                     colSorting = colSorting + ",int,int,int";
 
                     if (quarterCounter == 4)//Check if queter counter reach to last quarter then reset it
@@ -822,7 +822,7 @@ namespace RevenuePlanner.Services
 
                     columnIds = columnIds + "," + "Budget,Planned,Actual";
                     colType = colType + ",edn,edn,edn";
-                    width = width + ",140,140,140";
+                    width = width + ",155,155,155";
                     colSorting = colSorting + ",int,int,int";
                 }
             }
