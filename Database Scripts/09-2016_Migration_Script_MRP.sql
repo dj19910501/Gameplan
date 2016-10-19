@@ -1682,13 +1682,10 @@ BEGIN
 		JOIN Plan_Campaign C ON P.PlanCampaignId = C.PlanCampaignId and C.IsDeleted='0' and C.PlanId IN (SELECT PlanId FROM @PlanIds)
 		WHERE A.IsDeleted='0'
 	
-	SELECT DISTINCT(A.Name) AS [Text],A.EntityType +'Custom'+ Cast(A.CustomFieldId as nvarchar(50)) as Value  
-		FROM CustomField A CROSS APPLY (	SELECT B.CustomFieldTypeId,B.Name 
-											FROM CustomFieldType B 
-											WHERE A.CustomFieldTypeId = B.CustomFieldTypeId) B CROSS APPLY (SELECT C.CustomFieldID 
-																											FROM @tblCustomerFieldIDs C 
-																											WHERE C.CustomFieldID = A.CustomFieldId) C 
-											
+	    SELECT DISTINCT(A.Name) AS [Text],A.EntityType +'Custom'+ Cast(A.CustomFieldId as nvarchar(50)) as Value  
+		FROM CustomField A JOIN CustomFieldType B 
+		ON A.CustomFieldTypeId = B.CustomFieldTypeId JOIN @tblCustomerFieldIDs C 
+		ON C.CustomFieldID = A.CustomFieldId
 		WHERE A.ClientId=@ClientId AND A.IsDeleted=0 AND A.IsDisplayForFilter=1 AND A.EntityType IN ('Tactic','Campaign','Program') and B.Name='DropDownList' 
 		ORDER BY Value DESC 
 

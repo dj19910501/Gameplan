@@ -740,13 +740,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             if (states.OwnerName != "" && states.OwnerName != null) {
                                 $("div[taskId='" + TaskID + "']").attr('ownername', states.OwnerName);
                             }
-                            if ((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" && states.OwnerName != null) {
-                                if (planid != 0 && planid != null && planid != undefined) {
-                                    GetTacticTypelist(filters.PlanIDs);
-                                    GetOwnerListForFilter(filters.PlanIDs);
-                                    SaveLastSetofViews();
-                                }
-                            }
+                          
                             if (states.errormsg != null && states.errormsg.trim() != "") {
                                 alert(states.errormsg.trim());
                                 HomeGrid.cells(rowId, cellInd).setValue(oValue);
@@ -844,6 +838,13 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 state0 = ItemIndex;
                             }
                             if (UpdateColumn == OwnerId) {
+                                if ((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" && states.OwnerName != null) {
+                                    if (planid != 0 && planid != null && planid != undefined) {
+                                        GetTacticTypelist(filters.PlanIDs);
+                                        GetOwnerListForFilter(filters.PlanIDs);
+                                        SaveLastSetofViews();
+                                    }
+                                }
                                 CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
 
                             }
