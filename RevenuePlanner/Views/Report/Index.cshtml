@@ -531,6 +531,13 @@
     <!--End sidebar-->
 }
 
+<!--error message-->
+<div id="errNoRights" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong></strong><span id="spanerrNoRights"></span>
+</div>
+<!--error message-->
+
 <div style="float:left; width:100%; overflow:hidden" class="clearfix hello">
 
     @*Added By komal Rawal for #1296*@
@@ -1132,8 +1139,12 @@
 
         $('#ulLeftPane .dropdown-toggle').dropdown(); // Added for #2257
         if ('@ActiveReportMenu'.toLowerCase() == "none") {
-            $('#sidebar').empty();
+            $('#sidebar').hide();
             $('#ddlsection').empty();
+            $('.sidebar-toogle').hide();
+            $('.hello').hide();
+            $("#errNoRights").css("display", "block");
+            $("#spanerrNoRights").html("<strong>Error! </strong> You do not have permission to view the reports");
         }
         else if ('@ActiveReportMenu' == "Overview") {
             //$('.summary').addClass('active');
