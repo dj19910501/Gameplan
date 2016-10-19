@@ -1411,6 +1411,7 @@ namespace RevenuePlanner.Services
                                     || columnName == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost)
                                 {
                                     objPlanData.locked = !string.IsNullOrEmpty(objres.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
+                                    cellTextColor = int.Parse(IsEditable) == 0 ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
                                 }
                                 else if (columnName == Enums.HomeGrid_Default_Hidden_Columns.StartDate
                                         || columnName == Enums.HomeGrid_Default_Hidden_Columns.EndDate
@@ -1425,6 +1426,7 @@ namespace RevenuePlanner.Services
                                 else
                                 {
                                     objPlanData.locked = IsEditable;
+                                    cellTextColor = int.Parse(IsEditable) == 0 ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
                                 }
                             }
 
@@ -1449,6 +1451,7 @@ namespace RevenuePlanner.Services
                             else
                             {
                                 objPlanData.locked = IsEditable;
+                                cellTextColor = int.Parse(IsEditable) == 0 ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
                             }
                             break;
                         case Enums.EntityType.Program:
@@ -1464,6 +1467,7 @@ namespace RevenuePlanner.Services
                             else
                             {
                                 objPlanData.locked = IsEditable;
+                                cellTextColor = int.Parse(IsEditable) == 0 ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
                             }
                             break;
                         case Enums.EntityType.Campaign:
@@ -1479,6 +1483,7 @@ namespace RevenuePlanner.Services
                             else
                             {
                                 objPlanData.locked = IsEditable;
+                                cellTextColor = int.Parse(IsEditable) == 0 ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
                             }
                             break;
 
@@ -1497,11 +1502,12 @@ namespace RevenuePlanner.Services
                             else
                             {
                                 objPlanData.locked = IsEditable;
+                                cellTextColor = int.Parse(IsEditable) == 0 ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
                             }
                             break;
                     }
                     if (pair.Name == Convert.ToString(Enums.IntegrationIdType.Eloquaid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.WorkFrontid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.Marketoid)
-                        || pair.Name == Convert.ToString(Enums.IntegrationIdType.Salesforceid))
+                        || pair.Name == Convert.ToString(Enums.IntegrationIdType.Salesforceid) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue))
                     {
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
@@ -1755,15 +1761,12 @@ namespace RevenuePlanner.Services
                         objVal = string.Empty;
                         if (string.Compare(Convert.ToString(RowData.EntityType).ToLower(), Enums.EntityType.Lineitem.ToString().ToLower()) == 0)
                         {
-                            if (columnType == Enums.HomeGrid_Default_Hidden_Columns.TacticType)
-                            {
                                 objVal = Convert.ToString(RowData.LineItemType);
                             }
                             else
                             {
                                 objVal = Convert.ToString(RowData.TacticType);
                             }
-                        }
                         break;
                     case Enums.HomeGrid_Default_Hidden_Columns.Owner:
                         objVal = Convert.ToString(RowData.Owner);
@@ -2409,7 +2412,6 @@ namespace RevenuePlanner.Services
                     {
                         lockedval = objHomeGrid.lockedstateone;
                         styleval = objHomeGrid.stylecolorgray;
-                        DataValue = string.Empty;
                     }
                     lstCustomFieldData.Add(
                         new PlandataobjColumn
