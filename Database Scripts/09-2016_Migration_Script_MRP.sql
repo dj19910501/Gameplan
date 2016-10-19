@@ -205,12 +205,13 @@ BEGIN
 	DELETE FROM [MV].CustomFieldData
 
 	INSERT INTO [MV].CustomFieldData(EntityId, CustomFieldId, Value, UnrestrictedText)
-	SELECT	 EntityId
-			,CustomFieldId
-			,[MV].fnCustomFieldEntityValue(EntityId, CustomFieldId) AS Value
-			,[MV].fnCustomFieldEntityUnrestrictedText(EntityId, CustomFieldId) as [Text]
-	FROM CustomField_Entity
-	GROUP BY EntityId, CustomFieldId
+	SELECT	 A.EntityId
+			,A.CustomFieldId
+			,[MV].fnCustomFieldEntityValue(A.EntityId, A.CustomFieldId) AS Value
+			,[MV].fnCustomFieldEntityUnrestrictedText(A.EntityId, A.CustomFieldId) as [Text]
+	FROM (  SELECT DISTINCT EntityID, CustomFieldId 
+			FROM CustomField_Entity
+		  ) A
 
 	--re-Populate The [MV].[CustomFieldEntityRestrictedTextByUser] 
 	DELETE FROM [MV].[CustomFieldEntityRestrictedTextByUser]
@@ -219,8 +220,7 @@ BEGIN
 	SELECT	CR.CustomFieldId
 			,CR.UserId
 			,[MV].fnCustomFieldEntityRestrictedTextByUser(CR.CustomFieldId, CR.UserId) AS [Text]  
-	FROM CustomRestriction CR 
-	GROUP BY CR.CustomFieldId, CR.UserId
+	FROM (SELECT DISTINCT CustomFieldId, UserId FROM CustomRestriction) CR 
 
 END 
 GO
