@@ -699,10 +699,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
                                 var ids = states.DependentCustomfield;
                                 for (var i = 0; i < ids.length; i++) {
-                                    var originalColumnid = "custom_" + ids[i] + ":" + updatetype.toString();
-                                    var colIndex = HomeGrid.getColIndexById(originalColumnid);
+                                    var colIndex = HomeGrid.getColIndexById(ids[i].CustomFieldId);
                                     if (colIndex != undefined && colIndex != '')
-                                        HomeGrid.cells(rowId, colIndex).setValue('');
+                                        HomeGrid.cells(rowId, colIndex).setValue(ids[i].OptionValue);
                                 }
                             }
                         }
@@ -857,10 +856,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
                                 var ids = states.DependentCustomfield;
                                 for (var i = 0; i < ids.length; i++) {
-                                    var originalColumnid = "custom_" + ids[i] + ":" + updatetype.toString();
-                                    var colIndex = HomeGrid.getColIndexById(originalColumnid);
+                                    var colIndex = HomeGrid.getColIndexById(ids[i].CustomFieldId);
                                     if (colIndex != undefined && colIndex != '')
-                                        HomeGrid.cells(rowId, colIndex).setValue('');
+                                        HomeGrid.cells(rowId, colIndex).setValue(ids[i].OptionValue);
                                 }
                             }
                         }
