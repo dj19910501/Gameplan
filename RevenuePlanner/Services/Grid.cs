@@ -285,7 +285,7 @@ namespace RevenuePlanner.Services
             List<PlanDHTMLXGridDataModel> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
                      .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData, usercolindex))
                      .ToList();
-            
+
             objPlanMainDHTMLXGrid.head = ListOfDefaultColumnHeader;
             objPlanMainDHTMLXGrid.rows = griditems;
             return objPlanMainDHTMLXGrid;
@@ -947,65 +947,6 @@ namespace RevenuePlanner.Services
                 throw;
             }
             return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
-        }
-
-
-        PlanDHTMLXGridDataModel CreateItemGridCopy(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData, Dictionary<int, string> usercolindex)
-        {
-            List<PlanDHTMLXGridDataModel> children = new List<PlanDHTMLXGridDataModel>();
-            try
-            {
-                // Get entity Childs records
-                IEnumerable<PlanGridColumnData> lstChildren = GetChildrenGrid(DataList, Row.UniqueId);
-
-                // Call recursive if any other child entity
-                children = lstChildren
-                .Select(r => CreateItemGridCopy(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridDefaultData, usercolindex)).ToList();
-
-                EntitydataobjItem = new List<Plandataobj>();
-
-                // Get list of custom field values for particular entity based on pivoted entities list
-                List<PlandataobjColumn> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId == (Row.EntityType.ToString() + "_" + Row.EntityId))
-                                           .Select(a => a.CustomFieldData).FirstOrDefault();
-                if (lstCustomfieldData == null && CustomFieldData.CustomFields != null)
-                {
-                    List<PlandataobjColumn> ItemEmptylist = new List<PlandataobjColumn>(); // Variable for empty list of custom fields value to assign entity 
-                    // Get list of custom fields by entity type
-                    List<string> EntityCustomFields = CustomFieldData.CustomFields.Where(a => a.EntityType == Row.EntityType).Select(a => a.CustomFieldId.ToString()).ToList();
-                    // Get list of custom column indexes from custom field list
-                    List<int> Colindexes = customColumnslist.Select((s, k) => new { Str = s, Index = k })
-                                                .Where(x => EntityCustomFields.Contains(x.Str))
-                                                .Select(x => x.Index).ToList();
-                    // Set custom field is editable or not for respective entities
-                    if (Row.EntityType == Enums.EntityType.Lineitem && string.IsNullOrEmpty(Row.LineItemType))
-                    {
-                        Row.IsRowPermission = false;
-                    }
-                    if (Row.IsRowPermission)
-                    {
-                        for (int j = 0; j < EmptyCustomValues.Count; j++)
-                        {
-                            if (Colindexes.Contains(j))
-                            {
-                                ItemEmptylist.Add(new PlandataobjColumn { value = string.Empty, locked = objHomeGridProp.lockedstatezero, style = objHomeGridProp.stylecolorblack, column = EmptyCustomValues[j].column });
-                            }
-                            else
-                            { ItemEmptylist.Add(EmptyCustomValues[j]); }
-                        }
-                    }
-                    else
-                    { ItemEmptylist.AddRange(EmptyCustomValues); }
-                    lstCustomfieldData = ItemEmptylist;
-                }
-
-                // Set the values of row
-                EntitydataobjItem = GridDataRow(Row, EntitydataobjItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData, usercolindex);
-            }
-            catch
-            {
-                throw;
-            }
-            return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data1 = EntitydataobjItem.Select(a => a), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
         }
         #endregion
 
