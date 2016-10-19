@@ -8988,6 +8988,21 @@ SET NOCOUNT ON;
 	GROUP BY A.CustomFieldId, A.EntityId
 END
 GO
+---- Added by devanshi for replacing comma from custom field options value with "|" to resolved issue for multiselect dropdown in grid------
+SET ANSI_PADDING ON
+GO
+IF EXISTS( SELECT * FROM sys.columns  WHERE Name = N'Value' AND Object_ID = Object_ID(N'CustomFieldOption'))
+BEGIN
+update CustomFieldOption SET Value = REPLACE(Value,',','|') 
+  where Value like '%,%'
+End
+
+Go
+IF NOT EXISTS (SELECT * FROM sysconstraints WHERE OBJECT_NAME(constid) = 'Chk_CommaNotAllow' AND OBJECT_NAME(id) = 'CustomFieldOption')
+ALTER TABLE CustomFieldOption
+ADD CONSTRAINT Chk_CommaNotAllow CHECK(CHARINDEX(',',Value) = 0) 
+Go
+
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version
 -- ======================================================================================
