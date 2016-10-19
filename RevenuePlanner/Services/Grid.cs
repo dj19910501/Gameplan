@@ -1337,6 +1337,19 @@ namespace RevenuePlanner.Services
 
             lstPlanData.AddRange(lstHiddenColData);
 
+            objres.EntityType = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(RowData.EntityType));
+
+            if (objres.IsRowPermission == true)
+            {
+                IsEditable = objHomeGridProp.lockedstatezero;
+                cellTextColor = objHomeGridProp.stylecolorblack;
+            }
+            else
+            {
+                IsEditable = objHomeGridProp.lockedstateone;
+                cellTextColor = objHomeGridProp.stylecolorgray;
+            }
+
             // Set user selected columns values
             foreach (var pair in props.Select(n => new
             {
@@ -1349,19 +1362,7 @@ namespace RevenuePlanner.Services
                 {
                     objPlanData.column = pair.Name;
                     objPlanData.value = GetvalueFromObject(RowData, pair.Name);
-                    objres.EntityType = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(RowData.EntityType));
-
-                    if (objres.IsRowPermission == true)
-                    {
-                        IsEditable = objHomeGridProp.lockedstatezero;
-                        cellTextColor = objHomeGridProp.stylecolorblack;
-                    }
-                    else
-                    {
-                        IsEditable = objHomeGridProp.lockedstateone;
-                        cellTextColor = objHomeGridProp.stylecolorgray;
-                    }
-
+                    
                     Enums.HomeGrid_Default_Hidden_Columns columnName = (Enums.HomeGrid_Default_Hidden_Columns)Enum.Parse(typeof(Enums.HomeGrid_Default_Hidden_Columns), pair.Name);
                     switch (objres.EntityType)
                     {
