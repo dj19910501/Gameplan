@@ -11,37 +11,27 @@
     @RenderSection("nlFormContent", false)  
 
     @Styles.Render("~/Content/css/GetCSS")
-    @*@Styles.Render("~/Content/css/GetCSSStyle")*@
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
-    <!--font Awesome css-->
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css" />
-    <!--font Awesome css-->
-    <link rel="stylesheet" href="@Url.Content("~/content/css/style_min_Oct_18.css")" type="text/css" />
-   @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />*@
-
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Aug_2.css")" type="text/css" />
-    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css")" type="text/css" />*@
+    @Styles.Render("~/Content/css/IndexCSS")
+    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />*@
+    
+    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css" />*@
+    
+    @*<link rel="stylesheet" href="@Url.Content("~/content/css/style_min_Oct_18.css")" type="text/css" />*@
+   
+    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Aug_2.css")" type="text/css" />*@
+    
    
     @RenderSection("FilterEx", false)
      @Scripts.Render("~/bundles/GetJS")
      <script type="text/javascript">
-         // Add By Nishant Sheth
-         // Set Currency symbol globaly it's reassign from MultiCurrency.js file
          var CurrencySybmol = '@Sessions.PlanCurrencySymbol';
          var PlanExchangeRate = '@Sessions.PlanExchangeRate';
          var GetCurrencyURL = '@Url.Content("~/Currency/GetPlanCurrencyDetail")';
-         //Added By: Rahul Shah on 25/09/2015 to address ticket PL #900 Exception handling in client side scripting
-         //Summary: Added reference of script file and also initialize the javaScript variable 'logErrorUrl' so that errorhandler.js knows
          var logErrorUrl = '@Url.Action("LogJavaScriptError", "Error")';
 </script>
-    @* <script src="@Url.Content("~/Scripts/js/errorhandler.js")" type="text/javascript"></script>*@
-    <!-- #1746 Edited by Brad Gray 5 Dec 2015-->
     <script src="@Url.Content("~/Scripts/js/bootstrap-notify.min.js")"></script>
-    <!-- Added by Arpita Soni to resolve issue in clicking of Review tab inside plan menu -->
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/bootstrap2-toggle.min.js")"></script>
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">
-    <!-- #1746-->
-    <!-- Hotjar Added 26 March 2016 PL#2085-->
+    @*<link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap2-toggle.min.css")">*@
     <script>
         (function (h, o, t, j, a, r) {
             h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };

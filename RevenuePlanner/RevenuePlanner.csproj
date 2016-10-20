@@ -384,10 +384,13 @@
     <Content Include="Content\css\JquryUI\jquery-ui-1.11.4.min.js" />
     <Content Include="Content\css\JquryUI\jquery-ui-1.8.21.custom.css" />
     <Content Include="Content\css\NaturalLanguageForm\component.css" />
+    <Content Include="Content\css\NaturalLanguageForm\component_min.css" />
     <Content Include="Content\css\NaturalLanguageForm\default.css" />
+    <Content Include="Content\css\NaturalLanguageForm\default_min.css" />
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\styleIndexPage_19.css" />
     <Content Include="Content\css\style.css" />
+    <Content Include="Content\css\styleIndexPage_19_min.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Aug_2.css" />
     <Content Include="Content\css\style_min_Oct_18.css" />
@@ -710,6 +713,7 @@
     <Content Include="Scripts\js\Home\Calendar.js" />
     <Content Include="Scripts\js\Home\Grid_CalendarCommon.js" />
     <Content Include="Scripts\js\Home\HomeGrid.js" />
+    <Content Include="Scripts\js\Home\HomeGrid_Min.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.js" />
     <Content Include="Scripts\js\jquery-2.2.1.min.map" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt_smart_rendering.js.map" />
@@ -732,6 +736,7 @@
     <Content Include="Content\fonts\ProximaNova-Regular.ttf" />
     <Content Include="Content\fonts\ProximaNova-Regular.woff" />
     <Content Include="Content\fonts\ProximaNova-Regular.woff2" />
+    <Content Include="Scripts\js\NaturalLanguageForm\nlform_min.js" />
     <Content Include="Scripts\js\scripts_v2.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />

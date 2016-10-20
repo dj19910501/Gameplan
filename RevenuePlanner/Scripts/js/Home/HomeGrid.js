@@ -73,7 +73,6 @@ function GridHideColumn() {
     HomeGrid.setColumnHidden(ActivitypeHidden, true);
     HomeGrid.setColumnHidden(MachineNameHidden, true);
 }
-///
 
 ////Move column functionality
 function MoveColumn() {
@@ -116,14 +115,6 @@ function MoveColumn() {
         }
     });
 }
-///End
-
-//Related to Honeycomb
-//Start
-
-
-//Related to Bind Grid
-//start
 
 function LoadAfterParsing() {
     if (eventidonedit != 0) {
@@ -167,13 +158,8 @@ function LoadAfterParsing() {
     }
     editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
         SetTooltip();
-
-        //  LoadAfterParsing();
         var childItems = HomeGrid.getAllSubItems(rowid);
         if (childItems != undefined && childItems != null && childItems != "") {
-            //childItems = childItems.split(',').filter(function (tac) {
-            //    return tac.indexOf('tact') > -1;
-            //});
             childItems = childItems.split(',');
             $.each(childItems, function (item) {
                 var objHoneyComb = $(HomeGrid.getRowById(childItems[item])).find('div[id=TacticAdd]');
@@ -197,9 +183,9 @@ function sort_Owner(a, b, ord, a_id, b_id) {
 };
 
 function sort_TacticType(a, b, ord, a_id, b_id) {
-    var atype = a_id.split(".")[0].toString();
-    var btype = b_id.split(".")[0].toString();
-    if (atype == "tact" && btype == "tact") {
+    var atype = HomeGrid.cells(a_id, ActivitypeHidden).getValue();
+    var btype = HomeGrid.cells(b_id, ActivitypeHidden).getValue();
+    if (atype.toLowerCase() == secTactic.toLowerCase() && btype.toLowerCase() == secTactic.toLowerCase()) {
         a = HomeGrid.cells(a_id, TypeColIndex).getText();
         b = HomeGrid.cells(b_id, TypeColIndex).getText();
         return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
@@ -302,7 +288,6 @@ function SaveMoveTactic() {
         dataType: 'json',
         success: function (states) {
             HomeGrid.saveOpenStates("plangridState");
-
             LoadPlanGrid();
         }
     });
@@ -316,7 +301,7 @@ function formatDate(d) {
     return addZero(d.getMonth() + 1) + "/" + addZero(d.getDate()) + "/" + d.getFullYear();
 }
 
-function SetColumUpdatedValue(CellInd, diff) {    
+function SetColumUpdatedValue(CellInd, diff) {
     progActVal = HomeGrid.cells(progid, CellInd).getAttribute("actval");
     CampActVal = HomeGrid.cells(campid, CellInd).getAttribute("actval");
     PlanActVal = HomeGrid.cells(planid, CellInd).getAttribute("actval");
@@ -329,7 +314,7 @@ function SetColumUpdatedValue(CellInd, diff) {
 }
 
 
-function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {    
+function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     updatetype = HomeGrid.cells(rowId, ActivitypeHidden).getValue();
     var Id;
     var UpdateColumn;
@@ -358,7 +343,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     }
     AssignParentIds(rowId);
     UpdateColumn = HomeGrid.getColumnId(Colind, 0);
-    var type = HomeGrid.getColType(cellInd);    
+    var type = HomeGrid.getColType(cellInd);
     var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
     if (stage == 0) {
         var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
@@ -402,7 +387,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
 
                 GetCustomfieldOptionlist(id, entityid, cellInd);
 
-           }
+            }
         }
         opencombobox();
     }
@@ -741,7 +726,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             if (states.OwnerName != "" && states.OwnerName != null) {
                                 $("div[taskId='" + TaskID + "']").attr('ownername', states.OwnerName);
                             }
-                          
+
                             if (states.errormsg != null && states.errormsg.trim() != "") {
                                 alert(states.errormsg.trim());
                                 HomeGrid.cells(rowId, cellInd).setValue(oValue);
@@ -819,7 +804,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 }
                                 ComapreDate(updatetype, rowId, EndDateColIndex, nValue, UpdateColumn);
                             }
-                            if (UpdateColumn == PlannedCostId || UpdateColumn == TaskNameId) {
+                            if (UpdateColumn == PlannedCostId) {
                                 diff = parseInt(nValue) - parseInt(oValue);
                                 SetColumUpdatedValue(PlannedCostColIndex, diff);
                                 HomeGrid.cells(progid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newProgVal)));
@@ -831,6 +816,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                         HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + numberWithCommas(nValue - states.lineItemCost));
                                     }
                                 }
+
+                            }
+                            if (UpdateColumn == PlannedCostId || UpdateColumn == TaskNameId) {
                                 if (states.linkTacticId > 0) {
                                     LoadPlanGrid();
                                 }
@@ -941,7 +929,6 @@ function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
                 HomeGrid.cells(rowId, OwnerColIndex).setAttribute("locked", data.IsLocked);
                 HomeGrid.cells(rowId, TargetStageGoalColIndex).setAttribute("locked", data.IsLocked);
                 HomeGrid.setCellTextStyle(rowId, TaskNameColIndex, data.cellTextColor);
-                //HomeGrid.setCellTextStyle(rowId, 2, data.cellTextColor);
                 HomeGrid.setCellTextStyle(rowId, StartDateColIndex, data.cellTextColor);
                 HomeGrid.setCellTextStyle(rowId, EndDateColIndex, data.cellTextColor);
                 HomeGrid.setCellTextStyle(rowId, PlannedCostColIndex, data.cellTextColor);
@@ -1021,7 +1008,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                         HomeGrid.cells(rowid, TargetStageGoalColIndex).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
                         RefershPlanHeaderCalc();
                     }
-                    
+
                     if (UpdateColumn == TacticTypeId) {
                         var PlanIds = HomeGrid.cells(planid, GridHiddenId).getValue()
                         $("#ulTacticType li input[type=checkbox]").each(function () {
@@ -1201,14 +1188,10 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
     }
 }
 
-//insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
-//insertation start by kausha 21/09/2016 #2638/2592 Export to excel homegrid,budget,homegrid honeycomb
 function ExportToExcel(isHoneyComb) {
-    //start  
     var rowIdArray = [];
     var HoneyCombSelectedArray = [];
 
-    //get following columns index which need to show/hide in export
     var iconColumnIndex = HomeGrid.getColIndexById("Add");
     var colourCodeIndex = HomeGrid.getColIndexById("ColourCode");
     var machineNameIndex = HomeGrid.getColIndexById("MachineName");
@@ -1231,12 +1214,10 @@ function ExportToExcel(isHoneyComb) {
             }
         });
     }
-    //save users current strate of tree
     HomeGrid.saveOpenStates("plangridState");
     HomeGrid.expandAll();
 
     var ActivityIdIndex = HomeGrid.getColIndexById("ActivityId");
-    //Show/Hide columns as per export requirements
 
     if (gridname.toLowerCase() == "home") {
         HomeGrid.setColumnHidden(iconColumnIndex, true);
@@ -1247,7 +1228,6 @@ function ExportToExcel(isHoneyComb) {
         HomeGrid.setColumnHidden(TypeIndex, false);
         var columnIdArray = ColumnIds.split(',');
         var serializeStr = '';
-        // var startValueColumnIndex = 7;//this is the value column start index
         for (i = 0; i < columnIdArray.length; ++i) {
             if (i == 0) {
                 if (columnIdArray[i] == 'MachineName' || columnIdArray[i] == 'LineItemTypeId' || columnIdArray[i] == 'Buttons' || columnIdArray[i] == 'colourcode')
@@ -1268,9 +1248,7 @@ function ExportToExcel(isHoneyComb) {
     }
     HomeGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
     HomeGrid.collapseAll();
-    //load users current strate of tree
     HomeGrid.loadOpenStates("plangridState");
-    //Show/Hide columns as per export requirements
     if (gridname.toLowerCase() == "home") {
         HomeGrid.setColumnHidden(iconColumnIndex, false);
         HomeGrid.setColumnHidden(colourCodeIndex, false);
@@ -1280,18 +1258,14 @@ function ExportToExcel(isHoneyComb) {
         HomeGrid.setColumnHidden(ActivityIdindex, true);
         HomeGrid.setColumnHidden(TypeIndex, true);
     }
-    //.setColumnHidden(machineNameIndex, false);
     if (rowIdArray != undefined) {
         $.each(rowIdArray, function (key) {
             HomeGrid.setRowHidden(rowIdArray[key], false);
         });
     }
-    //Checked honeycomb icon as active after export as it sometimes    deactive due to export.
-
     if (HoneyCombSelectedArray != undefined) {
         $.each(HoneyCombSelectedArray, function (key) {
-            var columnText = HomeGrid.cells(HoneyCombSelectedArray
-[key], iconColumnIndex).getValue();
+            var columnText = HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).getValue();
             if (columnText.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
                 HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).setValue(columnText.replace("honeycombbox-icon-gantt", "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active"));
             }
@@ -1304,7 +1278,6 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
     var customoption = customfieldOptionList;
     var optionlist;
     var clistitem = [];
-    debugger;
     function filterbyparent(obj) {
         if (obj.customFieldId == customFieldId && obj.ParentOptionId != null && obj.ParentOptionId.length > 0)
             return true;
@@ -1314,7 +1287,6 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
     d = customoption.filter(filterbyparent);
 
     if (d != null && d.length > 0) {
-        debugger;
         var parentoptid = [];
         $.each(d, function (i, item) {
             if (parentoptid.indexOf(item.ParentOptionId[0]) < 0)
@@ -1331,7 +1303,6 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
                 parentoptionId: (parentoptid)
             },
             success: function (data) {
-                debugger;
                 if (data != null && data.optionlist != null && data.optionlist.length > 0)
                     optionlist = data.optionlist;
                 if (optionlist != null && optionlist.length > 0 && optionlist != undefined) {
@@ -1344,7 +1315,6 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
                 else {
                     HomeGrid.registerCList(cellInd, clistitem);
                 }
-
             }
         });
     }
@@ -1363,17 +1333,11 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
     }
 
 }
-//Open selectbox reverse when not find enough space at bottom - Bhumika - #2596
+
 function opencombobox() {
-    // get the scollTop (distance scrolled from top)
-    //var scrollTop = $(".objbox").scrollTop();
-    // get the top offset of the dropdown (distance from top of the page)
     var topOffset = $(".rowselected td").offset().top;
-    // get the Table height
     var windowHeight = $(".objbox").height();
-    // calculate the dropdown offset relative to table position
     var relativeOffset = topOffset - windowHeight;
-    // if the relative offset is greater than half the table height, reverse the dropdown.
     if (relativeOffset > 200) {
         $("body").addClass("reverse");
     }
