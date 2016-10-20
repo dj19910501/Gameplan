@@ -13,6 +13,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml.Linq;
@@ -26,7 +27,6 @@ namespace RevenuePlanner.Services
         private CacheObject objCache;
         private ColumnView objColumnView;
         List<Plandataobj> plandataobjlistCreateItem = new List<Plandataobj>();
-        List<Plandataobj> EntitydataobjItem = new List<Plandataobj>(); // Plan grid entity row's data
         List<CustomfieldPivotData> EntityCustomDataValues = new List<CustomfieldPivotData>(); // Set Custom fields value for entities
         List<PlandataobjColumn> EmptyCustomValues; // Variable for assigned blank values for custom field
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
@@ -195,6 +195,7 @@ namespace RevenuePlanner.Services
             User_CoulmnView objUserView = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
             List<AttributeDetail> UserColitems = null;
             Dictionary<int, string> usercolindex = new Dictionary<int, string>();
+            List<string> lstusercolindex = new List<string>();
             if (objUserView != null && !string.IsNullOrEmpty(objUserView.GridAttribute))
             {
                 XDocument doc = XDocument.Parse(objUserView.GridAttribute);
@@ -249,6 +250,18 @@ namespace RevenuePlanner.Services
 
             PivotcustomFieldData(ref customColumnslist, ListOfCustomData, ref IsUserView, EntityRowPermission);
 
+            EmptyCustomFieldsValuesEntity EntityEmptyCustomFieldsData = new EmptyCustomFieldsValuesEntity();
+            // Get list of custom fields empty cell are editable or not with respective entities 
+            if (customColumnslist != null && customColumnslist.Count > 0)
+            {
+                EntityEmptyCustomFieldsData.PlanEmptyCustomFields = GetListOfEmptyCustomFieldsEditCells(ListOfCustomData, customColumnslist, Enums.EntityType.Plan);
+                EntityEmptyCustomFieldsData.CampaignEmptyCustomFields = GetListOfEmptyCustomFieldsEditCells(ListOfCustomData, customColumnslist, Enums.EntityType.Campaign);
+                EntityEmptyCustomFieldsData.ProgramEmptyCustomFields = GetListOfEmptyCustomFieldsEditCells(ListOfCustomData, customColumnslist, Enums.EntityType.Program);
+                EntityEmptyCustomFieldsData.TacticEmptyCustomFields = GetListOfEmptyCustomFieldsEditCells(ListOfCustomData, customColumnslist, Enums.EntityType.Tactic);
+                EntityEmptyCustomFieldsData.LineitemEmptyCustomFields = GetListOfEmptyCustomFieldsEditCells(ListOfCustomData, customColumnslist, Enums.EntityType.Lineitem);
+                EntityEmptyCustomFieldsData.ViewOnlyCustomFields = GetListOfEmptyCustomFieldsViewCells();
+            }
+
             // Check is user select Planned Cost column in column saved view
             bool IsPlanCostColumn = UserDefinedColumns.Where(a =>
                a.ToLower() == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost).ToLower()).Any();
@@ -265,10 +278,7 @@ namespace RevenuePlanner.Services
 
             // Get selected columns data
             List<PlanGridColumnData> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
-            //List<PlanGridColumnData> lstSelectedColumnsData = new List<PlanGridColumnData>(GridHireachyData.Count);
-            //GridHireachyData.ForEach(a => lstSelectedColumnsData.Add(Projection(a, UserDefinedColumns, viewBy)));
-
-
+            
             // Merge header of plan grid with custom fields
             ListOfDefaultColumnHeader.AddRange(GridCustomHead(ListOfCustomData.CustomFields, customColumnslist));
 
@@ -280,15 +290,53 @@ namespace RevenuePlanner.Services
                                              orderby colsort.Key
                                              select HeaderCol).ToList();
 
+                lstusercolindex = usercolindex.OrderBy(a => int.Parse(a.Key.ToString())).Select(a => a.Value.ToLower()).ToList();
+
             }
             // Generate Hierarchy of Plan grid
             List<PlanDHTMLXGridDataModel> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
-                     .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData, usercolindex))
-                     .ToList();
+                   .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData, lstusercolindex, EntityEmptyCustomFieldsData))
+                   .ToList();
 
             objPlanMainDHTMLXGrid.head = ListOfDefaultColumnHeader;
             objPlanMainDHTMLXGrid.rows = griditems;
             return objPlanMainDHTMLXGrid;
+        }
+
+        /// <summary>
+        /// Get list of custom field empty values with respective entity type and with edit permission
+        /// </summary>
+        private List<PlandataobjColumn> GetListOfEmptyCustomFieldsEditCells(GridCustomColumnData CustomFieldData, List<string> customColumnslist, Enums.EntityType EntityType)
+        {
+            List<PlandataobjColumn> ItemEmptylist = new List<PlandataobjColumn>(); // Variable for empty list of custom fields value to assign entity 
+            // Get list of custom fields by entity type
+            List<string> EntityCustomFields = CustomFieldData.CustomFields.Where(a => a.EntityType == EntityType).Select(a => a.CustomFieldId.ToString()).ToList();
+            // Get list of custom column indexes from custom field list
+            List<int> Colindexes = customColumnslist.Select((s, k) => new { Str = s, Index = k })
+                                        .Where(x => EntityCustomFields.Contains(x.Str))
+                                        .Select(x => x.Index).ToList();
+
+            for (int j = 0; j < EmptyCustomValues.Count; j++)
+            {
+                if (Colindexes.Contains(j))
+                {
+                    ItemEmptylist.Add(new PlandataobjColumn { value = string.Empty, locked = objHomeGridProp.lockedstatezero, style = objHomeGridProp.stylecolorblack, column = EmptyCustomValues[j].column });
+                }
+                else
+                { ItemEmptylist.Add(EmptyCustomValues[j]); }
+            }
+
+            return ItemEmptylist;
+        }
+
+        /// <summary>
+        /// Get list of custom field empty values with respective entity type and with view permission
+        /// </summary>
+        private List<PlandataobjColumn> GetListOfEmptyCustomFieldsViewCells()
+        {
+            List<PlandataobjColumn> ItemEmptylist = new List<PlandataobjColumn>(); // Variable for empty list of custom fields value to assign entity 
+            ItemEmptylist.AddRange(EmptyCustomValues);
+            return ItemEmptylist;
         }
 
         /// <summary>
@@ -891,61 +939,64 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Generate items for hierarchy 
         /// </summary>
-        PlanDHTMLXGridDataModel CreateItemGrid(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData, Dictionary<int, string> usercolindex)
+        PlanDHTMLXGridDataModel CreateItemGrid(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData, List<string> usercolindex, EmptyCustomFieldsValuesEntity EmptyCustomFieldEntityData)
         {
-            List<PlanDHTMLXGridDataModel> children = new List<PlanDHTMLXGridDataModel>();
-            try
+            // Get entity Childs records
+            IEnumerable<PlanGridColumnData> lstChildren = GetChildrenGrid(DataList, Row.UniqueId);
+
+            // Call recursive if any other child entity
+            List<PlanDHTMLXGridDataModel> children = lstChildren
+            .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridDefaultData, usercolindex, EmptyCustomFieldEntityData)).ToList();
+
+            if (children == null)
             {
-                // Get entity Childs records
-                IEnumerable<PlanGridColumnData> lstChildren = GetChildrenGrid(DataList, Row.UniqueId);
+                children = new List<PlanDHTMLXGridDataModel>();
+            }
 
-                // Call recursive if any other child entity
-                children = lstChildren
-                .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridDefaultData, usercolindex)).ToList();
-
-                EntitydataobjItem = new List<Plandataobj>();
-
-                // Get list of custom field values for particular entity based on pivoted entities list
-                List<PlandataobjColumn> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId.ToLower() == (Row.EntityType.ToString().ToLower() + "_" + Row.EntityId))
-                                           .Select(a => a.CustomFieldData).FirstOrDefault();
-                if (lstCustomfieldData == null && CustomFieldData.CustomFields != null)
+            // Get list of custom field values for particular entity based on pivoted entities list
+            List<PlandataobjColumn> lstCustomfieldData = EntityCustomDataValues.Where(a => a.UniqueId.ToLower() == (Row.EntityType.ToString().ToLower() + "_" + Row.EntityId))
+                                       .Select(a => a.CustomFieldData).FirstOrDefault();
+            if (lstCustomfieldData == null && CustomFieldData.CustomFields != null)
+            {
+                lstCustomfieldData = EmptyCustomFieldEntityData.ViewOnlyCustomFields;
+                switch (Row.EntityType)
                 {
-                    List<PlandataobjColumn> ItemEmptylist = new List<PlandataobjColumn>(); // Variable for empty list of custom fields value to assign entity 
-                    // Get list of custom fields by entity type
-                    List<string> EntityCustomFields = CustomFieldData.CustomFields.Where(a => a.EntityType == Row.EntityType).Select(a => a.CustomFieldId.ToString()).ToList();
-                    // Get list of custom column indexes from custom field list
-                    List<int> Colindexes = customColumnslist.Select((s, k) => new { Str = s, Index = k })
-                                                .Where(x => EntityCustomFields.Contains(x.Str))
-                                                .Select(x => x.Index).ToList();
-                    // Set custom field is editable or not for respective entities
-                    if (Row.EntityType == Enums.EntityType.Lineitem && string.IsNullOrEmpty(Row.LineItemType))
-                    {
-                        Row.IsRowPermission = false;
-                    }
-                    if (Row.IsRowPermission)
-                    {
-                        for (int j = 0; j < EmptyCustomValues.Count; j++)
+                    case Enums.EntityType.Plan:
+                        if (Row.IsRowPermission)
+                            lstCustomfieldData = EmptyCustomFieldEntityData.PlanEmptyCustomFields;
+                        break;
+                    case Enums.EntityType.Campaign:
+                        if (Row.IsRowPermission)
+                            lstCustomfieldData = EmptyCustomFieldEntityData.CampaignEmptyCustomFields;
+                        break;
+                    case Enums.EntityType.Program:
+                        if (Row.IsRowPermission)
+                            lstCustomfieldData = EmptyCustomFieldEntityData.ProgramEmptyCustomFields;
+                        break;
+                    case Enums.EntityType.Tactic:
+                        if (Row.IsRowPermission)
+                            lstCustomfieldData = EmptyCustomFieldEntityData.TacticEmptyCustomFields;
+                        break;
+                    case Enums.EntityType.Lineitem:
+                        if (Row.EntityType == Enums.EntityType.Lineitem && string.IsNullOrEmpty(Row.LineItemType))
                         {
-                            if (Colindexes.Contains(j))
-                            {
-                                ItemEmptylist.Add(new PlandataobjColumn { value = string.Empty, locked = objHomeGridProp.lockedstatezero, style = objHomeGridProp.stylecolorblack, column = EmptyCustomValues[j].column });
-                            }
-                            else
-                            { ItemEmptylist.Add(EmptyCustomValues[j]); }
+                            lstCustomfieldData = EmptyCustomFieldEntityData.ViewOnlyCustomFields;
                         }
-                    }
-                    else
-                    { ItemEmptylist.AddRange(EmptyCustomValues); }
-                    lstCustomfieldData = ItemEmptylist;
+                        else
+                        {
+                            if (Row.IsRowPermission)
+                                lstCustomfieldData = EmptyCustomFieldEntityData.LineitemEmptyCustomFields;
+                        }
+                        break;
                 }
-
-                // Set the values of row
-                EntitydataobjItem = GridDataRow(Row, EntitydataobjItem, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData, usercolindex);
             }
-            catch
+            else if (Row.EntityType == Enums.EntityType.Lineitem && string.IsNullOrEmpty(Row.LineItemType))
             {
-                throw;
+                lstCustomfieldData = EmptyCustomFieldEntityData.ViewOnlyCustomFields;
             }
+
+            // Set the values of row
+            List<Plandataobj> EntitydataobjItem = GridDataRow(Row, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData, usercolindex);
             return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
         }
         #endregion
@@ -955,11 +1006,8 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Set the grid rows for entities
         /// </summary>
-        public List<Plandataobj> GridDataRow(PlanGridColumnData Row, List<Plandataobj> EntitydataobjCreateItem, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<PlandataobjColumn> objCustomfieldData, Dictionary<int, string> usercolindex)
+        public List<Plandataobj> GridDataRow(PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<PlandataobjColumn> objCustomfieldData, List<string> usercolindex)
         {
-            bool IsEditable = true;
-            string cellTextColor = string.Empty;
-            cellTextColor = IsEditable ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
             List<PlandataobjColumn> lstOrderData = new List<PlandataobjColumn>();
             #region Set Default Columns Values
             lstOrderData.AddRange(Row.lstdata);
@@ -972,16 +1020,10 @@ namespace RevenuePlanner.Services
             #endregion
             if (usercolindex != null && usercolindex.Count > 0)
             {
-                lstOrderData = (from colsort in usercolindex
-                                join lstData in lstOrderData
-                                    on colsort.Value.ToLower() equals lstData.column.ToLower()
-                                orderby colsort.Key
-                                select lstData).ToList();
+                lstOrderData = lstOrderData.OrderBy(a => usercolindex.IndexOf(a.column.ToLower())).Select(a => a).ToList();
             }
-            EntitydataobjCreateItem.AddRange(lstOrderData.Select(a => new Plandataobj { value = a.value, type = a.type, style = a.style, locked = a.locked, actval = a.actval }));
-            return EntitydataobjCreateItem;
+            return lstOrderData.Select(a => new Plandataobj { value = a.value, type = a.type, style = a.style, locked = a.locked, actval = a.actval }).ToList();
         }
-
         #endregion
 
         #region Check Row wise Permission
@@ -1439,7 +1481,6 @@ namespace RevenuePlanner.Services
                             else
                             {
                                 objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
-
                             }
 
                             if (columnName == Enums.HomeGrid_Default_Hidden_Columns.Status
@@ -1819,15 +1860,15 @@ namespace RevenuePlanner.Services
             switch (Row.EntityType)
             {
                 case Enums.EntityType.Plan:
-                    return PlanAddString(Row);
+                    return Convert.ToString(PlanAddString(Row));
                 case Enums.EntityType.Campaign:
-                    return CampaignAddString(Row);
+                    return Convert.ToString(CampaignAddString(Row));
                 case Enums.EntityType.Program:
-                    return ProgroamAddString(Row);
+                    return Convert.ToString(ProgroamAddString(Row));
                 case Enums.EntityType.Tactic:
-                    return TacticAddString(Row);
+                    return Convert.ToString(TacticAddString(Row));
                 case Enums.EntityType.Lineitem:
-                    return LineItemAddString(Row);
+                    return Convert.ToString(LineItemAddString(Row));
             }
 
             return string.Empty;
@@ -1835,91 +1876,94 @@ namespace RevenuePlanner.Services
 
         // Set the Plan add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string PlanAddString(PlanGridColumnData Row)
+        private StringBuilder PlanAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
-            string grid_add = string.Empty;
+            //string grid_add = string.Empty;
+            StringBuilder grid_add = new StringBuilder();
             if (Row.IsCreatePermission == true)
             {
-                grid_add = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId +
-                " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() +
-                " title=Add><i class='fa fa-plus-circle'></i></div>";
+                grid_add.Append("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId);
+                grid_add.Append(" per=" + Convert.ToString(Row.IsCreatePermission).ToLower());
+                grid_add.Append(" title=Add><i class='fa fa-plus-circle'></i></div>");
+                //grid_add = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Plan alt=" + Row.EntityId +
+                //" per=" + Convert.ToString(Row.IsCreatePermission).ToLower() +
+                //" title=Add><i class='fa fa-plus-circle'></i></div>";
             }
 
-            string addColumn = @" <div class=grid_Search id=Plan onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" +
-                grid_add
-                + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Select' id=Plan TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.Owner)
-                + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode + "' altId=" + Row.TaskId
-                + " per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>";
+            StringBuilder addColumn = new StringBuilder();
+            addColumn.Append(@" <div class=grid_Search id=Plan onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" + grid_add);
+            addColumn.Append("<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this)  title = 'Select' id=Plan TacticType= '" + "--" + "' OwnerName= '" + Convert.ToString(Row.Owner));
+            addColumn.Append("' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode + "' altId=" + Row.TaskId);
+            addColumn.Append(" per=" + "true" + "' taskId=" + Row.EntityId + " csvId=Plan_" + Row.EntityId + " ></div>");
             return addColumn;
         }
 
         // Set the Campaign add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string CampaignAddString(PlanGridColumnData Row)
+        private StringBuilder CampaignAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
-            string grid_add = string.Empty;
+            StringBuilder grid_add = new StringBuilder();
             if (Row.IsCreatePermission == true)
             {
-                grid_add = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) id=Campaign alt=" + Row.AltId +
-                " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
+                grid_add.Append("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event) id=Campaign alt=" + Row.AltId);
+                grid_add.Append(" per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>");
             }
-
-            string addColumn = @" <div class=grid_Search id=CP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
-                + grid_add
-                + "<div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '"
-                + Convert.ToString(Row.Owner) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;"))
-                + "' altId=" + Row.TaskId + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + "' taskId= " + Row.EntityId + " csvId=Campaign_" + Row.EntityId + "></div>";
+            StringBuilder addColumn = new StringBuilder();
+            addColumn.Append(@" <div class=grid_Search id=CP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" + grid_add);
+            addColumn.Append("<div class=honeycombbox-icon-gantt id=Campaign onclick=javascript:AddRemoveEntity(this) title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "'  OwnerName= '");
+            addColumn.Append(Convert.ToString(Row.Owner) + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")));
+            addColumn.Append("' altId=" + Row.TaskId + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + "' taskId= " + Row.EntityId + " csvId=Campaign_" + Row.EntityId + "></div>");
             return addColumn;
         }
 
         // Set the program add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string ProgroamAddString(PlanGridColumnData Row)
+        private StringBuilder ProgroamAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
-            string grid_add = string.Empty;
+            StringBuilder grid_add = new StringBuilder();
             if (Row.IsCreatePermission == true)
             {
-                grid_add = "<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Row.AltId +
-                " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
+                grid_add.Append("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id=Program alt=_" + Row.AltId);
+                grid_add.Append(" per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>");
             }
-            string addColumn = @" <div class=grid_Search id=PP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
-                + grid_add
-                + " <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.Owner)
-                + "'  TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "'  altId= " + Row.TaskId +
-                " per=" + Row.IsCreatePermission.ToString().ToLower() + "'  taskId= " + Row.EntityId + " csvId=Program_" + Row.EntityId + "></div>";
+            StringBuilder addColumn = new StringBuilder();
+            addColumn.Append(@" <div class=grid_Search id=PP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" + grid_add);
+            addColumn.Append(" <div class=honeycombbox-icon-gantt id=Program onclick=javascript:AddRemoveEntity(this);  title = 'Select'  TacticType= '" + objHomeGridProp.doubledesh + "' ColorCode='" + Row.ColorCode + "' OwnerName= '" + Convert.ToString(Row.Owner));
+            addColumn.Append("'  TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "'  altId= " + Row.TaskId);
+            addColumn.Append(" per=" + Row.IsCreatePermission.ToString().ToLower() + "'  taskId= " + Row.EntityId + " csvId=Program_" + Row.EntityId + "></div>");
             return addColumn;
         }
 
         // Set the tactic add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string TacticAddString(PlanGridColumnData Row)
+        private StringBuilder TacticAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
-            string grid_add = string.Empty;
+            StringBuilder grid_add = new StringBuilder();
             if (Row.IsCreatePermission == true)
             {
-                grid_add = "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Row.ParentEntityId + "_" + Row.EntityId +
-                " per=" + Row.IsCreatePermission.ToString().ToLower() + "  LinkTacticper ='" + Row.IsExtendTactic + "' LinkedTacticId = '" + 0
-                + "' tacticaddId='" + Row.EntityId + "' title=Add><i class='fa fa-plus-circle'></i></div>";
+                grid_add.Append("<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Tactic alt=__" + Row.ParentEntityId + "_" + Row.EntityId);
+                grid_add.Append(" per=" + Row.IsCreatePermission.ToString().ToLower() + "  LinkTacticper ='" + Row.IsExtendTactic + "' LinkedTacticId = '" + 0);
+                grid_add.Append("' tacticaddId='" + Row.EntityId + "' title=Add><i class='fa fa-plus-circle'></i></div>");
             }
-            string addColumn = @" <div class=grid_Search id=TP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
-                + grid_add
-                + " <div class=honeycombbox-icon-gantt id=Tactic onclick=javascript:AddRemoveEntity(this)  title = 'Select' anchortacticid='" + Row.AnchorTacticID + "' roitactictype='" + Row.AssetType
-                + "' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode
-                + "'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.Owner) + "' altId=" + Row.TaskId
-                + " per=" + Row.IsCreatePermission.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>";
+            StringBuilder addColumn = new StringBuilder();
+            addColumn.Append(@" <div class=grid_Search id=TP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" + grid_add);
+            addColumn.Append(" <div class=honeycombbox-icon-gantt id=Tactic onclick=javascript:AddRemoveEntity(this)  title = 'Select' anchortacticid='" + Row.AnchorTacticID + "' roitactictype='" + Row.AssetType);
+            addColumn.Append("' TaskName='" + (HttpUtility.HtmlEncode(Row.EntityTitle).Replace("'", "&#39;")) + "' ColorCode='" + Row.ColorCode);
+            addColumn.Append("'  TacticType= '" + Row.TacticType + "' OwnerName= '" + Convert.ToString(Row.Owner) + "' altId=" + Row.TaskId);
+            addColumn.Append(" per=" + Row.IsCreatePermission.ToString().ToLower() + "' taskId=" + Row.EntityId + " csvId=Tactic_" + Row.EntityId + "></div>");
             return addColumn;
         }
 
         // Set the line item add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string LineItemAddString(PlanGridColumnData Row)
+        private StringBuilder LineItemAddString(PlanGridColumnData Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
-            string grid_add = string.Empty;
+            StringBuilder grid_add = new StringBuilder();
             if (!string.IsNullOrEmpty(Row.LineItemType))
             {
                 if (Row.IsCreatePermission == true)
@@ -1930,17 +1974,17 @@ namespace RevenuePlanner.Services
                         int.TryParse(Convert.ToString(Row.LineItemTypeId), out LineItemTypeId);
                     }
 
-                    grid_add = "<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + Row.ParentEntityId + "_" + Row.EntityId
-                    + " lt=" + LineItemTypeId
-                    + " dt=" + HttpUtility.HtmlEncode(Row.EntityTitle) + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>";
+                    grid_add.Append("<div class=grid_add  onclick=javascript:DisplayPopUpMenu(this,event)  id=Line alt=___" + Row.ParentEntityId + "_" + Row.EntityId);
+                    grid_add.Append(" lt=" + LineItemTypeId);
+                    grid_add.Append(" dt=" + HttpUtility.HtmlEncode(Row.EntityTitle) + " per=" + Convert.ToString(Row.IsCreatePermission).ToLower() + " title=Add><i class='fa fa-plus-circle'></i></div>");
                 }
-                string addColumn = @" <div class=grid_Search id=LP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>"
-                    + grid_add;
+                StringBuilder addColumn = new StringBuilder();
+                addColumn.Append(@" <div class=grid_Search id=LP onclick=javascript:DisplayPopup(this) title='View'> <i Class='fa fa-external-link-square'> </i> </div>" + grid_add);
                 return addColumn;
             }
             else
             {
-                return string.Empty;
+                return grid_add;
             }
         }
 

@@ -788,6 +788,17 @@ namespace RevenuePlanner.Models
     }
 
     // Add By Nishant Sheth
+    // Below class used for respective entity custom fields cells are editable or not on home grid
+    public class EmptyCustomFieldsValuesEntity
+    {
+        public List<PlandataobjColumn> PlanEmptyCustomFields { get; set; }
+        public List<PlandataobjColumn> CampaignEmptyCustomFields { get; set; }
+        public List<PlandataobjColumn> ProgramEmptyCustomFields { get; set; }
+        public List<PlandataobjColumn> TacticEmptyCustomFields { get; set; }
+        public List<PlandataobjColumn> LineitemEmptyCustomFields { get; set; }
+        public List<PlandataobjColumn> ViewOnlyCustomFields { get; set; }
+    }
+    // Add By Nishant Sheth
     // Get list of view only and none permission custom field option
     public class UserRestrictedValues
     {
