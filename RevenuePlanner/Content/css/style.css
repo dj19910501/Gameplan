@@ -115,6 +115,7 @@ a:hover, a:focus {
 #sidebar {
 	width: 280px;
 	max-width: 280px;
+    min-width: 280px;
 	height: 100%; /* Edited for #2219 - Bhumika */
 	vertical-align: top;
 	/*float: left;*/
@@ -13555,7 +13556,9 @@ input.serach-input {
 }
 /* When hide sidebar below styles applied */
 #sidebar.slideLeft {
-	width: 0 !important;   
+	width: 0 !important;  
+    min-width: 0 !important;
+    max-width: 0 !important;   
 }
 #content_wraper.slideLeft {
 	margin-left: 0 !important;
