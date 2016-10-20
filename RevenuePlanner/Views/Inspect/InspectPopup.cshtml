@@ -825,7 +825,7 @@
             }
             $("#divArchiveMediaCode").html("");
             url = '@Url.Content("~/Inspect/LoadMediaCodeFromTacticPopup/")';
-            $("#divTab").load(url + '?tacticId=' + id + '&InsepectMode='+InsepectMode+'&IsPlanCreateAll='+@IsPlanCreateAll, function (response, status, xhr) {
+            $("#divTab").load(url + '?tacticId=' + id + '&InsepectMode='+InsepectMode+'&IsPlanCreateAll='+'@IsPlanCreateAll', function (response, status, xhr) {
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }

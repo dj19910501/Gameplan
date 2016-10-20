@@ -1447,7 +1447,7 @@ namespace RevenuePlanner.Services
                                 }
                                 else
                                 {
-                                    objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                                    objPlanData.actval = objPlanData.value;
                                 }
 
                                 if (columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType
@@ -1481,7 +1481,7 @@ namespace RevenuePlanner.Services
                             }
                             else
                             {
-                                objPlanData.actval = GetvalueFromObject(RowData, pair.Name);
+                                objPlanData.actval = objPlanData.value;
                             }
 
                             if (columnName == Enums.HomeGrid_Default_Hidden_Columns.Status

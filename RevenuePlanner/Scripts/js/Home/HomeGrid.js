@@ -870,19 +870,19 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 });
                 return true;
             }
-            //if (cellInd == TaskNameColIndex) {
-            //    if (value != undefined && value != "undefined" && value != null) {
-            //        HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
-            //    }
-            //    else {
-            //        HomeGrid.cells(rowId, cellInd).setValue(TacticName);
-            //    }
-            //}
-            //value = "";
-            //$("div[id^='LinkIcon']").each(function () {
-            //    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
-            //});
-            //return true;
+            if (cellInd == TaskNameColIndex) {
+                if (value != undefined && value != "undefined" && value != null) {
+                    HomeGrid.cells(rowId, cellInd).setValue(value + "</div>" + TacticName);
+                }
+                else {
+                    HomeGrid.cells(rowId, cellInd).setValue(TacticName);
+                }
+            }
+            value = "";
+            $("div[id^='LinkIcon']").each(function () {
+                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+            });
+            return true;
 
         }
     }
