@@ -6774,7 +6774,7 @@ namespace RevenuePlanner.Controllers
                 if (string.IsNullOrEmpty(viewBy))
                     viewBy = PlanGanttTypes.Tactic.ToString();
 
-                ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID);
+                ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID,Sessions.User.ID);
                 ViewBag.TacticTypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
                 ViewBag.LineItemTypelist = objGrid.GetLineItemTypeListForHeader(planIds, Sessions.User.CID);
                 objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds, viewBy);

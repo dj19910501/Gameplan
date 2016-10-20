@@ -305,12 +305,15 @@ namespace RevenuePlanner.Services
             return items;
         }
 
-        public List<CustomFieldOptionModel> GetCustomFiledOptionList(int clientID)
+        public List<CustomFieldOptionModel> GetCustomFiledOptionList(int clientID , int UserId)
         {
             List<CustomFieldOptionModel> optionlist = new List<CustomFieldOptionModel>();
             List<CustomFieldOption> finalOptionsList = new List<CustomFieldOption>();
+            string attributexml = string.Empty;
+            List<string> SelectedCustomfieldID = new List<string>();
+            List<int> enitablerestrictionoptionId = new List<int>();
                 DataTable dtColumnAttribute = GetCustomFieldList(clientID);
-
+                bool IsNoRestriction = false;
                 if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
                 {
                     List<CustomAttribute> columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new CustomAttribute
@@ -323,33 +326,75 @@ namespace RevenuePlanner.Services
                         IsRequired=Convert.ToBoolean(row["IsRequired"])
 
                     }).ToList();
-                    List<CustomFieldDependency> DependencyList = objDbMrpEntities.CustomFieldDependencies.Where(a => a.IsDeleted == false).Select(a => a).ToList();
-                    var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.ID, true);
-                    List<Models.CustomRestriction> lstEditableRestrictions = new List<CustomRestriction>();
-                    lstEditableRestrictions = userCustomRestrictionList.Where(restriction => restriction.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit).ToList();
-
-                    List<int> customfieldid = columnattribute.Select(a => Convert.ToInt32(a.CustomFieldId)).ToList();
-                    List<CustomFieldOption> optlist = objDbMrpEntities.CustomFieldOptions.Where(a => a.CustomField.ClientId == clientID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).ToList();
-                    List<int> enitablerestrictionoptionId = lstEditableRestrictions.Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
-                    foreach (CustomAttribute item in columnattribute)
+                    User_CoulmnView userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
+                    if (userview != null)
                     {
-                        int cutomid = Convert.ToInt32(item.CustomFieldId);
-                        if (item.IsRequired && item.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower())
-                            finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid && enitablerestrictionoptionId.Contains(opt.CustomFieldOptionId)).ToList();
-                        else
-                            finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid).ToList();
-                        var customoptionlist = finalOptionsList.Where(opt => opt.CustomFieldId == cutomid).Select(o => new CustomFieldOptionModel
+                        attributexml = Convert.ToString(userview.GridAttribute);
+                        if (!string.IsNullOrEmpty(attributexml))
                         {
-                            ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
-                            ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).ToList(),
-                            customFieldOptionId = o.CustomFieldOptionId,
-                            ChildOptionIds = DependencyList.Where(Child => Child.ParentOptionId == o.CustomFieldOptionId).Select(list => list.ChildOptionId).ToList(),
-                            value = o.Value,
-                            customFieldId = o.CustomFieldId
-                        }).OrderBy(o => o.value).ToList();
-                        optionlist.AddRange(customoptionlist);
+                            //Getting xml data to list
+                            XDocument doc = XDocument.Parse(attributexml);
+                            List<AttributeDetail> items = (from r in doc.Root.Elements("attribute")
+                                                           select new AttributeDetail
+                                                           {
+                                                               AttributeType = (string)r.Attribute("AttributeType"),
+                                                               AttributeId = (string)r.Attribute("AttributeId"),
+                                                               ColumnOrder = (string)r.Attribute("ColumnOrder")
+                                                           }).ToList();
+                            SelectedCustomfieldID = items.Where(a=>a.AttributeType!="Common").Select(a => a.AttributeId).ToList();
+                        }
+                        columnattribute = columnattribute.Where(a => SelectedCustomfieldID.Contains(a.CustomFieldId)).ToList();
+                        List<CustomFieldDependency> DependencyList = objDbMrpEntities.CustomFieldDependencies.Where(a => a.IsDeleted == false).Select(a => a).ToList();
+                        var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.ID, true);
+                        if (userCustomRestrictionList != null && userCustomRestrictionList.Count() > 0)
+                        {
+                            List<Models.CustomRestriction> lstEditableRestrictions = new List<CustomRestriction>();
+                            lstEditableRestrictions = userCustomRestrictionList.Where(restriction => restriction.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit).ToList();
+
+                            enitablerestrictionoptionId = lstEditableRestrictions.Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
+                        }
+                        else
+                            IsNoRestriction = true;
+
+                       
+                        List<int> customfieldid = columnattribute.Select(a => Convert.ToInt32(a.CustomFieldId)).ToList();
+                        List<CustomFieldOption> optlist = objDbMrpEntities.CustomFieldOptions.Where(a => a.CustomField.ClientId == clientID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).ToList();
+
+                        foreach (CustomAttribute item in columnattribute)
+                        {
+                            int cutomid = Convert.ToInt32(item.CustomFieldId);
+                            if (item.CustomfiledType.Equals(Enums.CustomFieldType.DropDownList.ToString(), StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                if (!IsNoRestriction)
+                                {
+                                    if ((item.IsRequired && item.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower()))
+                                        finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid && enitablerestrictionoptionId.Contains(opt.CustomFieldOptionId)).ToList();
+                                    else
+                                        finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid).ToList();
+                                }
+                                else
+                                    finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid).ToList();
+                                var customoptionlist = finalOptionsList.Where(opt => opt.CustomFieldId == cutomid).Select(o => new CustomFieldOptionModel
+                                {
+                                    ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
+                                    ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).ToList(),
+                                    customFieldOptionId = o.CustomFieldOptionId,
+                                    ChildOptionIds = DependencyList.Where(Child => Child.ParentOptionId == o.CustomFieldOptionId).Select(list => list.ChildOptionId).ToList(),
+                                    value = o.Value,
+                                    customFieldId = o.CustomFieldId
+                                }).OrderBy(o => o.value).ToList();
+                                optionlist.AddRange(customoptionlist);
+                            }
+                            else
+                            {
+                                CustomFieldOptionModel objCustFieldText = new CustomFieldOptionModel();
+                                objCustFieldText.ParentOptionId = DependencyList.Where(b => b.ChildCustomFieldId == Convert.ToInt32(item.CustomFieldId)).Select(b => b.ParentOptionId).ToList();
+                                objCustFieldText.value = item.CutomfieldName;
+                                objCustFieldText.customFieldId = Convert.ToInt32(item.CustomFieldId);
+                                optionlist.Add(objCustFieldText);
+                            }
+                        }
                     }
-                   
                    
                 }
            
