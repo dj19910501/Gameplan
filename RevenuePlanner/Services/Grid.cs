@@ -232,11 +232,12 @@ namespace RevenuePlanner.Services
             GridHireachyData = UpdatePlanStartEndDate(GridHireachyData);
             // Get List of custom fields and it's entity's values
             GridCustomColumnData ListOfCustomData = new GridCustomColumnData();
+            List<Int64> lsteditableEntityIds = new List<Int64>();
             if (customColumnslist != null && customColumnslist.Count > 0)
             {
                 ListOfCustomData = GridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customColumnslist, UserId, IsUserView);
+                lsteditableEntityIds = GetEditableTacticIds(GridHireachyData, ListOfCustomData, UserId, ClientId);
             }
-            List<Int64> lsteditableEntityIds = GetEditableTacticIds(GridHireachyData, ListOfCustomData, UserId, ClientId);
             // Set Row wise permission
             GridHireachyData = GridRowPermission(GridHireachyData, objPermission, lstSubordinatesIds, lsteditableEntityIds, UserId);
 
@@ -2024,7 +2025,9 @@ namespace RevenuePlanner.Services
                         tacData = tacData.Where(tactic => lstTacticIds.Contains((int)tactic.EntityId)).ToList();
                     }
                     //// get Allowed Entity Ids
+                    System.Diagnostics.Debug.WriteLine("start GetViewableTacticList " + DateTime.Now.ToString("hh.mm.ss.ffffff"));  
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
+                    System.Diagnostics.Debug.WriteLine("end GetViewableTacticList " + DateTime.Now.ToString("hh.mm.ss.ffffff"));  
                     tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains((int)tactic.EntityId)).ToList();    //filter tactics with allowed entity.
                     resultData.AddRange(tacData);
                 }

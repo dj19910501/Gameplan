@@ -540,7 +540,7 @@ function GetTacticTypelist(Planids, async, OnPlanChange) {
         },
         type: "GET",
         cache: false,
-        async: asyncval,
+        async: true,
         url: $('#TacticTypeURL').val(),
         data: {
             PlanId: Planids.toString()
