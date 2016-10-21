@@ -744,6 +744,8 @@ namespace RevenuePlanner.Models
         //Permission variables
         public bool IsCreatePermission { get; set; }
         public bool IsRowPermission { get; set; }
+        public List<PlandataobjColumn> lstdata { get; set; }
+        public bool IsExtendTactic { get; set; }
     }
 
     // Add By Nishant Sheth

@@ -278,7 +278,7 @@ namespace RevenuePlanner.Services
             GridHireachyData = RoundupValues(GridHireachyData, IsPlanCostColumn, IsRevenueColumn, IsMQLColumn);
 
             // Get selected columns data
-            List<PlanGridColumnData> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
+            List<GridDefaultModel> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
             
             // Merge header of plan grid with custom fields
             ListOfDefaultColumnHeader.AddRange(GridCustomHead(ListOfCustomData.CustomFields, customColumnslist));
@@ -915,7 +915,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Get first row of plan grid or parent row 
         /// </summary>
-        IEnumerable<PlanGridColumnData> GetTopLevelRowsGrid(List<PlanGridColumnData> DataList, string minParentId)
+        IEnumerable<GridDefaultModel> GetTopLevelRowsGrid(List<GridDefaultModel> DataList, string minParentId)
         {
             try
             {
@@ -930,7 +930,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Get Childs records of parent entity
         /// </summary>
-        IEnumerable<PlanGridColumnData> GetChildrenGrid(List<PlanGridColumnData> DataList, string parentId)
+        IEnumerable<GridDefaultModel> GetChildrenGrid(List<GridDefaultModel> DataList, string parentId)
         {
             return DataList
               .Where(row => row.ParentUniqueId == parentId);
@@ -940,10 +940,10 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Generate items for hierarchy 
         /// </summary>
-        PlanDHTMLXGridDataModel CreateItemGrid(List<PlanGridColumnData> DataList, PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData, List<string> usercolindex, EmptyCustomFieldsValuesEntity EmptyCustomFieldEntityData)
+        PlanDHTMLXGridDataModel CreateItemGrid(List<GridDefaultModel> DataList, GridDefaultModel Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData, List<string> usercolindex, EmptyCustomFieldsValuesEntity EmptyCustomFieldEntityData)
         {
             // Get entity Childs records
-            IEnumerable<PlanGridColumnData> lstChildren = GetChildrenGrid(DataList, Row.UniqueId);
+            IEnumerable<GridDefaultModel> lstChildren = GetChildrenGrid(DataList, Row.UniqueId);
 
             // Call recursive if any other child entity
             List<PlanDHTMLXGridDataModel> children = lstChildren
@@ -1007,7 +1007,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Set the grid rows for entities
         /// </summary>
-        public List<Plandataobj> GridDataRow(PlanGridColumnData Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<PlandataobjColumn> objCustomfieldData, List<string> usercolindex)
+        public List<Plandataobj> GridDataRow(GridDefaultModel Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<PlandataobjColumn> objCustomfieldData, List<string> usercolindex)
         {
             List<PlandataobjColumn> lstOrderData = new List<PlandataobjColumn>();
             #region Set Default Columns Values
@@ -1359,30 +1359,34 @@ namespace RevenuePlanner.Services
         #region Select Specific Columns dynamic
         // From this method we pass the array of column list and select it's values
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public PlanGridColumnData Projection(GridDefaultModel RowData, IEnumerable<string> props, string viewBy)
+        public GridDefaultModel Projection(GridDefaultModel RowData, IEnumerable<string> props, string viewBy)
         {
-            PlanGridColumnData objres = new PlanGridColumnData();
+            //PlanGridColumnData objres = new PlanGridColumnData();
             if (RowData == null)
             {
                 return null;
             }
-            PlandataobjColumn objPlanData = new PlandataobjColumn();
-            List<PlandataobjColumn> lstPlanData = new List<PlandataobjColumn>();
+            PlandataobjColumn objPlanData;
+            //List<PlandataobjColumn> lstPlanData = new List<PlandataobjColumn>();
             Type type = RowData.GetType();
             string IsEditable = string.Empty;
             string cellTextColor = string.Empty;
 
             // Set attribute values for add columns string as html and maintain hierarchy
-            objres = InsertAttributeValueforAddColumns(RowData, objres);
+            //objres = InsertAttributeValueforAddColumns(RowData, objres);
+
+            RowData.EntityType = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(RowData.EntityType));
 
             // Insert Hidden field values
-            List<PlandataobjColumn> lstHiddenColData = InsertHiddenDefaultColumnsValues(RowData, objres);
+            //List<PlandataobjColumn> lstHiddenColData = InsertHiddenDefaultColumnsValues(RowData);
+            RowData.lstdata = new List<PlandataobjColumn>();
+            InsertHiddenDefaultColumnsValues(RowData);
 
-            lstPlanData.AddRange(lstHiddenColData);
+            //lstPlanData.AddRange(lstHiddenColData);
 
-            objres.EntityType = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(RowData.EntityType));
+            //objres.EntityType = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(RowData.EntityType));
 
-            if (objres.IsRowPermission == true)
+            if (RowData.IsRowPermission == true)
             {
                 IsEditable = objHomeGridProp.lockedstatezero;
                 cellTextColor = objHomeGridProp.stylecolorblack;
@@ -1406,11 +1410,11 @@ namespace RevenuePlanner.Services
                     objPlanData.column = pair.Name;
                     objPlanData.value = GetvalueFromObject(RowData, pair.Name);
                     // Added by Viral to set StartDate & EndDate values set null in case of View By Parent rows like Created, Approved stages.
-                    if (objres.EntityType.ToString().ToUpper() != Enums.EntityType.Plan.ToString().ToUpper()
-                        && objres.EntityType.ToString().ToUpper() != Enums.EntityType.Campaign.ToString().ToUpper()
-                        && objres.EntityType.ToString().ToUpper() != Enums.EntityType.Program.ToString().ToUpper()
-                        && objres.EntityType.ToString().ToUpper() != Enums.EntityType.Tactic.ToString().ToUpper()
-                        && objres.EntityType.ToString().ToUpper() != Enums.EntityType.Lineitem.ToString().ToUpper() && ((pair.Name == "StartDate") || (pair.Name == "EndDate")))
+                    if (RowData.EntityType.ToString().ToUpper() != Enums.EntityType.Plan.ToString().ToUpper()
+                        && RowData.EntityType.ToString().ToUpper() != Enums.EntityType.Campaign.ToString().ToUpper()
+                        && RowData.EntityType.ToString().ToUpper() != Enums.EntityType.Program.ToString().ToUpper()
+                        && RowData.EntityType.ToString().ToUpper() != Enums.EntityType.Tactic.ToString().ToUpper()
+                        && RowData.EntityType.ToString().ToUpper() != Enums.EntityType.Lineitem.ToString().ToUpper() && ((pair.Name == "StartDate") || (pair.Name == "EndDate")))
                     {
                         objPlanData.value = "-";
                         objPlanData.actval = "-";
@@ -1418,11 +1422,11 @@ namespace RevenuePlanner.Services
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
                     Enums.HomeGrid_Default_Hidden_Columns columnName = (Enums.HomeGrid_Default_Hidden_Columns)Enum.Parse(typeof(Enums.HomeGrid_Default_Hidden_Columns), pair.Name);
-                    switch (objres.EntityType)
+                    switch (RowData.EntityType)
                     {
                         case Enums.EntityType.Lineitem:
                             // Check Entity Type is line item and is other line item or not
-                            if (string.IsNullOrEmpty(objres.LineItemType))
+                            if (string.IsNullOrEmpty(RowData.LineItemType))
                             {
                                 IsEditable = objHomeGridProp.lockedstateone;
                                 cellTextColor = objHomeGridProp.stylecolorgray;
@@ -1431,7 +1435,7 @@ namespace RevenuePlanner.Services
                             if ((columnName == Enums.HomeGrid_Default_Hidden_Columns.StartDate
                                     || columnName == Enums.HomeGrid_Default_Hidden_Columns.EndDate)
                                  || (viewBy.ToUpper() != PlanGanttTypes.Tactic.ToString().ToUpper())
-                                    && (objres.EntityType.ToString().ToUpper() == viewBy.ToUpper()))
+                                    && (RowData.EntityType.ToString().ToUpper() == viewBy.ToUpper()))
                             {
                                 objPlanData.value = "-";
                                 objPlanData.actval = "-";
@@ -1453,7 +1457,7 @@ namespace RevenuePlanner.Services
                                 if (columnName == Enums.HomeGrid_Default_Hidden_Columns.TacticType
                                     || columnName == Enums.HomeGrid_Default_Hidden_Columns.PlannedCost)
                                 {
-                                    objPlanData.locked = !string.IsNullOrEmpty(objres.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
+                                    objPlanData.locked = !string.IsNullOrEmpty(RowData.LineItemType) ? IsEditable : objHomeGridProp.lockedstateone;
                                     cellTextColor = int.Parse(IsEditable) == 0 ? objHomeGridProp.stylecolorblack : objHomeGridProp.stylecolorgray;
                                 }
                                 else if (columnName == Enums.HomeGrid_Default_Hidden_Columns.StartDate
@@ -1558,65 +1562,68 @@ namespace RevenuePlanner.Services
                 objPlanData.style = cellTextColor;
                 objPlanData.value = (objPlanData.value == null ? string.Empty : objPlanData.value);
                 objPlanData.actval = (objPlanData.actval == null ? string.Empty : objPlanData.actval);
-                lstPlanData.Add(objPlanData);
+                RowData.lstdata.Add(objPlanData);
             }
-            objres.lstdata = lstPlanData;
-            return objres;
+            //RowData.lstdata = lstPlanData;
+            return RowData;
         }
 
         /// <summary>
         /// Return the hidden columns data for particular Entities
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private List<PlandataobjColumn> InsertHiddenDefaultColumnsValues(object RowData, PlanGridColumnData objres)
+        private void InsertHiddenDefaultColumnsValues(GridDefaultModel RowData)
         {
+
+            #region "Declare Local Variables"
+            string Roistring, Linkedstring, IsEditable, cellTextColor, LinkedPlanName;
+            bool IsExtendedTactic;
+            int? LinkedTacticId;
+            DateTime TacticStartDate, TacticEndDate;
+            #endregion
+
             // Insert Hidden field values
-            List<PlandataobjColumn> lstPlanData = new List<PlandataobjColumn>();
+            //List<PlandataobjColumn> lstPlanData = new List<PlandataobjColumn>();
             lstHomeGrid_Hidden_And_Default_Columns().Select(col => col.Key).ToList().ForEach(coldata =>
             {
                 if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType), true) == 0)
                 {
-                    lstPlanData.Add(new PlandataobjColumn
+                    RowData.lstdata.Add(new PlandataobjColumn
                     {
-                        value = objres.EntityType.ToString(), // Set Entity Type like Plan/Campaign etc...
+                        value = RowData.EntityType.ToString(), // Set Entity Type like Plan/Campaign etc...
                         column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ActivityType)
                     });
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode), true) == 0)
                 {
-                    lstPlanData.Add(new PlandataobjColumn
+                    RowData.lstdata.Add(new PlandataobjColumn
                     {
-                        style = "background-color:#" + objres.ColorCode, // Set colour Column
+                        style = "background-color:#" + RowData.ColorCode, // Set colour Column
                         column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode)
                     });
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id), true) == 0)
                 {
-                    lstPlanData.Add(new PlandataobjColumn
+                    RowData.lstdata.Add(new PlandataobjColumn
                     {
-                        value = Convert.ToString(objres.EntityId), // Set column ids
+                        value = Convert.ToString(RowData.EntityId), // Set column ids
                         column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.id)
                     });
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName), true) == 0)
                 {
 
-                    lstPlanData.Add(new PlandataobjColumn
+                    RowData.lstdata.Add(new PlandataobjColumn
                     {
-                        value = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType()
-                                                                .GetProperty(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName))
-                                                                .GetValue(RowData, new object[0]))), // set machine name for tactics
+                        value = Convert.ToString(HttpUtility.HtmlEncode(RowData.MachineName)), // set machine name for tactics
                         column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName)
                     });
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName), true) == 0)
                 {
-                    string Roistring = string.Empty;
-                    string Linkedstring = string.Empty;
-                    string IsEditable = string.Empty;
-                    string cellTextColor = string.Empty;
+                    Roistring=Linkedstring=IsEditable=cellTextColor= string.Empty;
 
-                    if (objres.IsRowPermission == true)
+                    if (RowData.IsRowPermission == true)
                     {
                         IsEditable = objHomeGridProp.lockedstatezero;
                         cellTextColor = objHomeGridProp.stylecolorblack;
@@ -1627,55 +1634,41 @@ namespace RevenuePlanner.Services
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
                     // Check Entity Type is line item and is other line item or not
-                    if (objres.EntityType == Enums.EntityType.Lineitem && string.IsNullOrEmpty(objres.LineItemType))
+                    if (RowData.EntityType == Enums.EntityType.Lineitem && string.IsNullOrEmpty(RowData.LineItemType))
                     {
                         IsEditable = objHomeGridProp.lockedstateone;
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
 
-                    if (objres.EntityType == Enums.EntityType.Tactic)
+                    if (RowData.EntityType == Enums.EntityType.Tactic)
                     {
-                        // Get Anchor Tactic Id
-                        string AnchorTacticId = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType().GetProperty("AnchorTacticID").GetValue(RowData, new object[0])));
-
-                        // Get Tactic Id
-                        string EntityId = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType().GetProperty("EntityId").GetValue(RowData, new object[0])));
-
-                        if (!string.IsNullOrEmpty(AnchorTacticId) && !string.IsNullOrEmpty(EntityId))
+                        if (!string.IsNullOrEmpty(RowData.PackageTacticIds))
                         {
-                            if (string.Compare(AnchorTacticId, EntityId, true) == 0) // If Anchor tacticid and Entity id both same then set ROI package icon
-                            {
-                                // Get list of package tactic ids
-                                string PackageTacticIds = Convert.ToString(HttpUtility.HtmlEncode(RowData.GetType().GetProperty("PackageTacticIds").GetValue(RowData, new object[0])));
-
-                                Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id=pkgIcon onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
-                            }
+                            Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id=pkgIcon onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + RowData.PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
                         }
-                        DateTime TacticStartDate = Convert.ToDateTime(Convert.ToString(RowData.GetType().GetProperty("StartDate").GetValue(RowData, new object[0])));
-                        DateTime TacticEndDate = Convert.ToDateTime(Convert.ToString(RowData.GetType().GetProperty("EndDate").GetValue(RowData, new object[0])));
+                        TacticStartDate = Convert.ToDateTime(Convert.ToString(RowData.StartDate));
+                        TacticEndDate = Convert.ToDateTime(Convert.ToString(RowData.EndDate));
 
-                        bool IsExtendedTactic = (TacticEndDate.Year - TacticStartDate.Year) > 0 ? true : false;
+                        IsExtendedTactic = (TacticEndDate.Year - TacticStartDate.Year) > 0 ? true : false;
 
-                        int? LinkedTacticId = int.Parse(Convert.ToString(RowData.GetType().GetProperty("LinkedTacticId")
-                                        .GetValue(RowData, new object[0])));
+                        LinkedTacticId = int.Parse(Convert.ToString(RowData.LinkedTacticId));
                         if (LinkedTacticId == 0)
                         {
                             LinkedTacticId = null;
                         }
-                        string LinkedPlanName = Convert.ToString(RowData.GetType().GetProperty("LinkedPlanName")
-                                                                .GetValue(RowData, new object[0]));
+                        LinkedPlanName = Convert.ToString(RowData.LinkedPlanName);
                         Linkedstring = ((IsExtendedTactic == true && LinkedTacticId == null) ?
                                                         "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" :
                                                         ((IsExtendedTactic == true && LinkedTacticId != null) || (LinkedTacticId != null)) ? "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='"
                                                       + (string.IsNullOrEmpty(LinkedPlanName) ? null
                                                         : HttpUtility.HtmlEncode(LinkedPlanName).Replace("'", "&#39;"))
                                                        + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "");
-                        objres.IsExtendTactic = IsExtendedTactic;
-                        objres.LinkedTacticId = LinkedTacticId;
+                        RowData.IsExtendTactic = IsExtendedTactic;
+                        RowData.LinkedTacticId = LinkedTacticId;
                     }
-                    lstPlanData.Add(new PlandataobjColumn
+                    RowData.lstdata.Add(new PlandataobjColumn
                     {
-                        value = Roistring + Linkedstring + HttpUtility.HtmlEncode(objres.EntityTitle), //Set Entity title
+                        value = Roistring + Linkedstring + HttpUtility.HtmlEncode(RowData.EntityTitle), //Set Entity title
                         locked = IsEditable,
                         style = cellTextColor,
                         column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName)
@@ -1683,15 +1676,15 @@ namespace RevenuePlanner.Services
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add), true) == 0)
                 {
-                    lstPlanData.Add(new PlandataobjColumn
+                    RowData.lstdata.Add(new PlandataobjColumn
                     {
-                        value = AddColumnString(objres), //Set Add icon html string for plan grid
+                        value = AddColumnString(RowData), //Set Add icon html string for plan grid
                         column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Add)
                     });
                 }
             });
 
-            return lstPlanData;
+            //return lstPlanData;
         }
 
         /// <summary>
@@ -1856,7 +1849,7 @@ namespace RevenuePlanner.Services
         /// <summary>
         ///  Return plan grid add column's icon html value
         /// </summary>
-        private string AddColumnString(PlanGridColumnData Row)
+        private string AddColumnString(GridDefaultModel Row)
         {
             switch (Row.EntityType)
             {
@@ -1877,7 +1870,7 @@ namespace RevenuePlanner.Services
 
         // Set the Plan add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private StringBuilder PlanAddString(PlanGridColumnData Row)
+        private StringBuilder PlanAddString(GridDefaultModel Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             //string grid_add = string.Empty;
@@ -1902,7 +1895,7 @@ namespace RevenuePlanner.Services
 
         // Set the Campaign add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private StringBuilder CampaignAddString(PlanGridColumnData Row)
+        private StringBuilder CampaignAddString(GridDefaultModel Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             StringBuilder grid_add = new StringBuilder();
@@ -1921,7 +1914,7 @@ namespace RevenuePlanner.Services
 
         // Set the program add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private StringBuilder ProgroamAddString(PlanGridColumnData Row)
+        private StringBuilder ProgroamAddString(GridDefaultModel Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             StringBuilder grid_add = new StringBuilder();
@@ -1940,7 +1933,7 @@ namespace RevenuePlanner.Services
 
         // Set the tactic add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private StringBuilder TacticAddString(PlanGridColumnData Row)
+        private StringBuilder TacticAddString(GridDefaultModel Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             StringBuilder grid_add = new StringBuilder();
@@ -1961,7 +1954,7 @@ namespace RevenuePlanner.Services
 
         // Set the line item add icon html string
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private StringBuilder LineItemAddString(PlanGridColumnData Row)
+        private StringBuilder LineItemAddString(GridDefaultModel Row)
         {
             /// TODO :: We need to Move HTML code in HTML HELPER As A part of code refactoring it's covered in #2676 PL ticket.
             StringBuilder grid_add = new StringBuilder();

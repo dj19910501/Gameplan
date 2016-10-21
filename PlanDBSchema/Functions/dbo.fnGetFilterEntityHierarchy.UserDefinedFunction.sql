@@ -156,13 +156,13 @@ BEGIN
 			INNER JOIN [TacticType] as typ on T.TacticTypeId = typ.TacticTypeId and typ.IsDeleted=''0'' and typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,'',''))
 
 			LEFT JOIN (SELECT AnchorTacticID,PackageIds=
-					STUFF((SELECT '', '' + Cast(PlanTacticId as varchar)
+					STUFF((SELECT ', ' + Cast(PlanTacticId as varchar)
 					       FROM ROI_PackageDetail b 
 					       WHERE b.AnchorTacticID = a.AnchorTacticID 
-					      FOR XML PATH('''')), 1, 2, '''')
-					FROM @Entities as T1
-					JOIN ROI_PackageDetail as a on T1.EntityId = a.AnchorTacticID and T1.EntityType=''Tactic''
-					Where T1.EntityType=''Tactic''
+					      FOR XML PATH('')), 1, 2, '')
+					FROM @Entities as P1
+					JOIN Plan_Campaign_Program_Tactic T2 on P1.EntityId = T2.PlanProgramId and P1.EntityType='Program'
+					JOIN ROI_PackageDetail as a on T2.PlanTacticId = a.AnchorTacticID
 					GROUP BY a.AnchorTacticID
 					
 				) as R on T.PlanTacticId = R.AnchorTacticId
