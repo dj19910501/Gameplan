@@ -1,8 +1,8 @@
-/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/18/2016 8:08:46 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/21/2016 5:52:52 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetFilterEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 DROP FUNCTION [dbo].[fnGetFilterEntityHierarchy]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/18/2016 8:08:46 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/21/2016 5:52:52 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -142,7 +142,7 @@ BEGIN
 	-- Insert Tactic Data
 	BEGIN
 		INSERT INTO @Entities(UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,[Status],StartDate,EndDate,CreatedBy,AltId
-										,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId)
+										,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
 
 		SELECT ''P_C_P_T_'' + CAST(T.PlanTacticId AS NVARCHAR(10)) UniqueId,T.PlanTacticId EntityId, T.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId,''Tactic'' EntityType, T.Status, T.StartDate StartDate, T.EndDate EndDate,T.CreatedBy 
 			,CAST(T.PlanProgramId AS NVARCHAR(500))+''_''+CAST(T.PlanTacticId AS NVARCHAR(50)) As AltId
@@ -151,17 +151,18 @@ BEGIN
 			,P.PlanId
 			,P.ModelId
 			,T.IntegrationInstanceEloquaId as Eloquaid,T.IntegrationInstanceMarketoID as Marketoid,T.IntegrationWorkFrontProjectID as WorkFrontid,T.IntegrationInstanceTacticId as Salesforceid
+			,R.PackageIds as ROIPackageIds
 			FROM Plan_Campaign_Program_Tactic T
 			INNER JOIN @Entities P ON P.EntityId = T.PlanProgramId and P.EntityType=''Program''
 			INNER JOIN [TacticType] as typ on T.TacticTypeId = typ.TacticTypeId and typ.IsDeleted=''0'' and typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,'',''))
 
 			LEFT JOIN (SELECT AnchorTacticID,PackageIds=
-					STUFF((SELECT ', ' + Cast(PlanTacticId as varchar)
+					STUFF((SELECT '', '' + Cast(PlanTacticId as varchar)
 					       FROM ROI_PackageDetail b 
 					       WHERE b.AnchorTacticID = a.AnchorTacticID 
-					      FOR XML PATH('')), 1, 2, '')
+					      FOR XML PATH('''')), 1, 2, '''')
 					FROM @Entities as P1
-					JOIN Plan_Campaign_Program_Tactic T2 on P1.EntityId = T2.PlanProgramId and P1.EntityType='Program'
+					JOIN Plan_Campaign_Program_Tactic T2 on P1.EntityId = T2.PlanProgramId and P1.EntityType=''Program''
 					JOIN ROI_PackageDetail as a on T2.PlanTacticId = a.AnchorTacticID
 					GROUP BY a.AnchorTacticID
 					
@@ -170,6 +171,8 @@ BEGIN
 			WHERE T.IsDeleted = 0 AND (@isGrid=1 OR (T.StartDate>=@StartDate AND T.StartDate<=@EndDate) OR (T.EndDate>=@StartDate AND T.EndDate<=@EndDate))
 					AND T.[Status] IN (select val from comma_split(@statusIds,'','')) and  T.[CreatedBy] IN (select case when val = '''' then null else Convert(int,val) end from comma_split(@ownerIds,'',''))
 	END
+	
+	
 
 	-- Insert LineItem Data
 	BEGIN
