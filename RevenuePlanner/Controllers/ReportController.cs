@@ -234,7 +234,7 @@ namespace RevenuePlanner.Controllers
             ////Start Added by Mitesh Vaishnav for PL ticket #846
             Sessions.ReportPlanIds = new List<int>();
             string published = Convert.ToString(Enums.PlanStatus.Published);
-            List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == published && plan.Model.ClientId == Sessions.User.CID).ToList();
+            List<Plan> tblPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Model.ClientId == Sessions.User.CID).ToList();
 
             // Get Plan Id if Session Plan id not exist : Added By Bhavesh : Report Code ereview
             //string published = Convert.ToString(Enums.PlanStatus.Published);
@@ -458,7 +458,7 @@ namespace RevenuePlanner.Controllers
             //Add  By Nishant Sheth
             // Desc :: #1821 - Get list of plan base on start Date and end date
 
-            List<Plan> DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
+            List<Plan> DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false 
                 && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.CID && plan.IsActive == true).ToList();
             List<int> uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
             // Modified By Nishant Sheth 
@@ -2662,7 +2662,7 @@ namespace RevenuePlanner.Controllers
             {
                 List<DateTime> listDateTime = new List<DateTime>();
                 listDateTime.Add(new DateTime(2015, 1, 1));
-                var DataPlanList = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
+                var DataPlanList = db.Plans.Where(plan => plan.IsDeleted == false 
                     && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.CID && plan.IsActive == true).ToList();
                 var uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
                 var CampPlanIds = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId)).Select(camp => new { PlanId = camp.PlanId, StartDate = camp.StartDate, EndDate = camp.EndDate }).ToList()
