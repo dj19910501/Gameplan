@@ -1819,72 +1819,39 @@ CREATE NONCLUSTERED INDEX [IX_Plan_Campaign_Program_Tactic_Budget_1] ON [dbo].[P
 END
 GO
 
---Function fnGetMqlByEntityTypeAndEntityId
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetMqlByEntityTypeAndEntityId]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
-BEGIN
-	execute dbo.sp_executesql @statement = N'CREATE FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId](
-	 @EntityType NVARCHAR(100)=''''
+-- DROP AND CREATE FUNCTION
+IF EXISTS (SELECT * FROM sys.objects WHERE  object_id = OBJECT_ID(N'fnGetMqlByEntityTypeAndEntityId') AND type IN ( N'FN', N'IF', N'TF', N'FS', N'FT' ))
+  DROP FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId]
+GO
+
+CREATE FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId](
+	 @EntityType NVARCHAR(100)=''
 	 ,@ClientId INT = 0
 	 ,@StageMinLevel INT = 0
 	 ,@StageMaxLevel INT = 0
 	 ,@ModelId INT = 0
-	 ,@ProjectedStageValue decimal=0
+	 ,@ProjectedStageValue FLOAT=0
 	)
 RETURNS @RevenueTbl TABLE(
-	Value bigint
+	Value BIGINT
 )
 AS
 BEGIN
 	DECLARE @AggregateValue float = 1
-	DECLARE @value INT = 0 
-	IF (@EntityType=''Tactic'' and @StageMinLevel <= @StageMaxLevel)
+	DECLARE @value FLOAT = 0 
+	IF (@EntityType='Tactic' and @StageMinLevel <= @StageMaxLevel)
 	BEGIN
 		SELECT @AggregateValue *= (Ms.Value/100) FROM Model_Stage MS WITH (NOLOCK)
 			CROSS APPLY (SELECT S.StageId FROM Stage S WITH (NOLOCK) WHERE S.[Level] >= @StageMinLevel AND S.[Level] < @StageMaxLevel 
 							AND S.ClientId=@ClientId
 							AND S.StageId = MS.StageId) S
 				WHERE Ms.ModelId=@ModelId
-						AND StageType=''CR''
-		SET @value = (@ProjectedStageValue * @AggregateValue)
+						AND StageType='CR'
+		SET @value = ROUND(@ProjectedStageValue * @AggregateValue,0)
 	END
 
 	INSERT INTO @RevenueTbl VALUES(@value)
 	RETURN
-END
-'
-END
-ELSE 
-BEGIN
-	execute dbo.sp_executesql @statement = N'ALTER FUNCTION [dbo].[fnGetMqlByEntityTypeAndEntityId](
-	 @EntityType NVARCHAR(100)=''''
-	 ,@ClientId INT = 0
-	 ,@StageMinLevel INT = 0
-	 ,@StageMaxLevel INT = 0
-	 ,@ModelId INT = 0
-	 ,@ProjectedStageValue decimal=0
-	)
-RETURNS @RevenueTbl TABLE(
-	Value bigint
-)
-AS
-BEGIN
-	DECLARE @AggregateValue float = 1
-	DECLARE @value INT = 0 
-	IF (@EntityType=''Tactic'' and @StageMinLevel <= @StageMaxLevel)
-	BEGIN
-		SELECT @AggregateValue *= (Ms.Value/100) FROM Model_Stage MS WITH (NOLOCK)
-			CROSS APPLY (SELECT S.StageId FROM Stage S WITH (NOLOCK) WHERE S.[Level] >= @StageMinLevel AND S.[Level] < @StageMaxLevel 
-							AND S.ClientId=@ClientId
-							AND S.StageId = MS.StageId) S
-				WHERE Ms.ModelId=@ModelId
-						AND StageType=''CR''
-		SET @value = (@ProjectedStageValue * @AggregateValue)
-	END
-
-	INSERT INTO @RevenueTbl VALUES(@value)
-	RETURN
-END
-'
 END
 GO
 
