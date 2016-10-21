@@ -6762,6 +6762,30 @@ namespace RevenuePlanner.Controllers
             PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
             try
             {
+                if (string.IsNullOrEmpty(viewBy))
+                    viewBy = PlanGanttTypes.Tactic.ToString();
+
+                ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID,Sessions.User.ID);
+                ViewBag.TacticTypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
+                ViewBag.LineItemTypelist = objGrid.GetLineItemTypeListForHeader(planIds, Sessions.User.CID);
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            return PartialView("_HomeGrid", objPlanMainDHTMLXGrid);
+        }
+
+        [CompressAttribute]
+        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy)
+        {
+            PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
+            try
+            {
                 #region Set Permission
                 EntityPermission objPermission = new EntityPermission();
                 List<int> lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);
@@ -6774,9 +6798,6 @@ namespace RevenuePlanner.Controllers
                 if (string.IsNullOrEmpty(viewBy))
                     viewBy = PlanGanttTypes.Tactic.ToString();
 
-                ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID,Sessions.User.ID);
-                ViewBag.TacticTypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
-                ViewBag.LineItemTypelist = objGrid.GetLineItemTypeListForHeader(planIds, Sessions.User.CID);
                 objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds, viewBy);
             }
             catch (Exception objException)
@@ -6787,7 +6808,11 @@ namespace RevenuePlanner.Controllers
                     return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
                 }
             }
-            return PartialView("_HomeGrid", objPlanMainDHTMLXGrid);
+            var jsonResult = Json(new { data = objPlanMainDHTMLXGrid }, JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
+            //return Json(new { result = objPlanMainDHTMLXGrid }, JsonRequestBehavior.AllowGet);
+            //return PartialView("_HomeGrid", objPlanMainDHTMLXGrid);
         }
         #endregion
 

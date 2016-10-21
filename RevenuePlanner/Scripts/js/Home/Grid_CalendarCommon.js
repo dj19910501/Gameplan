@@ -268,13 +268,13 @@ function LoadPlanGrid() {
             });
         },
         //Added by Bhumika to display loading Spinner when calendar load
-        beforeSend: function () {
-            // setting a timeout
-            $('#loader').css('display', 'block');
-        },
-        complete: function () {
-            $('#loader').css('display', 'none');
-        }
+        //beforeSend: function () {
+        //    // setting a timeout
+        //    $('#loader').css('display', 'block');
+        //},
+        //complete: function () {
+        //    $('#loader').css('display', 'none');
+        //}
     });
 }
 //End

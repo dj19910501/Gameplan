@@ -2,15 +2,8 @@
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
 @{
-    var countrows = 0;
-    if (Model != null && Model.rows != null)
-    {
-        countrows = Model.rows.Count;
-    }
     bool IsFirstTimeLogin = Sessions.FirstTimeLogin;
     Sessions.FirstTimeLogin = false;
-    //List<TacticTypeModel> lstTacticType = new List<TacticTypeModel>(ViewBag.TacticTypelist);
-
 }
 <div id="gridbox" style="background-color:white;width:100%;"></div>
 <div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
@@ -68,8 +61,7 @@
             $("#totalEntity").text(ExportSelectedIds.TaskID.length);
             $(".honeycombbox").show();
         }
-        HomeGrid.enableEditEvents(true, false, true);
-        SetTooltip();
+        
         $('#cancel-button_Movetactic').on("click", function () {
             $('#divMovetacticPopup').modal("hide");
 
@@ -81,13 +73,28 @@
     });
 
 
-    $(document).ajaxComplete(function () {
-        HomeGrid.setSizes();
-    });
+    //$(document).ajaxComplete(function () {
+    //    HomeGrid.setSizes();
+    //});
 
     var GridDataHomeGrid;
     function BindHomeGrid() {
-        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model)';
+        
+        $.ajax({
+            url: urlContent + 'Plan/GetHomeGridDataJSON/',
+            data: {
+                planIds: filters.PlanIDs.toString(),
+                ownerIds: filters.OwnerIds.toString(),
+                TacticTypeid: filters.TacticTypeids.toString(),
+                StatusIds: filters.StatusIds.toString(),
+                customFieldIds: [],
+                viewBy: $('#ddlTabViewBy').val()
+            },
+            cache:false,
+            success: function (result) {
+                try {
+                    var JsonModel = result.data;
+                    //debugger;
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
@@ -114,16 +121,9 @@
         HomeGrid.init();
         HomeGrid.attachEvent("onDistributedEnd", function () {
             LoadAfterParsing();
-            //if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
-            //    HomeGrid.showRow(HomeGrid.getRowId(state0));
-            //    // HomeGrid.openItem(HomeGrid.getRowId(state0));
-            //}
-
             if (scrollstate != null && scrollstate != undefined) {
                 HomeGrid.objBox.scrollTop = scrollstate.y;
             }
-
-
         });
         HomeGrid.attachEvent("onRowSelect", function (id, ind) {
             isEditTacticHomeGrid = id;
@@ -132,11 +132,11 @@
         });
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);
-        var mainGridData = JsonModel;
-        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
-        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-        HomeGrid.parse(GridDataHomeGrid, "json");
-        GridHideColumn();  ///Calling Hide column function
+                    var mainGridData = JSON.stringify(JsonModel);
+                    //mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
+                    //GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+                    HomeGrid.parse(mainGridData, "json");
+                    GridHideColumn();
         
         HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
         colSplitId = HomeGrid.getColIndexById(AddId);
@@ -155,10 +155,12 @@
         }
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
 
-
+                    var count = HomeGrid.getRowsNum();
+                    //alert(count)
         LoadAfterParsing();
 
-        if (parseInt('@countrows') > 0) {
+                    
+                    if (parseInt(count) > 0) {
             $("#gridbox").show();
             $("#goalwrapper").show();
             $("#NodatawithfilterGrid").hide();
@@ -181,6 +183,25 @@
         if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
             GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
         }
+                    HomeGrid.enableEditEvents(true, false, true);
+                    SetTooltip();
+                } catch (e) {
+                    $('#loader').css('display', 'none');
+                }
+                
+            },
+            error: function (ex) {
+                alert(ex);
+            },
+            beforeSend: function () {
+                $('#loader').css('display', 'block');
+            },
+            complete: function () {
+                $('#loader').css('display', 'none');
+            }
+        });
+
+
     }
     //added by devanshi to add blank row to plan grid when there is no plan for client #2587 30-9-2016
     function AddBlankRow() {
