@@ -1,4 +1,4 @@
-﻿@model RevenuePlanner.Models.PlanMainDHTMLXGrid
+﻿@model RevenuePlanner.Models.PlanMainDHTMLXGridHomeGrid
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
 @{
@@ -105,7 +105,7 @@
             }
             else
                 return true;
-        });
+        });       
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
         HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
@@ -141,9 +141,7 @@
         HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
         colSplitId = HomeGrid.getColIndexById(AddId);
         HomeGrid.splitAt(colSplitId + 1);
-        MoveColumn(); ///Calling Move column function
-        @*var firsttime = '@IsFirstTimeLogin';
-        if (firsttime.toString().toLowerCase() == 'false') {*@
+        MoveColumn(); ///Calling Move column function   
         var cookie = document.cookie;
         if (cookie.indexOf("gridOpenplangridState") > -1) {
       

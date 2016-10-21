@@ -21,6 +21,7 @@ var value;
 var TacticName;
 var ExportToCsv = false;
 var _customFieldValues = [];
+var IsDependentTextBox = false;
 var NodatawithfilterGrid = '<div id="NodatawithfilterGrid" style="display:none;">' +
     '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' + '<br/></div>';
 function SetTooltip() {
@@ -302,15 +303,13 @@ function formatDate(d) {
 }
 
 function SetColumUpdatedValue(CellInd, diff) {
-    progActVal = HomeGrid.cells(progid, CellInd).getAttribute("actval");
-    CampActVal = HomeGrid.cells(campid, CellInd).getAttribute("actval");
-    PlanActVal = HomeGrid.cells(planid, CellInd).getAttribute("actval");
+   
+    progActVal = HomeGrid.cells(progid, CellInd).getValue();
+    CampActVal = HomeGrid.cells(campid, CellInd).getValue();
+    PlanActVal = HomeGrid.cells(planid, CellInd).getValue();
     newProgVal = parseInt(ReplaceCC(progActVal.toString())) + parseInt(diff);
     newCampVal = parseInt(ReplaceCC(CampActVal.toString())) + parseInt(diff);
-    newPlanVal = parseInt(ReplaceCC(PlanActVal.toString())) + parseInt(diff);
-    HomeGrid.cells(progid, CellInd).setAttribute("actval", newProgVal);
-    HomeGrid.cells(campid, CellInd).setAttribute("actval", newCampVal);
-    HomeGrid.cells(planid, CellInd).setAttribute("actval", newPlanVal);
+    newPlanVal = parseInt(ReplaceCC(PlanActVal.toString())) + parseInt(diff); 
 }
 
 
@@ -346,7 +345,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
     var type = HomeGrid.getColType(cellInd);
     var _planid = HomeGrid.cells(planid, GridHiddenId).getValue();
     if (stage == 0) {
-        var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+        var locked = HomeGrid.cells(rowId, cellInd).getAttribute("lo"); //to checked cell is locked or not
         if ((locked != null && locked != "") && locked == "1")
             return false;
         if (rowId == "newRow_0")
@@ -383,11 +382,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             var clistitem = [];
 
             var entityid = HomeGrid.cells(rowId, GridHiddenId).getValue();
-            if (type == "clist") {
+           // if (type == "clist") {
 
-                GetCustomfieldOptionlist(id, entityid, cellInd);
-
-            }
+            GetCustomfieldOptionlist(id, entityid, cellInd, type);
+            if (IsDependentTextBox)
+                return false;
+          // }
         }
         opencombobox();
     }
@@ -396,9 +396,31 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             $(".dhx_clist").css("display", "none");
             return false;
         }
-        if (updatetype.toLowerCase() == secLineItem.toLowerCase() || updatetype.toLowerCase() == 'tactic') {
+        if (IsDependentTextBox)
+            return false;
+        if (updatetype.toLowerCase() == secLineItem.toLowerCase() || updatetype.toLowerCase() == secTactic.toLowerCase()) {
             var oldval = HomeGrid.cells(rowId, cellInd).getValue();
             var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+            if (isNaN(parseInt(oldval))) {
+                var optionlist;
+                if (updatetype.toLowerCase() == secLineItem) {
+                    optionlist = lineItemTypefieldOptionList;
+                }
+                else {
+                    optionlist = tacticTypefieldOptionList;
+                }
+                var oldTacticTypeid = optionlist.filter(function (item) {
+                    if (item.PlanId == _planid && item.value.trim().toLowerCase().toString() == oldval.trim().toLowerCase().toString()) {
+                        return item.id;
+                    }
+                });
+                if (oldTacticTypeid.length > 0) {
+                    actval = oldTacticTypeid[0].id;
+                }
+            }
+            else {
+                actval = oldval;
+            }
             if (cellInd != 1) {
                 if (oldval == "")
                     $('.dhx_combo_select option[value="' + oldval + '"]').remove();
@@ -431,6 +453,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
             var psv = HomeGrid.cells(rowId, TargetStageGoalColIndex).getValue().split(" ");
             //this.editor.obj.value = (psv[0].replace(/,/g, ""));
             this.editor.obj.value = (ReplaceCC(psv[0]));
+        }
+
+        if (UpdateColumn == PlannedCostId) {
+            var actualcost = HomeGrid.cells(rowId, PlannedCostColIndex).getValue().replace(CurrencySybmol,'');
+            //this.editor.obj.value = (psv[0].replace(/,/g, ""));
+            this.editor.obj.value = (ReplaceCC(actualcost.toString()));
         }
     }
     if (stage == 2) {
@@ -805,15 +833,17 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 ComapreDate(updatetype, rowId, EndDateColIndex, nValue, UpdateColumn);
                             }
                             if (UpdateColumn == PlannedCostId) {
-                                diff = parseInt(nValue) - parseInt(oValue);
+                                var newcostValue = parseInt(ReplaceCC(nValue).replace(CurrencySybmol, ''));
+                                var oldcostValue = parseInt(ReplaceCC(oValue).replace(CurrencySybmol, ''));
+                                diff = newcostValue - oldcostValue;
                                 SetColumUpdatedValue(PlannedCostColIndex, diff);
                                 HomeGrid.cells(progid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newProgVal)));
                                 HomeGrid.cells(campid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newCampVal)));
                                 HomeGrid.cells(planid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newPlanVal)));
-                                HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(nValue)));
+                                HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newcostValue)));
                                 for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                     if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") != "False") {
-                                        HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + numberWithCommas(nValue - states.lineItemCost));
+                                        HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + numberWithCommas(newcostValue - states.lineItemCost));
                                     }
                                 }
 
@@ -961,8 +991,8 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
             tactictid: parseInt(TacticID), TacticTypeId: parseInt(TacticTypeID), projectedStageValue: StageValue, RedirectType: isAssortment, isTacticTypeChange: true, StageID: stageid
         },
         success: function (data) {
-            if (MQLColIndex != undefined && MQLColIndex != null) {
-                var tactActMqlVal = HomeGrid.cells(rowid, MQLColIndex).getAttribute("actval");
+            if (MQLColIndex != undefined && MQLColIndex != null) {                
+                var tactActMqlVal = HomeGrid.cells(rowid, MQLColIndex).getValue();
                 var mqlConversion = 0;
                 if (data.revenue != null)
                     revenue = data.revenue;
@@ -978,21 +1008,21 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                     }
                     var mqlValue = mqlConversion.toString();
                     HomeGrid.cells(rowid, MQLColIndex).setValue(numberWithCommas(mqlValue));
-                    diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
-                    HomeGrid.cells(rowid, MQLColIndex).setAttribute("actval", mqlConversion);
+                    diff = parseInt(mqlConversion) - parseInt(ReplaceCC(tactActMqlVal.toString()));
+                    
                     SetColumUpdatedValue(MQLColIndex, diff);
                 }
                 HomeGrid.cells(progid, MQLColIndex).setValue(numberWithCommas(newProgVal), false);
                 HomeGrid.cells(campid, MQLColIndex).setValue(numberWithCommas(newCampVal), false);
                 HomeGrid.cells(planid, MQLColIndex).setValue(numberWithCommas(newPlanVal), false);
-                HomeGrid.cells(rowid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(revenue));
-                var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getAttribute("actval");
-                diff = parseInt(revenue) - parseInt(tactActRevenuVal.toString().replace(/\,/g, '').replace(CurrencySybmol, ''));
+                
+                var tactActRevenuVal = HomeGrid.cells(rowid, RevenueColIndex).getValue();
+                HomeGrid.cells(rowid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(parseInt(revenue).toString()));
+                diff = parseInt(revenue) - parseInt(ReplaceCC(tactActRevenuVal.toString()).replace(CurrencySybmol, ''));
                 SetColumUpdatedValue(RevenueColIndex, diff);
                 HomeGrid.cells(progid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newProgVal));
                 HomeGrid.cells(campid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newCampVal));
-                HomeGrid.cells(planid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newPlanVal));
-                HomeGrid.cells(rowid, RevenueColIndex).setAttribute("actval", revenue);
+                HomeGrid.cells(planid, RevenueColIndex).setValue(CurrencySybmol + numberWithCommas(newPlanVal));               
             }
             $.ajax({
                 type: 'POST',
@@ -1002,7 +1032,6 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
 
                 success: function (states) {
                     HomeGrid.saveOpenStates("plangridState");
-
                     if (UpdateColumn == TargetStageGoalId) {
                         var psv = HomeGrid.getUserData(rowid, "stage");
                         HomeGrid.cells(rowid, TargetStageGoalColIndex).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
@@ -1027,7 +1056,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                         }
                         PlannedCostColIndex = HomeGrid.getColIndexById(PlannedCostId);
                         var oldTacticCost = HomeGrid.cells(rowid, PlannedCostColIndex).getValue();
-                        diff = parseInt(tacCost) - parseInt(ReplaceCC(oldTacticCost));
+                        diff = parseInt(tacCost) - parseInt(ReplaceCC(oldTacticCost.toString()));
                         SetColumUpdatedValue(PlannedCostColIndex, diff);
                         HomeGrid.cells(progid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newProgVal)));
                         HomeGrid.cells(campid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newCampVal)));
@@ -1274,7 +1303,8 @@ function ExportToExcel(isHoneyComb) {
 
 }
 //function to get dependent custom field options for tactic
-function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
+function GetCustomfieldOptionlist(customFieldId, entityid, cellInd, type) {
+   
     var customoption = customfieldOptionList;
     var optionlist;
     var clistitem = [];
@@ -1285,7 +1315,7 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
             return false;
     }
     d = customoption.filter(filterbyparent);
-
+    IsDependentTextBox = false;
     if (d != null && d.length > 0) {
         var parentoptid = [];
         $.each(d, function (i, item) {
@@ -1300,9 +1330,14 @@ function GetCustomfieldOptionlist(customFieldId, entityid, cellInd) {
             data: {
                 customfieldId: customFieldId,
                 entityid: entityid,
-                parentoptionId: (parentoptid)
+                parentoptionId: (parentoptid),
+                Customfieldtype: type
             },
             success: function (data) {
+                if (type == "ed" && data.IstextBoxDependent.toString().toLowerCase() == "true") {
+                    IsDependentTextBox = true;
+                    return false;
+                }
                 if (data != null && data.optionlist != null && data.optionlist.length > 0)
                     optionlist = data.optionlist;
                 if (optionlist != null && optionlist.length > 0 && optionlist != undefined) {

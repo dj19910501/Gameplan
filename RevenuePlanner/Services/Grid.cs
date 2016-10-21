@@ -26,7 +26,7 @@ namespace RevenuePlanner.Services
         private MRPEntities objDbMrpEntities;
         private CacheObject objCache;
         private ColumnView objColumnView;
-        List<Plandataobj> plandataobjlistCreateItem = new List<Plandataobj>();
+        List<PlanGridDataobj> plandataobjlistCreateItem = new List<PlanGridDataobj>();
         List<CustomfieldPivotData> EntityCustomDataValues = new List<CustomfieldPivotData>(); // Set Custom fields value for entities
         List<PlandataobjColumn> EmptyCustomValues; // Variable for assigned blank values for custom field
         public RevenuePlanner.Services.ICurrency objCurrency = new RevenuePlanner.Services.Currency();
@@ -176,11 +176,11 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Get plan grid data with default and custom fields columns 
         /// </summary>
-        public PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy)
+        public PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy)
         {
             _ClientId = ClientId;
             _UserId = UserId;
-            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
             PlanExchangeRate = ExchangeRate; // Set client currency plan exchange rate 
             PlanCurrencySymbol = CurrencySymbol; // Set user currency symbol
 
@@ -295,7 +295,7 @@ namespace RevenuePlanner.Services
 
             }
             // Generate Hierarchy of Plan grid
-            List<PlanDHTMLXGridDataModel> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
+            List<PlanDHTMLXGridDataModelHomeGrid> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
                    .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData, lstusercolindex, EntityEmptyCustomFieldsData))
                    .ToList();
 
@@ -940,18 +940,18 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Generate items for hierarchy 
         /// </summary>
-        PlanDHTMLXGridDataModel CreateItemGrid(List<GridDefaultModel> DataList, GridDefaultModel Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData, List<string> usercolindex, EmptyCustomFieldsValuesEntity EmptyCustomFieldEntityData)
+        PlanDHTMLXGridDataModelHomeGrid CreateItemGrid(List<GridDefaultModel> DataList, GridDefaultModel Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<string> customColumnslist, List<GridDefaultModel> GridDefaultData, List<string> usercolindex, EmptyCustomFieldsValuesEntity EmptyCustomFieldEntityData)
         {
             // Get entity Childs records
             IEnumerable<GridDefaultModel> lstChildren = GetChildrenGrid(DataList, Row.UniqueId);
 
             // Call recursive if any other child entity
-            List<PlanDHTMLXGridDataModel> children = lstChildren
+            List<PlanDHTMLXGridDataModelHomeGrid> children = lstChildren
             .Select(r => CreateItemGrid(DataList, r, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridDefaultData, usercolindex, EmptyCustomFieldEntityData)).ToList();
 
             if (children == null)
             {
-                children = new List<PlanDHTMLXGridDataModel>();
+                children = new List<PlanDHTMLXGridDataModelHomeGrid>();
             }
 
             // Get list of custom field values for particular entity based on pivoted entities list
@@ -997,8 +997,8 @@ namespace RevenuePlanner.Services
             }
 
             // Set the values of row
-            List<Plandataobj> EntitydataobjItem = GridDataRow(Row, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData, usercolindex);
-            return new PlanDHTMLXGridDataModel { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
+            List<PlanGridDataobj> EntitydataobjItem = GridDataRow(Row, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData, usercolindex);
+            return new PlanDHTMLXGridDataModelHomeGrid { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
         }
         #endregion
 
@@ -1007,7 +1007,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Set the grid rows for entities
         /// </summary>
-        public List<Plandataobj> GridDataRow(GridDefaultModel Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<PlandataobjColumn> objCustomfieldData, List<string> usercolindex)
+        public List<PlanGridDataobj> GridDataRow(GridDefaultModel Row, GridCustomColumnData CustomFieldData, string PlanCurrencySymbol, double PlanExchangeRate, List<PlandataobjColumn> objCustomfieldData, List<string> usercolindex)
         {
             List<PlandataobjColumn> lstOrderData = new List<PlandataobjColumn>();
             #region Set Default Columns Values
@@ -1023,7 +1023,9 @@ namespace RevenuePlanner.Services
             {
                 lstOrderData = lstOrderData.OrderBy(a => usercolindex.IndexOf(a.column.ToLower())).Select(a => a).ToList();
             }
-            return lstOrderData.Select(a => new Plandataobj { value = a.value, type = a.type, style = a.style, locked = a.locked, actval = a.actval }).ToList();
+            //return lstOrderData.Select(a => new Plandataobj { value = a.value, type = a.type, style = a.style, locked = a.locked, actval = a.actval }).ToList();
+            return lstOrderData.Select(a => new PlanGridDataobj { value = a.value, type = a.type, style = a.style, lo = a.locked }).ToList();
+
         }
         #endregion
 

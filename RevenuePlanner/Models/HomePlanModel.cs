@@ -396,6 +396,30 @@ namespace RevenuePlanner.Models
         public List<PlanDHTMLXGridDataModel> rows { get; set; }
     }
 
+    public class PlanMainDHTMLXGridHomeGrid
+    {
+        public List<PlanDHTMLXGridDataModelHomeGrid> rows { get; set; }
+        public List<PlanHead> head { get; set; }
+    }
+
+    public class PlanDHTMLXGridDataModelHomeGrid
+    {
+        public string id { get; set; }
+        public string open { get; set; }
+        public List<PlanGridDataobj> data { get; set; }
+        public Planuserdatagrid userdata { get; set; }
+        public List<PlanDHTMLXGridDataModelHomeGrid> rows { get; set; }
+    }
+
+    public class PlanGridDataobj
+    {
+        public string value { get; set; }
+        public string lo { get; set; }
+        public string style { get; set; }
+        public string type { get; set; }
+    }
+
+
     // Add By Nishant Sheth
     // Class for get dynamic column values of grid data
     public class PlanGridColumnData

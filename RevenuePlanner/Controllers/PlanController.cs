@@ -6759,7 +6759,7 @@ namespace RevenuePlanner.Controllers
         [CompressAttribute]
         public ActionResult GetHomeGridData(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy)
         {
-            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
             try
             {
                 #region Set Permission
@@ -10022,11 +10022,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="entityid"></param>
         /// <param name="parentoptionId"></param>
         /// <returns></returns>
-        public JsonResult GetdependantOptionlist(int customfieldId, int entityid, List<int> parentoptionId)
+        public JsonResult GetdependantOptionlist(int customfieldId, int entityid, List<int> parentoptionId, string Customfieldtype = "")
         {
             List<CustomField_Entity> entitycustomfieldvalue = db.CustomField_Entity.Where(a => a.EntityId == entityid).ToList();
             List<CustomFieldDependency> dependancy = db.CustomFieldDependencies.Where(a => a.ChildCustomFieldId == customfieldId).ToList();
             List<Options> CustomFieldOptionList = new List<Options>();
+            bool IstextBoxDependent = false;
             if (entitycustomfieldvalue != null && parentoptionId != null && parentoptionId.Count > 0)
             {
                 foreach (int parentoptid in parentoptionId)
@@ -10034,15 +10035,25 @@ namespace RevenuePlanner.Controllers
                     var isexist = entitycustomfieldvalue.Where(a => a.Value == Convert.ToString(parentoptid)).Any();
                     if (isexist)
                     {
-                        CustomFieldOptionList.AddRange(dependancy.Where(a => a.ParentOptionId == parentoptid && a.IsDeleted == false).Select(a => new Options
+                        if (!Customfieldtype.Equals(Convert.ToString(Enums.ColumnType.ed), StringComparison.CurrentCultureIgnoreCase))
                         {
-                            value = a.CustomFieldOption.Value
-                        }).ToList());
+                            CustomFieldOptionList.AddRange(dependancy.Where(a => a.ParentOptionId == parentoptid && a.IsDeleted == false).Select(a => new Options
+                            {
+                                value = a.CustomFieldOption.Value
+                            }).ToList());
+                        }
+                    }
+                    else
+                    {
+                        if (Customfieldtype.Equals(Convert.ToString(Enums.ColumnType.ed), StringComparison.CurrentCultureIgnoreCase))
+                            IstextBoxDependent = true;
                     }
                 }
             }
-            return Json(new { optionlist = CustomFieldOptionList }, JsonRequestBehavior.AllowGet);
+            return Json(new { optionlist = CustomFieldOptionList, IstextBoxDependent = IstextBoxDependent }, JsonRequestBehavior.AllowGet);
         }
+
+
 
         public void GetCacheValue()
         {

@@ -11,7 +11,7 @@ namespace RevenuePlanner.Services
     {
         // Add By Nishant Sheth
         // Get plan grid data
-        PlanMainDHTMLXGrid GetPlanGrid(string PlanIds, int ClientId, string onerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy);
+        PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string onerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy);
         // End plan grid data
 
         // Start: Calendar related functions
