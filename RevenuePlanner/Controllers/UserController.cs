@@ -1216,16 +1216,16 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">UserId</param>
         /// <returns>Return Managerlist in JsonResult</returns>
         [AcceptVerbs(HttpVerbs.Get)]
-        public JsonResult GetManagers(int clientId = 0, int UserId = 0)
+        public JsonResult GetManagers(int id = 0, int UserId = 0)
         {
             List<UserModel> managerList = new List<UserModel>();
             if (UserId != 0)
             {
-                managerList = GetManagersList(UserId, clientId);
+                managerList = GetManagersList(UserId, id);
             }
             else
             {
-                managerList = GetManagersList(0, clientId);
+                managerList = GetManagersList(0, id);
             }
 
             return Json(managerList, JsonRequestBehavior.AllowGet);
