@@ -81,12 +81,8 @@ namespace RevenuePlanner.Models
         public string mqlLabel { get; set; }
         public string costLabel { get; set; }
 
-        /// Added By: Maninder Singh Wadhva
-        /// Addressed PL Ticket: 37,38,47,49
         public double? PercentageMQLImproved { get; set; }
 
-        // public List<string> UpcomingActivity { get; set; }
-        public List<SelectListItem> UpcomingActivity { get; set; }
         public List<SelectListItem> plans { get; set; }
     }
 

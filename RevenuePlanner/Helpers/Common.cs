@@ -2552,7 +2552,7 @@ namespace RevenuePlanner.Helpers
                     impList = new List<Plan_Improvement_Campaign_Program_Tactic>();
                     impList = improvementTacticList.Where(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == plan.PlanId).ToList();
 
-                    MQLs = Common.GetTacticStageRelationForSinglePlanPerformance(planTacticIds, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, impList, modelDateList, MainModelId, stageList, false).Sum(t => t.MQLValue);
+                    MQLs = Common.GetTacticStageRelationForSinglePlanPerformance(planTacticIds, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, impList, modelDateList, MainModelId, stageList, false).Sum(t => Math.Round(t.MQLValue));
 
                     if (planTacticIds.Count() > 0)
                     {

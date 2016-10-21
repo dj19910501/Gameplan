@@ -515,19 +515,23 @@
                     if ($(this).val().trim() != '') {
                         var currentValue = $(this).val().trim().replace(/,/g, '').replace(CurrencySybmol, '');
                         if (currentValue.match(_decmlRegex)) {
-                            console.log($(this));
-                            var BalPeriodId =  '#' + $(this).attr('id').replace('Cost', '@BalLineItemId');
-                            $(BalPeriodId).text(currentValue);
-                            SetBudget(BalPeriodId);
-                            $(BalPeriodId).attr('ov', parseFloat(currentValue.toString())).toString();
-
+                            if ('@BalLineItemId' != undefined && '@BalLineItemId' != null && '@BalLineItemId' != '') {
+                                var BalPeriodId = '#' + $(this).attr('id').replace('Cost', '@BalLineItemId');
+                                if ($(BalPeriodId) != undefined && $(BalPeriodId) != null) {
+                                    $(BalPeriodId).text(currentValue);
+                                    SetBudget(BalPeriodId);
+                                    $(BalPeriodId).attr('ov', parseFloat(currentValue.toString())).toString();
+                                }
+                            }
                             cost += parseFloat(currentValue);
                         }
                     }
                 });
-                $("#lblTotal-" + '@BalLineItemId').html(FormatCurrency(cost.toString(), true));
-                SetBudget("#lblTotal-" + '@BalLineItemId'); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
-                $("#lblTotal-" + '@BalLineItemId').attr('ov', parseFloat(cost.toString())).toString();
+                if ('@BalLineItemId' != undefined && '@BalLineItemId' != null && '@BalLineItemId' != '') {
+                    $("#lblTotal-" + '@BalLineItemId').html(FormatCurrency(cost.toString(), true));
+                    SetBudget("#lblTotal-" + '@BalLineItemId'); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
+                    $("#lblTotal-" + '@BalLineItemId').attr('ov', parseFloat(cost.toString())).toString();
+                }
             }
             $("#lblTotalCost").html(FormatCurrency(cost.toString(), true));
             SetBudget("#lblTotalCost"); //Uncommented by Maitri Gandhi on 2/3/2016 to make consistent look of Actuals - Covered in #1755
@@ -631,15 +635,15 @@
                             document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
                             SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                             $("#" + ida).attr('ov', totalvalue.toString());
+                            if (arr[0] == 'Cost') {
+                                $('#' + BalLineItemId).text(FormatCurrency(currentValue, true));
+                                $('#' + BalLineItemId).attr('ov', parseFloat(currentValue.toString()));
 
-                            $('#' + BalLineItemId).text(FormatCurrency(currentValue, true));
-                            $('#' + BalLineItemId).attr('ov', parseFloat(currentValue.toString()));
-
-                            document.getElementById(BalTotal).innerHTML = totalvalue;
-                            document.getElementById(BalTotal).innerHTML = FormatCurrency(document.getElementById(BalTotal).innerHTML, true);
-                            SetBudget('#' + BalTotal);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-                            $("#" + BalTotal).attr('ov', totalvalue.toString());
-
+                                document.getElementById(BalTotal).innerHTML = totalvalue;
+                                document.getElementById(BalTotal).innerHTML = FormatCurrency(document.getElementById(BalTotal).innerHTML, true);
+                                SetBudget('#' + BalTotal);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                                $("#" + BalTotal).attr('ov', totalvalue.toString());
+                            }
                             
                         }
                         calculateRIO();
