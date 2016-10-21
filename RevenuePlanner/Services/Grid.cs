@@ -232,12 +232,11 @@ namespace RevenuePlanner.Services
             GridHireachyData = UpdatePlanStartEndDate(GridHireachyData);
             // Get List of custom fields and it's entity's values
             GridCustomColumnData ListOfCustomData = new GridCustomColumnData();
-            List<Int64> lsteditableEntityIds = new List<Int64>();
             if (customColumnslist != null && customColumnslist.Count > 0)
             {
                 ListOfCustomData = GridCustomFieldData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customColumnslist, UserId, IsUserView);
-                lsteditableEntityIds = GetEditableTacticIds(GridHireachyData, ListOfCustomData, UserId, ClientId);
             }
+            List<Int64> lsteditableEntityIds = GetEditableTacticIds(GridHireachyData, UserId, ClientId);
             // Set Row wise permission
             GridHireachyData = GridRowPermission(GridHireachyData, objPermission, lstSubordinatesIds, lsteditableEntityIds, UserId);
 
@@ -279,7 +278,7 @@ namespace RevenuePlanner.Services
 
             // Get selected columns data
             List<GridDefaultModel> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
-            
+
             // Merge header of plan grid with custom fields
             ListOfDefaultColumnHeader.AddRange(GridCustomHead(ListOfCustomData.CustomFields, customColumnslist));
 
@@ -343,43 +342,14 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get list of Editable tactic ids list
         /// </summary>
-        private List<Int64> GetEditableTacticIds(List<GridDefaultModel> GridHireachyData, GridCustomColumnData ListOfCustomData, int UserId, int ClientId)
+        private List<Int64> GetEditableTacticIds(List<GridDefaultModel> GridHireachyData, int UserId, int ClientId)
         {
             List<int> lstTacticIds = GridHireachyData.Where(a => a.EntityType == Enums.EntityType.Tactic).Select(a => int.Parse(a.EntityId.ToString())).ToList();
-            List<CustomField_Entity> customfieldEntitylist = new List<CustomField_Entity>();
             List<Int64> lsteditableEntityIds = new List<Int64>();
-            if (ListOfCustomData != null && ListOfCustomData.CustomFields != null && ListOfCustomData.CustomFieldValues != null)
-            {
-                // Split the comma separated values to list
-                var lstCommaSplitCustomfield = ListOfCustomData.CustomFieldValues.Where(a => a.Value != null).Select(a => new
-                {
-                    CustomFieldId = a.CustomFieldId,
-                    EntityId = a.EntityId,
-                    ListofValues = a.Value.Split(',')
-                }).ToList();
-
-                // Add item to custom field entity list
-                int ParseCustomValue = 0;
-                foreach (var data in lstCommaSplitCustomfield.Where(a => a.ListofValues.Count() > 1).ToList())
-                {
-                    foreach (var val in data.ListofValues)
-                    {
-                        int.TryParse(val, out ParseCustomValue);
-                        customfieldEntitylist.Add(new CustomField_Entity { CustomFieldId = int.Parse(data.CustomFieldId.ToString()), EntityId = int.Parse(data.EntityId.ToString()), Value = ParseCustomValue.ToString() });
-                    }
-                }
-
-                // Add items which have only single value for entity
-                customfieldEntitylist.AddRange(lstCommaSplitCustomfield.Where(a => a.ListofValues.Count() == 1)
-                    .Select(a => new CustomField_Entity { CustomFieldId = int.Parse(a.CustomFieldId.ToString()), EntityId = int.Parse(a.EntityId.ToString()), Value = Convert.ToString(a.ListofValues[0]) }).ToList());
-
-                ListOfCustomData.CustomFieldValues.Where(a => a.EntityId != null && a.CustomFieldId != null)
-                .Select(a => new CustomField_Entity { CustomFieldId = int.Parse(a.CustomFieldId.ToString()), EntityId = int.Parse(a.EntityId.ToString()), Value = a.Value }).ToList();
-
-                // Get list of editable list of tactic ids for permission
-                lsteditableEntityIds = Common.GetEditableTacticList(UserId, ClientId, lstTacticIds, false, customfieldEntitylist)
+            // Get list of editable list of tactic ids for permission
+            lsteditableEntityIds = Common.GetEditableTacticList(UserId, ClientId, lstTacticIds, false)
                    .Select(a => Int64.Parse(a.ToString())).ToList();
-            }
+
             return lsteditableEntityIds;
         }
 
@@ -1119,7 +1089,7 @@ namespace RevenuePlanner.Services
                 var CampProgramList = lstData.Where(camp => camp.ParentUniqueId == a.UniqueId).Select(camp => camp.UniqueId).ToList(); // Get Campaign's Program List 
                 var ProgramTacticList = lstData.Where(prg => CampProgramList.Contains(prg.ParentUniqueId)).Select(prg => prg.EntityId).ToList(); // Get Program's Tactic
                 var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
-                if (ProgramTacticList.Count > 0 && ProgramTacticList.Count == AllowEntityIds && lstSubordinatesIds.Contains(int.Parse(a.Owner.ToString())))
+                if (ProgramTacticList.Count == AllowEntityIds && lstSubordinatesIds.Contains(int.Parse(a.Owner.ToString())))
                 {
                     a.IsRowPermission = true;
                 }
@@ -1152,7 +1122,7 @@ namespace RevenuePlanner.Services
                {
                    var ProgramTacticList = lstData.Where(prg => prg.ParentUniqueId == a.UniqueId).Select(prg => prg.EntityId).ToList();// Get Program's Tactic
                    var AllowEntityIds = lsteditableEntityIds.Where(en => ProgramTacticList.Contains(en)).Count(); // Get list of tactic which have edit rights
-                   if (ProgramTacticList.Count > 0 && ProgramTacticList.Count == AllowEntityIds && lstSubordinatesIds.Contains(int.Parse(a.Owner.ToString())))
+                   if (ProgramTacticList.Count == AllowEntityIds && lstSubordinatesIds.Contains(int.Parse(a.Owner.ToString())))
                    {
                        a.IsRowPermission = true;
                    }
@@ -1623,7 +1593,7 @@ namespace RevenuePlanner.Services
                 }
                 else if (string.Compare(coldata, Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName), true) == 0)
                 {
-                    Roistring=Linkedstring=IsEditable=cellTextColor= string.Empty;
+                    Roistring = Linkedstring = IsEditable = cellTextColor = string.Empty;
 
                     if (RowData.IsRowPermission == true)
                     {
@@ -2020,9 +1990,9 @@ namespace RevenuePlanner.Services
                         tacData = tacData.Where(tactic => lstTacticIds.Contains((int)tactic.EntityId)).ToList();
                     }
                     //// get Allowed Entity Ids
-                    System.Diagnostics.Debug.WriteLine("start GetViewableTacticList " + DateTime.Now.ToString("hh.mm.ss.ffffff"));  
+                    System.Diagnostics.Debug.WriteLine("start GetViewableTacticList " + DateTime.Now.ToString("hh.mm.ss.ffffff"));
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
-                    System.Diagnostics.Debug.WriteLine("end GetViewableTacticList " + DateTime.Now.ToString("hh.mm.ss.ffffff"));  
+                    System.Diagnostics.Debug.WriteLine("end GetViewableTacticList " + DateTime.Now.ToString("hh.mm.ss.ffffff"));
                     tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains((int)tactic.EntityId)).ToList();    //filter tactics with allowed entity.
                     resultData.AddRange(tacData);
                 }

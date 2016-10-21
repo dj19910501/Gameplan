@@ -1627,6 +1627,7 @@ namespace RevenuePlanner.Controllers
             #region "Declare Main Variable for Model"
 
             ReportModel objReportModel = new ReportModel();
+            Sessions.ViewByValue = !string.IsNullOrEmpty(isQuarterly) ? (isQuarterly.ToLower() == "quarterly" ? "Q" : "M") : "Q";
             string[] ListYear;
             #endregion
             //// check planids selected or not
@@ -8943,6 +8944,7 @@ namespace RevenuePlanner.Controllers
 
             /// End Declartion
             #endregion
+            Sessions.ViewByValue = !string.IsNullOrEmpty(IsQuarterly) ? (IsQuarterly.ToLower() == "quarterly" ? "Q" : "M") : "Q";
             List<int> ReportPlanIds = Sessions.ReportPlanIds;
             List<int> campaignIds = new List<int>();
             campaignIds = db.Plan_Campaign.Where(camp => ReportPlanIds.Contains(camp.PlanId) && camp.IsDeleted == false).Select(camp => camp.PlanCampaignId).Distinct().ToList();
