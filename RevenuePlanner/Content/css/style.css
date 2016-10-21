@@ -13640,6 +13640,9 @@ input.serach-input {
     color: #6d6d6d ;
     background:#ccc;
 }
+/* on Insoect pop up */
+.lblCustomCheckbox .technology_chkbx,
+.lblCustomCheckbox  .lable_inline{float:left}
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
