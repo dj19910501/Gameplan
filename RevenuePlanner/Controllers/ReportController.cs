@@ -4136,7 +4136,7 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObjList.Add(BudgetDataObj);
                     //Budget
                     BudgetDataObj = new Budgetdataobj();
-                    if (Activitytype != ActivityType.ActivityLineItem && Activitytype != ActivityType.ActivityTactic && Tab == ReportTabType.Plan.ToString())
+                    if (Activitytype != ActivityType.ActivityLineItem && Tab == ReportTabType.Plan.ToString())//Activitytype != ActivityType.ActivityTactic &&
                     {
                         cssclass = string.Empty;
                         if (Tab == ReportTabType.Plan.ToString())
