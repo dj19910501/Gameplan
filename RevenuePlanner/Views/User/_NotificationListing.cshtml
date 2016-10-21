@@ -22,7 +22,7 @@
             @foreach (var item in RequestList)
             {
                 <div class="list-wrap clearfix" style="cursor:pointer" >
-                    <p class="list-p pull-left" style="width:95%" PlanId="@item.PlanID" EntityId ="@item.EntityID" onclick="RequestItemClick(this)">@item.Description <span>@item.CreatedDate</span></p>
+                    <p class="list-p pull-left" style="width:95%" PlanId="@item.PlanID" EntityId ="@item.EntityID" onclick="RequestItemClick(this)"><span class="desc-name">@item.Description </span> <span>@item.CreatedDate</span></p>
                     @*<input type="checkbox" class="dismissAlert pull-right" id="@item.NotificationId" title="Dismiss" onchange="DismissNotification(this)" />*@
                 </div>
 
@@ -37,7 +37,7 @@
             @foreach (var item in NotificationList)
             {
                 <div class="list-wrap clearfix">
-                    <p class="list-p pull-left">@item.Description <span>@item.CreatedDate</span></p>
+                    <p class="list-p pull-left" style="width:95%"><span class="desc-name">@item.Description</span> <span>@item.CreatedDate</span></p>
                     @*<input type="checkbox" class="dismissAlert pull-right" id="@item.NotificationId" title="Dismiss" onchange="DismissNotification(this)" />*@
                 </div>
             }

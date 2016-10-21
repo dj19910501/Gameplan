@@ -13209,6 +13209,14 @@ input.serach-input {
 	display: block;
 	font-size: 12px;
 }
+.list-p > span.desc-name {
+	color: inherit;
+	font-size: inherit;
+    white-space: normal; 
+    word-wrap: break-word; 
+    max-width:750px;
+
+}
 .listing-link {
 	width: 85%;
 }
@@ -13585,30 +13593,52 @@ input.serach-input {
 .budgetReportHeader .selectBox{float:right}
 /* CSS hack to resolve Gridbox table width issue only on finanace page Start*/
 #divTabData #gridbox{
-    width:1280px !important; 
-    /*max-width:1280px;*/
+    width:100% !important; 
+    max-width:1270px;
     min-height: 100%;
     overflow: hidden;
     border: 1px solid #ccc;
 }
   .slideLeft  #divTabData #gridbox {
-    width: 1500px !important;
+   max-width: 1550px !important;
 }
 @media (min-width: 1650px) {
+    #divTabData #gridbox {
+        max-width: 1500px;
+    }
     /*#divMainReportPart{width: 80.5%;}
     .slideLeft #divMainReportPart {width: 85%;}*/
 }
-@media (max-width: 1599px) {
+/*@media (max-width: 1599px) {
     #divTabData #gridbox {
-        width: 950px !important;
+        max-width: 1280px !important;
     }
    .slideLeft  #divTabData #gridbox {
-    width: 1080px !important;
+    max-width: 1080px !important;
+}
+}*/
+@media (max-width: 1599px) {
+    #divTabData #gridbox {
+        max-width: 950px !important;
+    }
+   .slideLeft  #divTabData #gridbox {
+    max-width: 1080px !important;
 }
 }
 /* End */
 #ddlCustomTimeFrame .sbHolder { /* Resolve issue on custom report - Measure Tab*/
     z-index: 1499;
+}
+.btn.btn-grey {
+    color: #6d6d6d ;
+}
+.user-roles .btn.btn-grey {
+    border-radius: 4px;
+}
+.user-roles .btn.btn-grey:hover, 
+.user-roles .btn.btn-grey:focus {
+    color: #6d6d6d ;
+    background:#ccc;
 }
 /* ********************  new styles  - End ******************** */
 
