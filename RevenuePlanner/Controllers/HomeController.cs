@@ -60,7 +60,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
 
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false, bool ShowPopup = false, bool IsBudgetView = false,int SelectedTacticID = 0)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false, bool ShowPopup = false, bool IsBudgetView = false, int SelectedTacticID = 0)
         {
             Guid AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
             Guid RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
@@ -154,7 +154,7 @@ namespace RevenuePlanner.Controllers
 
                 Plan Plan = objPlan;
                 isPublished = Plan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
-             
+
 
             }
             ViewBag.IsPlanEditable = IsPlanEditable;
@@ -177,7 +177,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ShowInspectPopup = false;
                 ViewBag.ShowInspectPopupErrorMessage = Common.objCached.InvalidURLForInspectPopup.ToString();
             }
-          
+
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
 
@@ -3123,18 +3123,19 @@ namespace RevenuePlanner.Controllers
             PresetName = Convert.ToString(PresetName).TrimEnd();
             PresetName = Convert.ToString(PresetName).Trim();
             //var ListOfUserViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
-            var ListOfUserViews = Sessions.PlanUserSavedViews;// Add By Nishant Sheth #1915
-            var ResetFlagList = ListOfUserViews.Where(view => view.IsDefaultPreset == true).ToList();
-            ResetFlagList.ForEach(s => { s.IsDefaultPreset = false; objDbMrpEntities.Entry(s).State = EntityState.Modified; });// Modified By Nishant Sheth #1915
-            if (!string.IsNullOrEmpty(PresetName))
+            List<Plan_UserSavedViews> ListOfUserViews = Sessions.PlanUserSavedViews;// Add By Nishant Sheth #1915
+            if (ListOfUserViews != null)
             {
-                ListOfUserViews = ListOfUserViews.Where(name => name.ViewName == PresetName).ToList();
-                ListOfUserViews.ForEach(s => { s.IsDefaultPreset = true; objDbMrpEntities.Entry(s).State = EntityState.Modified; });// Modified By Nishant Sheth #1915
+                List<Plan_UserSavedViews> ResetFlagList = ListOfUserViews.Where(view => view.IsDefaultPreset == true).ToList();
+                ResetFlagList.ForEach(s => { s.IsDefaultPreset = false; objDbMrpEntities.Entry(s).State = EntityState.Modified; });// Modified By Nishant Sheth #1915
+                if (!string.IsNullOrEmpty(PresetName))
+                {
+                    ListOfUserViews = ListOfUserViews.Where(name => name.ViewName == PresetName).ToList();
+                    ListOfUserViews.ForEach(s => { s.IsDefaultPreset = true; objDbMrpEntities.Entry(s).State = EntityState.Modified; });// Modified By Nishant Sheth #1915
 
+                }
+                objDbMrpEntities.SaveChanges();
             }
-            objDbMrpEntities.SaveChanges();
-
-
             return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
         }
 
