@@ -6731,7 +6731,7 @@ namespace RevenuePlanner.Helpers
                 }
             }
             string result = string.Empty;
-            string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.ID + "&RoleId=" + Sessions.User.RoleId + "&StartDate=" + Sessions.StartDate + "&EndDate=" + Sessions.EndDate + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+            string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&StartDate=" + Sessions.StartDate + "&EndDate=" + Sessions.EndDate + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
             try
             {
                 ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
