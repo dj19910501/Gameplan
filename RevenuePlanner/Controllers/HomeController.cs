@@ -3123,7 +3123,7 @@ namespace RevenuePlanner.Controllers
             PresetName = Convert.ToString(PresetName).TrimEnd();
             PresetName = Convert.ToString(PresetName).Trim();
             //var ListOfUserViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.ID).ToList();
-            var ListOfUserViews = Common.PlanUserSavedViews;// Add By Nishant Sheth #1915
+            var ListOfUserViews = Sessions.PlanUserSavedViews;// Add By Nishant Sheth #1915
             var ResetFlagList = ListOfUserViews.Where(view => view.IsDefaultPreset == true).ToList();
             ResetFlagList.ForEach(s => { s.IsDefaultPreset = false; objDbMrpEntities.Entry(s).State = EntityState.Modified; });// Modified By Nishant Sheth #1915
             if (!string.IsNullOrEmpty(PresetName))

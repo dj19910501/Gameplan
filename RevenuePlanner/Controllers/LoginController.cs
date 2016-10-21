@@ -28,6 +28,7 @@ namespace RevenuePlanner.Controllers
         MRPEntities db = new MRPEntities();
         private bool IsClientAllowedForCustomNaming = false;
         ICurrency objCurrency = new Currency(); // Add By Nishant Sheth
+        IFilter objFilter = new RevenuePlanner.Services.Filter();
         #endregion
 
         #region Login
@@ -351,6 +352,8 @@ namespace RevenuePlanner.Controllers
 
                     // Added by bhavesh Dobariya @Date: 26/11/2014
                     Sessions.IsDisplayDataInconsistencyMsg = false;
+
+                    Sessions.FilterPresetName = objFilter.SetDefaultFilterPresetName(Sessions.User.ID);
                     int ClientId = obj.ID;
                     List<int> deletedStageId = db.Stages.Where(s => s.ClientId == ClientId && s.IsDeleted == true).Select(s => s.StageId).ToList();
                     if (deletedStageId.Count > 0)

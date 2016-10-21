@@ -1031,5 +1031,11 @@ namespace RevenuePlanner.Services
             planList = planList.Where(s => !string.IsNullOrEmpty(s.Text)).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
             return planList;
         }
+
+        public string SetDefaultFilterPresetName(int UserID)
+        {
+            string DefaultPresetName =  objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == UserID && x.IsDefaultPreset == true).Select(x => x.ViewName).FirstOrDefault();
+            return DefaultPresetName;
+        }
     }
 }
