@@ -3339,3 +3339,28 @@ function setpdfgraphdata(lstchart) {
         });
     }
 }
+//// Function to start date of current quarter.
+function getQarterStartDate() {
+    var currentDate = new Date();
+    var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
+    var startDate;
+    var fullYear = currentDate.getFullYear();
+    switch (quater) {
+        case 1:
+            startDate = new Date(fullYear, 00, 01);
+            break;
+        case 2:
+            startDate = new Date(fullYear, 03, 01);
+            break;
+        case 3:
+            startDate = new Date(fullYear, 06, 01);
+            break;
+        case 4:
+            startDate = new Date(fullYear, 09, 01);
+            break;
+        default:
+            startDate = currentDate;
+    }
+
+    return startDate;
+}
