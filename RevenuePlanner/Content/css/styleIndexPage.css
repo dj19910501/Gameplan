@@ -618,8 +618,11 @@ a:hover, a:focus {
 	position: absolute;
 	/*overflow-x:hidden;*/
 	overflow-y: auto;
-	transition: width 0.1s ease-in-out 0.1s;
+	/*transition: width 0.05s ease-in-out 0.05s;
+    -webkit-transition: width 0.05s ease-in-out 0.05s;
+    -moz-transition: width 0.05s ease-in-out 0.05s;*/
 	background: #f0f0f0;
+    outline:0;
 }
 #content_wraper {
 	background: #fff none repeat scroll 0 0;
@@ -632,10 +635,15 @@ a:hover, a:focus {
 	min-height: 300px;
 	vertical-align: top;
 	width: calc(100% - 281px);
-	transition: margin 0.1s ease-in-out 0.1s;
+	/*transition: margin 0.05s ease-in-out 0.05s;
+    -webkit-transition: margin  0.05s ease-in-out 0.05s;
+    -moz-transition: margin  0.05s ease-in-out 0.05s;*/
+    border:0;
 }
 .slideLeft#sidebar {
-	width: 0
+	width: 0;
+    min-width: 0 !important;
+    max-width: 0 !important; 
 }
 .slideLeft#content_wraper {
 	margin-left: 0;

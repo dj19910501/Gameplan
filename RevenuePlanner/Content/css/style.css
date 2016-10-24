@@ -106,26 +106,21 @@ a:hover, a:focus {
 .row-fluid.calc-height-login {
 	min-width: 1280px; /* Edited for #2219 - Bhumika - bgcolor removed */
 }
+
 .midl-wrap { /* Class Added for #2219 - Bhumika */
-	display: table; /*display: block;*/
+	/*display: table;*/ display: block;
 	height: 100%;
-    background:#fff;
 }
 /* 27-10-2015 for ticket 1713 by bheru start*/
 #sidebar {
 	width: 280px;
 	max-width: 280px;
-    min-width: 280px;
 	height: 100%; /* Edited for #2219 - Bhumika */
 	vertical-align: top;
-	/*float: left;*/
-    float: none;
-    display: table-cell;
+    outline: 1px solid #ccc;
+	float: left;/*float: none;
+    display: table-cell;*/
 }
-.WelcomeMessageBorder {
-	border-bottom: 2px solid #cecece;
-}
-/* 27-10-2015 for ticket 1713 by bheru end*/
 #content_wraper {
 	background: #fff; /*for #2312 - Bhumika*/
 	min-height: 300px;
@@ -136,9 +131,11 @@ a:hover, a:focus {
 	vertical-align: top;
 	border-left: 1px solid #ccc;
 	border-bottom: 1px solid #ccc;
-	/*float: left;*/
-    float: none;
-    display: table-cell;
+	float: left;/*display: table-cell;*/
+}
+
+.WelcomeMessageBorder {
+	border-bottom: 2px solid #cecece;
 }
 /* 27-10-2015 for ticket 1713 by bheru start*/
 #header .title {
@@ -13513,38 +13510,19 @@ input.serach-input {
 
  /*  New style added according to StyleIndexpage CSS to match design with new Homepage */
  #sidebar {
-	vertical-align: top;
-	width: 280px;
-	border-right: 1px solid #ccc;
-    height: 100%;
-	/*bottom: 0;
-    top:0;
-	padding-top: 120px;	
-	position: absolute;*/
-	/*overflow-x:hidden;*/
+	overflow-x:hidden;
 	/*overflow-y: auto;*/
-	transition: width 0.1s ease-in-out 0.1s;
+	/*transition: width 0.1s ease-in-out 0.1s;
     -moz-transition: width 0.1s ease-in-out 0.1s;
-    -webkit-transition: width 0.1s ease-in-out 0.1s;
-	background: #f0f0f0;
+    -webkit-transition: width 0.1s ease-in-out 0.1s;*/	
 }
 #content_wraper {
-	background: #fff none repeat scroll 0 0;
-	border-bottom: 0 solid #ccc;
-	border-left: 0 none;
-	/*display: inline-block;*/
-	/*float: left;*/
-    /*margin: 0 0 0 280px;*/
-	height: 100% !important;	
-    margin:0;
-	min-height: 300px;
-	vertical-align: top;
 	width: calc(100% - 281px);
     width: -webkit-calc(100% - 281px);
     width: -moz-calc(100% - 281px);
-	transition: margin 0.1s ease-in-out 0.1s;
+	/*transition: margin 0.1s ease-in-out 0.1s;
     -moz-transition: margin 0.1s ease-in-out 0.1s;
-    -webkit-transition: margin 0.1s ease-in-out 0.1s;
+    -webkit-transition: margin 0.1s ease-in-out 0.1s;*/
 }
 .sidebar-toogle {
 	left: 279px;
@@ -13593,6 +13571,9 @@ input.serach-input {
 .budgetReportHeader .selectBox{float:right}
 /* CSS hack to resolve Gridbox table width issue only on finanace page Start*/
 #divTabData #gridbox{
+    width: 99% !important;
+}
+/*#divTabData #gridbox{
     width:100% !important; 
     max-width:1270px;
     min-height: 100%;
@@ -13606,17 +13587,9 @@ input.serach-input {
     #divTabData #gridbox {
         max-width: 1500px;
     }
-    /*#divMainReportPart{width: 80.5%;}
-    .slideLeft #divMainReportPart {width: 85%;}*/
+   
 }
-/*@media (max-width: 1599px) {
-    #divTabData #gridbox {
-        max-width: 1280px !important;
-    }
-   .slideLeft  #divTabData #gridbox {
-    max-width: 1080px !important;
-}
-}*/
+
 @media (max-width: 1599px) {
     #divTabData #gridbox {
         max-width: 950px !important;
@@ -13624,7 +13597,7 @@ input.serach-input {
    .slideLeft  #divTabData #gridbox {
     max-width: 1080px !important;
 }
-}
+}*/
 /* End */
 #ddlCustomTimeFrame .sbHolder { /* Resolve issue on custom report - Measure Tab*/
     z-index: 1499;
@@ -13640,9 +13613,18 @@ input.serach-input {
     color: #6d6d6d ;
     background:#ccc;
 }
-/* on Insoect pop up */
-.lblCustomCheckbox .technology_chkbx,
-.lblCustomCheckbox  .lable_inline{float:left}
+/* on Inspect pop up */
+table .lblCustomCheckbox .technology_chkbx,
+table .lblCustomCheckbox  .lable_inline,
+table .lblCustomCheckbox input,
+table .lblCustomCheckbox label{float:left}
+table .lblCustomCheckbox label{width:70%}
+
+
+#treeviewddl .obj td{border-right: 0 none;}
+#treeviewddl.gridbox_dhx_skyblue.gridbox table.hdr tr td div.hdrcell {color: #000 !important;}
+#treeviewddl.gridbox_dhx_skyblue.gridbox table.hdr tr td{border-left: 0 none !important;border-right: 0 none !important;}
+
 /* ********************  new styles  - End ******************** */
 
 /* To set orange corner on Grid Table End  */
