@@ -1756,7 +1756,7 @@ namespace RevenuePlanner.Services
                         string Revenue = Convert.ToString(RowData.Revenue);
                         double PlannedRevenue = 0;
                         double.TryParse(Convert.ToString(Revenue), out PlannedRevenue);
-                        objVal = PlanCurrencySymbol + FormatNumber(PlannedRevenue, 2);
+                        objVal = PlanCurrencySymbol + FormatNumber(objCurrency.GetValueByExchangeRate(PlannedRevenue, PlanExchangeRate), 2); 
                         break;
                     case Enums.HomeGrid_Default_Hidden_Columns.Status:
                         objVal = Convert.ToString(RowData.Status);
