@@ -935,6 +935,7 @@ namespace RevenuePlanner.Models
     public class PlanOptionsTacticType : PlanOptions
     {
         public int PlanId { get; set; }
+        public string Type { get; set; }
     }
     // Add By Nishant Sheth 
     // #1765 - to add list of monthly period.

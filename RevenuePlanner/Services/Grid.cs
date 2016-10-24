@@ -493,7 +493,7 @@ namespace RevenuePlanner.Services
                 if (ChildernCount > 0)
                     return objHomeGridProp.openstateone;
             }
-            return string.Empty;
+          return string.Empty;
         }
         #endregion
 
@@ -2242,7 +2242,8 @@ namespace RevenuePlanner.Services
                                                           {
                                                               PlanId = plan.PlanId,
                                                               id = tactictypes.TacticTypeId,
-                                                              value = tactictypes.Title
+                                                              value = tactictypes.Title,
+                                                              Type=tactictypes.AssetType
                                                           }
                                  ).ToList();
             return lstTacticTypes;
