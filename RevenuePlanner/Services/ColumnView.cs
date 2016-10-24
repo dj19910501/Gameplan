@@ -19,32 +19,7 @@ namespace RevenuePlanner.Services
         {
             objDbMrpEntities = new MRPEntities();
         }
-        #region method to fill custom field for create new view
-        // Get Custom field
-        public DataTable GetCustomFieldList(int ClientId)
-        {
-            DataTable CustomFieldList = new DataTable();
-            ///If connection is closed then it will be open
-            SqlConnection Connection = objDbMrpEntities.Database.Connection as SqlConnection;
-            if (Connection.State == System.Data.ConnectionState.Closed)
-                Connection.Open();
-            SqlCommand command = null;
-          
-                command = new SqlCommand("sp_GetCustomFieldList", Connection);
-
-                using (command)
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    command.Parameters.AddWithValue("@ClientId", ClientId);
-                    SqlDataAdapter adp = new SqlDataAdapter(command);
-                    command.CommandTimeout = 0;
-                    adp.Fill(CustomFieldList);
-                    if (Connection.State == System.Data.ConnectionState.Open) Connection.Close();
-                }
-            return CustomFieldList;
-        }
-        #endregion
+        
         #region method to save ColumnView
         public int SaveColumnView(int UserId, string ViewName, List<AttributeDetail> AttributeDetail, bool Isgrid = true)
         {
@@ -138,26 +113,8 @@ namespace RevenuePlanner.Services
                 }
                 if (IsGrid)
                 {
-                    DataTable dtColumnAttribute = GetCustomFieldList(ClientId);
-                    if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
-                    {
-                        //adding custom fields of all entities.
-                        List<CustomAttribute> columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new CustomAttribute
-                        {
-                            EntityType = Convert.ToString(row["EntityType"]).Trim(),
-                            CustomFieldId = Convert.ToString(row["CustomFieldId"]),
-                            CutomfieldName = Convert.ToString(row["Name"]).Trim(),
-                            ParentID = Convert.ToInt32(row["ParentId"])
-
-                        }).ToList();
-                        List<CustomAttribute> finalCustomFieldList = new List<CustomAttribute>();
-                        foreach (var item in columnattribute.Where(cfParent => cfParent.ParentID == 0).ToList())
-                        {
-                            finalCustomFieldList.Add(item);
-                            setCustomFieldHierarchy(int.Parse(item.CustomFieldId), columnattribute, ref finalCustomFieldList);
-                          
-                        }
-                        columnattribute = finalCustomFieldList;
+                DataTable dtColumnAttribute = new DataTable();
+               
                         //adding the basic fields of the grid
                         BasicFields = Enums.CommonGrid_Column.Select(row => new CustomAttribute
                         {
@@ -200,9 +157,6 @@ namespace RevenuePlanner.Services
                         }).ToList();
                         BasicFields.AddRange(IntegrationFields);
 
-                        BasicFields.AddRange(columnattribute);
-                    }
-                   
                     //adding all attributes to single list.
                     allattributeList = BasicFields.GroupBy(a => a.EntityType, StringComparer.OrdinalIgnoreCase).Select(a => new ColumnViewEntity
                     {
@@ -234,18 +188,7 @@ namespace RevenuePlanner.Services
           
             return allattributeList;
         }
-        //function to apply depedancy order for custom fields.
-        public static void setCustomFieldHierarchy(int parentId, List<CustomAttribute> lstCustomField, ref List<CustomAttribute> finalList)
-        {
-            foreach (var item in lstCustomField.Where(cf => cf.ParentID == parentId).ToList())
-            {
-                finalList.Add(item);
-                if (lstCustomField.Where(cf => cf.ParentID == int.Parse(item.CustomFieldId)).Any())
-                {
-                    setCustomFieldHierarchy(int.Parse(item.CustomFieldId), lstCustomField, ref finalList);
-                }
-            }
-        }
+      
         public int UpdateColumnView(User_CoulmnView columnview, bool Isgrid, int UserId, string xmlElements)
         {
             int result = 0;
@@ -305,101 +248,7 @@ namespace RevenuePlanner.Services
             return items;
         }
 
-        public List<CustomFieldOptionModel> GetCustomFiledOptionList(int clientID , int UserId)
-        {
-            List<CustomFieldOptionModel> optionlist = new List<CustomFieldOptionModel>();
-            List<CustomFieldOption> finalOptionsList = new List<CustomFieldOption>();
-            string attributexml = string.Empty;
-            List<string> SelectedCustomfieldID = new List<string>();
-            List<int> enitablerestrictionoptionId = new List<int>();
-                DataTable dtColumnAttribute = GetCustomFieldList(clientID);
-                bool IsNoRestriction = false;
-                if (dtColumnAttribute != null && dtColumnAttribute.Rows.Count > 0)
-                {
-                    List<CustomAttribute> columnattribute = dtColumnAttribute.AsEnumerable().Select(row => new CustomAttribute
-                    {
-                        EntityType = Convert.ToString(row["EntityType"]),
-                        CustomFieldId = Convert.ToString(row["CustomFieldId"]),
-                        CutomfieldName = Convert.ToString(row["Name"]),
-                        ParentID = Convert.ToInt32(row["ParentId"]),
-                        CustomfiledType = Convert.ToString(row["CustomFieldType"]),
-                        IsRequired=Convert.ToBoolean(row["IsRequired"])
-
-                    }).ToList();
-                    User_CoulmnView userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
-                    if (userview != null)
-                    {
-                        attributexml = Convert.ToString(userview.GridAttribute);
-                        if (!string.IsNullOrEmpty(attributexml))
-                        {
-                            //Getting xml data to list
-                            XDocument doc = XDocument.Parse(attributexml);
-                            List<AttributeDetail> items = (from r in doc.Root.Elements("attribute")
-                                                           select new AttributeDetail
-                                                           {
-                                                               AttributeType = (string)r.Attribute("AttributeType"),
-                                                               AttributeId = (string)r.Attribute("AttributeId"),
-                                                               ColumnOrder = (string)r.Attribute("ColumnOrder")
-                                                           }).ToList();
-                            SelectedCustomfieldID = items.Where(a=>a.AttributeType!="Common").Select(a => a.AttributeId).ToList();
-                        }
-                        columnattribute = columnattribute.Where(a => SelectedCustomfieldID.Contains(a.CustomFieldId)).ToList();
-                        List<CustomFieldDependency> DependencyList = objDbMrpEntities.CustomFieldDependencies.Where(a => a.IsDeleted == false).Select(a => a).ToList();
-                        var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.ID, true);
-                        if (userCustomRestrictionList != null && userCustomRestrictionList.Count() > 0)
-                        {
-                            List<Models.CustomRestriction> lstEditableRestrictions = new List<CustomRestriction>();
-                            lstEditableRestrictions = userCustomRestrictionList.Where(restriction => restriction.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit).ToList();
-
-                            enitablerestrictionoptionId = lstEditableRestrictions.Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
-                        }
-                        else
-                            IsNoRestriction = true;
-
-                       
-                        List<int> customfieldid = columnattribute.Select(a => Convert.ToInt32(a.CustomFieldId)).ToList();
-                        List<CustomFieldOption> optlist = objDbMrpEntities.CustomFieldOptions.Where(a => a.CustomField.ClientId == clientID && a.IsDeleted == false && customfieldid.Contains(a.CustomFieldId)).ToList();
-
-                        foreach (CustomAttribute item in columnattribute)
-                        {
-                            int cutomid = Convert.ToInt32(item.CustomFieldId);
-                            if (item.CustomfiledType.Equals(Enums.CustomFieldType.DropDownList.ToString(), StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                if (!IsNoRestriction)
-                                {
-                                    if ((item.IsRequired && item.EntityType.ToLower() == Convert.ToString(Enums.EntityType.Tactic).ToLower()))
-                                        finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid && enitablerestrictionoptionId.Contains(opt.CustomFieldOptionId)).ToList();
-                                    else
-                                        finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid).ToList();
-                                }
-                                else
-                                    finalOptionsList = optlist.Where(opt => opt.CustomFieldId == cutomid).ToList();
-                                var customoptionlist = finalOptionsList.Where(opt => opt.CustomFieldId == cutomid).Select(o => new CustomFieldOptionModel
-                                {
-                                    ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
-                                    ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).ToList(),
-                                    customFieldOptionId = o.CustomFieldOptionId,
-                                    ChildOptionIds = DependencyList.Where(Child => Child.ParentOptionId == o.CustomFieldOptionId).Select(list => list.ChildOptionId).ToList(),
-                                    value = o.Value,
-                                    customFieldId = o.CustomFieldId
-                                }).OrderBy(o => o.value).ToList();
-                                optionlist.AddRange(customoptionlist);
-                            }
-                            else
-                            {
-                                CustomFieldOptionModel objCustFieldText = new CustomFieldOptionModel();
-                                objCustFieldText.ParentOptionId = DependencyList.Where(b => b.ChildCustomFieldId == Convert.ToInt32(item.CustomFieldId)).Select(b => b.ParentOptionId).ToList();
-                                objCustFieldText.value = item.CutomfieldName;
-                                objCustFieldText.customFieldId = Convert.ToInt32(item.CustomFieldId);
-                                optionlist.Add(objCustFieldText);
-                            }
-                        }
-                    }
-                   
-                }
-           
-            return optionlist;
-        }
+    
 
        
     }

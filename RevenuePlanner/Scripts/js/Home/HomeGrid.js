@@ -20,7 +20,7 @@ var newTactVal = 0;
 var value;
 var TacticName;
 var ExportToCsv = false;
-var _customFieldValues = [];
+
 var IsDependentTextBox = false;
 var NodatawithfilterGrid = '<div id="NodatawithfilterGrid" style="display:none;">' +
     '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' + '<br/></div>';
@@ -85,14 +85,7 @@ function MoveColumn() {
             AttrType = 'Common';
             var ColWidth = HomeGrid.getColWidth(i);
             var customcolId = HomeGrid.getColumnId(i).toString();
-            if (customcolId.indexOf("custom_") >= 0) {
-                var CustomColDetail = customcolId.split(':');
-                if (CustomColDetail != null)
-                    if (Array.isArray(CustomColDetail)) {
-                        customcolId = CustomColDetail[0].replace("custom_", "");
-                        AttrType = CustomColDetail[1];
-                    }
-            }
+            
             if (ColWidth != 0) {
                 ColumnDetail.push({
                     AttributeId: customcolId,
@@ -373,22 +366,6 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 }
             }
         }
-
-        //added by devanshi #2598
-        var customcolId = HomeGrid.getColumnId(cellInd);
-        if (customcolId.indexOf("custom_") >= 0) {
-            var iddetail = customcolId.replace("custom_", "");
-            var id = iddetail.split(':')[0];
-            var clistitem = [];
-
-            var entityid = HomeGrid.cells(rowId, GridHiddenId).getValue();
-           // if (type == "clist") {
-
-            GetCustomfieldOptionlist(id, entityid, cellInd, type);
-            if (IsDependentTextBox)
-                return false;
-          // }
-        }
         opencombobox();
     }
     if (stage == 1) {
@@ -462,7 +439,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         }
     }
     if (stage == 2) {
-        if (nValue.trim() != null && nValue.trim() != "" || UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
+        if (nValue.trim() != null && nValue.trim() != "") {
             var oldAssetType = '';
             var NewValue = htmlDecode(nValue);
             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
@@ -553,42 +530,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 else
                     return false;
             }
-            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
-                var customcolId = UpdateColumn;
-                var iddetail = customcolId.replace("custom_", "");
-                var id = iddetail.split(':')[0];
-                var weightage = 100;
-                if (nValue != null && nValue != undefined && nValue != oValue) {
-                    var customvalue = nValue.split(',');
-                    _customFieldValues = [];
-                    if (customvalue.length > 0) {
-                        var TotalSelectedData = customvalue.length;
-                        var inputValues = parseInt(100 / TotalSelectedData);
-                        var residual = parseInt(100 % TotalSelectedData);
-                        var checkedResidualDiff = TotalSelectedData - residual;
-                        var res_counter = 0;
-                        $.each(customvalue, function (key) {
-                            res_counter += 1;
-                            if (res_counter <= checkedResidualDiff && checkedResidualDiff != _customFieldValues.length - 1) {
-                                weight = inputValues;
-                            }
-                            else {
-                                weight = inputValues + 1;
-                            }
-                            _customFieldValues.push({
-                                customFieldId: id,
-                                Value: htmlEncode(customvalue[key]),
-                                Weight: weight,
-                                CostWeight: weight
-                            });
-                        });
-                    }
-                    _customFieldValues = JSON.stringify(_customFieldValues);
-                }
-                else {
-                    return false;
-                }
-            }
+            
             if (UpdateColumn == TacticTypeId && updatetype.toLowerCase() == secTactic.toLowerCase()) {
                 //here oValue is assign id according to its value
                 var oldTacticTypeid = tacticTypefieldOptionList.filter(function (item) {
@@ -680,11 +622,10 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                     $.ajax({
                         type: 'POST',
                         url: urlContent + 'Plan/SaveGridDetail',
-                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id), CustomFieldInput: _customFieldValues, ColumnType: type.toString(), oValue: oValue.toString() },
+                        data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id)},
                         dataType: 'json',
                         success: function (states) {
                             HomeGrid.saveOpenStates("plangridState");
-
                             if (states.errormsg != null && states.errormsg.trim() != "") {
                                 alert(states.errormsg.trim());
                                 HomeGrid.cells(rowId, cellInd).setValue(oValue);
@@ -693,12 +634,13 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             else if (UpdateColumn == PlannedCostId) {
 
                                 diff = parseInt(states.lineItemCost) - parseInt(ReplaceCC(oValue));
+                                if (TotalRowIds != "" && TotalRowIds != undefined) {
                                 for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                     if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") != "False") {
                                         HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + (states.tacticCost - states.lineItemCost));
                                     }
                                 }
-
+                                }
                                 RefershPlanHeaderCalc();
                                 ItemIndex = HomeGrid.getRowIndex(tactid);
                                 state0 = ItemIndex;
@@ -709,16 +651,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                     LoadPlanGrid();
                                 }
                             }
-                            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
-                                var ids = states.DependentCustomfield;
-                                if (ids != null && ids != undefined) {
-                                    for (var i = 0; i < ids.length; i++) {
-                                        var colIndex = HomeGrid.getColIndexById(ids[i].CustomFieldId);
-                                        if (colIndex != undefined && colIndex != '')
-                                            HomeGrid.cells(rowId, colIndex).setValue(ids[i].OptionValue);
-                                    }
-                                }
-                            }
+                           
                         }
                     });
                 }
@@ -735,12 +668,10 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         type: 'POST',
                         url: urlContent + 'Plan/SaveGridDetail',
                         data: {
-                            UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id), CustomFieldInput: _customFieldValues, ColumnType: type.toString(), oValue: oValue.toString()
-                        },
+                            UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id)},
                         dataType: 'json',
                         success: function (states) {
                             HomeGrid.saveOpenStates("plangridState");
-
                             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
                             var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
 
@@ -841,10 +772,12 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 HomeGrid.cells(campid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newCampVal)));
                                 HomeGrid.cells(planid, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newPlanVal)));
                                 HomeGrid.cells(rowId, PlannedCostColIndex).setValue((CurrencySybmol + numberWithCommas(newcostValue)));
+                                if (TotalRowIds != "" && TotalRowIds != undefined) {
                                 for (var i = 0; i < TotalRowIds.split(',').length; i++) {
                                     if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") != "False") {
                                         HomeGrid.cells(TotalRowIds.split(',')[i], PlannedCostColIndex).setValue(CurrencySybmol + numberWithCommas(newcostValue - states.lineItemCost));
                                     }
+                                }
                                 }
 
                             }
@@ -873,16 +806,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                                 $('#ExpSearch').css('display', 'block');
                                 GlobalSearch();
                             }
-                            if (UpdateColumn.toString().trim().indexOf("custom_") >= 0) {
-                                var ids = states.DependentCustomfield;
-                                if (ids != null && ids != undefined) {
-                                    for (var i = 0; i < ids.length; i++) {
-                                        var colIndex = HomeGrid.getColIndexById(ids[i].CustomFieldId);
-                                        if (colIndex != undefined && colIndex != '')
-                                            HomeGrid.cells(rowId, colIndex).setValue(ids[i].OptionValue);
-                                    }
-                                }
-                            }
+                           
                         }
                     });
                 }
@@ -1302,73 +1226,6 @@ function ExportToExcel(isHoneyComb) {
     }
 
 }
-//function to get dependent custom field options for tactic
-function GetCustomfieldOptionlist(customFieldId, entityid, cellInd, type) {
-   
-    var customoption = customfieldOptionList;
-    var optionlist;
-    var clistitem = [];
-    function filterbyparent(obj) {
-        if (obj.customFieldId == customFieldId && obj.ParentOptionId != null && obj.ParentOptionId.length > 0)
-            return true;
-        else
-            return false;
-    }
-    d = customoption.filter(filterbyparent);
-    IsDependentTextBox = false;
-    if (d != null && d.length > 0) {
-        var parentoptid = [];
-        $.each(d, function (i, item) {
-            if (parentoptid.indexOf(item.ParentOptionId[0]) < 0)
-                parentoptid.push(item.ParentOptionId[0]);
-        });
-        //ajax call
-        $.ajax({
-            url: urlContent + 'Plan/GetdependantOptionlist/',
-            traditional: true,
-            async: false,
-            data: {
-                customfieldId: customFieldId,
-                entityid: entityid,
-                parentoptionId: (parentoptid),
-                Customfieldtype: type
-            },
-            success: function (data) {
-                if (type == "ed" && data.IstextBoxDependent.toString().toLowerCase() == "true") {
-                    IsDependentTextBox = true;
-                    return false;
-                }
-                if (data != null && data.optionlist != null && data.optionlist.length > 0)
-                    optionlist = data.optionlist;
-                if (optionlist != null && optionlist.length > 0 && optionlist != undefined) {
-                    $.each(optionlist, function (i, item) {
-                        if (clistitem.indexOf(item.value) == -1)
-                            clistitem.push(item.value);
-                    });
-                    HomeGrid.registerCList(cellInd, clistitem);
-                }
-                else {
-                    HomeGrid.registerCList(cellInd, clistitem);
-                }
-            }
-        });
-    }
-    else {
-        function filterbyId(obj) {
-            if (obj.customFieldId == customFieldId)
-                return true;
-            else
-                return false;
-        }
-        optionlist = customoption.filter(filterbyId);
-        $.each(optionlist, function (i, item) {
-            clistitem.push(item.value);
-        });
-        HomeGrid.registerCList(cellInd, clistitem);
-    }
-
-}
-
 function opencombobox() {
     var topOffset = $(".rowselected td").offset().top;
     var windowHeight = $(".objbox").height();

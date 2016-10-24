@@ -26,12 +26,13 @@
     </div>
 </div>
 <script src="~/Scripts/js/Home/HomeGrid_Min.js"></script>
+
 <script type="text/javascript">
     gridname = "home";
 
     var tacticTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
     var lineItemTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.LineItemTypelist))');
-    var customfieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.CustomAttributOption))'); // added by devanshi
+    
 
     var IslineItemDelete = false;
 
