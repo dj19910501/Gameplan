@@ -956,14 +956,14 @@ function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
         dataType: 'json',
         success: function (data) {
             if (data.IsLocked == "1") {
-                HomeGrid.cells(rowId, TaskNameColIndex).setAttribute("locked", data.IsLocked);
-                HomeGrid.cells(rowId, StartDateColIndex).setAttribute("locked", data.IsLocked);
-                HomeGrid.cells(rowId, EndDateColIndex).setAttribute("locked", data.IsLocked);
-                HomeGrid.cells(rowId, PlannedCostColIndex).setAttribute("locked", data.IsLocked);
-                HomeGrid.cells(rowId, AssetTypeColIndex).setAttribute("locked", data.IsLocked);
-                HomeGrid.cells(rowId, TypeColIndex).setAttribute("locked", data.IsLocked);
-                HomeGrid.cells(rowId, OwnerColIndex).setAttribute("locked", data.IsLocked);
-                HomeGrid.cells(rowId, TargetStageGoalColIndex).setAttribute("locked", data.IsLocked);
+                HomeGrid.cells(rowId, TaskNameColIndex).setAttribute("lo", data.IsLocked);
+                HomeGrid.cells(rowId, StartDateColIndex).setAttribute("lo", data.IsLocked);
+                HomeGrid.cells(rowId, EndDateColIndex).setAttribute("lo", data.IsLocked);
+                HomeGrid.cells(rowId, PlannedCostColIndex).setAttribute("lo", data.IsLocked);
+                HomeGrid.cells(rowId, AssetTypeColIndex).setAttribute("lo", data.IsLocked);
+                HomeGrid.cells(rowId, TypeColIndex).setAttribute("lo", data.IsLocked);
+                HomeGrid.cells(rowId, OwnerColIndex).setAttribute("lo", data.IsLocked);
+                HomeGrid.cells(rowId, TargetStageGoalColIndex).setAttribute("lo", data.IsLocked);
                 HomeGrid.setCellTextStyle(rowId, TaskNameColIndex, data.cellTextColor);
                 HomeGrid.setCellTextStyle(rowId, StartDateColIndex, data.cellTextColor);
                 HomeGrid.setCellTextStyle(rowId, EndDateColIndex, data.cellTextColor);
