@@ -166,6 +166,15 @@
                 isCopyTacticHomeGrid = 0;
 
             });
+            //Added to manage the tactic ids for on demand load of line items
+            HomeGrid.attachEvent("onOpenStart", function (id, state) {//state: -1=expanded, 1= collapse
+                var entType = HomeGrid.cells(id, ActivitypeHidden).getValue();
+                if (entType == 'Tactic') {
+                    var entId = HomeGrid.cells(id, GridHiddenId).getValue();
+                    ManageTacticIds(entId);
+                }
+                return true;
+            });
             var machineNameindex = HomeGrid.getColIndexById("MachineName");
             var LinkTacticId = HomeGrid.getColIndexById("LinkTacticId");
             var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");

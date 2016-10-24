@@ -33,6 +33,7 @@
 @Html.Hidden("hdnShowInspectForPlanLineItemId", ShowInspectForPlanLineItemId)
 @Html.Hidden("hdnIsImprovement", isImprovement)
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
+@Html.Hidden("ExpandedTacticIds") @*Added to manage the tactic ids for on demand load of line items*@
 <!-- Stylesheet Only For Homepage -->
 @section FilterEx{
     <link href="~/Content/css/styleIndexPage_min_24.css" rel="stylesheet" />
@@ -554,6 +555,24 @@
     $(".closeCreateNewView").click(function () {
         $('#CreateNewView').hide();
     });
+    //Added to manage the tactic ids for on demand load of line items
+    function ManageTacticIds(entId, state) {
+        var savedTacticIds = $('#ExpandedTacticIds').val().split(',');
+        if (state == -1) {
+            if ($.inArray(entId, savedTacticIds) == -1) {
+                savedTacticIds.push(entId);
+            }
+        }
+        else if (state == 1) {
+            savedTacticIds = jQuery.grep(savedTacticIds, function (value) {
+                return value != entId;
+            });
+        }
+        $('#ExpandedTacticIds').val(savedTacticIds.toString());
+    }
+    function CleareTacticIds() {
+        $('#ExpandedTacticIds').val('');
+    }
 </script>
 
 @section nlFormContent{

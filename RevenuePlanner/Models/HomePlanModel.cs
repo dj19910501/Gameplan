@@ -411,6 +411,15 @@ namespace RevenuePlanner.Models
         public List<PlanDHTMLXGridDataModelHomeGrid> rows { get; set; }
     }
 
+
+    public class PlanDHTMLXGridDataModelLineItem
+    {
+        public string id { get; set; }
+        public string CSValue { get; set; }
+        public List<PlanGridDataobj> data { get; set; }
+        public Planuserdatagrid userdata { get; set; }
+    }
+
     public class PlanGridDataobj
     {
         public string value { get; set; }

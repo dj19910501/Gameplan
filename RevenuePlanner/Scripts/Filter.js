@@ -905,6 +905,7 @@ var SavePresetValue = false;
 function UpdatePlan() {
 
     $('#txtGlobalSearch').val('');
+    CleareTacticIds();
     if ($('#ExpClose').css('display') == 'block')
     {
         $('#ExpSearch').css('display', 'block');

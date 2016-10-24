@@ -11,7 +11,7 @@ namespace RevenuePlanner.Services
     {
         // Add By Nishant Sheth
         // Get plan grid data
-        PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string onerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy);
+        PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string onerIds, string TacticTypeid, string StatusIds, string customFieldIds, string PlanCurrencySymbol, double PlanExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy,string ExpandedtacticIds);
         // End plan grid data
 
         // Start: Calendar related functions
@@ -21,5 +21,9 @@ namespace RevenuePlanner.Services
 
         List<PlanOptionsTacticType> GetTacticTypeListForHeader(string strPlanIds, int ClientId);
         List<PlanOptionsTacticType> GetLineItemTypeListForHeader(string strPlanIds, int ClientId);
+        List<GridDefaultModel> GetTacticLineItemListForGrid(string tacticId);
+        List<PlanGridDataobj> GridDataRow(GridDefaultModel Row, List<string> usercolindex);
+        Dictionary<string, PlanHead> lstHomeGrid_Default_Columns(bool IsIntegration = false);
+        GridDefaultModel Projection(GridDefaultModel RowData, IEnumerable<string> props, string viewBy);
     }
 }

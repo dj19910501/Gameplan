@@ -32,7 +32,7 @@
 
     var tacticTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
     var lineItemTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.LineItemTypelist))');
-    
+
 
     var IslineItemDelete = false;
 
@@ -62,7 +62,7 @@
             $("#totalEntity").text(ExportSelectedIds.TaskID.length);
             $(".honeycombbox").show();
         }
-        
+
         $('#cancel-button_Movetactic').on("click", function () {
             $('#divMovetacticPopup').modal("hide");
 
@@ -90,106 +90,120 @@
                 TacticTypeid: filters.TacticTypeids.toString(),
                 StatusIds: filters.StatusIds.toString(),
                 customFieldIds: filters.customFieldIds.toString(),
-                viewBy: $('#ddlTabViewBy').val()
+                viewBy: $('#ddlTabViewBy').val(),
+                ExpandedtacticIds: $('#ExpandedTacticIds').val()
             },
-            cache:false,
+            cache: false,
             success: function (result) {
                 try {
-                    var JsonModel = result.data;
-        HomeGrid = new dhtmlXGridObject('gridbox');
-        var imgpath = '@Url.Content("~/codebase/imgs/")';
-        HomeGrid.setImagePath(imgpath);
-        HomeGrid.enableDragAndDrop(true);
-        HomeGrid.enableAutoHeight(false);
-        HomeGrid.enableAutoWidth(false);        
-        HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
-            if (IsManageviewClick) {
-                IsManageviewClick = false;
-                return false;
-            }
-            else if (IsManageDropdown) {
-                IsManageviewClick = false;
-                return false;
-            }
-            else
-                return true;
-        });       
-        HomeGrid.setImageSize(1, 1);
-        HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
-        HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
-        HomeGrid.enableEditTabOnly(true);;
-        HomeGrid.csvParser = HomeGrid.csvExtParser;
-        HomeGrid.init();
-        HomeGrid.attachEvent("onDistributedEnd", function () {
-            LoadAfterParsing();
-            if (scrollstate != null && scrollstate != undefined) {
-                HomeGrid.objBox.scrollTop = scrollstate.y;
-            }
-        });
-        HomeGrid.attachEvent("onRowSelect", function (id, ind) {
-            isEditTacticHomeGrid = id;
-            isCopyTacticHomeGrid = 0;
+                    //var JsonModel = result.data;
+                    HomeGrid = new dhtmlXGridObject('gridbox');
+                    var imgpath = '@Url.Content("~/codebase/imgs/")';
+                    HomeGrid.setImagePath(imgpath);
+                    HomeGrid.enableDragAndDrop(true);
+                    HomeGrid.enableAutoHeight(false);
+                    HomeGrid.enableAutoWidth(false);
+                    HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
+                        if (IsManageviewClick) {
+                            IsManageviewClick = false;
+                            return false;
+                        }
+                        else if (IsManageDropdown) {
+                            IsManageviewClick = false;
+                            return false;
+                        }
+                        else
+                            return true;
+                    });
+                    HomeGrid.setImageSize(1, 1);
+                    HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
+                    HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
+                    HomeGrid.enableEditTabOnly(true);;
+                    HomeGrid.csvParser = HomeGrid.csvExtParser;
+                    HomeGrid.init();
+                    HomeGrid.attachEvent("onDistributedEnd", function () {
+                        LoadAfterParsing();
+                        if (scrollstate != null && scrollstate != undefined) {
+                            HomeGrid.objBox.scrollTop = scrollstate.y;
+                        }
+                    });
+                    HomeGrid.attachEvent("onRowSelect", function (id, ind) {
+                        isEditTacticHomeGrid = id;
+                        isCopyTacticHomeGrid = 0;
 
-        });
-        HomeGrid.enableDistributedParsing(true, 10, 0.1);
-        HomeGrid.enableColumnMove(true);
-                    var mainGridData = JSON.stringify(JsonModel);
+                    });
+                    //Added to manage the tactic ids for on demand load of line items
+                    HomeGrid.attachEvent("onOpenStart", function (id, state) {//state: -1=expanded, 1= collapse
+                        var entType = HomeGrid.cells(id, ActivitypeHidden).getValue();
+
+                        if (entType == 'Tactic') {
+                            var entId = HomeGrid.cells(id, GridHiddenId).getValue();
+                            ManageTacticIds(entId, state);
+                            if (state == -1) {
+                                AddLineItemsDataToGrid(id, entId);
+                            }
+                        }
+                        return true;
+                    });
+                    HomeGrid.enableDistributedParsing(true, 10, 0.1);
+                    HomeGrid.enableColumnMove(true);
+                    //var mainGridData = JSON.stringify(JsonModel);
                     //mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
                     //GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-                    HomeGrid.parse(mainGridData, "json");
+                    HomeGrid.parse(result.data, "json");
                     GridHideColumn();
-        
-        HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
-        colSplitId = HomeGrid.getColIndexById(AddId);
-        HomeGrid.splitAt(colSplitId + 1);
-        MoveColumn(); ///Calling Move column function   
-        var cookie = document.cookie;
-        if (cookie.indexOf("gridOpenplangridState") > -1) {
-      
-            HomeGrid.collapseAll();
-            
-            HomeGrid.loadOpenStates("plangridState");
-            setTimeout(function () {
-            HomeGrid.objBox.scrollTop = scrollstate.y;
 
-             }, 100);
-        }
-        HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
+                    HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
+                    colSplitId = HomeGrid.getColIndexById(AddId);
+                    HomeGrid.splitAt(colSplitId + 1);
+                    MoveColumn(); ///Calling Move column function
+                    var cookie = document.cookie;
+                    if (cookie.indexOf("gridOpenplangridState") > -1) {
+
+                        HomeGrid.collapseAll();
+
+                        HomeGrid.loadOpenStates("plangridState");
+                        setTimeout(function () {
+                            HomeGrid.objBox.scrollTop = scrollstate.y;
+
+                        }, 100);
+                    }
+                    HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
 
                     var count = HomeGrid.getRowsNum();
                     //alert(count)
-        LoadAfterParsing();
+                    LoadAfterParsing();
 
-                    
+
                     if (parseInt(count) > 0) {
-            $("#gridbox").show();
-            $("#goalwrapper").show();
-            $("#NodatawithfilterGrid").hide();
+                        $("#gridbox").show();
+                        $("#goalwrapper").show();
+                        $("#NodatawithfilterGrid").hide();
 
-        } else {
-            var noplan = '@Sessions.IsNoPlanCreated';
-            if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
-                AddBlankRow();
-                $("#gridbox").show();
-                $("#goalwrapper").show();
-                $("#NodatawithfilterGrid").hide();
-            }
-            else {
-                $("#gridbox").hide();
-                $("#goalwrapper").hide();
-                $("#NodatawithfilterGrid").show();
-            }
-            $('#exp-serach').hide();
-        }
-        if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
-            GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
-        }
+                    } else {
+                        var noplan = '@Sessions.IsNoPlanCreated';
+                        if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
+                            AddBlankRow();
+                            $("#gridbox").show();
+                            $("#goalwrapper").show();
+                            $("#NodatawithfilterGrid").hide();
+                        }
+                        else {
+                            $("#gridbox").hide();
+                            $("#goalwrapper").hide();
+                            $("#NodatawithfilterGrid").show();
+                        }
+                        $('#exp-serach').hide();
+                    }
+                    if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+                        GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
+                    }
                     HomeGrid.enableEditEvents(true, false, true);
                     SetTooltip();
                 } catch (e) {
                     $('#loader').css('display', 'none');
                 }
-                
+
             },
             error: function (ex) {
                 alert(ex);
@@ -237,5 +251,29 @@
         HomeGrid.setCellTextStyle("newRow_0", taskcolindex, "color:gray;font-style: italic;");
         var colourCodeIndex = HomeGrid.getColIndexById("ColourCode");
         HomeGrid.setColumnHidden(colourCodeIndex, true);
+    }
+    function AddLineItemsDataToGrid(tacid, intTacId) {
+        $.ajax({
+            type: 'GET',
+            async: 'true',
+            url: urlContent + 'Plan/GetTacticLineItemsForGridData',
+            data: { TacticId: intTacId },
+            success: function (data) {
+                var lineData = data.lineItemRows;
+                if (lineData != null && lineData != 'undefined') {
+
+                    var cnt = 0;
+                    $.each(lineData, function (key, value) {
+                        var id = value.id;
+                        var data = value.CSValue;
+                        var seqiance = '';
+                        var parentId = '';
+                        HomeGrid.addRow(id, data, cnt, tacid);
+                        cnt++;
+                    });
+                    HomeGrid.openItem(tacid);
+                }
+            }
+        });
     }
 </script>

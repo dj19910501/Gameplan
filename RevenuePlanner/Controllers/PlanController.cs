@@ -6781,7 +6781,7 @@ namespace RevenuePlanner.Controllers
         }
 
         [CompressAttribute]
-        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy)
+        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy,string ExpandedtacticIds)
         {
             PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
             try
@@ -6798,7 +6798,7 @@ namespace RevenuePlanner.Controllers
                 if (string.IsNullOrEmpty(viewBy))
                     viewBy = PlanGanttTypes.Tactic.ToString();
 
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds, viewBy);
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds, viewBy,ExpandedtacticIds);
             }
             catch (Exception objException)
             {
@@ -9744,7 +9744,35 @@ namespace RevenuePlanner.Controllers
             return Json(new { optionlist = CustomFieldOptionList, IstextBoxDependent = IstextBoxDependent }, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetTacticLineItemsForGridData(string TacticId)
+        {
+            List<GridDefaultModel> lstLineItemRows = new List<GridDefaultModel>();
+            lstLineItemRows = objGrid.GetTacticLineItemListForGrid(TacticId);
+            List<PlanDHTMLXGridDataModelLineItem> lstDHTMLXRows = new List<PlanDHTMLXGridDataModelLineItem>();
 
+            PlanDHTMLXGridDataModelLineItem objPlanMainDHTMLXGrid = null;
+            List<PlanGridDataobj> lstPlanGrid = null;
+
+            Dictionary<string, PlanHead> DictDefaultCoulmns = objGrid.lstHomeGrid_Default_Columns();
+            //DictDefaultCoulmns.Where(a => a.Key == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL)).FirstOrDefault().Value.value = MqlString;
+            List<PlanHead> lstDefaultColumns = DictDefaultCoulmns.Select(a => a.Value).ToList();
+            // Update UserDefinedColumns variable with default columns list
+            List<string> UserDefinedColumns = lstDefaultColumns.Select(a => a.id).ToList();
+
+            List<GridDefaultModel> lstSelectedColumnsData = lstLineItemRows.Select(a => objGrid.Projection(a, UserDefinedColumns, "Tactic")).ToList();
+            foreach (GridDefaultModel row in lstSelectedColumnsData)
+            {
+                lstPlanGrid = objGrid.GridDataRow(row, null);
+
+                objPlanMainDHTMLXGrid = new PlanDHTMLXGridDataModelLineItem();
+                objPlanMainDHTMLXGrid.id = row.UniqueId;
+                objPlanMainDHTMLXGrid.data = lstPlanGrid;
+                objPlanMainDHTMLXGrid.CSValue = string.Join(",", lstPlanGrid.Select(x => x.value).ToArray());
+                lstDHTMLXRows.Add(objPlanMainDHTMLXGrid);
+            }
+
+            return Json(new { lineItemRows = lstDHTMLXRows }, JsonRequestBehavior.AllowGet);
+        }
 
         public void GetCacheValue()
         {

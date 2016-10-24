@@ -54,10 +54,10 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// call stored procedure to get list of plan and all related entities for home grid, based on client and filters selected by user 
         /// <summary>
-        public List<GridDefaultModel> GetGridDefaultData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy)
+        public List<GridDefaultModel> GetGridDefaultData(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy, string ExpandedtacticIds)
         {
             List<GridDefaultModel> EntityList = new List<GridDefaultModel>();
-            SqlParameter[] para = new SqlParameter[6];
+            SqlParameter[] para = new SqlParameter[7];
 
             para[0] = new SqlParameter { ParameterName = "PlanId", Value = PlanIds };
 
@@ -71,8 +71,16 @@ namespace RevenuePlanner.Services
 
             para[5] = new SqlParameter { ParameterName = "ViewBy", Value = viewBy };
 
+            if (!string.IsNullOrEmpty(ExpandedtacticIds))
+            {
+                para[6] = new SqlParameter { ParameterName = "ExpandedtactictypeIds", Value = ExpandedtacticIds };
+            }
+            else
+            {
+                para[6] = new SqlParameter { ParameterName = "ExpandedtactictypeIds", Value = DBNull.Value };
+            }
             EntityList = objDbMrpEntities.Database
-                .SqlQuery<GridDefaultModel>("GetGridData @PlanId,@ClientId,@OwnerIds,@TacticTypeIds,@StatusIds,@ViewBy", para)
+                .SqlQuery<GridDefaultModel>("GetGridData @PlanId,@ClientId,@OwnerIds,@TacticTypeIds,@StatusIds,@ViewBy,@ExpandedtactictypeIds", para)
                 .OrderBy(a => a.EntityTitle).ToList();
             return EntityList;
         }
@@ -85,7 +93,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Get plan grid data with default and custom fields columns 
         /// </summary>
-        public PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy)
+        public PlanMainDHTMLXGridHomeGrid GetPlanGrid(string PlanIds, int ClientId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string CurrencySymbol, double ExchangeRate, int UserId, EntityPermission objPermission, List<int> lstSubordinatesIds, string viewBy, string ExpandedtacticIds)
         {
             _ClientId = ClientId;
             _UserId = UserId;
@@ -127,7 +135,7 @@ namespace RevenuePlanner.Services
             List<PlanHead> ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle, ref HiddenColumns, ref UserDefinedColumns, UserId, ref IsUserView);
 
             //Get list of entities for plan grid
-            List<GridDefaultModel> GridHireachyData = GetGridDefaultData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds, viewBy);
+            List<GridDefaultModel> GridHireachyData = GetGridDefaultData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds, viewBy,ExpandedtacticIds);
 
             //Filter custom field
             if (GridHireachyData != null && GridHireachyData.Count > 0 && !string.IsNullOrEmpty(customFieldIds))
@@ -249,6 +257,10 @@ namespace RevenuePlanner.Services
                 if (ChildernCount > 0)
                     return objHomeGridProp.openstateone;
             }
+            else if (EntityType == Enums.EntityType.Tactic)
+            {
+                    return "-1";
+            }
             return string.Empty;
         }
         #endregion
@@ -320,7 +332,7 @@ namespace RevenuePlanner.Services
         }
 
         // Below dictionary for default columns list of home grid // We are set the dhtmlx header properties 
-        private Dictionary<string, PlanHead> lstHomeGrid_Default_Columns(bool IsIntegration = false)
+        public Dictionary<string, PlanHead> lstHomeGrid_Default_Columns(bool IsIntegration = false)
         {
             Dictionary<string, PlanHead> lstColumns = new Dictionary<string, PlanHead>();
 
@@ -678,7 +690,7 @@ namespace RevenuePlanner.Services
             }
 
             // Set the values of row
-            List<PlanGridDataobj> EntitydataobjItem = GridDataRow(Row, PlanCurrencySymbol, PlanExchangeRate, usercolindex);
+            List<PlanGridDataobj> EntitydataobjItem = GridDataRow(Row, usercolindex);
             return new PlanDHTMLXGridDataModelHomeGrid { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
         }
         #endregion
@@ -688,7 +700,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Set the grid rows for entities
         /// </summary>
-        public List<PlanGridDataobj> GridDataRow(GridDefaultModel Row, string PlanCurrencySymbol, double PlanExchangeRate, List<string> usercolindex)
+        public List<PlanGridDataobj> GridDataRow(GridDefaultModel Row, List<string> usercolindex)
         {
             List<PlandataobjColumn> lstOrderData = new List<PlandataobjColumn>();
             #region Set Default Columns Values
@@ -1977,6 +1989,24 @@ namespace RevenuePlanner.Services
                                                             }
                                  ).ToList();
             return lstLineItemTypes;
+        }
+
+
+        // Get Tactic line items
+        public List<GridDefaultModel> GetTacticLineItemListForGrid(string tacticId)
+        {
+            List<GridDefaultModel> EntityList = new List<GridDefaultModel>();
+            SqlParameter[] para = new SqlParameter[1];
+            para[0] = new SqlParameter
+            {
+                ParameterName = "TacticIds",
+                Value = tacticId
+            };
+
+            EntityList = objDbMrpEntities.Database
+                .SqlQuery<GridDefaultModel>("GetTacticLineItemsForGrid @TacticIds", para)
+                .OrderBy(a => a.EntityTitle).ToList();
+            return EntityList;
         }
     }
 
