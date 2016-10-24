@@ -601,9 +601,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 if (oldTacticTypeid.length > 0) {
                     oValue = oldTacticTypeid[0].id;
                 }
-
                 var tacticTypeId = nValue;
-                var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');
+                var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div.honeycombbox-icon-gantt');
                 var arrTacTypes = tacticTypefieldOptionList;
                 var newAssetType = arrTacTypes.filter(function (v) {
                     return v.id == tacticTypeId;
@@ -614,7 +613,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 if (objHoneyComb != undefined && objHoneyComb != null) {
                     var anchorTacId = objHoneyComb.attr('anchortacticid');
                     if (anchorTacId != null && anchorTacId != "0") {
-                        if (oldAssetType != null && oldAssetType != "" && oldAssetType != newAssetType && oldAssetType.toLowerCase() == AssetTypeAsset.ToLower()) {
+                        if (oldAssetType != null && oldAssetType != "" && oldAssetType != newAssetType && oldAssetType.toLowerCase() == AssetTypeAsset.toLowerCase()) {
                             var retValue = confirm('Package associated to this tactic will be deleted. Do you wish to continue?');
                             if (!retValue) {
                                 return false;
@@ -622,7 +621,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         }
                     }
                 }
-                if (IsMediaCodePermission == 'true' && newAssetType != null && newAssetType != "" && oldAssetType != newAssetType && newAssetType.toLowerCase() == AssetTypeAsset.ToLower()) {
+                if (IsMediaCodePermission == 'true' && newAssetType != null && newAssetType != "" && oldAssetType != newAssetType && newAssetType.toLowerCase() == AssetTypeAsset.toLowerCase()) {
                     var retValue = confirm('Media code associated to this tactic will be deleted. Do you wish to continue?');
                     if (!retValue) {
                         return false;
@@ -645,6 +644,8 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             }
                             if (data.TacticTypeName != "" && data.TacticTypeName != null) {
                                 $("div[taskId='" + TaskID + "']").attr('tactictype', data.TacticTypeName);
+                                $("div[taskId='" + TaskID + "']").attr('roitactictype', newAssetType);
+
                             }
                             pcost = data.revenue;
                             var stagetitle = data.stageTitle;
