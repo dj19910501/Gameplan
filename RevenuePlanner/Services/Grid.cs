@@ -1948,7 +1948,8 @@ namespace RevenuePlanner.Services
                                                           {
                                                               PlanId = plan.PlanId,
                                                               id = tactictypes.TacticTypeId,
-                                                              value = tactictypes.Title
+                                                              value = tactictypes.Title,
+                                                              Type=tactictypes.AssetType
                                                           }
                                  ).ToList();
             return lstTacticTypes;

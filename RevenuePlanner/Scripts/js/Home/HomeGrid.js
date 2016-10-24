@@ -546,10 +546,10 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 var objHoneyComb = $(HomeGrid.getRowById(rowId)).find('div[id=TacticAdd]');
                 var arrTacTypes = tacticTypefieldOptionList;
                 var newAssetType = arrTacTypes.filter(function (v) {
-                    return v.TacticTypeId == tacticTypeId;
+                    return v.id == tacticTypeId;
                 });
                 if (newAssetType != null && newAssetType.length > 0) {
-                    newAssetType = newAssetType[0].AssetType;
+                    newAssetType = newAssetType[0].Type;
                 }
                 if (objHoneyComb != undefined && objHoneyComb != null) {
                     var anchorTacId = objHoneyComb.attr('anchortacticid');
@@ -596,6 +596,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             HomeGrid.setUserData(rowId, "stage", stagetitle);
                             HomeGrid.setUserData(rowId, "tactictype", tacticTypeId);
                             GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue, data.stageId);
+                             HomeGrid.cells(rowId, AssetTypeColIndex).setValue(newAssetType);
                         }
                     });
                     return true;
