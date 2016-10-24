@@ -80,22 +80,22 @@
 
     var GridDataHomeGrid;
     function BindHomeGrid() {
-        
+        filters = GetFilterIds();
         $.ajax({
-            url: urlContent + 'Plan/GetHomeGridDataJSON/',
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetHomeGridDataJSON/")', //urlContent + 'Plan/GetHomeGridDataJSON/',
             data: {
                 planIds: filters.PlanIDs.toString(),
                 ownerIds: filters.OwnerIds.toString(),
                 TacticTypeid: filters.TacticTypeids.toString(),
                 StatusIds: filters.StatusIds.toString(),
-                customFieldIds: [],
+                customFieldIds: filters.customFieldIds.toString(),
                 viewBy: $('#ddlTabViewBy').val()
             },
             cache:false,
             success: function (result) {
                 try {
                     var JsonModel = result.data;
-                    //debugger;
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
