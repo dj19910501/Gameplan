@@ -155,6 +155,7 @@ namespace RevenuePlanner.Models
         public double Budgeted { get; set; }
         public double Actual { get; set; }
         public double Planned { get; set; }
+        public double TotalCost { get; set; }
 
         public int? LineItemTypeId { get; set; }
         public int Weightage { get; set; }

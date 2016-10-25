@@ -2811,6 +2811,7 @@ namespace RevenuePlanner.Controllers
                         obj.ActivityType = ActivityType.ActivityPlan;
                         obj.ParentActivityId = parentMainId;
                         obj.TabActivityId = p.PlanId.ToString();
+                        obj.TotalCost = 0;
                         obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                         obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                         obj = GetMonthWiseDataReport(obj, planbudgetlist.Where(planbudget => planbudget.PlanId == p.PlanId).Select(b => new BudgetedValue
@@ -2832,6 +2833,7 @@ namespace RevenuePlanner.Controllers
                             obj.ActivityType = ActivityType.ActivityCampaign;
                             obj.ParentActivityId = parentPlanId;
                             obj.TabActivityId = p.PlanId.ToString();
+                            obj.TotalCost = 0;
                             obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                             obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                             obj = GetMonthWiseDataReport(obj, campaignbudgetlist.Where(pcb => pcb.PlanCampaignId == c.PlanCampaignId).Select(b => new BudgetedValue
@@ -2853,6 +2855,7 @@ namespace RevenuePlanner.Controllers
                                 obj.ActivityType = ActivityType.ActivityProgram;
                                 obj.ParentActivityId = parentCampaignId;
                                 obj.TabActivityId = p.PlanId.ToString();
+                                obj.TotalCost = 0;
                                 obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
                                 obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                                 obj = GetMonthWiseDataReport(obj, programbudgetlist.Where(pcpb => pcpb.PlanProgramId == pr.PlanProgramId).Select(b => new BudgetedValue
@@ -2874,6 +2877,7 @@ namespace RevenuePlanner.Controllers
                                     obj.ActivityType = ActivityType.ActivityTactic;
                                     obj.ParentActivityId = parentProgramId;
                                     obj.TabActivityId = p.PlanId.ToString();
+                                    obj.TotalCost = t.Cost;
                                     obj = GetMonthWiseDataReport(obj, tacticcostlist.Where(pcptc => pcptc.PlanTacticId == t.PlanTacticId).Select(b => new BudgetedValue
                                     {
                                         Period = b.Period,
@@ -2905,6 +2909,7 @@ namespace RevenuePlanner.Controllers
                                         obj.ActivityType = ActivityType.ActivityLineItem;
                                         obj.ParentActivityId = parentTacticId;
                                         obj.TabActivityId = p.PlanId.ToString();
+                                        obj.TotalCost = l.Cost;
                                         obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue
                                         {
                                             Period = b.Period,
@@ -4063,7 +4068,7 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObj = new Budgetdataobj();
                     if (Activitytype == ActivityType.ActivityLineItem && plannedValue <= 0)
                     {
-                        BudgetDataObj.value = "<div id=" + DivId + ">" + "---" + "</div>";
+                        BudgetDataObj.value = "<div id=" + DivId + ">" + actualValue + "</div>";
                     }
                     else if (Activitytype != ActivityType.ActivityLineItem && Activitytype != Helpers.ActivityType.ActivityTactic)
                     {
@@ -4101,7 +4106,7 @@ namespace RevenuePlanner.Controllers
                     BudgetDataObj = new Budgetdataobj();
                     if (Activitytype == ActivityType.ActivityLineItem && plannedValue <= 0)
                     {
-                        BudgetDataObj.value = "<div id=" + DivId + ">" + "---" + "</div>";
+                        BudgetDataObj.value = "<div id=" + DivId + ">" + plannedValue + "</div>";
                     }
                     else if (Activitytype != ActivityType.ActivityLineItem && Activitytype != ActivityType.ActivityTactic)
                     {
@@ -4176,13 +4181,13 @@ namespace RevenuePlanner.Controllers
             double dblProgress = 0;
             Budgetdataobj BudgetDataObj;
             double sumMonthActual = bm.MonthActual.BudgetY1 + bm.MonthActual.BudgetY2 + bm.MonthActual.BudgetY3 + bm.MonthActual.BudgetY4 + bm.MonthActual.BudgetY5 + bm.MonthActual.BudgetY6 + bm.MonthActual.BudgetY7 + bm.MonthActual.BudgetY8 + bm.MonthActual.BudgetY9 + bm.MonthActual.BudgetY10 + bm.MonthActual.BudgetY11 + bm.MonthActual.BudgetY12;
-            double sumMonthPlanned = bm.MonthPlanned.BudgetY1 + bm.MonthPlanned.BudgetY2 + bm.MonthPlanned.BudgetY3 + bm.MonthPlanned.BudgetY4 + bm.MonthPlanned.BudgetY5 + bm.MonthPlanned.BudgetY6 + bm.MonthPlanned.BudgetY7 + bm.MonthPlanned.BudgetY8 + bm.MonthPlanned.BudgetY9 + bm.MonthPlanned.BudgetY10 + bm.MonthPlanned.BudgetY11 + bm.MonthPlanned.BudgetY12;
+            double sumMonthPlanned = bm.TotalCost;//bm.MonthPlanned.BudgetY1 + bm.MonthPlanned.BudgetY2 + bm.MonthPlanned.BudgetY3 + bm.MonthPlanned.BudgetY4 + bm.MonthPlanned.BudgetY5 + bm.MonthPlanned.BudgetY6 + bm.MonthPlanned.BudgetY7 + bm.MonthPlanned.BudgetY8 + bm.MonthPlanned.BudgetY9 + bm.MonthPlanned.BudgetY10 + bm.MonthPlanned.BudgetY11 + bm.MonthPlanned.BudgetY12;
             double sumMonthAllocated = bm.MonthAllocated.BudgetY1 + bm.MonthAllocated.BudgetY2 + bm.MonthAllocated.BudgetY3 + bm.MonthAllocated.BudgetY4 + bm.MonthAllocated.BudgetY5 + bm.MonthAllocated.BudgetY6 + bm.MonthAllocated.BudgetY7 + bm.MonthAllocated.BudgetY8 + bm.MonthAllocated.BudgetY9 + bm.MonthAllocated.BudgetY10 + bm.MonthAllocated.BudgetY11 + bm.MonthAllocated.BudgetY12;
             double sumMonthChildAllocated = bm.ChildMonthAllocated.BudgetY1 + bm.ChildMonthAllocated.BudgetY2 + bm.ChildMonthAllocated.BudgetY3 + bm.ChildMonthAllocated.BudgetY4 + bm.ChildMonthAllocated.BudgetY5 + bm.ChildMonthAllocated.BudgetY6 + bm.ChildMonthAllocated.BudgetY7 + bm.ChildMonthAllocated.BudgetY8 + bm.ChildMonthAllocated.BudgetY9 + bm.ChildMonthAllocated.BudgetY10 + bm.ChildMonthAllocated.BudgetY11 + bm.ChildMonthAllocated.BudgetY12;
 
             //Actual
             BudgetDataObj = new Budgetdataobj();
-            if (Tab == ReportTabType.Plan.ToString())
+            if (Tab == ReportTabType.Plan.ToString() && bm.ActivityType != ActivityType.ActivityLineItem)
             {
                 dblProgress = 0;
                 dblProgress = (sumMonthActual == 0 && sumMonthAllocated == 0) ? 0 : (sumMonthActual > 0 && sumMonthAllocated == 0) ? 101 : sumMonthActual / sumMonthAllocated * 100;
@@ -4202,7 +4207,7 @@ namespace RevenuePlanner.Controllers
             BudgetDataObjList.Add(BudgetDataObj);
             //Planned
             BudgetDataObj = new Budgetdataobj();
-            if (Tab == ReportTabType.Plan.ToString())
+            if (Tab == ReportTabType.Plan.ToString() && bm.ActivityType != ActivityType.ActivityLineItem)
             {
                 dblProgress = 0;
                 dblProgress = (sumMonthPlanned == 0 && sumMonthAllocated == 0) ? 0 : (sumMonthPlanned > 0 && sumMonthAllocated == 0) ? 101 : sumMonthPlanned / sumMonthAllocated * 100;
@@ -4357,7 +4362,7 @@ namespace RevenuePlanner.Controllers
                         parent.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY11 * weightage) / 100) ?? 0;
                         parent.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY12 * weightage) / 100) ?? 0;
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
-                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
+                       // model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
 
                         //// Set parent Actual line values.
                         parentActual = new BudgetMonth();
@@ -4404,6 +4409,7 @@ namespace RevenuePlanner.Controllers
                     parent.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.BudgetY12) ?? 0;
                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
+                    model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().TotalCost = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.TotalCost) ?? 0;
 
                     //// Set parent Actual line values.
                     parentActual = new BudgetMonth();
@@ -4456,7 +4462,6 @@ namespace RevenuePlanner.Controllers
             {
                 BudgetMonth lineDiffPlanned = new BudgetMonth();
                 List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId).ToList();
-                //  List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && TacticID.Contains(line.ParentActivityId)).ToList();
                 if (lines.Count() > 0)
                 {
                     lineItems = lines;
@@ -4488,18 +4493,18 @@ namespace RevenuePlanner.Controllers
                             lineDiffPlanned.BudgetY11 = _budgModel.MonthPlanned.BudgetY11 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY11) ?? 0;
                             lineDiffPlanned.BudgetY12 = _budgModel.MonthPlanned.BudgetY12 - lines.Sum(lmon => (double?)lmon.MonthPlanned.BudgetY12) ?? 0;
 
-                            lineDiffPlanned.BudgetY1 = lineDiffPlanned.BudgetY1 < 0 ? 0 : lineDiffPlanned.BudgetY1;
-                            lineDiffPlanned.BudgetY2 = lineDiffPlanned.BudgetY2 < 0 ? 0 : lineDiffPlanned.BudgetY2;
-                            lineDiffPlanned.BudgetY3 = lineDiffPlanned.BudgetY3 < 0 ? 0 : lineDiffPlanned.BudgetY3;
-                            lineDiffPlanned.BudgetY4 = lineDiffPlanned.BudgetY4 < 0 ? 0 : lineDiffPlanned.BudgetY4;
-                            lineDiffPlanned.BudgetY5 = lineDiffPlanned.BudgetY5 < 0 ? 0 : lineDiffPlanned.BudgetY5;
-                            lineDiffPlanned.BudgetY6 = lineDiffPlanned.BudgetY6 < 0 ? 0 : lineDiffPlanned.BudgetY6;
-                            lineDiffPlanned.BudgetY7 = lineDiffPlanned.BudgetY7 < 0 ? 0 : lineDiffPlanned.BudgetY7;
-                            lineDiffPlanned.BudgetY8 = lineDiffPlanned.BudgetY8 < 0 ? 0 : lineDiffPlanned.BudgetY8;
-                            lineDiffPlanned.BudgetY9 = lineDiffPlanned.BudgetY9 < 0 ? 0 : lineDiffPlanned.BudgetY9;
-                            lineDiffPlanned.BudgetY10 = lineDiffPlanned.BudgetY10 < 0 ? 0 : lineDiffPlanned.BudgetY10;
-                            lineDiffPlanned.BudgetY11 = lineDiffPlanned.BudgetY11 < 0 ? 0 : lineDiffPlanned.BudgetY11;
-                            lineDiffPlanned.BudgetY12 = lineDiffPlanned.BudgetY12 < 0 ? 0 : lineDiffPlanned.BudgetY12;
+                            //lineDiffPlanned.BudgetY1 = lineDiffPlanned.BudgetY1 < 0 ? 0 : lineDiffPlanned.BudgetY1;
+                            //lineDiffPlanned.BudgetY2 = lineDiffPlanned.BudgetY2 < 0 ? 0 : lineDiffPlanned.BudgetY2;
+                            //lineDiffPlanned.BudgetY3 = lineDiffPlanned.BudgetY3 < 0 ? 0 : lineDiffPlanned.BudgetY3;
+                            //lineDiffPlanned.BudgetY4 = lineDiffPlanned.BudgetY4 < 0 ? 0 : lineDiffPlanned.BudgetY4;
+                            //lineDiffPlanned.BudgetY5 = lineDiffPlanned.BudgetY5 < 0 ? 0 : lineDiffPlanned.BudgetY5;
+                            //lineDiffPlanned.BudgetY6 = lineDiffPlanned.BudgetY6 < 0 ? 0 : lineDiffPlanned.BudgetY6;
+                            //lineDiffPlanned.BudgetY7 = lineDiffPlanned.BudgetY7 < 0 ? 0 : lineDiffPlanned.BudgetY7;
+                            //lineDiffPlanned.BudgetY8 = lineDiffPlanned.BudgetY8 < 0 ? 0 : lineDiffPlanned.BudgetY8;
+                            //lineDiffPlanned.BudgetY9 = lineDiffPlanned.BudgetY9 < 0 ? 0 : lineDiffPlanned.BudgetY9;
+                            //lineDiffPlanned.BudgetY10 = lineDiffPlanned.BudgetY10 < 0 ? 0 : lineDiffPlanned.BudgetY10;
+                            //lineDiffPlanned.BudgetY11 = lineDiffPlanned.BudgetY11 < 0 ? 0 : lineDiffPlanned.BudgetY11;
+                            //lineDiffPlanned.BudgetY12 = lineDiffPlanned.BudgetY12 < 0 ? 0 : lineDiffPlanned.BudgetY12;
 
                             model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthPlanned = lineDiffPlanned;
                             model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonthPlanned = lineDiffPlanned;
@@ -4512,6 +4517,7 @@ namespace RevenuePlanner.Controllers
                         {
                             model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthPlanned = _budgModel.MonthPlanned;
                             model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonthPlanned = _budgModel.MonthPlanned;
+                            model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthActual = _budgModel.MonthActual;
                             model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Planned = _budgModel.Planned < 0 ? 0 : _budgModel.Planned;
                         }
                     }
