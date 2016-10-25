@@ -4,11 +4,18 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     //ViewBag.Title = ViewBag.ActiveMenu;
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
-    int showInspectForPlanTacticId = ViewBag.ShowInspectForPlanTacticId;
-    int showInspectForPlanCampaignId = ViewBag.ShowInspectForPlanCampaignId; // variable added to show campagin popup from email url link click when email sent to user when comapign shared
-    int showInspectForPlanProgramId = ViewBag.ShowInspectForPlanProgramId; // variable added to show program popup from email url link click when email sent to user when program shared
-    int ShowInspectForPlanLineItemId = ViewBag.ShowInspectForPlanLineItemId; // variable added to show Plan LineItem popup from Finance page when user click on View button of LineItem Grid
-    bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
+    var ShowInspectPopup = ViewBag.ShowInspectPopup; //nullable  value
+    int showInspectForPlanTacticId = 0;
+    int showInspectForPlanCampaignId = 0;
+    int showInspectForPlanProgramId = 0;
+    int ShowInspectForPlanLineItemId = 0;
+    if (ShowInspectPopup != null && ShowInspectPopup)
+    {
+        showInspectForPlanTacticId = ViewBag.ShowInspectForPlanTacticId;
+        showInspectForPlanCampaignId = ViewBag.ShowInspectForPlanCampaignId; // variable added to show campagin popup from email url link click when email sent to user when comapign shared
+        showInspectForPlanProgramId = ViewBag.ShowInspectForPlanProgramId; // variable added to show program popup from email url link click when email sent to user when program shared
+        ShowInspectForPlanLineItemId = ViewBag.ShowInspectForPlanLineItemId; // variable added to show Plan LineItem popup from Finance page when user click on View button of LineItem Grid
+    }
     string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
@@ -21,7 +28,6 @@
     var TacticTaskColor = (string)ViewBag.TacticTaskColor;
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
-    var ShowInspectPopup = ViewBag.ShowInspectPopup; //nullable  value
     bool NoPlanCreated = (bool)Sessions.IsNoPlanCreated;
     int CurrentRequestPlanID = ViewBag.currentPlanId;
     int SelectedTacticid = ViewBag.SelectedTacticID;
@@ -31,7 +37,6 @@
 @Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
 @Html.Hidden("hdnSelectedPlanIds", 0, new { id = "hdnSelectedPlanIds" })
 @Html.Hidden("hdnShowInspectForPlanLineItemId", ShowInspectForPlanLineItemId)
-@Html.Hidden("hdnIsImprovement", isImprovement)
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 @Html.Hidden("ExpandedTacticIds") @*Added to manage the tactic ids for on demand load of line items*@
 <!-- Stylesheet Only For Homepage -->
@@ -41,7 +46,7 @@
 
 @* Sidebar Section Start *@
 @section Sidebar{
-<div id="divFilter"></div>
+    <div id="divFilter"></div>
 }
 
 
@@ -52,7 +57,7 @@
 
 
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
-<div id="gridExport" style="background-color:white;width:100%;display:none;"></div>
+<div id="gridExport" style="background-color: white; width: 100%; display: none;"></div>
 <div class="cf full-width-header" id="planHeader">
     <div class="sidebar-toogle">
         <a href="#" class="sidebar-filter-icon"><i class="fa fa-filter" aria-hidden="true" title="Show/Hide Filters"></i></a>
@@ -69,7 +74,7 @@
                 </a>
             </div>
             <div class="ix-icon-block">
-                <a id="ImportBtn" class="new-btn-plan-left" href="#" style="display:none" onclick="showModal();">@* P-icon-active class removed by Bhumika *@
+                <a id="ImportBtn" class="new-btn-plan-left" href="#" style="display: none" onclick="showModal();">@* P-icon-active class removed by Bhumika *@
                     <i class="fa fa-download" title="Import"></i><span>Import</span>
                 </a>
                 <a href="#" id="" class="new-btn-plan-right dropdown-toggle " data-toggle="dropdown">
@@ -77,12 +82,12 @@
                 </a>
                 <ul id="" class="dropdown-menu export-dd">
                     <li title=""><a href="#" id="ExportXls" onclick="ExportToExcel()">.xls</a></li>
-                    <li title=""><a href="#" id="ExportPDf" onclick="CallPDF()" style="display:none">PDF</a></li>
+                    <li title=""><a href="#" id="ExportPDf" onclick="CallPDF()" style="display: none">PDF</a></li>
                 </ul>
             </div>
 
             <!-- -->
-            <div id="divupcomingact" class="viewby-wrap" style="display:none">
+            <div id="divupcomingact" class="viewby-wrap" style="display: none">
                 <label id="lblUpcoming_Activies1" for="Time_Frame:">Time Frame:</label>
                 <span style="width: 100px;" id="ddlUpComingActivitesSelectBox" class="selectBox">
                     <select name="ddlUpComingActivites" id="ddlUpComingActivites" class="hide" sb="85765995" style="display: none;"></select>
@@ -100,7 +105,7 @@
 @* ================= Grid box start here ================= *@
 <div class="task-tbl clearfix">
     <!-- Searchbox is here Apply on all 3table grid, calendar and budget -->
-    <div id="exp-serach" class="clearfix" style="display:none">
+    <div id="exp-serach" class="clearfix" style="display: none">
         <div class="input-group-btn">
             <button id="searchCriteria" onclick="OpenDropdown(true)" type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" value="ActivityName">A</button>
             <div class="dropdown-menu">
@@ -112,24 +117,24 @@
         </div>
         <input id="txtGlobalSearch" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Search">
         <span class="ExpIcon" id="ExpSearch" data-toggle="tooltip" title="Search"><i class="fa fa-search"></i></span>
-        <span class="ExpIcon" id="ExpClose" style="display:none"><i class="fa fa-times-circle-o" aria-hidden="true"></i></span>
+        <span class="ExpIcon" id="ExpClose" style="display: none"><i class="fa fa-times-circle-o" aria-hidden="true"></i></span>
     </div>
     @* ===== Close button to change View Start ======= *@
     <div class="changeView-wrap">
-        <a class="changeView" id="ChangeView" style="display:none"><i class="fa fa-times-circle" aria-hidden="true" title="Go Back to Grid"></i></a>
+        <a class="changeView" id="ChangeView" style="display: none"><i class="fa fa-times-circle" aria-hidden="true" title="Go Back to Grid"></i></a>
     </div>
     @* ===== Close button to change View End ======= *@
     <!-- -->
-    <div id="GridGanttContent" style="display:none"></div>
-    <div id="divgridview"></div> 
+    <div id="GridGanttContent" style="display: none"></div>
+    <div id="divgridview"></div>
     <div class="market-activity-main">
         <div class="btn-dropdwn" style="display: none;" id="popupType">
         </div>
     </div>
-</div>   
+</div>
 @*Inspect Popup Div*@
 
-<div class="container-fluid all-height" id="modalMainContainer" style="display:none">
+<div class="container-fluid all-height" id="modalMainContainer" style="display: none">
     <div class="row-fluid calc-height content-wrapper-main">
         <div class="container-fluid">
             <div class="row-fluid ">
@@ -187,23 +192,22 @@
 <div id="loader" style="display: none;">
     <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
     <span class="sr-only">Loading...</span>
-</div>  
+</div>
 @*<div class="footer">
     <span class="source-sans-proregular">Copyright &copy; @System.DateTime.Now.Year.ToString() Hive9, Inc. All rights reserved.<a href="http://www.hive9.com/ssa-sla" target="_blank">Terms of Use</a></span>
 </div>*@
 @Html.Partial("~/Views/Plan/_PlanGridVariable.cshtml")
 @Html.Partial("~/Views/Home/_CalExportPDFHeaderHtml.cshtml")
-<div class="honeycombbox" style="display:none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
+<div class="honeycombbox" style="display: none" id="divhoneycombbox">@Html.Partial("_HoneyComb")</div>
 <script src="~/Scripts/js/Home/HomeGrid_Min.js"></script>
 @Scripts.Render("~/bundles/Home_BudgetJs")
 
-    <script type="text/javascript">
+<script type="text/javascript">
     var HomeGrid;
     var SelectedTacticId = '@SelectedTacticid';
     var isCopyTacticHomeGrid = 0;
     var isEditTacticHomeGrid = 0;
-    if (SelectedTacticId != 0)
-    {
+    if (SelectedTacticId != 0) {
         isEditTacticHomeGrid = SelectedTacticId;
     }
     var selectedTaskID = "";

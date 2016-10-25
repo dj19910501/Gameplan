@@ -115,7 +115,7 @@ namespace RevenuePlanner.Services
             }
 
             LstYear = GetListofYears(SelectedYear, StartYears, EndYears);
-
+            
             return planmodel;
         }
 
@@ -229,7 +229,7 @@ namespace RevenuePlanner.Services
             {
                 if (!string.IsNullOrEmpty(FilterName))
                 {
-                    SetOFLastViews = PlanUserSavedViews.ToList();
+                    SetOFLastViews = PlanUserSavedViews.Where(view => view.ViewName == FilterName).ToList();
                 }
                 else
                 {
