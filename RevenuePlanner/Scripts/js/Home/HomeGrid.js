@@ -159,21 +159,6 @@ function LoadAfterParsing() {
     }
     editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
         SetTooltip();
-        var childItems = HomeGrid.getAllSubItems(rowid);
-        if (childItems != undefined && childItems != null && childItems != "") {
-            childItems = childItems.split(',');
-            $.each(childItems, function (item) {
-                var objHoneyComb = $(HomeGrid.getRowById(childItems[item])).find('div[id=TacticAdd]');
-                var altIdForTac = objHoneyComb.attr('altid');
-                var index = ExportSelectedIds.TaskID.indexOf(altIdForTac);
-                if (index < 0) {
-                    objHoneyComb.removeClass('honeycombbox-icon-gantt-Active');
-                }
-                else {
-                    objHoneyComb.addClass('honeycombbox-icon-gantt-Active');
-                }
-            });
-        }
     });
 }
 
