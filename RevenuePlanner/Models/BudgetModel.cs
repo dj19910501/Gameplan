@@ -243,9 +243,9 @@ namespace RevenuePlanner.Models
     public class Budgetdataobj
     {
         public string value { get; set; }
-        public string locked { get; set; }
+        public string lo { get; set; }
         public string style { get; set; }
-        public string actval { get; set; }
-        public string type { get; set; }
+        public string av { get; set; }
+        
     }
 }
