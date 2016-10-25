@@ -137,7 +137,8 @@
                                         <td class="userDelete">
                                             @if (item.IsManager == false)    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                                             {
-                                                <a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this user?');"> @*Modified by Maitri Gandhi on 2/5/2016 for #2145 Observation*@
+                                               
+                                                <a onclick="DeleteUser('@item.UserId.ToString()');">
                                                     <span class="x-icon hide pull-right" title="Delete Member"></span>
                                                 </a>
                                             }
@@ -232,7 +233,7 @@
                 $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
                 $(".selectBox select").selectbox(); @* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
 
-                
+
                 /*close x event on message*/
                 $(".close").click(function (e) {
                     e.stopPropagation();
@@ -272,8 +273,60 @@
 
             // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             function DeleteOnEdit(userId) {
-                alert('@ViewBag.NotifyBeforManagerDeletion');
-                OnTeamMemberClick(userId);
+                var IsTacticAssociated = CheckAssociatedTactics(userId);
+                if (IsTacticAssociated) {
+
+                    alert('This user cannot be deleted, as there are tactics owned by the user.');
+                    return false;
+                }
+                else {
+
+                    alert('@ViewBag.NotifyBeforManagerDeletion');
+                    OnTeamMemberClick(userId);
+                }
+            }
+
+            function DeleteUser(userId)
+            {
+                var IsTacticAssociated = CheckAssociatedTactics(userId);
+                if (IsTacticAssociated)
+                {
+                    alert('This user cannot be deleted, as there are tactics owned by the user.');
+                    return false;
+                }
+                else
+                {
+
+                var returnvalue = confirm('Are you sure you want to delete this user?');
+                if (returnvalue)
+                {
+                    var queryStringArr = [];
+                    queryStringArr.push(
+                     {
+                         key:'id',
+                         Value: userId
+                     });
+
+                    formSubmitEvent('@Url.Content("~/User/Delete")', queryStringArr);
+                }
+
+                }
+            }
+
+            function CheckAssociatedTactics(userId)
+            {
+                var IsTacticAssociated = false;
+                $.ajax(
+                {
+                    type: "GET",
+                    async: false,
+                    url: '@Url.Content("~/User/CheckAssociatedTactics")',
+                    data: { UserId: userId },
+                    success: function (IsTacticOwned) {
+                        IsTacticAssociated = IsTacticOwned;
+                    }
+                });
+                return IsTacticAssociated;
             }
 
 

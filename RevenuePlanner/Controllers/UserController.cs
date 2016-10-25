@@ -335,6 +335,26 @@ namespace RevenuePlanner.Controllers
             return RedirectToAction("Index");
         }
 
+
+        public JsonResult CheckAssociatedTactics(int UserId)
+        {
+            bool IsTacticOwned = false;
+            try
+            {
+                if (UserId != 0)
+                {
+                    //check if the user owns any tactic.
+                    IsTacticOwned = db.Plan_Campaign_Program_Tactic.Where(user => user.CreatedBy.Equals(UserId)).Any();
+                   
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return Json(IsTacticOwned, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
 
         #region Add New User
