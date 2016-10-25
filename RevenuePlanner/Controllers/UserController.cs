@@ -344,7 +344,7 @@ namespace RevenuePlanner.Controllers
                 if (UserId != 0)
                 {
                     //check if the user owns any tactic.
-                    IsTacticOwned = db.Plan_Campaign_Program_Tactic.Where(user => user.CreatedBy.Equals(UserId)).Any();
+                    IsTacticOwned = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.CreatedBy.Equals(UserId) && tactic.IsDeleted == false).Any();
                    
                 }
             }
