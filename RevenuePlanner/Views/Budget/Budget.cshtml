@@ -156,6 +156,16 @@
                 else
                     return true;
             });
+
+            HomeGrid.attachEvent("onAfterSorting", function (ind, grid) {
+                if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds.TaskID.length > 0) {
+                    var ListofIDs = ExportSelectedIds.TaskID;
+                    $.each(ListofIDs, function (Index, Id) {
+                        $("div").find("[altid='" + Id + "']").addClass("honeycombbox-icon-gantt-Active");
+                    });
+                };
+            });
+
             HomeGrid.attachEvent("onRowSelect", function (id, ind) {
                 isEditTacticHomeGrid = id;
                 isCopyTacticHomeGrid = 0;
