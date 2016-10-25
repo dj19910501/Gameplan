@@ -10173,7 +10173,7 @@ li.accordion-inner.close-list {
 	overflow: auto;
 	width: 100%;
 	min-width: 800px;
-	margin-top: 26px;
+	margin-top: 38px;
 	/*max-height:600px; PL 1492 Issue(2)*/ /*by bheru 18-11-2015 #1619*/
 	height: 88vh;
 }
@@ -11819,6 +11819,7 @@ div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
 	top: 0px;
 	right: 0px;
 }
+/* To set orange corner on Grid Table End  */
 .gotoLink { /* For #2212 */
 	border-bottom: 1px solid;
 	clear: both;
@@ -13627,7 +13628,7 @@ table .lblCustomCheckbox label{width:70%}
 
 /* ********************  new styles  - End ******************** */
 
-/* To set orange corner on Grid Table End  */
+
 /************************************************ Responsive css start here **********************************************************/
 
 @media (max-width: 1600px) {
@@ -15274,4 +15275,5 @@ tbody.column2 {
 	margin-bottom: 10px;
 	display: block;
 }
+
 

@@ -81,7 +81,7 @@
     <div class="headefix">
 
         <h2 class="title-simple source-sans-prolight">
-            @if (lineitemTitle != string.Empty)
+            @if (!string.IsNullOrEmpty(lineitemTitle)) //#2725 changed by komal
             {
                 <span>
                     @if (IsPlanEditable)
@@ -431,7 +431,8 @@
              // $("#liActuals ,#liBudget,#liSetup").unbind('click');
              loadAddSetup();
          }
-         if ($('#btnEditlineItem').hasClass('edit-icon-white') && inspectMode == '@Enums.InspectPopupMode.Edit.ToString()') {
+       
+         if ($('#btnEditlineItem').hasClass('edit-icon-white') && planLineitemId != '0') { //#2725 changed by komal
              $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318
              $('#btnEditlineItem').addClass('Save-icon-white');
              $("#errorMessage").css("display", "none");
