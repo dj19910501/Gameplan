@@ -2685,10 +2685,8 @@ function RefreshCurrentTab() {
 
 ///Added by dhvani to open inspect popup for URL -- PL #2534
 function ShowInspectForPlanTacticId() {
-    var hdnIsImprovement = $('#hdnIsImprovement');
     ShowModel(null, true);
     $('#hdnshowInspectForPlanTacticId').val(0);
-    $('#hdnIsImprovement').val(false);
 
 }
 

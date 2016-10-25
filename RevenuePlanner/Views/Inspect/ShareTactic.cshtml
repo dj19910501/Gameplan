@@ -3,19 +3,13 @@
     int planTacticId = Convert.ToInt32(ViewBag.PlanTacticId);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
     @Html.Hidden("planTacticId", planTacticId);
-                                              bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
-                                              if (isImprovement)
-                                              {
-    @Html.Hidden("hdnSection", Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower());
-                                              }
-                                              else
-                                              {
+                                             
     @Html.Hidden("hdnSection", Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower());
-                                              }
+                                              
     
-                                              //// Flag to indicate unavailability of web service.
-                                              //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                                              //// Ticket: 942 Exception handeling in Gameplan.
+    //// Flag to indicate unavailability of web service.
+    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+    //// Ticket: 942 Exception handeling in Gameplan.
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
     
 }

@@ -360,25 +360,22 @@ namespace RevenuePlanner.Services
         public List<GridDefaultModel> UpdatePlanStartEndDate(List<GridDefaultModel> GridData)
         {
             List<GridDefaultModel> CopyGridData = GridData; // Copy the grid data to get it's Childs data
-            CopyGridData.ForEach(a =>
+            CopyGridData.Where(a => a.EntityType == Enums.EntityType.Plan).ToList().ForEach(a =>
             {
-                if (a.EntityType == Enums.EntityType.Plan)
-                {
-                    int year = int.Parse(a.PlanYear);
-                    DateTime firstDay = new DateTime(year, 1, 1);
-                    DateTime? lastDay = new DateTime(year, 12, 31);
+                int year = int.Parse(a.PlanYear);
+                DateTime firstDay = new DateTime(year, 1, 1);
+                DateTime? lastDay = new DateTime(year, 12, 31);
 
-                    // Check is any campaign or not in plan data
-                    DateTime? CampaignMaxDate = GridData.Where(cmp => cmp.ParentUniqueId == a.UniqueId)
-                                            .Max(b => b.EndDate);
-                    if (CampaignMaxDate != null)
-                    {
-                        lastDay = CampaignMaxDate;
-                    }
-                    // Set Plan Dates
-                    a.StartDate = firstDay;
-                    a.EndDate = lastDay;
+                // Check is any campaign or not in plan data
+                DateTime? CampaignMaxDate = GridData.Where(cmp => cmp.ParentUniqueId == a.UniqueId)
+                                        .Max(b => b.EndDate);
+                if (CampaignMaxDate != null)
+                {
+                    lastDay = CampaignMaxDate;
                 }
+                // Set Plan Dates
+                a.StartDate = firstDay;
+                a.EndDate = lastDay;
             });
             return CopyGridData;
         }

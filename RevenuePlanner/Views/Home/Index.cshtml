@@ -4,11 +4,18 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     //ViewBag.Title = ViewBag.ActiveMenu;
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
-    int showInspectForPlanTacticId = ViewBag.ShowInspectForPlanTacticId;
-    int showInspectForPlanCampaignId = ViewBag.ShowInspectForPlanCampaignId; // variable added to show campagin popup from email url link click when email sent to user when comapign shared
-    int showInspectForPlanProgramId = ViewBag.ShowInspectForPlanProgramId; // variable added to show program popup from email url link click when email sent to user when program shared
-    int ShowInspectForPlanLineItemId = ViewBag.ShowInspectForPlanLineItemId; // variable added to show Plan LineItem popup from Finance page when user click on View button of LineItem Grid
-    bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
+    var ShowInspectPopup = ViewBag.ShowInspectPopup; //nullable  value
+    int showInspectForPlanTacticId = 0;
+    int showInspectForPlanCampaignId = 0;
+    int showInspectForPlanProgramId = 0;
+    int ShowInspectForPlanLineItemId = 0;
+    if (ShowInspectPopup != null && ShowInspectPopup)
+    {
+        showInspectForPlanTacticId = ViewBag.ShowInspectForPlanTacticId;
+        showInspectForPlanCampaignId = ViewBag.ShowInspectForPlanCampaignId; // variable added to show campagin popup from email url link click when email sent to user when comapign shared
+        showInspectForPlanProgramId = ViewBag.ShowInspectForPlanProgramId; // variable added to show program popup from email url link click when email sent to user when program shared
+        ShowInspectForPlanLineItemId = ViewBag.ShowInspectForPlanLineItemId; // variable added to show Plan LineItem popup from Finance page when user click on View button of LineItem Grid
+    }
     string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
@@ -21,7 +28,6 @@
     var TacticTaskColor = (string)ViewBag.TacticTaskColor;
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
-    var ShowInspectPopup = ViewBag.ShowInspectPopup; //nullable  value
     bool NoPlanCreated = (bool)Sessions.IsNoPlanCreated;
     int CurrentRequestPlanID = ViewBag.currentPlanId;
     int SelectedTacticid = ViewBag.SelectedTacticID;
@@ -31,7 +37,6 @@
 @Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
 @Html.Hidden("hdnSelectedPlanIds", 0, new { id = "hdnSelectedPlanIds" })
 @Html.Hidden("hdnShowInspectForPlanLineItemId", ShowInspectForPlanLineItemId)
-@Html.Hidden("hdnIsImprovement", isImprovement)
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 <!-- Stylesheet Only For Homepage -->
 @section FilterEx{

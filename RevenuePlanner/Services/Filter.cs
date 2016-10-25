@@ -229,7 +229,7 @@ namespace RevenuePlanner.Services
             {
                 if (!string.IsNullOrEmpty(FilterName))
                 {
-                    SetOFLastViews = PlanUserSavedViews.ToList();
+                    SetOFLastViews = PlanUserSavedViews.Where(view => view.ViewName == FilterName).ToList();
                 }
                 else
                 {

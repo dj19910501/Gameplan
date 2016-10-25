@@ -124,13 +124,8 @@ namespace RevenuePlanner.Controllers
             var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
             ViewBag.TacticTaskColor = TacticColor;
             ViewBag.ActiveMenu = activeMenu;
-            ViewBag.ShowInspectForPlanTacticId = planTacticId;
-            ViewBag.ShowInspectForPlanCampaignId = planCampaignId;
-            ViewBag.ShowInspectForPlanProgramId = planProgramId;
-            ViewBag.IsImprovement = isImprovement;
             ViewBag.GridView = isGridView;
             ViewBag.BudgetView = IsBudgetView;
-            ViewBag.ShowInspectForPlanLineItemId = planLineItemId;
             if (currentPlanId > 0)
             {
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.ID);
@@ -165,6 +160,10 @@ namespace RevenuePlanner.Controllers
             if (currentPlanId > 0 && ShowPopup)
             {
                 ViewBag.ShowInspectPopup = true;
+                ViewBag.ShowInspectForPlanTacticId = planTacticId;
+                ViewBag.ShowInspectForPlanCampaignId = planCampaignId;
+                ViewBag.ShowInspectForPlanProgramId = planProgramId;
+                ViewBag.ShowInspectForPlanLineItemId = planLineItemId;
                 currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
             }
             else if (currentPlanId <= 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
