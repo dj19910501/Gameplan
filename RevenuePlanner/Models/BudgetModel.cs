@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Web;
 
@@ -154,12 +155,12 @@ namespace RevenuePlanner.Models
         public double Budgeted { get; set; }
         public double Actual { get; set; }
         public double Planned { get; set; }
-        
+
         public int? LineItemTypeId { get; set; }
         public int Weightage { get; set; }
         public string CustomFieldType { get; set; }
         public int CustomFieldID { get; set; }
-        
+
     }
     public class BudgetedValue
     {
@@ -199,7 +200,7 @@ namespace RevenuePlanner.Models
     }
     //Added By Maitri Gandhi #1852: Convert Finance Report Grid to DHTMLX Tree Grid
     public class BudgetDHTMLXGridModel
-    {       
+    {
         public string SetHeader { get; set; }
         public string ColType { get; set; }
         public string Width { get; set; }
@@ -207,8 +208,8 @@ namespace RevenuePlanner.Models
         public string ColumnIds { get; set; }
         public List<string> AttachHeader { get; set; }
         public string HiddenTab { get; set; }
-		public string ColAlign { get; set; } // Added by Arpita Soni for Ticket #2634 on 09/26/2016
-        
+        public string ColAlign { get; set; } // Added by Arpita Soni for Ticket #2634 on 09/26/2016
+
         public BudgetDHTMLXGrid Grid { get; set; }
     }
     public class BudgetDHTMLXGrid
@@ -243,9 +244,9 @@ namespace RevenuePlanner.Models
     public class Budgetdataobj
     {
         public string value { get; set; }
-        public string locked { get; set; }
+        public string lo { get; set; }
         public string style { get; set; }
-        public string actval { get; set; }
-        public string type { get; set; }
+        public string av { get; set; }
+        
     }
 }

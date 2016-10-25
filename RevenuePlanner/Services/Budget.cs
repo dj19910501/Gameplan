@@ -80,11 +80,11 @@ namespace RevenuePlanner.Services
             }
 
             DataTable dt = objSp.GetBudget(PlanIds, UserID, viewBy, OwnerIds, TacticTypeids, StatusIds, year); //Get budget data for budget,planned cost and actual using store proc. GetplanBudget
-
+            
             List<PlanBudgetModel> model = CreateBudgetDataModel(dt, PlanExchangeRate); //Convert datatable with budget data to PlanBudgetModel model
-
+            
             model = FilterPlanByTimeFrame(model, year);//Except plan al entity be filter at Db level so we remove plan object by applying timeframe filter.  
-
+            
             List<int> CustomFieldFilteredTacticIds = FilterCustomField(model, CustomFieldId);
 
             //filter budget model by custom field filter list
@@ -101,7 +101,7 @@ namespace RevenuePlanner.Services
             bool isSelectAll = false;
 
             model = ManageLineItems(model);//Manage lineitems unallocated cost values in other line item
-
+            
             #region "Calculate Monthly Budget from Bottom to Top for Hierarchy level like: LineItem > Tactic > Program > Campaign > CustomField(if filtered) > Plan"
 
             //// Set ViewBy data to model.
@@ -118,13 +118,13 @@ namespace RevenuePlanner.Services
             {
             model = SetLineItemCostByWeightage(model, viewBy);//// Set LineItem monthly budget cost by it's parent tactic weightage.
             }
-           
 
+            
             BudgetDHTMLXGridModel objBudgetDHTMLXGrid = new BudgetDHTMLXGridModel();
             objBudgetDHTMLXGrid = GenerateHeaderString(AllocatedBy, objBudgetDHTMLXGrid, year);
-
+            
             objBudgetDHTMLXGrid = CreateDhtmlxFormattedBudgetData(objBudgetDHTMLXGrid, model, AllocatedBy, UserID, ClientId, year, viewBy);//create model to bind data in grid as per DHTMLx grid format.
-
+            
             List<ColumnViewEntity> userManagedColumns = objColumnView.GetCustomfieldModel(ClientId, isPlangrid, out isSelectAll, UserID);
             string hiddenTab = string.Empty;
             if (!userManagedColumns.Where(u => u.EntityIsChecked).Any())
@@ -140,7 +140,7 @@ namespace RevenuePlanner.Services
                 hiddenTab = hiddenTab + item.EntityType + ',';
             }
             objBudgetDHTMLXGrid.HiddenTab = hiddenTab;
-
+            
 
             return objBudgetDHTMLXGrid;
         }
@@ -358,7 +358,7 @@ namespace RevenuePlanner.Services
             {
                 // Get list of package tactic ids
                 Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
-                BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring).Replace("'", "&#39;").Replace("\"", "&#34;") + Linkedstring + HttpUtility.HtmlEncode(Entity.ActivityName).Replace("'", "&#39;").Replace("\"", "&#34;");
+                BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring).Replace("'", "&#39;").Replace("\"", "&#34;") + Linkedstring + HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
             }
             else
             {
@@ -367,12 +367,12 @@ namespace RevenuePlanner.Services
 
             if (Entity.ActivityType == ActivityType.ActivityLineItem && Entity.LineItemTypeId == null)
             {
-                BudgetDataObj.locked = CellLocked;
+                BudgetDataObj.lo = CellLocked;
                 BudgetDataObj.style = NotEditableCellStyle;
             }
             else
             {
-                BudgetDataObj.locked = Entity.isEntityEditable ? CellNotLocked : CellLocked;
+                BudgetDataObj.lo = Entity.isEntityEditable ? CellNotLocked : CellLocked;
                 BudgetDataObj.style = Entity.isEntityEditable ? string.Empty : NotEditableCellStyle;
             }
             BudgetDataObjList.Add(BudgetDataObj);
@@ -574,9 +574,9 @@ namespace RevenuePlanner.Services
                 lstSubordinatesIds = Common.GetAllSubordinates(UserID);
             }
 
-
+            
             Dictionary<int, string> lstTacticTypeTitle = new Dictionary<int, string>();
-            List<int> TacticTypeIds = model.Where(t => t.ActivityType == ActivityType.ActivityTactic).Select(t => t.TacticTypeId).ToList();
+            IEnumerable<int> TacticTypeIds = model.Where(t => t.ActivityType == ActivityType.ActivityTactic).Select(t => t.TacticTypeId).Distinct();
             lstTacticTypeTitle = objDbMrpEntities.TacticTypes.Where(tt => TacticTypeIds.Contains(tt.TacticTypeId) && tt.IsDeleted == false).ToDictionary(tt => tt.TacticTypeId, tt => tt.Title);
             foreach (PlanBudgetModel bm in model.Where(p => p.ActivityType == ActivityType.ActivityPlan && (!isViewBy || p.ParentActivityId == ParentId)).OrderBy(p => p.ActivityName))
             {
@@ -611,7 +611,7 @@ namespace RevenuePlanner.Services
                         isMultiYearPlan = true;
                     }
                 }
-
+                
                 gridjsonlistPlanObj = new BudgetDHTMLXGridDataModel();
                 gridjsonlistPlanObj.id = bm.TaskId;//ActivityType.ActivityPlan + "_" + HttpUtility.HtmlEncode(bm.ActivityId);
                 gridjsonlistPlanObj.open = Open;
@@ -621,7 +621,7 @@ namespace RevenuePlanner.Services
                 OwnerName = Convert.ToString(bm.CreatedBy);
                 BudgetDataObjList = SetBudgetDhtmlxFormattedValues(model, bm, OwnerName, ActivityType.ActivityPlan, AllocatedBy, isNextYearPlan, isMultiYearPlan, gridjsonlistPlanObj.id, IsPlanCreateAll);
                 gridjsonlistPlanObj.data = BudgetDataObjList;
-
+              
                 List<BudgetDHTMLXGridDataModel> CampaignRowsObjList = new List<BudgetDHTMLXGridDataModel>();
                 BudgetDHTMLXGridDataModel CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                 foreach (
@@ -639,7 +639,7 @@ namespace RevenuePlanner.Services
                     OwnerName = Convert.ToString(bm.CreatedBy);
                     List<Budgetdataobj> CampaignDataObjList = SetBudgetDhtmlxFormattedValues(model, bmc, OwnerName, ActivityType.ActivityCampaign, AllocatedBy, isNextYearPlan, isMultiYearPlan, CampaignRowsObj.id, IsCampCreateAll);
 
-                    CampaignRowsObj.data = CampaignDataObjList;
+                    CampaignRowsObj.data = CampaignDataObjList;    
                     List<BudgetDHTMLXGridDataModel> ProgramRowsObjList = new List<BudgetDHTMLXGridDataModel>();
                     BudgetDHTMLXGridDataModel ProgramRowsObj = new BudgetDHTMLXGridDataModel();
                     foreach (
@@ -658,7 +658,7 @@ namespace RevenuePlanner.Services
                         OwnerName = Convert.ToString(bm.CreatedBy);
                         List<Budgetdataobj> ProgramDataObjList = SetBudgetDhtmlxFormattedValues(model, bmp, OwnerName, ActivityType.ActivityProgram, AllocatedBy, isNextYearPlan, isMultiYearPlan, ProgramRowsObj.id, IsProgCreateAll);
                         ProgramRowsObj.data = ProgramDataObjList;
-
+                       
                         List<BudgetDHTMLXGridDataModel> TacticRowsObjList = new List<BudgetDHTMLXGridDataModel>();
                         BudgetDHTMLXGridDataModel TacticRowsObj = new BudgetDHTMLXGridDataModel();
                         foreach (
@@ -722,7 +722,6 @@ namespace RevenuePlanner.Services
                 }
                 //set campaign row data as child to respective plan
                 gridjsonlistPlanObj.rows = CampaignRowsObjList;
-                //gridjsonlist.Add(gridjsonlistPlanObj);
                 gridjsonlist.Add(gridjsonlistPlanObj);
             }
             return gridjsonlist;
@@ -851,45 +850,45 @@ namespace RevenuePlanner.Services
                     if (Entity.ActivityType == ActivityType.ActivityLineItem)
                     {
                         objTotalBudget.value = ThreeDash;//Set values for Total budget
-                        objTotalBudget.locked = CellLocked;
+                        objTotalBudget.lo = CellLocked;
                         objTotalBudget.style = NotEditableCellStyle;
                     }
                     else
                     {
                         objTotalBudget.value = Convert.ToString(Entity.YearlyBudget);//Set values for Total budget
-                        objTotalBudget.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                        objTotalBudget.lo = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
                         objTotalBudget.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
                     }
 
                     objTotalActual.value = Convert.ToString(Entity.TotalActuals);//Set values for Total actual
-                    objTotalActual.locked = CellLocked;
+                    objTotalActual.lo = CellLocked;
                     objTotalActual.style = NotEditableCellStyle;
 
                     bool isOtherLineItem = activityType == ActivityType.ActivityLineItem && Entity.LineItemTypeId == null;
                     objTotalCost.value = Convert.ToString(Entity.TotalAllocatedCost);
-                    objTotalCost.locked = Entity.isCostEditable && !isOtherLineItem ? CellNotLocked : CellLocked;
+                    objTotalCost.lo = Entity.isCostEditable && !isOtherLineItem ? CellNotLocked : CellLocked;
                     objTotalCost.style = Entity.isCostEditable && !isOtherLineItem ? string.Empty : NotEditableCellStyle;
                     if (Common.ParseDoubleValue(objTotalCost.value) > Common.ParseDoubleValue(objTotalBudget.value) && Entity.ActivityType != ActivityType.ActivityLineItem)
                     {
                         objTotalCost.style = objTotalCost.style + RedCornerStyle;
-                        objTotalCost.actval = CostFlagVal;
+                        objTotalCost.av = CostFlagVal;
                     }
                     if (ChildTotalBudget > Common.ParseDoubleValue(objTotalBudget.value))
                     {
                         objTotalBudget.style = objTotalBudget.style + OrangeCornerStyle;
-                        objTotalBudget.actval = BudgetFlagval;
+                        objTotalBudget.av = BudgetFlagval;
                     }
                 }
                 else
                 {
                     objTotalBudget.value = ThreeDash;//Set values for Total budget
-                    objTotalBudget.locked = CellLocked;
+                    objTotalBudget.lo = CellLocked;
                     objTotalBudget.style = NotEditableCellStyle;
                     objTotalActual.value = ThreeDash;
-                    objTotalActual.locked = CellLocked;
+                    objTotalActual.lo = CellLocked;
                     objTotalActual.style = NotEditableCellStyle;
                     objTotalCost.value = ThreeDash;
-                    objTotalCost.locked = CellLocked;
+                    objTotalCost.lo = CellLocked;
                     objTotalCost.style = NotEditableCellStyle;
                 }
 
@@ -942,9 +941,9 @@ namespace RevenuePlanner.Services
                 Budgetdataobj objActualMonth = new Budgetdataobj();
                 if (!isViewby)
                 {
-                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-                    objActualMonth.locked = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                    objBudgetMonth.lo = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                    objCostMonth.lo = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                    objActualMonth.lo = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                     objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
                     objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
                     objActualMonth.style = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
@@ -955,7 +954,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY1 < Entity.ChildMonthValues.BudgetY1 )
                         {
                             objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1);
@@ -967,7 +966,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY2 < Entity.ChildMonthValues.BudgetY2)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY2);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY2);
@@ -978,7 +977,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY3 < Entity.ChildMonthValues.BudgetY3)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY3);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY3);
@@ -989,7 +988,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY4 < Entity.ChildMonthValues.BudgetY4)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4);
@@ -1000,7 +999,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY5 < Entity.ChildMonthValues.BudgetY5)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY5);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY5);
@@ -1011,7 +1010,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY6 < Entity.ChildMonthValues.BudgetY6)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY6);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY6);
@@ -1022,7 +1021,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY7 < Entity.ChildMonthValues.BudgetY7)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7);
@@ -1033,7 +1032,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY8 < Entity.ChildMonthValues.BudgetY8)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY8);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY8);
@@ -1044,7 +1043,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY9 < Entity.ChildMonthValues.BudgetY9)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY9);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY9);
@@ -1055,7 +1054,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY10 < Entity.ChildMonthValues.BudgetY10)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10);
@@ -1066,7 +1065,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY11 < Entity.ChildMonthValues.BudgetY11)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY11);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY11);
@@ -1077,7 +1076,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Entity.MonthValues.BudgetY12 < Entity.ChildMonthValues.BudgetY12)
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY12);
@@ -1085,14 +1084,14 @@ namespace RevenuePlanner.Services
                     if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
-                        objCostMonth.actval = CostFlagVal;
+                        objCostMonth.av = CostFlagVal;
                     }
                 }
                 else
                 {
-                    objBudgetMonth.locked = CellLocked;
-                    objCostMonth.locked = CellLocked;
-                    objActualMonth.locked = CellLocked;
+                    objBudgetMonth.lo = CellLocked;
+                    objCostMonth.lo = CellLocked;
+                    objActualMonth.lo = CellLocked;
                     objBudgetMonth.value = ThreeDash;
                     objCostMonth.value = ThreeDash;
                     objActualMonth.value = ThreeDash;
@@ -1116,11 +1115,11 @@ namespace RevenuePlanner.Services
                 Budgetdataobj objBudgetMonth = new Budgetdataobj();
                 Budgetdataobj objCostMonth = new Budgetdataobj();
                 Budgetdataobj objActualMonth = new Budgetdataobj();
-                objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                objBudgetMonth.lo = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
                 objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
-                objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                objCostMonth.lo = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
                 objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                objActualMonth.locked = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                objActualMonth.lo = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 objActualMonth.style = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
                 if (!isViewby)
                 {
@@ -1130,7 +1129,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY1 + Entity.ChildMonthValues.BudgetY2 + Entity.ChildMonthValues.BudgetY3))
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1 + Entity.MonthValues.CostY2 + Entity.MonthValues.CostY3);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1 + Entity.MonthValues.ActualY2 + Entity.MonthValues.ActualY3);
@@ -1143,7 +1142,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY4 + Entity.ChildMonthValues.BudgetY5 + Entity.ChildMonthValues.BudgetY6) )
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle ;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4 + Entity.MonthValues.CostY5 + Entity.MonthValues.CostY6);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4 + Entity.MonthValues.ActualY5 + Entity.MonthValues.ActualY6);
@@ -1155,7 +1154,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY7 + Entity.ChildMonthValues.BudgetY8 + Entity.ChildMonthValues.BudgetY9))
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7 + Entity.MonthValues.CostY8 + Entity.MonthValues.CostY9);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7 + Entity.MonthValues.ActualY8 + Entity.MonthValues.ActualY9);
@@ -1166,7 +1165,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY10 + Entity.ChildMonthValues.BudgetY11 + Entity.ChildMonthValues.BudgetY12))
                         {
                             objBudgetMonth.style =   objBudgetMonth.style + OrangeCornerStyle ;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10 + Entity.MonthValues.CostY11 + Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10 + Entity.MonthValues.ActualY11 + Entity.MonthValues.ActualY12);
@@ -1177,7 +1176,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY1 + Entity.ChildNextYearMonthValues.BudgetY2 + Entity.ChildNextYearMonthValues.BudgetY3))
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle ;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY1 + Entity.NextYearMonthValues.CostY2 + Entity.NextYearMonthValues.CostY3) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY1 + Entity.NextYearMonthValues.ActualY2 + Entity.NextYearMonthValues.ActualY3) : ThreeDash;
@@ -1188,7 +1187,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY4 + Entity.ChildNextYearMonthValues.BudgetY5 + Entity.ChildNextYearMonthValues.BudgetY6))
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY4 + Entity.NextYearMonthValues.CostY5 + Entity.NextYearMonthValues.CostY6) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY4 + Entity.NextYearMonthValues.ActualY5 + Entity.NextYearMonthValues.ActualY6) : ThreeDash;
@@ -1199,7 +1198,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY7 + Entity.ChildNextYearMonthValues.BudgetY8 + Entity.ChildNextYearMonthValues.BudgetY9))
                         {
                             objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY7 + Entity.NextYearMonthValues.CostY8 + Entity.NextYearMonthValues.CostY9) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY7 + Entity.NextYearMonthValues.ActualY8 + Entity.NextYearMonthValues.ActualY9) : ThreeDash;
@@ -1211,7 +1210,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY10 + Entity.ChildNextYearMonthValues.BudgetY11 + Entity.ChildNextYearMonthValues.BudgetY12))
                         {
                             objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12) : ThreeDash;
                         objActualMonth.value = IsMultiYearPlan ? Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12) : ThreeDash;
@@ -1219,14 +1218,14 @@ namespace RevenuePlanner.Services
                     if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
-                        objCostMonth.actval = CostFlagVal;
+                        objCostMonth.av = CostFlagVal;
                     }
                 }
                 else
                 {
-                    objBudgetMonth.locked = CellLocked;
-                    objCostMonth.locked = CellLocked;
-                    objActualMonth.locked = CellLocked;
+                    objBudgetMonth.lo = CellLocked;
+                    objCostMonth.lo = CellLocked;
+                    objActualMonth.lo = CellLocked;
                     objBudgetMonth.value = ThreeDash;
                     objCostMonth.value = ThreeDash;
                     objActualMonth.value = ThreeDash;
@@ -1247,9 +1246,9 @@ namespace RevenuePlanner.Services
                 Budgetdataobj objActualMonth = new Budgetdataobj();
                 if (!isViewBy)
                 {
-                    objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
-                    objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
-                    objActualMonth.locked = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                    objBudgetMonth.lo = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                    objCostMonth.lo = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                    objActualMonth.lo = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                     objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
                     objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
                     objActualMonth.style = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
@@ -1257,15 +1256,15 @@ namespace RevenuePlanner.Services
                     if (monthNo < 13)
                     {
                         objBudgetMonth.value = ThreeDash;
-                        objBudgetMonth.locked = CellLocked;
+                        objBudgetMonth.lo = CellLocked;
                         objBudgetMonth.style = NotEditableCellStyle;
 
                         objCostMonth.value = ThreeDash;
-                        objCostMonth.locked = CellLocked;
+                        objCostMonth.lo = CellLocked;
                         objCostMonth.style = NotEditableCellStyle;
 
                         objActualMonth.value = ThreeDash;
-                        objActualMonth.locked = CellLocked;
+                        objActualMonth.lo = CellLocked;
                         objActualMonth.style = NotEditableCellStyle;
                     }
                     else if (monthNo == 13)
@@ -1275,7 +1274,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY1 + Entity.ChildMonthValues.BudgetY2 + Entity.ChildMonthValues.BudgetY3))
                         {
                             objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY1 + Entity.MonthValues.CostY2 + Entity.MonthValues.CostY3);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY1 + Entity.MonthValues.ActualY2 + Entity.MonthValues.ActualY3);
@@ -1288,7 +1287,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY4 + Entity.ChildMonthValues.BudgetY5 + Entity.ChildMonthValues.BudgetY6) )
                         {
                             objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle ;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY4 + Entity.MonthValues.CostY5 + Entity.MonthValues.CostY6);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY4 + Entity.MonthValues.ActualY5 + Entity.MonthValues.ActualY6);
@@ -1300,7 +1299,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY7 + Entity.ChildMonthValues.BudgetY8 + Entity.ChildMonthValues.BudgetY9))
                         {
                             objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY7 + Entity.MonthValues.CostY8 + Entity.MonthValues.CostY9);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY7 + Entity.MonthValues.ActualY8 + Entity.MonthValues.ActualY9);
@@ -1312,7 +1311,7 @@ namespace RevenuePlanner.Services
                         if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildMonthValues.BudgetY10 + Entity.ChildMonthValues.BudgetY11 + Entity.ChildMonthValues.BudgetY12))
                         {
                             objBudgetMonth.style =  objBudgetMonth.style + OrangeCornerStyle ;
-                            objBudgetMonth.actval = BudgetFlagval;
+                            objBudgetMonth.av = BudgetFlagval;
                         }
                         objCostMonth.value = Convert.ToString(Entity.MonthValues.CostY10 + Entity.MonthValues.CostY11 + Entity.MonthValues.CostY12);
                         objActualMonth.value = Convert.ToString(Entity.MonthValues.ActualY10 + Entity.MonthValues.ActualY11 + Entity.MonthValues.ActualY12);
@@ -1320,14 +1319,14 @@ namespace RevenuePlanner.Services
                     if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                     {
                         objCostMonth.style = objCostMonth.style + RedCornerStyle;
-                        objCostMonth.actval = CostFlagVal;
+                        objCostMonth.av = CostFlagVal;
                     }
                 }
                 else
                 {
-                    objBudgetMonth.locked = CellLocked;
-                    objCostMonth.locked = CellLocked;
-                    objActualMonth.locked = CellLocked;
+                    objBudgetMonth.lo = CellLocked;
+                    objCostMonth.lo = CellLocked;
+                    objActualMonth.lo = CellLocked;
                     objBudgetMonth.value = ThreeDash;
                     objCostMonth.value = ThreeDash;
                     objActualMonth.value = ThreeDash;
@@ -1346,11 +1345,11 @@ namespace RevenuePlanner.Services
                 Budgetdataobj objBudgetMonth = new Budgetdataobj();
                 Budgetdataobj objCostMonth = new Budgetdataobj();
                 Budgetdataobj objActualMonth = new Budgetdataobj();
-                objBudgetMonth.locked = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
+                objBudgetMonth.lo = Entity.isBudgetEditable ? CellNotLocked : CellLocked;
                 objBudgetMonth.style = Entity.isBudgetEditable ? string.Empty : NotEditableCellStyle;
-                objCostMonth.locked = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
+                objCostMonth.lo = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? CellNotLocked : CellLocked;
                 objCostMonth.style = Entity.isCostEditable && (isTactic || (isLineItem && Entity.LineItemTypeId != null)) ? string.Empty : NotEditableCellStyle;
-                objActualMonth.locked = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
+                objActualMonth.lo = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? CellNotLocked : CellLocked;
                 objActualMonth.style = !IsOtherLineItem && Entity.isActualEditable && Entity.isAfterApproved ? string.Empty : NotEditableCellStyle;
                 if (monthNo == 13)
                 {
@@ -1359,7 +1358,7 @@ namespace RevenuePlanner.Services
                     if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY1 + Entity.ChildNextYearMonthValues.BudgetY2 + Entity.ChildNextYearMonthValues.BudgetY3))
                     {
                         objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle ;
-                        objBudgetMonth.actval = BudgetFlagval;
+                        objBudgetMonth.av = BudgetFlagval;
                     }
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY1 + Entity.NextYearMonthValues.CostY2 + Entity.NextYearMonthValues.CostY3);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY1 + Entity.NextYearMonthValues.ActualY2 + Entity.NextYearMonthValues.ActualY3);
@@ -1372,7 +1371,7 @@ namespace RevenuePlanner.Services
                     if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY4 + Entity.ChildNextYearMonthValues.BudgetY5 + Entity.ChildNextYearMonthValues.BudgetY6))
                     {
                         objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                        objBudgetMonth.actval = BudgetFlagval;
+                        objBudgetMonth.av = BudgetFlagval;
                     }
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY4 + Entity.NextYearMonthValues.CostY5 + Entity.NextYearMonthValues.CostY6);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY4 + Entity.NextYearMonthValues.ActualY5 + Entity.NextYearMonthValues.ActualY6);
@@ -1384,7 +1383,7 @@ namespace RevenuePlanner.Services
                     if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY7 + Entity.ChildNextYearMonthValues.BudgetY8 + Entity.ChildNextYearMonthValues.BudgetY9))
                     {
                         objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                        objBudgetMonth.actval = BudgetFlagval;
+                        objBudgetMonth.av = BudgetFlagval;
                     }
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY7 + Entity.NextYearMonthValues.CostY8 + Entity.NextYearMonthValues.CostY9);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY7 + Entity.NextYearMonthValues.ActualY8 + Entity.NextYearMonthValues.ActualY9);
@@ -1396,7 +1395,7 @@ namespace RevenuePlanner.Services
                     if (!isLineItem && Common.ParseDoubleValue(objBudgetMonth.value) < (Entity.ChildNextYearMonthValues.BudgetY10 + Entity.ChildNextYearMonthValues.BudgetY11 + Entity.ChildNextYearMonthValues.BudgetY12))
                     {
                         objBudgetMonth.style = objBudgetMonth.style + OrangeCornerStyle;
-                        objBudgetMonth.actval = BudgetFlagval;
+                        objBudgetMonth.av = BudgetFlagval;
                     }
                     objCostMonth.value = Convert.ToString(Entity.NextYearMonthValues.CostY10 + Entity.NextYearMonthValues.CostY11 + Entity.NextYearMonthValues.CostY12);
                     objActualMonth.value = Convert.ToString(Entity.NextYearMonthValues.ActualY10 + Entity.NextYearMonthValues.ActualY11 + Entity.NextYearMonthValues.ActualY12);
@@ -1404,7 +1403,7 @@ namespace RevenuePlanner.Services
                 if (Common.ParseDoubleValue(objCostMonth.value) > Common.ParseDoubleValue(objBudgetMonth.value) && !isLineItem)
                 {
                     objCostMonth.style = objCostMonth.style + RedCornerStyle;
-                    objCostMonth.actval = CostFlagVal;
+                    objCostMonth.av = CostFlagVal;
                 }
                 BudgetDataObjList.Add(objBudgetMonth);
                 BudgetDataObjList.Add(objCostMonth);
@@ -1440,7 +1439,7 @@ namespace RevenuePlanner.Services
             List<int> customfieldids = customfieldlist.Where(customfield => customfield.CustomFieldType.Name == DropDownList && (isDisplayForFilter ? customfield.IsDisplayForFilter : true)).Select(customfield => customfield.CustomFieldId).ToList();
             //Get tactics only for budget model
             List<string> tacIds = BudgetModel.Where(t => t.ActivityType.ToUpper() == EntityTypeTactic.ToUpper()).Select(t => t.Id).ToList();
-
+            
             //get tactic ids from tactic list
             List<int> intList = tacIds.ConvertAll(s => Int32.Parse(s));
             List<CustomField_Entity> Entities = objDbMrpEntities.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).ToList();
@@ -1449,7 +1448,7 @@ namespace RevenuePlanner.Services
             List<CustomField_Entity> lstAllTacticCustomFieldEntities = Entities.Where(customFieldEntity => customfieldids.Contains(customFieldEntity.CustomFieldId))
                                                                                                 .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
             List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(UserId, true);
-
+           
 
             #region "Set Permissions"
             #region "Set Plan Permission"

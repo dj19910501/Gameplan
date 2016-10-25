@@ -85,27 +85,21 @@
                 return this.get(0).scrollHeight > this.height();
             }
         })(jQuery);
-        
+
         var GridRowId = '@GridFirstrowId';
         $('#divgridview').addClass('budget-grid');
         if (GridRowId != '' || noplan.toLowerCase() == 'true') {
-            var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
-            exportgridData = JsonModel;
+
+            ColumnIds = '@Model.ColumnIds';
             HomeGrid = new dhtmlXGridObject('gridbox');
             var imgpath = '@Url.Content("~/codebase/imgs/")';
             HomeGrid.setImagePath(imgpath);
             HomeGrid.setImageSize(1, 1);
-            gridheader = '@Model.SetHeader';
-            ColumnIds = '@Model.ColumnIds';
-            colType = '@Model.ColType';
-            colSorting = '@Model.ColSorting';
-            budgetWidth = '@Model.Width';
             header = '@Model.SetHeader';
             header = $('<div/>').html(header.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
             header = (header.toString().replace(/&amp;/g, '&'));
             HomeGrid.setHeader(header);
             //assigned header to export to excel
-            gridheader = header;
             HomeGrid.setColTypes('@Model.ColType');
             HomeGrid.setInitWidths('@Model.Width');
             HomeGrid.setColSorting('@Model.ColSorting');
@@ -120,9 +114,10 @@
             HomeGrid.setEditable(true);
             HomeGrid.init();
 
-            var mainGridData = JsonModel;
-            mainGridData = $('<textarea/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-            var GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+            // var mainGridData = JsonModel;
+            var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
+            JsonModel = $('<textarea/>').html(JsonModel.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+            JsonModel = (JsonModel.toString().replace(/&amp;/g, '&'));
 
             //Set number format for value fields
             var columnIdArray = '@Model.ColumnIds'.split(',');
@@ -134,7 +129,7 @@
                 HomeGrid.setNumberFormat("0,000.00", i, ".", ",");
 
             }
-            HomeGrid.parse(GridDataHomeGrid, "json");
+            HomeGrid.parse(JsonModel, "json");
 
             var colSplitId = HomeGrid.getColIndexById("BudgetCost");
             HomeGrid.splitAt(colSplitId);
@@ -146,7 +141,7 @@
                     setTimeout(function () {
                         SetTooltip();
                     }, 200);
-                }                
+                }
             });
 
             HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
@@ -196,7 +191,6 @@
                     }
                 }
             }
-
             //setTimeout(function () {
             HomeGrid.setSizes();
             var cookie = document.cookie;
@@ -213,7 +207,6 @@
 
             //}, 200);
             LoadAfterParsing();
-
             var rowCount = HomeGrid.getRowsNum();
             if (rowCount != undefined && rowCount == 0) {
 
@@ -242,12 +235,12 @@
         for (var i = 0; i < allRowIDs.length; i++) {
             for (var j = 0; j < HomeGrid.getColumnsNum() ; j++) {
                 if (HomeGrid.getColumnId(j) == "PlannedCost" || HomeGrid.getColumnId(j) == "Planned" || HomeGrid.getColumnId(j) == "BudgetCost" || HomeGrid.getColumnId(j) == "Budget")
-                    if (HomeGrid.cells(allRowIDs[i], j).getAttribute("actval") == "1") {
+                    if (HomeGrid.cells(allRowIDs[i], j).getAttribute("av") == "1") {
                         var TypeIndex = HomeGrid.getColIndexById("Type");
                         var Type = HomeGrid.cells(allRowIDs[i], TypeIndex).getValue();
                         HomeGrid.cells(allRowIDs[i], j).setAttribute("title", Type + "'s cost is over it's budget.");
                     }
-                    else if (HomeGrid.cells(allRowIDs[i], j).getAttribute("actval") == "2") {
+                    else if (HomeGrid.cells(allRowIDs[i], j).getAttribute("av") == "2") {
                         var TypeIndex = HomeGrid.getColIndexById("Type");
                         var Type = HomeGrid.cells(allRowIDs[i], TypeIndex).getValue();
                         var p_ind = parent.indexOf(Type.toLowerCase());
@@ -303,7 +296,7 @@
                 }
             }
 
-            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("lo");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
             if (rowId == "newRow_0")
@@ -500,7 +493,7 @@
                     ChildTotal = parseFloat(ChildTotal + parseFloat(HomeGrid.cells(arrChildNodeIds[i], cellInd).getValue()));
                 }
                 if (ChildTotal > ParentCost) {
-                    var locked = HomeGrid.cells(GetParentId, cellInd).getAttribute("locked");
+                    var locked = HomeGrid.cells(GetParentId, cellInd).getAttribute("lo");
                     if ((locked != null && locked != "") && locked == "1") {
                         HomeGrid.setCellTextStyle(GetParentId, cellInd, "color:#a2a2a2 !important; background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                     }
@@ -516,7 +509,7 @@
                     HomeGrid.cells(GetParentId, cellInd).setAttribute("title", parentUppercase[p_ind] + " Budget is less than the budget for it's " + child[p_ind] + ".");
                 }
                 else {
-                    var locked = HomeGrid.cells(GetParentId, cellInd).getAttribute("locked");
+                    var locked = HomeGrid.cells(GetParentId, cellInd).getAttribute("lo");
                     if ((locked != null && locked != "") && locked == "1") {
                         HomeGrid.setCellTextStyle(GetParentId, cellInd, "color:#a2a2a2 !important;");
                     }
@@ -525,7 +518,7 @@
                     }
                     HomeGrid.cells(GetParentId, cellInd).setAttribute("title", "");
                 }
-            }            
+            }
         }
 
         ParentCost = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
@@ -541,7 +534,7 @@
 
         if (Type.toLowerCase() != 'lineitem') {
             if (ChildTotal > ParentCost) {
-                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("lo");
                 if ((locked != null && locked != "") && locked == "1") {
                     HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important; background-image: url(./content/images/orange-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                 }
@@ -555,7 +548,7 @@
                 HomeGrid.cells(rowId, cellInd).setAttribute("title", parentUppercase[p_ind] + " Budget is less than the budget for it's " + child[p_ind] + ".");
             }
             else {
-                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("lo");
                 if ((locked != null && locked != "") && locked == "1") {
                     HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;");
                 }
@@ -568,7 +561,7 @@
             var BudgetVal = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
             var PlannedVal = parseFloat(HomeGrid.cells(rowId, cellInd + 1).getValue());
             if (PlannedVal > BudgetVal) {
-                var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("locked");
+                var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("lo");
                 if ((locked != null && locked != "") && locked == "1") {
                     HomeGrid.setCellTextStyle(rowId, cellInd + 1, "color:#a2a2a2 !important; background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                 }
@@ -581,7 +574,7 @@
                 HomeGrid.cells(rowId, cellInd + 1).setAttribute("title", Type + "'s cost is over it's budget.");
             }
             else {
-                var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("locked");
+                var locked = HomeGrid.cells(rowId, cellInd + 1).getAttribute("lo");
                 if ((locked != null && locked != "") && locked == "1") {
                     HomeGrid.setCellTextStyle(rowId, cellInd + 1, "color:#a2a2a2 !important;");
                 }
@@ -683,7 +676,7 @@
             var PlannedVal = parseFloat(HomeGrid.cells(rowId, cellInd).getValue());
             var BudgetVal = parseFloat(HomeGrid.cells(rowId, cellInd - 1).getValue());
             if (PlannedVal > BudgetVal) {
-                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("lo");
                 if ((locked != null && locked != "") && locked == "1") {
                     HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                 }
@@ -696,7 +689,7 @@
                 HomeGrid.cells(rowId, cellInd).setAttribute("title", Type + "'s cost is over it's budget.");
             }
             else {
-                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+                var locked = HomeGrid.cells(rowId, cellInd).getAttribute("lo");
                 if ((locked != null && locked != "") && locked == "1") {
                     HomeGrid.setCellTextStyle(rowId, cellInd, "color:#a2a2a2 !important;");
                 }
@@ -740,7 +733,7 @@
                 var PlannedVal = parseFloat(HomeGrid.cells(ParentId, cellInd).getValue());
                 var BudgetVal = parseFloat(HomeGrid.cells(ParentId, cellInd - 1).getValue());
                 if (PlannedVal > BudgetVal) {
-                    var locked = HomeGrid.cells(ParentId, cellInd).getAttribute("locked");
+                    var locked = HomeGrid.cells(ParentId, cellInd).getAttribute("lo");
                     if ((locked != null && locked != "") && locked == "1") {
                         HomeGrid.setCellTextStyle(ParentId, cellInd, "color:#a2a2a2 !important; background-image:url(./content/images/red-corner-budget.png); background-repeat: no-repeat; background-position: right top;");
                     }
@@ -753,7 +746,7 @@
                     HomeGrid.cells(ParentId, cellInd).setAttribute("title", ParentTypeId + "'s cost is over it's budget.");
                 }
                 else {
-                    var locked = HomeGrid.cells(ParentId, cellInd).getAttribute("locked");
+                    var locked = HomeGrid.cells(ParentId, cellInd).getAttribute("lo");
                     if ((locked != null && locked != "") && locked == "1") {
                         HomeGrid.setCellTextStyle(ParentId, cellInd, "color:#a2a2a2 !important;");
                     }

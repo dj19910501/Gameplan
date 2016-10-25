@@ -145,7 +145,7 @@ else
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         if (stage == 0) {   // Stage == 0 Means Click on Cell
             // Disable cells which has no permission to edit
-            var locked = LineItemGrid.cells(rowId, cellInd).getAttribute("locked");
+            var locked = LineItemGrid.cells(rowId, cellInd).getAttribute("lo");
             if ((locked != null && locked != "") && (locked == "1" || locked == "True"))
                 return false;
         }

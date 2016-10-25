@@ -181,12 +181,12 @@ namespace RevenuePlanner.Services
                 // Set editable based on permission (balance always remain read only)
                 if (modelEntity.LineItemTypeId == null)
                 {
-                    objBudgetData.locked = objHomeGridProperty.lockedstateone;
+                    objBudgetData.lo = objHomeGridProperty.lockedstateone;
                     objBudgetData.style = objHomeGridProperty.stylecolorgray;
                 }
                 else
                 {
-                    objBudgetData.locked = lockedstate;
+                    objBudgetData.lo = lockedstate;
                     objBudgetData.style = stylecolor;
                 }
 
@@ -209,7 +209,7 @@ namespace RevenuePlanner.Services
         {
             // Add Unallocated Cost column at the end
             Budgetdataobj objBudgetData = new Budgetdataobj();
-            objBudgetData.locked = objHomeGridProperty.lockedstateone;
+            objBudgetData.lo = objHomeGridProperty.lockedstateone;
             objBudgetData.style = objHomeGridProperty.stylecolorgray;
             objBudgetData.value = (PlannedCost - totalAllocatedCost).ToString(formatThousand);
             return objBudgetData;
@@ -249,19 +249,19 @@ namespace RevenuePlanner.Services
 
             objTacticData = new Budgetdataobj();    // Add Activity Name column value
             objTacticData.value = HttpUtility.HtmlEncode(tacticModel.ActivityName).Replace("'", "&#39;");   // HttpUtility.HtmlEncode handles all character except ' so need to be replaced
-            objTacticData.locked = lockedstate;
+            objTacticData.lo = lockedstate;
             objTacticData.style = stylecolor;
             lstTacticData.Add(objTacticData);
 
             objTacticData = new Budgetdataobj();    // Add Icons column value
             objTacticData.value = "";
-            objTacticData.locked = lockedstate;
+            objTacticData.lo = lockedstate;
             objTacticData.style = stylecolor;
             lstTacticData.Add(objTacticData);
 
             objTacticData = new Budgetdataobj();    // Add Planned Cost column value
             objTacticData.value = tacticModel.PlannedCost.ToString(formatThousand);
-            objTacticData.locked = lockedstate;
+            objTacticData.lo = lockedstate;
             objTacticData.style = stylecolor;
             lstTacticData.Add(objTacticData);
 
@@ -331,12 +331,12 @@ namespace RevenuePlanner.Services
             objLineItemData = new Budgetdataobj();  // Add Activity Name to the column
             if (modelEntity.LineItemTypeId == null)
             {
-                objLineItemData.locked = objHomeGridProperty.lockedstateone; // Balance row name should not be editable
+                objLineItemData.lo = objHomeGridProperty.lockedstateone; // Balance row name should not be editable
                 objLineItemData.style = objHomeGridProperty.stylecolorgray;
             }
             else
             {
-                objLineItemData.locked = lockedstate;
+                objLineItemData.lo = lockedstate;
                 objLineItemData.style = stylecolor;
             }
             objLineItemData.value = HttpUtility.HtmlEncode(ActivityName).Replace("'", "&#39;"); // HttpUtility.HtmlEncode handles all character except ' so need to be replaced
@@ -350,12 +350,12 @@ namespace RevenuePlanner.Services
             objLineItemData.value = modelEntity.PlannedCost.ToString(formatThousand);
             if (modelEntity.LineItemTypeId == null)
             {
-                objLineItemData.locked = objHomeGridProperty.lockedstateone;    // Balance row name should not be editable
+                objLineItemData.lo = objHomeGridProperty.lockedstateone;    // Balance row name should not be editable
                 objLineItemData.style = objHomeGridProperty.stylecolorgray;
             }
             else
             {
-                objLineItemData.locked = lockedstate;
+                objLineItemData.lo = lockedstate;
                 objLineItemData.style = stylecolor;
             }
             lstLineItemData.Add(objLineItemData);
