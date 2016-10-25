@@ -142,27 +142,32 @@
 
                     });
                     //Added to manage the tactic ids for on demand load of line items
+                    HomeGrid.enableDistributedParsing(true, 10, 0.1);
+                    HomeGrid.enableColumnMove(true);                   
+                    HomeGrid.parse(result.data, "json");
+                    GridHideColumn();
+                  
                     HomeGrid.attachEvent("onOpenStart", function (id, state) {//state: -1=expanded, 1= collapse
                         var entType = HomeGrid.cells(id, ActivitypeHidden).getValue();
-
-                        if (entType == 'Tactic') {
+                        var isChildExist = HomeGrid.getSubItems(id);
+                        if (entType == 'Tactic' && isChildExist == "") {                            
                             var entId = HomeGrid.cells(id, GridHiddenId).getValue();
                             ManageTacticIds(entId, state);
                             if (state == -1) {
                                 AddLineItemsDataToGrid(id, entId);
                             }
                         }
+                        else if (entType == 'Tactic' && isChildExist != "") {
+                            var childData = isChildExist.split(",");
+                            for (var i = 0 ; i < childData.length ; i++) {                               
+                                HomeGrid.lockRow(childData[i], true);
+                                HomeGrid.cells(childData[i], PlannedCostColIndex).setAttribute("lo", "0");
+                            }
+                        }
                         return true;
                     });
-                    HomeGrid.enableDistributedParsing(true, 10, 0.1);
-                    HomeGrid.enableColumnMove(true);
-                    //var mainGridData = JSON.stringify(JsonModel);
-                    //mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
-                    //GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-                    HomeGrid.parse(result.data, "json");
-                    GridHideColumn();
-
                     HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
+                              
                     colSplitId = HomeGrid.getColIndexById(AddId);
                     HomeGrid.splitAt(colSplitId + 1);
                     MoveColumn(); ///Calling Move column function

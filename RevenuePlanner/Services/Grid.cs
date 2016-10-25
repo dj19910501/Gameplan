@@ -268,7 +268,7 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Create Plan Grid header for default columns
         /// </summary>
-        private List<PlanHead> GenerateJsonHeader(string MQLTitle, ref List<string> HiddenColumns, ref List<string> UserDefinedColumns, int UserId, ref bool IsUserView)
+        public List<PlanHead> GenerateJsonHeader(string MQLTitle, ref List<string> HiddenColumns, ref List<string> UserDefinedColumns, int UserId, ref bool IsUserView)
         {
             List<PlanHead> headobjlist = new List<PlanHead>(); // List of headers detail of plan grid
             // Get user column view
@@ -1033,7 +1033,7 @@ namespace RevenuePlanner.Services
         /// <summary>
         /// Get the client wise mql stage title 
         /// </summary>
-        private string GetMqlTitle(int ClientId)
+        public string GetMqlTitle(int ClientId)
         {
             string MQLTitle = string.Empty;
             string MQLCode = Convert.ToString(Enums.PlanGoalType.MQL).ToLower();

@@ -27125,7 +27125,7 @@ function eXcell_sub_row_grid(a) {
     this.setValue = function(b) {
         if (b) {
             this.grid.setUserData(this.cell.parentNode.idd, "__sub_row", b)
-        }
+        }        
         this.cell._sub_row_type = "grid";
         this._setState(b ? "plus.gif" : "blank.gif")
     };
@@ -28255,7 +28255,9 @@ dhtmlXGridObject.prototype._massInsert = function(a, c, d, l) {
 dhtmlXGridObject.prototype.expandKids = function(b, e) {
     var c = this._h2.get[b.idd];
     if ((!c.childs.length) && (!c._xml_await)) {
-        return
+        if (c.level != 3 || (c.buff.firstChild.textContent == "Tactic" && c.level == 4)) {
+            return
+        }
     }
     if (c.state != "plus") {
         return
@@ -28515,6 +28517,9 @@ eXcell_tree.prototype.setValue = function(a) {
         c.push(e.plus);
         g.state = "plus"
     } else {
+        if (g.level == 3 || (g.buff.firstChild.textContent == "Tactic" && g.level == 4)) {
+            g.state = "plus"
+        }
         c.push(e.imst + g.state + ".gif" + e.imact)
     }
     c.push(e.imsti);

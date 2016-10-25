@@ -25,6 +25,8 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using System.Data.OleDb;
 using Excel;
 using System.Runtime.CompilerServices;
+using System.Xml.Linq;
+
 
 /*
  * Added By :
@@ -9746,31 +9748,26 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult GetTacticLineItemsForGridData(string TacticId)
         {
+            string MQLTitle = objGrid.GetMqlTitle(Sessions.User.CID);
             List<GridDefaultModel> lstLineItemRows = new List<GridDefaultModel>();
             lstLineItemRows = objGrid.GetTacticLineItemListForGrid(TacticId);
-            List<PlanDHTMLXGridDataModelLineItem> lstDHTMLXRows = new List<PlanDHTMLXGridDataModelLineItem>();
-
+            List<PlanDHTMLXGridDataModelLineItem> lstDHTMLXRows = new List<PlanDHTMLXGridDataModelLineItem>();            
             PlanDHTMLXGridDataModelLineItem objPlanMainDHTMLXGrid = null;
-            List<PlanGridDataobj> lstPlanGrid = null;
-
-            Dictionary<string, PlanHead> DictDefaultCoulmns = objGrid.lstHomeGrid_Default_Columns();
-            //DictDefaultCoulmns.Where(a => a.Key == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL)).FirstOrDefault().Value.value = MqlString;
-            List<PlanHead> lstDefaultColumns = DictDefaultCoulmns.Select(a => a.Value).ToList();
-            // Update UserDefinedColumns variable with default columns list
-            List<string> UserDefinedColumns = lstDefaultColumns.Select(a => a.id).ToList();
-
+            List<PlanGridDataobj> lstPlanGrid = null;           
+            List<string> UserDefinedColumns = new List<string>();
+            List<string> HiddenColumns = new List<string>(); 
+            bool IsUserView = false;
+            List<PlanHead> lstDefaultColumns = objGrid.GenerateJsonHeader(MQLTitle, ref HiddenColumns, ref UserDefinedColumns, Sessions.User.ID, ref IsUserView);           
             List<GridDefaultModel> lstSelectedColumnsData = lstLineItemRows.Select(a => objGrid.Projection(a, UserDefinedColumns, "Tactic")).ToList();
             foreach (GridDefaultModel row in lstSelectedColumnsData)
             {
                 lstPlanGrid = objGrid.GridDataRow(row, null);
-
                 objPlanMainDHTMLXGrid = new PlanDHTMLXGridDataModelLineItem();
                 objPlanMainDHTMLXGrid.id = row.UniqueId;
                 objPlanMainDHTMLXGrid.data = lstPlanGrid;
                 objPlanMainDHTMLXGrid.CSValue = string.Join(",", lstPlanGrid.Select(x => x.value).ToArray());
                 lstDHTMLXRows.Add(objPlanMainDHTMLXGrid);
             }
-
             return Json(new { lineItemRows = lstDHTMLXRows }, JsonRequestBehavior.AllowGet);
         }
 

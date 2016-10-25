@@ -23,7 +23,9 @@ namespace RevenuePlanner.Services
         List<PlanOptionsTacticType> GetLineItemTypeListForHeader(string strPlanIds, int ClientId);
         List<GridDefaultModel> GetTacticLineItemListForGrid(string tacticId);
         List<PlanGridDataobj> GridDataRow(GridDefaultModel Row, List<string> usercolindex);
-        Dictionary<string, PlanHead> lstHomeGrid_Default_Columns(bool IsIntegration = false);
-        GridDefaultModel Projection(GridDefaultModel RowData, IEnumerable<string> props, string viewBy);
+        //Dictionary<string, PlanHead> lstHomeGrid_Default_Columns(bool IsIntegration = false);
+        GridDefaultModel Projection(GridDefaultModel RowData, IEnumerable<string> props, string viewBy);        
+        List<PlanHead> GenerateJsonHeader(string MQLTitle, ref List<string> HiddenColumns, ref List<string> UserDefinedColumns, int UserId, ref bool IsUserView);
+        string GetMqlTitle(int ClientId);
     }
 }
