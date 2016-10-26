@@ -12,7 +12,7 @@ $('#btngridcalendar').click(function () {
         Id: [],
         Value: []
     };
-  //End
+    //End
     //cleare success msg as we want to hide import msg on click of grid or calendar
     $('#SuccessMsg').css('display', 'none');
     if ($('#errorMsg').css('display') == 'block') {
@@ -54,8 +54,7 @@ $('#btngridcalendar').click(function () {
     ShowhideDataonGridCalendar();
 });
 //load context from calendar to grid:Context management #2677
-function SetcookieforSaveState()
-{
+function SetcookieforSaveState() {
     var c = [];
     gantt.eachTask(function (task) {
 
@@ -100,14 +99,14 @@ function ShowhideDataonGridCalendar() {
     IsBudgetGrid = false;
     $('#ImportBtn').parent().removeClass('round-corner');
     $('#ImportBtn').hide();
-    $('#btnbudget').removeClass('P-icon-active');    
+    $('#btnbudget').removeClass('P-icon-active');
 }
 
 $('#btnbudget').click(function () {
     IsBudgetGrid = true;
     BindUpcomingActivites(filters.PlanIDs.toString());
 
-   // clear array used for package/unpackage handling in calendar on tab change
+    // clear array used for package/unpackage handling in calendar on tab change
     AddRemovePackageItems = {
         RemoveId: [],
         AddItemId: [],
@@ -117,9 +116,9 @@ $('#btnbudget').click(function () {
         Id: [],
         Value: []
     };
-   //end
+    //end
     //cleare success msg as we want to hide import msg on click of grid or calendar
-  
+
     if ($('#errorMsg').css('display') == 'block') {
         $('#errorMsg').css('display', 'none');
     }
@@ -147,7 +146,7 @@ $('#btnbudget').click(function () {
 
 function ShowHideDataonBudgetScreen() {
     $('#ImportBtn').parent().addClass('round-corner');
-   // $('#txtGlobalSearch').val('');
+    // $('#txtGlobalSearch').val('');
     IsBudgetGrid = true;
     $('#SuccessMsg').css('display', 'none');
     $('#ErrorMsg').css('display', 'none');
@@ -192,9 +191,9 @@ $('#ChangeView').click(function () {
 
 //Added by Rahul Shah to call budget data 
 function LoadBudgetGrid() {
-    filters = GetFilterIds(); 
-   // BindUpcomingActivites(filters.PlanIDs.toString())
- var selectedTimeFrame = $('#ddlUpComingActivites').val();
+    filters = GetFilterIds();
+    // BindUpcomingActivites(filters.PlanIDs.toString())
+    var selectedTimeFrame = $('#ddlUpComingActivites').val();
     var currentDate = new Date();
     if (selectedTimeFrame == null || selectedTimeFrame == 'undefined' || selectedTimeFrame == "") {
         selectedTimeFrame = currentDate.getFullYear().toString();
@@ -207,9 +206,9 @@ function LoadBudgetGrid() {
             ownerIds: filters.OwnerIds.toString(),
             TacticTypeids: filters.TacticTypeids.toString(),
             StatusIds: filters.StatusIds.toString(),
-            customFieldIds: filters.customFieldIds.toString() ,
+            customFieldIds: filters.customFieldIds.toString(),
             year: selectedTimeFrame.toString(),
-            ViewBy:viewBy
+            ViewBy: viewBy
 
         },
         success: function (result) {
@@ -244,7 +243,7 @@ var gridname;
 function LoadPlanGrid() {
     filters = GetFilterIds();
     var viewBy = $('#ddlTabViewBy').val();
-  
+
     $.ajax({
         url: urlContent + 'Plan/GetHomeGridData/',
         data: {
@@ -367,7 +366,7 @@ function ShowModels(mode, section, id, ParentId, RequestedModule) {
 };
 
 function loadInspectPopup(id, section, tabValue, mode, parentId) {
-       $('#modalMainContainer').show(); // Added to remove extra space Below Grid/Calendar Table
+    $('#modalMainContainer').show(); // Added to remove extra space Below Grid/Calendar Table
     logMixpanelTrack("Open " + section + " inspection window.");
     parentId = typeof parentId !== 'undefined' ? parentId : '0';
     var url = urlContent + 'Inspect/LoadInspectPopup/';
@@ -416,8 +415,7 @@ function DisplayPopUpMenu(obj, e) {
         LineType = $(obj).attr('lt');
 
     }
-    else
-    {
+    else {
         SetcookieforSaveState();
     }
     var name_Id = name.split("_");
@@ -487,13 +485,13 @@ function DisplayPopUpMenu(obj, e) {
                 ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li></ul>";
             }
             else {
-            if ('@IsPlanCreateAuthorized') {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>New Campaign</li> </ul>";
+                if ('@IsPlanCreateAuthorized') {
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>New Campaign</li> </ul>";
+                }
+                else {
+                    ul = "<ul style='margin: 0;'> <li class='new-prog' id='ChildCampaign'>New Campaign</li> </ul>";
+                }
             }
-            else {
-                ul = "<ul style='margin: 0;'> <li class='new-prog' id='ChildCampaign'>New Campaign</li> </ul>";
-            }
-        }
         }
         else {
             $('#popupType').css('display', 'none');
@@ -589,18 +587,18 @@ function DisplayPopUpMenu(obj, e) {
                 'left': left,
             });
         }
-        
+
     }
     //Added by Bhumika to resolve issue popup cutout when no space at bottom
     if (UlBottomOffset <= contentHeight) {
-        $("#popupType").css("margin-top","-100px");
+        $("#popupType").css("margin-top", "-100px");
     }
     else {
         $("#popupType").css("margin-top", "0px");
     }
     e.stopPropagation();
     $("#NewPlan").click(function (e) {
-       //Open inspect popup for add new plan added by devanshi #2587
+        //Open inspect popup for add new plan added by devanshi #2587
         ShowModels(inspectAdd, secPlan, " ", 0, RequestedModule);
 
     });
@@ -1015,7 +1013,7 @@ function CloseIconClick() {
                         y: HomeGrid.objBox.scrollTop,
                         x: HomeGrid.objBox.scrollLeft,
                     }
-                
+
                     LoadFilter(gridTab);            //variable 'gridTab' delcare at Index.cshtml page. 
                     gridSearchFlag = 0;
                 }
@@ -1099,7 +1097,7 @@ $("#honeycomb").popover({
         $('#honeycomb_content').find("#UnpackageHoneyComb").removeAttr('style');
         $('#honeycomb_content').find("#PackageHoneyComb").removeAttr('style');
         var ViewBy = $('#ddlTabViewBy').val();
-        if ( ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+        if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
             $('#honeycomb_content').find("#PackageHoneyComb").attr('style', 'color:gray; cursor: default !important');
         }
         else {
@@ -1116,7 +1114,7 @@ $("#honeycomb").popover({
             $('#honeycomb_content').html("");
             for (i = 0; i < (ExportSelectedIds.TaskID.length) ; i++) {
                 if (isCalendarView == false) {
-                   if (ExportSelectedIds.ROITacticType[i] == AssetType) {
+                    if (ExportSelectedIds.ROITacticType[i] == AssetType) {
                         htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '" EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  dhtmlxrowid="' + ExportSelectedIds.TaskID[i] + '"  csvid="' + ExportSelectedIds.CsvId[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"> <div class="row-fluid"> ' +
                             ' <div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"> ' +
                             ' <h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5> ' +
@@ -1126,8 +1124,8 @@ $("#honeycomb").popover({
                             ' <div class="span1 text-right pull-right" title="Delete" > ' +
                             ' <i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i> ' +
                             ' </div></div></div>';
-                        }
-                        else {
+                    }
+                    else {
                         htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '" EntityTaskId="' + ExportSelectedIds.TaskID[i] + '"  dhtmlxrowid="' + ExportSelectedIds.TaskID[i] + '"  csvid="' + ExportSelectedIds.CsvId[i] + '" roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"> <div class="row-fluid"> ' +
                                 ' <div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"> ' +
                                 ' <h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5> ' +
@@ -1137,13 +1135,13 @@ $("#honeycomb").popover({
                                 ' <div class="span1 text-right pull-right" title="Delete"> ' +
                                 ' <i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i> ' +
                                 ' </div></div></div>';
-                        }
                     }
-                    else {
-                    if (ExportSelectedIds.ROITacticType[i] == AssetType) {
-                        htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '" csvid="' + ExportSelectedIds.CsvId[i] + '"  roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + SetOwnerNameFoeHoneycomb(ExportSelectedIds.OwnerName[i]) + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                 }
                 else {
+                    if (ExportSelectedIds.ROITacticType[i] == AssetType) {
+                        htmlstringForAsset += '<div class="hc-block asset-bg" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '" csvid="' + ExportSelectedIds.CsvId[i] + '"  roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + SetOwnerNameFoeHoneycomb(ExportSelectedIds.OwnerName[i]) + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                    }
+                    else {
                         htmlstring += '<div class="hc-block" anchortacticid="' + ExportSelectedIds.AnchorTacticId[i] + '"  EntityTaskId="' + ExportSelectedIds.TaskID[i] + '" csvid="' + ExportSelectedIds.CsvId[i] + '"  roitactictype="' + ExportSelectedIds.ROITacticType[i] + '"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + htmlEncode(ExportSelectedIds.Title[i]) + '">' + htmlEncode(ExportSelectedIds.Title[i]) + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + SetOwnerNameFoeHoneycomb(ExportSelectedIds.OwnerName[i]) + '</span></p></div><div class="span1 text-right pull-right" title="Delete"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
                     }
                 }
@@ -1154,8 +1152,7 @@ $("#honeycomb").popover({
     }
 });
 //function to set owner name while diplay detail on honeycomb export popup
-function SetOwnerNameFoeHoneycomb(ownerid)
-{
+function SetOwnerNameFoeHoneycomb(ownerid) {
     var honeycombOwnerlist = Ownerlist;
     var ownername = ownerid;
     $.each(honeycombOwnerlist, function (index, item) {
@@ -1181,7 +1178,7 @@ function RemoveAllHoneyCombData() {
         AnchorTacticId: [],
         CalendarEntityType: [],
     };
-        $("div[class*='honeycombbox-icon-gantt-Active']").removeClass("honeycombbox-icon-gantt-Active");
+    $("div[class*='honeycombbox-icon-gantt-Active']").removeClass("honeycombbox-icon-gantt-Active");
     $("#totalEntity").text(0);
     $(".popover ").hide();
     $(".honeycombbox").hide();
@@ -1223,7 +1220,7 @@ function AddRemoveEntity(item) {
                 ExportSelectedIds.CalendarEntityType.push($(this).attr('id'));
             }
             else {
-                                    ExportSelectedIds.PlanFlag.push('Grid');
+                ExportSelectedIds.PlanFlag.push('Grid');
 
             }
         }
@@ -1232,7 +1229,7 @@ function AddRemoveEntity(item) {
 
         if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
             var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
-                                    if (index >= 0) {
+            if (index >= 0) {
                 ExportSelectedIds.TaskID.splice(index, 1);
                 ExportSelectedIds.Title.splice(index, 1);
                 ExportSelectedIds.OwnerName.splice(index, 1);
@@ -1258,10 +1255,10 @@ function AddRemoveEntity(item) {
             ExportSelectedIds.ROITacticType.push($(item).attr('roitactictype'));
             ExportSelectedIds.AnchorTacticId.push($(item).attr('anchortacticid'));
             if (isCalendarView == true) {
-                                    ExportSelectedIds.PlanFlag.push('Calender');
+                ExportSelectedIds.PlanFlag.push('Calender');
                 ExportSelectedIds.CalendarEntityType.push($(this).attr('id'));
-        }
-        else {
+            }
+            else {
                 ExportSelectedIds.PlanFlag.push('Grid');
             }
         }
@@ -1271,22 +1268,22 @@ function AddRemoveEntity(item) {
         if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
             $(item).removeClass("honeycombbox-icon-gantt-Active");
             var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
-        if (index >= 0) {
-            ExportSelectedIds.TaskID.splice(index, 1);
-            ExportSelectedIds.Title.splice(index, 1);
-            ExportSelectedIds.OwnerName.splice(index, 1);
-            ExportSelectedIds.TacticType.splice(index, 1);
-            ExportSelectedIds.ColorCode.splice(index, 1);
+            if (index >= 0) {
+                ExportSelectedIds.TaskID.splice(index, 1);
+                ExportSelectedIds.Title.splice(index, 1);
+                ExportSelectedIds.OwnerName.splice(index, 1);
+                ExportSelectedIds.TacticType.splice(index, 1);
+                ExportSelectedIds.ColorCode.splice(index, 1);
                 ExportSelectedIds.PlanFlag.splice(index, 1);
                 ExportSelectedIds.CsvId.splice(index, 1);
-            ExportSelectedIds.ROITacticType.splice(index, 1);
-            ExportSelectedIds.AnchorTacticId.splice(index, 1);
+                ExportSelectedIds.ROITacticType.splice(index, 1);
+                ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 ExportSelectedIds.CalendarEntityType.splice(index, 1);
             }
             $(item).addClass("honeycombbox-icon-gantt");
 
-    }
-    else {
+        }
+        else {
             $(item).addClass("honeycombbox-icon-gantt-Active");
             ExportSelectedIds.TaskID.push($(item).attr('altId'));
             ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp', '&'));
@@ -1299,8 +1296,8 @@ function AddRemoveEntity(item) {
             if (isCalendarView == true) {
                 ExportSelectedIds.PlanFlag.push('Calender');
                 ExportSelectedIds.CalendarEntityType.push($(this).attr('id'));
-        }
-        else {
+            }
+            else {
                 ExportSelectedIds.PlanFlag.push('Grid');
             }
         }
@@ -1318,16 +1315,16 @@ function AddRemoveEntity(item) {
             }
             $(item).removeClass("honeycombbox-icon-gantt-Active");
             var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
-        if (index >= 0) {
-            ExportSelectedIds.TaskID.splice(index, 1);
-            ExportSelectedIds.Title.splice(index, 1);
-            ExportSelectedIds.OwnerName.splice(index, 1);
-            ExportSelectedIds.TacticType.splice(index, 1);
-            ExportSelectedIds.ColorCode.splice(index, 1);
+            if (index >= 0) {
+                ExportSelectedIds.TaskID.splice(index, 1);
+                ExportSelectedIds.Title.splice(index, 1);
+                ExportSelectedIds.OwnerName.splice(index, 1);
+                ExportSelectedIds.TacticType.splice(index, 1);
+                ExportSelectedIds.ColorCode.splice(index, 1);
                 ExportSelectedIds.PlanFlag.splice(index, 1);
                 ExportSelectedIds.CsvId.splice(index, 1);
-            ExportSelectedIds.ROITacticType.splice(index, 1);
-            ExportSelectedIds.AnchorTacticId.splice(index, 1);
+                ExportSelectedIds.ROITacticType.splice(index, 1);
+                ExportSelectedIds.AnchorTacticId.splice(index, 1);
                 ExportSelectedIds.CalendarEntityType.splice(index, 1);
             }
             $(item).addClass("honeycombbox-icon-gantt");
@@ -1356,17 +1353,17 @@ function AddRemoveEntity(item) {
         $(".honeycombbox").hide();
     }
     else {
-                $("#totalEntity").text(ExportSelectedIds.TaskID.length);
-                $(".honeycombbox").show();
-               //Added following condition to hide show export to pdf and xls option as per grid and calendar view
-                if (isCalendarView) {
-                    $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
-                    $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
-                }
-                else {
-                    $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
-                    $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
-                }
+        $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+        $(".honeycombbox").show();
+        //Added following condition to hide show export to pdf and xls option as per grid and calendar view
+        if (isCalendarView) {
+            $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
+            $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
+        }
+        else {
+            $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
+            $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
+        }
     }
 }
 //End
@@ -1401,7 +1398,7 @@ function OpentCopyPopup(obj, isProceed) {
             else {
                 selectedcell = HomeGrid.findCell(linkItemId, colSplitId, true);
             }
-            
+
             var id = selectedcell[0];
             var rowid = id[0];
             ItemIndex = HomeGrid.getRowIndex(rowid);
@@ -1507,9 +1504,8 @@ function RemoveAllMediaCodeData() {
 //Common Functions
 //Start
 function RefershPlanHeaderCalc() {
- var TimeFrame=$('#ddlUpComingActivites').val();
-    if (TimeFrame == null)
-    {
+    var TimeFrame = $('#ddlUpComingActivites').val();
+    if (TimeFrame == null) {
         TimeFrame = "thisquarter";
     }
     GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, TimeFrame);
@@ -1576,7 +1572,7 @@ $(".searchDropdown li a").click(function () {
     var searchColumn = $(this).text();
     $("#txtGlobalSearch").val("");
     $("#searchCriteria").text($(this).text()[0]);
-    $("#searchCriteria").val(searchColumn.replace(" ",''));
+    $("#searchCriteria").val(searchColumn.replace(" ", ''));
     $("#txtGlobalSearch").attr('Placeholder', $(this).text());
     if ($('#errorMsg').css('display') == 'block') {
         $('#errorMsg').css('display', 'none');
@@ -1631,7 +1627,7 @@ function OpenDropdown() {
 var SearchTextforcal = ""
 function GlobalSearch() {
     var SearchText = $('#txtGlobalSearch').val();
-   // if (SearchText != "" && SearchText != 'undefined') {
+    // if (SearchText != "" && SearchText != 'undefined') {
     if ($('#IsGridView').val().toLowerCase() == 'true' || IsBudgetGrid) {
 
         var SearchDDLValue = $('#searchCriteria').val().replace(" ", "");
@@ -1674,7 +1670,7 @@ function GlobalSearch() {
                 return false;
             }
         });
-        
+
         gantt.eachTask(function (task) {
             task.$open = true;
         });
@@ -1695,7 +1691,7 @@ function GlobalSearch() {
                 gantt.render();
             }
         }
-        }
+    }
     //}
 }
 
@@ -1718,9 +1714,9 @@ function GlobalSearchonGrid(node, columnName) {
         $('#txtGlobalSearch').val(node.trim());
 
         if ($('#NodatawithfilterGrid').is(':hidden')) {
-        $("#errorMsg").css("display", "block");
-        $("#spanMsgError").empty();
-        $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
+            $("#errorMsg").css("display", "block");
+            $("#spanMsgError").empty();
+            $("#spanMsgError").text("No data found! Please check the filter and make correct Plan and Attributes selections");
         }
         $(window).scrollTop(0);
     }
@@ -1776,7 +1772,7 @@ function LoadFileInputModelBox() {
         if (selectedTimeFrame == null || selectedTimeFrame == 'undefined' || selectedTimeFrame == "") {
             selectedTimeFrame = currentDate.getFullYear().toString();
         }
-        $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString() + '&year='+selectedTimeFrame.toString());
+        $('#divgridview').load(urlContent + 'Plan/GetBudgetData' + '?PlanIds=' + filters.PlanIDs.toString() + '&OwnerIds=' + filters.OwnerIds.toString() + '&TactictypeIds=' + filters.TacticTypeids.toString() + '&StatusIds=' + filters.StatusIds.toString() + '&CustomFieldIds=' + filters.customFieldIds.toString() + '&year=' + selectedTimeFrame.toString());
 
     });
 
@@ -1849,8 +1845,7 @@ $("#ddlTabViewBy").change(function () {
         $('.export-dd').find('#ExportXls').show();
         $('.export-dd').find('#ExportPDf').hide();
     }
-    else if (IsBudgetGrid)
-    {
+    else if (IsBudgetGrid) {
         isCalendarView = false;
         $('#ChangeView').hide();
         $('#exp-serach').css('display', 'none');
@@ -1886,7 +1881,7 @@ function SetFilterData(EntityId, nValue) {
         $('#lstPlanActive').text(selectedFilters.planName.join(", "));
     }
     GetMultiplePlanNames();
-} 
+}
 
 
 function CallPackageHoneyComb() {
@@ -1906,28 +1901,28 @@ function CallPackageHoneyComb() {
 
     if (countElements > 0) {
         $('.popover-content').find(".hc-block").each(function () {
-                var ROITacticType = $(this).attr('roitactictype');
-                var ExistingAnchorTacticId = $(this).attr('anchortacticid');
-                var Csvid = $(this).attr('csvid').split('_');
-                var EntityType = Csvid[0];
+            var ROITacticType = $(this).attr('roitactictype');
+            var ExistingAnchorTacticId = $(this).attr('anchortacticid');
+            var Csvid = $(this).attr('csvid').split('_');
+            var EntityType = Csvid[0];
 
-                if (ROITacticType.toLowerCase() == AssetType.toLowerCase()) {
-                    anchorTacticId = Csvid[1];
+            if (ROITacticType.toLowerCase() == AssetType.toLowerCase()) {
+                anchorTacticId = Csvid[1];
                 if (isCalendarView == false) {
-                        dhtmlxrowid = $(this).attr('dhtmlxrowid');
-                    }
-                else {
-                        AnchorTaskId = $(this).attr('EntityTaskId');
-                        var index = AnchorTaskIdsList.Id.indexOf(AnchorTaskId);
-                        if (index >= 0) {
-                            AnchorTaskIdsList.Id.splice(index, 1);
-                            AnchorTaskIdsList.Value.splice(index, 1);
-                        }
-                        AnchorTaskIdsList.Id.push(AnchorTaskId);
-                    }
-                    
-                    hasAnchorTactic++;
+                    dhtmlxrowid = $(this).attr('dhtmlxrowid');
                 }
+                else {
+                    AnchorTaskId = $(this).attr('EntityTaskId');
+                    var index = AnchorTaskIdsList.Id.indexOf(AnchorTaskId);
+                    if (index >= 0) {
+                        AnchorTaskIdsList.Id.splice(index, 1);
+                        AnchorTaskIdsList.Value.splice(index, 1);
+                    }
+                    AnchorTaskIdsList.Id.push(AnchorTaskId);
+                }
+
+                hasAnchorTactic++;
+            }
             if (EntityType.toLowerCase() == EntityTypeTactic.toLowerCase()) {
                 var TaskId = $(this).attr('EntityTaskId');
                 var ListIds = TaskId.split('_');
@@ -1943,17 +1938,17 @@ function CallPackageHoneyComb() {
 
                 });
             }
-                if (EntityType.toLowerCase() != EntityTypeTactic.toLowerCase()) {
-                    isOnlyTactics = false;
-                }
-                else {
-                    promotionTacticIds.push(Csvid[1]);
-                }
+            if (EntityType.toLowerCase() != EntityTypeTactic.toLowerCase()) {
+                isOnlyTactics = false;
+            }
+            else {
+                promotionTacticIds.push(Csvid[1]);
+            }
 
-                if ((!IsPackageView && ExistingAnchorTacticId != "0" && ExistingAnchorTacticId != "null") || (IsPackageView && ExistingAnchorTacticId != "0" && ExistingAnchorTacticId != anchorTacticId && ExistingAnchorTacticId != "null")) {
-                    IsAlreadyPackaged.push($(this).find('h5').text());
-                }
-            });
+            if ((!IsPackageView && ExistingAnchorTacticId != "0" && ExistingAnchorTacticId != "null") || (IsPackageView && ExistingAnchorTacticId != "0" && ExistingAnchorTacticId != anchorTacticId && ExistingAnchorTacticId != "null")) {
+                IsAlreadyPackaged.push($(this).find('h5').text());
+            }
+        });
         if (isCalendarView == true) {
             AnchorTaskIdsList.Value.push(promotionTacticIds.toString());
         }
@@ -1986,7 +1981,7 @@ function CallPackageHoneyComb() {
         // Create new package
         $.ajax({
             type: 'POST',
-            url:   urlContent + 'Home/AddROIPackageDetails/',
+            url: urlContent + 'Home/AddROIPackageDetails/',
             data: { AnchorTacticId: anchorTacticId, PromotionTacticIds: promotionTacticIds.toString() },
             success: function (data) {
                 if (isCalendarView == true) {
@@ -2068,23 +2063,23 @@ function CallPackageHoneyComb() {
 function CallUnPackageHoneyComb() {
     if (PreventUnPackageClick == false) {
         var anchorTacticId = 0;
-         
-            var objAssetElement = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]");
-            if (objAssetElement != undefined && objAssetElement != null && objAssetElement.length > 0) {
-                anchorTacticId = $(objAssetElement).attr('csvid').split('_')[1];
-                if (isCalendarView == true) {
-                    var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]").attr('entitytaskid');
-                    $('.popover-content').find(".hc-block[anchortacticid= " + anchorTacticId + " ]").each(function () {
-                        var TaskID = $(this).attr('entitytaskid');
-                        AddRemovePackageItems.RemoveId.push(TaskID);
-                    });
-                }
+
+        var objAssetElement = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]");
+        if (objAssetElement != undefined && objAssetElement != null && objAssetElement.length > 0) {
+            anchorTacticId = $(objAssetElement).attr('csvid').split('_')[1];
+            var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]").attr('entitytaskid');
+            if (isCalendarView == true) {
+                $('.popover-content').find(".hc-block[anchortacticid= " + anchorTacticId + " ]").each(function () {
+                    var TaskID = $(this).attr('entitytaskid');
+                    AddRemovePackageItems.RemoveId.push(TaskID);
+                });
             }
-            else {
-                ShowMessageHoneyComb(true, DeselectAssetFromPackage, 400);
-                return false;
-            }
-           
+        }
+        else {
+            ShowMessageHoneyComb(true, DeselectAssetFromPackage, 400);
+            return false;
+        }
+
 
         $.ajax({
             url: urlContent + 'Home/UnpackageTactics/',
@@ -2107,14 +2102,17 @@ function CallUnPackageHoneyComb() {
                     }
 
                     if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
-                        HomeGrid.clearAll();
-                        $("#gridbox").hide();
-                        $('#exp-serach').css('display', 'none');
-                        $("#goalwrapper").hide();
-                        $('#exp-serach').css('display', 'none');
-                        $("#NodatawithfilterGrid").show();
-                        
-                     }
+                        var removeEntirePkg = CalendarTaskID.split('_')[0];
+                        HomeGrid.deleteRow(removeEntirePkg);
+                        var RowCount = HomeGrid.getRowsNum();
+                        if (RowCount <= 0) {
+                            $("#gridbox").hide();
+                            $('#exp-serach').css('display', 'none');
+                            $("#goalwrapper").hide();
+                            $('#exp-serach').css('display', 'none');
+                            $("#NodatawithfilterGrid").show();
+                        }
+                    }
                 }
                 else {
                     var TaskHtml = $("div[task_id='" + CalendarTaskID + "']");
@@ -2160,7 +2158,7 @@ function CallUnPackageHoneyComb() {
                         AnchorTaskIdsList.Id.push(CalendarTaskID);
                     }
                     // Added by Arpita Soni for Ticket #2357 on 07/15/2016
-                   
+
                     if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
                         var removeEntirePkg = CalendarTaskID.split('_')[0];
                         gantt.deleteTask(removeEntirePkg);
@@ -2291,6 +2289,7 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
     var ROITacticType = $(item).parents('.hc-block').attr('roitactictype');
     var planTacticId = $(item).parents('.hc-block').attr('csvid').split('_')[1];
     var dhtmlxrowid = $(item).parents('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]").attr('dhtmlxrowid');
+    var AssetTaskID = $('.popover-content').find(".hc-block[roitactictype=" +AssetType + "]").attr('entitytaskid');
     var IsPromotion = true;
 
     // If Asset tactic then provide confirmation to delete entire package
@@ -2311,7 +2310,7 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
                 myApp.hidePleaseWait();
             }
         },
-        url:urlContent + 'Home/UnpackageTactics/',
+        url: urlContent + 'Home/UnpackageTactics/',
         data: { AnchorTacticId: planTacticId, IsPromotion: IsPromotion },
         success: function (data) {
             var getvalue = HomeGrid.cells(dhtmlxrowid, TaskNameColIndex).getValue();
@@ -2358,12 +2357,16 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
                 RemoveAllHoneyCombData();
                 ShowMessage(false, PackageUnsuccessful, 3000);
                 if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
-                    HomeGrid.clearAll();
-                    $("#gridbox").hide();
-                    $('#exp-serach').css('display', 'none');
-                    $("#goalwrapper").hide();
-                    $('#exp-serach').css('display', 'none');
-                    $("#NodatawithfilterGrid").show();
+                    var removeEntirePkg = AssetTaskID.split('_')[0];
+                    HomeGrid.deleteRow(removeEntirePkg);
+                    var RowCount = HomeGrid.getRowsNum();
+                    if (RowCount <= 0) {
+                        $("#gridbox").hide();
+                        $('#exp-serach').css('display', 'none');
+                        $("#goalwrapper").hide();
+                        $('#exp-serach').css('display', 'none');
+                        $("#NodatawithfilterGrid").show();
+                    }
                 }
 
             }
@@ -2385,7 +2388,7 @@ function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totalleng
     var PromoID = 0;
 
     // If Asset tactic then provide confirmation to delete entire package
-    if (ROITacticType.toLowerCase() == AssetType.toLowerCase() ) {
+    if (ROITacticType.toLowerCase() == AssetType.toLowerCase()) {
         var deleteAsset = confirm('Deleting this Tactic will delete the entire package.\n Do you wish to continue?');
         IsPromotion = false;
         if (!deleteAsset) {
@@ -2408,7 +2411,7 @@ function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totalleng
             }
         },
         type: 'POST',
-        url:urlContent + 'Home/UnpackageTactics/',
+        url: urlContent + 'Home/UnpackageTactics/',
         data: { AnchorTacticId: planTacticId, IsPromotion: IsPromotion },
         success: function (data) {
             var TaskHtml = $("div[task_id='" + CalendarTaskID + "']");
@@ -2493,9 +2496,9 @@ function DeleteTacticFromPackageCalendarOnClickCloseIcon(item, taskId, Totalleng
                     }
 
                 });
-               
+
                 AnchorTaskIdsList.Id.push(CalendarTaskID);
-                if ( ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
+                if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
                     var removeEntirePkg = taskId.split('_')[0];
                     gantt.deleteTask(removeEntirePkg);
                     gantt.refreshData();
@@ -2573,9 +2576,9 @@ function OpenHoneyComb(obj) {
             type: 'POST',
             url: urlContent + 'Home/GetPackageTacticDetails/',
             data: {
-                viewBy:$('#ddlTabViewBy').val(),
+                viewBy: $('#ddlTabViewBy').val(),
                 TacticIds: IdsNotinList.toString(),
-                TacticTaskColor:TacticColorCode,
+                TacticTaskColor: TacticColorCode,
                 IsGridView: isCalendarView == false ? true : false
             },
             success: function (data) {
@@ -2654,8 +2657,7 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
             if (Id.indexOf('C') >= 0) {
                 CampaignId = Id.replace("C", "");
             }
-            if (Id.indexOf('P') >= 0)
-            {
+            if (Id.indexOf('P') >= 0) {
                 ProgramId = Id.replace("P", "");
             }
 
@@ -2703,7 +2705,7 @@ function ShowInspectForPlanProgramId() {
 function ShowInspectForPlanLineItemId() {
     ShowModel(null, true);
     $('#hdnShowInspectForPlanLineItemId').val(0);
-    }
+}
 
 function ShowInspectForPlanId() {
     var hdnShowInspectForPlanId = $("#CurrentPlanId")
@@ -2712,10 +2714,9 @@ function ShowInspectForPlanId() {
         $('#hdnShowInspectForPlanId').val(0);
     }
 }
-function SetselectedRow()
-{
+function SetselectedRow() {
     var idcoluIndex = '';
-    if ($('#IsGridView').val().toLowerCase()=='true')
+    if ($('#IsGridView').val().toLowerCase() == 'true')
         idcoluIndex = HomeGrid.getColIndexById('id');
     else
         idcoluIndex = HomeGrid.getColIndexById('ActivityId');
@@ -2738,16 +2739,16 @@ function SetselectedRow()
         if (isEditTacticHomeGrid.indexOf('L') > -1)
             id = isEditTacticHomeGrid;
         else {
-        var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, idcoluIndex, true);
+            var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, idcoluIndex, true);
             id = selectedcell[0];
         }
-        
+
         if (id != undefined && id != 'undefined') {
             if (isEditTacticHomeGrid.indexOf('L') > -1)
                 rowid = id;
             else
-            rowid = id[0];
-           // HomeGrid.openItem(HomeGrid.getParentId(rowid));
+                rowid = id[0];
+            // HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, false);
             ItemIndex = HomeGrid.getRowIndex(rowid);
             state0 = ItemIndex;
@@ -2759,7 +2760,7 @@ function SetselectedRow()
 }
 //Following function is used to export to pdf from honeComb
 function CallPdfHoneyComb() {
-   
+
     var isQuater = $("#ddlUpComingActivites").val();
     PdfFilters.SelectedPlans = [];
     $.each(filters.PlanIDs, function () {
@@ -2800,7 +2801,7 @@ function CallPdfHoneyComb() {
             ExportSelectedIds.TaskID = ExportSelectedIdsafterSearch.TaskID;
         }
         var Status = "";
-      
+
         var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
         for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
             if (GanttTaskDataNew.data[i].type != undefined) {
@@ -2925,7 +2926,7 @@ function CallPdfHoneyComb() {
         htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
         htmltestdiv += isQuater + '</span>';
         htmltestdiv += '</p>';
-     
+
         var innerfiltervalueplan = "";
         var isselectedplan = true;
         var DropDownPlan = true;
@@ -3234,7 +3235,7 @@ function CallPdfHoneyComb() {
             $('#mainpdfdiv').css('width', '');
             var headerhtml = $("#testdiv").html();
         }
-        gantt.getGridColumn("colorcode").hide = true; 
+        gantt.getGridColumn("colorcode").hide = true;
         gantt.exportToPDF({
             header: headerhtml,
             start: datestart,
@@ -3248,7 +3249,7 @@ function CallPdfHoneyComb() {
         //    GanttTaskData.data[indexdef].parent = parentdef;
         //}
         selectedIds = [];
-    
+
         GanttTaskDataforHoney.data = new Array();
         gantt.clearAll();
         gantt.init("gantt_here");
@@ -3263,9 +3264,9 @@ function CallPdfHoneyComb() {
         $('#errorMessageInspectPopup').removeClass('message-position');
     }
 }
-var selectedIds =[];
+var selectedIds = [];
 function GetParentIdRecursive(id) {
-    
+
     var checkindexselected = selectedIds.indexOf(id);
     if (!(checkindexselected >= 0)) {
         selectedIds.push(id);
@@ -3277,7 +3278,7 @@ function GetParentIdRecursive(id) {
 
 }
 function setpdfgraphdata(lstchart) {
-    
+
     //$(".dhx_chart_legend").html('');
     // $(".dhx_chart_legend").hide();
     var legendvalue = "";
