@@ -54,8 +54,7 @@ $('#btngridcalendar').click(function () {
     ShowhideDataonGridCalendar();
 });
 //load context from calendar to grid:Context management #2677
-function SetcookieforSaveState()
-{
+function SetcookieforSaveState() {
     var c = [];
     gantt.eachTask(function (task) {
 
@@ -416,8 +415,7 @@ function DisplayPopUpMenu(obj, e) {
         LineType = $(obj).attr('lt');
 
     }
-    else
-    {
+    else {
         SetcookieforSaveState();
     }
     var name_Id = name.split("_");
@@ -1154,8 +1152,7 @@ $("#honeycomb").popover({
     }
 });
 //function to set owner name while diplay detail on honeycomb export popup
-function SetOwnerNameFoeHoneycomb(ownerid)
-{
+function SetOwnerNameFoeHoneycomb(ownerid) {
     var honeycombOwnerlist = Ownerlist;
     var ownername = ownerid;
     $.each(honeycombOwnerlist, function (index, item) {
@@ -1508,8 +1505,7 @@ function RemoveAllMediaCodeData() {
 //Start
 function RefershPlanHeaderCalc() {
  var TimeFrame=$('#ddlUpComingActivites').val();
-    if (TimeFrame == null)
-    {
+    if (TimeFrame == null) {
         TimeFrame = "thisquarter";
     }
     GetHeadsUpData(urlContent + 'Plan/GetHeaderforPlanByMultiplePlanIDs/', urlContent + 'Home/GetActivityDistributionchart/', secHome, TimeFrame);
@@ -1849,8 +1845,7 @@ $("#ddlTabViewBy").change(function () {
         $('.export-dd').find('#ExportXls').show();
         $('.export-dd').find('#ExportPDf').hide();
     }
-    else if (IsBudgetGrid)
-    {
+    else if (IsBudgetGrid) {
         isCalendarView = false;
         $('#ChangeView').hide();
         $('#exp-serach').css('display', 'none');
@@ -2072,8 +2067,8 @@ function CallUnPackageHoneyComb() {
             var objAssetElement = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]");
             if (objAssetElement != undefined && objAssetElement != null && objAssetElement.length > 0) {
                 anchorTacticId = $(objAssetElement).attr('csvid').split('_')[1];
+            var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]").attr('entitytaskid');
                 if (isCalendarView == true) {
-                    var CalendarTaskID = $('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]").attr('entitytaskid');
                     $('.popover-content').find(".hc-block[anchortacticid= " + anchorTacticId + " ]").each(function () {
                         var TaskID = $(this).attr('entitytaskid');
                         AddRemovePackageItems.RemoveId.push(TaskID);
@@ -2107,13 +2102,16 @@ function CallUnPackageHoneyComb() {
                     }
 
                     if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
-                        HomeGrid.clearAll();
+                        var removeEntirePkg = CalendarTaskID.split('_')[0];
+                        HomeGrid.deleteRow(removeEntirePkg);
+                        var RowCount = HomeGrid.getRowsNum();
+                        if (RowCount <= 0) {
                         $("#gridbox").hide();
                         $('#exp-serach').css('display', 'none');
                         $("#goalwrapper").hide();
                         $('#exp-serach').css('display', 'none');
                         $("#NodatawithfilterGrid").show();
-                        
+                        }
                      }
                 }
                 else {
@@ -2291,6 +2289,7 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
     var ROITacticType = $(item).parents('.hc-block').attr('roitactictype');
     var planTacticId = $(item).parents('.hc-block').attr('csvid').split('_')[1];
     var dhtmlxrowid = $(item).parents('.popover-content').find(".hc-block[roitactictype=" + AssetType + "]").attr('dhtmlxrowid');
+    var AssetTaskID = $('.popover-content').find(".hc-block[roitactictype=" +AssetType + "]").attr('entitytaskid');
     var IsPromotion = true;
 
     // If Asset tactic then provide confirmation to delete entire package
@@ -2358,12 +2357,16 @@ function DeleteTacticFromPackageOnClickCloseIcon(item, taskId, Totallength, Heig
                 RemoveAllHoneyCombData();
                 ShowMessage(false, PackageUnsuccessful, 3000);
                 if (ViewBy != null && ViewBy != undefined && ViewBy == ViewByROI) {
-                    HomeGrid.clearAll();
+                    var removeEntirePkg = AssetTaskID.split('_')[0];
+                    HomeGrid.deleteRow(removeEntirePkg);
+                    var RowCount = HomeGrid.getRowsNum();
+                    if (RowCount <= 0) {
                     $("#gridbox").hide();
                     $('#exp-serach').css('display', 'none');
                     $("#goalwrapper").hide();
                     $('#exp-serach').css('display', 'none');
                     $("#NodatawithfilterGrid").show();
+                    }
                 }
 
             }
@@ -2654,8 +2657,7 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
             if (Id.indexOf('C') >= 0) {
                 CampaignId = Id.replace("C", "");
             }
-            if (Id.indexOf('P') >= 0)
-            {
+            if (Id.indexOf('P') >= 0) {
                 ProgramId = Id.replace("P", "");
             }
 
@@ -2712,8 +2714,7 @@ function ShowInspectForPlanId() {
         $('#hdnShowInspectForPlanId').val(0);
     }
 }
-function SetselectedRow()
-{
+function SetselectedRow() {
     var idcoluIndex = '';
     if ($('#IsGridView').val().toLowerCase()=='true')
         idcoluIndex = HomeGrid.getColIndexById('id');
