@@ -1070,10 +1070,10 @@ RETURNS
 			ParentTaskId	NVARCHAR(500),
 			PlanId			BIGINT,
 			ModelId			BIGINT,
-			EloquaId		nvarchar(100),
-			MarketoId		nvarchar(100),
-			WorkfrontID		nvarchar(100),
-			SalesforceId	nvarchar(100),
+			--EloquaId		nvarchar(100),
+			--MarketoId		nvarchar(100),
+			--WorkfrontID		nvarchar(100),
+			--SalesforceId	nvarchar(100),
 			ROIPackageIds	Varchar(max)
 		)
 AS
@@ -1128,10 +1128,10 @@ BEGIN
 						ParentTaskId	NVARCHAR(500),
 						PlanId			BIGINT,
 						ModelId			BIGINT,
-						EloquaId		nvarchar(100),
-						MarketoId		nvarchar(100),
-						WorkfrontID		nvarchar(100),
-						SalesforceId	nvarchar(100),
+						--EloquaId		nvarchar(100),
+						--MarketoId		nvarchar(100),
+						--WorkfrontID		nvarchar(100),
+						--SalesforceId	nvarchar(100),
 						ViewByTitle		NVARCHAR(500),
 						ROIPackageIds	Varchar(max)
 					)
@@ -1155,10 +1155,10 @@ BEGIN
 						ParentTaskId	NVARCHAR(500),
 						PlanId			BIGINT,
 						ModelId			BIGINT,
-						EloquaId		nvarchar(100),
-						MarketoId		nvarchar(100),
-						WorkfrontID		nvarchar(100),
-						SalesforceId	nvarchar(100),
+						--EloquaId		nvarchar(100),
+						--MarketoId		nvarchar(100),
+						--WorkfrontID		nvarchar(100),
+						--SalesforceId	nvarchar(100),
 						ROIPackageIds	Varchar(max)
 					)
 			
@@ -1178,8 +1178,8 @@ BEGIN
 			BEGIN
 				
 				INSERT Into @ResultEntities(
-							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)		
-				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds)		
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds
 				FROM		fnGetFilterEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@TimeFrame,@isGrid)
 	
 				RETURN
@@ -1188,8 +1188,8 @@ BEGIN
 			BEGIN
 				-- GET Data with applying required filter and insert into local table to re use for further process.
 				INSERT Into @vwEntities(
-							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)		
-				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds)		
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds
 				FROM		fnGetFilterEntityHierarchy(@planIds,@ownerIds,@tactictypeIds,@statusIds,@TimeFrame,@isGrid)
 			END
 	
@@ -1300,8 +1300,7 @@ BEGIN
 						,'Z'+R.ViewByValue+'_'+H.TaskId		
 						,'Z'+R.ViewByValue+'_'+H.ParentTaskId
 						,H.PlanId ,H.ModelId ,
-						H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
-						 R.ViewByValue,H.ROIPackageIds
+						R.ViewByValue,H.ROIPackageIds
 			FROM		@distViewByValues as DV
 			JOIN		@tblEntityViewByMapping as R on DV.ViewById = R.ViewByValue
 			JOIN		@vwEntities as H on R.EntityId = H.EntityId and H.EntityTypeId=@entTypeId
@@ -1332,7 +1331,6 @@ BEGIN
 									,'Z'+C.ViewByTitle+'_'+H.TaskId as TaskId
 									,'Z'+C.ViewByTitle+'_'+H.ParentTaskId as ParentTaskId
 									,H.PlanId, H.ModelId, C.ViewByTitle,
-									H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
 									H.ROIPackageIds
 							FROM @vwEntities H
 							JOIN @prntEntityTable as C ON H.UniqueId = C.ParentUniqueId
@@ -1347,7 +1345,6 @@ BEGIN
 									,'Z'+P.ViewByTitle+'_'+H.TaskId as TaskId
 									,'Z'+P.ViewByTitle+'_'+H.ParentTaskId as ParentTaskId
 									,H.PlanId, H.ModelId, P.ViewByTitle,
-									H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
 									H.ROIPackageIds
 							FROM @vwEntities H
 							JOIN prnt as P ON H.UniqueId = P.ParentUniqueId
@@ -1358,8 +1355,8 @@ BEGIN
 				
 	
 				INSERT INTO @ResultViewByHierarchyEntities(
-							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
-				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds 
+							UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds)
+				SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds 
 				FROM		prnt
 			
 			END
@@ -1373,7 +1370,7 @@ BEGIN
 					(
 						(
 							-- Get Parent records from @ResultViewByHierarchyEntities to create child hierarchy data.
-							SELECT	UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
+							SELECT	UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds
 							FROM	@ResultViewByHierarchyEntities 
 							WHERE	EntityTypeId=@entTypeId
 						)
@@ -1385,7 +1382,6 @@ BEGIN
 									Cast('Z'+C.ViewByTitle+'_'+H.TaskId as nvarchar(500))  as TaskId,
 									C.TaskId as ParentTaskId,
 									H.PlanId, H.ModelId, C.ViewByTitle,
-									H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
 									H.ROIPackageIds
 							FROM	@vwEntities as H
 							JOIN	child C on C.UniqueId = H.ParentUniqueId
@@ -1395,21 +1391,20 @@ BEGIN
 					--select * from child
 	
 					INSERT INTO @ResultViewByHierarchyEntities (
-								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
-					SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds 
+								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds)
+					SELECT		UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds 
 					FROM		child 
 					WHERE EntityTypeId <> @entTypeId
 				END
 				ELSE
 				BEGIN
 					INSERT INTO @ResultViewByHierarchyEntities (
-								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
+								UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ViewByTitle,ROIPackageIds)
 				
 					SELECT	H.UniqueId, H.EntityId, H.EntityTitle, H.ParentEntityId, H.ParentUniqueId, H.EntityType,H.EntityTypeId, H.ColorCode, H.[Status], H.StartDate, H.EndDate, H.CreatedBy, H.AltId,
 							'Z'+R.ViewByTitle+'_'+H.TaskId,
 							R.TaskId, H.PlanId, H.ModelId, R.ViewByTitle,
-							H.EloquaId,H.MarketoId,H.WorkfrontID,H.SalesforceId,
-							 H.ROIPackageIds
+							H.ROIPackageIds
 					FROM	@ResultViewByHierarchyEntities as R
 					JOIN	@vwEntities H on R.UniqueId  = H.ParentUniqueId and R.EntityTypeId=@entTypeId
 				END
@@ -1430,8 +1425,8 @@ BEGIN
 	
 			-- Insert data to result set.
 			Insert INTO @ResultEntities (
-						UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
-			SELECT		Distinct UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds
+						UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds)
+			SELECT		Distinct UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,EntityTypeId,ColorCode,[Status],StartDate,EndDate,CreatedBy,AltId,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds
 			FROM		@ResultViewByHierarchyEntities
 	
 	
@@ -8759,11 +8754,11 @@ BEGIN
 				,ROI.AnchorTacticID
 				--PackageTacticIds - comma saperated values selected as part of ROI package
 				,Hireachy.ROIPackageIds AS PackageTacticIds 
-				,PlanDetail.PlanYear,
-				Hireachy.EloquaId AS 'Eloquaid',
-				Hireachy.MarketoId AS 'Marketoid',
-				Hireachy.WorkfrontId AS 'WorkFrontid',
-				Hireachy.SalesforceId AS 'Salesforceid'
+				,PlanDetail.PlanYear
+				--Hireachy.EloquaId AS 'Eloquaid',
+				--Hireachy.MarketoId AS 'Marketoid',
+				--Hireachy.WorkfrontId AS 'WorkFrontid',
+				--Hireachy.SalesforceId AS 'Salesforceid'
 				FROM [dbo].fnViewByEntityHierarchy(@PlanId,@OwnerIds,@TacticTypeIds,@StatusIds,@ViewBy,@TimeFrame,@Isgrid) Hireachy
 				LEFT JOIN Model M ON Hireachy.ModelId = M.ModelId
 				LEFT JOIN Plan_Campaign_Program_Tactic Tactic ON Hireachy.EntityType='Tactic'

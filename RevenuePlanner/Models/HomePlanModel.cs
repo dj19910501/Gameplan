@@ -402,6 +402,15 @@ namespace RevenuePlanner.Models
         public List<PlanHead> head { get; set; }
     }
 
+    public class PlanGridFilters
+    {
+        public string PlanIds { get; set; }
+        public string OwnerIds { get; set; }
+        public string StatusIds { get; set; }
+        public string TacticTypeIds { get; set; }
+        public string CustomFieldIds { get; set; }
+    }
+
     public class PlanDHTMLXGridDataModelHomeGrid
     {
         public string id { get; set; }

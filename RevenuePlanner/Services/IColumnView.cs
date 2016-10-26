@@ -10,8 +10,8 @@ namespace RevenuePlanner.Services
     public interface IColumnView
     {
         int SaveColumnView(int UserId, string ViewName, List<AttributeDetail> AttributeDetail, bool Isgrid = true);
-        DataTable GetCustomFieldList(int ClientId);
+        //DataTable GetCustomFieldList(int ClientId);
         List<ColumnViewEntity> GetCustomfieldModel(int ClientId, bool Isgrid, out bool IsSelectall, int UserId);
-        List<CustomFieldOptionModel> GetCustomFiledOptionList(int clientID,int UserId);
+        //List<CustomFieldOptionModel> GetCustomFiledOptionList(int clientID,int UserId);
     }
 }

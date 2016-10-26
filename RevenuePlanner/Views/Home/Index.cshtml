@@ -125,7 +125,9 @@
     @* ===== Close button to change View End ======= *@
     <!-- -->
     <div id="GridGanttContent" style="display:none"></div>
-    <div id="divgridview"></div> 
+    <div id="divgridview">
+        @Html.Partial("~/Views/Plan/_HomeGrid.cshtml")
+    </div> 
     <div class="market-activity-main">
         <div class="btn-dropdwn" style="display: none;" id="popupType">
         </div>
@@ -308,6 +310,7 @@
     var calendarTab = '@Enums.ActivePlanTab.Calendar.ToString()';
     var gridTab = '@Enums.ActivePlanTab.Grid.ToString()';
     var budgetTab = '@Enums.ActivePlanTab.Budget.ToString()';
+    var isFirstTimeOnGrid = true;
     //End
 
     //for Hidding tooltip -ticket 2414
@@ -424,6 +427,8 @@
 
 
     $(document).ready(function () {
+        
+        BindHomeGrid();
         var Successmsgduplicate = '@Successmsgduplicate';
         var Errormsgduplicate = '@errormsgduplicate';
         if (Successmsgduplicate != "") {
@@ -521,7 +526,7 @@
                         IsBudgetGrid = true;
                         LoadBudgetGrid();
                     }
-                    else if (currentActiveTab == gridTab) {
+                    else if (currentActiveTab == gridTab && isFirstTimeOnGrid == false) {
                         LoadPlanGrid();
                     }
                     else if (currentActiveTab == calendarTab) {
@@ -567,3 +572,225 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform_min.js")"></script>
 }
+
+<script type="text/javascript">
+    gridname = "home";
+
+    var tacticTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
+    var lineItemTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.LineItemTypelist))');
+
+
+    var IslineItemDelete = false;
+
+    var colSplitId = 0;
+    var GridHiddenId = 0;
+    var ActivitypeHidden = 0;
+    var MachineNameHidden = 0;
+    var TaskNameColIndex = 0;
+    var PlannedCostColIndex = 0;
+    var AssetTypeColIndex = 0;
+    var TypeColIndex = 0;
+    var OwnerColIndex = 0;
+    var TargetStageGoalColIndex = 0;
+    var MQLColIndex = 0;
+    var RevenueColIndex = 0;
+    var StartDateColIndex = 0;
+    var EndDateColIndex = 0;
+
+    $(document).ready(function () {
+        //BindHomeGrid();
+        $('.nav').addClass('no-bottom-border');
+        $('.task-tbl div.gridbox').css('height', $(window).height() - 450);
+        if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+            $(".honeycombbox").hide();
+        }
+        else {
+            $("#totalEntity").text(ExportSelectedIds.TaskID.length);
+            $(".honeycombbox").show();
+        }
+
+        $('#cancel-button_Movetactic').on("click", function () {
+            $('#divMovetacticPopup').modal("hide");
+
+        });
+        $('#proceed-button_Movetactic').on("click", function () {
+            SaveMoveTactic();
+            $('#divMovetacticPopup').modal("hide");
+        });
+    });
+
+
+    //$(document).ajaxComplete(function () {
+    //    HomeGrid.setSizes();
+    //});
+
+    //var GridDataHomeGrid;
+    function BindHomeGrid() {
+        //filters = GetFilterIds();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetHomeGridDataJSON/")', //urlContent + 'Plan/GetHomeGridDataJSON/',
+            async: true,
+            data: {
+                planIds: filters.PlanIDs.toString(),
+                ownerIds: filters.OwnerIds.toString(),
+                TacticTypeid: filters.TacticTypeids.toString(),
+                StatusIds: filters.StatusIds.toString(),
+                customFieldIds: filters.customFieldIds.toString(),
+                viewBy: $('#ddlTabViewBy').val(),
+                isLoginFirst: isFirstTimeOnGrid
+                //ExpandedtacticIds: $('#ExpandedTacticIds').val()
+            },
+            cache: false,
+            success: function (result) {
+                try {
+                    //var JsonModel = result.data;
+                    HomeGrid = new dhtmlXGridObject('gridbox');
+                    var imgpath = '@Url.Content("~/codebase/imgs/")';
+                    HomeGrid.setImagePath(imgpath);
+                    HomeGrid.enableDragAndDrop(true);
+                    HomeGrid.enableAutoHeight(false);
+                    HomeGrid.enableAutoWidth(false);
+                    HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
+                        if (IsManageviewClick) {
+                            IsManageviewClick = false;
+                            return false;
+                        }
+                        else if (IsManageDropdown) {
+                            IsManageviewClick = false;
+                            return false;
+                        }
+                        else
+                            return true;
+                    });
+                    HomeGrid.setImageSize(1, 1);
+                    HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
+                    HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
+                    HomeGrid.enableEditTabOnly(true);;
+                    HomeGrid.csvParser = HomeGrid.csvExtParser;
+                    HomeGrid.init();
+                    HomeGrid.attachEvent("onDistributedEnd", function () {
+                        LoadAfterParsing();
+                        if (scrollstate != null && scrollstate != undefined) {
+                            HomeGrid.objBox.scrollTop = scrollstate.y;
+                        }
+                    });
+                    HomeGrid.attachEvent("onRowSelect", function (id, ind) {
+                        isEditTacticHomeGrid = id;
+                        isCopyTacticHomeGrid = 0;
+
+                    });
+                    
+                    HomeGrid.enableDistributedParsing(true, 10, 0.1);
+                    HomeGrid.enableColumnMove(true);
+                    //var mainGridData = JSON.stringify(JsonModel);
+                    //mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
+                    //GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+                    HomeGrid.parse(result.data, "json");
+                    GridHideColumn();
+
+                    HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
+                    colSplitId = HomeGrid.getColIndexById(AddId);
+                    HomeGrid.splitAt(colSplitId + 1);
+                    MoveColumn(); ///Calling Move column function
+                    var cookie = document.cookie;
+                    if (cookie.indexOf("gridOpenplangridState") > -1) {
+
+                        HomeGrid.collapseAll();
+
+                        HomeGrid.loadOpenStates("plangridState");
+                        setTimeout(function () {
+                            HomeGrid.objBox.scrollTop = scrollstate.y;
+
+                        }, 100);
+                    }
+                    HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
+
+                    var count = HomeGrid.getRowsNum();
+                    //alert(count)
+                    LoadAfterParsing();
+
+
+                    if (parseInt(count) > 0) {
+                        $("#gridbox").show();
+                        $("#goalwrapper").show();
+                        $("#NodatawithfilterGrid").hide();
+                        $('#exp-serach').show();
+                        $("div[id^='LinkIcon']").each(function () {
+                            bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+                        });
+
+                    } else {
+                        var noplan = '@Sessions.IsNoPlanCreated';
+                        if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
+                            AddBlankRow();
+                            $("#gridbox").show();
+                            $("#goalwrapper").show();
+                            $("#NodatawithfilterGrid").hide();
+                        }
+                        else {
+                            $("#gridbox").hide();
+                            $("#goalwrapper").hide();
+                            $("#NodatawithfilterGrid").show();
+                        }
+                        $('#exp-serach').hide();
+                    }
+                    if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+                        GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
+                    }
+                    HomeGrid.enableEditEvents(true, false, true);
+                    SetTooltip();
+                } catch (e) {
+                    $('#loader').css('display', 'none');
+                }
+
+            },
+            error: function (ex) {
+                alert(ex);
+            },
+            beforeSend: function () {
+                $('#loader').css('display', 'block');
+            },
+            complete: function () {
+                $('#loader').css('display', 'none');
+            }
+        });
+
+
+    }
+    //added by devanshi to add blank row to plan grid when there is no plan for client #2587 30-9-2016
+    function AddBlankRow() {
+        var blankrawdata = [];
+        blankrawdata.push("--");
+        var id = "";
+        var addcolindex = 0;
+        var taskcolindex = 0;
+        for (var i = 1; i < HomeGrid.getColumnCount() ; i++) {
+            id = HomeGrid.getColumnId(i);
+            if (id == '@Enums.HomeGrid_Default_Hidden_Columns.TaskName') {
+                blankrawdata.push("Your plan goes here");
+                taskcolindex = i;
+            }
+            else if (id == '@Enums.HomeGrid_Default_Hidden_Columns.Add') {
+                blankrawdata.push("");
+                addcolindex = i;
+            }
+            else if (id == '@Enums.HomeGrid_Default_Hidden_Columns.id') {
+                blankrawdata.push("0");
+            }
+            else if (id == '@Enums.HomeGrid_Default_Hidden_Columns.ColourCode') {
+                blankrawdata.push("");
+            }
+            else {
+                blankrawdata.push("--");
+            }
+        }
+        var rawdata = blankrawdata.join(',');
+        HomeGrid.addRow("newRow_0", rawdata);
+        HomeGrid.cells("newRow_0", addcolindex).setValue("<div class=grid_add onclick=javascript:DisplayPopUpMenu(this,event)  id='Plan' alt='000' per='true' title='Add'><i class='fa fa-plus-circle'></i></div>");
+        HomeGrid.setCellTextStyle("newRow_0", taskcolindex, "color:gray;font-style: italic;");
+        var colourCodeIndex = HomeGrid.getColIndexById("ColourCode");
+        HomeGrid.setColumnHidden(colourCodeIndex, true);
+    }
+    
+</script>

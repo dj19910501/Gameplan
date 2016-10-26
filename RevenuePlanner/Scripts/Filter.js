@@ -903,7 +903,7 @@ function SavePreset() {
 var isFiltered = false;
 var SavePresetValue = false;
 function UpdatePlan() {
-
+    isFirstTimeOnGrid = false;
     $('#txtGlobalSearch').val('');
     if ($('#ExpClose').css('display') == 'block')
     {

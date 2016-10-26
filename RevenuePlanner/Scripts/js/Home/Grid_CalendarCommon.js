@@ -262,6 +262,7 @@ function LoadPlanGrid() {
             gridhtml += result;
             $("#divgridview").html('');
             $("#divgridview").html(gridhtml);
+            BindHomeGrid();
             $("div[id^='LinkIcon']").each(function () {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });

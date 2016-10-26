@@ -76,6 +76,24 @@ namespace RevenuePlanner.Services
                 .OrderBy(a => a.EntityTitle).ToList();
             return EntityList;
         }
+
+        /// <summary>
+        /// Add By Nishant Sheth
+        /// call stored procedure to get list of filters of login user
+        /// <summary>
+        public List<PlanGridFilters> GetGridFilterData(int ClientId, int UserId)
+        {
+            SqlParameter[] para = new SqlParameter[2];
+
+            para[0] = new SqlParameter { ParameterName = "userId", Value = UserId };
+
+            para[1] = new SqlParameter { ParameterName = "ClientId", Value = ClientId };
+
+            List<PlanGridFilters> EntityList = objDbMrpEntities.Database
+                .SqlQuery<PlanGridFilters>("GetGridFilters @userId,@ClientId", para)
+                .ToList();
+            return EntityList;
+        }
         #endregion
 
         #region Mtehod to get grid customfield and it's entity value

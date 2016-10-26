@@ -6765,7 +6765,7 @@ namespace RevenuePlanner.Controllers
                 if (string.IsNullOrEmpty(viewBy))
                     viewBy = PlanGanttTypes.Tactic.ToString();
 
-                ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID,Sessions.User.ID);
+                //ViewBag.CustomAttributOption = objcolumnview.GetCustomFiledOptionList(Sessions.User.CID,Sessions.User.ID);
                 ViewBag.TacticTypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
                 ViewBag.LineItemTypelist = objGrid.GetLineItemTypeListForHeader(planIds, Sessions.User.CID);
             }
@@ -6781,7 +6781,7 @@ namespace RevenuePlanner.Controllers
         }
 
         [CompressAttribute]
-        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy)
+        public JsonResult GetHomeGridDataJSON(string planIds, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string viewBy, bool isLoginFirst = false)
         {
             PlanMainDHTMLXGridHomeGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGridHomeGrid();
             try
@@ -6797,7 +6797,15 @@ namespace RevenuePlanner.Controllers
 
                 if (string.IsNullOrEmpty(viewBy))
                     viewBy = PlanGanttTypes.Tactic.ToString();
-
+                if (isLoginFirst)
+                {
+                    PlanGridFilters objFilter = objGrid.GetGridFilterData(Sessions.User.CID, Sessions.User.ID).FirstOrDefault();
+                    planIds = objFilter.PlanIds;
+                    ownerIds = objFilter.OwnerIds;
+                    TacticTypeid = objFilter.TacticTypeIds;
+                    StatusIds = objFilter.StatusIds;
+                    customFieldIds = objFilter.CustomFieldIds;
+                }
                 objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds, viewBy);
             }
             catch (Exception objException)
