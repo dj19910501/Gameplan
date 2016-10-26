@@ -1,8 +1,8 @@
-/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/21/2016 5:52:52 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/26/2016 7:15:03 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetFilterEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 DROP FUNCTION [dbo].[fnGetFilterEntityHierarchy]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/21/2016 5:52:52 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/26/2016 7:15:03 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -154,7 +154,8 @@ BEGIN
 			,R.PackageIds as ROIPackageIds
 			FROM Plan_Campaign_Program_Tactic T
 			INNER JOIN @Entities P ON P.EntityId = T.PlanProgramId and P.EntityType=''Program''
-			INNER JOIN [TacticType] as typ on T.TacticTypeId = typ.TacticTypeId and typ.IsDeleted=''0'' and typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,'',''))
+			INNER JOIN [TacticType] as typ on T.TacticTypeId = typ.TacticTypeId and typ.IsDeleted=''0'' and 
+			(@tactictypeIds = ''All'' OR typ.[TacticTypeId] IN (select val from comma_split(@tactictypeIds,'','')))
 
 			LEFT JOIN (SELECT AnchorTacticID,PackageIds=
 					STUFF((SELECT '', '' + Cast(PlanTacticId as varchar)
@@ -169,7 +170,8 @@ BEGIN
 				) as R on T.PlanTacticId = R.AnchorTacticId
 
 			WHERE T.IsDeleted = 0 AND (@isGrid=1 OR (T.StartDate>=@StartDate AND T.StartDate<=@EndDate) OR (T.EndDate>=@StartDate AND T.EndDate<=@EndDate))
-					AND T.[Status] IN (select val from comma_split(@statusIds,'','')) and  T.[CreatedBy] IN (select case when val = '''' then null else Convert(int,val) end from comma_split(@ownerIds,'',''))
+					AND T.[Status] IN (select val from comma_split(@statusIds,'','')) and  
+					(@ownerIds = ''All'' OR T.[CreatedBy] IN (select case when val = '''' then null else Convert(int,val) end from comma_split(@ownerIds,'','')))
 	END
 	
 	

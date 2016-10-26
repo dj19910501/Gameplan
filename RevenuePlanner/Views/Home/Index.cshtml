@@ -746,7 +746,7 @@
 
             },
             error: function (ex) {
-                alert(ex);
+                $('#loader').css('display', 'none');
             },
             beforeSend: function () {
                 $('#loader').css('display', 'block');
