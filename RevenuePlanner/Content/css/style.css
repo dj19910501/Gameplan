@@ -13637,8 +13637,11 @@ table .lblCustomCheckbox label{width:70%}
 #treeviewddl.gridbox_dhx_skyblue.gridbox table.hdr tr td{border-left: 0 none !important;border-right: 0 none !important;}
 
 /* ********************  new styles  - End ******************** */
-
-
+/* in sidebar filter dropdown issue*/
+.filter-preset .dropdown-menu {
+    left: auto;
+    right: -2px;
+}
 /************************************************ Responsive css start here **********************************************************/
 
 @media (max-width: 1600px) {
