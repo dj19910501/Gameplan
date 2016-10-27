@@ -8870,7 +8870,7 @@ BEGIN
 				Hireachy.ParentTaskId,	
 				Hireachy.PlanId	,		
 				Hireachy.ModelId,			
-				TacticType.AssetType,
+				--TacticType.AssetType,
 				TacticType.Title AS TacticType,
 				Tactic.TacticTypeId,
 				LineItem.LineItemTypeId,
@@ -8920,7 +8920,7 @@ BEGIN
 					Hireachy.EntityType = 'Plan' AND
 					Hireachy.EntityId = PlanDetail.PlanId) PlanDetail
 	OUTER APPLY(SELECT TacticType.TacticTypeId,
-						TacticType.AssetType,
+						--TacticType.AssetType,
 						TacticType.Title  
 						FROM TacticType WITH (NOLOCK)
 						WHERE Tactic.TacticTypeId = TacticType.TacticTypeId) TacticType

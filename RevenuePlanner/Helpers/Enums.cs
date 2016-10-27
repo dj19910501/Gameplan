@@ -1734,7 +1734,7 @@ namespace RevenuePlanner.Helpers
            {"EndDate","End Date"},
            {"Status","Status"},
            {"PlannedCost","Planned Cost"},
-           {"AssetType","Tactic Category"},
+           //{"AssetType","Tactic Category"},
            {"TacticType","Type"},
            {"Owner","Owner"},
            {"TargetStageGoal","Target Stage Goal"}
