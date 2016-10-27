@@ -626,15 +626,15 @@ namespace RevenuePlanner.Services
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.PlannedCost) + ColumnManagmentIcon
             });
 
-            lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.AssetType), new PlanHead
-            {
-                type = "ro",
-                align = "center",
-                id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.AssetType),
-                sort = "str",
-                width = 150,
-                value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.AssetType) + ColumnManagmentIcon
-            });
+            //lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.AssetType), new PlanHead
+            //{
+            //    type = "ro",
+            //    align = "center",
+            //    id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.AssetType),
+            //    sort = "str",
+            //    width = 150,
+            //    value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.AssetType) + ColumnManagmentIcon
+            //});
 
             lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TacticType), new PlanHead
             {
