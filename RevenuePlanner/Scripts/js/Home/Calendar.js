@@ -340,7 +340,7 @@ else if ( $.isNumeric(timeframe)) {
         }
         //CountTacticForRenderChart(task.id, '');
     });
-
+   
     AttachEventToTactic();
     AttachEventToonTaskRowClick();
     //GlobalSearch();

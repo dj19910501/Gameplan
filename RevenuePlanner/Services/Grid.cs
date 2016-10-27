@@ -83,14 +83,18 @@ namespace RevenuePlanner.Services
         /// <summary>
         public List<PlanGridFilters> GetGridFilterData(int ClientId, int UserId)
         {
-            SqlParameter[] para = new SqlParameter[2];
+            bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
+            SqlParameter[] para = new SqlParameter[3];
+
 
             para[0] = new SqlParameter { ParameterName = "userId", Value = UserId };
 
             para[1] = new SqlParameter { ParameterName = "ClientId", Value = ClientId };
 
+            para[2] = new SqlParameter { ParameterName = "IsDefaultCustomRestrictionsViewable", Value = IsDefaultCustomRestrictionsViewable };
+
             List<PlanGridFilters> EntityList = objDbMrpEntities.Database
-                .SqlQuery<PlanGridFilters>("GetGridFilters @userId,@ClientId", para)
+                .SqlQuery<PlanGridFilters>("GetGridFilters @userId,@ClientId,@IsDefaultCustomRestrictionsViewable", para)
                 .ToList();
             return EntityList;
         }

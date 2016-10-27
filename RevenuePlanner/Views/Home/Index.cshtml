@@ -556,7 +556,7 @@
                 $('#warningMessage1').hide();
             }
         });
-        HomeGrid.saveOpenStates("plangridState");
+        //HomeGrid.saveOpenStates("plangridState");
 
         IsManageviewClick = true;
         return true;
@@ -575,11 +575,7 @@
 
 <script type="text/javascript">
     gridname = "home";
-
-    var tacticTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
-    var lineItemTypefieldOptionList = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.LineItemTypelist))');
-
-
+    var tacticTypefieldOptionList, lineItemTypefieldOptionList;
     var IslineItemDelete = false;
 
     var colSplitId = 0;
@@ -626,7 +622,7 @@
 
     //var GridDataHomeGrid;
     function BindHomeGrid() {
-        //filters = GetFilterIds();
+        filters = GetFilterIds();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/GetHomeGridDataJSON/")', //urlContent + 'Plan/GetHomeGridDataJSON/',
@@ -644,7 +640,8 @@
             cache: false,
             success: function (result) {
                 try {
-                    //var JsonModel = result.data;
+                    tacticTypefieldOptionList = result.tType;
+                    lineItemTypefieldOptionList = result.lType;
                     HomeGrid = new dhtmlXGridObject('gridbox');
                     var imgpath = '@Url.Content("~/codebase/imgs/")';
                     HomeGrid.setImagePath(imgpath);
@@ -671,14 +668,12 @@
                     HomeGrid.init();
                     HomeGrid.attachEvent("onDistributedEnd", function () {
                         LoadAfterParsing();
-                        if (scrollstate != null && scrollstate != undefined) {
-                            HomeGrid.objBox.scrollTop = scrollstate.y;
-                        }
+                      
                     });
                     HomeGrid.attachEvent("onRowSelect", function (id, ind) {
                         isEditTacticHomeGrid = id;
                         isCopyTacticHomeGrid = 0;
-
+                        selectedTaskID = id;
                     });
                     
                     HomeGrid.enableDistributedParsing(true, 10, 0.1);
@@ -693,17 +688,18 @@
                     colSplitId = HomeGrid.getColIndexById(AddId);
                     HomeGrid.splitAt(colSplitId + 1);
                     MoveColumn(); ///Calling Move column function
-                    var cookie = document.cookie;
-                    if (cookie.indexOf("gridOpenplangridState") > -1) {
+                    //var cookie = document.cookie;
+                    //if (cookie.indexOf("gridOpenplangridState") > -1) {
 
-                        HomeGrid.collapseAll();
+                    //    HomeGrid.collapseAll();
 
-                        HomeGrid.loadOpenStates("plangridState");
-                        setTimeout(function () {
-                            HomeGrid.objBox.scrollTop = scrollstate.y;
+                    //    HomeGrid.loadOpenStates("plangridState");
+                    //    setTimeout(function () {
+                    //        HomeGrid.objBox.scrollTop = scrollstate.y;
 
-                        }, 100);
-                    }
+                    //    }, 100);
+                    //}
+                   
                     HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
 
                     var count = HomeGrid.getRowsNum();

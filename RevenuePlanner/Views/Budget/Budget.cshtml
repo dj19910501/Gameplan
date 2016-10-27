@@ -169,7 +169,7 @@
             HomeGrid.attachEvent("onRowSelect", function (id, ind) {
                 isEditTacticHomeGrid = id;
                 isCopyTacticHomeGrid = 0;
-
+                selectedTaskID = id;
             });
             var machineNameindex = HomeGrid.getColIndexById("MachineName");
             var LinkTacticId = HomeGrid.getColIndexById("LinkTacticId");
@@ -203,17 +203,17 @@
             }
             //setTimeout(function () {
             HomeGrid.setSizes();
-            var cookie = document.cookie;
-            if (cookie.indexOf("gridOpenplangridState") > -1) {
+            //var cookie = document.cookie;
+            //if (cookie.indexOf("gridOpenplangridState") > -1) {
 
-                HomeGrid.collapseAll();
+            //    HomeGrid.collapseAll();
 
-                HomeGrid.loadOpenStates("plangridState");
-                setTimeout(function () {
-                    HomeGrid.objBox.scrollTop = scrollstate.y;
+            //    HomeGrid.loadOpenStates("plangridState");
+            //    setTimeout(function () {
+            //        HomeGrid.objBox.scrollTop = scrollstate.y;
 
-                }, 100);
-            }
+            //    }, 100);
+            //}
 
             //}, 200);
             LoadAfterParsing();
@@ -265,9 +265,15 @@
         }
         eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
         SetselectedRow();
-        setTimeout(function () {
-            HomeGrid.objBox.scrollTop = scrollstate.y;
-        }, 100);
+        if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
+            HomeGrid.showRow(HomeGrid.getRowId(state0));
+            HomeGrid.openItem(HomeGrid.getRowId(state0));
+        }
+        //setTimeout(function () {
+        //    if (scrollstate != null && scrollstate != undefined) {
+        //        HomeGrid.objBox.scrollTop = scrollstate.y;
+        //    }
+        //}, 100);
         ManageBorderBoxClass() //#2607
     }
     // Below function created for #2607 Resolve point-42 header and data column alignment issue - Bhumika
@@ -373,7 +379,7 @@
                                     SetFilterData(EntityId, nValue);
                                 }
                                 if (LinkTacticId != null && LinkTacticId != '' && LinkTacticId != 0) {
-                                    HomeGrid.saveOpenStates("plangridState");
+                                    //HomeGrid.saveOpenStates("plangridState");
                                     LoadBudgetGrid();
                                 }
                             }
@@ -896,7 +902,7 @@
                         $("#hdnBudgetingExpandId").val(section + sectionIntializer + '_' + EntityId);
                     }
                     if (LinkTacticId != null && LinkTacticId != '' && LinkTacticId != 0) {
-                        HomeGrid.saveOpenStates("plangridState");
+                        //HomeGrid.saveOpenStates("plangridState");
                         LoadBudgetGrid();
                     }
                 }

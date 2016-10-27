@@ -902,7 +902,7 @@ function SavePreset() {
 
 var isFiltered = false;
 var SavePresetValue = false;
-function UpdatePlan() {
+function UpdatePlan() {    
     isFirstTimeOnGrid = false;
     $('#txtGlobalSearch').val('');
     if ($('#ExpClose').css('display') == 'block')
@@ -958,56 +958,13 @@ function UpdateResult() {
     isRequest = false;
     var PreviousPlanIds = filters.PlanIDs;
 
-    GetFilterIds();
+    GetFilterIds();    
     var CurrentPlanIds = filters.PlanIDs;
 
     RemoveAllHoneyCombData();
     //if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
     if ($('#IsGridView').val().toLowerCase() == "true" && !IsBudgetGrid) {
-        HomeGrid.saveOpenStates("plangridState");
-        filters.customFieldIds = [];
-        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                var chkid = $(this).attr("id");
-                if (chkid != undefined && chkid != 'undefined') {
-                    filters.customFieldIds.push(chkid);
-                }
-            }
-        });
-        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
-        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
-            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
-                AllCounter = $(this).find("input[type=checkbox]").length;
-                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
-                UncheckedCounter = AllCounter - CheckedCounter;
-                if (AllCounter == UncheckedCounter) {
-                    var Id = $(this).attr("id");
-                    if (Id.indexOf("-") >= 0) {
-                        Id = Id.split('-')[1];
-                        var CustomId = Id + "_null";
-                        filters.customFieldIds.push(CustomId);
-
-                    }
-                }
-                else if (AllCounter == CheckedCounter) {
-                    id = this.id;
-                    if (id != null && id != "" && id.indexOf("-") > -1) {
-                        id = this.id.split("-")[1];
-                    }
-                    var i = 0, customfieldid;
-                    for (i = 0; i < filters.customFieldIds.length; i++) {
-                        if (filters.customFieldIds[i].indexOf("_") > -1) {
-                            customfieldid = filters.customFieldIds[i].split("_")[0];
-                            if (id == customfieldid) {
-                                filters.customFieldIds.splice(i, 1);
-                                i--;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
+        
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
         var TacticTypeids = filters.TacticTypeids;
@@ -1018,14 +975,14 @@ function UpdateResult() {
 
     }
     else if (IsBudgetGrid) {
-        HomeGrid.saveOpenStates("plangridState");
+        //HomeGrid.saveOpenStates("plangridState");
         Resetopenstate(PreviousPlanIds, CurrentPlanIds);
         LoadBudgetGrid();
     }
     else {
         SetcookieforSaveState();
         Resetopenstate(PreviousPlanIds, CurrentPlanIds);
-        GetOpenCloseState();
+      GetOpenCloseState();
         BindPlanCalendar();
     }
     RefershPlanHeaderCalc();
@@ -1073,7 +1030,7 @@ function GetPlanIds() {
     });
     return filters.PlanIDs;
 }
-function GetFilterIds() {
+function GetFilterIds() {    
     filters.SelectedYears = [];
     filters.PlanIDs = [];
     filters.customFieldIds = [];
