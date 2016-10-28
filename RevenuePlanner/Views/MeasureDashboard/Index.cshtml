@@ -338,7 +338,7 @@
                                     if (j > 1) {
                                         try {
                                             var originalValue = $(cell).text();
-                                            $(cell).text(ME_number_format(originalValue, '', '.', ','));
+                                            $(cell).text(ME_number_format(originalValue,2, '.', ','));
                                             $(cell).attr('title', originalValue);
                                             $(cell).addClass('north');
                                             $(cell).attr('title', $(cell).attr('data-original-title'));
