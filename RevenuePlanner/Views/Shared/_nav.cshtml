@@ -97,11 +97,28 @@
                             <ul class="dropdown-menu">
                                 @foreach (Menu submenu in Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId))
                                 {
-                                    <li>
-                                        <a href="@Url.Action(Convert.ToString(submenu.ActionName), Convert.ToString(submenu.ControllerName))">
-                                            @submenu.Name
-                                        </a>
-                                    </li>
+                                    if (!string.IsNullOrEmpty(Convert.ToString(o.Description)) && Convert.ToString(o.Description).Contains("javascript:void(0)"))
+                                    {
+                                        LiId = "SubPage_" + submenu.MenuApplicationId;
+                                        DashFrom = "Measure";
+                                        if (submenu.Description != null)
+                                        {
+                                            hrefLink = submenu.Description;
+                                        }
+                                        <li id="@LiId" dashfrom="@DashFrom">
+                                            <a href="@hrefLink">
+                                                <span class="nav-text">@submenu.Name.ToUpper()</span>
+                                            </a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a href="@Url.Action(Convert.ToString(submenu.ActionName), Convert.ToString(submenu.ControllerName))">
+                                                @submenu.Name
+                                            </a>
+                                        </li>
+                                    }
                                 }
                             </ul>
                         </li>
@@ -142,11 +159,20 @@
 
     $(document).on("click", "li[id^='Measure']", function () {
         $('.menu-content li').removeClass('active');
-      
         $(this).addClass('active');
         var DashId = $(this).attr('id').replace('Measure_', '');
-        var url = '@Url.Action("Index", "MeasureDashboard", new { DashboardId = "FIRST" })';
-        window.location.href = url.replace('FIRST', DashId);
+        var url = '@Url.Content("~/MeasureDashboard/Index/")';
+        window.location.href = url + "?DashboardId=" + DashId + "&DashboardPageId=0";
+    });
+    $(document).on("click", "li[id^='SubPage']", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $('.menu-content li').removeClass('active');
+        $(this).addClass('active');
+        var DashId = $(this).parent().parent().attr('id').replace('Measure_', '');
+        var SubPageId = $(this).attr('id').replace('SubPage_', '').toString();
+        var url = '@Url.Content("~/MeasureDashboard/Index/")';
+        window.location.href = url + "?DashboardId=" + DashId + "&DashboardPageId=" + SubPageId;
     });
 </script>
 

@@ -7,6 +7,7 @@
     string AuthorizedReportAPIPassword = Convert.ToString(ViewBag.AuthorizedReportAPIPassword);
     string ApiUrl = Convert.ToString(ViewBag.ApiUrl);
     string DashId = Convert.ToString(ViewBag.DashboardID);
+    string DashPageID = Convert.ToString(ViewBag.DashboardPageID);
     string ClientDimensionId = string.Empty;
     string ClientDimensionValueId = string.Empty;
     if (Convert.ToString(ViewBag.ClientDimensionId) != RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet)
@@ -55,7 +56,8 @@
                 <div id="divCustomFieldsFilter">
                     @{
                         int DashboardID = (int)ViewBag.DashboardID;
-                        @Html.Raw(@Html.GetFilterData(DashboardID, 0))
+                        int DashboardPageID = (int)ViewBag.DashboardPageID;
+                        @Html.Raw(@Html.GetFilterData(DashboardID, DashboardPageID))
                     }
                 </div>
             }

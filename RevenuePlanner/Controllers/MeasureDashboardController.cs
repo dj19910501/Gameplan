@@ -19,13 +19,15 @@ namespace RevenuePlanner.Controllers
     public class MeasureDashboardController : CommonController
     {
         public CacheObject objCache = new CacheObject();
-        public ActionResult Index(string DashboardId)
+        public ActionResult Index(string DashboardId, string DashboardPageId)
         {
             try
             {
                 int DashId = 0;
+                int DashPageId = 0;
                 if (int.TryParse(Convert.ToString(DashboardId), out DashId) && Sessions.AppMenus.Where(w => w.Description == "javascript:void(0)" && w.MenuApplicationId == DashId).Any())
                 {
+                    int.TryParse(Convert.ToString(DashboardPageId), out DashPageId);
                     if (string.IsNullOrEmpty(Sessions.StartDate))
                     {
                         Sessions.StartDate = DateTime.Now.AddMonths(6).ToString("MM/dd/yyyy");
@@ -65,7 +67,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     Custom_Dashboard model = new Custom_Dashboard();
-                    string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                    string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashId + "&DashboardPageId=" + DashPageId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
                     try
                     {
                         ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
@@ -100,6 +102,7 @@ namespace RevenuePlanner.Controllers
                     ViewData["ViewBy"] = li;
                     ViewBag.ViewBy = li;
                     ViewBag.DashboardID = DashId;
+                    ViewBag.DashboardPageID = DashPageId;
                     ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                     ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                     ViewBag.ApiUrl = ApiUrl;
@@ -111,6 +114,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     ViewBag.DashboardID = DashId;
+                    ViewBag.DashboardPageID = DashPageId;
                     ViewBag.AuthorizedReportAPIUserName = string.Empty;
                     ViewBag.AuthorizedReportAPIPassword = string.Empty;
                     ViewBag.ApiUrl = string.Empty;
