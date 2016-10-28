@@ -154,10 +154,10 @@ function LoadAfterParsing() {
 
     SetselectedRow();
    
-    if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
-        HomeGrid.showRow(HomeGrid.getRowId(state0));
-        HomeGrid.openItem(HomeGrid.getRowId(state0));
-    }
+    //if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
+    //    HomeGrid.showRow(HomeGrid.getRowId(state0));
+    //    HomeGrid.openItem(HomeGrid.getRowId(state0));
+    //}
     if (editidonOpenEnd != 0) {
         HomeGrid.detachEvent(editidonOpenEnd);
     }
@@ -277,6 +277,7 @@ function SaveMoveTactic() {
         data: { UpdateType: "tactic", UpdateColumn: "ParentID", UpdateVal: destinatinId, Id: parseInt(sourseid) },
         dataType: 'json',
         success: function (states) {
+            HomeGrid.saveOpenStates("plangridState");
             LoadPlanGrid();
         }
     });
@@ -674,7 +675,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id), CustomFieldInput: _customFieldValues, ColumnType: type.toString(), oValue: oValue.toString() },
                         dataType: 'json',
                         success: function (states) {
-                            //HomeGrid.saveOpenStates("plangridState");
+                            HomeGrid.saveOpenStates("plangridState");
 
                             if (states.errormsg != null && states.errormsg.trim() != "") {
                                 alert(states.errormsg.trim());
@@ -730,7 +731,7 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                         },
                         dataType: 'json',
                         success: function (states) {
-                            //HomeGrid.saveOpenStates("plangridState");
+                            HomeGrid.saveOpenStates("plangridState");
                             var TaskID = HomeGrid.cells(rowId, GridHiddenId).getValue();
                             var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
 
@@ -1025,7 +1026,7 @@ function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageV
                 dataType: 'json',
 
                 success: function (states) {
-                    //HomeGrid.saveOpenStates("plangridState");
+                    HomeGrid.saveOpenStates("plangridState");
                     if (UpdateColumn == TargetStageGoalId) {
                         var psv = HomeGrid.getUserData(rowid, "stage");
                         HomeGrid.cells(rowid, TargetStageGoalColIndex).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
@@ -1239,7 +1240,7 @@ function ExportToExcel(isHoneyComb) {
             }
         });
     }
-    //HomeGrid.saveOpenStates("plangridState");
+    HomeGrid.saveOpenStates("plangridState");
     HomeGrid.expandAll();
 
     var ActivityIdIndex = HomeGrid.getColIndexById("ActivityId");

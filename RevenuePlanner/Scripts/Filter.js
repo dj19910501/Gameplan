@@ -969,20 +969,21 @@ function UpdateResult() {
         var OwnerIds = filters.OwnerIds;
         var TacticTypeids = filters.TacticTypeids;
         var StatusIds = filters.StatusIds;
+        HomeGrid.saveOpenStates("plangridState");
         Resetopenstate(PreviousPlanIds, CurrentPlanIds);
         LoadPlanGrid();
         $("#totalEntity").text(ExportSelectedIds.TaskID.length);
 
     }
     else if (IsBudgetGrid) {
-        //HomeGrid.saveOpenStates("plangridState");
+        HomeGrid.saveOpenStates("plangridState");
         Resetopenstate(PreviousPlanIds, CurrentPlanIds);
         LoadBudgetGrid();
     }
     else {
         SetcookieforSaveState();
         Resetopenstate(PreviousPlanIds, CurrentPlanIds);
-      GetOpenCloseState();
+         GetOpenCloseState();
         BindPlanCalendar();
     }
     RefershPlanHeaderCalc();

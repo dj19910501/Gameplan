@@ -22,7 +22,7 @@ $('#btngridcalendar').click(function () {
     if ($('#btnbudget').hasClass('P-icon-active')) {
         isCalendarView = true;
         $('#IsGridView').val('false');
-       // HomeGrid.saveOpenStates("plangridState");
+       HomeGrid.saveOpenStates("plangridState");
         // get scroll set of selected row from grid to calendar
         scrollstate = {
             y: HomeGrid.objBox.scrollTop,
@@ -129,7 +129,7 @@ $('#btnbudget').click(function () {
             y: HomeGrid.objBox.scrollTop,
             x: HomeGrid.objBox.scrollLeft,
         }
-        //HomeGrid.saveOpenStates("plangridState");
+        HomeGrid.saveOpenStates("plangridState");
     }
     else {
         SetcookieforSaveState();
@@ -373,7 +373,7 @@ function loadInspectPopup(id, section, tabValue, mode, parentId) {
 }
 ///Added by Rahul Shah to open Inpection window on click ok ViewIcon for Plan Grid
 function DisplayPopup(item) {
-    //HomeGrid.saveOpenStates("plangridState");
+    HomeGrid.saveOpenStates("plangridState");
     inspectCloseFocus = $(item).position().top;
     var id = $(item).parent().prev().html();
     var type = $(item).attr('id');
@@ -381,7 +381,7 @@ function DisplayPopup(item) {
     DisplayEditablePopup(id, type);
 }
 function DisplayPopupforBudget(item) {
-   // HomeGrid.saveOpenStates("plangridState");
+    HomeGrid.saveOpenStates("plangridState");
     inspectCloseFocus = $(item).position().top;
     var id = $(item).parent().parent().find('td:first').html();
     var type = $(item).attr('id');
@@ -401,7 +401,7 @@ function DisplayPopUpMenu(obj, e) {
     var LineType = $(obj).attr('lineitemtype');
     if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
         isFirstTimeOnGrid = false;
-        //HomeGrid.saveOpenStates("plangridState");
+        HomeGrid.saveOpenStates("plangridState");
         LinkTacticPermission = $(obj).attr('linktacticper');
         LinkedTacticId = $(obj).attr('linkedtacticid');
         type = $(obj).attr('id');
@@ -695,14 +695,14 @@ function DisplayPopUpMenu(obj, e) {
                     isCopyTactic = data.Id;
                     isCopyTacticHomeGrid = isCopyTactic;
                     if (IsBudgetGrid) {
-                        //HomeGrid.saveOpenStates("plangridState");
+                        HomeGrid.saveOpenStates("plangridState");
                         LoadBudgetGrid();
                     }
                     else if ($('#IsGridView').val().toLowerCase() == "false") {
                         BindPlanCalendar();
                     }
                     else {
-                        //HomeGrid.saveOpenStates("plangridState");
+                        HomeGrid.saveOpenStates("plangridState");
 
                         LoadPlanGrid();
                     }
@@ -770,7 +770,7 @@ function DisplayPopUpMenu(obj, e) {
                     isCopyTactic = data.Id;
                     isCopyTacticHomeGrid = isCopyTactic;
                     if (IsBudgetGrid) {
-                        //HomeGrid.saveOpenStates("plangridState");
+                        HomeGrid.saveOpenStates("plangridState");
 
                         LoadBudgetGrid();
                     }
@@ -778,7 +778,7 @@ function DisplayPopUpMenu(obj, e) {
                         BindPlanCalendar();
                     }
                     else {
-                       // HomeGrid.saveOpenStates("plangridState");
+                       HomeGrid.saveOpenStates("plangridState");
                         LoadPlanGrid();
                     }
                     isError = false;
@@ -859,14 +859,14 @@ function DisplayPopUpMenu(obj, e) {
                     isCopyTactic = data.Id;
                     isCopyTacticHomeGrid = isCopyTactic;
                     if (IsBudgetGrid) {
-                        //HomeGrid.saveOpenStates("plangridState");
+                        HomeGrid.saveOpenStates("plangridState");
                         LoadBudgetGrid();
                     }
                     else if ($('#IsGridView').val().toLowerCase() == "false") {
                         BindPlanCalendar();
                     }
                     else {
-                       // HomeGrid.saveOpenStates("plangridState");
+                       HomeGrid.saveOpenStates("plangridState");
                         LoadPlanGrid();
                     }
 
@@ -936,11 +936,11 @@ function DisplayPopUpMenu(obj, e) {
                     isError = false;
                     ShowMessage(isError, data.msg);
                     if (IsBudgetGrid) {
-                        //HomeGrid.saveOpenStates("plangridState");
+                        HomeGrid.saveOpenStates("plangridState");
                         LoadBudgetGrid();
                     }
                     else {
-                       // HomeGrid.saveOpenStates("plangridState");
+                       HomeGrid.saveOpenStates("plangridState");
                         LoadPlanGrid();
                     }
                     return;
@@ -1004,12 +1004,12 @@ function CloseIconClick() {
                 if (gridSearchFlag == 1) {
                     isCopyTacticHomeGrid = isCopyTactic;
                     isEditTacticHomeGrid = isEditTactic;
-                    //HomeGrid.saveOpenStates("plangridState");
+                    HomeGrid.saveOpenStates("plangridState");
                     scrollstate = {
                         y: HomeGrid.objBox.scrollTop,
                         x: HomeGrid.objBox.scrollLeft,
                     }
-                    isFirstTimeOnGrid = false;
+                   isFirstTimeOnGrid = false;
                     LoadFilter(gridTab);            //variable 'gridTab' delcare at Index.cshtml page. 
                     gridSearchFlag = 0;
                 }
@@ -1036,7 +1036,7 @@ function CloseIconClick() {
             }
             else if (IsBudgetGrid) {
                 if (isDataModified) {
-                    //HomeGrid.saveOpenStates("plangridState");
+                    HomeGrid.saveOpenStates("plangridState");
                     scrollstate = {
                         y: HomeGrid.objBox.scrollTop,
                         x: HomeGrid.objBox.scrollLeft,
@@ -1518,7 +1518,7 @@ function ConfirmLinkTactic() {
             if (gridSearchFlag == 1) {
                 isCopyTacticHomeGrid = isCopyTactic;
                 isEditTacticHomeGrid = isEditTactic;
-                //HomeGrid.saveOpenStates("plangridState");
+                HomeGrid.saveOpenStates("plangridState");
                 LoadPlanGrid();
                 gridSearchFlag = 0;
             }
@@ -2744,7 +2744,7 @@ function SetselectedRow() {
                 rowid = id;
             else
                 rowid = id[0];
-           HomeGrid.openItem(HomeGrid.getParentId(rowid));
+          // HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, false);
             ItemIndex = HomeGrid.getRowIndex(rowid);
             state0 = ItemIndex;
