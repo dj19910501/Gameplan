@@ -205,6 +205,7 @@ namespace RevenuePlanner.Models
     public class DashboardContentModel
     {
         public int ReportID { get; set; }
+        public int ReportTableID { get; set; }
         public int DashboardContentId { get; set; }
         public int DashboardId { get; set; }
         public DashboardContentModel()
@@ -227,5 +228,24 @@ namespace RevenuePlanner.Models
         public string UserName { get; set; }
         public string Password { get; set; }
         public string[] CurrencyRate { get; set; }
+    }
+
+    public class ReportTableParameters
+    {
+        public int Id { get; set; }
+        public string ConnectionString { get; set; }
+        public string Container { get; set; }
+        public string[] SDV { get; set; }
+        public bool TopOnly { get; set; }
+        public string ViewBy { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public int DashboardId { get; set; }
+        public int DashboardPageid { get; set; }
+        public int DashboardContentId { get; set; }
+        public string UserId { get; set; }
+        public string RoleId { get; set; }
     }
 }

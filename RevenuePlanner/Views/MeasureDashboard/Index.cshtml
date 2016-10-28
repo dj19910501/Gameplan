@@ -21,6 +21,7 @@
     }
 }
 
+<link rel="stylesheet" href="@Url.Content("~/content/css/dhtmlxgrid_dhx_web.css")" type="text/css" />
 @Scripts.Render("~/bundles/DateRangeJs")
 @Scripts.Render("~/bundles/GetJSReport")
 
@@ -64,7 +65,26 @@
         </div>
     </div>
 }
+<style type="text/css">
+    div.gridbox .objbox {
+        overflow: hidden !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        width: inherit;
+    }
 
+    div.gridbox .xhdr {
+        overflow: hidden !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        width: inherit;
+    }
+
+    div.gridbox table.obj td {
+        border-bottom: 1px solid #ededed !important;
+        border-left: 1px solid #ededed !important;
+    }
+</style>
 <div class="error-box data_error_box source-sans-proregular" id="divAggregationStatus">The data in the application is currently being updated, performance may be degraded during this process.<span><i style="cursor: pointer;" class="fa fa-times aggregationmsg"></i></span></div>
 <div class="col-sm-9  col-md-9 col-lg-10 main report-main">
     <div id="mainContent" class="col-md-12 content">
@@ -100,7 +120,7 @@
 
                         <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); float:left; ">
                             <div class="tab-head">@ReportGraph.DisplayName</div>
-                            <div id=@RepdivId style="width: 98%; height:100%" reportgraphid='@ReportGraph.ReportID' dashboardcontentid='@ReportGraph.DashboardContentId'></div>
+                            <div id=@RepdivId style="width: 98%; height:100%" reporttableid='@ReportGraph.ReportTableID' reportgraphid='@ReportGraph.ReportID' dashboardcontentid='@ReportGraph.DashboardContentId'></div>
                         </div>
 
                         componentCount++;
@@ -200,62 +220,192 @@
         }
         //insertation start for ticket no #246 05/09/2016
 
-        function LoadReport(obj) {
-            var id = $(obj).attr('ReportGraphId');
-            var ViewBy = $("#ddlViewBy").val();
+    function LoadReport(obj) {
+        var IsGraph = true;
+        var id = $(obj).attr('ReportGraphId');
+        var DashboardContentId = $(obj).attr('dashboardcontentid');
+        if (Number(id) == 0) {
+            id = $(obj).attr('ReportTableId');
+            IsGraph = false;
+        }
+        var ViewBy = $("#ddlViewBy").val();
 
-            var StartDate = '';
-            var EndDate = '';
-            $('div[id=reportrange]').each(function () {
-                StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
-                EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
-            });
-            var ulListing = [];
-            var SelectedDimensionValue = [];
-            $('ul[id^=ulListing]').each(function () {
-                var DimensionID = $(this).attr('id').replace("ulListing", "");
-                var ulListingID = $(this).attr('id');
-                if ($.inArray(ulListingID, ulListing) == -1) {
-                    ulListing.push(ulListingID);
-                    var IsDimensionSelected = false;
-                    $(this).find('li').each(function () {
-                        if ($(this).find("input[type='checkbox']").is(":checked")) {
-                            SelectedDimensionValue.push(DimensionID + ":" + $(this).attr('id').replace("liAllListing", ""));
-                        }
-                    });
-                }
-            });
-
-            var URL;
-            if ('@ApiUrl' == '') {
-                $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured");
-            }
-            else {
-                var params = {};
-                params.Id = id;
-                params.DbName = '@Enums.ApplicationCode.RPC.ToString()';
-                params.Container = $(obj).attr('id');
-                params.SDV = SelectedDimensionValue;
-                params.TopOnly = 'True';
-                params.ViewBy = ViewBy;
-                params.StartDate = StartDate;
-                params.EndDate = EndDate;
-                URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
-                $.ajax({
-                    url: URL,
-                    async: true,
-                    traditional: true,
-                    data: $.param(params, true),
-                    dataType: "json",
-                    success: function (data) {
-                        eval(JSON.parse(data.data));
-                    },
-                    error: function (err) {
-                        $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
+        var StartDate = '';
+        var EndDate = '';
+        $('div[id=reportrange]').each(function () {
+            StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
+            EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
+        });
+        var ulListing = [];
+        var SelectedDimensionValue = [];
+        $('ul[id^=ulListing]').each(function () {
+            var DimensionID = $(this).attr('id').replace("ulListing", "");
+            var ulListingID = $(this).attr('id');
+            if ($.inArray(ulListingID, ulListing) == -1) {
+                ulListing.push(ulListingID);
+                var IsDimensionSelected = false;
+                $(this).find('li').each(function () {
+                    if ($(this).find("input[type='checkbox']").is(":checked")) {
+                        SelectedDimensionValue.push(DimensionID + ":" + $(this).attr('id').replace("liAllListing", ""));
                     }
                 });
             }
+        });
+
+        var URL;
+        if ('@ApiUrl' == '') {
+            $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured");
         }
+        else {
+            var params = {};
+            params.Id = id;
+            params.DbName = '@Enums.ApplicationCode.RPC.ToString()';
+            params.Container = $(obj).attr('id');
+            params.SDV = SelectedDimensionValue;
+            params.TopOnly = 'True';
+            params.ViewBy = ViewBy;
+            params.StartDate = StartDate;
+            params.EndDate = EndDate;
+            if (IsGraph) {
+                URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
+            }
+            else {
+                params.DashboardId = '@DashId';
+                params.DashboardPageid = '@DashPageID';
+                params.DashboardContentId = DashboardContentId;
+                URL = '@Url.Content("~/MeasureDashboard/GetReportTable/")';
+            }
+
+            $.ajax({
+                url: URL,
+                async: true,
+                traditional: true,
+                data: $.param(params, true),
+                dataType: "json",
+                success: function (data) {
+                    if (IsGraph) {
+                        eval(JSON.parse(data.data));
+                    }
+                    else {
+                        $('#divChart' + DashboardContentId).html(data);
+                        var reportTableId = "ReportTable" + DashboardContentId;
+                        var defaultRows = $('#hdn_' + reportTableId).attr('defaultRows');
+                        var defaultSortColumn = $('#hdn_' + reportTableId).attr('defaultSortColumn');
+                        var defaultSortOrder = $('#hdn_' + reportTableId).attr('defaultSortOrder');
+                        if (defaultSortOrder != 'asc')
+                            defaultSortOrder = 'des';
+
+                        var ShowFooterRow = $('#hdn_' + reportTableId).attr('ShowFooterRow');
+
+                        $('#' + reportTableId + '_wrapper').css('overflow-x', 'auto');
+                        $('#' + reportTableId + '_wrapper').css('overflow-y', 'auto');
+                        $('#' + reportTableId + '_wrapper').css('height', '100%');
+
+                        if (data.indexOf('ReportTable' + DashboardContentId) > -1) {
+                            var mygrid = dhtmlXGridFromTable(reportTableId);
+
+                            $('#' + reportTableId + '_wrapper').find('.objbox').find('table').attr('id', reportTableId + '_tbl');
+
+                            var tblTotal = $(mygrid.obj).find('.totalRow').clone();
+                            $(mygrid.obj).find('tbody').find('.totalRow').remove();
+
+                            if (ShowFooterRow == 'True') {
+                                var foot = $(mygrid.obj).find('tfoot');
+                                if (!foot.length) foot = $('<tfoot>').appendTo(mygrid.obj);
+                                foot.append($(tblTotal));
+                            }
+                            $('#' + reportTableId).find('.objbox').find('table').find('tr').each(function (i, row) {
+                                $(row).find('td').each(function (j, cell) {
+                                    if (j > 1) {
+                                        try {
+                                            var originalValue = $(cell).text();
+                                            $(cell).text(ME_number_format(originalValue, '', '.', ','));
+                                            $(cell).attr('title', originalValue);
+                                            $(cell).addClass('north');
+                                            $(cell).attr('title', $(cell).attr('data-original-title'));
+                                            $(".north").tooltip({
+                                                'container': 'body',
+                                                'placement': 'bottom'
+                                            });
+                                        } catch (e) {
+                                        }
+
+                                    }
+                                });
+                            });
+
+                            mygrid.setEditable(false);
+                            mygrid.enableAutoHeight(true);
+                            mygrid.setColumnHidden(1, true);
+
+                            $('#' + reportTableId).find('tfoot').find('.totalRow').find('td').each(function (j, cell) {
+                                if (j == 1) {
+                                    $(this).css('display', 'none');
+                                }
+                            });
+                            $('#' + reportTableId).find('tfoot').find('.goalRow').find('td').each(function (j, cell) {
+                                if (j == 1) {
+                                    $(this).css('display', 'none');
+                                }
+                                else {
+                                    if ($(cell).text() == "0" || $(cell).text().trim() == "") {
+                                        $(this).text('');
+                                        $(this).removeAttr('data-toggle');
+                                        $(this).removeAttr('data-original-title');
+                                        $(this).removeAttr('data-sort');
+                                    }
+                                }
+                            });
+
+                            mygrid.enableAutoWidth(true);
+
+                            var count = mygrid.getColumnsNum();
+                            for (var j = 0; j < count; j++) {
+                                mygrid.adjustColumnSize(j);
+                            }
+                            var widthx = (parseInt($('#' + reportTableId).parent().width()) * 75) / 100;
+
+                            $('#' + reportTableId).css('margin', '0 auto');
+                            $('#' + reportTableId).css('width', '100%');
+                            $('#' + reportTableId).find('.xhdr').css('width', '100%');
+                            $('#' + reportTableId).find('.hdr').css('width', '100%');
+
+                            var widthArray = [];
+                            $('#' + reportTableId).find('.xhdr table' + ' tr:first').find('th').each(function (key, data) {
+                                $('#' + reportTableId).find('.objbox table' + ' tr:first').find('th').each(function (key1, data1) {
+                                    if (key == key1) {
+                                        var totalWt = $(data).width();
+                                        widthArray.push(totalWt);
+                                    }
+                                });
+                            });
+                            $('#' + reportTableId).find('.objbox table' + ' tr:first').find('th').each(function (j, data1) {
+                                for (var i = 0; i < widthArray.length; i++) {
+                                    if (j == i) {
+                                        mygrid.setColWidth(j, widthArray[i]);
+                                    }
+                                }
+                            });
+
+                            mygrid.attachEvent("onMouseOver", function () { return false; });
+                            $('#' + reportTableId).find('tfoot').find('.totalRow').css('display', 'table-row');
+
+                            var parenttblHeight = $('#' + reportTableId).find('.objbox').find('table').height();
+                            var childtblHeight = $('#' + reportTableId).find('.xhdr').find('table').height();
+                            $('#' + reportTableId).height(parenttblHeight + childtblHeight);
+
+                            mygrid.attachEvent("onAfterSorting", function (index, type, direction) {
+                                $(mygrid.obj).find('tbody').find('.totalRow').remove();
+                            });
+                        }
+                    }
+                },
+                error: function (err) {
+                    $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
+                }
+            });
+        }
+    }
 
         function BulkOwnerOperationSelect(id) {
             var hvParentUlID = "#ulListing" + id;
