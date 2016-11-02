@@ -981,6 +981,7 @@ function isDataChanged() {
 //Start
 function CloseIconClick() {
     $('.close-x-big-icon').click(function () {
+        var promise;
         $('#modalMainContainer').hide();// Added to remove extra space Below Grid/Calendar Table
         logMixpanelTrack("Exit from inspection window.");
         RemoveAllMediaCodeData();
@@ -1009,18 +1010,24 @@ function CloseIconClick() {
                         y: HomeGrid.objBox.scrollTop,
                         x: HomeGrid.objBox.scrollLeft,
                     }
-                   isFirstTimeOnGrid = false;
-                    LoadFilter(gridTab);            //variable 'gridTab' delcare at Index.cshtml page. 
-                    gridSearchFlag = 0;
+                    isFirstTimeOnGrid = false;
+                    //variable 'gridTab' delcare at Index.cshtml page. 
+                    promise = LoadFilter(gridTab).then(function() {
+                        gridSearchFlag = 0;
+                    });
                 }
                 //else if (isBoostAuthorized) {
                 //    var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
                 //    $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
                 //}
             }
-            if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
-                $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
-            }
+
+            // wait for LoadFilter to finish.  TODO: is this really necessary??
+            (promise || $.when()).then(function() {
+                if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
+                    $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
+                }
+            });
             return true;
         }
         else {
@@ -2677,7 +2684,8 @@ function RefreshCurrentTab() {
         currentTab = gridTab;           //variable 'gridTab' delcared at Index.cshtml page.
     }
 
-    LoadFilter(currentTab);
+    // return the deferred that LoadFilter returns
+    return LoadFilter(currentTab);
 
 }
 

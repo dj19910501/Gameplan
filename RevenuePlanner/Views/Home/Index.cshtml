@@ -472,28 +472,32 @@
 
         $(".selectBox select").selectbox();
         $("#ddlTabViewBy").multiselect();
-        LoadFilter(gridTab);    // Set PlanGrid as Active tab after user logged in to application on first time.
-        $("#ddlUpComingActivites").change(function () {
-            RefershPlanHeaderCalc();
-            if (IsBudgetGrid) {
-                LoadBudgetGrid();
+
+        // Set PlanGrid as Active tab after user logged in to application on first time.
+        LoadFilter(gridTab).then(function() { // TODO: can this code be run even while we wait on LoadFilter to finish??
+            $("#ddlUpComingActivites").change(function() {
+                RefershPlanHeaderCalc();
+                if (IsBudgetGrid) {
+                    LoadBudgetGrid();
+                } else if ($('#IsGridView').val().toLowerCase() == "false") {
+                    BindPlanCalendar();
+                }
+            });
+            $("#ddlUpComingActivitesSelectBox").click(function() {
+                $('#ddlTabViewBy').multiselect("close");
+            });
+            SetTooltip();
+
+            function toggleChevron(e) {
+                $(e.target)
+                    .prev('.accordion-heading')
+                    .find("i.indicator")
+                    .toggleClass('fa-angle-down fa-angle-up');
             }
-            else if ($('#IsGridView').val().toLowerCase() == "false") {
-                BindPlanCalendar();
-            }
+
+            $('.accordion').on('hidden.bs.collapse', toggleChevron);
+            $('.accordion').on('shown.bs.collapse', toggleChevron);
         });
-        $("#ddlUpComingActivitesSelectBox").click(function () {
-            $('#ddlTabViewBy').multiselect("close");
-        });
-        SetTooltip();
-        function toggleChevron(e) {
-            $(e.target)
-                .prev('.accordion-heading')
-                .find("i.indicator")
-            .toggleClass('fa-angle-down fa-angle-up');
-        }
-        $('.accordion').on('hidden.bs.collapse', toggleChevron);
-        $('.accordion').on('shown.bs.collapse', toggleChevron);
     });
     function LoadFilter(currentActiveTab) {
         var PlanID = '@CurrentRequestPlanID';
@@ -501,16 +505,17 @@
         if (PlanID == 0) {
             PlanID = 'null'
         }
-        $.ajax({
-            url: strURL,
-            type: 'post',
-            dataType: 'html',
-            async: false,
-            data: {
-                activeMenu: '@Enums.ActiveMenu.Home',
-                currentPlanId: PlanID,
-            },
-            success: function (data) {
+
+        // return a deferred so callers can wait before they do their work if they want
+        return $.ajax({
+                url: strURL,
+                type: 'post',
+                dataType: 'html',
+                data: {
+                    activeMenu: '@Enums.ActiveMenu.Home',
+                    currentPlanId: PlanID
+                }
+        }).then(function (data) {
                 if (data != 'undefined' && data != null) {
                     $('#divFilter').html(data);
                     filters.PlanIDs = GetPlanIds();
@@ -533,8 +538,7 @@
                         BindPlanCalendar();
                     }
                 }
-            }
-        });
+            });
     }
     function OpenCreateNew(IsGridView) {
         $.ajax({
