@@ -519,24 +519,25 @@
                 if (data != 'undefined' && data != null) {
                     $('#divFilter').html(data);
                     filters.PlanIDs = GetPlanIds();
-                    GetTacticTypelist(filters.PlanIDs);
-                    GetOwnerListForFilter(filters.PlanIDs);
-                    GetLastSetofViews($('#FilterPresetName').val());
-                    BindUpcomingActivites(filters.PlanIDs);
-                    BindViewSelections(urlContent + 'Home/GetViewBylistData');
-                    RefershPlanHeaderCalc();
-                    GetMultiplePlanNames();
-                    GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
-                    if (currentActiveTab == budgetTab) {
-                        IsBudgetGrid = true;
-                        LoadBudgetGrid();
-                    }
-                    else if (currentActiveTab == gridTab && isFirstTimeOnGrid == false) {
-                        LoadPlanGrid();
-                    }
-                    else if (currentActiveTab == calendarTab) {
-                        BindPlanCalendar();
-                    }
+                    // is it safe to run these in parallel?
+                    var p1 = GetTacticTypelist(filters.PlanIDs);
+                    var p2 = GetOwnerListForFilter(filters.PlanIDs);
+                    return $.when(p1, p2).then(function() {
+                        GetLastSetofViews($('#FilterPresetName').val());
+                        BindUpcomingActivites(filters.PlanIDs);
+                        BindViewSelections(urlContent + 'Home/GetViewBylistData');
+                        RefershPlanHeaderCalc();
+                        GetMultiplePlanNames();
+                        GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
+                        if (currentActiveTab == budgetTab) {
+                            IsBudgetGrid = true;
+                            LoadBudgetGrid();
+                        } else if (currentActiveTab == gridTab && isFirstTimeOnGrid == false) {
+                            LoadPlanGrid();
+                        } else if (currentActiveTab == calendarTab) {
+                            BindPlanCalendar();
+                        }
+                    });
                 }
             });
     }

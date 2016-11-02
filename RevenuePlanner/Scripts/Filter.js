@@ -540,32 +540,33 @@ function GetTacticTypelist(Planids, async, OnPlanChange) {
         },
         type: "GET",
         cache: false,
-        async: asyncval,
+        // async: asyncval,
         url: $('#TacticTypeURL').val(),
         data: {
             PlanId: Planids.toString()
         },
-        dataType: "json",
-        success: function (data) {
-            if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                window.location = $('#ServerUnavailableURL').val();
+        dataType: "json"
+    });
+
+    return currentRequestforTactics.then(function (data) {
+        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+            window.location = $('#ServerUnavailableURL').val();
+        }
+        else {
+            if (data.isSuccess == true) {
+                LoadTacticTypelist(data);
             }
             else {
-                if (data.isSuccess == true) {
-                    LoadTacticTypelist(data);
-                }
-                else {
-                    $("#TacticTypeAllModule").css("display", "none");
-                    $("#NoTTFound").show();
-                }
-                TactictypeCount = $("#ulTacticType li").length;
-                checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
-                $('#tTTcount').text('/' + TactictypeCount);
-                $('#cTTcount').text(checkedTTcount);
-                filters.tempTacticTypeIds = [];
-                async = true;
-                currentRequestforTactics = null;
+                $("#TacticTypeAllModule").css("display", "none");
+                $("#NoTTFound").show();
             }
+            TactictypeCount = $("#ulTacticType li").length;
+            checkedTTcount = $("#ulTacticType li input:checkbox:checked").length;
+            $('#tTTcount').text('/' + TactictypeCount);
+            $('#cTTcount').text(checkedTTcount);
+            filters.tempTacticTypeIds = [];
+            async = true;
+            currentRequestforTactics = null;
         }
     });
 }
@@ -594,97 +595,98 @@ function GetOwnerListForFilter(Planids, async, OnPlanChange) {
         },
         type: "GET",
         cache: false,
-        async: asyncval,
+        //async: asyncval,
         url: $('#OwnerListURL').val(),
         data: {
             PlanId: Planids.toString(),
             ViewBy: $('#PlanGantType').val(),
             ActiveMenu: $('#ActiveMenu').val()
         },
-        dataType: "json",
-        success: function (data) {
-            if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                window.location = $('#ServerUnavailableURL').val();
-            }
-            else {
-                if (data.isSuccess == true) {
-                    var LoggedInOwner = data.LoggedInUser.OwnerId;
-                    if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
-                        OwnerCount = data.AllowedOwner.length;
-                        if (OwnerCount > 0) {
-                            var IsOwnerPresent = false;
-                            var checked = "";
-                            var checkedclass = "";
-                            $("#ulOwnerAllModule").css("display", "block");
-                            $("#NoOwnerFound").hide();
-                            $('#ulSelectedOwner li').remove();
-                            $.each(data.AllowedOwner, function (i, OwnerItem) {
-                                if (OwnerItem.OwnerId == LoggedInOwner) {
-                                    IsOwnerPresent = true;
-                                }
-                                checked = "checked"
-                                checkedclass = "close-list"
-                                if (filters.tempOwnerIds.length > 0) {
-                                    if (filters.tempOwnerIds.indexOf(OwnerItem.OwnerId.toString()) >= 0) {
-                                        checked = "";
-                                        checkedclass = "";
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
-                                    }
-                                    else {
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
-                                    }
+        dataType: "json"
+    });
+
+    return currentRequest.then(function (data) {
+        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+            window.location = $('#ServerUnavailableURL').val();
+        }
+        else {
+            if (data.isSuccess == true) {
+                var LoggedInOwner = data.LoggedInUser.OwnerId;
+                if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
+                    OwnerCount = data.AllowedOwner.length;
+                    if (OwnerCount > 0) {
+                        var IsOwnerPresent = false;
+                        var checked = "";
+                        var checkedclass = "";
+                        $("#ulOwnerAllModule").css("display", "block");
+                        $("#NoOwnerFound").hide();
+                        $('#ulSelectedOwner li').remove();
+                        $.each(data.AllowedOwner, function (i, OwnerItem) {
+                            if (OwnerItem.OwnerId == LoggedInOwner) {
+                                IsOwnerPresent = true;
+                            }
+                            checked = "checked"
+                            checkedclass = "close-list"
+                            if (filters.tempOwnerIds.length > 0) {
+                                if (filters.tempOwnerIds.indexOf(OwnerItem.OwnerId.toString()) >= 0) {
+                                    checked = "";
+                                    checkedclass = "";
+                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
                                 }
                                 else {
                                     $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
                                 }
-                            });
-                            if (IsOwnerPresent == false) {
-                                checked = "checked"
-                                checkedclass = "close-list"
-                                if (filters.tempOwnerIds.indexOf(LoggedInOwner.toString()) >= 0) {
-                                    checked = "";
-                                    checkedclass = "";
-                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
-                                }
-                                else {
-                                    $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
-                                }
-
                             }
-                        }
-                        else {
-                            $("#ulOwnerAllModule").css("display", "none");
-                            $("#NoOwnerFound").show();
+                            else {
+                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                            }
+                        });
+                        if (IsOwnerPresent == false) {
+                            checked = "checked"
+                            checkedclass = "close-list"
+                            if (filters.tempOwnerIds.indexOf(LoggedInOwner.toString()) >= 0) {
+                                checked = "";
+                                checkedclass = "";
+                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                            }
+                            else {
+                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');/*<span class="chkbx-icon"></span>*/
+                            }
+
                         }
                     }
                     else {
                         $("#ulOwnerAllModule").css("display", "none");
                         $("#NoOwnerFound").show();
                     }
-                    checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
-                    TotalOwnercount = $("#ulSelectedOwner li").length;
-                    $('#tOwnercount').text('/' + TotalOwnercount);
-                    $('#cOwnercount').text(checkedOwnercount);
-                }
-                selectedFilters.ownerName = [];
-                $("#ulSelectedOwner li input[type=checkbox]:checked").each(function () {
-                    selectedFilters.ownerName.push($(this).attr('ownertitle').toString());
-
-                });
-                if (selectedFilters.ownerName.length == 0) {
-                    $('#lstOwner').text(FiltersNone);
-                }
-                else if ($("#ulSelectedOwner li").length == selectedFilters.ownerName.length) {
-                    $('#lstOwner').text(FiltersAll);
                 }
                 else {
-                    $('#lstOwner').text(selectedFilters.ownerName.join(", "));
+                    $("#ulOwnerAllModule").css("display", "none");
+                    $("#NoOwnerFound").show();
                 }
-                filters.tempOwnerIds = [];
+                checkedOwnercount = $("#ulSelectedOwner li input:checkbox:checked").length;
+                TotalOwnercount = $("#ulSelectedOwner li").length;
+                $('#tOwnercount').text('/' + TotalOwnercount);
+                $('#cOwnercount').text(checkedOwnercount);
             }
-            async = true;
-            currentRequest = null;
+            selectedFilters.ownerName = [];
+            $("#ulSelectedOwner li input[type=checkbox]:checked").each(function () {
+                selectedFilters.ownerName.push($(this).attr('ownertitle').toString());
+
+            });
+            if (selectedFilters.ownerName.length == 0) {
+                $('#lstOwner').text(FiltersNone);
+            }
+            else if ($("#ulSelectedOwner li").length == selectedFilters.ownerName.length) {
+                $('#lstOwner').text(FiltersAll);
+            }
+            else {
+                $('#lstOwner').text(selectedFilters.ownerName.join(", "));
+            }
+            filters.tempOwnerIds = [];
         }
+        async = true;
+        currentRequest = null;
     });
 }
 
@@ -942,12 +944,14 @@ function UpdatePlan() {
         });
     }
     BindUpcomingActivites(planids);
-    GetTacticTypelist(planids, false);
-    GetOwnerListForFilter(planids, false);
-    UpdateResult();
-    GetMultiplePlanNames();
-    GetGoalValues(urlContent + 'Home/GetGoalValues', filters.PlanIDs);
-
+    // Can I run these in parallel??
+    var gttlpromise = GetTacticTypelist(planids, false);
+    var golff = GetOwnerListForFilter(planids, false);
+    return $.when(gttlpromise, golff).then(function() {
+        UpdateResult();
+        GetMultiplePlanNames();
+        GetGoalValues(urlContent + 'Home/GetGoalValues', filters.PlanIDs);
+    });
 }
 
 var isFiltered = false;

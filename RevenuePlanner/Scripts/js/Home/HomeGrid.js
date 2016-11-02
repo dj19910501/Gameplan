@@ -853,9 +853,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                             if (UpdateColumn == OwnerId) {
                                 if ((OldValue.toString() != states.OwnerName.toString()) && states.OwnerName != "" && states.OwnerName != null) {
                                     if (planid != 0 && planid != null && planid != undefined) {
-                                        GetTacticTypelist(filters.PlanIDs);
-                                        GetOwnerListForFilter(filters.PlanIDs);
-                                        SaveLastSetofViews();
+                                        $.when(GetTacticTypelist(filters.PlanIDs), GetOwnerListForFilter(filters.PlanIDs)).then(function() {
+                                            SaveLastSetofViews();
+                                        });
                                     }
                                 }
                                 CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
