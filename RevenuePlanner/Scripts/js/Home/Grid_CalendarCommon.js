@@ -1790,7 +1790,7 @@ function BindViewSelections(strUrl) {
     var $html = '';
     var type = '';
     $.ajax({
-        type: 'POST',
+        type: 'GET',
         url: strUrl,
         data: { planids: filters.PlanIDs.toString() },
         success: function (data) {
@@ -2744,7 +2744,7 @@ function SetselectedRow() {
                 rowid = id;
             else
                 rowid = id[0];
-          // HomeGrid.openItem(HomeGrid.getParentId(rowid));
+          HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, false);
             ItemIndex = HomeGrid.getRowIndex(rowid);
             state0 = ItemIndex;

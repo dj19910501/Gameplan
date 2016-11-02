@@ -500,7 +500,16 @@ namespace RevenuePlanner.Services
         /// Add by Nishant Sheth
         /// set open/close entity state for respective entity
         /// </summary>
-        public string GridEntityOpenState(Enums.EntityType EntityType, int ChildernCount)
+        public string GridEntityOpenState(Enums.EntityType EntityType, int ChildernCount,string RowId)
+        {
+
+            if (Sessions.OpenGridRowID != null && Sessions.OpenGridRowID.Count()>0)
+            {
+                List<string> openrowid = Sessions.OpenGridRowID;
+                if (openrowid.Contains(RowId))
+                    return objHomeGridProp.openstateone;
+            }
+            else
         {
             if (EntityType == Enums.EntityType.Plan)
             {
@@ -511,6 +520,7 @@ namespace RevenuePlanner.Services
             {
                 if (ChildernCount > 0)
                     return objHomeGridProp.openstateone;
+            }
             }
           return string.Empty;
         }
@@ -987,7 +997,7 @@ namespace RevenuePlanner.Services
 
             // Set the values of row
             List<PlanGridDataobj> EntitydataobjItem = GridDataRow(Row, CustomFieldData, PlanCurrencySymbol, PlanExchangeRate, lstCustomfieldData, usercolindex);
-            return new PlanDHTMLXGridDataModelHomeGrid { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
+            return new PlanDHTMLXGridDataModelHomeGrid { id = (Row.TaskId), data = EntitydataobjItem.Select(a => a).ToList(), rows = children, open = GridEntityOpenState(Row.EntityType, children.Count, Row.TaskId), userdata = GridUserData(Row.EntityType, Row.UniqueId, GridDefaultData) };
         }
         #endregion
 

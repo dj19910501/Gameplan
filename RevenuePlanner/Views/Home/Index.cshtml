@@ -505,7 +505,7 @@
             url: strURL,
             type: 'post',
             dataType: 'html',
-            async: false,
+            async: isFirstTimeOnGrid,
             data: {
                 activeMenu: '@Enums.ActiveMenu.Home',
                 currentPlanId: PlanID,
@@ -622,6 +622,7 @@
 
     //var GridDataHomeGrid;
     function BindHomeGrid() {
+    
         filters = GetFilterIds();
         $.ajax({
             type: 'POST',
@@ -640,6 +641,7 @@
             cache: false,
             success: function (result) {
                 try {
+
                     tacticTypefieldOptionList = result.tType;
                     lineItemTypefieldOptionList = result.lType;
                     HomeGrid = new dhtmlXGridObject('gridbox');
@@ -665,12 +667,12 @@
                     HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
                     HomeGrid.enableEditTabOnly(true);;
                     HomeGrid.csvParser = HomeGrid.csvExtParser;
-                    HomeGrid.init();
+                    HomeGrid.enableEditEvents(true, false, true);
                     HomeGrid.attachEvent("onDistributedEnd", function () {
                         LoadAfterParsing();
-                        if (scrollstate != null && scrollstate != undefined) {
-                            HomeGrid.objBox.scrollTop = scrollstate.y;
-                        }
+                        //if (scrollstate != null && scrollstate != undefined) {
+                        //    HomeGrid.objBox.scrollTop = scrollstate.y;
+                        //}
                       
                     });
                     HomeGrid.attachEvent("onRowSelect", function (id, ind) {
@@ -679,36 +681,42 @@
                         selectedTaskID = id;
                     });
                     
-                    HomeGrid.enableDistributedParsing(true, 10, 0.1);
+                  // HomeGrid.enableDistributedParsing(true, 10, 0.1);
                     HomeGrid.enableColumnMove(true);
-                   var mainGridData = JSON.stringify(result.data);
+                    HomeGrid.init();
+                    HomeGrid.setColumnMinWidth("300", TaskNameColIndex);
+                    MoveColumn();
+                    //HomeGrid.enableAlterCss("uneven");
+                    
+                   //var mainGridData = JSON.stringify(result.data);
                    // mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
-                   GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-                   HomeGrid.parse(GridDataHomeGrid, "json");
+                  // GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+                    HomeGrid.parse(result.data, "json");
                     GridHideColumn();
-
-                    HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
                     colSplitId = HomeGrid.getColIndexById(AddId);
-                    HomeGrid.splitAt(colSplitId + 1);
-                    MoveColumn(); ///Calling Move column function
-                    var cookie = document.cookie;
-                    if (cookie.indexOf("gridOpenplangridState") > -1) {
+                   HomeGrid.splitAt(colSplitId + 1);
+              
+                    //var cookie = document.cookie;
+                    //if (cookie.indexOf("gridOpenplangridState") > -1) {
 
-                        HomeGrid.collapseAll();
+                    //    HomeGrid.collapseAll();
 
-                        HomeGrid.loadOpenStates("plangridState");
-                        setTimeout(function () {
-                            HomeGrid.objBox.scrollTop = scrollstate.y;
+                    //    HomeGrid.loadOpenStates("plangridState");
+                    //    setTimeout(function () {
+                    //        HomeGrid.objBox.scrollTop = scrollstate.y;
 
-                        }, 100);
-                    }
+                    //    }, 100);
+                    //}
                    
-                    HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
+                 
 
                     var count = HomeGrid.getRowsNum();
-                    //alert(count)
-                    LoadAfterParsing();
 
+                    LoadAfterParsing();
+                    if (scrollstate != null && scrollstate != undefined) {
+                        HomeGrid.objBox.scrollTop = scrollstate.y;
+                    }
+                   SetTooltip();
 
                     if (parseInt(count) > 0) {
                         $("#gridbox").show();
@@ -737,8 +745,7 @@
                     if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
                         GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
                     }
-                    HomeGrid.enableEditEvents(true, false, true);
-                    SetTooltip();
+                    
                 } catch (e) {
                     $('#loader').css('display', 'none');
                 }

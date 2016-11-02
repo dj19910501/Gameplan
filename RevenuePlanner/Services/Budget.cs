@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Web;
 
+
 namespace RevenuePlanner.Services
 {
     public class Budget : IBudget
@@ -562,6 +563,7 @@ namespace RevenuePlanner.Services
             bool IsPlanCreateAll = false;
             bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             List<int> lstSubordinatesIds = new List<int>();
+            List<string> openrowid = new List<string>();
 
             if (IsPlanCreateAllAuthorized)
             {
@@ -573,8 +575,17 @@ namespace RevenuePlanner.Services
             {
                 lstSubordinatesIds = Common.GetAllSubordinates(UserID);
             }
-
-            
+            if (HttpContext.Current.Request.Cookies["gridOpenplangridState"] != null)
+            {
+                var value = HttpContext.Current.Request.Cookies["gridOpenplangridState"].Value;
+                openrowid = value.Split('|').ToList();
+                Sessions.OpenGridRowID = openrowid;
+            }
+            else
+            {
+                Sessions.OpenGridRowID = openrowid;
+            }
+           
             Dictionary<int, string> lstTacticTypeTitle = new Dictionary<int, string>();
             IEnumerable<int> TacticTypeIds = model.Where(t => t.ActivityType == ActivityType.ActivityTactic).Select(t => t.TacticTypeId).Distinct();
             lstTacticTypeTitle = objDbMrpEntities.TacticTypes.Where(tt => TacticTypeIds.Contains(tt.TacticTypeId) && tt.IsDeleted == false).ToDictionary(tt => tt.TacticTypeId, tt => tt.Title);
@@ -632,7 +643,10 @@ namespace RevenuePlanner.Services
                 {
                     CampaignRowsObj = new BudgetDHTMLXGridDataModel();
                     CampaignRowsObj.id = bmc.TaskId;//ActivityType.ActivityCampaign + "_" + HttpUtility.HtmlEncode(bmc.ActivityId);
+                    if (openrowid.Contains(bmc.TaskId))
                     CampaignRowsObj.open = Open;
+                    else
+                    CampaignRowsObj.open = null;
 
                     bool IsCampCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmc.CreatedBy == UserID || lstSubordinatesIds.Contains(bmc.CreatedBy)) ? true : false : true;
 
@@ -651,7 +665,11 @@ namespace RevenuePlanner.Services
                     {
                         ProgramRowsObj = new BudgetDHTMLXGridDataModel();
                         ProgramRowsObj.id = bmp.TaskId;//ActivityType.ActivityProgram + "_" + HttpUtility.HtmlEncode(bmp.ActivityId);
+                        if (openrowid.Contains(bmp.TaskId))
+                            ProgramRowsObj.open = Open;
+                        else
                         ProgramRowsObj.open = null;
+                        //ProgramRowsObj.open = null;
 
                         bool IsProgCreateAll = IsPlanCreateAll = IsPlanCreateAll == false ? (bmp.CreatedBy == UserID || lstSubordinatesIds.Contains(bmp.CreatedBy)) ? true : false : true;
 
@@ -670,6 +688,9 @@ namespace RevenuePlanner.Services
                         {
                             TacticRowsObj = new BudgetDHTMLXGridDataModel();
                             TacticRowsObj.id = bmt.TaskId;//ActivityType.ActivityTactic + "_" + HttpUtility.HtmlEncode(bmt.ActivityId);
+                            if (openrowid.Contains(bmt.TaskId))
+                                TacticRowsObj.open = Open;
+                            else
                             TacticRowsObj.open = null;
 
                             bool IsTacCreateAll = IsPlanCreateAll == false ? (bmt.CreatedBy == UserID || lstSubordinatesIds.Contains(bmt.CreatedBy)) ? true : false : true;
@@ -698,6 +719,9 @@ namespace RevenuePlanner.Services
                             {
                                 LineRowsObj = new BudgetDHTMLXGridDataModel();
                                 LineRowsObj.id = bml.TaskId;//ActivityType.ActivityLineItem + "_" + HttpUtility.HtmlEncode(bml.ActivityId);
+                                if (openrowid.Contains(bml.TaskId))
+                                    LineRowsObj.open = Open;
+                                else
                                 LineRowsObj.open = null;
 
                                 bool IsLinItmCreateAll = IsPlanCreateAll == false ? (bml.CreatedBy == UserID || lstSubordinatesIds.Contains(bml.CreatedBy)) ? true : false : true;

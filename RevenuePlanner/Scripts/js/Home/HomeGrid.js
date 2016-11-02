@@ -70,9 +70,9 @@ function GridHideColumn() {
     GridHiddenId = HomeGrid.getColIndexById('id');
     ActivitypeHidden = HomeGrid.getColIndexById(ActivityTypeId);
     MachineNameHidden = HomeGrid.getColIndexById(MachineNameId);
-    HomeGrid.setColumnHidden(GridHiddenId, true);
-    HomeGrid.setColumnHidden(ActivitypeHidden, true);
-    HomeGrid.setColumnHidden(MachineNameHidden, true);
+    //HomeGrid.setColumnHidden(GridHiddenId, true);
+    //HomeGrid.setColumnHidden(ActivitypeHidden, true);
+    //HomeGrid.setColumnHidden(MachineNameHidden, true);
 }
 
 ////Move column functionality
@@ -85,14 +85,7 @@ function MoveColumn() {
             AttrType = 'Common';
             var ColWidth = HomeGrid.getColWidth(i);
             var customcolId = HomeGrid.getColumnId(i).toString();
-            if (customcolId.indexOf("custom_") >= 0) {
-                var CustomColDetail = customcolId.split(':');
-                if (CustomColDetail != null)
-                    if (Array.isArray(CustomColDetail)) {
-                        customcolId = CustomColDetail[0].replace("custom_", "");
-                        AttrType = CustomColDetail[1];
-                    }
-            }
+           
             if (ColWidth != 0) {
                 ColumnDetail.push({
                     AttributeId: customcolId,
@@ -144,7 +137,7 @@ function LoadAfterParsing() {
             var drag_Type = HomeGrid.cells(id, ActivitypeHidden).getValue();
             if (drag_id.length > 0) {
                 if (drag_Type.toLowerCase() != secTactic) return false;
-                var locked = HomeGrid.cells(id, TaskNameColIndex).getAttribute("locked");
+                var locked = HomeGrid.cells(id, TaskNameColIndex).getAttribute("lo");
                 if ((locked != null && locked != "") && locked == "1")
                     return false;
                 return true;
@@ -154,10 +147,6 @@ function LoadAfterParsing() {
 
     SetselectedRow();
    
-    //if (HomeGrid.getRowId(state0) != undefined || HomeGrid.getRowId(state0) == '') {
-    //    HomeGrid.showRow(HomeGrid.getRowId(state0));
-    //    HomeGrid.openItem(HomeGrid.getRowId(state0));
-    //}
     if (editidonOpenEnd != 0) {
         HomeGrid.detachEvent(editidonOpenEnd);
     }
@@ -346,7 +335,9 @@ function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
                 combo.clear();
                 if (lineItemTypefieldOptionList.length > 0) {
                     $.each(lineItemTypefieldOptionList, function (i, item) {
-                        combo.put(item.id, item.value);
+                        if (item.PlanId == _planid) {
+                            combo.put(item.id, item.value);
+                        }
                     });
                 }
             }
