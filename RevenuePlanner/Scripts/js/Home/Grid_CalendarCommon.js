@@ -1,59 +1,60 @@
 ﻿///Manage Calendar/PlanGrid/Budget Icon Click
 $('#btngridcalendar').click(function () {
     IsBudgetGrid = false
-    BindUpcomingActivites(filters.PlanIDs.toString());
-    // clear array used for package/unpackage handling in calendar on tab change
-    AddRemovePackageItems = {
-        RemoveId: [],
-        AddItemId: [],
-    };
+    BindUpcomingActivites(filters.PlanIDs.toString()).then(function () {
+        // clear array used for package/unpackage handling in calendar on tab change
+        AddRemovePackageItems = {
+            RemoveId: [],
+            AddItemId: [],
+        };
 
-    AnchorTaskIdsList = {
-        Id: [],
-        Value: []
-    };
-    //End
-    //cleare success msg as we want to hide import msg on click of grid or calendar
-    $('#SuccessMsg').css('display', 'none');
-    if ($('#errorMsg').css('display') == 'block') {
-        $('#errorMsg').css('display', 'none');
-    }
-    $('#exp-serach').css('display', 'none');
-    if ($('#btnbudget').hasClass('P-icon-active')) {
-        isCalendarView = true;
-        $('#IsGridView').val('false');
-       HomeGrid.saveOpenStates("plangridState");
-        // get scroll set of selected row from grid to calendar
-        scrollstate = {
-            y: HomeGrid.objBox.scrollTop,
-            x: HomeGrid.objBox.scrollLeft,
+        AnchorTaskIdsList = {
+            Id: [],
+            Value: []
+        };
+        //End
+        //cleare success msg as we want to hide import msg on click of grid or calendar
+        $('#SuccessMsg').css('display', 'none');
+        if ($('#errorMsg').css('display') == 'block') {
+            $('#errorMsg').css('display', 'none');
         }
-        HomeGrid.saveOpenStates("plangridState");
-        BindPlanCalendar();
-    }
-    else {
-        if ($('#IsGridView').val().toLowerCase() == "false") {
-            scrollstate = gantt.getScrollState();
-            isCalendarView = false;
-            SetcookieforSaveState();
-            LoadPlanGrid();
-            $('#IsGridView').val('true');
-
-        } else {
+        $('#exp-serach').css('display', 'none');
+        if ($('#btnbudget').hasClass('P-icon-active')) {
             isCalendarView = true;
             $('#IsGridView').val('false');
-           HomeGrid.saveOpenStates("plangridState");
+            HomeGrid.saveOpenStates("plangridState");
             // get scroll set of selected row from grid to calendar
             scrollstate = {
                 y: HomeGrid.objBox.scrollTop,
                 x: HomeGrid.objBox.scrollLeft,
             }
+            HomeGrid.saveOpenStates("plangridState");
             BindPlanCalendar();
         }
-    }
-    RemoveAllHoneyCombData();
-    RefershPlanHeaderCalc();
-    ShowhideDataonGridCalendar();
+        else {
+            if ($('#IsGridView').val().toLowerCase() == "false") {
+                scrollstate = gantt.getScrollState();
+                isCalendarView = false;
+                SetcookieforSaveState();
+                LoadPlanGrid();
+                $('#IsGridView').val('true');
+
+            } else {
+                isCalendarView = true;
+                $('#IsGridView').val('false');
+                HomeGrid.saveOpenStates("plangridState");
+                // get scroll set of selected row from grid to calendar
+                scrollstate = {
+                    y: HomeGrid.objBox.scrollTop,
+                    x: HomeGrid.objBox.scrollLeft,
+                }
+                BindPlanCalendar();
+            }
+        }
+        RemoveAllHoneyCombData();
+        RefershPlanHeaderCalc();
+        ShowhideDataonGridCalendar();
+    });
 });
 //load context from calendar to grid:Context management #2677
 function SetcookieforSaveState() {
@@ -106,44 +107,43 @@ function ShowhideDataonGridCalendar() {
 
 $('#btnbudget').click(function () {
     IsBudgetGrid = true;
-    BindUpcomingActivites(filters.PlanIDs.toString());
+    BindUpcomingActivites(filters.PlanIDs.toString()).then(function() {
+        // clear array used for package/unpackage handling in calendar on tab change
+        AddRemovePackageItems = {
+            RemoveId: [],
+            AddItemId: [],
+        };
 
-    // clear array used for package/unpackage handling in calendar on tab change
-    AddRemovePackageItems = {
-        RemoveId: [],
-        AddItemId: [],
-    };
+        AnchorTaskIdsList = {
+            Id: [],
+            Value: []
+        };
+        //end
+        //cleare success msg as we want to hide import msg on click of grid or calendar
 
-    AnchorTaskIdsList = {
-        Id: [],
-        Value: []
-    };
-    //end
-    //cleare success msg as we want to hide import msg on click of grid or calendar
-
-    if ($('#errorMsg').css('display') == 'block') {
-        $('#errorMsg').css('display', 'none');
-    }
-    if (IsGridView || $('#IsGridView').val().toLowerCase() == "true") {
-        scrollstate = {
-            y: HomeGrid.objBox.scrollTop,
-            x: HomeGrid.objBox.scrollLeft,
+        if ($('#errorMsg').css('display') == 'block') {
+            $('#errorMsg').css('display', 'none');
         }
-        HomeGrid.saveOpenStates("plangridState");
-    }
-    else {
-        SetcookieforSaveState();
-    }
-    isCalendarView = false;
-    IsGridView = false;
-    $('#IsGridView').val('false');
-    $('#ChangeView').hide();
-    $('#exp-serach').css('display', 'none');
-    RemoveAllHoneyCombData();
-    RefershPlanHeaderCalc();
-    LoadBudgetGrid();
-    ShowHideDataonBudgetScreen();
-
+        if (IsGridView || $('#IsGridView').val().toLowerCase() == "true") {
+            scrollstate = {
+                y: HomeGrid.objBox.scrollTop,
+                x: HomeGrid.objBox.scrollLeft,
+            }
+            HomeGrid.saveOpenStates("plangridState");
+        }
+        else {
+            SetcookieforSaveState();
+        }
+        isCalendarView = false;
+        IsGridView = false;
+        $('#IsGridView').val('false');
+        $('#ChangeView').hide();
+        $('#exp-serach').css('display', 'none');
+        RemoveAllHoneyCombData();
+        RefershPlanHeaderCalc();
+        LoadBudgetGrid();
+        ShowHideDataonBudgetScreen();
+    });
 });
 
 function ShowHideDataonBudgetScreen() {
@@ -186,9 +186,10 @@ $('#ChangeView').click(function () {
         $('#ExpClose').css('display', 'none');
         $('#ExpSearch').css('display', 'block');
     }
-    BindUpcomingActivites(filters.PlanIDs.toString())
-    RefershPlanHeaderCalc();
-    ShowhideDataonGridCalendar();
+    BindUpcomingActivites(filters.PlanIDs.toString()).then(function() {
+        RefershPlanHeaderCalc();
+        ShowhideDataonGridCalendar();
+    });
 });
 
 //Added by Rahul Shah to call budget data 

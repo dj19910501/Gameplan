@@ -336,98 +336,94 @@
         CustomTacticName: "@Common.TacticCustomTitle"
     });
 
-    $('.sidebar-toogle a').click(function () {
+    $('.sidebar-toogle a').click(function() {
         $("#sidebar").toggleClass("slideLeft");
         $("#content_wraper").toggleClass("slideLeft");
     });
 
     // Added by Bhumika to resize Grid and calendar when sidebar hide - Code copied from Index-original.cshtml
     $('.sidebar-toogle a').toggle(
-    function () {
-        ///new code
-        var ganttwidth;
-        var totalWidth;
-        if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
-            var ganttwidth = $("#gridbox").width();
-            var totalWidth = ganttwidth + 230;
-            ResizeGrid(totalWidth);
-        }
-        else {
-            ganttwidth = $("#gantt_here").width();
-            totalWidth = ganttwidth - 230;
-            gantt._render_tasks_scales(totalWidth);
-            gantt.refreshData();
-        }
-        $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
+        function() {
+            ///new code
+            var ganttwidth;
+            var totalWidth;
+            if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
+                var ganttwidth = $("#gridbox").width();
+                var totalWidth = ganttwidth + 230;
+                ResizeGrid(totalWidth);
+            } else {
+                ganttwidth = $("#gantt_here").width();
+                totalWidth = ganttwidth - 230;
+                gantt._render_tasks_scales(totalWidth);
+                gantt.refreshData();
+            }
+            $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
 
-        $(".gantt_last_cell").dblclick(function (e) {
-            e.stopPropagation();
+            $(".gantt_last_cell").dblclick(function(e) {
+                e.stopPropagation();
+            });
+
+            $(".gantt_last_cell").click(function(e) {
+                e.stopPropagation();
+            });
+
+
+            var $doc = $(document);
+            $doc.click(function() {
+                $('#popupType').css('display', 'none');
+            });
+
+            $(document).mouseup(function(e) {
+                $('#popupType').css("display", "none");
+            });
+            $(".gantt_ver_scroll").scroll(function() {
+                $('#popupType').css('display', 'none');
+            });
+
+            $('.gantt_hor_scroll').hide();
+
+        }, function() {
+            var ganttwidth;
+            var totalWidth;
+            if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
+                var ganttwidth = $("#gridbox").width();
+                var totalWidth = ganttwidth + 230;
+                ResizeGrid(totalWidth);
+            } else {
+                ganttwidth = $("#gantt_here").width();
+                totalWidth = ganttwidth - 230;
+                gantt._render_tasks_scales(totalWidth);
+                gantt.refreshData();
+            }
+
+            $('#gantt_hor_scroll').attr('style', 'Width: 1483px;');
+
+            $(".gantt_last_cell").dblclick(function(e) {
+                e.stopPropagation();
+            });
+
+            $(".gantt_last_cell").click(function(e) {
+                e.stopPropagation();
+            });
+            var $doc = $(document);
+            $doc.click(function() {
+                $('#popupType').css('display', 'none');
+            });
+
+            $(document).mouseup(function(e) {
+                $('#popupType').css("display", "none");
+            });
+            $(".gantt_ver_scroll").scroll(function() {
+                $('#popupType').css('display', 'none');
+            });
+
+            $('.gantt_hor_scroll').hide();
+
         });
 
-        $(".gantt_last_cell").click(function (e) {
-            e.stopPropagation();
-        });
 
+    $(document).ready(function() {
 
-        var $doc = $(document);
-        $doc.click(function () {
-            $('#popupType').css('display', 'none');
-        });
-
-        $(document).mouseup(function (e) {
-            $('#popupType').css("display", "none");
-        });
-        $(".gantt_ver_scroll").scroll(function () {
-            $('#popupType').css('display', 'none');
-        });
-
-        $('.gantt_hor_scroll').hide();
-
-    }
-
-    , function () {
-        var ganttwidth;
-        var totalWidth;
-        if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
-            var ganttwidth = $("#gridbox").width();
-            var totalWidth = ganttwidth + 230;
-            ResizeGrid(totalWidth);
-        }
-        else {
-            ganttwidth = $("#gantt_here").width();
-            totalWidth = ganttwidth - 230;
-            gantt._render_tasks_scales(totalWidth);
-            gantt.refreshData();
-        }
-
-        $('#gantt_hor_scroll').attr('style', 'Width: 1483px;');
-
-        $(".gantt_last_cell").dblclick(function (e) {
-            e.stopPropagation();
-        });
-
-        $(".gantt_last_cell").click(function (e) {
-            e.stopPropagation();
-        });
-        var $doc = $(document);
-        $doc.click(function () {
-            $('#popupType').css('display', 'none');
-        });
-
-        $(document).mouseup(function (e) {
-            $('#popupType').css("display", "none");
-        });
-        $(".gantt_ver_scroll").scroll(function () {
-            $('#popupType').css('display', 'none');
-        });
-
-        $('.gantt_hor_scroll').hide();
-
-    });
-
-
-    $(document).ready(function () {
-        
         BindHomeGrid();
         var Successmsgduplicate = '@Successmsgduplicate';
         var Errormsgduplicate = '@errormsgduplicate';
@@ -437,7 +433,7 @@
         if (Errormsgduplicate != "") {
             ShowMessage(true, Errormsgduplicate, 400);
         }
-        $('.plan').addClass('active');//Select Plans menu after login for ticket - 2570
+        $('.plan').addClass('active'); //Select Plans menu after login for ticket - 2570
         ///Added by Dhvani to open inpsect popup for alert URL -- PL #2534
         //START CODE
         if ('@ShowInspectPopup'.toLowerCase() == 'true') {
@@ -451,8 +447,7 @@
                 ShowInspectForPlanLineItemId();
             else
                 ShowInspectForPlanId();
-        }
-        else {
+        } else {
             var currentUrlQueryString = window.location.search.toString().toLowerCase();
             var isNotificationEmailShareLink = false;
             if (currentUrlQueryString.indexOf('plancampaignid') > 0 || currentUrlQueryString.indexOf('planprogramid') > 0 || currentUrlQueryString.indexOf('plantacticid') > 0) {
@@ -462,8 +457,7 @@
                 $('#cErrorInspectPopup').html('<strong>Error! </strong> ' + '@ViewBag.ShowInspectPopupErrorMessage');
                 $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
                 $('#errorMessageInspectPopup').slideDown(3000);
-            }
-            else {
+            } else {
                 $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
                 $('#errorMessageInspectPopup').slideUp(400);
             }
@@ -499,6 +493,7 @@
             $('.accordion').on('shown.bs.collapse', toggleChevron);
         });
     });
+
     function LoadFilter(currentActiveTab) {
         var PlanID = '@CurrentRequestPlanID';
         var strURL = '@Url.Content("~/Filter/Index/")';
@@ -508,23 +503,23 @@
 
         // return a deferred so callers can wait before they do their work if they want
         return $.ajax({
-                url: strURL,
-                type: 'post',
-                dataType: 'html',
-                data: {
-                    activeMenu: '@Enums.ActiveMenu.Home',
-                    currentPlanId: PlanID
-                }
-        }).then(function (data) {
-                if (data != 'undefined' && data != null) {
-                    $('#divFilter').html(data);
-                    filters.PlanIDs = GetPlanIds();
-                    // is it safe to run these in parallel?
-                    var p1 = GetTacticTypelist(filters.PlanIDs);
-                    var p2 = GetOwnerListForFilter(filters.PlanIDs);
-                    return $.when(p1, p2).then(function() {
-                        return GetLastSetofViews($('#FilterPresetName').val()).then(function () {
-                            BindUpcomingActivites(filters.PlanIDs);
+            url: strURL,
+            type: 'post',
+            dataType: 'html',
+            data: {
+                activeMenu: '@Enums.ActiveMenu.Home',
+                currentPlanId: PlanID
+            }
+        }).then(function(data) {
+            if (data != 'undefined' && data != null) {
+                $('#divFilter').html(data);
+                filters.PlanIDs = GetPlanIds();
+                // is it safe to run these in parallel?
+                var p1 = GetTacticTypelist(filters.PlanIDs);
+                var p2 = GetOwnerListForFilter(filters.PlanIDs);
+                return $.when(p1, p2).then(function() {
+                    return GetLastSetofViews($('#FilterPresetName').val()).then(function() {
+                        return BindUpcomingActivites(filters.PlanIDs).then(function() {
                             BindViewSelections(urlContent + 'Home/GetViewBylistData');
                             RefershPlanHeaderCalc();
                             GetMultiplePlanNames();
@@ -539,15 +534,17 @@
                             }
                         });
                     });
-                }
-            });
+                });
+            }
+        });
     }
+
     function OpenCreateNew(IsGridView) {
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/ColumnView/GetAttributeList_ColumnView/")',
             data: { IsGrid: IsGridView },
-            success: function (data) {
+            success: function(data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }

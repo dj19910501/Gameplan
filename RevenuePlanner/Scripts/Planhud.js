@@ -288,37 +288,35 @@ function GetGoalValues(url,selectedPlanIds) {
 function BindUpcomingActivites(SelectedPlanIds) {
     var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
     var years = "";
-    $.each(listCheckbox, function () {
+    $.each(listCheckbox, function() {
         if ($(this).attr("checked")) {
             years += $(this).attr('yearValue') + ",";
         }
     });
     years = years.slice(0, -1);
-  
+
     var currentval = $("#ddlUpComingActivites").val();
-    $.ajax({
+    return $.ajax({
         type: 'POST',
         url: urlContent + 'Home/BindUpcomingActivitesValues/',
-        async: false,
         data: {
             planids: SelectedPlanIds.toString(),
             fltrYears: years,
             IsBudgetGrid: IsBudgetGrid
-        },
-        success: function (data) {
-            var upcomingvalues = [];
-            $.each($("#ddlUpComingActivites option"), function () {
-                upcomingvalues.push(this.value.toString());
-            });
-
-            if (upcomingvalues.indexOf(currentval) > 0) {
-                $.each($("#ddlUpComingActivites option"), function () {
-                    $(this).removeAttr('selected');
-                });
-                $("#ddlUpComingActivites option[value='" + currentval + "']").attr('selected', 'selected');
-            }
-            BindUpcomingActivies(data);
         }
+    }).then(function(data) {
+        var upcomingvalues = [];
+        $.each($("#ddlUpComingActivites option"), function() {
+            upcomingvalues.push(this.value.toString());
+        });
+
+        if (upcomingvalues.indexOf(currentval) > 0) {
+            $.each($("#ddlUpComingActivites option"), function() {
+                $(this).removeAttr('selected');
+            });
+            $("#ddlUpComingActivites option[value='" + currentval + "']").attr('selected', 'selected');
+        }
+        BindUpcomingActivies(data);
     });
 }
 

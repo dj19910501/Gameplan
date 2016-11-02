@@ -941,11 +941,11 @@ function UpdatePlan() {
             $(this).parent().removeClass("close-list");
         });
     }
-    BindUpcomingActivites(planids);
     // Can I run these in parallel??
+    var bua = BindUpcomingActivites(planids);
     var gttlpromise = GetTacticTypelist(planids, false);
     var golff = GetOwnerListForFilter(planids, false);
-    return $.when(gttlpromise, golff).then(function() {
+    return $.when(bua, gttlpromise, golff).then(function() {
         UpdateResult();
         GetMultiplePlanNames();
         GetGoalValues(urlContent + 'Home/GetGoalValues', filters.PlanIDs);
