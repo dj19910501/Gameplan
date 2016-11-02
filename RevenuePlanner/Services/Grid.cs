@@ -1669,7 +1669,7 @@ namespace RevenuePlanner.Services
                     }
                     RowData.lstdata.Add(new PlandataobjColumn
                     {
-                        value = Roistring + Linkedstring + HttpUtility.HtmlEncode(RowData.EntityTitle), //Set Entity title
+                        value = Roistring + Linkedstring + HttpUtility.HtmlEncode(RowData.EntityTitle).Replace("&amp;", "&"), //Set Entity title
                         locked = IsEditable,
                         style = cellTextColor,
                         column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName)
