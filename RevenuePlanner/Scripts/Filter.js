@@ -355,168 +355,166 @@ var PreviousListFilter = {
     TacticTypeIds: []
 }
 function GetLastSetofViews(presetName) {
-    $.ajax({
+    return $.ajax({
         type: 'POST',
         url: $('#LastSetOfViewsURL').val(),
         data: { PresetName: presetName },
-        dataType: "json",
-        async: false,
-        success: function (data) {
+        dataType: "json"
+    }).then(function (data) {
 
-            if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                window.location = $('#HomeIndexURL').val();
-            }
-            else {
-                if (data.StatusNAmes != null) {
-                    if (data.StatusNAmes.length != 0 && data.StatusNAmes.length != undefined) {
-                        $("#ulStatus li input[type=checkbox]").removeAttr('checked');
-                        $("#ulStatus li ").removeClass("close-list");
-                        filters.StatusIds = [];
-                        for (i = 0 ; i < data.StatusNAmes.length; i++) {
-                            $("#ulStatus li input[type=checkbox]").each(function () {
-                                var Value = $(this).attr("id");
-                                if (Value == data.StatusNAmes[i]) {
-                                    filters.StatusIds.push(Value);
-                                    $(this).attr('checked', 'checked');
-                                    $(this).parent().addClass("close-list");
-                                }
-                            });
-                        }
-                    }
-                    else {
-                        $('#ulStatus').find("input[type=checkbox]").each(function () {
-                            $(this).attr('checked', 'checked');
-                            $(this).parent().addClass("close-list");
-                        });
-                    }
-                }
-                else {
-                    $("#ulStatus li").each(function (i) {
-                        $(this).removeClass("close-list");
-                        var chkid = $(this).find("input[type=checkbox]").attr("id");
-                        $("#" + chkid).removeAttr("checked");
-                    });
-                }
-                var AutoSelectedCustomField = 0;
-                if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
-                    filters.customFieldIds = [];
-                    for (i = 0 ; i < data.Customfields.length; i++) {
-                        var CustomFieldId = data.Customfields[i].ID.split('_')[1];
-                        var CustomFieldValues = data.Customfields[i].Value;
-                        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
-                            var chkid = $(this).attr("id");
-                            var chkfieldid = $(this).attr("id").split('_')[0];
-                            var chkOptionid = $(this).attr("id").split('_')[1];
-                            if (chkfieldid == CustomFieldId) {
-                                if (CustomFieldValues.indexOf(chkOptionid) != -1) {
-                                    $(this).attr('checked', 'checked');
-                                    AutoSelectedCustomField++;
-                                    filters.customFieldIds.push(chkid);
-                                    $(this).parent().addClass("close-list");
-                                }
-                                else {
-                                    $(this).removeAttr('checked');
-                                }
-
-                            }
-                        });
-                        $("#SelectedCustomFilter_" + CustomFieldId).text(AutoSelectedCustomField);
-                        AutoSelectedCustomField = 0;
-                    }
-                }
-                else {
-                    $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
-                        $(this).attr('checked', 'checked');
-                        $(this).parent().addClass("close-list");
-                        AutoSelectedCustomField++;
-                    });
-                    $('#ulSelectedFilter').find("li #CustomFields .sidebarliwidthSelected-right").text(FiltersAll);
-                }
-                if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined && data.OwnerNames != "All") {
-                    filters.OwnerIds = [];
-                    $("#ulSelectedOwner li input[type=checkbox]").removeAttr('checked');
-                    $("#ulSelectedOwner li ").removeClass("close-list");
-                    for (i = 0 ; i < data.OwnerNames.length; i++) {
-                        PreviousListFilter.OwnerIds.push(data.OwnerNames[i]);
-                        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+            window.location = $('#HomeIndexURL').val();
+        }
+        else {
+            if (data.StatusNAmes != null) {
+                if (data.StatusNAmes.length != 0 && data.StatusNAmes.length != undefined) {
+                    $("#ulStatus li input[type=checkbox]").removeAttr('checked');
+                    $("#ulStatus li ").removeClass("close-list");
+                    filters.StatusIds = [];
+                    for (i = 0 ; i < data.StatusNAmes.length; i++) {
+                        $("#ulStatus li input[type=checkbox]").each(function () {
                             var Value = $(this).attr("id");
-                            if (Value == data.OwnerNames[i]) {
-                                filters.OwnerIds.push(Value);
+                            if (Value == data.StatusNAmes[i]) {
+                                filters.StatusIds.push(Value);
                                 $(this).attr('checked', 'checked');
                                 $(this).parent().addClass("close-list");
                             }
                         });
                     }
                 }
-                else if (data.OwnerNames == "All") {
-                    $("#ulSelectedOwner li input[type=checkbox]").each(function () {
-                        var Value = $(this).attr("id");
-                        filters.OwnerIds.push(Value);
+                else {
+                    $('#ulStatus').find("input[type=checkbox]").each(function () {
                         $(this).attr('checked', 'checked');
                         $(this).parent().addClass("close-list");
                     });
                 }
-                if (data.TTList != null) {
-                    if (data.TTList.length != 0 && data.TTList.length != undefined && data.TTList != "All") {
-                        filters.TacticTypeids = [];
-                        $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
-                        $("#ulTacticType li ").removeClass("close-list");
-                        for (i = 0 ; i < data.TTList.length; i++) {
-                            PreviousListFilter.TacticTypeIds.push(data.TTList[i]);
-                            $("#ulTacticType li input[type=checkbox]").each(function () {
-                                var Value = $(this).attr("id").replace("CbTT", "");
-                                if (Value == data.TTList[i]) {
-                                    filters.TacticTypeids.push(Value);
-                                    $(this).attr('checked', 'checked');
-                                    $(this).parent().addClass("close-list");
-                                }
-                            });
+            }
+            else {
+                $("#ulStatus li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+                });
+            }
+            var AutoSelectedCustomField = 0;
+            if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
+                filters.customFieldIds = [];
+                for (i = 0 ; i < data.Customfields.length; i++) {
+                    var CustomFieldId = data.Customfields[i].ID.split('_')[1];
+                    var CustomFieldValues = data.Customfields[i].Value;
+                    $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                        var chkid = $(this).attr("id");
+                        var chkfieldid = $(this).attr("id").split('_')[0];
+                        var chkOptionid = $(this).attr("id").split('_')[1];
+                        if (chkfieldid == CustomFieldId) {
+                            if (CustomFieldValues.indexOf(chkOptionid) != -1) {
+                                $(this).attr('checked', 'checked');
+                                AutoSelectedCustomField++;
+                                filters.customFieldIds.push(chkid);
+                                $(this).parent().addClass("close-list");
+                            }
+                            else {
+                                $(this).removeAttr('checked');
+                            }
+
                         }
-                    }
-                    else if (data.TTList == "All") {
-                        $("#ulTacticType li input[type=checkbox]").each(function () {
-                            var Value = $(this).attr("id").replace("CbTT", "");
-                            filters.TacticTypeids.push(Value);
-                            $(this).attr('checked', 'checked');
-                            $(this).parent().addClass("close-list");
-                        });
-                    }
-                    else {
-                        $('#ulTacticType').find("input[type=checkbox]").each(function () {
-                            $(this).attr('checked', 'checked');
-                            $(this).parent().addClass("close-list");
-                        });
-                    }
+                    });
+                    $("#SelectedCustomFilter_" + CustomFieldId).text(AutoSelectedCustomField);
+                    AutoSelectedCustomField = 0;
                 }
-                else {
-                    $("#ulTacticType li").each(function (i) {
-                        $(this).removeClass("close-list");
-                        var chkid = $(this).find("input[type=checkbox]").attr("id");
-                        $("#" + chkid).removeAttr("checked");
+            }
+            else {
+                $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                    $(this).attr('checked', 'checked');
+                    $(this).parent().addClass("close-list");
+                    AutoSelectedCustomField++;
+                });
+                $('#ulSelectedFilter').find("li #CustomFields .sidebarliwidthSelected-right").text(FiltersAll);
+            }
+            if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined && data.OwnerNames != "All") {
+                filters.OwnerIds = [];
+                $("#ulSelectedOwner li input[type=checkbox]").removeAttr('checked');
+                $("#ulSelectedOwner li ").removeClass("close-list");
+                for (i = 0 ; i < data.OwnerNames.length; i++) {
+                    PreviousListFilter.OwnerIds.push(data.OwnerNames[i]);
+                    $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                        var Value = $(this).attr("id");
+                        if (Value == data.OwnerNames[i]) {
+                            filters.OwnerIds.push(Value);
+                            $(this).attr('checked', 'checked');
+                            $(this).parent().addClass("close-list");
+                        }
                     });
                 }
-                if (data.Years != null) {
-                    if (data.Years.length != 0 && data.Years.length != undefined) {
-                        filters.SelectedYears = [];
-                        $("#ulSelectedYear li input[type=checkbox]").removeAttr('checked');
-                        $("#ulSelectedYear li ").removeClass("close-list");
-                        for (i = 0 ; i < data.Years.length; i++) {
-                            $("#ulSelectedYear li input[type=checkbox]").each(function () {
-                                var Value = $(this).attr("yearvalue");
-                                if (Value == data.Years[i]) {
-                                    filters.SelectedYears.push(Value);
-                                    $(this).attr('checked', 'checked');
-                                    $(this).parent().addClass("close-list");
-                                }
-                            });
-                        }
+            }
+            else if (data.OwnerNames == "All") {
+                $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                    var Value = $(this).attr("id");
+                    filters.OwnerIds.push(Value);
+                    $(this).attr('checked', 'checked');
+                    $(this).parent().addClass("close-list");
+                });
+            }
+            if (data.TTList != null) {
+                if (data.TTList.length != 0 && data.TTList.length != undefined && data.TTList != "All") {
+                    filters.TacticTypeids = [];
+                    $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
+                    $("#ulTacticType li ").removeClass("close-list");
+                    for (i = 0 ; i < data.TTList.length; i++) {
+                        PreviousListFilter.TacticTypeIds.push(data.TTList[i]);
+                        $("#ulTacticType li input[type=checkbox]").each(function () {
+                            var Value = $(this).attr("id").replace("CbTT", "");
+                            if (Value == data.TTList[i]) {
+                                filters.TacticTypeids.push(Value);
+                                $(this).attr('checked', 'checked');
+                                $(this).parent().addClass("close-list");
+                            }
+                        });
                     }
                 }
-                if (presetName != 'undefined' && presetName != null && presetName != "") {
-                    SaveLastSetofViews();
+                else if (data.TTList == "All") {
+                    $("#ulTacticType li input[type=checkbox]").each(function () {
+                        var Value = $(this).attr("id").replace("CbTT", "");
+                        filters.TacticTypeids.push(Value);
+                        $(this).attr('checked', 'checked');
+                        $(this).parent().addClass("close-list");
+                    });
                 }
-                UpdateSelectedFilters();
+                else {
+                    $('#ulTacticType').find("input[type=checkbox]").each(function () {
+                        $(this).attr('checked', 'checked');
+                        $(this).parent().addClass("close-list");
+                    });
+                }
             }
+            else {
+                $("#ulTacticType li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+                });
+            }
+            if (data.Years != null) {
+                if (data.Years.length != 0 && data.Years.length != undefined) {
+                    filters.SelectedYears = [];
+                    $("#ulSelectedYear li input[type=checkbox]").removeAttr('checked');
+                    $("#ulSelectedYear li ").removeClass("close-list");
+                    for (i = 0 ; i < data.Years.length; i++) {
+                        $("#ulSelectedYear li input[type=checkbox]").each(function () {
+                            var Value = $(this).attr("yearvalue");
+                            if (Value == data.Years[i]) {
+                                filters.SelectedYears.push(Value);
+                                $(this).attr('checked', 'checked');
+                                $(this).parent().addClass("close-list");
+                            }
+                        });
+                    }
+                }
+            }
+            if (presetName != 'undefined' && presetName != null && presetName != "") {
+                SaveLastSetofViews();
+            }
+            UpdateSelectedFilters();
         }
     });
 }
