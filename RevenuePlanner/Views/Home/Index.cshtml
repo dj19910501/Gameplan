@@ -25,7 +25,6 @@
     var errormsgduplicate = (string)ViewBag.ErrorMessageDuplicatePlan;
     var IsGridView = (bool)ViewBag.GridView;
     bool IsBudgetView = (bool)ViewBag.BudgetView;
-    var TacticTaskColor = (string)ViewBag.TacticTaskColor;
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
     bool NoPlanCreated = (bool)Sessions.IsNoPlanCreated;
@@ -40,7 +39,7 @@
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 <!-- Stylesheet Only For Homepage -->
 @section FilterEx{
-    <link href="~/Content/css/styleIndexPage_min_24.css" rel="stylesheet" />
+    <link href="~/Content/css/styleIndexPage_min_03.css" rel="stylesheet" />
 }
 
 @* Sidebar Section Start *@
@@ -65,7 +64,10 @@
     <div class="planheader-left">
         <div class="plan-header-grid">
             <div class="request-icon-block">
-                <a class="new-btn-plan-left" href="#" id="btngridcalendar" title="Calendar View">
+                <a href="#" class="new-btn-plan-left" id="btngrid" title="Grid View">
+                    <i class="fa fa-table"></i>
+                </a>
+                <a class="new-btn-plan-middle" href="#" id="btngridcalendar" title="Calendar View">
                     <i class="fa fa-calendar"></i>
                 </a>
                 <a id="btnbudget" title="Budget & Cost" class="new-btn-plan-right" href="#">
@@ -119,9 +121,9 @@
         <span class="ExpIcon" id="ExpClose" style="display:none"><i class="fa fa-times-circle-o" aria-hidden="true"></i></span>
     </div>
     @* ===== Close button to change View Start ======= *@
-    <div class="changeView-wrap">
+    @*<div class="changeView-wrap">
         <a class="changeView" id="ChangeView" style="display:none"><i class="fa fa-times-circle" aria-hidden="true" title="Go Back to Grid"></i></a>
-    </div>
+    </div>*@
     @* ===== Close button to change View End ======= *@
     <!-- -->
     <div id="GridGanttContent" style="display:none"></div>
@@ -505,7 +507,7 @@
             url: strURL,
             type: 'post',
             dataType: 'html',
-            async: false,
+            async: isFirstTimeOnGrid,
             data: {
                 activeMenu: '@Enums.ActiveMenu.Home',
                 currentPlanId: PlanID,
@@ -626,10 +628,6 @@
             type: 'POST',
             url: '@Url.Content("~/Plan/GetHomeGridDataJSON/")', //urlContent + 'Plan/GetHomeGridDataJSON/',
             async: true,
-            dataFilter: function(data) {
-                // convert back to ampersands
-                return data.replace(/&amp;/g, '&');
-            },
             data: {
                 planIds: filters.PlanIDs.toString(),
                 ownerIds: filters.OwnerIds.toString(),
@@ -770,6 +768,7 @@
 
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
 
+        $('#btngrid').addClass('P-icon-active');
         var count = HomeGrid.getRowsNum();
         //alert(count)
         LoadAfterParsing();

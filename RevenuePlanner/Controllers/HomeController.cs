@@ -62,19 +62,22 @@ namespace RevenuePlanner.Controllers
 
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = true, int planLineItemId = 0, bool IsPlanSelector = false, int PreviousPlanID = 0, bool IsRequest = false, bool ShowPopup = false, bool IsBudgetView = false, int SelectedTacticID = 0)
         {
-            Guid AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
-            Guid RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
-            Sessions.User.RoleId = RoleId;
-            Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
-            Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
-            if (Sessions.AppMenus != null)
+            if (Sessions.IsfromMeasure == true)
             {
-                var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
-                var item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Model.ToString().ToUpper());
-                if (item != null && !isAuthorized)
+                Sessions.IsfromMeasure = false;
+                Guid AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
+                Guid RoleId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.RoleIdApplicationWise).FirstOrDefault();
+                Sessions.User.RoleId = RoleId;
+                Sessions.AppMenus = objBDSServiceClient.GetMenu(AppId, Sessions.User.RoleId);
+                Sessions.RolePermission = objBDSServiceClient.GetPermission(AppId, Sessions.User.RoleId);
+                if (Sessions.AppMenus != null)
                 {
-                    Sessions.AppMenus.Remove(item);
-                }
+                    var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+                    var item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Model.ToString().ToUpper());
+                    if (item != null && !isAuthorized)
+                    {
+                        Sessions.AppMenus.Remove(item);
+                    }
 
                 isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit) ||
                     AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit));
@@ -102,11 +105,12 @@ namespace RevenuePlanner.Controllers
                     Sessions.AppMenus.Remove(item);
                 }
 
-                isAuthorized = Sessions.AppMenus.Select(x => x.Code.ToLower()).Contains(Enums.ActiveMenu.Plan.ToString().ToLower());
-                item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
-                if (item != null && !isAuthorized)
-                {
-                    Sessions.AppMenus.Remove(item);
+                    isAuthorized = Sessions.AppMenus.Select(x => x.Code.ToLower()).Contains(Enums.ActiveMenu.Plan.ToString().ToLower());
+                    item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
+                    if (item != null && !isAuthorized)
+                    {
+                        Sessions.AppMenus.Remove(item);
+                    }
                 }
             }
             ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -119,16 +123,26 @@ namespace RevenuePlanner.Controllers
             ViewBag.PreviousPlanID = PreviousPlanID;
             ViewBag.IsRequest = IsRequest;
             ViewBag.SelectedTacticID = SelectedTacticID;
-            Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
-            ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
-            var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
-            ViewBag.TacticTaskColor = TacticColor;
             ViewBag.ActiveMenu = activeMenu;
             ViewBag.GridView = isGridView;
             ViewBag.BudgetView = IsBudgetView;
+
+            #region "Get OwnerName"
+            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+            lstUserHierarchy = objBDSServiceClient.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
+            var lstUsersData = lstUserHierarchy.Select(u => new
+            {
+                key = u.UID.ToString(),
+                value = Convert.ToString(HttpUtility.HtmlEncode(u.FirstName + " " + u.LastName))
+            }).ToList(); // Get User list by Client ID.           
+            ViewBag.OwnerList = lstUsersData;
+            Sessions.UserHierarchyList = lstUserHierarchy;
+            #endregion
+
             if (currentPlanId > 0)
             {
-                var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.ID);
+                List<int> lstOwnAndSubOrdinates = Common.GetAllSubordinateslist(lstUserHierarchy, Sessions.User.ID);
+
                 var objPlan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId == currentPlanId);
 
                 if (objPlan.CreatedBy == Sessions.User.ID)
@@ -194,15 +208,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.IsPlanEditable = IsPlanEditable;
 
-            #region "Get OwnerName"
-
-            var lstUsersData = objBDSServiceClient.GetUserListByClientIdEx(Sessions.User.CID).Select(u => new
-            {
-                key = u.ID.ToString(),
-                value = Convert.ToString(HttpUtility.HtmlEncode(u.FirstName + " " + u.LastName))
-            }).ToList(); // Get User list by Client ID.
-            ViewBag.OwnerList = lstUsersData;
-            #endregion
+            
 
             return View();
 

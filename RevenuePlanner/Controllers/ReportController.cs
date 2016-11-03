@@ -87,6 +87,7 @@ namespace RevenuePlanner.Controllers
         #region Report Index
         public ActionResult MeasureReport()
         {
+            Sessions.IsfromMeasure = true;
             var AppId = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.MRP.ToString()).Select(o => o.ApplicationId).FirstOrDefault();
             Guid MeasureAppId = new Guid();
             if (ConfigurationManager.AppSettings.Count > 0)

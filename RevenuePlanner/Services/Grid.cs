@@ -239,7 +239,7 @@ namespace RevenuePlanner.Services
                 });
             }
             // Generate header columns for grid
-            List<PlanHead> ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle, ref HiddenColumns, ref UserDefinedColumns, ref customColumnslist, UserId, ref IsUserView);
+            List<PlanHead> ListOfDefaultColumnHeader = GenerateJsonHeader(MQLTitle, ref HiddenColumns, ref UserDefinedColumns, ref customColumnslist, UserId, ref IsUserView, objUserView);
 
             //Get list of entities for plan grid
             List<GridDefaultModel> GridHireachyData = GetGridDefaultData(PlanIds, ClientId, ownerIds, TacticTypeid, StatusIds, customFieldIds, viewBy);
@@ -522,11 +522,11 @@ namespace RevenuePlanner.Services
         /// Add By Nishant Sheth
         /// Create Plan Grid header for default columns
         /// </summary>
-        private List<PlanHead> GenerateJsonHeader(string MQLTitle, ref List<string> HiddenColumns, ref List<string> UserDefinedColumns, ref List<string> customColumnslist, int UserId, ref bool IsUserView)
+        private List<PlanHead> GenerateJsonHeader(string MQLTitle, ref List<string> HiddenColumns, ref List<string> UserDefinedColumns, ref List<string> customColumnslist, int UserId, ref bool IsUserView, User_CoulmnView userview)
         {
             List<PlanHead> headobjlist = new List<PlanHead>(); // List of headers detail of plan grid
             // Get user column view
-            User_CoulmnView userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
+            //User_CoulmnView userview = objDbMrpEntities.User_CoulmnView.Where(a => a.CreatedBy == UserId).FirstOrDefault();
             // Add Default and hidden required columns into list
             headobjlist = lstHomeGrid_Hidden_And_Default_Columns().Select(a => a.Value).ToList();
             if (headobjlist != null && headobjlist.Count > 0)
@@ -1659,7 +1659,7 @@ namespace RevenuePlanner.Services
                     }
                     RowData.lstdata.Add(new PlandataobjColumn
                     {
-                        value = Roistring + Linkedstring + HttpUtility.HtmlEncode(RowData.EntityTitle), //Set Entity title
+                        value = Roistring + Linkedstring + HttpUtility.HtmlEncode(RowData.EntityTitle).Replace("&amp;", "&"), //Set Entity title
                         locked = IsEditable,
                         style = cellTextColor,
                         column = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.TaskName)
@@ -2009,9 +2009,7 @@ namespace RevenuePlanner.Services
                         tacData = tacData.Where(tactic => lstTacticIds.Contains((int)tactic.EntityId)).ToList();
                     }
                     //// get Allowed Entity Ids
-                    System.Diagnostics.Debug.WriteLine("start GetViewableTacticList " + DateTime.Now.ToString("hh.mm.ss.ffffff"));
-                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
-                    System.Diagnostics.Debug.WriteLine("end GetViewableTacticList " + DateTime.Now.ToString("hh.mm.ss.ffffff"));
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(_UserId, _ClientId, lstTacticIds, false);
                     tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains((int)tactic.EntityId)).ToList();    //filter tactics with allowed entity.
                     resultData.AddRange(tacData);
                 }
@@ -2057,7 +2055,7 @@ namespace RevenuePlanner.Services
 
             #region "Filter data based on customfields selected under filter"
             if (calResultset != null && calResultset.Count > 0 && !string.IsNullOrEmpty(customFieldIds))
-                calResultset = FilterCustomField(calResultset, customFieldIds); // Get filtered tactics based on customfield selection under Filter.
+                calResultset = FilterCustomField(calResultset, customFieldIds,_UserId,_ClientId); // Get filtered tactics based on customfield selection under Filter.
             #endregion
 
 
@@ -2081,10 +2079,9 @@ namespace RevenuePlanner.Services
             bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);    // Check that user has subordinates permission or not. 
             bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);                  // Check that user has plan create permission or not.
             bool IsPlanEditAll = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);                            // Check that user has permission to edit plan permission or not.
-            int userId = Sessions.User.ID;
             if (IsTacticAllowForSubordinates)
             {
-                lstSubordinatesIds = Common.GetAllSubordinates(userId);   // Get all subordinates based on UserId.
+                lstSubordinatesIds = Common.GetAllSubordinates(_UserId);   // Get all subordinates based on UserId.
             }
             #endregion
 
@@ -2098,7 +2095,7 @@ namespace RevenuePlanner.Services
             {
                 lstCalendarDataModel.Where(data =>
                                                 (data.CreatedBy.HasValue) &&
-                                                (data.CreatedBy.Value.Equals(userId) || lstSubordinatesIds.Contains(data.CreatedBy.Value))
+                                                (data.CreatedBy.Value.Equals(_UserId) || lstSubordinatesIds.Contains(data.CreatedBy.Value))
                                           ).ToList()
                                     .ForEach(data => data.Permission = true);
             }
@@ -2109,9 +2106,9 @@ namespace RevenuePlanner.Services
 
             string strPlanEntity = Enums.EntityType.Plan.ToString().ToLower();
 
-            if (lstCalendarDataModel.Where(a => a.CreatedBy.HasValue && a.CreatedBy.Value == userId).Any())  // check that user is owner or not
+            if (lstCalendarDataModel.Where(a => a.CreatedBy.HasValue && a.CreatedBy.Value == _UserId).Any())  // check that user is owner or not
             {
-                lstCalendarDataModel.Where(a => a.CreatedBy.HasValue && a.CreatedBy.Value == userId).ToList().ForEach(a => a.IsRowPermission = true);   // set Edit permission for all entities.
+                lstCalendarDataModel.Where(a => a.CreatedBy.HasValue && a.CreatedBy.Value == _UserId).ToList().ForEach(a => a.IsRowPermission = true);   // set Edit permission for all entities.
             }
             else if (IsPlanEditAll)                         // Check that user has permission to edit plan permission or not.
             {
@@ -2128,7 +2125,7 @@ namespace RevenuePlanner.Services
 
             #region "Tactic Entities Permission"
             lstCalendarDataModel.Where(a => a.type != null && a.type.ToLower() == Enums.EntityType.Tactic.ToString().ToLower() &&
-                                            a.CreatedBy.HasValue && ((a.CreatedBy.Value == userId) || lstSubordinatesIds.Contains(a.CreatedBy.Value))).ToList()
+                                            a.CreatedBy.HasValue && ((a.CreatedBy.Value == _UserId) || lstSubordinatesIds.Contains(a.CreatedBy.Value))).ToList()
                                 .ForEach(a => a.IsRowPermission = true);
             #endregion
 
@@ -2146,7 +2143,7 @@ namespace RevenuePlanner.Services
         /// Desc: Filter Calendar Model data based on custom field selected under filter screen. 
         /// </summary>
         /// <returns> Return List<calendarDataModel> dataset</returns>
-        private List<calendarDataModel> FilterCustomField(List<calendarDataModel> allData, string fltrCustomfields)
+        private List<calendarDataModel> FilterCustomField(List<calendarDataModel> allData, string fltrCustomfields,int UserId, int ClientId)
         {
             List<calendarDataModel> resultData = new List<calendarDataModel>();
             if (allData != null && allData.Count > 0)
@@ -2177,7 +2174,7 @@ namespace RevenuePlanner.Services
                     tacData = tacData.Where(tactic => lstTacticIds.Contains(tactic.PlanTacticId.Value)).ToList();
                 }
                 //// get Allowed Entity Ids
-                List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.ID, Sessions.User.CID, lstTacticIds, false);
+                List<int> lstAllowedEntityIds = Common.GetViewableTacticList(UserId, ClientId, lstTacticIds, false);
                 tacData = tacData.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId.Value)).ToList();    //filter tactics with allowed entity.
                 resultData.AddRange(tacData);
             }

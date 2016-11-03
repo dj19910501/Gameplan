@@ -19,38 +19,39 @@ $('#btngridcalendar').click(function () {
         $('#errorMsg').css('display', 'none');
     }
     $('#exp-serach').css('display', 'none');
-    if ($('#btnbudget').hasClass('P-icon-active')) {
-        isCalendarView = true;
-        $('#IsGridView').val('false');
-       HomeGrid.saveOpenStates("plangridState");
-        // get scroll set of selected row from grid to calendar
-        scrollstate = {
-            y: HomeGrid.objBox.scrollTop,
-            x: HomeGrid.objBox.scrollLeft,
-        }
-        HomeGrid.saveOpenStates("plangridState");
-        BindPlanCalendar();
-    }
-    else {
-        if ($('#IsGridView').val().toLowerCase() == "false") {
-            scrollstate = gantt.getScrollState();
-            isCalendarView = false;
-            SetcookieforSaveState();
-            LoadPlanGrid();
-            $('#IsGridView').val('true');
 
-        } else {
-            isCalendarView = true;
-            $('#IsGridView').val('false');
-           HomeGrid.saveOpenStates("plangridState");
-            // get scroll set of selected row from grid to calendar
+    isCalendarView = true;
+    $('#IsGridView').val('false');
+    HomeGrid.saveOpenStates("plangridState");
+    // get scroll set of selected row from grid to calendar
+    scrollstate = {
+        y: HomeGrid.objBox.scrollTop,
+        x: HomeGrid.objBox.scrollLeft,
+    }
+    BindPlanCalendar();
+
+    RemoveAllHoneyCombData();
+    RefershPlanHeaderCalc();
+    ShowhideDataonGridCalendar();
+});
+$('#btngrid').click(function () {
+
+    if ($('#btnbudget').hasClass('P-icon-active')) {
+        HomeGrid.saveOpenStates("plangridState");
+         // get scroll set of selected row from grid to calendar
             scrollstate = {
                 y: HomeGrid.objBox.scrollTop,
                 x: HomeGrid.objBox.scrollLeft,
             }
-            BindPlanCalendar();
-        }
     }
+    else if (isCalendarView==true) {
+        scrollstate = gantt.getScrollState();
+        SetcookieforSaveState();
+    }
+    isCalendarView = false;
+    $('#exp-serach').css('display', 'none');
+    LoadPlanGrid();
+    $('#IsGridView').val('true');
     RemoveAllHoneyCombData();
     RefershPlanHeaderCalc();
     ShowhideDataonGridCalendar();
@@ -78,6 +79,8 @@ function ShowhideDataonGridCalendar() {
         $('#ChangeView').hide();
         isCalendarView = false;
         $('#btngridcalendar').removeClass('P-icon-active');
+        $('#btngrid').addClass('P-icon-active');
+
     }
     else {
         $('.export-dd').find('#ExportXls').hide();
@@ -89,6 +92,7 @@ function ShowhideDataonGridCalendar() {
         isCalendarView = true;
         $('#IsGridView').val('false');
         $('#btngridcalendar').addClass('P-icon-active');
+        $('#btngrid').removeClass('P-icon-active');
     }
     $('#SuccessMsg').css('display', 'none');
     $('#ErrorMsg').css('display', 'none');
@@ -138,6 +142,7 @@ $('#btnbudget').click(function () {
     IsGridView = false;
     $('#IsGridView').val('false');
     $('#ChangeView').hide();
+    $('#btngrid').removeClass('P-icon-active');
     $('#exp-serach').css('display', 'none');
     RemoveAllHoneyCombData();
     RefershPlanHeaderCalc();
@@ -164,32 +169,7 @@ function ShowHideDataonBudgetScreen() {
     $('.export-dd').find('#ExportPDf').hide();
 }
 
-$('#ChangeView').click(function () {
-    if (isCalendarView) {
-        SetcookieforSaveState();
-        scrollstate = gantt.getScrollState();
-    }
-    else {
-        scrollstate = {
-            y: HomeGrid.objBox.scrollTop,
-            x: HomeGrid.objBox.scrollLeft,
-        }
-        HomeGrid.saveOpenStates("plangridState");
-    }
-    LoadPlanGrid();
-    $('#IsGridView').val('true');
-    IsBudgetGrid = false;
-    if ($('#errorMsg').css('display') == 'block') {
-        $('#errorMsg').css('display', 'none');
-    }
-    if ($('#ExpClose').css('display') == 'block') {
-        $('#ExpClose').css('display', 'none');
-        $('#ExpSearch').css('display', 'block');
-    }
-    BindUpcomingActivites(filters.PlanIDs.toString())
-    RefershPlanHeaderCalc();
-    ShowhideDataonGridCalendar();
-});
+
 
 //Added by Rahul Shah to call budget data 
 function LoadBudgetGrid() {
@@ -1790,7 +1770,7 @@ function BindViewSelections(strUrl) {
     var $html = '';
     var type = '';
     $.ajax({
-        type: 'POST',
+        type: 'GET',
         url: strUrl,
         data: { planids: filters.PlanIDs.toString() },
         success: function (data) {
@@ -2744,7 +2724,7 @@ function SetselectedRow() {
                 rowid = id;
             else
                 rowid = id[0];
-          // HomeGrid.openItem(HomeGrid.getParentId(rowid));
+          HomeGrid.openItem(HomeGrid.getParentId(rowid));
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, false);
             ItemIndex = HomeGrid.getRowIndex(rowid);
             state0 = ItemIndex;

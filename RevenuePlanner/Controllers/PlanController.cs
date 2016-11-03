@@ -6772,7 +6772,18 @@ namespace RevenuePlanner.Controllers
             {
                 #region Set Permission
                 EntityPermission objPermission = new EntityPermission();
-                List<int> lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.ID);
+                List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+                if (Sessions.UserHierarchyList != null)
+                {
+                    lstUserHierarchy = Sessions.UserHierarchyList;
+                }
+                else
+                {
+                    lstUserHierarchy = objBDSServiceClient.GetUserHierarchyEx(Sessions.User.CID, Sessions.ApplicationId);
+                }
+               
+
+                List<int> lstSubordinatesIds = Common.GetAllSubordinateslist(lstUserHierarchy, Sessions.User.ID);
 
                 objPermission.PlanCreate = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
                 objPermission.PlanEditAll = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
@@ -6790,7 +6801,22 @@ namespace RevenuePlanner.Controllers
                     StatusIds = objFilter.StatusIds;
                     customFieldIds = objFilter.CustomFieldIds;
                 }
-                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, Sessions.User.CID, ownerIds, TacticTypeid, StatusIds, customFieldIds, Sessions.PlanCurrencySymbol, Sessions.PlanExchangeRate, Sessions.User.ID, objPermission, lstSubordinatesIds, viewBy);
+                List<string> openRowIds = new List<string>();
+                if (Request.Cookies["gridOpenplangridState"] != null)
+                {
+                    var value = Request.Cookies["gridOpenplangridState"].Value;
+                     openRowIds = value.Split('|').ToList();
+                    Sessions.OpenGridRowID = openRowIds;
+                }
+                else
+                {
+                    Sessions.OpenGridRowID = openRowIds;
+                }
+                int ClientID = Sessions.User.CID;
+                string PlanCurrencySymbol = Sessions.PlanCurrencySymbol;
+                double PlanExchangeRate = Sessions.PlanExchangeRate;
+                int UserID = Sessions.User.ID;
+                objPlanMainDHTMLXGrid = objGrid.GetPlanGrid(planIds, ClientID, ownerIds, TacticTypeid, StatusIds, customFieldIds, PlanCurrencySymbol, PlanExchangeRate, UserID, objPermission, lstSubordinatesIds, viewBy);
                 Tactictypelist = objGrid.GetTacticTypeListForHeader(planIds, Sessions.User.CID);
                 LineItemtypelist = objGrid.GetLineItemTypeListForHeader(planIds, Sessions.User.CID);
             }
@@ -10017,6 +10043,17 @@ namespace RevenuePlanner.Controllers
             if (string.IsNullOrEmpty(ViewBy))
             {
                 ViewBy = PlanGanttTypes.Tactic.ToString();
+            }
+            List<string> openRowIds = new List<string>();
+            if (Request.Cookies["gridOpenplangridState"] != null)
+            {
+                var value = Request.Cookies["gridOpenplangridState"].Value;
+                openRowIds = value.Split('|').ToList();
+                Sessions.OpenGridRowID = openRowIds;
+            }
+            else
+            {
+                Sessions.OpenGridRowID = openRowIds;
             }
             BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, ViewBy, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds);
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();

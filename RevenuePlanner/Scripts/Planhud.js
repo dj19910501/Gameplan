@@ -261,7 +261,7 @@ function GetMultiplePlanNames() {
 function GetGoalValues(url,selectedPlanIds) {
     $.ajax(
    {
-       type: "POST",
+       type: "GET",
        url: url,
        data: {
            planids: selectedPlanIds.toString(),
@@ -297,7 +297,7 @@ function BindUpcomingActivites(SelectedPlanIds) {
   
     var currentval = $("#ddlUpComingActivites").val();
     $.ajax({
-        type: 'POST',
+        type: 'GET',
         url: urlContent + 'Home/BindUpcomingActivitesValues/',
         async: false,
         data: {
