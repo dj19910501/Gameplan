@@ -626,7 +626,7 @@
             type: 'POST',
             url: '@Url.Content("~/Plan/GetHomeGridDataJSON/")', //urlContent + 'Plan/GetHomeGridDataJSON/',
             async: true,
-            dataFilter: function (data) {
+            dataFilter: function(data) {
                 // convert back to ampersands
                 return data.replace(/&amp;/g, '&');
             },
@@ -642,6 +642,47 @@
             },
             cache: false
         });
+    }
+
+    /**
+     * Checks if there is saved open state in a cookie.
+     * If there isn't, then just returns the grid data unmodified (keeping whatever "open" settings it has)
+     * If there is, then the grid data is modified so that is open settings match what was in the cookie
+     * Call this when you have a bunch of grid data you are getting ready to load into the grid and want to
+     * prep the openstates before initial render
+     */
+    function UpdateGridDataFromSavedOpenState(rows, name) {
+        var cookie = dhtmlXGridObject.prototype.getCookie(name, "gridOpen");
+        if (cookie) {
+            // construct a dictionary of the IDS that are open
+            var isOpen = Object.create(null);
+            var parts = cookie.split("|");
+            var numParts = parts.length;
+            for (var i = 0; i < numParts; ++i) {
+                isOpen[parts[i]] = "1";
+            }
+
+            // Now walk the data and set the open property
+            function processRows(rows) {
+                var n = rows.length;
+                for (var i = 0; i < n; ++i) {
+                    processItem(rows[i]);
+                }
+            }
+
+            function processItem(item) {
+                if (item) {
+                    item.open = item.id && isOpen[item.id];
+                    if (Array.isArray(item.rows)) {
+                        processRows(item.rows);
+                    }
+                }
+            }
+
+            if (Array.isArray(rows)) {
+                processRows(rows);
+            }
+        }
     }
 
     function RenderGrid(result) {
@@ -669,7 +710,10 @@
         HomeGrid.enableEditTabOnly(true);;
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
-        HomeGrid.attachEvent("onDistributedEnd", function() {
+        var begin;
+        HomeGrid.attachEvent("onDistributedEnd", function () {
+            var dend = performance.now();
+            console.log("distributedEnd " + (dend - begin) + " ms");
             LoadAfterParsing();
             if (scrollstate != null && scrollstate != undefined) {
                 HomeGrid.objBox.scrollTop = scrollstate.y;
@@ -682,17 +726,20 @@
             selectedTaskID = id;
         });
 
-        HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);
         GridDataHomeGrid = result.data;
 
-        var begin = performance.now();
+        begin = performance.now();
 
         var rows = GridDataHomeGrid.rows;
         var head = GridDataHomeGrid.head;
 
+        // update the row open/closed status based on saved state
+        UpdateGridDataFromSavedOpenState(rows, "plangridState");
+
         // first process just the headers
         GridDataHomeGrid.rows = null;
+        HomeGrid.enableDistributedParsing(false, 10, 0.1);
         HomeGrid.parse(GridDataHomeGrid, "json");
         GridDataHomeGrid.rows = rows;
 
@@ -705,23 +752,14 @@
 
         // Now process the rows
         GridDataHomeGrid.head = null;
+        HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.parse(GridDataHomeGrid, "json");
         GridDataHomeGrid.head = head;
-        var finish = performance.now();
-        console.log("spent " + (finish - begin) + " ms to prepare grid");
 
         MoveColumn(); ///Calling Move column function
-        var cookie = document.cookie;
-        if (cookie.indexOf("gridOpenplangridState") > -1) {
 
-            HomeGrid.collapseAll();
-
-            HomeGrid.loadOpenStates("plangridState");
-            setTimeout(function() {
-                HomeGrid.objBox.scrollTop = scrollstate.y;
-
-            }, 100);
-        }
+        var finish = performance.now();
+        console.log("spent " + (finish - begin) + " ms to prepare grid");
 
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
 
