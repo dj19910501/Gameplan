@@ -593,23 +593,22 @@
     var StartDateColIndex = 0;
     var EndDateColIndex = 0;
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         //BindHomeGrid();
         $('.nav').addClass('no-bottom-border');
         $('.task-tbl div.gridbox').css('height', $(window).height() - 450);
         if ($('.honeycombbox-icon-gantt-Active').length == 0) {
             $(".honeycombbox").hide();
-        }
-        else {
+        } else {
             $("#totalEntity").text(ExportSelectedIds.TaskID.length);
             $(".honeycombbox").show();
         }
 
-        $('#cancel-button_Movetactic').on("click", function () {
+        $('#cancel-button_Movetactic').on("click", function() {
             $('#divMovetacticPopup').modal("hide");
 
         });
-        $('#proceed-button_Movetactic').on("click", function () {
+        $('#proceed-button_Movetactic').on("click", function() {
             SaveMoveTactic();
             $('#divMovetacticPopup').modal("hide");
         });
@@ -621,9 +620,9 @@
     //});
 
     //var GridDataHomeGrid;
-    function BindHomeGrid() {
-        filters = GetFilterIds();
-        $.ajax({
+
+    function GetGridData(filters, viewBy) {
+        return $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/GetHomeGridDataJSON/")', //urlContent + 'Plan/GetHomeGridDataJSON/',
             async: true,
@@ -633,130 +632,131 @@
                 TacticTypeid: filters.TacticTypeids.toString(),
                 StatusIds: filters.StatusIds.toString(),
                 customFieldIds: filters.customFieldIds.toString(),
-                viewBy: $('#ddlTabViewBy').val(),
+                viewBy: viewBy,
                 isLoginFirst: isFirstTimeOnGrid
                 //ExpandedtacticIds: $('#ExpandedTacticIds').val()
             },
-            cache: false,
-            success: function (result) {
-                try {
-                    tacticTypefieldOptionList = result.tType;
-                    lineItemTypefieldOptionList = result.lType;
-                    HomeGrid = new dhtmlXGridObject('gridbox');
-                    var imgpath = '@Url.Content("~/codebase/imgs/")';
-                    HomeGrid.setImagePath(imgpath);
-                    HomeGrid.enableDragAndDrop(true);
-                    HomeGrid.enableAutoHeight(false);
-                    HomeGrid.enableAutoWidth(false);
-                    HomeGrid.attachEvent("onBeforeSorting", function (ind, grid) {
-                        if (IsManageviewClick) {
-                            IsManageviewClick = false;
-                            return false;
-                        }
-                        else if (IsManageDropdown) {
-                            IsManageviewClick = false;
-                            return false;
-                        }
-                        else
-                            return true;
-                    });
-                    HomeGrid.setImageSize(1, 1);
-                    HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
-                    HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
-                    HomeGrid.enableEditTabOnly(true);;
-                    HomeGrid.csvParser = HomeGrid.csvExtParser;
-                    HomeGrid.init();
-                    HomeGrid.attachEvent("onDistributedEnd", function () {
-                        LoadAfterParsing();
-                        if (scrollstate != null && scrollstate != undefined) {
-                            HomeGrid.objBox.scrollTop = scrollstate.y;
-                        }
-                      
-                    });
-                    HomeGrid.attachEvent("onRowSelect", function (id, ind) {
-                        isEditTacticHomeGrid = id;
-                        isCopyTacticHomeGrid = 0;
-                        selectedTaskID = id;
-                    });
-                    
-                    HomeGrid.enableDistributedParsing(true, 10, 0.1);
-                    HomeGrid.enableColumnMove(true);
-                   var mainGridData = JSON.stringify(result.data);
-                   // mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
-                   GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
-                   HomeGrid.parse(GridDataHomeGrid, "json");
-                    GridHideColumn();
+            cache: false
+        });
+    }
 
-                    HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
-                    colSplitId = HomeGrid.getColIndexById(AddId);
-                    HomeGrid.splitAt(colSplitId + 1);
-                    MoveColumn(); ///Calling Move column function
-                    var cookie = document.cookie;
-                    if (cookie.indexOf("gridOpenplangridState") > -1) {
-
-                        HomeGrid.collapseAll();
-
-                        HomeGrid.loadOpenStates("plangridState");
-                        setTimeout(function () {
-                            HomeGrid.objBox.scrollTop = scrollstate.y;
-
-                        }, 100);
-                    }
-                   
-                    HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
-
-                    var count = HomeGrid.getRowsNum();
-                    //alert(count)
-                    LoadAfterParsing();
-
-
-                    if (parseInt(count) > 0) {
-                        $("#gridbox").show();
-                        $("#goalwrapper").show();
-                        $("#NodatawithfilterGrid").hide();
-                        $('#exp-serach').show();
-                        $("div[id^='LinkIcon']").each(function () {
-                            bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
-                        });
-
-                    } else {
-                        var noplan = '@Sessions.IsNoPlanCreated';
-                        if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
-                            AddBlankRow();
-                            $("#gridbox").show();
-                            $("#goalwrapper").show();
-                            $("#NodatawithfilterGrid").hide();
-                        }
-                        else {
-                            $("#gridbox").hide();
-                            $("#goalwrapper").hide();
-                            $("#NodatawithfilterGrid").show();
-                        }
-                        $('#exp-serach').hide();
-                    }
-                    if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
-                        GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
-                    }
-                    HomeGrid.enableEditEvents(true, false, true);
-                    SetTooltip();
-                } catch (e) {
-                    $('#loader').css('display', 'none');
-                }
-
-            },
-            error: function (ex) {
-                $('#loader').css('display', 'none');
-            },
-            beforeSend: function () {
-                $('#loader').css('display', 'block');
-            },
-            complete: function () {
-                $('#loader').css('display', 'none');
+    function RenderGrid(result) {
+        tacticTypefieldOptionList = result.tType;
+        lineItemTypefieldOptionList = result.lType;
+        HomeGrid = new dhtmlXGridObject('gridbox');
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        HomeGrid.setImagePath(imgpath);
+        HomeGrid.enableDragAndDrop(true);
+        HomeGrid.enableAutoHeight(false);
+        HomeGrid.enableAutoWidth(false);
+        HomeGrid.attachEvent("onBeforeSorting", function(ind, grid) {
+            if (IsManageviewClick) {
+                IsManageviewClick = false;
+                return false;
+            } else if (IsManageDropdown) {
+                IsManageviewClick = false;
+                return false;
+            } else
+                return true;
+        });
+        HomeGrid.setImageSize(1, 1);
+        HomeGrid.setCustomSorting(sort_Owner, OwnerColIndex);
+        HomeGrid.setCustomSorting(sort_TacticType, TypeColIndex);
+        HomeGrid.enableEditTabOnly(true);;
+        HomeGrid.csvParser = HomeGrid.csvExtParser;
+        HomeGrid.init();
+        HomeGrid.attachEvent("onDistributedEnd", function() {
+            LoadAfterParsing();
+            if (scrollstate != null && scrollstate != undefined) {
+                HomeGrid.objBox.scrollTop = scrollstate.y;
             }
+
+        });
+        HomeGrid.attachEvent("onRowSelect", function(id, ind) {
+            isEditTacticHomeGrid = id;
+            isCopyTacticHomeGrid = 0;
+            selectedTaskID = id;
         });
 
+        HomeGrid.enableDistributedParsing(true, 10, 0.1);
+        HomeGrid.enableColumnMove(true);
+        var mainGridData = JSON.stringify(result.data);
+        // mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
+        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+        HomeGrid.parse(GridDataHomeGrid, "json");
+        GridHideColumn();
 
+        HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
+        colSplitId = HomeGrid.getColIndexById(AddId);
+        HomeGrid.splitAt(colSplitId + 1);
+        MoveColumn(); ///Calling Move column function
+        var cookie = document.cookie;
+        if (cookie.indexOf("gridOpenplangridState") > -1) {
+
+            HomeGrid.collapseAll();
+
+            HomeGrid.loadOpenStates("plangridState");
+            setTimeout(function() {
+                HomeGrid.objBox.scrollTop = scrollstate.y;
+
+            }, 100);
+        }
+
+        HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
+
+        var count = HomeGrid.getRowsNum();
+        //alert(count)
+        LoadAfterParsing();
+
+
+        if (parseInt(count) > 0) {
+            $("#gridbox").show();
+            $("#goalwrapper").show();
+            $("#NodatawithfilterGrid").hide();
+            $('#exp-serach').show();
+            $("div[id^='LinkIcon']").each(function() {
+                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+            });
+
+        } else {
+            var noplan = '@Sessions.IsNoPlanCreated';
+            if ($("#IsPlanEditable").val().toString().toLowerCase() == 'true' && noplan.toLowerCase() == 'true') {
+                AddBlankRow();
+                $("#gridbox").show();
+                $("#goalwrapper").show();
+                $("#NodatawithfilterGrid").hide();
+            } else {
+                $("#gridbox").hide();
+                $("#goalwrapper").hide();
+                $("#NodatawithfilterGrid").show();
+            }
+            $('#exp-serach').hide();
+        }
+        if ($('#txtGlobalSearch').val() != undefined && $('#txtGlobalSearch').val() != "" && $('#txtGlobalSearch').val() != null) {
+            GlobalSearchonGrid($('#txtGlobalSearch').val(), $('#searchCriteria').val().replace(" ", ""));
+        }
+        HomeGrid.enableEditEvents(true, false, true);
+        SetTooltip();
     }
+
+    function showLoader() {
+        $('#loader').css('display', 'block');
+    }
+
+    function hideLoader() {
+        $('#loader').css('display', 'none');
+    }
+
+    function BindHomeGrid() {
+        filters = GetFilterIds();
+        var viewBy = $('#ddlTabViewBy').val();
+
+        showLoader();
+        return GetGridData(filters, viewBy)
+            .then(RenderGrid)
+            .then(hideLoader, hideLoader);
+    }
+
     //added by devanshi to add blank row to plan grid when there is no plan for client #2587 30-9-2016
     function AddBlankRow() {
         var blankrawdata = [];
@@ -791,5 +791,5 @@
         var colourCodeIndex = HomeGrid.getColIndexById("ColourCode");
         HomeGrid.setColumnHidden(colourCodeIndex, true);
     }
-    
+
 </script>
