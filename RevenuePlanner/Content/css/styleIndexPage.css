@@ -1139,6 +1139,20 @@ span.filter-count, span.filter-count > span {
 	float: left;
 	color: #3e3f37 !important; /* Edited for #2219 - Bhumika */
 }
+.new-btn-plan-middle
+{
+    background: #fff none no-repeat scroll left center;
+	border: 1px solid #c6c6c6;
+    border-right: 0;
+	font-family: source_sans_proregular;
+	font-size: 14px;
+	height: 30px;
+	line-height: 30px;
+	padding: 0 15px;
+	display: inline-block;
+	float: left;
+	color: #3e3f37 !important; /* Edited for #2219 - Bhumika */
+}
 #ImportBtn {
     line-height: 30px;
     margin: 0;
@@ -1181,7 +1195,7 @@ span.filter-count, span.filter-count > span {
 	background: #F4F4F4;
 	color: inherit;
 }
-.P-icon-active, .new-btn-plan-left:hover, .new-btn-plan-right:hover {
+.P-icon-active, .new-btn-plan-left:hover, .new-btn-plan-right:hover, .new-btn-plan-middle:hover{
 	/*background-color: #f0f0f0 !important;
 	color: inherit !important;*/
     background-color: #abd7e1 !important;
@@ -1863,7 +1877,7 @@ body.reverse .dhx_clist{margin-top:-150px !important}
     }
 
 @media (max-width: 1550px) {
-.new-btn-plan-left, .new-btn-plan-right {
+.new-btn-plan-left, .new-btn-plan-right, .new-btn-plan-right {
 	padding: 0 8px;
 }
 .goals-wrapper span {
