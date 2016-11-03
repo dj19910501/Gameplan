@@ -685,6 +685,8 @@
         }
     }
 
+    var USE_DISTRIBUTED_RENDERING = false;
+
     function RenderGrid(result) {
         tacticTypefieldOptionList = result.tType;
         lineItemTypefieldOptionList = result.lType;
@@ -711,15 +713,21 @@
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
         var begin;
-        HomeGrid.attachEvent("onDistributedEnd", function () {
+
+        var renderComplete = function() {
             var dend = performance.now();
             console.log("distributedEnd " + (dend - begin) + " ms");
             LoadAfterParsing();
             if (scrollstate != null && scrollstate != undefined) {
                 HomeGrid.objBox.scrollTop = scrollstate.y;
             }
+        };
 
-        });
+   
+        if (USE_DISTRIBUTED_RENDERING) {
+            HomeGrid.attachEvent("onDistributedEnd", renderComplete);
+        }
+
         HomeGrid.attachEvent("onRowSelect", function(id, ind) {
             isEditTacticHomeGrid = id;
             isCopyTacticHomeGrid = 0;
@@ -739,7 +747,6 @@
 
         // first process just the headers
         GridDataHomeGrid.rows = null;
-        HomeGrid.enableDistributedParsing(false, 10, 0.1);
         HomeGrid.parse(GridDataHomeGrid, "json");
         GridDataHomeGrid.rows = rows;
 
@@ -752,11 +759,14 @@
 
         // Now process the rows
         GridDataHomeGrid.head = null;
-        HomeGrid.enableDistributedParsing(true, 10, 0.1);
+
+        HomeGrid.enableDistributedParsing(USE_DISTRIBUTED_RENDERING, 10, 0.1);
         HomeGrid.parse(GridDataHomeGrid, "json");
         GridDataHomeGrid.head = head;
 
         MoveColumn(); ///Calling Move column function
+
+        renderComplete();
 
         var finish = performance.now();
         console.log("spent " + (finish - begin) + " ms to prepare grid");
