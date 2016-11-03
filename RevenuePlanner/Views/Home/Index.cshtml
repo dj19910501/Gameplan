@@ -768,15 +768,11 @@
 
         renderComplete();
 
-        var finish = performance.now();
-        console.log("spent " + (finish - begin) + " ms to prepare grid");
-
         HomeGrid.enableAlterCss("uneven"); // Added for odd row bgcolor
 
         var count = HomeGrid.getRowsNum();
         //alert(count)
         LoadAfterParsing();
-
 
         if (parseInt(count) > 0) {
             $("#gridbox").show();
@@ -806,6 +802,9 @@
         }
         HomeGrid.enableEditEvents(true, false, true);
         SetTooltip();
+
+        var finish = performance.now();
+        console.log("spent " + (finish - begin) + " ms to prepare grid");
     }
 
     function showLoader() {
