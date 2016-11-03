@@ -2,7 +2,6 @@
 var eventidonedit = 0;
 var eventidonbeforedrag = 0;
 var eventidonscroll = 0;
-var editidonOpenEnd = 0;
 var updatetype = 0;
 var progid = 0;
 var campid = 0;
@@ -145,13 +144,6 @@ function LoadAfterParsing() {
     });
 
     SetselectedRow();
-   
-    if (editidonOpenEnd != 0) {
-        HomeGrid.detachEvent(editidonOpenEnd);
-    }
-    editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
-        SetTooltip();
-    });
 }
 
 function sort_Owner(a, b, ord, a_id, b_id) {

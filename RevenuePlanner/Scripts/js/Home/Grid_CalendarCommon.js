@@ -2639,9 +2639,9 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
 
         });
         var divCamp = $('div[taskid="' + CampaignId + '"]').attr('altId');
-        HomeGrid.openItem(divCamp);
+        openRow(HomeGrid, divCamp);
         var divProg = $('div[taskid="' + ProgramId + '"]').attr('altId');
-        HomeGrid.openItem(divProg);
+        openRow(HomeGrid, divProg);
     }
 }
 // Method to refresh calender after popup close-- #2587
@@ -2690,6 +2690,13 @@ function ShowInspectForPlanId() {
         $('#hdnShowInspectForPlanId').val(0);
     }
 }
+
+function openRow(grid, id) {
+    if (!grid.getOpenState(id)) {
+        grid.openItem(id);
+    }
+}
+
 function SetselectedRow() {
     var idcoluIndex = '';
     if ($('#IsGridView').val().toLowerCase() == 'true')
@@ -2702,7 +2709,7 @@ function SetselectedRow() {
         var rowid;
         if (id != undefined && id != 'undefined') {
             rowid = id[0];
-            HomeGrid.openItem(rowid);
+            openRow(HomeGrid, rowid);
             ItemIndex = HomeGrid.getRowIndex(rowid);
             state0 = ItemIndex;
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
@@ -2724,7 +2731,7 @@ function SetselectedRow() {
                 rowid = id;
             else
                 rowid = id[0];
-          HomeGrid.openItem(HomeGrid.getParentId(rowid));
+            openRow(HomeGrid, HomeGrid.getParentId(rowid));
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, false);
             ItemIndex = HomeGrid.getRowIndex(rowid);
             state0 = ItemIndex;
