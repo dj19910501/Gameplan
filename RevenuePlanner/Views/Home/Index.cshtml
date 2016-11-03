@@ -685,12 +685,31 @@
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);
         GridDataHomeGrid = result.data;
+
+        var begin = performance.now();
+
+        var rows = GridDataHomeGrid.rows;
+        var head = GridDataHomeGrid.head;
+
+        // first process just the headers
+        GridDataHomeGrid.rows = null;
         HomeGrid.parse(GridDataHomeGrid, "json");
+        GridDataHomeGrid.rows = rows;
+
+        // now modify the columns
         GridHideColumn();
 
         HomeGrid.setColumnMinWidth("300", TaskNameColIndex); ///to assign minimum width for task name column
         colSplitId = HomeGrid.getColIndexById(AddId);
         HomeGrid.splitAt(colSplitId + 1);
+
+        // Now process the rows
+        GridDataHomeGrid.head = null;
+        HomeGrid.parse(GridDataHomeGrid, "json");
+        GridDataHomeGrid.head = head;
+        var finish = performance.now();
+        console.log("spent " + (finish - begin) + " ms to prepare grid");
+
         MoveColumn(); ///Calling Move column function
         var cookie = document.cookie;
         if (cookie.indexOf("gridOpenplangridState") > -1) {
