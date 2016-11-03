@@ -24,20 +24,20 @@ var _customFieldValues = [];
 var IsDependentTextBox = false;
 var NodatawithfilterGrid = '<div id="NodatawithfilterGrid" style="display:none;">' +
     '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' + '<br/></div>';
+var SetTooltipFirstTime = true;
 function SetTooltip() {
-    $(".grid_Search").tooltip({
-        'container': 'body',
-        'placement': 'bottom'
-    });
-    $(".grid_add").tooltip({
-        'container': 'body',
-        'placement': 'bottom'
-    });
-    $(".honeycombbox-icon-gantt").tooltip({
-        'container': 'body',
-        'placement': 'bottom'
-    });
+    // Use the delegation options.  makes things MUCH FASTER
+    if (SetTooltipFirstTime) {
+        SetTooltipFirstTime = false;
+        $(document.body).tooltip({
+            'container': 'body',
+            'placement': 'bottom',
+            'selector': '.grid_Search,.grid_add,.honeycombbox-icon-gantt'
+        });
+    }
 }
+
+SetTooltip();
 
 var $doc = $(document);
 $doc.click(function () {
