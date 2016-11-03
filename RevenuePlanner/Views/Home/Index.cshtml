@@ -683,7 +683,8 @@
         }
     }
 
-    var USE_DISTRIBUTED_RENDERING = true;
+    // progressive rendering.  causes some weird behavior when trying to reset the scroll position so leaving off for now.
+    var USE_DISTRIBUTED_RENDERING = false;
 
     function RenderGrid(result) {
         tacticTypefieldOptionList = result.tType;
