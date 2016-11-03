@@ -8876,7 +8876,7 @@ BEGIN
 	SELECT Hireachy.UniqueId,
 				Hireachy.EntityId,		
 				Hireachy.EntityTitle,		
-				Hireachy.ParentEntityId	,
+				IsNull(Hireachy.ParentEntityId,0) as ParentEntityId,
 				Hireachy.ParentUniqueId	,
 				IsNull(Hireachy.EntityTypeId,0) As EntityType	,	
 				Hireachy.ColorCode,		
@@ -8888,33 +8888,35 @@ BEGIN
 				Hireachy.TaskId,			
 				Hireachy.ParentTaskId,	
 				Hireachy.PlanId	,		
-				Hireachy.ModelId,			
+				IsNull(Hireachy.ModelId,0) as ModelId,			
 				--TacticType.AssetType,
 				TacticType.Title AS TacticType,
-				Tactic.TacticTypeId,
-				LineItem.LineItemTypeId,
+				IsNull(Tactic.TacticTypeId,0) as TacticTypeId,
+				IsNull(LineItem.LineItemTypeId,0) as LineItemTypeId,
 				LineItem.LineItemType,
-				CASE WHEN EntityType = 'Tactic'
+				IsNUll(CASE WHEN EntityType = 'Tactic'
 						THEN Tactic.Cost 
 							WHEN EntityType = 'LineItem' 
 								THEN LineItem.Cost
-				END AS PlannedCost
-				,Tactic.ProjectedStageValue 
+				END,0) AS PlannedCost
+				,IsNull(Tactic.ProjectedStageValue,0) as ProjectedStageValue
 				,Stage.Title AS 'ProjectedStage'
 				,NULL AS 'TargetStageGoal'
 				,CASE WHEN Hireachy.EntityType='Tactic'
 					THEN
-					(SELECT Value FROM dbo.fnGetMqlByEntityTypeAndEntityId('Tactic',@ClientId,Stage.[Level],@StageMqlMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue))
+					(SELECT IsNUll(Value,0) FROM dbo.fnGetMqlByEntityTypeAndEntityId('Tactic',@ClientId,Stage.[Level],@StageMqlMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue))
+					ELSE 0
 					END
 					AS MQL
 				,CASE WHEN Hireachy.EntityType='Tactic'
-					THEN (SELECT Value FROM dbo.fnGetRevueneByEntityTypeAndEntityId('Tactic',@ClientId,Stage.[Level],@StageRevenueMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue,M.AverageDealSize))
+					THEN (SELECT IsNUll(Value,0) FROM dbo.fnGetRevueneByEntityTypeAndEntityId('Tactic',@ClientId,Stage.[Level],@StageRevenueMaxLevel,Hireachy.ModelId,Tactic.ProjectedStageValue,M.AverageDealSize))
+					ELSE 0
 					END AS Revenue
 				,Tactic.TacticCustomName AS 'MachineName'
-				,Tactic.LinkedPlanId
-				,Tactic.LinkedTacticId
+				,IsNull(Tactic.LinkedPlanId,0) as LinkedPlanId
+				,IsNull(Tactic.LinkedTacticId,0) as LinkedTacticId
 				,P.PlanName AS 'LinkedPlanName'
-				,ROI.AnchorTacticID
+				,IsNULL(ROI.AnchorTacticID,0) as AnchorTacticID
 				--PackageTacticIds - comma saperated values selected as part of ROI package
 				,Hireachy.ROIPackageIds AS PackageTacticIds 
 				,PlanDetail.PlanYear
@@ -8957,6 +8959,7 @@ BEGIN
 						AND Hireachy.EntityId = LineItem.PlanLineItemId) LineItem
 	OUTER APPLY (SELECT Stage.Title,Stage.StageId,Stage.[Level] FROM Stage WITH (NOLOCK) WHERE Tactic.StageId = Stage.StageId AND Stage.IsDeleted=0) Stage
 END
+
 GO
 
 
@@ -9131,6 +9134,8 @@ IF NOT EXISTS (SELECT * FROM sysconstraints WHERE OBJECT_NAME(constid) = 'Chk_Co
 ALTER TABLE CustomFieldOption
 ADD CONSTRAINT Chk_CommaNotAllow CHECK(CHARINDEX(',',Value) = 0) 
 Go
+
+
 
 -- ===========================Please put your script above this script=============================
 -- Description :Ensure versioning table exists & Update versioning table with script version

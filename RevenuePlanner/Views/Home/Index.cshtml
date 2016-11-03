@@ -25,7 +25,7 @@
     var errormsgduplicate = (string)ViewBag.ErrorMessageDuplicatePlan;
     var IsGridView = (bool)ViewBag.GridView;
     bool IsBudgetView = (bool)ViewBag.BudgetView;
-    var TacticTaskColor = (string)ViewBag.TacticTaskColor;
+    
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
     bool NoPlanCreated = (bool)Sessions.IsNoPlanCreated;

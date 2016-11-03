@@ -5254,6 +5254,35 @@ namespace RevenuePlanner.Helpers
             return lstUserId;
         }
 
+
+        /// <summary>
+        /// Function to get all subirdinates upto n level by passing user hierarchy list
+        /// Added by komal, 11-03-2016
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static List<int> GetAllSubordinateslist(List<BDSService.UserHierarchy> lstUserHierarchy, int userId )
+        {
+            
+            List<int> lstUserId = new List<int>();
+
+            List<int> lstSubordinates = lstUserHierarchy.Where(u => u.MID == userId)
+                                                         .ToList()
+                                                         .Select(u => u.UID).ToList();
+
+
+            while (lstSubordinates.Count > 0)
+            {
+                lstSubordinates.ForEach(u => lstUserId.Add(u));
+
+                lstSubordinates = lstUserHierarchy.Where(u => lstSubordinates.Contains(u.MID)).ToList().Select(u => u.UID).ToList();
+            }
+
+
+            return lstUserId;
+        }
+
+
         /// <summary>
         /// Function to get immediate subirdinates
         /// Added by dharmraj, 1-7-2014
@@ -7498,14 +7527,14 @@ namespace RevenuePlanner.Helpers
                 using (MRPEntities objDbMrpEntities = new MRPEntities())
                 {
 
-                    bool isCustomFieldExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), clientId);
+                    //bool isCustomFieldExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), clientId);
                     string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
                     string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
-                    if (isCustomFieldExist)
-                    {
-                        var customfieldlist = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic)
+                    //if (isCustomFieldExist)
+                    //{
+                        List<CustomField> customfieldlist = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic)
                                                                                     && customfield.IsDeleted.Equals(false)).ToList();
-                        var CustomFieldexists = customfieldlist.Where(customfield => (customfield.IsRequired && !isDisplayForFilter)).Any();
+                        bool CustomFieldexists = customfieldlist.Where(customfield => (customfield.IsRequired && !isDisplayForFilter)).Any();
                         if (CustomFieldexists)
                         {
                             //    List<CustomField_Entity> tblCustomfieldEntity = objDbMrpEntities.CustomField_Entity.Where(entityid => lstTactic.Contains(entityid.EntityId)).ToList();
@@ -7537,11 +7566,11 @@ namespace RevenuePlanner.Helpers
 
                             //// Get Custom Restrictions
                             var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(userId, true);
-                            return GetEditableTacticListPO(userId, clientId, lstTactic, isCustomFieldExist, CustomFieldexists, lstAllTacticCustomFieldEntities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, isDisplayForFilter);
+                            return GetEditableTacticListPO(userId, clientId, lstTactic, CustomFieldexists, CustomFieldexists, lstAllTacticCustomFieldEntities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, isDisplayForFilter);
                         }
                         return lstTactic;
-                    }
-                    return lstTactic;
+                    //}
+                    //return lstTactic;
                 }
             }
             catch (Exception ex)

@@ -714,5 +714,36 @@ namespace RevenuePlanner.Helpers
             }
 
         }
+
+
+        public static bool IsfromMeasure
+        {
+            get
+            {
+                bool IsfromMeasure = false;
+                if (HttpContext.Current.Session["IsfromMeasure"] != null)
+                {
+                    bool.TryParse(Convert.ToString(HttpContext.Current.Session["IsfromMeasure"]), out IsfromMeasure);
+                }
+                return IsfromMeasure;
+            }
+            set
+            {
+                HttpContext.Current.Session["IsfromMeasure"] = value;
+            }
+        }
+
+        public static List<BDSService.UserHierarchy> UserHierarchyList
+        {
+            get
+            {
+                return (List<BDSService.UserHierarchy>)HttpContext.Current.Session["UserHierarchyList"];
+            }
+            set
+            {
+                HttpContext.Current.Session["UserHierarchyList"] = value;
+            }
+        }
+
     }
 }
