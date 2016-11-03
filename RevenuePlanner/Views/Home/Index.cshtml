@@ -626,6 +626,10 @@
             type: 'POST',
             url: '@Url.Content("~/Plan/GetHomeGridDataJSON/")', //urlContent + 'Plan/GetHomeGridDataJSON/',
             async: true,
+            dataFilter: function (data) {
+                // convert back to ampersands
+                return data.replace(/&amp;/g, '&');
+            },
             data: {
                 planIds: filters.PlanIDs.toString(),
                 ownerIds: filters.OwnerIds.toString(),
@@ -680,9 +684,7 @@
 
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
         HomeGrid.enableColumnMove(true);
-        var mainGridData = JSON.stringify(result.data);
-        // mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text();
-        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+        GridDataHomeGrid = result.data;
         HomeGrid.parse(GridDataHomeGrid, "json");
         GridHideColumn();
 
