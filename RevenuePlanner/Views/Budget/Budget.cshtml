@@ -115,6 +115,9 @@
             // var mainGridData = JsonModel;
             var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid).Replace("&amp;", "&").Replace("\\", "\\\\").Replace("'", "\\'"))';
 
+            // Set open/closed state
+            UpdateGridDataFromSavedOpenState(JsonModel.rows, "plangridState")
+
             //Set number format for value fields
             var columnIdArray = '@Model.ColumnIds'.split(',');
 
@@ -125,10 +128,11 @@
                 HomeGrid.setNumberFormat("0,000.00", i, ".", ",");
 
             }
-            HomeGrid.parse(JsonModel, "json");
 
             var colSplitId = HomeGrid.getColIndexById("BudgetCost");
             HomeGrid.splitAt(colSplitId);
+
+            HomeGrid.parse(JsonModel, "json");
 
             HomeGrid.attachEvent("onOpenEnd", function (id, state) {
                 ManageBorderBoxClass(); //#2607
@@ -197,22 +201,9 @@
                     }
                 }
             }
-            //setTimeout(function () {
-            HomeGrid.setSizes();
-            var cookie = document.cookie;
-            if (cookie.indexOf("gridOpenplangridState") > -1) {
 
-                HomeGrid.collapseAll();
+            BudgetLoadAfterParsing();
 
-                HomeGrid.loadOpenStates("plangridState");
-                setTimeout(function () {
-                    HomeGrid.objBox.scrollTop = scrollstate.y;
-
-                }, 100);
-            }
-           
-            //}, 200);
-            LoadAfterParsing();
             var rowCount = HomeGrid.getRowsNum();
             if (rowCount != undefined && rowCount == 0) {
 
@@ -255,7 +246,7 @@
             }
         }
     }
-    function LoadAfterParsing() {
+    function BudgetLoadAfterParsing() {
         if (eventidonedit != 0) {
             HomeGrid.detachEvent(eventidonedit);
         }
