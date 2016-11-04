@@ -2050,9 +2050,12 @@ namespace RevenuePlanner.Services
 
             #region "Set SubOrdinate Permission"
 
-            #region "Plan Entities Permission"
-
             string strPlanEntity = Enums.EntityType.Plan.ToString().ToLower();
+            string strCampaign = Enums.EntityType.Campaign.ToString().ToLower();
+            string strProgram = Enums.EntityType.Program.ToString().ToLower();
+            string strTactic = Enums.EntityType.Tactic.ToString().ToLower();
+
+            #region "Plan Entities Permission"
 
             if (lstCalendarDataModel.Where(a => a.CreatedBy.HasValue && a.CreatedBy.Value == _UserId).Any())  // check that user is owner or not
             {
@@ -2071,9 +2074,9 @@ namespace RevenuePlanner.Services
             }
             #endregion
 
-            #region "Tactic Entities Permission"
-            lstCalendarDataModel.Where(a => a.type != null && a.type.ToLower() == Enums.EntityType.Tactic.ToString().ToLower() &&
-                                            a.CreatedBy.HasValue && ((a.CreatedBy.Value == _UserId) || lstSubordinatesIds.Contains(a.CreatedBy.Value))).ToList()
+            #region "Campaign/Program/Tactic Entities Permission"
+            lstCalendarDataModel.Where(a => a.type != null && ((a.type.ToLower() == strTactic) || (a.type.ToLower() == strProgram) || (a.type.ToLower() == strCampaign)) &&
+                                            a.CreatedBy.HasValue && (lstSubordinatesIds.Contains(a.CreatedBy.Value))).ToList()
                                 .ForEach(a => a.IsRowPermission = true);
             #endregion
 
