@@ -95,9 +95,7 @@
             var imgpath = '@Url.Content("~/codebase/imgs/")';
             HomeGrid.setImagePath(imgpath);
             HomeGrid.setImageSize(1, 1);
-            header = '@Model.SetHeader';
-            header = $('<div/>').html(header.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-            header = (header.toString().replace(/&amp;/g, '&'));
+            header = '@Html.Raw(Model.SetHeader.Replace("&amp;", "&").Replace("\\", "\\\\").Replace("'", "\\'"))';
             HomeGrid.setHeader(header);
             //assigned header to export to excel
             HomeGrid.setColTypes('@Model.ColType');
@@ -115,9 +113,7 @@
             HomeGrid.init();
 
             // var mainGridData = JsonModel;
-            var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid))';
-            JsonModel = $('<textarea/>').html(JsonModel.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-            JsonModel = (JsonModel.toString().replace(/&amp;/g, '&'));
+            var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Grid).Replace("&amp;", "&").Replace("\\", "\\\\").Replace("'", "\\'"))';
 
             //Set number format for value fields
             var columnIdArray = '@Model.ColumnIds'.split(',');

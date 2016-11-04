@@ -346,7 +346,7 @@ namespace RevenuePlanner.Services
             string Linkedstring = string.Empty;
             if (string.Compare(Entity.ActivityType, Convert.ToString(Enums.EntityType.Tactic), true) == 0)
             {
-                Linkedstring = HttpUtility.HtmlEncode(((IsExtendedTactic == true && LinkedTacticId == null) ?
+                Linkedstring = (((IsExtendedTactic == true && LinkedTacticId == null) ?
                                     "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" :
                                         ((IsExtendedTactic == true && LinkedTacticId != null) || (LinkedTacticId != null)) ?
                                         "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + (string.IsNullOrEmpty(Entity.LinkedPlanName) ?
@@ -358,11 +358,11 @@ namespace RevenuePlanner.Services
             {
                 // Get list of package tactic ids
                 Roistring = "<div class='package-icon package-icon-grid' style='cursor:pointer' title='Package' id='pkgIcon' onclick='OpenHoneyComb(this);event.cancelBubble=true;' pkgtacids='" + PackageTacticIds + "'><i class='fa fa-object-group'></i></div>";
-                BudgetDataObj.value = HttpUtility.HtmlEncode(Roistring).Replace("'", "&#39;").Replace("\"", "&#34;") + Linkedstring + HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
+                BudgetDataObj.value = (Roistring).Replace("'", "&#39;").Replace("\"", "&#34;") + Linkedstring + (Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
             }
             else
             {
-                BudgetDataObj.value = Linkedstring + HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
+                BudgetDataObj.value = Linkedstring + (Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
             }
 
             if (Entity.ActivityType == ActivityType.ActivityLineItem && Entity.LineItemTypeId == null)
@@ -381,7 +381,7 @@ namespace RevenuePlanner.Services
             Budgetdataobj iconsData = new Budgetdataobj();
             if (!isViewBy)
             {
-                iconsData.value = HttpUtility.HtmlEncode(SetIcons(Entity, OwnerName, EntityType, DhtmlxGridRowId, IsAddEntityRights, pcptid, TacticType));
+                iconsData.value = (SetIcons(Entity, OwnerName, EntityType, DhtmlxGridRowId, IsAddEntityRights, pcptid, TacticType));
             }
             else
             {
@@ -416,7 +416,7 @@ namespace RevenuePlanner.Services
             string doubledesh = "--";
             string IconsData = string.Empty;
             //Set icon of magnifying glass and honey comb for plan entity with respective ids
-            string Title = HttpUtility.HtmlEncode(Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
+            string Title = (Entity.ActivityName.Replace("'", "&#39;").Replace("\"", "&#34;"));
             if (Convert.ToString(EntityType).ToLower() == ActivityType.ActivityPlan.ToLower())
             {
                 // Magnifying Glass to open Inspect Popup
