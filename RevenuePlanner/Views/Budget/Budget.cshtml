@@ -132,8 +132,6 @@
             var colSplitId = HomeGrid.getColIndexById("BudgetCost");
             HomeGrid.splitAt(colSplitId);
 
-            HomeGrid.parse(JsonModel, "json");
-
             HomeGrid.attachEvent("onOpenEnd", function (id, state) {
                 ManageBorderBoxClass(); //#2607
                 if (state == "1") {
@@ -201,6 +199,8 @@
                     }
                 }
             }
+
+            HomeGrid.parse(JsonModel, "json");
 
             BudgetLoadAfterParsing();
 
