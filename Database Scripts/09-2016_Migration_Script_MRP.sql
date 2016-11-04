@@ -818,11 +818,11 @@ DROP FUNCTION [dbo].[fnGetEntityHirarchyByPlanId]
 GO
 
 -- Merge Filter EntityHierarchy and EntityHierarchy function into single function
-/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/26/2016 7:15:03 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 11/04/2016 12:21:55 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[fnGetFilterEntityHierarchy]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 DROP FUNCTION [dbo].[fnGetFilterEntityHierarchy]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 10/26/2016 7:15:03 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetFilterEntityHierarchy]    Script Date: 11/04/2016 12:21:55 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -858,10 +858,10 @@ RETURNS @Entities TABLE (
 			ParentTaskId	NVARCHAR(500),
 			PlanId			BIGINT,
 			ModelId			BIGINT,
-			EloquaId		nvarchar(100),
-			MarketoId		nvarchar(100),
-			WorkfrontID		nvarchar(100),
-			SalesforceId	nvarchar(100),
+			--EloquaId		nvarchar(100),
+			--MarketoId		nvarchar(100),
+			--WorkfrontID		nvarchar(100),
+			--SalesforceId	nvarchar(100),
 			ROIPackageIds	Varchar(max)
 		)
 AS
@@ -919,7 +919,7 @@ BEGIN
 	-- Insert Campaign Data
 	BEGIN
 		INSERT INTO @Entities(UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,[Status],StartDate,EndDate,CreatedBy,AltId
-										,TaskId,ParentTaskId,PlanId,ModelId,WorkfrontID,SalesforceId)
+										,TaskId,ParentTaskId,PlanId,ModelId)
 		SELECT ''P_C_'' + CAST(C.PlanCampaignId AS NVARCHAR(10)) UniqueId
 				,C.PlanCampaignId EntityId
 				, C.Title EntityTitle
@@ -935,8 +935,7 @@ BEGIN
 			,''L''+CAST(C.PlanId  AS NVARCHAR(500)) AS ParentTaskId
 			,P.PlanId
 			,P.ModelId
-			,c.IntegrationWorkFrontProgramID as WorkFrontid,c.IntegrationInstanceCampaignId as Salesforceid
-
+			
 			FROM Plan_Campaign C
 			INNER JOIN @Entities P ON P.EntityId = C.PlanId and P.EntityType=''Plan''
 			WHERE C.IsDeleted = 0 AND (@isGrid=1 OR (C.StartDate>=@StartDate AND C.StartDate<=@EndDate) OR (C.EndDate>=@StartDate AND C.EndDate<=@EndDate))
@@ -945,7 +944,7 @@ BEGIN
 	-- Insert Program Data
 	BEGIN
 		INSERT INTO @Entities(UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,[Status],StartDate,EndDate,CreatedBy,AltId
-										,TaskId,ParentTaskId,PlanId,ModelId,SalesforceId)
+										,TaskId,ParentTaskId,PlanId,ModelId)
 
 		SELECT ''P_C_P_'' + CAST(P.PlanProgramId AS NVARCHAR(10)) UniqueId
 			,P.PlanProgramId EntityId, P.Title EntityTitle, C.EntityId ParentEntityId,C.UniqueId ParentUniqueId,''Program'' EntityType, P.Status, P.StartDate StartDate, P.EndDate EndDate,P.CreatedBy 
@@ -954,7 +953,7 @@ BEGIN
 			,CAST(C.ParentTaskId AS NVARCHAR(500))+''_C''+CAST(P.PlanCampaignId AS NVARCHAR(50)) As ParentTaskId
 			,C.PlanId
 			,C.ModelId
-			,P.IntegrationInstanceProgramId as Salesforceid
+		
 			FROM Plan_Campaign_Program P
 			INNER JOIN @Entities C ON C.EntityId = P.PlanCampaignId and C.EntityType=''Campaign''
 			WHERE P.IsDeleted = 0 AND (@isGrid=1 OR (P.StartDate>=@StartDate AND P.StartDate<=@EndDate) OR (P.EndDate>=@StartDate AND P.EndDate<=@EndDate))
@@ -963,7 +962,7 @@ BEGIN
 	-- Insert Tactic Data
 	BEGIN
 		INSERT INTO @Entities(UniqueId,EntityId,EntityTitle,ParentEntityId,ParentUniqueId,EntityType,[Status],StartDate,EndDate,CreatedBy,AltId
-										,TaskId,ParentTaskId,PlanId,ModelId,EloquaId,MarketoId,WorkfrontID,SalesforceId,ROIPackageIds)
+										,TaskId,ParentTaskId,PlanId,ModelId,ROIPackageIds)
 
 		SELECT ''P_C_P_T_'' + CAST(T.PlanTacticId AS NVARCHAR(10)) UniqueId,T.PlanTacticId EntityId, T.Title EntityTitle, P.EntityId ParentEntityId,P.UniqueId ParentUniqueId,''Tactic'' EntityType, T.Status, T.StartDate StartDate, T.EndDate EndDate,T.CreatedBy 
 			,CAST(T.PlanProgramId AS NVARCHAR(500))+''_''+CAST(T.PlanTacticId AS NVARCHAR(50)) As AltId
@@ -971,7 +970,7 @@ BEGIN
 			,CAST(P.ParentTaskId AS NVARCHAR(500))+''_P''+CAST(T.PlanProgramId AS NVARCHAR(50)) As ParentTaskId
 			,P.PlanId
 			,P.ModelId
-			,T.IntegrationInstanceEloquaId as Eloquaid,T.IntegrationInstanceMarketoID as Marketoid,T.IntegrationWorkFrontProjectID as WorkFrontid,T.IntegrationInstanceTacticId as Salesforceid
+			
 			,R.PackageIds as ROIPackageIds
 			FROM Plan_Campaign_Program_Tactic T
 			INNER JOIN @Entities P ON P.EntityId = T.PlanProgramId and P.EntityType=''Program''

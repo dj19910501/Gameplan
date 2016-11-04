@@ -586,7 +586,7 @@ namespace RevenuePlanner.Services
         }
 
         // Below dictionary for default columns list of home grid // We are set the dhtmlx header properties 
-        private Dictionary<string, PlanHead> lstHomeGrid_Default_Columns(bool IsIntegration = false)
+        private Dictionary<string, PlanHead> lstHomeGrid_Default_Columns()
         {
             Dictionary<string, PlanHead> lstColumns = new Dictionary<string, PlanHead>();
 
@@ -690,47 +690,7 @@ namespace RevenuePlanner.Services
                 width = 150,
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Revenue) + ColumnManagmentIcon
             });
-            #region add integration ids
-            if (IsIntegration)
-            {
-                lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Eloquaid), new PlanHead
-                {
-                    type = "ro",
-                    align = "center",
-                    id = Convert.ToString(Enums.IntegrationIdType.Eloquaid),
-                    sort = "str",
-                    width = 160,
-                    value = Enums.Integration_Column[Enums.IntegrationIdType.Eloquaid.ToString()] + ColumnManagmentIcon
-                });
-                lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Salesforceid), new PlanHead
-                {
-                    type = "ro",
-                    align = "center",
-                    id = Convert.ToString(Enums.IntegrationIdType.Salesforceid),
-                    sort = "str",
-                    width = 220,
-                    value = Enums.Integration_Column[Enums.IntegrationIdType.Salesforceid.ToString()] + ColumnManagmentIcon
-                });
-                lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.Marketoid), new PlanHead
-                {
-                    type = "ro",
-                    align = "center",
-                    id = Convert.ToString(Enums.IntegrationIdType.Marketoid),
-                    sort = "str",
-                    width = 160,
-                    value = Enums.Integration_Column[Enums.IntegrationIdType.Marketoid.ToString()] + ColumnManagmentIcon
-                });
-                lstColumns.Add(Convert.ToString(Enums.IntegrationIdType.WorkFrontid), new PlanHead
-                {
-                    type = "ro",
-                    align = "center",
-                    id = Convert.ToString(Enums.IntegrationIdType.WorkFrontid),
-                    sort = "str",
-                    width = 250,
-                    value = Enums.Integration_Column[Enums.IntegrationIdType.WorkFrontid.ToString()] + ColumnManagmentIcon
-                });
-            }
-            #endregion
+            
             return lstColumns;
         }
 
@@ -754,7 +714,7 @@ namespace RevenuePlanner.Services
                 id = Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.ColourCode),
                 sort = "na",
                 width = 10,
-                value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.ColourCode)
+                value = string.Empty
             });
 
             lstColumns.Add(Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MachineName), new PlanHead
@@ -815,7 +775,7 @@ namespace RevenuePlanner.Services
             if (UserSelctedDefaultcolumnsList != null && UserSelctedDefaultcolumnsList.Count > 0)
             {
                 // Get the default/common list of header object 
-                lstDefaultCols = lstHomeGrid_Default_Columns(true)
+                lstDefaultCols = lstHomeGrid_Default_Columns()
                     .Where(a => UserSelctedDefaultcolumnsList.Contains(a.Value.id.ToLower()))
                     .Select(a => a.Value).OrderBy(a => UserSelctedDefaultcolumnsList.IndexOf(a.id.ToLower()))
                         .ToList();
@@ -1543,8 +1503,7 @@ namespace RevenuePlanner.Services
                             }
                             break;
                     }
-                    if (pair.Name == Convert.ToString(Enums.IntegrationIdType.Eloquaid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.WorkFrontid) || pair.Name == Convert.ToString(Enums.IntegrationIdType.Marketoid)
-                        || pair.Name == Convert.ToString(Enums.IntegrationIdType.Salesforceid) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue))
+                    if ( pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue))
                     {
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
@@ -1797,18 +1756,7 @@ namespace RevenuePlanner.Services
                     case Enums.HomeGrid_Default_Hidden_Columns.Owner:
                         objVal = Convert.ToString(RowData.Owner);
                         break;
-                    case Enums.HomeGrid_Default_Hidden_Columns.Eloquaid:
-                        objVal = Convert.ToString(RowData.Eloquaid);
-                        break;
-                    case Enums.HomeGrid_Default_Hidden_Columns.Salesforceid:
-                        objVal = Convert.ToString(RowData.Salesforceid);
-                        break;
-                    case Enums.HomeGrid_Default_Hidden_Columns.Marketoid:
-                        objVal = Convert.ToString(RowData.Marketoid);
-                        break;
-                    case Enums.HomeGrid_Default_Hidden_Columns.WorkFrontid:
-                        objVal = Convert.ToString(RowData.WorkFrontid);
-                        break;
+                  
                     default:
                         objVal = string.Empty;
                         break;
