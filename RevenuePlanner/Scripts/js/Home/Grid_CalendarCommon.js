@@ -171,8 +171,8 @@ function ShowHideDataonBudgetScreen() {
 
 
 
-//Added by Rahul Shah to call budget data 
-function LoadBudgetGrid() {
+//Added by Rahul Shah to call budget data
+function GetBudgetGridData() {
     filters = GetFilterIds();
     // BindUpcomingActivites(filters.PlanIDs.toString())
     var selectedTimeFrame = $('#ddlUpComingActivites').val();
@@ -181,7 +181,8 @@ function LoadBudgetGrid() {
         selectedTimeFrame = currentDate.getFullYear().toString();
     }
     var viewBy = $('#ddlTabViewBy').val();
-    $.ajax({
+
+    return $.ajax({
         url: urlContent + 'Plan/GetBudgetData/',
         data: {
             planIds: filters.PlanIDs.toString(),
@@ -192,33 +193,30 @@ function LoadBudgetGrid() {
             year: selectedTimeFrame.toString(),
             ViewBy: viewBy
 
-        },
-        success: function (result) {
-            var start = performance.now();
-            $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
-            var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
-    '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
-'<br/></div>';
-            gridhtml += result;
-            $("#divgridview").html('');
-            $("#divgridview").html(gridhtml);
-            $("div[id^='LinkIcon']").each(function () {
-                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
-            });
-            $('#ChangeView').show();
-
-            var stop = performance.now();
-            console.log("finished processing budget data after " + (stop - start) + " ms");
-        },
-        //Added by Bhumika to display loading Spinner when calendar load
-        beforeSend: function () {
-            // setting a timeout
-            $('#loader').css('display', 'block');
-        },
-        complete: function () {
-            $('#loader').css('display', 'none');
         }
     });
+}
+function LoadBudgetGrid(gridDataPromise) {
+    showLoader();
+    // if they did not give us a promise, then make our own
+    var promise = gridDataPromise || GetBudgetGridData();
+    promise.then(function(result) {
+        var start = performance.now();
+        $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
+        var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
+            '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
+            '<br/></div>';
+        gridhtml += result;
+        $("#divgridview").html('');
+        $("#divgridview").html(gridhtml);
+        $("div[id^='LinkIcon']").each(function() {
+            bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+        });
+        $('#ChangeView').show();
+
+        var stop = performance.now();
+        console.log("finished processing budget data after " + (stop - start) + " ms");
+    }).then(hideLoader, hideLoader);
 }
 
 //insertation start by kausha 21/09/2016 #2638/2592 Export to excel
@@ -226,7 +224,7 @@ var exportgridData;
 var gridname;
 //insertation end by kausha 21/09/2016 #2638/2592 Export to excel
 //Function To Call HomeGrid Data for Selected Plan
-function LoadPlanGrid() {
+function LoadPlanGrid(gridDataPromise) {
        $.ajax({
         url: urlContent + 'Plan/GetHomeGridData/',
         data: {           
@@ -239,7 +237,7 @@ function LoadPlanGrid() {
             gridhtml += result;
             $("#divgridview").html('');
             $("#divgridview").html(gridhtml);
-            BindHomeGrid();
+            BindHomeGrid(gridDataPromise);
             $("div[id^='LinkIcon']").each(function () {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
@@ -994,7 +992,7 @@ function CloseIconClick() {
                         x: HomeGrid.objBox.scrollLeft,
                     }
                    isFirstTimeOnGrid = false;
-                    LoadFilter(gridTab);            //variable 'gridTab' delcare at Index.cshtml page. 
+                    LoadFilter(gridTab, true);            //variable 'gridTab' delcare at Index.cshtml page. 
                     gridSearchFlag = 0;
                 }
                 //else if (isBoostAuthorized) {
@@ -1011,7 +1009,7 @@ function CloseIconClick() {
             // Modified by Arpita Soni to resolve inspect popup crashing issue from Budget screen
             if (isCalendarView) {
                 if (isDataModified) {
-                    RefreshCurrentTab();
+                    RefreshCurrentTab(true);
                 }
                 else if (isCalendarView) {
                     gantt.refreshData();
@@ -1025,6 +1023,8 @@ function CloseIconClick() {
                         y: HomeGrid.objBox.scrollTop,
                         x: HomeGrid.objBox.scrollLeft,
                     }
+                    $('#gridbox').empty();
+                    $('#exp-serach').css('display', 'none');
                     LoadBudgetGrid();
                     $('#divPlanEditButtonHome').click();
                 }
@@ -2649,7 +2649,7 @@ function ExpandTacticsForSelectedPackage(PCPTId) {
     }
 }
 // Method to refresh calender after popup close-- #2587
-function RefreshCurrentTab() {
+function RefreshCurrentTab(fastmode) {
     var currentTab;
     if (!IsBudgetGrid) {
         currentTab = calendarTab;       //variable 'calendarTab' delcared at Index.cshtml page. 
@@ -2661,7 +2661,7 @@ function RefreshCurrentTab() {
         currentTab = gridTab;           //variable 'gridTab' delcared at Index.cshtml page.
     }
 
-    LoadFilter(currentTab);
+    LoadFilter(currentTab, fastmode);
 
 }
 

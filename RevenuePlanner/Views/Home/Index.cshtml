@@ -338,98 +338,94 @@
         CustomTacticName: "@Common.TacticCustomTitle"
     });
 
-    $('.sidebar-toogle a').click(function () {
+    $('.sidebar-toogle a').click(function() {
         $("#sidebar").toggleClass("slideLeft");
         $("#content_wraper").toggleClass("slideLeft");
     });
 
     // Added by Bhumika to resize Grid and calendar when sidebar hide - Code copied from Index-original.cshtml
     $('.sidebar-toogle a').toggle(
-    function () {
-        ///new code
-        var ganttwidth;
-        var totalWidth;
-        if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
-            var ganttwidth = $("#gridbox").width();
-            var totalWidth = ganttwidth + 230;
-            ResizeGrid(totalWidth);
-        }
-        else {
-            ganttwidth = $("#gantt_here").width();
-            totalWidth = ganttwidth - 230;
-            gantt._render_tasks_scales(totalWidth);
-            gantt.refreshData();
-        }
-        $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
+        function() {
+            ///new code
+            var ganttwidth;
+            var totalWidth;
+            if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
+                var ganttwidth = $("#gridbox").width();
+                var totalWidth = ganttwidth + 230;
+                ResizeGrid(totalWidth);
+            } else {
+                ganttwidth = $("#gantt_here").width();
+                totalWidth = ganttwidth - 230;
+                gantt._render_tasks_scales(totalWidth);
+                gantt.refreshData();
+            }
+            $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
 
-        $(".gantt_last_cell").dblclick(function (e) {
-            e.stopPropagation();
+            $(".gantt_last_cell").dblclick(function(e) {
+                e.stopPropagation();
+            });
+
+            $(".gantt_last_cell").click(function(e) {
+                e.stopPropagation();
+            });
+
+
+            var $doc = $(document);
+            $doc.click(function() {
+                $('#popupType').css('display', 'none');
+            });
+
+            $(document).mouseup(function(e) {
+                $('#popupType').css("display", "none");
+            });
+            $(".gantt_ver_scroll").scroll(function() {
+                $('#popupType').css('display', 'none');
+            });
+
+            $('.gantt_hor_scroll').hide();
+
+        }, function() {
+            var ganttwidth;
+            var totalWidth;
+            if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
+                var ganttwidth = $("#gridbox").width();
+                var totalWidth = ganttwidth + 230;
+                ResizeGrid(totalWidth);
+            } else {
+                ganttwidth = $("#gantt_here").width();
+                totalWidth = ganttwidth - 230;
+                gantt._render_tasks_scales(totalWidth);
+                gantt.refreshData();
+            }
+
+            $('#gantt_hor_scroll').attr('style', 'Width: 1483px;');
+
+            $(".gantt_last_cell").dblclick(function(e) {
+                e.stopPropagation();
+            });
+
+            $(".gantt_last_cell").click(function(e) {
+                e.stopPropagation();
+            });
+            var $doc = $(document);
+            $doc.click(function() {
+                $('#popupType').css('display', 'none');
+            });
+
+            $(document).mouseup(function(e) {
+                $('#popupType').css("display", "none");
+            });
+            $(".gantt_ver_scroll").scroll(function() {
+                $('#popupType').css('display', 'none');
+            });
+
+            $('.gantt_hor_scroll').hide();
+
         });
 
-        $(".gantt_last_cell").click(function (e) {
-            e.stopPropagation();
-        });
 
+    $(document).ready(function() {
 
-        var $doc = $(document);
-        $doc.click(function () {
-            $('#popupType').css('display', 'none');
-        });
-
-        $(document).mouseup(function (e) {
-            $('#popupType').css("display", "none");
-        });
-        $(".gantt_ver_scroll").scroll(function () {
-            $('#popupType').css('display', 'none');
-        });
-
-        $('.gantt_hor_scroll').hide();
-
-    }
-
-    , function () {
-        var ganttwidth;
-        var totalWidth;
-        if ($('#IsGridView').val().toLowerCase() == "true" || IsBudgetGrid) {
-            var ganttwidth = $("#gridbox").width();
-            var totalWidth = ganttwidth + 230;
-            ResizeGrid(totalWidth);
-        }
-        else {
-            ganttwidth = $("#gantt_here").width();
-            totalWidth = ganttwidth - 230;
-            gantt._render_tasks_scales(totalWidth);
-            gantt.refreshData();
-        }
-
-        $('#gantt_hor_scroll').attr('style', 'Width: 1483px;');
-
-        $(".gantt_last_cell").dblclick(function (e) {
-            e.stopPropagation();
-        });
-
-        $(".gantt_last_cell").click(function (e) {
-            e.stopPropagation();
-        });
-        var $doc = $(document);
-        $doc.click(function () {
-            $('#popupType').css('display', 'none');
-        });
-
-        $(document).mouseup(function (e) {
-            $('#popupType').css("display", "none");
-        });
-        $(".gantt_ver_scroll").scroll(function () {
-            $('#popupType').css('display', 'none');
-        });
-
-        $('.gantt_hor_scroll').hide();
-
-    });
-
-
-    $(document).ready(function () {
-        
         BindHomeGrid();
         var Successmsgduplicate = '@Successmsgduplicate';
         var Errormsgduplicate = '@errormsgduplicate';
@@ -439,7 +435,7 @@
         if (Errormsgduplicate != "") {
             ShowMessage(true, Errormsgduplicate, 400);
         }
-        $('.plan').addClass('active');//Select Plans menu after login for ticket - 2570
+        $('.plan').addClass('active'); //Select Plans menu after login for ticket - 2570
         ///Added by Dhvani to open inpsect popup for alert URL -- PL #2534
         //START CODE
         if ('@ShowInspectPopup'.toLowerCase() == 'true') {
@@ -453,8 +449,7 @@
                 ShowInspectForPlanLineItemId();
             else
                 ShowInspectForPlanId();
-        }
-        else {
+        } else {
             var currentUrlQueryString = window.location.search.toString().toLowerCase();
             var isNotificationEmailShareLink = false;
             if (currentUrlQueryString.indexOf('plancampaignid') > 0 || currentUrlQueryString.indexOf('planprogramid') > 0 || currentUrlQueryString.indexOf('plantacticid') > 0) {
@@ -464,8 +459,7 @@
                 $('#cErrorInspectPopup').html('<strong>Error! </strong> ' + '@ViewBag.ShowInspectPopupErrorMessage');
                 $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
                 $('#errorMessageInspectPopup').slideDown(3000);
-            }
-            else {
+            } else {
                 $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
                 $('#errorMessageInspectPopup').slideUp(400);
             }
@@ -474,76 +468,95 @@
 
         $(".selectBox select").selectbox();
         $("#ddlTabViewBy").multiselect();
-        LoadFilter(gridTab);    // Set PlanGrid as Active tab after user logged in to application on first time.
-        $("#ddlUpComingActivites").change(function () {
+        LoadFilter(gridTab); // Set PlanGrid as Active tab after user logged in to application on first time.
+        $("#ddlUpComingActivites").change(function() {
             RefershPlanHeaderCalc();
             if (IsBudgetGrid) {
                 LoadBudgetGrid();
-            }
-            else if ($('#IsGridView').val().toLowerCase() == "false") {
+            } else if ($('#IsGridView').val().toLowerCase() == "false") {
                 BindPlanCalendar();
             }
         });
-        $("#ddlUpComingActivitesSelectBox").click(function () {
+        $("#ddlUpComingActivitesSelectBox").click(function() {
             $('#ddlTabViewBy').multiselect("close");
         });
         SetTooltip();
+
         function toggleChevron(e) {
             $(e.target)
                 .prev('.accordion-heading')
                 .find("i.indicator")
-            .toggleClass('fa-angle-down fa-angle-up');
+                .toggleClass('fa-angle-down fa-angle-up');
         }
+
         $('.accordion').on('hidden.bs.collapse', toggleChevron);
         $('.accordion').on('shown.bs.collapse', toggleChevron);
     });
-    function LoadFilter(currentActiveTab) {
+
+    function LoadFilter(currentActiveTab, fastmode) {
         var PlanID = '@CurrentRequestPlanID';
         var strURL = '@Url.Content("~/Filter/Index/")';
         if (PlanID == 0) {
             PlanID = 'null'
         }
-        $.ajax({
-            url: strURL,
-            type: 'post',
-            dataType: 'html',
-            async: isFirstTimeOnGrid,
-            data: {
-                activeMenu: '@Enums.ActiveMenu.Home',
-                currentPlanId: PlanID,
-            },
-            success: function (data) {
+
+        var dataRequest;
+        if (fastmode) {
+            // do not reload filters in "fastmode"
+            dataRequest = $.when();
+        } else {
+            dataRequest = $.ajax({
+                url: strURL,
+                type: 'post',
+                dataType: 'html',
+                async: isFirstTimeOnGrid,
+                data: {
+                    activeMenu: '@Enums.ActiveMenu.Home',
+                    currentPlanId: PlanID,
+                }
+            }).then(function(data) {
                 if (data != 'undefined' && data != null) {
                     $('#divFilter').html(data);
                     filters.PlanIDs = GetPlanIds();
                     GetTacticTypelist(filters.PlanIDs);
                     GetOwnerListForFilter(filters.PlanIDs);
                     GetLastSetofViews($('#FilterPresetName').val());
-                    BindUpcomingActivites(filters.PlanIDs);
-                    BindViewSelections(urlContent + 'Home/GetViewBylistData');
-                    RefershPlanHeaderCalc();
-                    GetMultiplePlanNames();
-                    GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
-                    if (currentActiveTab == budgetTab) {
-                        IsBudgetGrid = true;
-                        LoadBudgetGrid();
-                    }
-                    else if (currentActiveTab == gridTab && isFirstTimeOnGrid == false) {
-                        LoadPlanGrid();
-                    }
-                    else if (currentActiveTab == calendarTab) {
-                        BindPlanCalendar();
-                    }
                 }
+            });
+        }
+
+        return dataRequest.then(function() {
+            var gridDataPromise;
+            if (currentActiveTab == gridTab && !isFirstTimeOnGrid) {
+                gridDataPromise = StartRetrieveGridData();
+            }
+            else if (currentActiveTab == budgetTab) {
+                gridDataPromise = GetBudgetGridData();
+            }
+            BindUpcomingActivites(filters.PlanIDs);
+            BindViewSelections(urlContent + 'Home/GetViewBylistData');
+            RefershPlanHeaderCalc();
+            GetMultiplePlanNames();
+            GetGoalValues('@Url.Action("GetGoalValues", "Home")', filters.PlanIDs);
+            if (currentActiveTab == budgetTab) {
+                IsBudgetGrid = true;
+                $('#gridbox').empty();
+                $('#exp-serach').css('display', 'none');
+                LoadBudgetGrid(gridDataPromise);
+            } else if (currentActiveTab == gridTab && !isFirstTimeOnGrid) {
+                LoadPlanGrid(gridDataPromise);
+            } else if (currentActiveTab == calendarTab) {
+                BindPlanCalendar();
             }
         });
     }
+
     function OpenCreateNew(IsGridView) {
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/ColumnView/GetAttributeList_ColumnView/")',
             data: { IsGrid: IsGridView },
-            success: function (data) {
+            success: function(data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
@@ -813,12 +826,19 @@
         $('#loader').css('display', 'none');
     }
 
-    function BindHomeGrid() {
+    function StartRetrieveGridData() {
         filters = GetFilterIds();
         var viewBy = $('#ddlTabViewBy').val();
+        return GetGridData(filters, viewBy);
+    }
 
+    function BindHomeGrid(gridDataPromise) {
         showLoader();
-        return GetGridData(filters, viewBy)
+
+        // if gridData was not provided, then start retrieving it ourselves
+        var promise = gridDataPromise || StartRetrieveGridData();
+
+        return promise
             .then(RenderGrid)
             .then(hideLoader, hideLoader);
     }
