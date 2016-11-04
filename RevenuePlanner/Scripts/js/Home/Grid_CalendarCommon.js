@@ -194,6 +194,7 @@ function LoadBudgetGrid() {
 
         },
         success: function (result) {
+            var start = performance.now();
             $('#exp-serach').css('display', 'block'); // To load dropdown after grid is loaded  ticket - 2596
             var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
     '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters or grouping applied.</span>' +
@@ -205,6 +206,9 @@ function LoadBudgetGrid() {
                 bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
             });
             $('#ChangeView').show();
+
+            var stop = performance.now();
+            console.log("finished processing budget data after " + (stop - start) + " ms");
         },
         //Added by Bhumika to display loading Spinner when calendar load
         beforeSend: function () {
