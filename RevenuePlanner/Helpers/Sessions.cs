@@ -694,27 +694,6 @@ namespace RevenuePlanner.Helpers
             }
 
         }
-        public static List<string> OpenGridRowID
-        {
-
-            get
-            {
-                if (HttpContext.Current.Session["OpenGridRowID"] != null)
-                {
-                    return (List<string>)HttpContext.Current.Session["OpenGridRowID"];
-                }
-                else
-                {
-                    return new List<string>();
-                }
-            }
-            set
-            {
-                HttpContext.Current.Session["OpenGridRowID"] = value;
-            }
-
-        }
-
 
         public static bool IsfromMeasure
         {

@@ -6801,17 +6801,7 @@ namespace RevenuePlanner.Controllers
                     StatusIds = objFilter.StatusIds;
                     customFieldIds = objFilter.CustomFieldIds;
                 }
-                List<string> openRowIds = new List<string>();
-                if (Request.Cookies["gridOpenplangridState"] != null)
-                {
-                    var value = Request.Cookies["gridOpenplangridState"].Value;
-                     openRowIds = value.Split('|').ToList();
-                    Sessions.OpenGridRowID = openRowIds;
-                }
-                else
-                {
-                    Sessions.OpenGridRowID = openRowIds;
-                }
+
                 int ClientID = Sessions.User.CID;
                 string PlanCurrencySymbol = Sessions.PlanCurrencySymbol;
                 double PlanExchangeRate = Sessions.PlanExchangeRate;
@@ -10043,17 +10033,6 @@ namespace RevenuePlanner.Controllers
             if (string.IsNullOrEmpty(ViewBy))
             {
                 ViewBy = PlanGanttTypes.Tactic.ToString();
-            }
-            List<string> openRowIds = new List<string>();
-            if (Request.Cookies["gridOpenplangridState"] != null)
-            {
-                var value = Request.Cookies["gridOpenplangridState"].Value;
-                openRowIds = value.Split('|').ToList();
-                Sessions.OpenGridRowID = openRowIds;
-            }
-            else
-            {
-                Sessions.OpenGridRowID = openRowIds;
             }
             BudgetDHTMLXGridModel budgetModel = Iobj.GetBudget(ClientId, UserID, PlanIds, PlanExchangeRate, ViewBy, year, CustomFieldIds, OwnerIds, TactictypeIds, StatusIds);
             string strThisMonth = Enums.UpcomingActivities.ThisYearMonthly.ToString();
