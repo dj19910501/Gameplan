@@ -19,13 +19,15 @@ namespace RevenuePlanner.Controllers
     public class MeasureDashboardController : CommonController
     {
         public CacheObject objCache = new CacheObject();
-        public ActionResult Index(string DashboardId)
+        public ActionResult Index(string DashboardId, string DashboardPageId)
         {
             try
             {
                 int DashId = 0;
+                int DashPageId = 0;
                 if (int.TryParse(Convert.ToString(DashboardId), out DashId) && Sessions.AppMenus.Where(w => w.Description == "javascript:void(0)" && w.MenuApplicationId == DashId).Any())
                 {
+                    int.TryParse(Convert.ToString(DashboardPageId), out DashPageId);
                     if (string.IsNullOrEmpty(Sessions.StartDate))
                     {
                         Sessions.StartDate = DateTime.Now.AddMonths(6).ToString("MM/dd/yyyy");
@@ -65,7 +67,7 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     Custom_Dashboard model = new Custom_Dashboard();
-                    string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+                    string url = ApiUrl + "api/Dashboard/GetDashboardContent?DashboardId=" + DashId + "&DashboardPageId=" + DashPageId + "&UserId=" + Sessions.User.UserId + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
                     try
                     {
                         ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
@@ -80,7 +82,7 @@ namespace RevenuePlanner.Controllers
 
                     List<SelectListItem> li = new List<SelectListItem>();
 
-                                 
+
                     li.Add(new SelectListItem { Text = "Years", Value = "Y" });
                     li.Add(new SelectListItem { Text = "Quarters", Value = "Q" });
                     li.Add(new SelectListItem { Text = "Months", Value = "M" });
@@ -100,6 +102,7 @@ namespace RevenuePlanner.Controllers
                     ViewData["ViewBy"] = li;
                     ViewBag.ViewBy = li;
                     ViewBag.DashboardID = DashId;
+                    ViewBag.DashboardPageID = DashPageId;
                     ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
                     ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
                     ViewBag.ApiUrl = ApiUrl;
@@ -111,6 +114,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     ViewBag.DashboardID = DashId;
+                    ViewBag.DashboardPageID = DashPageId;
                     ViewBag.AuthorizedReportAPIUserName = string.Empty;
                     ViewBag.AuthorizedReportAPIPassword = string.Empty;
                     ViewBag.ApiUrl = string.Empty;
@@ -267,24 +271,24 @@ namespace RevenuePlanner.Controllers
                         i++;
                     }
                 }
-                
+
                 try
                 {
                     HttpClient client = new HttpClient();
-                    
+
                     int CommonWebAPITimeout = 0;
                     string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
                     if (!string.IsNullOrEmpty(strwebAPITimeout))
                         CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
-                    
+
                     client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
                     client.Timeout = TimeSpan.FromHours(3);  //set timeout for Common Integration API call
-                    
+
                     Uri baseAddress = new Uri(ApiUrl);
                     client.BaseAddress = baseAddress;
-                    
+
                     ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                    
+
                     ReportParameters objParams = new ReportParameters();
                     objParams.Id = Id;
                     objParams.ConnectionString = ConnectionString;
@@ -307,6 +311,88 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return Json(new { isSuccess = true, data = result }, JsonRequestBehavior.AllowGet);
-        }        
+        }
+
+        /// <summary>
+        /// Add By Nandish Shah
+        /// Get Report table Data
+        /// </summary>
+        public async Task<string> GetReportTable(int Id, string DbName, string Container, string[] SDV, bool TopOnly = true, string ViewBy = "Q", string StartDate = "01/01/1900", string EndDate = "01/01/2100", int DashboardId = 0, int DashboardPageid = 0, int DashboardContentId = 0)
+        {
+            string AuthorizedReportAPIUserName = string.Empty;
+            string AuthorizedReportAPIPassword = string.Empty;
+            string ApiUrl = string.Empty;
+            string ConnectionString = string.Empty;
+            Sessions.ViewByValue = ViewBy;
+
+            if (!string.IsNullOrEmpty(DbName) && DbName == Convert.ToString(Enums.ApplicationCode.RPC))
+            {
+                // Get Measure Connection String
+                ConnectionString = Sessions.User.UserApplicationId.Where(o => o.ApplicationTitle == Enums.ApplicationCode.RPC.ToString()).Select(o => o.ConnectionString).FirstOrDefault();
+            }
+
+            if (ConfigurationManager.AppSettings.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIUserName"])))
+                {
+                    AuthorizedReportAPIUserName = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIUserName");
+                }
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["AuthorizedReportAPIPassword"])))
+                {
+                    AuthorizedReportAPIPassword = System.Configuration.ConfigurationManager.AppSettings.Get("AuthorizedReportAPIPassword");
+                }
+                if (!string.IsNullOrEmpty(Convert.ToString(ConfigurationManager.AppSettings["IntegrationApi"])))
+                {
+                    ApiUrl = System.Configuration.ConfigurationManager.AppSettings.Get("IntegrationApi");
+                    if (!string.IsNullOrEmpty(ApiUrl) && !ApiUrl.EndsWith("/"))
+                    {
+                        ApiUrl += "/";
+                    }
+                }
+
+                try
+                {
+                    HttpClient client = new HttpClient();
+
+                    int CommonWebAPITimeout = 0;
+                    string strwebAPITimeout = System.Configuration.ConfigurationManager.AppSettings["CommonIntegrationWebAPITimeOut"];
+                    if (!string.IsNullOrEmpty(strwebAPITimeout))
+                        CommonWebAPITimeout = Convert.ToInt32(strwebAPITimeout);
+
+                    client.Timeout = TimeSpan.FromHours(CommonWebAPITimeout);  //set timeout for Common Integration API call
+                    client.Timeout = TimeSpan.FromHours(3);  //set timeout for Common Integration API call
+
+                    Uri baseAddress = new Uri(ApiUrl);
+                    client.BaseAddress = baseAddress;
+
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
+                    ReportTableParameters objParams = new ReportTableParameters();
+                    objParams.Id = Id;
+                    objParams.ConnectionString = ConnectionString;
+                    objParams.Container = Container;
+                    objParams.SDV = SDV;
+                    objParams.TopOnly = TopOnly;
+                    objParams.ViewBy = ViewBy;
+                    objParams.StartDate = StartDate;
+                    objParams.EndDate = EndDate;
+                    objParams.UserName = AuthorizedReportAPIUserName;
+                    objParams.Password = AuthorizedReportAPIPassword;
+                    objParams.DashboardId = DashboardId;
+                    objParams.DashboardPageid = DashboardPageid;
+                    objParams.DashboardContentId = DashboardContentId;
+                    objParams.UserId = Convert.ToString(Sessions.User.UserId);
+                    objParams.RoleId = Convert.ToString(Sessions.User.RoleId);
+
+                    HttpResponseMessage response = await client.PostAsJsonAsync("api/Report/GetReportTable ", objParams);
+                    return response.Content.ReadAsStringAsync().Result;
+                }
+                catch (Exception ex)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(ex);
+                }
+            }
+            return string.Empty;
+        }
     }
 }

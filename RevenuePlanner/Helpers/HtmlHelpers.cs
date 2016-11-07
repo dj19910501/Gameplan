@@ -2367,7 +2367,7 @@ namespace RevenuePlanner.Helpers
                         {4,obj.BudgetY4},
                         {7,obj.BudgetY7},
                         {10,obj.BudgetY10}
-                        
+
                     };
                 int quarterCounter = 1;
                 for (int i = 1; i <= 11; i += 3)
@@ -2641,7 +2641,7 @@ namespace RevenuePlanner.Helpers
                         {4,c.Month.BudgetY4},
                         {7,c.Month.BudgetY7},
                         {10,c.Month.BudgetY10}
-                        
+
                     };
                         Dictionary<int, double> campaignParentMonth = new Dictionary<int, double>()
                     {
@@ -6731,7 +6731,7 @@ namespace RevenuePlanner.Helpers
                 }
             }
             string result = string.Empty;
-            string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&StartDate=" + Sessions.StartDate + "&EndDate=" + Sessions.EndDate + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
+            string url = ApiUrl + "api/Dashboard/GetFilterdashboardWise?DashboardId=" + DashboardID + "&DashboardPageID=" + DashboardPageID + "&UserId=" + Sessions.User.UserId + "&RoleId=" + Sessions.User.RoleId + "&StartDate=" + Sessions.StartDate + "&EndDate=" + Sessions.EndDate + "&ConnectionString=" + ReportDBConnString + "&UserName=" + AuthorizedReportAPIUserName + "&Password=" + AuthorizedReportAPIPassword;
             try
             {
                 ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
@@ -6766,29 +6766,27 @@ namespace RevenuePlanner.Helpers
                 MenuStr = MenuStr + "<li class='Other fix-width dropdown'><a href='#'><span class='fa fa-gear'></span><span class='nav-text'>OTHER</span><span class='dd-arrow'><i class='fa fa-caret-down'></i></span></a><ul class='dropdown-menu'>";
             }
             string hrefLink = string.Empty;
-            if (!Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Any())
+
+            if (o.Description != null)
             {
-                if (o.Description != null)
+                hrefLink = o.Description;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(o.ActionName)) && Convert.ToString(o.ActionName).ToLower() == "index")
                 {
-                    hrefLink = o.Description;
+                    hrefLink = "/" + Convert.ToString(o.ControllerName);
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(Convert.ToString(o.ActionName)) && Convert.ToString(o.ActionName).ToLower() == "index")
-                    {
-                        hrefLink = "/" + Convert.ToString(o.ControllerName);
-                    }
-                    else
-                    {
-                        hrefLink = "/" + Convert.ToString(o.ControllerName) + "/" + Convert.ToString(o.ActionName);
-                    }
+                    hrefLink = "/" + Convert.ToString(o.ControllerName) + "/" + Convert.ToString(o.ActionName);
                 }
             }
             string classname = Convert.ToString(o.Code.ToLower().Replace(" ", ""));
-            classname = "'" + classname + " fix-width";
+            classname = "'" + classname;
             if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
             {
-                classname = classname + " dropdown";
+                classname = classname + " dropdown-submenu";
             }
             classname = classname + "'";
             string DashFrom = "Plan";
@@ -6799,12 +6797,28 @@ namespace RevenuePlanner.Helpers
                 CusCss = o.CustomCss;
                 DashFrom = "Measure";
             }
-            MenuStr = MenuStr + "<li class=" + classname + " id=" + LiId + " DashFrom=" + DashFrom + "> <a href=" + hrefLink + "> <span class='" + CusCss + "'></span> <span class='nav-text'> " + Convert.ToString(o.Name).ToUpper() + " </span>";
+            MenuStr = MenuStr + "<li class=" + classname + " id=" + LiId + " DashFrom=" + DashFrom + "> <a href=" + hrefLink + " class='dropdown-toggle'> <span class='" + CusCss + "'></span> <span class='nav-text'> " + Convert.ToString(o.Name).ToUpper() + " </span></a>";
             if (Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId).Count() > 0)
             {
-                MenuStr = MenuStr + "<span class='dd-arrow'><i class='fa fa-caret-down'></i></span>";
+                MenuStr = MenuStr + "<ul class='dropdown-menu'>";
+                foreach (RevenuePlanner.BDSService.Menu SubPage in Sessions.AppMenus.Where(x => x.ParentApplicationId == o.MenuApplicationId))
+                {
+                    LiId = "SubPage_" + SubPage.MenuApplicationId;
+                    DashFrom = "Measure";
+                    if (SubPage.Description != null)
+                    {
+                        hrefLink = SubPage.Description;
+                    }
+
+                    classname = Convert.ToString(SubPage.Code.ToLower().Replace(" ", ""));
+                    classname = "'" + classname + "'";
+
+                    MenuStr = MenuStr + "<li class= " + classname + " id=" + LiId + " DashFrom=" + DashFrom + "><a href=" + hrefLink + "><span class='nav-text'> " + Convert.ToString(SubPage.Name).ToUpper() + " </span></a></li>";
+                }
+                MenuStr = MenuStr + "</ul>";
             }
-            MenuStr = MenuStr + "</a></li>";
+
+            MenuStr = MenuStr + "</li>";
 
             if (MenuNo == TotalMenuCnt)
             {

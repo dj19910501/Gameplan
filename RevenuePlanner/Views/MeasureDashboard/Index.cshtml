@@ -7,6 +7,7 @@
     string AuthorizedReportAPIPassword = Convert.ToString(ViewBag.AuthorizedReportAPIPassword);
     string ApiUrl = Convert.ToString(ViewBag.ApiUrl);
     string DashId = Convert.ToString(ViewBag.DashboardID);
+    string DashPageID = Convert.ToString(ViewBag.DashboardPageID);
     string ClientDimensionId = string.Empty;
     string ClientDimensionValueId = string.Empty;
     if (Convert.ToString(ViewBag.ClientDimensionId) != RevenuePlanner.Helpers.Common.objCached.ClientDimenisionNotSet)
@@ -20,6 +21,7 @@
     }
 }
 
+<link rel="stylesheet" href="@Url.Content("~/content/css/dhtmlxgrid_dhx_web.css")" type="text/css" />
 @Scripts.Render("~/bundles/DateRangeJs")
 @Scripts.Render("~/bundles/GetJSReport")
 
@@ -30,292 +32,464 @@
 @section Sidebar
 {
     @*<div class="padding-content padding-bottom0 sidebar-toogle-wrapper" id="divsidebartoggle">
-        <div class="sidebar-toogle">
-            <a href="#">&nbsp;<span><< hide</span></a>
-        </div>
-    </div>*@  @*placement of toggle is changed now*@
+            <div class="sidebar-toogle">
+                <a href="#">&nbsp;<span><< hide</span></a>
+            </div>
+        </div>*@  @*placement of toggle is changed now*@
 
-    <div id="Filtersidebar" class="span2 sidebar">
-        <div class="sidebar-section scroll-section">
-            <div class="float-left filter-preset">
-                <div class="width50 float-left filter-title ">
-                    <span class="filter-header">Filters</span>
+        <div id="Filtersidebar" class="span2 sidebar">
+            <div class="sidebar-section scroll-section">
+                <div class="float-left filter-preset">
+                    <div class="width50 float-left filter-title ">
+                        <span class="filter-header">Filters</span>
+                    </div>
                 </div>
+                <div style="clear: both;"></div>
+                <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
+                    <div class="wraper-btns cf">
+                        <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdatePlan" onclick="UpdatePlan()">
+                            Update Results
+                        </button>
+                    </div>
+                </div>
+                @if (Model.DashboardContent.Count > 0 && ViewBag.DashboardAccess == true)
+                {
+                    <div id="divCustomFieldsFilter">
+                        @{
+                            int DashboardID = (int)ViewBag.DashboardID;
+                            int DashboardPageID = (int)ViewBag.DashboardPageID;
+                            @Html.Raw(@Html.GetFilterData(DashboardID, DashboardPageID))
+                        }
+                    </div>
+                            }
             </div>
-            <div style="clear: both;"></div>
-            <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
-                <div class="wraper-btns cf">
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdatePlan" onclick="UpdatePlan()">
-                        Update Results
-                    </button>
-                </div>
-            </div>
-            @if (Model.DashboardContent.Count > 0 && ViewBag.DashboardAccess == true)
-            {
-                <div id="divCustomFieldsFilter">
-                    @{
-                        int DashboardID = (int)ViewBag.DashboardID;
-                        @Html.Raw(@Html.GetFilterData(DashboardID, 0))
-                    }
-                </div>
-            }
         </div>
-    </div>
 }
+<style type="text/css">
+    div.gridbox .objbox {
+        overflow: hidden !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        width: inherit;
+    }
 
+    div.gridbox .xhdr {
+        overflow: hidden !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        width: inherit;
+    }
+
+    div.gridbox table.obj td {
+        border-bottom: 1px solid #ededed !important;
+        border-left: 1px solid #ededed !important;
+    }
+</style>
 <div class="error-box data_error_box source-sans-proregular" id="divAggregationStatus">The data in the application is currently being updated, performance may be degraded during this process.<span><i style="cursor: pointer;" class="fa fa-times aggregationmsg"></i></span></div>
 <div class="col-sm-9  col-md-9 col-lg-10 main report-main">
     <div id="mainContent" class="col-md-12 content">
         <div class="clearfix report-handing">
-           @if (ViewData["ViewBy"] != null) {
-                <span class="selectBox" id="ddlMeasureVB">   
-                          
-                    @*/@Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewData["ViewBy"], "Value", "Text", "Selected"), new { @class = "ddlStyleReport hide" })*@                
-                    @*Updation start bind dropdown using viewbag inplace of view data *@
-                        @Html.DropDownList("ddlViewBy", (IEnumerable<SelectListItem>)ViewBag.ViewBy, new { @class = "ddlStyleReport hide" })
-                    </span>
-                    <span class="viewby">View by</span>
-               }
+            <div style="" class="breadcrum-wrap">
+                <ol class="breadcrumb">
+                    <li><span id="Dashboardtext"></span></li>
+                    <li class="active" id="dashboardpagetext"></li>
+                </ol>
             </div>
-            <div class="report-wrap clearfix">
-                @if (Model.DashboardContent.Count > 0)
+            @if (ViewData["ViewBy"] != null)
+            {
+                <span class="selectBox" id="ddlMeasureVB">
+
+                    @*/@Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewData["ViewBy"], "Value", "Text", "Selected"), new { @class = "ddlStyleReport hide" })*@
+                    @*Updation start bind dropdown using viewbag inplace of view data *@
+                    @Html.DropDownList("ddlViewBy", (IEnumerable<SelectListItem>)ViewBag.ViewBy, new { @class = "ddlStyleReport hide" })
+                </span>
+                    <span class="viewby">View by</span>
+            }
+        </div>
+        <div class="report-wrap clearfix">
+            @if (Model.DashboardContent.Count > 0)
+            {
+                int componentCount = 0;
+                int componentCountRow = 0;
+
+                foreach (var ReportGraph in Model.DashboardContent)
                 {
-                    int componentCount = 0;
-                    int componentCountRow = 0;
-
-                    foreach (var ReportGraph in Model.DashboardContent)
+                    if (componentCount % Model.Columns == 0)
                     {
-                        if (componentCount % Model.Columns == 0)
-                        {
-                            componentCountRow = 0;
-                            @Html.Raw("<div class=\"main-row clearfix\"  \">")
-                        }
-                        string cssHeight = @ReportGraph.Height.ToString() + "px";
-                        string cssWidth = @ReportGraph.Width.ToString() + "%";
-                        string cssWidthMinus = "21px";
-                        string cssClass = "component";
-                        string RepdivId = "divChart" + @ReportGraph.DashboardContentId;
+                        componentCountRow = 0;
+                        @Html.Raw("<div class=\"main-row clearfix\"  \">")
+                    }
+                    string cssHeight = @ReportGraph.Height.ToString() + "px";
+                    string cssWidth = @ReportGraph.Width.ToString() + "%";
+                    string cssWidthMinus = "21px";
+                    string cssClass = "component";
+                    string RepdivId = "divChart" + @ReportGraph.DashboardContentId;
 
-                        <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); float:left; ">
-                            <div class="tab-head">@ReportGraph.DisplayName</div>
-                            <div id=@RepdivId style="width: 98%; height:100%" reportgraphid='@ReportGraph.ReportID' dashboardcontentid='@ReportGraph.DashboardContentId'></div>
-                        </div>
+                    <div class="@cssClass" style="height:@cssHeight; width:calc(@cssWidth - @cssWidthMinus); float:left; ">
+                        <div class="tab-head">@ReportGraph.DisplayName</div>
+                        <div id=@RepdivId style="width: 98%; height:100%" reporttableid='@ReportGraph.ReportTableID' reportgraphid='@ReportGraph.ReportID' dashboardcontentid='@ReportGraph.DashboardContentId'></div>
+                    </div>
 
-                        componentCount++;
-                        componentCountRow++;
-                        if (componentCountRow == Model.Columns)
-                        {
-                            @Html.Raw("</div>")
-                        }
+                    componentCount++;
+                    componentCountRow++;
+                    if (componentCountRow == Model.Columns)
+                    {
+                        @Html.Raw("</div>")
                     }
                 }
+            }
+        </div>
+        @if (Model.DashboardContent.Count == 0 && ViewBag.DashboardAccess == true)
+            {
+            <div class="noreportsfound" style="padding:25px">
+                <p>"@RevenuePlanner.Helpers.Common.objCached.ReportNotConfigured"</p>
             </div>
-            @if (Model.DashboardContent.Count == 0 && ViewBag.DashboardAccess == true)
-            {
-                <div class="noreportsfound" style="padding:25px">
-                    <p>"@RevenuePlanner.Helpers.Common.objCached.ReportNotConfigured"</p>
-                </div>
-            }
-            else if (ViewBag.DashboardAccess == false)
-            {
-                <div class="noreportsfound" style="padding:25px">
-                    <p>"You have no access for this dashboard"</p>
-                </div>
-            }
+        }
+        else if (ViewBag.DashboardAccess == false)
+        {
+            <div class="noreportsfound" style="padding:25px">
+                <p>"You have no access for this dashboard"</p>
+            </div>
+        }
     </div>
-    </div>
+</div>
 
-    <script type="text/javascript">
-        var filters = {
-            OwnerIds: []
-        };
+<script type="text/javascript">
+    var filters = {
+        OwnerIds: []
+    };
 
-        $(document).ready(function () {
-            $("#ddlMeasureVB select").selectbox();
-            $('#aMeasure').addClass('active');
-            $('#aPlan').removeClass('active');
-            var LiId = 'Measure_' + '@DashId';
-            if ($('#' + LiId).find('.nav-text').html() != undefined && $('#' + LiId).find('.nav-text').html() != 'undefined') {
-                document.title = $('#' + LiId).find('.nav-text').html();
+    $(document).ready(function () {
+        $("#ddlMeasureVB select").selectbox();
+        $('#aMeasure').addClass('active');
+        $('#aPlan').removeClass('active');
+
+        var Pageid = '@DashPageID';
+
+        var LiId = 'Measure_' + '@DashId';
+
+        if (Number(Pageid) > 0) {
+            Pageid = 'SubPage_' + '@DashPageID';
+            $('#Dashboardtext').text($('#' + LiId).find('.nav-text').html());
+            $('#dashboardpagetext').text($('#' + Pageid).find('.nav-text').html());
+        }
+        else {
+            $('#Dashboardtext').text('');
+            $('#dashboardpagetext').text('');
+        }
+
+        if ($('#' + LiId).find('.nav-text').html() != undefined && $('#' + LiId).find('.nav-text').html() != 'undefined') {
+            document.title = $('#' + LiId).find('.nav-text').html();
+        }
+        $('#' + LiId).addClass('active');
+        if ($('#' + LiId).parent().parent().hasClass('Other')) {
+            $('#' + LiId).parent().parent().addClass('active');
+        }
+        getFiscalDateRange();
+        LoadAllReports();
+    });
+
+    function UpdatePlan() {
+        var StartDate = '';
+        var EndDate = '';
+        $('div[id=reportrange]').each(function () {
+            StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
+            EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
+        });
+        var url = '@Url.Content("~/MeasureDashboard/SetDateRange/")';
+        $.ajax({
+            url: url,
+            data: {
+                StartDate: StartDate,
+                EndDate: EndDate
+            },
+            success: function (response) {
+                LoadAllReports();
             }
-            $('#' + LiId).addClass('active');
-            if ($('#' + LiId).parent().parent().hasClass('Other')) {
-                $('#' + LiId).parent().parent().addClass('active');
-            }
-            getFiscalDateRange();
-            LoadAllReports();
         });
 
-        function UpdatePlan() {
-            var StartDate = '';
-            var EndDate = '';
-            $('div[id=reportrange]').each(function () {
-                StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
-                EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
-            });
-            var url = '@Url.Content("~/MeasureDashboard/SetDateRange/")';
-            $.ajax({
-                url: url,
-                data: {
-                    StartDate: StartDate,
-                    EndDate: EndDate
-                },
-                success: function (response) {
-                    LoadAllReports();
-                }
-            });
+    }
 
-        }
+    function LoadAllReports() {
+        //called update viewby function to update session
+        UpdateViewBy();
+        $('div[id^=divChart]').each(function () {
+            LoadReport(this);
+        });
 
-        function LoadAllReports() {
-            //called update viewby function to update session
-            UpdateViewBy();
-            $('div[id^=divChart]').each(function () {
-                LoadReport(this);
-            });
-
-        }
-        //insertation start for ticket no #246 05/09/2016
-        function UpdateViewBy()
-        {           
-            var ViewBy = $("#ddlViewBy").val();
-            var obj = JSON.stringify({ 'viewBy': ViewBy });
-            var url = '@Url.Content("~/MeasureDashboard/UpdateViewBy")';
-            $.ajax({
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                type: 'POST',
-                url: url,
-                async: false,
-                data: obj,
-                success: function () {
-                },
-                failure: function (response) {
-                    $('#result').html(response);
-                }
-            });
-
-        }
-        //insertation start for ticket no #246 05/09/2016
-
-        function LoadReport(obj) {
-            var id = $(obj).attr('ReportGraphId');
-            var ViewBy = $("#ddlViewBy").val();
-
-            var StartDate = '';
-            var EndDate = '';
-            $('div[id=reportrange]').each(function () {
-                StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
-                EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
-            });
-            var ulListing = [];
-            var SelectedDimensionValue = [];
-            $('ul[id^=ulListing]').each(function () {
-                var DimensionID = $(this).attr('id').replace("ulListing", "");
-                var ulListingID = $(this).attr('id');
-                if ($.inArray(ulListingID, ulListing) == -1) {
-                    ulListing.push(ulListingID);
-                    var IsDimensionSelected = false;
-                    $(this).find('li').each(function () {
-                        if ($(this).find("input[type='checkbox']").is(":checked")) {
-                            SelectedDimensionValue.push(DimensionID + ":" + $(this).attr('id').replace("liAllListing", ""));
-                        }
-                    });
-                }
-            });
-
-            var URL;
-            if ('@ApiUrl' == '') {
-                $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured");
+    }
+    //insertation start for ticket no #246 05/09/2016
+    function UpdateViewBy() {
+        var ViewBy = $("#ddlViewBy").val();
+        var obj = JSON.stringify({ 'viewBy': ViewBy });
+        var url = '@Url.Content("~/MeasureDashboard/UpdateViewBy")';
+        $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: url,
+            async: false,
+            data: obj,
+            success: function () {
+            },
+            failure: function (response) {
+                $('#result').html(response);
             }
-            else {
-                var params = {};
-                params.Id = id;
-                params.DbName = '@Enums.ApplicationCode.RPC.ToString()';
-                params.Container = $(obj).attr('id');
-                params.SDV = SelectedDimensionValue;
-                params.TopOnly = 'True';
-                params.ViewBy = ViewBy;
-                params.StartDate = StartDate;
-                params.EndDate = EndDate;
-                URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
-                $.ajax({
-                    url: URL,
-                    async: true,
-                    traditional: true,
-                    data: $.param(params, true),
-                    dataType: "json",
-                    success: function (data) {
-                        eval(JSON.parse(data.data));
-                    },
-                    error: function (err) {
-                        $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
+        });
+
+    }
+    //insertation start for ticket no #246 05/09/2016
+
+    function LoadReport(obj) {
+        var IsGraph = true;
+        var id = $(obj).attr('ReportGraphId');
+        var DashboardContentId = $(obj).attr('dashboardcontentid');
+        if (Number(id) == 0) {
+            id = $(obj).attr('ReportTableId');
+            IsGraph = false;
+        }
+        var ViewBy = $("#ddlViewBy").val();
+
+        var StartDate = '';
+        var EndDate = '';
+        $('div[id=reportrange]').each(function () {
+            StartDate = ($(this).data('daterangepicker').startDate.format("MM/DD/YYYY"));
+            EndDate = ($(this).data('daterangepicker').endDate.format("MM/DD/YYYY"));
+        });
+        var ulListing = [];
+        var SelectedDimensionValue = [];
+        $('ul[id^=ulListing]').each(function () {
+            var DimensionID = $(this).attr('id').replace("ulListing", "");
+            var ulListingID = $(this).attr('id');
+            if ($.inArray(ulListingID, ulListing) == -1) {
+                ulListing.push(ulListingID);
+                var IsDimensionSelected = false;
+                $(this).find('li').each(function () {
+                    if ($(this).find("input[type='checkbox']").is(":checked")) {
+                        SelectedDimensionValue.push(DimensionID + ":" + $(this).attr('id').replace("liAllListing", ""));
                     }
                 });
             }
+        });
+
+        var URL;
+        if ('@ApiUrl' == '') {
+            $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ApiUrlNotConfigured");
         }
-
-        function BulkOwnerOperationSelect(id) {
-            var hvParentUlID = "#ulListing" + id;
-            var totalcnt = 0;
-            $(hvParentUlID + " li").each(function (i) {
-                if ($(this).is(':visible')) {
-                    $(this).addClass("close-list");
-                    if ($(this).find("input[type='checkbox']").is(':enabled')) {
-                        $(this).find("input[type=checkbox]").prop('checked', true);
-                        totalcnt++;
-                    }
-                }
-            });
-            $("#lblSelectedFilters_" + id).text(totalcnt);
-        }
-
-        function BulkOwnerOperationDeselect(id) {
-
-            filters.OwnerIds = [];
-            var hvParentUlID = "#ulListing" + id;
-            $(hvParentUlID + " li").each(function (i) {
-                $(this).removeClass("close-list");
-                var chkid = $(this).find("input[type=checkbox]").attr("id");
-                if ($(this).find("input[type='checkbox']").is(':enabled')) {
-                    $(this).find("input[type=checkbox]").prop('checked', false);
-                }
-            });
-            $("#lblSelectedFilters_" + id).text("0");
-        }
-
-        $('.accordion .accordion-heading').click(function () {
-
-            if ($(this).find('i').hasClass('fa-angle-down')) {
-                $(this).find('i').removeClass('fa-angle-down');
-                $(this).find('i').addClass('fa-angle-up');
-
-                $(this).next('div').removeClass('collapse');
+        else {
+            var params = {};
+            params.Id = id;
+            params.DbName = '@Enums.ApplicationCode.RPC.ToString()';
+            params.Container = $(obj).attr('id');
+            params.SDV = SelectedDimensionValue;
+            params.TopOnly = 'True';
+            params.ViewBy = ViewBy;
+            params.StartDate = StartDate;
+            params.EndDate = EndDate;
+            if (IsGraph) {
+                URL = '@Url.Content("~/MeasureDashboard/GetChart/")';
             }
             else {
-                $(this).find('i').removeClass('fa-angle-up');
-                $(this).find('i').addClass('fa-angle-down');
+                params.DashboardId = '@DashId';
+                params.DashboardPageid = '@DashPageID';
+                params.DashboardContentId = DashboardContentId;
+                URL = '@Url.Content("~/MeasureDashboard/GetReportTable/")';
+            }
 
-                $(this).next('div').addClass('collapse');
+            $.ajax({
+                url: URL,
+                async: true,
+                traditional: true,
+                data: $.param(params, true),
+                dataType: "json",
+                success: function (data) {
+                    if (IsGraph) {
+                        eval(JSON.parse(data.data));
+                    }
+                    else {
+                        $('#divChart' + DashboardContentId).html(data);
+                        var reportTableId = "ReportTable" + DashboardContentId;
+                        var defaultRows = $('#hdn_' + reportTableId).attr('defaultRows');
+                        var defaultSortColumn = $('#hdn_' + reportTableId).attr('defaultSortColumn');
+                        var defaultSortOrder = $('#hdn_' + reportTableId).attr('defaultSortOrder');
+                        if (defaultSortOrder != 'asc')
+                            defaultSortOrder = 'des';
+
+                        var ShowFooterRow = $('#hdn_' + reportTableId).attr('ShowFooterRow');
+
+                        $('#' + reportTableId + '_wrapper').css('overflow-x', 'auto');
+                        $('#' + reportTableId + '_wrapper').css('overflow-y', 'auto');
+                        $('#' + reportTableId + '_wrapper').css('height', '100%');
+
+                        if (data.indexOf('ReportTable' + DashboardContentId) > -1) {
+                            var mygrid = dhtmlXGridFromTable(reportTableId);
+
+                            $('#' + reportTableId + '_wrapper').find('.objbox').find('table').attr('id', reportTableId + '_tbl');
+
+                            var tblTotal = $(mygrid.obj).find('.totalRow').clone();
+                            $(mygrid.obj).find('tbody').find('.totalRow').remove();
+
+                            if (ShowFooterRow == 'True') {
+                                var foot = $(mygrid.obj).find('tfoot');
+                                if (!foot.length) foot = $('<tfoot>').appendTo(mygrid.obj);
+                                foot.append($(tblTotal));
+                            }
+                            $('#' + reportTableId).find('.objbox').find('table').find('tr').each(function (i, row) {
+                                $(row).find('td').each(function (j, cell) {
+                                    if (j > 1) {
+                                        try {
+                                            var originalValue = $(cell).text();
+                                            $(cell).text(ME_number_format(originalValue,2, '.', ','));
+                                            $(cell).attr('title', originalValue);
+                                            $(cell).addClass('north');
+                                            $(cell).attr('title', $(cell).attr('data-original-title'));
+                                            $(".north").tooltip({
+                                                'container': 'body',
+                                                'placement': 'bottom'
+                                            });
+                                        } catch (e) {
+                                        }
+
+                                    }
+                                });
+                            });
+
+                            mygrid.setEditable(false);
+                            mygrid.enableAutoHeight(true);
+                            mygrid.setColumnHidden(1, true);
+
+                            $('#' + reportTableId).find('tfoot').find('.totalRow').find('td').each(function (j, cell) {
+                                if (j == 1) {
+                                    $(this).css('display', 'none');
+                                }
+                            });
+                            $('#' + reportTableId).find('tfoot').find('.goalRow').find('td').each(function (j, cell) {
+                                if (j == 1) {
+                                    $(this).css('display', 'none');
+                                }
+                                else {
+                                    if ($(cell).text() == "0" || $(cell).text().trim() == "") {
+                                        $(this).text('');
+                                        $(this).removeAttr('data-toggle');
+                                        $(this).removeAttr('data-original-title');
+                                        $(this).removeAttr('data-sort');
+                                    }
+                                }
+                            });
+
+                            mygrid.enableAutoWidth(true);
+
+                            var count = mygrid.getColumnsNum();
+                            for (var j = 0; j < count; j++) {
+                                mygrid.adjustColumnSize(j);
+                            }
+                            var widthx = (parseInt($('#' + reportTableId).parent().width()) * 75) / 100;
+
+                            $('#' + reportTableId).css('margin', '0 auto');
+                            $('#' + reportTableId).css('width', '100%');
+                            $('#' + reportTableId).find('.xhdr').css('width', '100%');
+                            $('#' + reportTableId).find('.hdr').css('width', '100%');
+
+                            var widthArray = [];
+                            $('#' + reportTableId).find('.xhdr table' + ' tr:first').find('th').each(function (key, data) {
+                                $('#' + reportTableId).find('.objbox table' + ' tr:first').find('th').each(function (key1, data1) {
+                                    if (key == key1) {
+                                        var totalWt = $(data).width();
+                                        widthArray.push(totalWt);
+                                    }
+                                });
+                            });
+                            $('#' + reportTableId).find('.objbox table' + ' tr:first').find('th').each(function (j, data1) {
+                                for (var i = 0; i < widthArray.length; i++) {
+                                    if (j == i) {
+                                        mygrid.setColWidth(j, widthArray[i]);
+                                    }
+                                }
+                            });
+
+                            mygrid.attachEvent("onMouseOver", function () { return false; });
+                            $('#' + reportTableId).find('tfoot').find('.totalRow').css('display', 'table-row');
+
+                            var parenttblHeight = $('#' + reportTableId).find('.objbox').find('table').height();
+                            var childtblHeight = $('#' + reportTableId).find('.xhdr').find('table').height();
+                            $('#' + reportTableId).height(parenttblHeight + childtblHeight);
+
+                            mygrid.attachEvent("onAfterSorting", function (index, type, direction) {
+                                $(mygrid.obj).find('tbody').find('.totalRow').remove();
+                                mygrid.setSortImgState(false);
+                                return true;
+                            });
+                        }
+                    }
+                },
+                error: function (err) {
+                    $(obj).html("@RevenuePlanner.Helpers.Common.objCached.ErrorInWebApi");
+                }
+            });
+        }
+    }
+
+    function BulkOwnerOperationSelect(id) {
+        var hvParentUlID = "#ulListing" + id;
+        var totalcnt = 0;
+        $(hvParentUlID + " li").each(function (i) {
+            if ($(this).is(':visible')) {
+                $(this).addClass("close-list");
+                if ($(this).find("input[type='checkbox']").is(':enabled')) {
+                    $(this).find("input[type=checkbox]").prop('checked', true);
+                    totalcnt++;
+                }
             }
         });
+        $("#lblSelectedFilters_" + id).text(totalcnt);
+    }
 
-        $('.sidebar-toogle a').click(function () {
-            $("#sidebar").toggleClass("slideLeft");
-            $("#content_wraper").toggleClass("slideLeft");
+    function BulkOwnerOperationDeselect(id) {
+
+        filters.OwnerIds = [];
+        var hvParentUlID = "#ulListing" + id;
+        $(hvParentUlID + " li").each(function (i) {
+            $(this).removeClass("close-list");
+            var chkid = $(this).find("input[type=checkbox]").attr("id");
+            if ($(this).find("input[type='checkbox']").is(':enabled')) {
+                $(this).find("input[type=checkbox]").prop('checked', false);
+            }
         });
+        $("#lblSelectedFilters_" + id).text("0");
+    }
 
-        $('.sidebar-toogle a').toggle(function () {
-        
+    $('.accordion .accordion-heading').click(function () {
+
+        if ($(this).find('i').hasClass('fa-angle-down')) {
+            $(this).find('i').removeClass('fa-angle-down');
+            $(this).find('i').addClass('fa-angle-up');
+
+            $(this).next('div').removeClass('collapse');
+        }
+        else {
+            $(this).find('i').removeClass('fa-angle-up');
+            $(this).find('i').addClass('fa-angle-down');
+
+            $(this).next('div').addClass('collapse');
+        }
+    });
+
+    $('.sidebar-toogle a').click(function () {
+        $("#sidebar").toggleClass("slideLeft");
+        $("#content_wraper").toggleClass("slideLeft");
+    });
+
+    $('.sidebar-toogle a').toggle(function () {
+
         $(".sidebar-toogle-wrapper h4.text-shadow-black").css("display", "none");
         $(".sidebar-section").css("display", "none");
         //$('.sidebar-toogle a').html(">>").css('letter-spacing', '-1px');
 
         $(".wraper-btns").css("display", "none");
         $("#btnreportSection").css("display", "none");
-       // $("#content_wraper").css('width', 'calc(100% - 52px)');
-       // $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
-       // $('.sidebar-toogle').css('border-bottom-width', '0');
+        // $("#content_wraper").css('width', 'calc(100% - 52px)');
+        // $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
+        // $('.sidebar-toogle').css('border-bottom-width', '0');
         var ganttwidth = $("#gridbox").width();
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
             var ganttwidth = $("#gridbox").width();
@@ -343,7 +517,7 @@
         $(".wraper-btns").css("display", "block");
         $("#btnreportSection").css("display", "block");
         //$("#content_wraper").css('width', 'calc(100% - 282px)');
-       // $('#sidebar.sidebar').css({ 'width': '280px' });
+        // $('#sidebar.sidebar').css({ 'width': '280px' });
         //$('.sidebar-toogle').css('border-bottom-width', '1px');
         var ganttwidth = $("#gridbox").width();
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
@@ -368,116 +542,116 @@
 
     });
 
-        function getFiscalDateRange() {
-            try {
-                var cbMainDate = function (start, end, label) {
-                    console.log(start.toISOString(), end.toISOString(), label);
-                    $('div[id=reportrange]').each(function () {
-                        $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
-                    });
-                };
-
-                var optionSet1 = {
-                    showDropdowns: true,
-                    showWeekNumbers: true,
-                    timePicker: false,
-                    timePickerIncrement: 1,
-                    timePicker12Hour: true,
-                    ranges: {
-                        'This Quarter': [moment().startOf('quarter'), moment().endOf('quarter')],
-                        'This Year': [moment().startOf('year'), moment().endOf('year')],
-                        'Year to Date': [moment().startOf('year'), moment()],
-                        'Last 12 Months': [moment().subtract(12, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                        'Last 4 Quarters': [moment().subtract(4, 'quarter').startOf('quarter'), moment().subtract(1, 'quarter').endOf('quarter')],
-                        'Last Calendar Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
-                    },
-                    opens: 'left',
-                    buttonClasses: ['btn btn-default'],
-                    applyClass: 'btn-sm btn-primary',
-                    cancelClass: 'btn-sm',
-                    format: 'MM/DD/YYYY',
-                    separator: ' to ',
-                    locale: {
-                        applyLabel: 'Apply',
-                        cancelLabel: 'Cancel',
-                        fromLabel: 'From',
-                        toLabel: 'To',
-                        daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-                        monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                        firstDay: 1
-                    }
-                };
-
+    function getFiscalDateRange() {
+        try {
+            var cbMainDate = function (start, end, label) {
+                console.log(start.toISOString(), end.toISOString(), label);
                 $('div[id=reportrange]').each(function () {
-                    optionSet1.startDate = '@Sessions.StartDate';
-                    optionSet1.endDate = '@Sessions.EndDate';
-                    $(this).daterangepicker(optionSet1, cbMainDate);
+                    $(this).find('span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
                 });
-            }
-            catch (err) {
+            };
 
-            }
-        }
-
-        function toggleOwner(obj) {
-            var id = $(obj).attr('id');
-            var hvParentUlID = "#ulListing" + $('#hdParentValue' + id + '').val();
-
-            if ($(obj).is(':checked')) {
-                $(obj).parents().find("#liAllListing" + id).addClass("close-list");
-            }
-            else {
-                $(obj).parents().find("#liAllListing" + id).removeClass("close-list");
-            }
-            if ($(obj).is(':checked')) {
-                $("#lblSelectedFilters_" + $('#hdParentValue' + id + '').val()).text(parseInt($("#lblSelectedFilters_" + $('#hdParentValue' + id + '').val()).text()) + 1);
-            }
-            else
-                $("#lblSelectedFilters_" + $('#hdParentValue' + id + '').val()).text(parseInt($("#lblSelectedFilters_" + $('#hdParentValue' + id + '').val()).text()) - 1);
-        }
-
-        $('li[id^="CustomReportli"]').click(function () {
-            leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Custom.ToString()'
-            RemoveAllActiveItem();
-            $('.menu-content li').removeClass('active');
-            $('#liCustomReport').addClass('active');
-            $.each($('li[id^="CustomReportli"]'), function () {
-                if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
+            var optionSet1 = {
+                showDropdowns: true,
+                showWeekNumbers: true,
+                timePicker: false,
+                timePickerIncrement: 1,
+                timePicker12Hour: true,
+                ranges: {
+                    'This Quarter': [moment().startOf('quarter'), moment().endOf('quarter')],
+                    'This Year': [moment().startOf('year'), moment().endOf('year')],
+                    'Year to Date': [moment().startOf('year'), moment()],
+                    'Last 12 Months': [moment().subtract(12, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Last 4 Quarters': [moment().subtract(4, 'quarter').startOf('quarter'), moment().subtract(1, 'quarter').endOf('quarter')],
+                    'Last Calendar Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+                },
+                opens: 'left',
+                buttonClasses: ['btn btn-default'],
+                applyClass: 'btn-sm btn-primary',
+                cancelClass: 'btn-sm',
+                format: 'MM/DD/YYYY',
+                separator: ' to ',
+                locale: {
+                    applyLabel: 'Apply',
+                    cancelLabel: 'Cancel',
+                    fromLabel: 'From',
+                    toLabel: 'To',
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                    firstDay: 1
                 }
-            });
-            document.title = "Custom";
-            $(this).addClass('selected');
-            $('#ddlsection').hide();
-            $("#BtnShareReport").hide();
-            $('#budgetHeader').css('display', 'none');
-            $('#ddlCustomTimeFrame').show();
-            $('.custom').addClass('active');
-            var DashboardLink = $(this).find('a');
-            if (DashboardLink != null && DashboardLink != undefined && DashboardLink != 'undefined') {
-                var CustomUrlLink = $(DashboardLink).text().trim();
-                $("#dashboardpagetext").text(CustomUrlLink);
-            }
-            var DashboardID = $(this).attr('id').replace('CustomReportli', '');
-            var url = '@Url.Action("ReportCustom", "Report", new { DashboardId = "FIRST" })';
-            window.location.href = url.replace('FIRST', DashboardID);
-        });
+            };
 
-        function RemoveAllActiveItem() {
-            $('#ulLeftPane li').each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass('active');
-                }
+            $('div[id=reportrange]').each(function () {
+                optionSet1.startDate = '@Sessions.StartDate';
+                optionSet1.endDate = '@Sessions.EndDate';
+                $(this).daterangepicker(optionSet1, cbMainDate);
             });
         }
-        $("#ddlViewBy").change(function () {
-            var sbValue = $("#ddlViewBy").attr('sb');
-            var arrddlValue = $('#sbSelector_' + sbValue).text().split(' ');
-            var ddlValue = '';
-            for (i = 0; i < arrddlValue.length; i++) {
-                ddlValue += arrddlValue[i].substring(0, 1);
+        catch (err) {
+
+        }
+    }
+
+    function toggleOwner(obj) {
+        var id = $(obj).attr('id');
+        var hvParentUlID = "#ulListing" + $('#hdParentValue' + id + '').val();
+
+        if ($(obj).is(':checked')) {
+            $(obj).parents().find("#liAllListing" + id).addClass("close-list");
+        }
+        else {
+            $(obj).parents().find("#liAllListing" + id).removeClass("close-list");
+        }
+        if ($(obj).is(':checked')) {
+            $("#lblSelectedFilters_" + $('#hdParentValue' + id + '').val()).text(parseInt($("#lblSelectedFilters_" + $('#hdParentValue' + id + '').val()).text()) + 1);
+        }
+        else
+            $("#lblSelectedFilters_" + $('#hdParentValue' + id + '').val()).text(parseInt($("#lblSelectedFilters_" + $('#hdParentValue' + id + '').val()).text()) - 1);
+    }
+
+    $('li[id^="CustomReportli"]').click(function () {
+        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Custom.ToString()'
+        RemoveAllActiveItem();
+        $('.menu-content li').removeClass('active');
+        $('#liCustomReport').addClass('active');
+        $.each($('li[id^="CustomReportli"]'), function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
             }
-            $("#ddlViewBy").val(ddlValue);
-            LoadAllReports();
         });
-    </script>
+        document.title = "Custom";
+        $(this).addClass('selected');
+        $('#ddlsection').hide();
+        $("#BtnShareReport").hide();
+        $('#budgetHeader').css('display', 'none');
+        $('#ddlCustomTimeFrame').show();
+        $('.custom').addClass('active');
+        var DashboardLink = $(this).find('a');
+        if (DashboardLink != null && DashboardLink != undefined && DashboardLink != 'undefined') {
+            var CustomUrlLink = $(DashboardLink).text().trim();
+            $("#dashboardpagetext").text(CustomUrlLink);
+        }
+        var DashboardID = $(this).attr('id').replace('CustomReportli', '');
+        var url = '@Url.Action("ReportCustom", "Report", new { DashboardId = "FIRST" })';
+        window.location.href = url.replace('FIRST', DashboardID);
+    });
+
+    function RemoveAllActiveItem() {
+        $('#ulLeftPane li').each(function () {
+            if ($(this).hasClass('active')) {
+                $(this).removeClass('active');
+            }
+        });
+    }
+    $("#ddlViewBy").change(function () {
+        var sbValue = $("#ddlViewBy").attr('sb');
+        var arrddlValue = $('#sbSelector_' + sbValue).text().split(' ');
+        var ddlValue = '';
+        for (i = 0; i < arrddlValue.length; i++) {
+            ddlValue += arrddlValue[i].substring(0, 1);
+        }
+        $("#ddlViewBy").val(ddlValue);
+        LoadAllReports();
+    });
+</script>
