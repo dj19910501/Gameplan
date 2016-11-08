@@ -664,5 +664,15 @@ namespace RevenuePlanner.Test.MockHelpers
                 ruleId = rules.RuleId;
             return ruleId;
         }
+
+        public static Plan_UserSavedViews GetUserView(int userId)
+        {
+            Plan_UserSavedViews userviews = db.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.ID && a.ViewName != null).FirstOrDefault();
+            if (userviews != null)
+            {
+                return userviews;
+            }
+            return null;
+        }
     }
 }

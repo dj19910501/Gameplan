@@ -139,9 +139,53 @@ namespace RevenuePlanner.Test.Controllers
             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
             lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
 
-            string Status = string.Join(",", lststatus);
 
+            string Status = string.Join(",", lststatus);
+        
             var result = objFilterController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status, "", "", "") as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+        }
+
+        /// <summary>
+        /// To Save last set data
+        /// </summary>
+        /// <auther> Dhvanni Raval</auther>
+        /// <createddate>8Nov2016</createddate>
+        [TestMethod]
+        public void SaveLastSetOfViewsWithAlreadyExistData()
+        {
+            Console.WriteLine("To Save last set data.\n");
+            MRPEntities db = new MRPEntities();
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            FilterController objFilterController = new FilterController();
+            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+
+            string ViewBy = PlanGanttTypes.Tactic.ToString();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tactic);
+
+            List<int> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            var UserID = Sessions.User.ID;
+
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(UserID);
+
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+
+            string Status = string.Join(",", lststatus);
+            var ViewName = DataHelper.GetUserView(Sessions.User.ID).ViewName;
+            Sessions.PlanUserSavedViews = db.Plan_UserSavedViews.Where(t => t.Userid == Sessions.User.ID).ToList();
+            var result = objFilterController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status, ViewName, "", "") as JsonResult;
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
         }
@@ -206,6 +250,35 @@ namespace RevenuePlanner.Test.Controllers
             Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
             Assert.IsNotNull(result.Data);
         }
+
+        [TestMethod]
+        public void Render_LastSetofViewsWithOneParameter()
+        {
+            Console.WriteLine("To Render last set of view.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            FilterController objFilterController = new FilterController();
+            RevenuePlanner.Services.IFilter objCommonFilter = new RevenuePlanner.Services.Filter();
+          
+            string ViewName = DataHelper.GetUserView(Sessions.User.ID).ViewName;
+            var result = objFilterController.LastSetOfViews(ViewName) as JsonResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.Data);
+            Assert.IsNotNull(result.Data);
+        }
+
+        [TestMethod]
+        public void Render_LastSetofViewsWithAllParameter()
+        {
+            Console.WriteLine("To Render last set of view.\n");
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            FilterController objFilterController = new FilterController();
+            RevenuePlanner.Services.IFilter objCommonFilter = new RevenuePlanner.Services.Filter();
+
+            string ViewName = DataHelper.GetUserView(Sessions.User.ID).ViewName;
+            var result = objFilterController.LastSetOfViews(ViewName, true) as PartialViewResult;
+            Console.WriteLine(System.Reflection.MethodBase.GetCurrentMethod().Name + " \n The Assert Value result.Data:  " + result.ViewName);
+            Assert.IsNotNull(result.ViewName);
+        }
+
 
         /// <summary>
         /// Get Plan Based On Year
