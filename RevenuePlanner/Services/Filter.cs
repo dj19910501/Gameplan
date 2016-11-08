@@ -633,9 +633,11 @@ namespace RevenuePlanner.Services
         /// <returns>returns List of Owner</returns>
         public List<OwnerModel> GetOwnerListForFilter(int ClientId, int UserId, string FirstName, string LastName, Guid ApplicationId, string PlanId, string ViewBy, string ActiveMenu)
         {
+
             List<int> lstAllowedEntityIds = new List<int>();
             List<int> PlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
             DataSet dsPlanCampProgTac = new DataSet();
+            RevenuePlanner.Helpers.StoredProcedure objSp = new StoredProcedure();
             dsPlanCampProgTac = (DataSet)objCache.Returncache(Convert.ToString(Enums.CacheObject.dsPlanCampProgTac));
             if (dsPlanCampProgTac == null)
             {
@@ -670,34 +672,40 @@ namespace RevenuePlanner.Services
             }
             objCache.AddCache(Convert.ToString(Enums.CacheObject.Tactic), tacticList);
             string section = Convert.ToString(Enums.Section.Tactic);
-
-            List<CustomField> customfield = objDbMrpEntities.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == ClientId && customField.IsDeleted == false).ToList();
-            objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomField), customfield);
-            List<int> customfieldidlist = customfield.Select(c => c.CustomFieldId).ToList();
-            List<CacheCustomField> lstAllTacticCustomFieldEntitiesanony = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
-                                                                                   .Select(customFieldEntity => new CacheCustomField { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value, CreatedBy = customFieldEntity.CreatedBy, CustomFieldEntityId = customFieldEntity.CustomFieldEntityId }).Distinct().ToList();
-
-            objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomFieldEntity), lstAllTacticCustomFieldEntitiesanony);
-            for (int i = 0; i < PlanIds.Count; i++)
+            using (MRPEntities objDbMrpEntities = new MRPEntities())
             {
-                List<int> planTacticIds = customtacticList.Where(tact => tact.PlanId == PlanIds[i]).Select(tact => tact.PlanTacticId).ToList();
-                List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
-                                                            join lst in planTacticIds on tbl.EntityId equals lst
-                                                            select new CustomField_Entity
-                                                            {
-                                                                EntityId = tbl.EntityId,
-                                                                CustomFieldId = tbl.CustomFieldId,
-                                                                Value = tbl.Value
-                                                            }).ToList();
-
-                List<int> AllowedEntityIds = Common.GetViewableTacticList(UserId, ClientId, planTacticIds, false, customfieldlist);
-                if (AllowedEntityIds.Count > 0)
+                using (var tx = new System.Transactions.TransactionScope(System.Transactions.TransactionScopeOption.Required,
+    new System.Transactions.TransactionOptions() { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
                 {
-                    lstAllowedEntityIds.AddRange(AllowedEntityIds);
+                    List<CustomField> customfield = objDbMrpEntities.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == ClientId && customField.IsDeleted == false).ToList();
+                    objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomField), customfield);
+                    List<int> customfieldidlist = customfield.Select(c => c.CustomFieldId).ToList();
+                    //List<CacheCustomField> lstAllTacticCustomFieldEntitiesanony = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
+                    //                                                                       .Select(customFieldEntity => new CacheCustomField { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value, CreatedBy = customFieldEntity.CreatedBy, CustomFieldEntityId = customFieldEntity.CustomFieldEntityId }).Distinct().ToList();
+                    List<CacheCustomField> lstAllTacticCustomFieldEntitiesanony = objSp.GetTacticIdsOnCustomField(Sessions.User.CID, Sessions.User.ID)
+                        .Select(customFieldEntity => new CacheCustomField { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value, CreatedBy = customFieldEntity.CreatedBy, CustomFieldEntityId = customFieldEntity.CustomFieldEntityId }).ToList();
+
+                    objCache.AddCache(Convert.ToString(Enums.CacheObject.CustomFieldEntity), lstAllTacticCustomFieldEntitiesanony);
+                    for (int i = 0; i < PlanIds.Count; i++)
+                    {
+                        List<int> planTacticIds = customtacticList.Where(tact => tact.PlanId == PlanIds[i]).Select(tact => tact.PlanTacticId).ToList();
+                        List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
+                                                                    join lst in planTacticIds on tbl.EntityId equals lst
+                                                                    select new CustomField_Entity
+                                                                    {
+                                                                        EntityId = tbl.EntityId,
+                                                                        CustomFieldId = tbl.CustomFieldId,
+                                                                        Value = tbl.Value
+                                                                    }).ToList();
+
+                        List<int> AllowedEntityIds = Common.GetViewableTacticList(UserId, ClientId, planTacticIds, false, customfieldlist);
+                        if (AllowedEntityIds.Count > 0)
+                        {
+                            lstAllowedEntityIds.AddRange(AllowedEntityIds);
+                        }
+                    }
                 }
-
             }
-
             return GetOwnerList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds, ApplicationId, UserId);
 
         }
@@ -1034,7 +1042,7 @@ namespace RevenuePlanner.Services
 
         public string SetDefaultFilterPresetName(int UserID)
         {
-            string DefaultPresetName =  objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == UserID && x.IsDefaultPreset == true).Select(x => x.ViewName).FirstOrDefault();
+            string DefaultPresetName = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == UserID && x.IsDefaultPreset == true).Select(x => x.ViewName).FirstOrDefault();
             return DefaultPresetName;
         }
     }
