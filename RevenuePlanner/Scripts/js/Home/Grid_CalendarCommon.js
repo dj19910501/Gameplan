@@ -35,7 +35,8 @@ $('#btngridcalendar').click(function () {
     ShowhideDataonGridCalendar();
 });
 $('#btngrid').click(function () {
-
+    BindUpcomingActivites(filters.PlanIDs.toString());
+    gridname = "home";
     if ($('#btnbudget').hasClass('P-icon-active')) {
         HomeGrid.saveOpenStates("plangridState");
          // get scroll set of selected row from grid to calendar

@@ -10119,5 +10119,541 @@ namespace RevenuePlanner.Controllers
             objCache.AddCache(Enums.CacheObject.Tactic.ToString(), tacticList);
         }
 
+        #region Export to Excel
+
+        public void DownloadCSV()
+        {
+            DataTable dtTable = new DataTable();
+            DataRow dtRow;
+
+            dtTable.Columns.Add("SNo", typeof(int));
+            dtTable.Columns.Add("Address", typeof(string));
+
+            for (int i = 0; i <= 9; i++)
+            {
+                dtRow = dtTable.NewRow();
+                dtRow[0] = i;
+                dtRow[1] = "Address " + i.ToString();
+                dtTable.Rows.Add(dtRow);
+            }
+
+            Response.ContentType = "Application/x-excel";
+            Response.AddHeader("content-disposition", "attachment;filename=test.csv");
+            Response.Write(ExportToCSVFile(dtTable));
+            Response.End();
+
+        }
+
+        private string ExportToCSVFile(DataTable dtTable)
+        {
+            StringBuilder sbldr = new StringBuilder();
+            if (dtTable.Columns.Count != 0)
+            {
+                foreach (DataColumn col in dtTable.Columns)
+                {
+                    sbldr.Append(col.ColumnName + ',');
+                }
+                sbldr.Append("\r\n");
+                foreach (DataRow row in dtTable.Rows)
+                {
+                    foreach (DataColumn column in dtTable.Columns)
+                    {
+                        sbldr.Append(row[column].ToString().Replace(",", ";") + ','); // To handle the comma char from values
+                        //sbldr.Append(row[column].ToString() + ',');
+                    }
+                    sbldr.Append("\r\n");
+                }
+            }
+            return HtmlDecodeString(sbldr.ToString());
+        }
+
+        public void ExportCsvDataTable()
+        {
+            string FileName = HttpUtility.HtmlDecode(Convert.ToString(Session["FileName"]));
+            DataTable CSVDataTable = (DataTable)Session["CSVDataTable"];
+            Response.ContentType = "Application/x-excel";
+            Response.ContentEncoding = System.Text.Encoding.Default; // Add By Nishant Sheth // #2502 For handle multicurrency symbol in exported file
+            Response.Charset = "UTF-8";
+            //added by devanshi to replace invalid character for filename
+            FileName = string.Join("_", FileName.Split(Path.GetInvalidFileNameChars()));
+
+            // Modified By Nishant Sheth
+            // Export csv does not work in Firefox #2430
+            if (!string.IsNullOrEmpty(FileName))
+            {
+                FileName = FileName + ".csv";
+            }
+            Response.AddHeader("content-disposition", string.Format("attachment; filename = \"{0}\"", System.IO.Path.GetFileName(FileName)));
+            // End By Nishant Sheth
+            Response.Write(ExportToCSVFile(CSVDataTable));
+            Response.End();
+        }
+
+        public JsonResult ExportToCsv(string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds, string HoneycombIds = null, int PlanId = 0)
+        {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
+            BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
+
+            List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+            List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
+            List<int> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<int>() : ownerIds.Split(',').Select(owner => int.Parse(owner)).ToList();
+            List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+            List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+
+            DataTable dtTable = new DataTable();
+            DataSet dsExportCsv = new DataSet();
+            DataTable dtCSV = new DataTable();
+            DataTable dtCSVCost = new DataTable();
+            dsExportCsv = objSp.GetExportCSV(PlanId, HoneycombIds);
+            dtCSV = dsExportCsv.Tables[0];
+            dtCSVCost = dsExportCsv.Tables[0];
+
+            //var useridslist = dtCSV.Rows.Cast<DataRow>().Select(x => Guid.Parse(x.Field<string>("CreatedBy"))).ToList();
+            //string strContatedIndividualList = string.Join(",", useridslist.Select(tactic => tactic.ToString()));
+
+            var listOfClientId = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+            stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.CID && stage.IsDeleted == false).Select(stage => stage).ToList();
+            string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
+            ViewBag.MQLTitle = MQLTitle;
+
+            //DataColumnCollection columns = dsExportCsv.Tables[0].Columns;
+            DataTable dtColums = dsExportCsv.Tables[1];
+
+            string[] ListEnumCol = Enum.GetNames(typeof(Enums.DownloadCSV));
+            string[] ListNotEnumCol = Enum.GetNames(typeof(Enums.NotDownloadCSV));
+            foreach (var colEnums in ListEnumCol)
+            {
+                string dtcolname = Convert.ToString(colEnums);
+                if (colEnums == Enums.DownloadCSV.MQL.ToString())
+                {
+                    dtcolname = MQLTitle;
+                }
+                dtTable.Columns.Add(dtcolname, typeof(string));
+            }
+
+            for (int i = 0; i < dtColums.Rows.Count; i++)
+            {
+                if (!ListEnumCol.Contains(dtColums.Rows[i][0].ToString()) && !ListNotEnumCol.Contains(dtColums.Rows[i][0].ToString()))
+                {
+                    dtTable.Columns.Add(dtColums.Rows[i][0].ToString(), typeof(string));
+                }
+            }
+            dtTable.AcceptChanges();
+
+            DataColumnCollection columnNames = dtTable.Columns;
+
+            var PlanList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => x.Field<int>("EntityId")).ToList();
+            int modelId = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => int.Parse(x.Field<string>("ModelId"))).FirstOrDefault();
+
+            var TacticIds = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()).Select(x => x.Field<int>("EntityId")).ToList();
+
+            var PlanTactics = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(PlanId) && _tactic.IsDeleted.Equals(false)).ToList();
+            string FileName = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+            || x.Field<string>("Section") == Enums.Section.Program.ToString()
+            || x.Field<string>("Section") == Enums.Section.Campaign.ToString()
+            || x.Field<string>("Section") == Enums.Section.Plan.ToString()).Select(x => x.Field<string>("Plan")).FirstOrDefault();
+            ViewBag.CSVFileName = FileName;
+            var PlanTacticIds = PlanTactics.Select(a => a.PlanTacticId).ToList();
+            var progTactic = PlanTactics.Where(_tactic => TacticIds.Contains(_tactic.PlanTacticId) && _tactic.IsDeleted.Equals(false)).ToList();
+            string section = Enums.Section.Tactic.ToString();
+            var cusomfield = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.CID && customField.IsDeleted == false).ToList();
+            var customfieldidlist = cusomfield.Select(c => c.CustomFieldId).ToList();
+
+            var lstAllTacticCustomFieldEntitiesanony = db.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
+                                                                                                   .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
+
+            List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
+                                                        join lst in TacticIds on tbl.EntityId equals lst
+                                                        select new CustomField_Entity
+                                                        {
+                                                            EntityId = tbl.EntityId,
+                                                            CustomFieldId = tbl.CustomFieldId,
+                                                            Value = tbl.Value
+                                                        }).ToList();
+            if (dtCSV.Rows.Count > 0)
+            {
+                if (HoneycombIds == null)
+                {
+                    CalculateTacticCostRevenue(modelId, TacticIds, progTactic, PlanId);
+                }
+                else
+                {
+                    if (modelId == 0)
+                    {
+                        modelId = PlanTactics.Select(a => a.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).FirstOrDefault();
+                    }
+                    CalculateTacticCostRevenue(modelId, PlanTacticIds, PlanTactics, PlanId);
+                }
+            }
+
+            //// Custom Field Filter Criteria.
+            List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+            if (filteredCustomFields.Count > 0)
+            {
+                filteredCustomFields.ForEach(customField =>
+                {
+                    string[] splittedCustomField = customField.Split('_');
+                    lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                    lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                });
+            }
+
+            if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+            {
+                progTactic = progTactic.Where(pcptobj => (filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                         (filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
+                                         (filterStatus.Contains(pcptobj.Status))).ToList();
+
+                //// Apply Custom restriction for None type
+                if (progTactic.Count() > 0)
+                {
+
+                    if (filteredCustomFields.Count > 0)
+                    {
+                        TacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, TacticIds, customfieldlist);
+                        //// get Allowed Entity Ids
+                        progTactic = progTactic.Where(tacticlist => TacticIds.Contains(tacticlist.PlanTacticId)).ToList();
+                    }
+
+                }
+            }
+
+            var FilterTacticIds = progTactic.Select(a => a.PlanTacticId).ToList();
+            if (HoneycombIds != null)
+            {
+                var TacticIdsList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString())
+                    .Select(x => int.Parse(x.Field<string>("ParentId"))).ToList();
+
+                var ProgramIdsList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString())
+                    .Select(x => int.Parse(x.Field<string>("ParentId"))).ToList();
+
+                var CampaignIdsList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Campaign.ToString())
+                    .Select(x => int.Parse(x.Field<string>("ParentId"))).ToList();
+
+                var PlanIdsList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Plan.ToString())
+                    .Select(x => int.Parse(x.Field<string>("ParentId"))).ToList();
+
+                var MinParentId = 0;
+                var MinSection = "";
+                if (PlanIdsList.Count > 0)
+                {
+                    MinParentId = PlanIdsList.Min();
+                    MinSection = Enums.Section.Plan.ToString();
+                }
+                else if (CampaignIdsList.Count > 0)
+                {
+                    MinParentId = CampaignIdsList.Min();
+                    MinSection = Enums.Section.Campaign.ToString();
+                }
+                else if (ProgramIdsList.Count > 0)
+                {
+                    MinParentId = ProgramIdsList.Min();
+                    MinSection = Enums.Section.Program.ToString();
+                }
+                else if (TacticIdsList.Count > 0)
+                {
+                    MinParentId = TacticIdsList.Min();
+                    MinSection = Enums.Section.Tactic.ToString();
+                }
+
+                var dd = dtCSV
+              .Rows
+              .Cast<DataRow>()
+              .Where(row => row.Field<string>("ParentId") == Convert.ToString(MinParentId) && row.Field<string>("Section") == MinSection).ToList();
+
+                for (int i = 0; i < dtCSV.Rows.Count; i++)
+                {
+                    if (dtTable.Rows.Count == 0)
+                    {
+                        var items = GetTopLevelRows(dtCSV, MinParentId, MinSection)
+                                .Select(row => CreateItem(dtCSV, row, columnNames, dtTable, listOfClientId, PlanTacticIds))
+                                .ToList();
+                    }
+                    else
+                    {
+                        MinParentId = Convert.ToInt32(dtCSV.Rows[i]["ParentId"].ToString());
+                        MinSection = Convert.ToString(dtCSV.Rows[i]["Section"].ToString());
+                        var EntityId = dtCSV.Rows[i]["EntityId"].ToString();
+                        var CheckRecordExist = dtTable.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == MinSection && x.Field<string>("EntityId") == EntityId)
+                            .Select(x => x.Field<string>("EntityId")).ToList();
+
+                        if (CheckRecordExist.Count == 0)
+                        {
+
+                            var items = GetTopLevelRows(dtCSV, MinParentId, MinSection)
+                                    .Select(row => CreateItem(dtCSV, row, columnNames, dtTable, listOfClientId, PlanTacticIds))
+                                    .ToList();
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                #region Default Hireachy
+                for (int plan = 0; plan < PlanList.Count; plan++)
+                {
+                    totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
+                    totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIds.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
+                    DataRow[] dr = dtCSV.Select("EntityId = " + PlanList[plan] + "AND Section = '" + Enums.Section.Plan.ToString() + "'");
+
+                    OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+                    var CampList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Campaign.ToString()
+                        && int.Parse(x.Field<string>("ParentId")) == PlanList[plan]).OrderBy(x => x.Field<string>("Campaign")).Select(x => x.Field<int>("EntityId")).ToList();
+
+                    var PlanProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
+                          && CampList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => x.Field<int>("EntityId")).ToList();
+
+                    var PlanTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                   && PlanProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
+
+                    totalPlannedCostCSV = PlanTacticCostlist.Sum();
+
+                    DataRowsInsert(dr, dtTable, columnNames);
+
+                    for (int camp = 0; camp < CampList.Count; camp++)
+                    {
+                        totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.MQL) : 0;
+                        totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => CampList[camp] == l.CampaignId).Sum(l => l.Revenue) : 0;
+                        var ProgramList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Program.ToString()
+                           && int.Parse(x.Field<string>("ParentId")) == CampList[camp]).OrderBy(x => x.Field<string>("Program")).Select(x => x.Field<int>("EntityId")).ToList();
+
+                        var CampTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                       && ProgramList.Contains(int.Parse(x.Field<string>("ParentId")))).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
+
+                        totalPlannedCostCSV = CampTacticCostlist.Sum();
+
+                        dr = dtCSV.Select("EntityId = " + CampList[camp] + "AND Section ='" + Enums.Section.Campaign.ToString() + "'");
+                        OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+                        DataRowsInsert(dr, dtTable, columnNames);
+
+                        for (int prog = 0; prog < ProgramList.Count; prog++)
+                        {
+                            totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.MQL) : 0;
+                            totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => ProgramList[prog] == l.Programid).Sum(l => l.Revenue) : 0;
+                            var ProgTacticCostlist = dtCSVCost.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                       && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).Select(x => double.Parse(x.Field<string>("PlannedCost"))).ToList();
+                            totalPlannedCostCSV = ProgTacticCostlist.Sum();
+
+                            dr = dtCSV.Select("EntityId = " + ProgramList[prog] + "AND Section = '" + Enums.Section.Program.ToString() + "'");
+                            OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+                            DataRowsInsert(dr, dtTable, columnNames);
+
+                            var TacticList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.Tactic.ToString()
+                                && int.Parse(x.Field<string>("ParentId")) == ProgramList[prog]).OrderBy(x => x.Field<string>("Tactic")).Select(x => x.Field<int>("EntityId")).ToList();
+
+                            for (int Tac = 0; Tac < TacticList.Count; Tac++)
+                            {
+                                if (FilterTacticIds.Contains(TacticList[Tac]))
+                                {
+                                    totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.MQL) : 0;
+                                    totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticList[Tac] == l.PlanTacticId).Sum(l => l.Revenue) : 0;
+                                    dr = dtCSV.Select("EntityId = " + TacticList[Tac] + "AND Section = '" + Enums.Section.Tactic.ToString() + "'");
+                                    totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
+                                    OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+                                    DataRowsInsert(dr, dtTable, columnNames);
+
+                                    var LineitemList = dtCSV.Rows.Cast<DataRow>().Where(x => x.Field<string>("Section") == Enums.Section.LineItem.ToString()
+                                        && int.Parse(x.Field<string>("ParentId")) == TacticList[Tac]).OrderBy(x => x.Field<string>("LineItem")).Select(x => x.Field<int>("EntityId")).ToList();
+
+                                    for (int line = 0; line < LineitemList.Count; line++)
+                                    {
+                                        totalmqlCSV = 0;
+                                        totalrevenueCSV = 0;
+                                        dr = dtCSV.Select("EntityId = " + LineitemList[line] + "AND Section = '" + Enums.Section.LineItem.ToString() + "'");
+                                        totalPlannedCostCSV = Convert.ToDouble(dr[0][Enums.DownloadCSV.PlannedCost.ToString()]);
+                                        OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+                                        DataRowsInsert(dr, dtTable, columnNames);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+                #endregion
+            }
+            dtTable.Columns.Remove(Enums.DownloadCSV.EntityId.ToString());
+            dtTable.Columns.Remove(Enums.DownloadCSV.Section.ToString());
+            //Added By Komal rawal for 2102 for honey comb export line item column not required
+            if (HoneycombIds != null)
+            {
+                dtTable.Columns.Remove(Enums.DownloadCSV.Lineitem.ToString());
+            }
+            Session["CSVDataTable"] = dtTable;
+            Session["FileName"] = FileName;
+            return Json(new { data = FileName }, JsonRequestBehavior.AllowGet); ;
+        }
+
+        public void DataRowsInsert(DataRow[] dr, DataTable dt, DataColumnCollection columns)
+        {
+            for (int i = 0; i < dr.Length; i++)
+            {
+                DataRow row = dt.NewRow();
+                for (int j = 0; j < columns.Count; j++)
+                {
+                    // Modified Condition By Nishant Sheth //#2345 :: TQL/Qualified Leads Values are not display in exported csv file
+                    if (dr[i].Table.Columns.Contains(columns[j].ToString()) || dr[i].Table.Columns.Contains(Enums.DownloadCSV.MQL.ToString()))
+                    {
+                        string MqlColName = Convert.ToString(ViewBag.MQLTitle);
+                        ViewBag.MQLTitle = MqlColName;
+
+                        if (columns[j].ToString() == MqlColName)
+                        {
+                            if (!string.IsNullOrEmpty(Convert.ToString(row[columns["Lineitem"].ToString()])))
+                            {
+                                row[columns[j].ToString()] = "--";
+                            }
+                            else
+                            {
+                                row[columns[j].ToString()] = (Int64)totalmqlCSV;
+                            }
+                        }
+                        else if (columns[j].ToString() == Enums.DownloadCSV.Revenue.ToString())
+                        {
+                            if (!string.IsNullOrEmpty(Convert.ToString(row[columns["Lineitem"].ToString()])))
+                            {
+                                row[columns[j].ToString()] = "--";
+                            }
+                            else
+                            {
+                                row[columns[j].ToString()] = Sessions.PlanCurrencySymbol + Math.Round(totalrevenueCSV, 2);
+                            }
+                        }
+                        else if (columns[j].ToString() == Enums.DownloadCSV.Owner.ToString())
+                        {
+                            row[columns[j].ToString()] = OwnerNameCsv;
+                        }
+                        else if (columns[j].ToString() == Enums.DownloadCSV.PlannedCost.ToString())
+                        {
+                            row[columns[j].ToString()] = Sessions.PlanCurrencySymbol + totalPlannedCostCSV;
+                        }
+                        else if (columns[j].ToString() == Enums.DownloadCSV.EndDate.ToString())
+                        {
+                            string EndDate = Convert.ToString(dr[i][columns[j].ToString()]).Split(';').Max();
+                            row[columns[j].ToString()] = EndDate;
+                        }
+                        else
+                        {
+
+                            if (columns[j].ToString() == MqlColName)
+                            {
+                                row[MqlColName] = Convert.ToString(dr[i][Enums.DownloadCSV.MQL.ToString()]);
+                            }
+                            else
+                            {
+                                if (dr[i].Table.Columns.Contains(columns[j].ToString()))
+                                {
+                                    row[columns[j].ToString()] = Convert.ToString(dr[i][columns[j].ToString()]);
+                                }
+                                else
+                                {
+                                    row[columns[j].ToString()] = "--";
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        row[columns[j].ToString()] = Convert.ToString(DBNull.Value);
+                    }
+                }
+                dt.Rows.Add(row);
+                dt.AcceptChanges();
+            }
+        }
+
+        private string HtmlDecodeString(string source)
+        {
+            source = source.Replace("&amp;", "&");
+            source = source.Replace("–", "-");
+            return HttpUtility.HtmlDecode(source.ToString());
+        }
+
+        //get rows of the top-level items
+        IEnumerable<DataRow> GetTopLevelRows(DataTable dataTable, int minParentId, string Section)
+        {
+            return dataTable
+              .Rows
+              .Cast<DataRow>()
+              .Where(row => row.Field<string>("ParentId") == Convert.ToString(minParentId) && row.Field<string>("Section") == Section);
+        }
+
+        class CSVItem
+        {
+            public Int32 Id { get; set; }
+            public String Section { get; set; }
+            public IEnumerable<CSVItem> Children { get; set; }
+        }
+
+        //create an item including the child collection. This function will recurse down the hierarchy
+        CSVItem CreateItem(DataTable dataTable, DataRow row, DataColumnCollection columnNames, DataTable insertDataTable, List<User> listOfClientId, List<int> TacticIdsList)
+        {
+            PlanExchangeRate = Sessions.PlanExchangeRate;
+            var id = row.Field<Int32>("EntityId");
+            var Section = row.Field<String>("Section");
+            var ChildSection = Section;
+            if (Section == Enums.Section.Plan.ToString())
+            {
+                ChildSection = Enums.Section.Campaign.ToString();
+            }
+            else if (Section == Enums.Section.Campaign.ToString())
+            {
+                ChildSection = Enums.Section.Program.ToString();
+            }
+            else if (Section == Enums.Section.Program.ToString())
+            {
+                ChildSection = Enums.Section.Tactic.ToString();
+            }
+
+            //var Section = row.Field<string>("Section");
+            if (Section == Enums.Section.Plan.ToString())
+            {
+                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIdsList.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
+                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => TacticIdsList.Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
+                totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => TacticIdsList.Contains(l.PlanTacticId)).Sum(l => l.Cost) : 0;
+            }
+            else if (Section == Enums.Section.Campaign.ToString())
+            {
+                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.CampaignId == id).Sum(l => l.MQL) : 0;
+                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.CampaignId == id).Sum(l => l.Revenue) : 0;
+                totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => l.CampaignId == id).Sum(l => l.Cost) : 0;
+            }
+            else if (Section == Enums.Section.Program.ToString())
+            {
+                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.Programid == id).Sum(l => l.MQL) : 0;
+                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.Programid == id).Sum(l => l.Revenue) : 0;
+                totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => l.Programid == id).Sum(l => l.Cost) : 0;
+            }
+            else if (Section == Enums.Section.Tactic.ToString())
+            {
+                totalmqlCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.PlanTacticId == id).Sum(l => l.MQL) : 0;
+                totalrevenueCSV = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => l.PlanTacticId == id).Sum(l => l.Revenue) : 0;
+                totalPlannedCostCSV = LineItemList.Count > 0 ? LineItemList.Where(l => l.PlanTacticId == id).Sum(l => l.Cost) : 0;
+            }
+            totalPlannedCostCSV = objCurrency.GetValueByExchangeRate(totalPlannedCostCSV, PlanExchangeRate); // Add By Nishant Sheth #2502 : Export csv with multi-currency
+            DataRow[] dr = dataTable.Select("EntityId = " + id + "AND Section = '" + Section + "'");
+
+            OwnerNameCsv = GetOwnerNameCSV(dr[0][Enums.NotDownloadCSV.CreatedBy.ToString()].ToString(), listOfClientId);
+
+            DataRowsInsert(dr, insertDataTable, columnNames);
+
+            var children = GetChildren(dataTable, id, ChildSection)
+             .Select(r => CreateItem(dataTable, r, columnNames, insertDataTable, listOfClientId, TacticIdsList))
+             .ToList();
+            //return row;
+            return new CSVItem { Id = id, Section = Section, Children = children };
+        }
+
+        //get the children of a specific item
+        IEnumerable<DataRow> GetChildren(DataTable dataTable, Int32 parentId, string Section)
+        {
+            return dataTable
+              .Rows
+              .Cast<DataRow>()
+              .Where(row => row.Field<string>("ParentId") == Convert.ToString(parentId) && row.Field<string>("Section") == Section);
+        }
+
+        #endregion
     }
 }
