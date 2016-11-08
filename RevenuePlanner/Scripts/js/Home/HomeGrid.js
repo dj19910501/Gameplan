@@ -1196,42 +1196,129 @@ function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
     }
 }
 
-function ExportToExcel(isHoneyComb) {
-    var rowIdArray = [];
-    var HoneyCombSelectedArray = [];
+function ExportToCsvSp() {
+    if ($('#txtGlobalSearch').val().trim() != undefined && $('#txtGlobalSearch').val().trim() != "") {
+        var ExportdataId = new Array();
+        $(HomeGrid.rowsBuffer).find('td div.honeycombbox-icon-gantt').each(function () {
+            ExportdataId.push($(this).attr('csvid'));
+        });
 
-    var iconColumnIndex = HomeGrid.getColIndexById("Add");
-    var colourCodeIndex = HomeGrid.getColIndexById("ColourCode");
-    var machineNameIndex = HomeGrid.getColIndexById("MachineName");
-    var TypeIndex = HomeGrid.getColIndexById("Type");
-    var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
-    if (gridname.toLowerCase() == "budget") {
-        iconColumnIndex = HomeGrid.getColIndexById("Buttons");
-        colourCodeIndex = HomeGrid.getColIndexById("colourcode");
-    }
-    if (isHoneyComb) {
-        HomeGrid.forEachRow(function (id) {
-
-            var d = HomeGrid.cells(id, iconColumnIndex).getValue();
-            if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
-                HomeGrid.setRowHidden(id, true);
-                rowIdArray.push(id);
-            }
-            else {
-                HoneyCombSelectedArray.push(id);
+        var Honeycombids = ExportdataId.toString();
+        $.ajax({
+            type: 'POST',
+            url: urlContent + 'Plan/ExportToCsv/',
+            data: { HoneycombIds: Honeycombids, PlanId: filters.PlanIDs.toString() },
+            success: function (data) {
+                window.location = urlContent + 'Plan/ExportCsvDataTable/';
             }
         });
     }
-    HomeGrid.saveOpenStates("plangridState");
-    HomeGrid.expandAll();
+    else {
+        var CheckedCounter = 0, AllCounter = 0, id = null, UncheckedCounter = 0;
+        $("#divCustomFieldsFilter").find("div.accordion").each(function () {
+            if ($(this).find("input[type=checkbox]") != null || $(this).find("input[type=checkbox]") != "") {
+                AllCounter = $(this).find("input[type=checkbox]").length;
+                CheckedCounter = $(this).find("input[type=checkbox]:checked").length;
+                UncheckedCounter = AllCounter - CheckedCounter;
+                if (AllCounter == UncheckedCounter) {
+                    var Id = $(this).attr("id");
+                    if (Id.indexOf("-") >= 0) {
+                        Id = Id.split('-')[1];
+                        var CustomId = Id + "_null";
+                        filters.customFieldIds.push(CustomId);
+                    }
+                }
+                else if (AllCounter == CheckedCounter) {
+                    id = this.id;
+                    if (id != null && id != "" && id.indexOf("-") > -1) {
+                        id = this.id.split("-")[1];
+                    }
+                    var i = 0, customfieldid;
+                    for (i = 0; i < filters.customFieldIds.length; i++) {
+                        if (filters.customFieldIds[i].indexOf("_") > -1) {
+                            customfieldid = filters.customFieldIds[i].split("_")[0];
+                            if (id == customfieldid) {
+                                filters.customFieldIds.splice(i, 1);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        var OwnerIds = filters.OwnerIds.toString();
+        var TacticTypeids = filters.TacticTypeids.toString();
+        var StatusIds = filters.StatusIds.toString();
+        var CustomFieldId = filters.customFieldIds.toString();
+        $.ajax({
+            type: 'POST',
+            url: urlContent + 'Plan/ExportToCsv/',
+            data: { ownerIds: OwnerIds, TacticTypeid: TacticTypeids, StatusIds: StatusIds, customFieldIds: CustomFieldId, PlanId: filters.PlanIDs.toString() },
+            success: function (data) {
+                window.location = urlContent + 'Plan/ExportCsvDataTable/';
+            }
 
-    var ActivityIdIndex = HomeGrid.getColIndexById("ActivityId");
+        });
+    }
+}
 
+var IsExportToCsv = false;
+function ExportCSVHoneyCombSp() {
+    var Honeycombids = ExportSelectedIds.CsvId.toString();
+    $.ajax({
+        type: 'POST',
+        url: urlContent + 'Plan/ExportToCsv/',
+        data: { HoneycombIds: Honeycombids, PlanId: filters.PlanIDs.toString() },
+        success: function (data) {
+            window.location = urlContent + 'Plan/ExportCsvDataTable/';
+        }
+
+    });
+}
+
+function ExportToExcel(isHoneyComb) {
     if (gridname.toLowerCase() == "home") {
-        HomeGrid.setColumnHidden(iconColumnIndex, true);
-        HomeGrid.setColumnHidden(colourCodeIndex, true);
+        if (filters.PlanIDs.length > 1) {
+            alert('You can export only one plan at a time. Please select the correct plan and try to export again');
+        }
+        else {
+            if (isHoneyComb) {
+                ExportCSVHoneyCombSp();
+            }
+            else {
+                ExportToCsvSp();
+            }
+        }
     }
     else {
+        var rowIdArray = [];
+        var HoneyCombSelectedArray = [];
+
+        var machineNameIndex = HomeGrid.getColIndexById("MachineName");
+        var TypeIndex = HomeGrid.getColIndexById("Type");
+        var ActivityIdindex = HomeGrid.getColIndexById("ActivityId");
+        if (gridname.toLowerCase() == "budget") {
+            iconColumnIndex = HomeGrid.getColIndexById("Buttons");
+            colourCodeIndex = HomeGrid.getColIndexById("colourcode");
+        }
+        if (isHoneyComb) {
+            HomeGrid.forEachRow(function (id) {
+
+                var d = HomeGrid.cells(id, iconColumnIndex).getValue();
+                if (d.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
+                    HomeGrid.setRowHidden(id, true);
+                    rowIdArray.push(id);
+                }
+                else {
+                    HoneyCombSelectedArray.push(id);
+                }
+            });
+        }
+        HomeGrid.saveOpenStates("plangridState");
+        HomeGrid.expandAll();
+
+        var ActivityIdIndex = HomeGrid.getColIndexById("ActivityId");
+
         HomeGrid.setColumnHidden(ActivityIdindex, false);
         HomeGrid.setColumnHidden(TypeIndex, false);
         var columnIdArray = ColumnIds.split(',');
@@ -1253,33 +1340,25 @@ function ExportToExcel(isHoneyComb) {
 
         }
         HomeGrid.setSerializableColumns(serializeStr);
-    }
-    HomeGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
-    HomeGrid.collapseAll();
-    HomeGrid.loadOpenStates("plangridState");
-    if (gridname.toLowerCase() == "home") {
-        HomeGrid.setColumnHidden(iconColumnIndex, false);
-        HomeGrid.setColumnHidden(colourCodeIndex, false);
-    }
-    else {
-
+        HomeGrid.toExcel("https://dhtmlxgrid.appspot.com/export/excel");
+        HomeGrid.collapseAll();
+        HomeGrid.loadOpenStates("plangridState");
         HomeGrid.setColumnHidden(ActivityIdindex, true);
         HomeGrid.setColumnHidden(TypeIndex, true);
+        if (rowIdArray != undefined) {
+            $.each(rowIdArray, function (key) {
+                HomeGrid.setRowHidden(rowIdArray[key], false);
+            });
+        }
+        if (HoneyCombSelectedArray != undefined) {
+            $.each(HoneyCombSelectedArray, function (key) {
+                var columnText = HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).getValue();
+                if (columnText.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
+                    HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).setValue(columnText.replace("honeycombbox-icon-gantt", "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active"));
+                }
+            });
+        }
     }
-    if (rowIdArray != undefined) {
-        $.each(rowIdArray, function (key) {
-            HomeGrid.setRowHidden(rowIdArray[key], false);
-        });
-    }
-    if (HoneyCombSelectedArray != undefined) {
-        $.each(HoneyCombSelectedArray, function (key) {
-            var columnText = HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).getValue();
-            if (columnText.indexOf('honeycombbox-icon-gantt-Active') <= -1) {
-                HomeGrid.cells(HoneyCombSelectedArray[key], iconColumnIndex).setValue(columnText.replace("honeycombbox-icon-gantt", "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active"));
-            }
-        });
-    }
-
 }
 //function to get dependent custom field options for tactic
 function GetCustomfieldOptionlist(customFieldId, entityid, cellInd, type) {
