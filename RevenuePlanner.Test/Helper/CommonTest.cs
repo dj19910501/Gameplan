@@ -15,6 +15,12 @@ namespace RevenuePlanner.Test.Helper
     [TestClass]
     public class CommonTest
     {
+        [TestInitialize]
+        public void LoadCacheMessage()
+        {
+            HttpContext.Current = RevenuePlanner.Test.MockHelpers.MockHelpers.FakeHttpContext();
+        }
+
         #region Custom Naming Structure
         /// <summary>
         /// To Check Generate custom name with null object

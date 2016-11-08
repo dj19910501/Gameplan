@@ -9241,7 +9241,7 @@ Declare @SatatusInProgress nvarchar(25)='In-Progress',
 -- cursor to update tactic
 DECLARE TacticCursor CURSOR FOR
 SELECT  PlanTacticId,[Status], StartDate,enddate,PlanProgramId from Plan_Campaign_Program_Tactic 
-where IsDeleted=0 and status in ('In-Progress','Approved') and ((GETDATE()> StartDate and GETDATE()<enddate) or (GETDATE()>enddate))
+where IsDeleted=0 and status in ('In-Progress','Approved') and ((GETDATE()>= StartDate and GETDATE()<enddate) or (GETDATE()>enddate))
 
 
 OPEN TacticCursor
@@ -9249,7 +9249,7 @@ FETCH NEXT FROM TacticCursor
 INTO @PlanTacticId, @TacticStatus, @StartDate,@enddate ,@PlanProgramId
 	WHILE @@FETCH_STATUS = 0
 		BEGIN
-		if(GETDATE()> @StartDate and GETDATE()<@enddate and @TacticStatus!=@SatatusInProgress)
+		if(GETDATE()>= @StartDate and GETDATE()<@enddate and @TacticStatus!=@SatatusInProgress)
 		begin
 		
 			update  Plan_Campaign_Program_Tactic --update status to in-progress
@@ -9342,7 +9342,7 @@ INTO @PlanProgramId
                           set @ProgramNewStatus =@SatatusDecline
 					else if((@cntCompleteTacticStatus=@TacticCnt) OR (@cntInProgressTacticStatus=@TacticCnt))
 					begin
-					 if(GETDATE()> @StartDate and GETDATE()<@enddate)
+					 if(GETDATE()>= @StartDate and GETDATE()<@enddate)
 						set @ProgramNewStatus =@SatatusInProgress
 					 else if(GETDATE()>@enddate)
 						set @ProgramNewStatus =@SatatusComplete
@@ -9434,7 +9434,7 @@ INTO @PlanCampaignId
                           set @CampaignNewStatus = @SatatusDecline
 					else if((@cntCompleteProgramStatus=@ProgramCnt) OR (@cntInProgressProgramStatus=@ProgramCnt))
 					begin
-						  if(GETDATE()> @StartDate and GETDATE()<@enddate)
+						  if(GETDATE()>= @StartDate and GETDATE()<@enddate)
 							set @CampaignNewStatus =@SatatusInProgress
 						  else if(GETDATE()>@enddate)
 							set @CampaignNewStatus =@SatatusComplete
