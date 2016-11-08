@@ -580,6 +580,25 @@ namespace RevenuePlanner.Helpers
             return GoalValues = GoalValues.Concat(CustomGoalValues).ToList();
         }
         //End
+
+        // Add by Nishant Sheth
+        // Get list of tactic ids based on clients custom field ids
+        public List<CustomField_Entity> GetTacticIdsOnCustomField(int ClientId, int UserId)
+        {
+            List<CustomField_Entity> EntityList = new List<CustomField_Entity>();
+            bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
+            SqlParameter[] para = new SqlParameter[3];
+
+            para[0] = new SqlParameter { ParameterName = "userId", Value = UserId };
+
+            para[1] = new SqlParameter { ParameterName = "ClientId", Value = ClientId };
+
+            para[2] = new SqlParameter { ParameterName = "IsDefaultCustomRestrictionsViewable", Value = IsDefaultCustomRestrictionsViewable };
+
+            EntityList = db.Database.SqlQuery<CustomField_Entity>("GetTacticIdsOnCustomField @userId,@ClientId,@IsDefaultCustomRestrictionsViewable", para)
+                .ToList();
+            return EntityList;
+        }
     }
     #endregion
 }
