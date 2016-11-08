@@ -181,7 +181,7 @@ namespace RevenuePlanner.Helpers
         // Get Tactic line ite,
         public List<Plan_Campaign_Program_Tactic_LineItem> GetTacticLineItemList(string tacticId)
         {
-           
+
             SqlParameter[] para = new SqlParameter[1];
             para[0] = new SqlParameter
             {
@@ -195,7 +195,7 @@ namespace RevenuePlanner.Helpers
         // Get List of tactic type
         public List<TacticTypeModel> GetTacticTypeList(string lstAllowedEntityIds)
         {
-          
+
             SqlParameter[] para = new SqlParameter[1];
             para[0] = new SqlParameter
             {
@@ -209,7 +209,7 @@ namespace RevenuePlanner.Helpers
         // Get list of view by 
         public List<ViewByModel> spViewByDropDownList(string planId)
         {
-          
+
             List<ViewByModel> viewByListResult = new List<ViewByModel>();
             viewByListResult.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
             viewByListResult.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
@@ -259,7 +259,7 @@ namespace RevenuePlanner.Helpers
         public DataSet GetBudgetListAndLineItemBudgetList(int BudgetId = 0)
         {
             DataSet dataset = new DataSet();
-          
+
             Connection = Conn_Open();
             using (command = new SqlCommand("GetBudgetListAndLineItemBudgetList", Connection))
             {
@@ -278,7 +278,7 @@ namespace RevenuePlanner.Helpers
         public DataSet GetDashboardContent(int HomepageId = 0, int DashboardId = 0, int DashboardPageId = 0)
         {
             DataSet ds = new DataSet();
-           
+
             Connection = Conn_Open();
             using (command = new SqlCommand("GetDashboardContent", Connection))
             {
@@ -470,7 +470,7 @@ namespace RevenuePlanner.Helpers
                 else
                 {
                     return Convert.ToString(ColumnValue);
-                }                
+                }
             }
         }
 
@@ -495,8 +495,8 @@ namespace RevenuePlanner.Helpers
         public int SaveLogNoticationdata(string action, string actionSuffix, int? componentId, string componentTitle, string description, int? objectid, int? parentObjectId, string TableName, int ClientId, int User, string UserName, int EntityOwnerID, string ReportRecipientUserIds)
         {
             int returnvalue = 0;
-           
-             List<int> lst_RecipientId = new List<int>();
+
+            List<int> lst_RecipientId = new List<int>();
             if (description == Convert.ToString(Enums.ChangeLog_ComponentType.tactic).ToLower() && componentId != null)
             {
                 if (action == Convert.ToString(Enums.ChangeLog_Actions.submitted))
@@ -580,6 +580,25 @@ namespace RevenuePlanner.Helpers
             return GoalValues = GoalValues.Concat(CustomGoalValues).ToList();
         }
         //End
+
+        // Add by Nishant Sheth
+        // Get list of tactic ids based on clients custom field ids
+        public List<CustomField_Entity> GetTacticIdsOnCustomField(int ClientId, int UserId)
+        {
+            List<CustomField_Entity> EntityList = new List<CustomField_Entity>();
+            bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
+            SqlParameter[] para = new SqlParameter[3];
+
+            para[0] = new SqlParameter { ParameterName = "userId", Value = UserId };
+
+            para[1] = new SqlParameter { ParameterName = "ClientId", Value = ClientId };
+
+            para[2] = new SqlParameter { ParameterName = "IsDefaultCustomRestrictionsViewable", Value = IsDefaultCustomRestrictionsViewable };
+
+            EntityList = db.Database.SqlQuery<CustomField_Entity>("GetTacticIdsOnCustomField @userId,@ClientId,@IsDefaultCustomRestrictionsViewable", para)
+                .ToList();
+            return EntityList;
+        }
     }
     #endregion
 }

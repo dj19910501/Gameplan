@@ -261,7 +261,7 @@ namespace RevenuePlanner.Services
             List<Int64> lsteditableEntityIds = GetEditableTacticIds(GridHireachyData, UserId, ClientId);
             // Set Row wise permission
             GridHireachyData = GridRowPermission(GridHireachyData, objPermission, lstSubordinatesIds, lsteditableEntityIds, UserId);
-
+            
             List<EntityPermissionRowWise> EntityRowPermission = GridHireachyData.Select(a => new EntityPermissionRowWise
             {
                 IsRowPermission = a.IsRowPermission,
@@ -300,7 +300,7 @@ namespace RevenuePlanner.Services
 
             // Get selected columns data
             List<GridDefaultModel> lstSelectedColumnsData = GridHireachyData.Select(a => Projection(a, UserDefinedColumns, viewBy)).ToList();
-
+            
             // Merge header of plan grid with custom fields
             ListOfDefaultColumnHeader.AddRange(GridCustomHead(ListOfCustomData.CustomFields, customColumnslist));
 
@@ -319,7 +319,7 @@ namespace RevenuePlanner.Services
             List<PlanDHTMLXGridDataModelHomeGrid> griditems = GetTopLevelRowsGrid(lstSelectedColumnsData, null)
                    .Select(row => CreateItemGrid(lstSelectedColumnsData, row, ListOfCustomData, PlanCurrencySymbol, PlanExchangeRate, customColumnslist, GridHireachyData, lstusercolindex, EntityEmptyCustomFieldsData))
                    .ToList();
-
+            
             objPlanMainDHTMLXGrid.head = ListOfDefaultColumnHeader;
             objPlanMainDHTMLXGrid.rows = griditems;
             return objPlanMainDHTMLXGrid;
@@ -369,7 +369,7 @@ namespace RevenuePlanner.Services
             List<int> lstTacticIds = GridHireachyData.Where(a => a.EntityType == Enums.EntityType.Tactic).Select(a => int.Parse(a.EntityId.ToString())).ToList();
             List<Int64> lsteditableEntityIds = new List<Int64>();
             // Get list of editable list of tactic ids for permission
-            lsteditableEntityIds = Common.GetEditableTacticList(UserId, ClientId, lstTacticIds, false)
+            lsteditableEntityIds = lsteditableEntityIds = Common.GetEditableTacticList(UserId, ClientId, lstTacticIds, false)
                    .Select(a => Int64.Parse(a.ToString())).ToList();
 
             return lsteditableEntityIds;
@@ -512,7 +512,7 @@ namespace RevenuePlanner.Services
                 if (ChildernCount > 0)
                     return objHomeGridProp.openstateone;
             }
-          return string.Empty;
+            return string.Empty;
         }
         #endregion
 
@@ -690,7 +690,7 @@ namespace RevenuePlanner.Services
                 width = 150,
                 value = Enums.GetEnumDescription(Enums.HomeGrid_Default_Hidden_Columns.Revenue) + ColumnManagmentIcon
             });
-            
+
             return lstColumns;
         }
 
@@ -1503,7 +1503,7 @@ namespace RevenuePlanner.Services
                             }
                             break;
                     }
-                    if ( pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue))
+                    if (pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.MQL) || pair.Name == Convert.ToString(Enums.HomeGrid_Default_Hidden_Columns.Revenue))
                     {
                         cellTextColor = objHomeGridProp.stylecolorgray;
                     }
@@ -1734,7 +1734,7 @@ namespace RevenuePlanner.Services
                         string Revenue = Convert.ToString(RowData.Revenue);
                         double PlannedRevenue = 0;
                         double.TryParse(Convert.ToString(Revenue), out PlannedRevenue);
-                        objVal = PlanCurrencySymbol + FormatNumber(objCurrency.GetValueByExchangeRate(PlannedRevenue, PlanExchangeRate), 2); 
+                        objVal = PlanCurrencySymbol + FormatNumber(objCurrency.GetValueByExchangeRate(PlannedRevenue, PlanExchangeRate), 2);
                         break;
                     case Enums.HomeGrid_Default_Hidden_Columns.Status:
                         objVal = Convert.ToString(RowData.Status);
@@ -1756,7 +1756,7 @@ namespace RevenuePlanner.Services
                     case Enums.HomeGrid_Default_Hidden_Columns.Owner:
                         objVal = Convert.ToString(RowData.Owner);
                         break;
-                  
+
                     default:
                         objVal = string.Empty;
                         break;
@@ -2003,7 +2003,7 @@ namespace RevenuePlanner.Services
 
             #region "Filter data based on customfields selected under filter"
             if (calResultset != null && calResultset.Count > 0 && !string.IsNullOrEmpty(customFieldIds))
-                calResultset = FilterCustomField(calResultset, customFieldIds,_UserId,_ClientId); // Get filtered tactics based on customfield selection under Filter.
+                calResultset = FilterCustomField(calResultset, customFieldIds, _UserId, _ClientId); // Get filtered tactics based on customfield selection under Filter.
             #endregion
 
 
@@ -2094,7 +2094,7 @@ namespace RevenuePlanner.Services
         /// Desc: Filter Calendar Model data based on custom field selected under filter screen. 
         /// </summary>
         /// <returns> Return List<calendarDataModel> dataset</returns>
-        private List<calendarDataModel> FilterCustomField(List<calendarDataModel> allData, string fltrCustomfields,int UserId, int ClientId)
+        private List<calendarDataModel> FilterCustomField(List<calendarDataModel> allData, string fltrCustomfields, int UserId, int ClientId)
         {
             List<calendarDataModel> resultData = new List<calendarDataModel>();
             if (allData != null && allData.Count > 0)
@@ -2210,7 +2210,7 @@ namespace RevenuePlanner.Services
                                                               PlanId = plan.PlanId,
                                                               id = tactictypes.TacticTypeId,
                                                               value = tactictypes.Title,
-                                                              Type=tactictypes.AssetType
+                                                              Type = tactictypes.AssetType
                                                           }
                                  ).ToList();
             return lstTacticTypes;
