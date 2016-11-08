@@ -10235,7 +10235,14 @@ namespace RevenuePlanner.Controllers
             {
                 if (!ListEnumCol.Contains(dtColums.Rows[i][0].ToString()) && !ListNotEnumCol.Contains(dtColums.Rows[i][0].ToString()))
                 {
-                    dtTable.Columns.Add(dtColums.Rows[i][0].ToString(), typeof(string));
+                    if (dtTable.Columns.Contains(Convert.ToString(dtColums.Rows[i][0])))
+                    {
+                        dtTable.Columns.Add(" " + dtColums.Rows[i][0].ToString() + " ", typeof(string));
+                    }
+                    else
+                    {
+                        dtTable.Columns.Add(dtColums.Rows[i][0].ToString(), typeof(string));
+                    }
                 }
             }
             dtTable.AcceptChanges();
