@@ -75,7 +75,8 @@ function ShowhideDataonGridCalendar() {
         $("#GridGanttContent").hide();
         $('#divupcomingact').hide();
         $("#divgridview").show();
-        $('.export-dd').find('#ExportXls').show();
+        $('.export-dd').find('#ExportCSV').show();
+        $('.export-dd').find('#ExportXls').hide();
         $('.export-dd').find('#ExportPDf').hide();
         $('#ChangeView').hide();
         isCalendarView = false;
@@ -85,6 +86,7 @@ function ShowhideDataonGridCalendar() {
     }
     else {
         $('.export-dd').find('#ExportXls').hide();
+        $('.export-dd').find('#ExportCSV').hide();
         $('.export-dd').find('#ExportPDf').show();
         $('#divupcomingact').show();
         $('#divgridview').empty();
@@ -168,6 +170,7 @@ function ShowHideDataonBudgetScreen() {
     $('#ImportBtn').show();
     $('.export-dd').find('#ExportXls').show();
     $('.export-dd').find('#ExportPDf').hide();
+    $('.export-dd').find('#ExportCSV').hide();
 }
 
 
@@ -1338,10 +1341,17 @@ function AddRemoveEntity(item) {
         $(".honeycombbox").show();
         //Added following condition to hide show export to pdf and xls option as per grid and calendar view
         if (isCalendarView) {
+            $('.dropdown-menu').find('a#ExportXLSHoneyComb').css("display", "none");
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
             $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
         }
+        else if (IsBudgetGrid) {
+            $('.dropdown-menu').find('a#ExportXLSHoneyComb').css("display", "block");
+            $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
+            $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
+        }
         else {
+            $('.dropdown-menu').find('a#ExportXLSHoneyComb').css("display", "none");
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
             $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
         }
@@ -1823,7 +1833,8 @@ $("#ddlTabViewBy").change(function () {
         $("#GridGanttContent").hide();
         $('#divupcomingact').hide();
         $("#divgridview").show();
-        $('.export-dd').find('#ExportXls').show();
+        $('.export-dd').find('#ExportCSV').show();
+        $('.export-dd').find('#ExportXls').hide();
         $('.export-dd').find('#ExportPDf').hide();
     }
     else if (IsBudgetGrid) {
@@ -1836,6 +1847,7 @@ $("#ddlTabViewBy").change(function () {
     else {
         BindPlanCalendar();
         $('.export-dd').find('#ExportXls').hide();
+        $('.export-dd').find('#ExportCSV').hide();
         $('.export-dd').find('#ExportPDf').show();
         $('#divupcomingact').show();
         $("#GridGanttContent").show();

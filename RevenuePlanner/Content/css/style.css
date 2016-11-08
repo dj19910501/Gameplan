@@ -13642,6 +13642,9 @@ table .lblCustomCheckbox label{width:70%}
     left: auto;
     right: -2px;
 }
+
+.inspect-column-parent .lable_inline p{margin:0 8px 0 0}
+
 /************************************************ Responsive css start here **********************************************************/
 
 @media (max-width: 1600px) {
