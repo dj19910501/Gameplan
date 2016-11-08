@@ -8816,7 +8816,26 @@ GO
 
 GO
 
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetTacticTypeList]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[GetTacticTypeList]
+GO
 
+CREATE PROCEDURE [dbo].[GetTacticTypeList]
+@TacticIds nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+Select val INTO #PlanTacticIds From dbo.comma_split(@TacticIds,',')
+
+SELECT [TacticType].Title,[TacticType].TacticTypeId,Count([TacticType].TacticTypeId) As Number FROM TacticType WITH (NOLOCK) 
+CROSS APPLY (SELECT PlanTacticId,TacticTypeId FROM Plan_Campaign_Program_Tactic As Tactic WITH (NOLOCK)
+CROSS APPLY (SELECT * FROM #PlanTacticIds PT WHERE PT.val = Tactic.PlanTacticId) PT
+WHERE TacticType.TacticTypeId=Tactic.TacticTypeId  AND IsDeleted=0) Tactic
+GROUP BY [TacticType].TacticTypeId,[TacticType].Title
+ORDER BY [TacticType].Title
+END
+GO
 
 
 /****** Object:  StoredProcedure [dbo].[GetGridData]    Script Date: 10/17/2016 8:04:18 PM ******/
