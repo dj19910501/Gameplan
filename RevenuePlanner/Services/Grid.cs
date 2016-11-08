@@ -369,7 +369,7 @@ namespace RevenuePlanner.Services
             List<int> lstTacticIds = GridHireachyData.Where(a => a.EntityType == Enums.EntityType.Tactic).Select(a => int.Parse(a.EntityId.ToString())).ToList();
             List<Int64> lsteditableEntityIds = new List<Int64>();
             // Get list of editable list of tactic ids for permission
-            lsteditableEntityIds = lsteditableEntityIds = Common.GetEditableTacticList(UserId, ClientId, lstTacticIds, false)
+            lsteditableEntityIds = Common.GetEditableTacticList(UserId, ClientId, lstTacticIds, false)
                    .Select(a => Int64.Parse(a.ToString())).ToList();
 
             return lsteditableEntityIds;
