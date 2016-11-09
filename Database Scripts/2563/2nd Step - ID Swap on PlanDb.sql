@@ -118,3 +118,20 @@ FROM INFORMATION_SCHEMA.COLUMNS A
 WHERE RIGHT(A.COLUMN_NAME, 3) = '2zz'
 --print @sql;
 EXECUTE sp_executesql @sql;
+
+--https://pl6.projectlocker.com/Bulldog_Solutions/Gameplan/trac/ticket/2761
+--
+SELECT @sql = (
+SELECT '
+' + 
+'UPDATE Plan_UserSavedViews SET FilterValues = SUBSTRING((select '','' +CAST(A.ID AS VARCHAR) FROM dbo.SplitString('''+FilterValues+''', '','') B JOIN '+@AuthDb+'.dbo.[User] A ON A.UserId = B.Item FOR XML PATH('''')), 2, 5000)
+ WHERE Id = '+STR(ID)+''
+FROM Plan_UserSavedViews 
+where FilterName = 'Owner' and FilterValues <> 'All' and FilterValues <> ''
+FOR XML PATH ('')
+)
+
+SET @sql = replace(@sql, '&#x0D;', '')
+
+--print @sql 
+exec (@sql);
