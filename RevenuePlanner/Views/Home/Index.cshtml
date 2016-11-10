@@ -314,7 +314,9 @@
     var gridTab = '@Enums.ActivePlanTab.Grid.ToString()';
     var budgetTab = '@Enums.ActivePlanTab.Budget.ToString()';
     var isFirstTimeOnGrid = true;
-    //End
+        //End
+    var IsNewPlan = false;
+    var IndexLink = '@Url.Content("~/Home/Index")';
 
     //for Hidding tooltip -ticket 2414
     var $doc = $(document);

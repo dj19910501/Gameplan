@@ -967,6 +967,18 @@ function isDataChanged() {
 //Start
 function CloseIconClick() {
     $('.close-x-big-icon').click(function () {
+        if (isDataModified && IsNewPlan == true) {
+            IsNewPlan = false;
+            var planid = $("#hdnPlanId").val();
+            var queryStringArr = [];
+            queryStringArr.push(
+                {
+                    key: 'currentPlanId',
+                    Value: planid
+                });
+            formSubmitEvent(IndexLink, queryStringArr);
+        }
+
         $('#modalMainContainer').hide();// Added to remove extra space Below Grid/Calendar Table
         logMixpanelTrack("Exit from inspection window.");
         RemoveAllMediaCodeData();

@@ -14,6 +14,7 @@ using Integration;
 using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
 using RevenuePlanner.Services;
+using System.Data.SqlClient;
 
 
 
@@ -367,16 +368,14 @@ namespace RevenuePlanner.Controllers
                         int resultadd = AddUpdatePlanDetails(objPlanModel, 0, plan, true);
                         if (resultadd > 0)
                         {
-                            List<Plan_UserSavedViews> UserSavedViews = db.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.ID).ToList();
-                            UserSavedViews.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                            db.SaveChanges();
                             Sessions.PlanUserSavedViews = null;
-                            Sessions.PlanId = plan.PlanId;
-                            Sessions.PlanPlanIds.Add(plan.PlanId);
+                         
                             Sessions.IsNoPlanCreated = false;
                             //Create default Plan Improvement Campaign, Program
                             int returnValue = CreatePlanImprovementCampaignAndProgram();
-                            strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Convert.ToString(Enums.PlanEntity.Plan)]);  
+                            bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
+                            strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Convert.ToString(Enums.PlanEntity.Plan)]);
+                            SaveFilterValuesForNewplan(Sessions.User.ID, Sessions.User.CID, IsDefaultCustomRestrictionsViewable, plan.PlanId);
                             return Json(new { id = plan.PlanId, succmsg = strMessage, redirect = "" });
                         }
                         else
@@ -392,7 +391,24 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
             return Json(new { id = 0 });
-        }       
+        }
+
+        public void SaveFilterValuesForNewplan(int UserId, int ClientId, bool IsDefaultCustomRestrictionsViewable, int Planid)
+        {
+            SqlParameter[] para = new SqlParameter[4];
+
+            para[0] = new SqlParameter { ParameterName = "userId", Value = UserId };
+
+            para[1] = new SqlParameter { ParameterName = "ClientId", Value = ClientId };
+
+            para[2] = new SqlParameter { ParameterName = "IsDefaultCustomRestrictionsViewable", Value = IsDefaultCustomRestrictionsViewable };
+
+            para[3] = new SqlParameter { ParameterName = "newPlanId ", Value = Planid };
+
+            db.Database
+               .SqlQuery<GridDefaultModel>("SavePlanDefaultFilters @userId,@ClientId,@IsDefaultCustomRestrictionsViewable,@newPlanId", para).ToList();
+
+        }
             /// <summary>
         /// Method to Add / update plan detail from inspect popup
         /// Added by : Devanshi
