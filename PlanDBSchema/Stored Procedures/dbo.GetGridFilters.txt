@@ -139,7 +139,7 @@ BEGIN
 		BEGIN
 			
 			SELECT Top 1 @PlanId = p.PlanId from Model as M
-			JOIN [Plan] as P on M.ModelId = P.ModelId and M.ClientId=@ClientId and P.IsDeleted='0' and M.IsDeleted='0'
+			JOIN [Plan] as P on M.ModelId = P.ModelId and M.ClientId=@ClientId and P.IsDeleted='0' and M.IsDeleted='0' and P.[Year]<=Datepart(yyyy,GETDATE())
 			Order by P.Year desc, P.Title
 			
 			SET @OwnerIds=@keyAll

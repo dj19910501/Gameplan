@@ -374,6 +374,7 @@
                                 returnparameter = true;
                                 var planid = $("#hdnPlanId").val();
                                 if (planid == '0') {
+                                    IsNewPlan = true;
                                     planid = data.id;
                                     isCopyTactic = planid;
                                     $("#hdnPlanId").val(planid);
