@@ -255,7 +255,7 @@ namespace RevenuePlanner.Controllers
             //Modified By Komal Rawal include year filter in default view
             List<string> LastSetOfPlanSelected = new List<string>();
             List<string> LastSetOfYearSelected = new List<string>();
-            string  Label = Enums.FilterLabel.Plan.ToString();
+            string Label = Enums.FilterLabel.Plan.ToString();
             string Yearlabel = Enums.FilterLabel.Year.ToString();
             string FilterName = Sessions.FilterPresetName;
 
@@ -459,7 +459,7 @@ namespace RevenuePlanner.Controllers
             //Add  By Nishant Sheth
             // Desc :: #1821 - Get list of plan base on start Date and end date
 
-            List<Plan> DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false 
+            List<Plan> DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false
                 && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.CID && plan.IsActive == true).ToList();
             List<int> uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
             // Modified By Nishant Sheth 
@@ -497,7 +497,7 @@ namespace RevenuePlanner.Controllers
                 TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
                 return RedirectToAction("PlanSelector", "Plan");
             }
-           
+
             ViewBag.SelectedYear = selectedYear;//@N set selected year for report year list
             // End - Added by Arpita Soni for Ticket #1148 on 02/02/2015
 
@@ -527,7 +527,7 @@ namespace RevenuePlanner.Controllers
 
             }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();//@N Left Panel Plan List
 
-          
+
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();//@N Left Panel year list
             //End Added by Mitesh Vaishnav for PL ticket #846
 
@@ -566,7 +566,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-           
+
             ViewBag.MeasureConnStr = ReportDBConnString;
             ViewBag.AuthorizedReportAPIUserName = AuthorizedReportAPIUserName;
             ViewBag.AuthorizedReportAPIPassword = AuthorizedReportAPIPassword;
@@ -2109,7 +2109,7 @@ namespace RevenuePlanner.Controllers
             foreach (var tactic in Tacticdata)
             {
                 int id = tactic.TacticObj.PlanTacticId;
-                var InnerLineItemList = LineItemList.Where(l => l.PlanTacticId == id).ToList();
+                var InnerLineItemList = LineItemList.Where(l => l.PlanTacticId == id && l.LineItemTypeId != null).ToList();
                 if (InnerLineItemList.Count() > 0)
                 {
                     List<Plan_Campaign_Program_Tactic_LineItem_Actual> innerLineItemActualList = LineItemActualList.Where(la => InnerLineItemList.Select(line => line.PlanLineItemId).Contains(la.PlanLineItemId)).ToList();
@@ -2664,7 +2664,7 @@ namespace RevenuePlanner.Controllers
             {
                 List<DateTime> listDateTime = new List<DateTime>();
                 listDateTime.Add(new DateTime(2015, 1, 1));
-                var DataPlanList = db.Plans.Where(plan => plan.IsDeleted == false 
+                var DataPlanList = db.Plans.Where(plan => plan.IsDeleted == false
                     && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.CID && plan.IsActive == true).ToList();
                 var uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
                 var CampPlanIds = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId)).Select(camp => new { PlanId = camp.PlanId, StartDate = camp.StartDate, EndDate = camp.EndDate }).ToList()
@@ -2698,7 +2698,7 @@ namespace RevenuePlanner.Controllers
                 {
                     planList = DataPlanList.Where(plan => allPlanIds.Contains(plan.PlanId)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList().Select(plan => new SelectListItem
                     {
-                        Text = plan.Year + " " + plan.Title ,
+                        Text = plan.Year + " " + plan.Title,
                         Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy
                     }).ToList();
                 }
@@ -2730,7 +2730,7 @@ namespace RevenuePlanner.Controllers
                 if (Sessions.ViewByValue.ToUpper() == Convert.ToString(Enums.viewByOption.Q))
                     AllocatedBy = Enums.PlanAllocatedBy.quarters.ToString();
                 if (Sessions.ViewByValue.ToUpper() == Convert.ToString(Enums.viewByOption.M))
-                    AllocatedBy = Enums.PlanAllocatedBy.months.ToString();             
+                    AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
             }
             //Insertation end #2416 21/09/2016 kausha 
 
@@ -4363,7 +4363,7 @@ namespace RevenuePlanner.Controllers
                         parent.BudgetY11 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY11 * weightage) / 100) ?? 0;
                         parent.BudgetY12 = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)(line.MonthPlanned.BudgetY12 * weightage) / 100) ?? 0;
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
-                       // model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
+                        // model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
 
                         //// Set parent Actual line values.
                         parentActual = new BudgetMonth();
@@ -12145,7 +12145,7 @@ namespace RevenuePlanner.Controllers
 
                     }
                     // End By Nishant Sheth 
-                    #endregion
+                #endregion
                 }
                 else
                 {
@@ -12181,7 +12181,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-                #endregion
+        #endregion
 
                 #region "Add all list to Master Model"
                 objSubDataTableModel.PerformanceList = PerformanceList;
@@ -12608,7 +12608,7 @@ namespace RevenuePlanner.Controllers
                 tacticlist = GetTacticForReporting();
 
                 // End By Nishant Sheth
-                #endregion
+            #endregion
                 /// Declarion For Card Section 
                 /// Nishant Sheth
                 /// 

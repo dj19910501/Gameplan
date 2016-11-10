@@ -7803,7 +7803,7 @@ namespace RevenuePlanner.Helpers
                     List<Plan_Campaign_Program_Tactic_LineItem> tblLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => PlanTacticIds.Contains(li.PlanTacticId) && li.IsDeleted.Equals(false)).ToList();
                     var lineitemids = tblLineItems.Select(line => line.PlanLineItemId).ToList();
                     List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lia => lineitemids.Contains(lia.PlanLineItemId)).ToList();
-
+                    List<Plan_Campaign_Program_Tactic_Actual> tblTacticItemActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(tac => PlanTacticIds.Contains(tac.PlanTacticId)).ToList();
                     TacticActualCostModel objTacticActualCost;
                     List<BudgetedValue> lstActulalValue;
                     foreach (int keyTactic in PlanTacticIds)
@@ -7812,7 +7812,7 @@ namespace RevenuePlanner.Helpers
                         objTacticActualCost = new TacticActualCostModel();
                         objTacticActualCost.PlanTacticId = keyTactic;
                         lstLineItems = new List<int>();
-                        lstLineItems = tblLineItems.Where(line => line.PlanTacticId.Equals(keyTactic)).Select(li => li.PlanLineItemId).ToList();
+                        lstLineItems = tblLineItems.Where(line => line.PlanTacticId.Equals(keyTactic) && line.LineItemTypeId != null).Select(li => li.PlanLineItemId).ToList();
                         if (lstLineItems.Count > 0)
                         {
                             //lstLineItemActuals = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
@@ -7845,44 +7845,36 @@ namespace RevenuePlanner.Helpers
                             }
 
                         }
-                        // Commented By Nishant Sheth
-                        // Desc :: Match overview's finance actual value with finace tab #1541
-                        //else
-                        //{
-                        //    // Modified By Nishant Sheth
-                        //    // Desc :: #2052 To Resolve Actual value show 0
-                        //    var lstPlanTacticsActualsData = Tacticdata.Where(pta => pta.TacticObj.PlanTacticId.Equals(keyTactic)).Select(pta => pta.ActualTacticList).FirstOrDefault();
-                        //    List<BudgetedValue> lstPlanTacticsActuals = new List<BudgetedValue>();
-                        //    if (lstPlanTacticsActualsData != null)
-                        //    {
-                        //        lstPlanTacticsActuals = lstPlanTacticsActualsData.ToList().Select(tac => new
-                        //        {
-                        //            Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
-                        //            TacticId = tac.PlanTacticId,
-                        //            Value = tac.Actualvalue,
-                        //            StartYear = tac.Plan_Campaign_Program_Tactic.StartDate.Year
-                        //        }).ToList().Select(tac => new
-                        //        {
-                        //            Period = tac.Period,
-                        //            NumPeriod = (tac.Period / 13),
-                        //            TacticId = tac.TacticId,
-                        //            Value = tac.Value,
-                        //            StartYear = tac.StartYear
-                        //        }).ToList().Select(tact => new BudgetedValue
-                        //        {
-                        //            Period = "Y" + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
-                        //            Year = tact.StartYear + tact.NumPeriod,
-                        //            //TacticId = tact.TacticId,
-                        //            Value = tact.Value
-                        //        }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year.ToString()))).ToList();
-                        //    }
-
-                        //    lstActulalValue = new List<BudgetedValue>();
-                        //    if (lstPlanTacticsActuals != null)
-                        //    {
-                        //        lstActulalValue = lstPlanTacticsActuals.ToList();
-                        //    }
-                        //}
+                        else
+                        {
+                            var lstTacticItemActuals = tblTacticItemActuals.Where(tac => tac.PlanTacticId == keyTactic).ToList()
+                                .Select(tac => new
+                                {
+                                    Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
+                                    TacticId = tac.PlanTacticId,
+                                    Value = tac.Actualvalue,
+                                    StartDate = tac.Plan_Campaign_Program_Tactic.StartDate // Modified By Nishant Sheth #2507
+                                }).ToList().Select(tac => new
+                                {
+                                    Period = tac.Period,
+                                    NumPeriod = (tac.Period / 13),
+                                    TacticId = tac.TacticId,
+                                    Value = tac.Value,
+                                    StartYear = tac.StartDate.Year,
+                                    StartDate = tac.StartDate
+                                }).ToList().Select(tact => new
+                                {
+                                    Period = "Y" + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                                    Year = tact.StartYear + tact.NumPeriod,
+                                    TacticId = tact.TacticId,
+                                    Value = tact.Value,
+                                    StartDate = tact.StartDate
+                                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+                            if (lstTacticItemActuals.Any())
+                            {
+                                lstActulalValue = lstTacticItemActuals.Select(actual => new BudgetedValue { Period = actual.Period, Value = actual.Value, Year = actual.Year, StartDate = actual.StartDate }).ToList();
+                            }
+                        }
                         objTacticActualCost.ActualList = lstActulalValue;
                         TacticActualCostList.Add(objTacticActualCost);
                     }
@@ -7912,27 +7904,20 @@ namespace RevenuePlanner.Helpers
             {
 
                 List<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem =
-                    db.Plan_Campaign_Program_Tactic_LineItem.Where(w => w.IsDeleted == false &&
+                    db.Plan_Campaign_Program_Tactic_LineItem.Where(w => w.IsDeleted == false && PlanTacticIds.Contains(w.PlanTacticId)).ToList();
 
-PlanTacticIds.Contains(w.PlanTacticId)).ToList();
-
-                List<int> lineitemIdList = Plan_Campaign_Program_Tactic_LineItem.Where(w => w.IsDeleted == false && PlanTacticIds.Contains(w.PlanTacticId)).Select
-
-(w => w.PlanLineItemId).ToList();
-                List<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(w =>
-
-lineitemIdList.Contains(w.PlanLineItemId)).ToList();
-                List<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost = db.Plan_Campaign_Program_Tactic_Cost.Where(w => PlanTacticIds.Contains
-
-(w.PlanTacticId)).ToList();
+                List<int> lineitemIdList = Plan_Campaign_Program_Tactic_LineItem.Where(w => w.IsDeleted == false && PlanTacticIds.Contains(w.PlanTacticId))
+                    .Select(w => w.PlanLineItemId).ToList();
+                List<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost = db.Plan_Campaign_Program_Tactic_LineItem_Cost
+                    .Where(w => lineitemIdList.Contains(w.PlanLineItemId)).ToList();
+                List<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost = db.Plan_Campaign_Program_Tactic_Cost
+                    .Where(w => PlanTacticIds.Contains(w.PlanTacticId)).ToList();
 
                 int TacticLength = PlanTacticIds.Count;
                 for (int i = 0; i < TacticLength; i++)
                 {
                     int TacticId = PlanTacticIds[i];
-                    var listlineitems = Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && !ln.IsDeleted && ln.LineItemTypeId !=
-
-null).Select(ln => ln).ToList();
+                    var listlineitems = Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && !ln.IsDeleted && ln.LineItemTypeId != null).Select(ln => ln).ToList();
                     List<int> lineitemIds = listlineitems.Select(ln => ln.PlanLineItemId).ToList();
                     var tacCostData = Plan_Campaign_Program_Tactic_Cost.Where(Cost => Cost.PlanTacticId.Equals(TacticId)).Select(cost => cost).ToList();
                     var LineCostListData = Plan_Campaign_Program_Tactic_LineItem_Cost.Where(Cost => lineitemIds.Contains(Cost.PlanLineItemId)).ToList();
@@ -7965,9 +7950,7 @@ null).Select(ln => ln).ToList();
                         }
                     }
 
-                    var LineItemCostSum = LineCostListData.Select(a => a.Value).Sum();
                     var OtherLineItem = Plan_Campaign_Program_Tactic_LineItem.Where(ln => ln.PlanTacticId.Equals(TacticId) && ln.LineItemTypeId == null &&
-
 ln.IsDeleted.Equals(false)).FirstOrDefault();
                     if (OtherLineItem != null)
                     {
