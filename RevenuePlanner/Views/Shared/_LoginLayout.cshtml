@@ -21,12 +21,14 @@
     <meta charset="utf-8" />
     <title>@ViewBag.Title</title>
     <link rel="shortcut icon" href="@Url.Content("~/Content/images/favicon.png")">
+    
     <meta name="viewport" content="width=device-width" />
     <meta name="robots" content="noindex">
 
     @Styles.Render("~/Content/css/GetCSSForLogin")
-
+    <link rel="stylesheet" href="@Url.Content("~/content/css/style_extended_min_aug_2.css")" type="text/css" />
     @Scripts.Render("~/bundles/GetJSForLogin")
+    
     <script type="text/javascript">
         //Added By: Rahul Shah on 25/09/2015 to address ticket PL #900 Exception handling in client side scripting
         //Summary: Added reference of script file and also initialize the javaScript variable 'logErrorUrl' so that errorhandler.js knows
