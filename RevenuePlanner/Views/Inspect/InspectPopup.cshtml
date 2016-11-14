@@ -268,7 +268,7 @@
     var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Handling add mode of inspect popup
     var mxpnlTabArrivalTime,mxpnlTabLeaveTime,mxpnlTabName; //Declared global varible to handle that user spent what time to particular inspect tab. PL ticket #2343.
     $(document).ready(
-         
+
       function () {
 
           // Added by Viral related to PL ticket #2434.
@@ -279,7 +279,7 @@
           //Bhumika - #2236 For equal width of li
           var evenWidth = ($("#InspectTab").width() / $("#InspectTab li").length) - 2;
           $("#InspectTab li").css("width", evenWidth);
-          
+
 
           var modelHeight = $(window).height();
           var headerHeight = $('.headerfix-wraper').height();
@@ -314,15 +314,15 @@
           $("#liSetup,#liReview,#liActuals,#liLine_Items,#liMedia_Codes").on("click", function () {
               $("#divArchiveMediaCode").html("");
               //added by devanshi for PL ticket #2276
-        if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
-            ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
-            $("#txtTacticTitle").addClass("error");
-            return false;
-        }
+              if (CheckHtmlTag($("#txtTacticTitle").val()) == false) {
+                  ShowError("@RevenuePlanner.Helpers.Common.objCached.TitleContainHTMLString");
+                  $("#txtTacticTitle").addClass("error");
+                  return false;
+              }
               //end
 
-              
-            
+
+
               // Modified by Komal Rawal for #2165 clicking on tabs or button before loading gets complete gives elmah error.
               if($('#InspectTab').hasClass('SpanDisable') == false)
               {
@@ -338,11 +338,11 @@
 
                   // If condition added by bhavesh, if same tab click then don't require to save data. Date : 10-jan-2015.Ticket: #1823
                   var returnpara = true;
-                 
+
                   if (tabtext != activeTab) {
                       returnpara = SaveAllData(activeTab); //Added By Komal Rawal for #1213 to save data to tab click
-                      
-                      // Start: Log Mixpanel- Added by Viral regarding PL ticket #2343.              
+
+                      // Start: Log Mixpanel- Added by Viral regarding PL ticket #2343.
                       var d = new Date();
                       // 'mxpnlTabLeaveTime' variable declared at InspectPopup.cshtml to access & log tab arrival time for all tabs.
                       mxpnlTabLeaveTime = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();    // Store setup tab leave time.
@@ -352,11 +352,11 @@
                       // End: Log Mixpanel- Added by Viral regarding PL ticket #2343.
                   }
                   if (returnpara) {
-                      
+
                       RemoveTabClass();
                       $(this).removeClass("pull-left");
                       $(this).addClass("active pull-left");
-                        $("#errorMessage").css("display", "none");
+                      $("#errorMessage").css("display", "none");
                       $("#successMessage").css("display", "none");
                       $('#MultiSelectProcced').css("display", "none");
                       var planTacticId = $("#hdnPlanTacticId").val();
@@ -376,7 +376,7 @@
 
           });
 
-         
+
 
           // Close event for Error Message & Success Message Close button
           $(".alert").find(".close").on("click", function (e) {
@@ -396,7 +396,7 @@
           $('#EditForm').on("click", function (e) { SaveTacticAddNew(); } );
 
       });
- 
+
     //
     //The save will need to work for both "Save & Close" and "Save & Add New" - #2329 by zz
     //
@@ -525,11 +525,11 @@
     }
 
     //
-    // Reload saved tactic 
+    // Reload saved tactic
     //
     function ReloadSavedTactic(){
         //Reloading the dialog is NOT ideal, yet it sure cleans things up and guarantees a clean start. zz
-        loadInspectPopup($("#hdnPlanTacticId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", @PlanProgramId, '@RequestedModule');
+        loadInspectPopup($("#hdnPlanTacticId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", tabtext, "@Enums.InspectPopupMode.Edit.ToString()", @PlanProgramId, '@RequestedModule');
     }
 
     //Added By Komal Rawal for #1213
@@ -553,14 +553,14 @@
                 }
             }
 
-            // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
-            //else if (activeTab == TabBudget) {
-            //    var ReturnParameter = TacticBudgetSave();
-            //    if (ReturnParameter == false) {
-            //        $('#InspectTab').removeClass('SpanDisable');
-            //        return false;
-            //    }
-            //}
+                // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
+                //else if (activeTab == TabBudget) {
+                //    var ReturnParameter = TacticBudgetSave();
+                //    if (ReturnParameter == false) {
+                //        $('#InspectTab').removeClass('SpanDisable');
+                //        return false;
+                //    }
+                //}
 
             else if (activeTab == TabActual) {
                 var hdnTacticStatus = $("#hdnTacticStatus").val();
@@ -582,7 +582,7 @@
                 // Added by Arpita Soni for Ticket #2237 on 06/09/2016
                 //Modified by Komal for #2296
             else if (activeTab == TabLineItem) {
-                    $('#InspectTab').removeClass('SpanDisable');
+                $('#InspectTab').removeClass('SpanDisable');
             }
             else if (activeTab == TabReview) {
                 var ReturnParameter = SaveReviewIntegrationInfo();//SaveTitle();
@@ -592,7 +592,7 @@
                     return false;
                 }
             }
-            
+
 
         }
 
@@ -788,7 +788,7 @@
             });
         }
         // Commented by Arpita Soni for Ticket #2236 on 06/07/2016
-       @* if (tabValue == TabBudget) {
+        @* if (tabValue == TabBudget) {
             if (ProgramOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
                  $('#txtTacticTitle').css('display', 'block');
                  $('#lblTacticTitle').css('display', 'none');
@@ -799,7 +799,7 @@
                  $('#InspectTab').removeClass('SpanDisable');
              });
          }*@
-                
+
         // Added by Arpita Soni for Ticket #2237 on 06/09/2016
         if (tabValue == TabLineItem) {
             var isLocked = true;
@@ -815,7 +815,7 @@
                 $('#InspectTab').removeClass('SpanDisable');
             });
         }
-       //added by devanshi #2290
+        //added by devanshi #2290
         if(tabValue==TabMediaCode)
         {
             var InsepectMode=$("#hdnInspectMode").val();
@@ -885,7 +885,7 @@
         }
     }
 
-    //Modified By Komal Rawal for #2182 
+    //Modified By Komal Rawal for #2182
     function checkChangeValue(classname, withResubmissionLabel) {
         _resubmissionLabelValues = [];
         var resubmit = false;
@@ -922,10 +922,10 @@
         }
     }
     //End
-       
+
     var isInspectWin = false;
-    $('#CloneTactic').click(function () {        
-        //Modified by Rahul Shah for PL #2031 on 22/03/2016        
+    $('#CloneTactic').click(function () {
+        //Modified by Rahul Shah for PL #2031 on 22/03/2016
         var returnpara = true;
         isInspectWin = false;
         if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
@@ -963,7 +963,7 @@
             // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
             var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
             if (activeTab != null && activeTab != undefined && activeTab != '') {
-                returnpara = SaveAllData(activeTab);                               
+                returnpara = SaveAllData(activeTab);
             }
         }
         if (!isInspectWin && returnpara) {
@@ -1039,12 +1039,12 @@
                 CalledFromBudget: '@CalledFromBudget',
                 RequsetedModule: '@RedirectType'
             },
-            success: function (data) {                
+            success: function (data) {
                 if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
-                    
+
                     var currentTab = "Setup";
 
                     @*if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
@@ -1120,7 +1120,7 @@
                     else {
                         if (data.IsSuccess && data.opt != 'undefined') {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                
+
                                 // Added by Arpita Soni for Ticket #2354 on 07/14/2016
                                 RemoveAllHoneyCombData();
 
@@ -1221,7 +1221,7 @@
             var activeTab = $("#InspectTab li.active a").text().replace(" ","_");
             if (activeTab != null && activeTab != undefined && activeTab != '') {
                 returnpara = SaveAllData(activeTab);
-               
+
             }
         }
         if (!isInspectNewLineItem && returnpara) {
@@ -1230,7 +1230,7 @@
     });
     //Added by Rahul Shah on 12/04/2016 for PL #2038
     var isInspectNewTactic = false;
-    $("#NewTacticfromPopup").on("click", function () {  
+    $("#NewTacticfromPopup").on("click", function () {
         isInspectNewLineItem = false;
         var returnpara = true;
         // Modified by Arpita Soni for Ticket #2237 on 06/13/2016
@@ -1267,11 +1267,11 @@
             isInspectNewLineItem = true;
         }
         else {
-            
-        if (activeTab != null && activeTab != undefined && activeTab != '') {
-            returnpara = SaveAllData(activeTab);
-           
-        }
+
+            if (activeTab != null && activeTab != undefined && activeTab != '') {
+                returnpara = SaveAllData(activeTab);
+
+            }
         }
         var ProgramId = @PlanProgramId;
         isCopyTactic = ProgramId;
