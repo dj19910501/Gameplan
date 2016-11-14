@@ -1278,16 +1278,28 @@ function ExportCSVHoneyCombSp() {
 
 function ExportToExcel(isHoneyComb) {
     if (gridname.toLowerCase() == "home") {
-        if (filters.PlanIDs.length > 1) {
-            alert('You can export only one plan at a time. Please select the correct plan and try to export again');
+        if (isHoneyComb) {
+            var TaskId = [];
+            for (var i = 0; i < ExportSelectedIds.TaskID.length; i++) {
+                TaskId.push(ExportSelectedIds.TaskID[i].split(/_(.+)?/)[0])
+            }
+            var arrTaskId = TaskId.filter(function (itm, i, TaskId) {
+                return i == TaskId.indexOf(itm);
+            });
+            if (arrTaskId.length > 1) {
+                alert('You can export only one plan at a time. Please select the correct plan and try to export again');
+            }
+            else {
+                ExportCSVHoneyCombSp();
+            }            
         }
         else {
-            if (isHoneyComb) {
-                ExportCSVHoneyCombSp();
+            if (filters.PlanIDs.length > 1) {
+                alert('You can export only one plan at a time. Please select the correct plan and try to export again');
             }
             else {
                 ExportToCsvSp();
-            }
+            }            
         }
     }
     else {
