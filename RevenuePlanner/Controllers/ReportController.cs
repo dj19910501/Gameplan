@@ -249,7 +249,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                planid = tblPlan.OrderByDescending(p => Convert.ToInt32(p.Year)).OrderBy(p => p.Title).ToList().FirstOrDefault().PlanId; // Change By Nishant Sheth for select first plan
+                planid = tblPlan.OrderByDescending(p => Convert.ToInt32(p.Year)).OrderBy(p => p.Title).ToList().Select(a => a.PlanId).FirstOrDefault(); // Change By Nishant Sheth for select first plan
             }
 
             //Modified By Komal Rawal include year filter in default view
