@@ -3,9 +3,11 @@ using RevenuePlanner.Test.QA;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RevenuePlanner.Test.MockHelpers;
 
 namespace RevenuePlanner.Test.IntegrationHelpers
 {
@@ -38,7 +40,24 @@ namespace RevenuePlanner.Test.IntegrationHelpers
 
         }
 
+        public void SetSessionData()
+        {
+            List<int> PlanIds = new List<int>();
+            List<int> ReportOwnerIds = new List<int>();
+            List<int> ReportTacticTypeIds = new List<int>();
 
+            int PlanId = Convert.ToInt32(ConfigurationManager.AppSettings["PlanId"]);
+            PlanIds.Add(PlanId);
+            Sessions.ReportPlanIds = PlanIds;
+
+            int OwnerId = DataHelper.GetPlanOwnerId(PlanId);
+            ReportOwnerIds.Add(OwnerId);
+            Sessions.ReportOwnerIds = ReportOwnerIds;
+
+            int ModelId = Convert.ToInt32(ConfigurationManager.AppSettings["ModelId"]);
+            ReportTacticTypeIds = QA_DataHelper.GetTacticTypeIds(ModelId);
+            Sessions.ReportTacticTypeIds = ReportTacticTypeIds;
+        }
 
     }
 }

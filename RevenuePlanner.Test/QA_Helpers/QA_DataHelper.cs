@@ -94,6 +94,8 @@ namespace RevenuePlanner.Test.QA
         {
             var objTactic = db.Plan_Campaign_Program_Tactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId && a.IsDeleted == false).FirstOrDefault();
             return objTactic;
-        }       
+        }
+
+       
     }
 }
