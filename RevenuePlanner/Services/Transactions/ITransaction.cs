@@ -74,6 +74,7 @@ namespace RevenuePlanner.Services.Transactions
     /// </summary>
     public class TransactionLineItemMapping
     {
+        public int TransactionLineItemMappingId { get; set; } 
         public int TransactionId { get; set; }
         public int LineItemId { get; set; }
         public double Amount { get; set; }
