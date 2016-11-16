@@ -150,7 +150,10 @@ namespace RevenuePlanner.Services.Transactions
         /// <param name="clientId"></param>
         /// <returns></returns>
         List<TransactionHeaderMapping> GetHeaderMappings(int clientId);
+<<<<<<< HEAD
 
         void DeleteTransactionLineItemMapping(int mappingId);
+=======
+>>>>>>> afe55ed2e7ce4c2c108b0dbff11840aae0c516ec
     }
 }

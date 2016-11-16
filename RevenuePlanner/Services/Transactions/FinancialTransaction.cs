@@ -12,11 +12,14 @@ namespace RevenuePlanner.Services.Transactions
             throw new NotImplementedException();
         }
 
+<<<<<<< HEAD
         public void DeleteTransactionLineItemMapping(int mappingId)
         {
             throw new NotImplementedException();
         }
 
+=======
+>>>>>>> afe55ed2e7ce4c2c108b0dbff11840aae0c516ec
         public List<TransactionHeaderMapping> GetHeaderMappings(int clientId)
         {
             throw new NotImplementedException();
