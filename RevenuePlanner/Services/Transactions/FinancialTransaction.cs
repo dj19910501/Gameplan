@@ -7,7 +7,7 @@ namespace RevenuePlanner.Services.Transactions
 {
     public class FinancialTransaction : ITransaction
     {
-        public void AttrbuteTransactionsToLineItems(List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId)
+        public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId)
         {
             throw new NotImplementedException();
         }

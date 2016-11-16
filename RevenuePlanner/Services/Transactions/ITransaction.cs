@@ -158,7 +158,7 @@ namespace RevenuePlanner.Services.Transactions
         /// This method handles both new mapping as well as updating existing mappings 
         /// </summary>
         /// <param name="transactionLineItemMappings"></param>
-        void AttrbuteTransactionsToLineItems(List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId);
+        void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings, int modifyingUserId);
         /// <summary>
         /// Client may customize transaction column headers (to display on UI) to their taste by providing headers mappings
         /// from our standard header to theirs. Internally, we will always use standard headings (see Transaction class)

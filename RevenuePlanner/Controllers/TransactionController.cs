@@ -20,9 +20,9 @@ namespace RevenuePlanner.Controllers
             _transaction = transaction; //DI will take crea of populating this!
         }
 
-        public void AttrbuteTransactionsToLineItems(List<TransactionLineItemMapping> transactionLineItemMappings)
+        public void SaveTransactionToLineItemMapping(List<TransactionLineItemMapping> transactionLineItemMappings)
         {
-            _transaction.AttrbuteTransactionsToLineItems(transactionLineItemMappings, Sessions.User.ID);
+            _transaction.SaveTransactionToLineItemMapping(transactionLineItemMappings, Sessions.User.ID);
         }
 
         public void DeleteTransactionLineItemMapping(int mappingId)
